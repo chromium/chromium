@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 
@@ -32,7 +31,6 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -49,7 +47,6 @@ import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -112,19 +109,15 @@ public class ExpandablePaymentHandlerTest {
     public static class GoodCertParams implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {
-            List<ParameterSet> parameters = new ArrayList<>();
-            parameters.add(new ParameterSet()
-                                   .value(ServerCertificate.CERT_COMMON_NAME_IS_DOMAIN)
-                                   .name("CERT_COMMON_NAME_IS_DOMAIN"));
-            parameters.add(new ParameterSet().value(ServerCertificate.CERT_AUTO).name("CERT_AUTO"));
-            // Disabling 2 parameterized tests on M per https://crbug.com/1101030
-            if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M) {
-                parameters.add(new ParameterSet().value(ServerCertificate.CERT_OK).name("CERT_OK"));
-                parameters.add(new ParameterSet()
-                                       .value(ServerCertificate.CERT_OK_BY_INTERMEDIATE)
-                                       .name("CERT_OK_BY_INTERMEDIATE"));
-            }
-            return parameters;
+            return Arrays.asList(
+                    new ParameterSet().value(ServerCertificate.CERT_OK).name("CERT_OK"),
+                    new ParameterSet()
+                            .value(ServerCertificate.CERT_COMMON_NAME_IS_DOMAIN)
+                            .name("CERT_COMMON_NAME_IS_DOMAIN"),
+                    new ParameterSet()
+                            .value(ServerCertificate.CERT_OK_BY_INTERMEDIATE)
+                            .name("CERT_OK_BY_INTERMEDIATE"),
+                    new ParameterSet().value(ServerCertificate.CERT_AUTO).name("CERT_AUTO"));
         }
     }
 
@@ -365,12 +358,8 @@ public class ExpandablePaymentHandlerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(message = "https://crbug.com/1101030",
-            sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N)
     @Feature({"Payments"})
-    public void
-    testNavigateBackWithSystemBackButton() throws Throwable {
+    public void testNavigateBackWithSystemBackButton() throws Throwable {
         startDefaultServer();
 
         PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
