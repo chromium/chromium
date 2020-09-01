@@ -1716,6 +1716,8 @@ public class AwContents implements SmartClipProvider {
         mContentsClient.getVisitedHistory(callback);
     }
 
+    private static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
+
     /**
      * WebView.loadUrl.
      */
@@ -1740,6 +1742,15 @@ public class AwContents implements SmartClipProvider {
 
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
         if (additionalHttpHeaders != null) {
+            boolean valid = true;
+            for (Map.Entry<String, String> header : additionalHttpHeaders.entrySet()) {
+                if (BAD_HEADER_CHAR.matcher(header.getKey()).find()
+                        || BAD_HEADER_CHAR.matcher(header.getValue()).find()) {
+                    valid = false;
+                    break;
+                }
+            }
+            RecordHistogram.recordBooleanHistogram("Android.WebView.ExtraHeaders.Valid", valid);
             params.setExtraHeaders(new HashMap<String, String>(additionalHttpHeaders));
         }
 

@@ -5317,6 +5317,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ExtraHeaders.Valid" enum="BooleanValid"
+    expires_after="2021-01-14">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded when an app passes extra headers to
+    WebView.loadUrl(url,extra_headers). We check if the header names and values
+    are valid.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ExtraHeadersRedirect"
     enum="WebViewExtraHeadersRedirect" expires_after="2020-12-01">
   <owner>torne@chromium.org</owner>
@@ -5713,6 +5724,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The version of the target SDK of the app WebView is running in. This is
     recorded at WebView creation.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.UserAgent.Valid" enum="WebViewUserAgentType"
+    expires_after="2021-01-14">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded when an app passes a custom user agent to
+    WebSettings.setUserAgentString. We check if the UA is valid, and if not we
+    try to interpret it in several ways and record which (if any) made sense.
   </summary>
 </histogram>
 

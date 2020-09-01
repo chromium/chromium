@@ -74998,6 +74998,20 @@ Called by update_scheduler_enums.py.-->
   <int value="13" label="android_asset or android_res"/>
 </enum>
 
+<enum name="WebViewUserAgentType">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Invalid - contains one or more nulls"/>
+  <int value="2"
+      label="Invalid - but could be extra headers (with correct line endings)"/>
+  <int value="3"
+      label="Invalid - but could be extra headers (but with wrong line
+             endings)"/>
+  <int value="4"
+      label="Invalid - but could be attempting to terminate headers"/>
+  <int value="5"
+      label="Invalid - none of the above; random garbage or an unknown case"/>
+</enum>
+
 <enum name="WebViewVisibility">
   <int value="0" label="Visible"/>
   <int value="1" label="NotVisible"/>

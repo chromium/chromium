@@ -26,6 +26,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
@@ -642,6 +643,66 @@ public class AwSettings {
                 < Build.VERSION_CODES.P;
     }
 
+    // Used to record the UMA histogram Android.WebView.UserAgent.Valid. Since these values
+    // are persisted to logs, they should never be renumbered or reused.
+    @IntDef({UserAgentType.VALID, UserAgentType.HAS_NULL, UserAgentType.EXTRA_HEADERS,
+            UserAgentType.EXTRA_HEADERS_SLOPPY_LINEEND, UserAgentType.HEADER_TERMINATION,
+            UserAgentType.UNKNOWN_INVALID})
+    @interface UserAgentType {
+        int VALID = 0;
+        int HAS_NULL = 1;
+        int EXTRA_HEADERS = 2;
+        int EXTRA_HEADERS_SLOPPY_LINEEND = 3;
+        int HEADER_TERMINATION = 4;
+        int UNKNOWN_INVALID = 5;
+        int COUNT = 6;
+    }
+
+    // Regex fragments used in checkUserAgentValueValidity.
+    private static final String HEADER_NAME = "[^\r\n:]+";
+    private static final String HEADER_VALUE = "[^\r\n]+";
+    private static final String HEADER = HEADER_NAME + ":" + HEADER_VALUE;
+    private static final String STRICT_LINEEND = "\r\n";
+    private static final String SLOPPY_LINEEND = "(?:\r\n|\r|\n)";
+
+    private static @UserAgentType int checkUserAgentValueValidity(String ua) {
+        boolean hasLineEnds = false;
+        for (int i = 0; i < ua.length(); ++i) {
+            char c = ua.charAt(i);
+            if (c == '\u0000') {
+                // An embedded null is never going to be valid.
+                return UserAgentType.HAS_NULL;
+            }
+            if (c == '\r' || c == '\n') {
+                hasLineEnds = true;
+                break;
+            }
+        }
+
+        if (!hasLineEnds) {
+            // If we had no nulls and no CR or LF, it's good enough to pass
+            // net::HttpUtil::IsValidHeaderValue().
+            return UserAgentType.VALID;
+        }
+
+        // If it has CR/LFs in it, it might be trying to insert extra headers or other "creative"
+        // uses; check if there's a plausible interpretation. We already established there are no
+        // nulls above.
+        if (ua.matches(HEADER_VALUE + "(?:" + STRICT_LINEEND + HEADER + ")+")) {
+            // Looks like a working attempt to insert additional headers, using CRLF as per spec.
+            return UserAgentType.EXTRA_HEADERS;
+        } else if (ua.matches(HEADER_VALUE + "(?:" + SLOPPY_LINEEND + HEADER + ")+")) {
+            // Looks like an attempt to insert additional headers, but wrong line endings.
+            return UserAgentType.EXTRA_HEADERS_SLOPPY_LINEEND;
+        } else if (ua.matches(".*" + SLOPPY_LINEEND + SLOPPY_LINEEND + ".*")) {
+            // Possibly an attempt to terminate headers and push the rest into the request body?
+            return UserAgentType.HEADER_TERMINATION;
+        } else {
+            // Maybe just random garbage, or some more weird/subtle usage.
+            return UserAgentType.UNKNOWN_INVALID;
+        }
+    }
+
     /**
      * See {@link android.webkit.WebSettings#setUserAgentString}.
      */
@@ -655,6 +716,13 @@ public class AwSettings {
                 mUserAgent = ua;
             }
             if (!oldUserAgent.equals(mUserAgent)) {
+                if (ua != null && ua.length() > 0) {
+                    // If we're using the passed-in string (not the default), and we've actually
+                    // changed the UA since the last call, then check whether it's a valid header
+                    // value so we can log metrics.
+                    RecordHistogram.recordEnumeratedHistogram("Android.WebView.UserAgent.Valid",
+                            checkUserAgentValueValidity(ua), UserAgentType.COUNT);
+                }
                 mEventHandler.runOnUiThreadBlockingAndLocked(() -> {
                     if (mNativeAwSettings != 0) {
                         AwSettingsJni.get().updateUserAgentLocked(
