@@ -7,9 +7,13 @@
 
 #include <memory>
 
-#include "gpu/config/gpu_preferences.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
+
+namespace gpu {
+struct GpuPreferences;
+class GpuDriverBugWorkarounds;
+}  // namespace gpu
 
 namespace media {
 
@@ -26,6 +30,9 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
   // Gets the supported codec profiles for video encoding on the platform.
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences);
+  static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(GpuVideoEncodeAcceleratorFactory);

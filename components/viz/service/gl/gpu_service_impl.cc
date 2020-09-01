@@ -294,7 +294,7 @@ void GetVideoCapabilities(const gpu::GpuPreferences& gpu_preferences,
   gpu_info->video_encode_accelerator_supported_profiles =
       media::GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(
           media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-              gpu_preferences));
+              gpu_preferences, gpu_workarounds));
 #endif
 }
 
@@ -704,10 +704,14 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
         vea_provider_receiver) {
   DCHECK(io_runner_->BelongsToCurrentThread());
+
+  gpu::GpuDriverBugWorkarounds gpu_workarounds(
+      gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
+
   media::MojoVideoEncodeAcceleratorProvider::Create(
       std::move(vea_provider_receiver),
       base::BindRepeating(&media::GpuVideoEncodeAcceleratorFactory::CreateVEA),
-      gpu_preferences_);
+      gpu_preferences_, gpu_workarounds);
 }
 
 void GpuServiceImpl::CreateGpuMemoryBuffer(

@@ -380,11 +380,6 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
     return true;
   }
 
-  // TODO(b/158655609): Several Gen 9.5 GPU devices suffer from a GPU hang when
-  // VP8 encoding in some power saving states. Block them temporarily.
-  if (IsGen95Gpu() && va_profile == VAProfileVP8Version0_3)
-    return true;
-
   return false;
 }
 

@@ -3499,6 +3499,24 @@
       "features": [
         "enable_bgra8_overlays_with_yuv_overlay_support"
       ]
+    },
+    {
+      "id": 348,
+      "cr_bugs": [1120411],
+      "description": "VP8 video encoding hangs on Intel Gen 9.5 GPUs",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "geminilake",
+        "kabylake",
+        "whiskeylake",
+        "cometlake"
+      ],
+      "features": [
+        "disable_accelerated_vp8_encode"
+      ]
     }
   ]
 }

@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/limits.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
@@ -71,7 +72,7 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
     mojo_vea_receiver_ = mojo::MakeSelfOwnedReceiver(
         std::make_unique<MojoVideoEncodeAcceleratorService>(
             base::BindRepeating(&CreateAndInitializeFakeVEA),
-            gpu::GpuPreferences()),
+            gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds()),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
     mojo_vea_.reset(new MojoVideoEncodeAccelerator(
