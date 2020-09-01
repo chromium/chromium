@@ -28,6 +28,14 @@ class ScopedRequestCrashKeys {
  private:
   base::debug::ScopedCrashKeyString url_;
   url::debug::ScopedOriginCrashKey request_initiator_;
+
+  // TODO(lukasza): https://crbug.com/1056949: Remove this diagnostic aid once
+  // the bug is understood.
+  base::debug::ScopedCrashKeyString resource_type_;
+
+  // TODO(lukasza): https://crbug.com/1056949: Remove this diagnostic aid once
+  // the bug is understood.
+  base::debug::ScopedCrashKeyString load_flags_;
 };
 
 }  // namespace debug
