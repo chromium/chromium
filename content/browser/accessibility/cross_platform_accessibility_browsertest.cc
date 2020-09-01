@@ -28,6 +28,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -66,6 +67,14 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   // ContentBrowserTest
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    // kDisableAXMenuList is true on Chrome OS by default. Make it consistent
+    // for these cross-platform tests.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kDisableAXMenuList, "false");
+  }
 
  protected:
   void LoadInitialAccessibilityTreeFromUrl(

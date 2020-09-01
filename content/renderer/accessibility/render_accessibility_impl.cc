@@ -228,9 +228,21 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
   // Optionally disable AXMenuList, which makes the internal pop-up menu
-  // UI for a select element directly accessible.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisableAXMenuList))
+  // UI for a select element directly accessible. Disable by default on
+  // Chrome OS, but some tests may override.
+  bool disable_ax_menu_list = false;
+#if defined(OS_CHROMEOS)
+  disable_ax_menu_list = true;
+#endif
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kDisableAXMenuList)) {
+    if (command_line->GetSwitchValueASCII(::switches::kDisableAXMenuList) ==
+        "false")
+      disable_ax_menu_list = false;
+    else
+      disable_ax_menu_list = true;
+  }
+  if (disable_ax_menu_list)
     settings->SetUseAXMenuList(false);
 
   const WebDocument& document = GetMainDocument();

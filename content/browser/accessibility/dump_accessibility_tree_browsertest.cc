@@ -78,6 +78,10 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     // Enable display locking, used in some tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "CSSContentVisibilityHiddenMatchable");
+    // kDisableAXMenuList is true on Chrome OS by default. Make it consistent
+    // for these cross-platform tests.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kDisableAXMenuList, "false");
   }
 
   void RunAriaTest(const base::FilePath::CharType* file_path) {
