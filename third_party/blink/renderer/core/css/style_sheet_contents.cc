@@ -407,12 +407,8 @@ void StyleSheetContents::CheckLoaded() {
   for (unsigned i = 0; i < loading_clients.size(); ++i) {
     if (loading_clients[i]->LoadCompleted())
       continue;
-
-    if (loading_clients[i]->IsConstructed()) {
-      // Resolve the promise for CSSStyleSheet.replace calls.
-      loading_clients[i]->ResolveReplacePromiseIfNeeded(did_load_error_occur_);
+    if (loading_clients[i]->IsConstructed())
       continue;
-    }
 
     // sheetLoaded might be invoked after its owner node is removed from
     // document.
