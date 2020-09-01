@@ -719,6 +719,7 @@ MISSING DEPENDENCY: contacts/resources/helpers.js
 MISSING DEPENDENCY: credential-management/support/otpcredential-helper.js
 MISSING DEPENDENCY: generic-sensor/resources/generic-sensor-helpers.js
 MISSING DEPENDENCY: idle-detection/interceptor.https.html
+MISSING DEPENDENCY: mediacapture-image/resources/imagecapture-helpers.js
 MISSING DEPENDENCY: orientation-event/resources/orientation-event-helpers.js
 MISSING DEPENDENCY: resources/test-only-api.js
 MISSING DEPENDENCY: screen_enumeration/resources/screenenumeration-helpers.js
@@ -726,9 +727,6 @@ MISSING DEPENDENCY: shape-detection/resources/shapedetection-helpers.js
 MISSING DEPENDENCY: web-nfc/resources/nfc-helpers.js
 MISSING DEPENDENCY: webusb/resources/usb-helpers.js
 MISSING DEPENDENCY: webxr/resources/webxr_util.js
-
-# TODO(Hexcles): delete these files once we include them in mojojs.zip.
-MOJOM-JS: resources/chromium/image_capture.mojom.js
 
 # Tests that are false positives for using Ahem as a system font
 AHEM SYSTEM FONT: acid/acid3/test.html
