@@ -416,9 +416,8 @@ void SourceBuffer::abort(ExceptionState& exception_state) {
       return;
     }
 
-    Deprecation::CountDeprecation(
-        source_->MediaElement()->GetExecutionContext(),
-        WebFeature::kMediaSourceAbortRemove);
+    Deprecation::CountDeprecation(GetExecutionContext(),
+                                  WebFeature::kMediaSourceAbortRemove);
     CancelRemove();
   }
 
@@ -1131,7 +1130,7 @@ void SourceBuffer::NotifyParseWarning(const ParseWarning warning) {
       // TODO(wolenetz): Use the data to scope additional work. See
       // https://crbug.com/739931.
       UseCounter::Count(
-          source_->MediaElement()->GetDocument(),
+          GetExecutionContext(),
           WebFeature::kMediaSourceKeyframeTimeGreaterThanDependant);
       break;
     case WebSourceBufferClient::kMuxedSequenceMode:
@@ -1140,7 +1139,7 @@ void SourceBuffer::NotifyParseWarning(const ParseWarning warning) {
       // SourceBuffer, at Media.OriginUrl.MSE.MuxedSequenceModeSourceBuffer.
       // TODO(wolenetz): Use the data to scope additional work. See
       // https://crbug.com/737757.
-      UseCounter::Count(source_->MediaElement()->GetDocument(),
+      UseCounter::Count(GetExecutionContext(),
                         WebFeature::kMediaSourceMuxedSequenceMode);
       break;
     case WebSourceBufferClient::kGroupEndTimestampDecreaseWithinMediaSegment:
@@ -1150,7 +1149,7 @@ void SourceBuffer::NotifyParseWarning(const ParseWarning warning) {
       // https://crbug.com/920853 and
       // https://github.com/w3c/media-source/issues/203.
       UseCounter::Count(
-          source_->MediaElement()->GetDocument(),
+          GetExecutionContext(),
           WebFeature::kMediaSourceGroupEndTimestampDecreaseWithinMediaSegment);
       break;
   }

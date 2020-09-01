@@ -606,7 +606,7 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
     }
 
     Deprecation::CountDeprecation(
-        attached_element_->GetExecutionContext(),
+        GetExecutionContext(),
         WebFeature::kMediaSourceDurationTruncatingBuffered);
     // See also deprecated remove(new duration, old duration) behavior below.
   }
@@ -625,9 +625,10 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
     // Deprecated behavior: if the new duration is less than old duration,
     // then call remove(new duration, old duration) on all all objects in
     // sourceBuffers.
-    for (unsigned i = 0; i < source_buffers_->length(); ++i)
+    for (unsigned i = 0; i < source_buffers_->length(); ++i) {
       source_buffers_->item(i)->remove(new_duration, old_duration,
                                        ASSERT_NO_EXCEPTION);
+    }
   }
 
   // 5. If a user agent is unable to partially render audio frames or text cues
