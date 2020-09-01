@@ -2768,6 +2768,7 @@ enum WebFeature {
   kRTCIceCandidatePort = 3439,
   kRTCIceCandidateRelatedAddress = 3440,
   kRTCIceCandidateRelatedPort = 3441,
+  kSlotAssignNode = 3442,
   kWebCodecsAudioDecoder = 3456,
   kWebCodecsVideoDecoder = 3457,
   kWebCodecsVideoEncoder = 3458,

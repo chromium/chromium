@@ -196,6 +196,7 @@ void HTMLSlotElement::assign(HeapVector<Member<Node>> nodes,
   if (!CheckNodesValidity(nodes, exception_state))
     return;
 
+  UseCounter::Count(GetDocument(), WebFeature::kSlotAssignNode);
   ContainingShadowRoot()->GetSlotAssignment().ClearCandidateNodes(
       assigned_nodes_candidates_);
   HeapLinkedHashSet<Member<Node>> candidates;
