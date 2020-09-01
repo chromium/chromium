@@ -2515,22 +2515,24 @@ PP_Var PepperPluginInstanceImpl::ExecuteScript(PP_Instance instance,
 
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
     PP_Instance instance) {
-  return render_frame() ? AudioDeviceFactory::GetOutputDeviceInfo(
-                              render_frame()->GetWebFrame()->GetFrameToken(),
-                              media::AudioSinkParameters())
-                              .output_params()
-                              .sample_rate()
-                        : 0;
+  return render_frame()
+             ? AudioDeviceFactory::GetOutputDeviceInfo(
+                   render_frame()->GetWebFrame()->GetLocalFrameToken(),
+                   media::AudioSinkParameters())
+                   .output_params()
+                   .sample_rate()
+             : 0;
 }
 
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputBufferSize(
     PP_Instance instance) {
-  return render_frame() ? AudioDeviceFactory::GetOutputDeviceInfo(
-                              render_frame()->GetWebFrame()->GetFrameToken(),
-                              media::AudioSinkParameters())
-                              .output_params()
-                              .frames_per_buffer()
-                        : 0;
+  return render_frame()
+             ? AudioDeviceFactory::GetOutputDeviceInfo(
+                   render_frame()->GetWebFrame()->GetLocalFrameToken(),
+                   media::AudioSinkParameters())
+                   .output_params()
+                   .frames_per_buffer()
+             : 0;
 }
 
 PP_Var PepperPluginInstanceImpl::GetDefaultCharSet(PP_Instance instance) {

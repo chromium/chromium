@@ -56,7 +56,7 @@ base::TimeDelta GetDefaultAuthTimeout() {
 }
 
 scoped_refptr<media::AudioOutputDevice> NewOutputDevice(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   CHECK(blink::WebAudioOutputIPCFactory::get());
@@ -77,7 +77,7 @@ bool IsMixable(blink::WebAudioDeviceSourceType source_type) {
 
 scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
     blink::WebAudioDeviceSourceType source_type,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   RenderThreadImpl* render_thread = RenderThreadImpl::current();
   DCHECK(render_thread) << "RenderThreadImpl is not instantiated, or "
@@ -112,7 +112,7 @@ media::AudioLatency::LatencyType AudioDeviceFactory::GetSourceLatencyType(
 
 scoped_refptr<media::AudioRendererSink>
 AudioDeviceFactory::NewAudioRendererMixerSink(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   // AudioRendererMixer sinks are always used asynchronously and thus can
   // operate without a timeout value.
@@ -123,12 +123,8 @@ AudioDeviceFactory::NewAudioRendererMixerSink(
 scoped_refptr<media::AudioRendererSink>
 AudioDeviceFactory::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
-// Can be empty in tests on Android.
-#if !defined(OS_ANDROID)
-  CHECK(!frame_token.is_empty());
-#endif
   if (factory_) {
     scoped_refptr<media::AudioRendererSink> device =
         factory_->CreateAudioRendererSink(source_type, frame_token, params);
@@ -153,7 +149,7 @@ AudioDeviceFactory::NewAudioRendererSink(
 scoped_refptr<media::SwitchableAudioRendererSink>
 AudioDeviceFactory::NewSwitchableAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   if (factory_) {
     scoped_refptr<media::SwitchableAudioRendererSink> sink =
@@ -175,7 +171,7 @@ AudioDeviceFactory::NewSwitchableAudioRendererSink(
 // static
 scoped_refptr<media::AudioCapturerSource>
 AudioDeviceFactory::NewAudioCapturerSource(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& params) {
   if (factory_) {
     // We don't pass on |session_id|, as this branch is only used for tests.
@@ -193,7 +189,7 @@ AudioDeviceFactory::NewAudioCapturerSource(
 
 // static
 media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   DCHECK(RenderThreadImpl::current())
       << "RenderThreadImpl is not instantiated, or "
@@ -225,7 +221,7 @@ AudioDeviceFactory::~AudioDeviceFactory() {
 // static
 scoped_refptr<media::AudioRendererSink>
 AudioDeviceFactory::NewFinalAudioRendererSink(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   if (factory_) {

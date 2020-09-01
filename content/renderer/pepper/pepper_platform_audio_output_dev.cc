@@ -261,7 +261,7 @@ bool PepperPlatformAudioOutputDev::Initialize(int sample_rate,
   client_ = client;
 
   ipc_ = blink::WebAudioOutputIPCFactory::get()->CreateAudioOutputIPC(
-      render_frame->GetWebFrame()->GetFrameToken());
+      render_frame->GetWebFrame()->GetLocalFrameToken());
   CHECK(ipc_);
 
   params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,

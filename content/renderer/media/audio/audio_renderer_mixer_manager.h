@@ -21,6 +21,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_mixer_pool.h"
 #include "media/base/output_device_info.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace media {
 class AudioRendererMixer;
@@ -55,29 +56,33 @@ class CONTENT_EXPORT AudioRendererMixerManager
   // output device associated with the opened input device designated by
   // |session_id| is used. Otherwise, |session_id| is ignored.
   scoped_refptr<media::AudioRendererMixerInput> CreateInput(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const base::UnguessableToken& session_id,
       const std::string& device_id,
       media::AudioLatency::LatencyType latency);
 
-  // AudioRendererMixerPool implementation.
+  // media::AudioRendererMixerPool implementation. The rest of the
+  // implementation is kept private (see comment below).
+  void ReturnMixer(media::AudioRendererMixer* mixer) final;
+
+  // media::AudioRendererMixerPool look-alikes, with strongly typed tokens.
+  // Clients in content/ should use these functions.
   media::AudioRendererMixer* GetMixer(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const media::AudioParameters& input_params,
       media::AudioLatency::LatencyType latency,
       const media::OutputDeviceInfo& sink_info,
-      scoped_refptr<media::AudioRendererSink> sink) final;
-  void ReturnMixer(media::AudioRendererMixer* mixer) final;
+      scoped_refptr<media::AudioRendererSink> sink);
   scoped_refptr<media::AudioRendererSink> GetSink(
-      const base::UnguessableToken& source_frame_token,
-      const std::string& device_id) final;
+      const blink::LocalFrameToken& source_frame_token,
+      const std::string& device_id);
 
  protected:
   // Callback which will be used to create sinks. See AudioDeviceFactory for
   // more details on the parameters.
   using CreateSinkCB =
       base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
-          const base::UnguessableToken& source_frame_token,
+          const blink::LocalFrameToken& source_frame_token,
           const media::AudioSinkParameters& params)>;
 
   explicit AudioRendererMixerManager(CreateSinkCB create_sink_cb);
@@ -85,15 +90,29 @@ class CONTENT_EXPORT AudioRendererMixerManager
  private:
   friend class AudioRendererMixerManagerTest;
 
+  // media::AudioRendererMixerPool implementation. This interface faces
+  // code in media/ which uses untyped tokens, and is kept private so that
+  // content/ clients prefer to use the strongly-typed-token variants.
+  media::AudioRendererMixer* GetMixer(
+      const base::UnguessableToken& source_frame_token,
+      const media::AudioParameters& input_params,
+      media::AudioLatency::LatencyType latency,
+      const media::OutputDeviceInfo& sink_info,
+      scoped_refptr<media::AudioRendererSink> sink) final;
+  scoped_refptr<media::AudioRendererSink> GetSink(
+      const base::UnguessableToken& source_frame_token,
+      const std::string& device_id) final;
+
   // Define a key so that only those AudioRendererMixerInputs from the same
   // RenderView, AudioParameters and output device can be mixed together.
   struct MixerKey {
-    MixerKey(const base::UnguessableToken& source_frame_token,
+    MixerKey(const blink::LocalFrameToken& source_frame_token,
              const media::AudioParameters& params,
              media::AudioLatency::LatencyType latency,
              const std::string& device_id);
     MixerKey(const MixerKey& other);
-    base::UnguessableToken source_frame_token;
+    ~MixerKey();
+    blink::LocalFrameToken source_frame_token;
     media::AudioParameters params;
     media::AudioLatency::LatencyType latency;
     std::string device_id;

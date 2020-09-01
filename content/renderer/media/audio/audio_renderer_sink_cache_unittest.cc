@@ -24,7 +24,7 @@ const char* const kDefaultDeviceId =
     media::AudioDeviceDescription::kDefaultDeviceId;
 const char kAnotherDeviceId[] = "another-device-id";
 const char kUnhealthyDeviceId[] = "i-am-sick";
-const base::UnguessableToken kFrameToken = base::UnguessableToken::Create();
+const blink::LocalFrameToken kFrameToken;
 constexpr base::TimeDelta kDeleteTimeout =
     base::TimeDelta::FromMilliseconds(500);
 }  // namespace
@@ -43,7 +43,7 @@ class AudioRendererSinkCacheTest : public testing::Test {
     task_env_.FastForwardUntilNoTasksRemain();
   }
 
-  void GetSink(const base::UnguessableToken& frame_token,
+  void GetSink(const blink::LocalFrameToken& frame_token,
                const std::string& device_id,
                media::AudioRendererSink** sink) {
     *sink = cache_->GetSink(frame_token, device_id).get();
@@ -56,7 +56,7 @@ class AudioRendererSinkCacheTest : public testing::Test {
   }
 
   scoped_refptr<media::AudioRendererSink> CreateSink(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params) {
     return new testing::NiceMock<media::MockAudioRendererSink>(
         params.device_id, (params.device_id == kUnhealthyDeviceId)
@@ -85,7 +85,7 @@ class AudioRendererSinkCacheTest : public testing::Test {
     e.Wait();
   }
 
-  void DropSinksForFrame(const base::UnguessableToken& frame_token) {
+  void DropSinksForFrame(const blink::LocalFrameToken& frame_token) {
     cache_->DropSinksForFrame(frame_token);
   }
 
@@ -254,7 +254,7 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsStopped) {
       task_env_.GetMainThreadTaskRunner(),
       base::BindRepeating(
           [](scoped_refptr<media::AudioRendererSink> sink,
-             const base::UnguessableToken& frame_token,
+             const blink::LocalFrameToken& frame_token,
              const media::AudioSinkParameters& params) {
             EXPECT_EQ(kFrameToken, frame_token);
             EXPECT_TRUE(params.session_id.is_empty());
@@ -282,7 +282,7 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkUsingSessionIdIsStopped) {
       task_env_.GetMainThreadTaskRunner(),
       base::BindRepeating(
           [](scoped_refptr<media::AudioRendererSink> sink,
-             const base::UnguessableToken& frame_token,
+             const blink::LocalFrameToken& frame_token,
              const media::AudioSinkParameters& params) {
             EXPECT_EQ(kFrameToken, frame_token);
             EXPECT_TRUE(!params.session_id.is_empty());
@@ -397,7 +397,7 @@ TEST_F(AudioRendererSinkCacheTest, StopsAndDropsCorrectSinks) {
   scoped_refptr<media::AudioRendererSink> sink1 =
       cache_->GetSink(kFrameToken, "device1").get();
   scoped_refptr<media::AudioRendererSink> another_sink =
-      cache_->GetSink(base::UnguessableToken::Create(), "device1").get();
+      cache_->GetSink(blink::LocalFrameToken(), "device1").get();
   scoped_refptr<media::AudioRendererSink> sink2 =
       cache_->GetSink(kFrameToken, "device2").get();
   EXPECT_EQ(3, sink_count());

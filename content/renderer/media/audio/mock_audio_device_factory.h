@@ -11,6 +11,7 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
@@ -48,24 +49,24 @@ class MockAudioDeviceFactory : public AudioDeviceFactory {
   // implemented.
   MOCK_METHOD3(CreateFinalAudioRendererSink,
                scoped_refptr<media::AudioRendererSink>(
-                   const base::UnguessableToken& frame_token,
+                   const blink::LocalFrameToken& frame_token,
                    const media::AudioSinkParameters& params,
                    base::TimeDelta auth_timeout));
   MOCK_METHOD3(CreateAudioRendererSink,
                scoped_refptr<media::AudioRendererSink>(
                    blink::WebAudioDeviceSourceType source_type,
-                   const base::UnguessableToken& frame_token,
+                   const blink::LocalFrameToken& frame_token,
                    const media::AudioSinkParameters& params));
   MOCK_METHOD3(CreateSwitchableAudioRendererSink,
                scoped_refptr<media::SwitchableAudioRendererSink>(
                    blink::WebAudioDeviceSourceType source_type,
-                   const base::UnguessableToken& frame_token,
+                   const blink::LocalFrameToken& frame_token,
                    const media::AudioSinkParameters& params));
 
   // Returns mock_capturer_source_ once. If called a second time, the process
   // will crash.
   scoped_refptr<media::AudioCapturerSource> CreateAudioCapturerSource(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const media::AudioSourceParameters& params) override;
 
  private:

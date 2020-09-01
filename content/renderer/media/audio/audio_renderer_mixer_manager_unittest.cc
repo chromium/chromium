@@ -37,9 +37,8 @@ const char kAnotherDeviceId[] = "another-device-id";
 const char kMatchedDeviceId[] = "matched-device-id";
 const char kNonexistentDeviceId[] = "nonexistent-device-id";
 
-const base::UnguessableToken kFrameToken = base::UnguessableToken::Create();
-const base::UnguessableToken kAnotherFrameToken =
-    base::UnguessableToken::Create();
+const blink::LocalFrameToken kFrameToken;
+const blink::LocalFrameToken kAnotherFrameToken;
 }  // namespace
 
 using media::AudioLatency;
@@ -76,7 +75,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
 
   enum class SinkUseState { kExistingSink, kNewSink };
   media::AudioRendererMixer* GetMixer(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const media::AudioParameters& params,
       AudioLatency::LatencyType latency,
       const std::string& device_id,
@@ -96,7 +95,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
   }
 
   scoped_refptr<media::AudioRendererMixerInput> CreateInputHelper(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const base::UnguessableToken& session_id,
       const std::string& device_id,
       media::AudioLatency::LatencyType latency,
@@ -116,7 +115,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
 
  protected:
   scoped_refptr<media::MockAudioRendererSink> GetSink(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const media::AudioSinkParameters& params) {
     if ((params.device_id == kDefaultDeviceId) ||
         (params.device_id == kAnotherDeviceId)) {
@@ -145,7 +144,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
 
  private:
   scoped_refptr<media::AudioRendererSink> GetPlainSink(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const media::AudioSinkParameters& params) {
     return GetSink(source_frame_token, params);
   }

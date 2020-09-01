@@ -23,7 +23,7 @@ FuchsiaAudioDeviceFactory::~FuchsiaAudioDeviceFactory() = default;
 
 scoped_refptr<media::AudioRendererSink>
 FuchsiaAudioDeviceFactory::CreateFinalAudioRendererSink(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   // Return nullptr to fallback to the default renderer implementation.
@@ -33,7 +33,7 @@ FuchsiaAudioDeviceFactory::CreateFinalAudioRendererSink(
 scoped_refptr<media::AudioRendererSink>
 FuchsiaAudioDeviceFactory::CreateAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   // Return nullptr to fallback to the default renderer implementation.
   return nullptr;
@@ -42,7 +42,7 @@ FuchsiaAudioDeviceFactory::CreateAudioRendererSink(
 scoped_refptr<media::SwitchableAudioRendererSink>
 FuchsiaAudioDeviceFactory::CreateSwitchableAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   // Return nullptr to fallback to the default renderer implementation.
   return nullptr;
@@ -50,7 +50,7 @@ FuchsiaAudioDeviceFactory::CreateSwitchableAudioRendererSink(
 
 scoped_refptr<media::AudioCapturerSource>
 FuchsiaAudioDeviceFactory::CreateAudioCapturerSource(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& params) {
   blink::WebFrame* web_frame = blink::WebFrame::FromFrameToken(frame_token);
   if (!web_frame)

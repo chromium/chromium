@@ -22,7 +22,7 @@ namespace content {
 PepperPlatformAudioOutput* PepperPlatformAudioOutput::Create(
     int sample_rate,
     int frames_per_buffer,
-    const base::UnguessableToken& source_frame_token,
+    const blink::LocalFrameToken& source_frame_token,
     AudioHelper* client) {
   scoped_refptr<PepperPlatformAudioOutput> audio_output(
       new PepperPlatformAudioOutput());
@@ -131,7 +131,7 @@ PepperPlatformAudioOutput::PepperPlatformAudioOutput()
 bool PepperPlatformAudioOutput::Initialize(
     int sample_rate,
     int frames_per_buffer,
-    const base::UnguessableToken& source_frame_token,
+    const blink::LocalFrameToken& source_frame_token,
     AudioHelper* client) {
   DCHECK(client);
   client_ = client;

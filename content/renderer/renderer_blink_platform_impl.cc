@@ -130,7 +130,7 @@ media::AudioParameters GetAudioHardwareParams() {
     return media::AudioParameters::UnavailableDeviceParams();
 
   return AudioDeviceFactory::GetOutputDeviceInfo(
-             render_frame->GetWebFrame()->GetFrameToken(),
+             render_frame->GetWebFrame()->GetLocalFrameToken(),
              media::AudioSinkParameters())
       .output_params();
 }
@@ -491,8 +491,8 @@ scoped_refptr<media::AudioCapturerSource>
 RendererBlinkPlatformImpl::NewAudioCapturerSource(
     blink::WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
-  return AudioDeviceFactory::NewAudioCapturerSource(web_frame->GetFrameToken(),
-                                                    params);
+  return AudioDeviceFactory::NewAudioCapturerSource(
+      web_frame->GetLocalFrameToken(), params);
 }
 
 viz::RasterContextProvider*
@@ -526,7 +526,7 @@ RendererBlinkPlatformImpl::NewAudioRendererSink(
     blink::WebLocalFrame* web_frame,
     const media::AudioSinkParameters& params) {
   return AudioDeviceFactory::NewAudioRendererSink(
-      source_type, web_frame->GetFrameToken(), params);
+      source_type, web_frame->GetLocalFrameToken(), params);
 }
 
 media::AudioLatency::LatencyType

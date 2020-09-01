@@ -23,7 +23,7 @@ WebAudioOutputIPCFactory* WebAudioOutputIPCFactory::instance_ = nullptr;
 class WebAudioOutputIPCFactory::Impl {
  public:
   using StreamFactoryMap = base::flat_map<
-      base::UnguessableToken,
+      blink::LocalFrameToken,
       mojo::Remote<mojom::blink::RendererAudioOutputStreamFactory>>;
 
   explicit Impl(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
@@ -31,15 +31,15 @@ class WebAudioOutputIPCFactory::Impl {
   ~Impl() { DCHECK(factory_remotes_.empty()); }
 
   mojom::blink::RendererAudioOutputStreamFactory* GetRemoteFactory(
-      const base::UnguessableToken& frame_token) const;
+      const blink::LocalFrameToken& frame_token) const;
 
   void RegisterRemoteFactoryOnIOThread(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       mojo::PendingRemote<mojom::blink::RendererAudioOutputStreamFactory>
           factory_pending_remote);
 
   void MaybeDeregisterRemoteFactoryOnIOThread(
-      const base::UnguessableToken& frame_token);
+      const blink::LocalFrameToken& frame_token);
 
   // Maps frame id to the corresponding factory.
   StreamFactoryMap factory_remotes_;
@@ -64,7 +64,7 @@ WebAudioOutputIPCFactory::~WebAudioOutputIPCFactory() {
 
 std::unique_ptr<media::AudioOutputIPC>
 WebAudioOutputIPCFactory::CreateAudioOutputIPC(
-    const base::UnguessableToken& frame_token) const {
+    const blink::LocalFrameToken& frame_token) const {
   // Unretained is safe due to the contract at the top of the header file.
   return std::make_unique<MojoAudioOutputIPC>(
       base::BindRepeating(&WebAudioOutputIPCFactory::Impl::GetRemoteFactory,
@@ -73,7 +73,7 @@ WebAudioOutputIPCFactory::CreateAudioOutputIPC(
 }
 
 void WebAudioOutputIPCFactory::RegisterRemoteFactory(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     blink::BrowserInterfaceBrokerProxy* interface_broker) {
   mojo::PendingRemote<mojom::blink::RendererAudioOutputStreamFactory>
       factory_remote;
@@ -90,7 +90,7 @@ void WebAudioOutputIPCFactory::RegisterRemoteFactory(
 }
 
 void WebAudioOutputIPCFactory::MaybeDeregisterRemoteFactory(
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   io_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WebAudioOutputIPCFactory::Impl::
                                     MaybeDeregisterRemoteFactoryOnIOThread,
@@ -104,14 +104,14 @@ WebAudioOutputIPCFactory::io_task_runner() const {
 
 mojom::blink::RendererAudioOutputStreamFactory*
 WebAudioOutputIPCFactory::Impl::GetRemoteFactory(
-    const base::UnguessableToken& frame_token) const {
+    const blink::LocalFrameToken& frame_token) const {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   auto it = factory_remotes_.find(frame_token);
   return it == factory_remotes_.end() ? nullptr : it->second.get();
 }
 
 void WebAudioOutputIPCFactory::Impl::RegisterRemoteFactoryOnIOThread(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     mojo::PendingRemote<mojom::blink::RendererAudioOutputStreamFactory>
         factory_pending_remote) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
@@ -134,7 +134,7 @@ void WebAudioOutputIPCFactory::Impl::RegisterRemoteFactoryOnIOThread(
 }
 
 void WebAudioOutputIPCFactory::Impl::MaybeDeregisterRemoteFactoryOnIOThread(
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   // This function can be called both by the frame and the connection error
   // handler of the factory remote. Calling erase multiple times even though

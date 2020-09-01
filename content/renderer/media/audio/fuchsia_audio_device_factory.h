@@ -6,6 +6,7 @@
 #define CONTENT_RENDERER_MEDIA_AUDIO_FUCHSIA_AUDIO_DEVICE_FACTORY_H_
 
 #include "content/renderer/media/audio/audio_device_factory.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
@@ -16,23 +17,23 @@ class FuchsiaAudioDeviceFactory : public AudioDeviceFactory {
 
  protected:
   scoped_refptr<media::AudioRendererSink> CreateFinalAudioRendererSink(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params,
       base::TimeDelta auth_timeout) final;
 
   scoped_refptr<media::AudioRendererSink> CreateAudioRendererSink(
       blink::WebAudioDeviceSourceType source_type,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params) final;
 
   scoped_refptr<media::SwitchableAudioRendererSink>
   CreateSwitchableAudioRendererSink(
       blink::WebAudioDeviceSourceType source_type,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params) final;
 
   scoped_refptr<media::AudioCapturerSource> CreateAudioCapturerSource(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const media::AudioSourceParameters& params) final;
 };
 

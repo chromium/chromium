@@ -4,6 +4,7 @@ include_rules = [
   "+ppapi/shared_impl",
   "+ppapi/thunk",
   "+printing",
+  "+third_party/blink/public/common",
   "+third_party/libvpx",
   "+third_party/libyuv",
   "+third_party/opus",

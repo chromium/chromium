@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace base {
@@ -44,16 +45,16 @@ class BLINK_MODULES_EXPORT WebAudioOutputIPCFactory {
   // Enables |this| to create MojoAudioOutputIPCs for the specified frame.
   // Does nothing if not using mojo factories.
   void RegisterRemoteFactory(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       blink::BrowserInterfaceBrokerProxy* interface_broker);
 
   // Every call to the above method must be matched by a call to this one when
   // the frame is destroyed. Does nothing if not using mojo factories.
-  void MaybeDeregisterRemoteFactory(const base::UnguessableToken& frame_token);
+  void MaybeDeregisterRemoteFactory(const blink::LocalFrameToken& frame_token);
 
   // The returned object may only be used on |io_task_runner()|.
   std::unique_ptr<media::AudioOutputIPC> CreateAudioOutputIPC(
-      const base::UnguessableToken& frame_token) const;
+      const blink::LocalFrameToken& frame_token) const;
 
  private:
   // TODO(https://crbug.com/787252): When this header gets moved out of the

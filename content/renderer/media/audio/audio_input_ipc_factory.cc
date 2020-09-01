@@ -22,17 +22,21 @@ namespace content {
 
 namespace {
 
+RenderFrameImpl* GetRenderFrameImplFromFrameToken(
+    const blink::LocalFrameToken& frame_token) {
+  return RenderFrameImpl::FromWebFrame(
+      blink::WebFrame::FromFrameToken(frame_token));
+}
+
 void CreateMojoAudioInputStreamOnMainThread(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& source_params,
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         client,
     const media::AudioParameters& params,
     bool automatic_gain_control,
     uint32_t total_segments) {
-  RenderFrameImpl* frame = RenderFrameImpl::FromWebFrame(
-      blink::WebFrame::FromFrameToken(frame_token));
-  if (frame) {
+  if (auto* frame = GetRenderFrameImplFromFrameToken(frame_token)) {
     frame->GetAudioInputStreamFactory()->CreateStream(
         std::move(client), source_params.session_id, params,
         automatic_gain_control, total_segments);
@@ -41,7 +45,7 @@ void CreateMojoAudioInputStreamOnMainThread(
 
 void CreateMojoAudioInputStream(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& source_params,
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         client,
@@ -57,18 +61,16 @@ void CreateMojoAudioInputStream(
 
 void AssociateInputAndOutputForAec(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& input_stream_id,
     const std::string& output_device_id) {
   main_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const base::UnguessableToken& frame_token,
+          [](const blink::LocalFrameToken& frame_token,
              const base::UnguessableToken& input_stream_id,
              const std::string& output_device_id) {
-            RenderFrameImpl* frame = RenderFrameImpl::FromWebFrame(
-                blink::WebFrame::FromFrameToken(frame_token));
-            if (frame) {
+            if (auto* frame = GetRenderFrameImplFromFrameToken(frame_token)) {
               frame->GetAudioInputStreamFactory()
                   ->AssociateInputAndOutputForAec(input_stream_id,
                                                   output_device_id);
@@ -95,7 +97,7 @@ AudioInputIPCFactory::~AudioInputIPCFactory() {
 }
 
 std::unique_ptr<media::AudioInputIPC> AudioInputIPCFactory::CreateAudioInputIPC(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& source_params) const {
   CHECK(!source_params.session_id.is_empty());
   return std::make_unique<MojoAudioInputIPC>(

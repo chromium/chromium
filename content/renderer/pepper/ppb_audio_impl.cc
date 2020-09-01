@@ -135,7 +135,7 @@ int32_t PPB_Audio_Impl::Open(PP_Resource config,
   audio_ = PepperPlatformAudioOutput::Create(
       static_cast<int>(enter.object()->GetSampleRate()),
       static_cast<int>(enter.object()->GetSampleFrameCount()),
-      instance->render_frame()->GetWebFrame()->GetFrameToken(), this);
+      instance->render_frame()->GetWebFrame()->GetLocalFrameToken(), this);
   if (!audio_)
     return PP_ERROR_FAILED;
 

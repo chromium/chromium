@@ -23,7 +23,7 @@ MockAudioDeviceFactory::~MockAudioDeviceFactory() {}
 
 scoped_refptr<media::AudioCapturerSource>
 MockAudioDeviceFactory::CreateAudioCapturerSource(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& params) {
   CHECK(!did_create_once_);
   did_create_once_ = true;

@@ -31,11 +31,11 @@ namespace {
 
 const int kRenderFrameId = 0;
 
-base::UnguessableToken TokenFromInt(int i) {
+blink::LocalFrameToken TokenFromInt(int i) {
   static base::UnguessableToken base_token = base::UnguessableToken::Create();
-  return base::UnguessableToken::Deserialize(
+  return blink::LocalFrameToken(base::UnguessableToken::Deserialize(
       base_token.GetHighForSerialization() + i,
-      base_token.GetLowForSerialization() + i);
+      base_token.GetLowForSerialization() + i));
 }
 
 std::unique_ptr<base::Thread> MakeIOThread() {

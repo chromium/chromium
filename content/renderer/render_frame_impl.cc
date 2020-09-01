@@ -2047,7 +2047,7 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
 
   // blink::WebAudioOutputIPCFactory may be null in tests.
   if (auto* factory = blink::WebAudioOutputIPCFactory::get())
-    factory->RegisterRemoteFactory(GetWebFrame()->GetFrameToken(),
+    factory->RegisterRemoteFactory(GetWebFrame()->GetLocalFrameToken(),
                                    GetBrowserInterfaceBroker());
 
   AudioRendererSinkCache::ObserveFrame(this);
@@ -4161,7 +4161,7 @@ void RenderFrameImpl::WillDetach() {
     observer.WillDetach();
 
   if (auto* factory = blink::WebAudioOutputIPCFactory::get())
-    factory->MaybeDeregisterRemoteFactory(GetWebFrame()->GetFrameToken());
+    factory->MaybeDeregisterRemoteFactory(GetWebFrame()->GetLocalFrameToken());
 
   // Send a state update before the frame is detached.
   SendUpdateState();
@@ -4427,8 +4427,9 @@ void RenderFrameImpl::DidCommitNavigation(
       // TODO(https://crbug.com/668275): Still, it is odd for one specific
       // factory to be registered here, make this a RenderFrameObserver.
       // code.
-      factory->MaybeDeregisterRemoteFactory(GetWebFrame()->GetFrameToken());
-      factory->RegisterRemoteFactory(GetWebFrame()->GetFrameToken(),
+      factory->MaybeDeregisterRemoteFactory(
+          GetWebFrame()->GetLocalFrameToken());
+      factory->RegisterRemoteFactory(GetWebFrame()->GetLocalFrameToken(),
                                      GetBrowserInterfaceBroker());
     }
 
@@ -6491,7 +6492,7 @@ void RenderFrameImpl::CheckIfAudioSinkExistsAndIsAuthorized(
   std::move(
       blink::ConvertToOutputDeviceStatusCB(std::move(completion_callback)))
       .Run(AudioDeviceFactory::GetOutputDeviceInfo(
-               GetWebFrame()->GetFrameToken(),
+               GetWebFrame()->GetLocalFrameToken(),
                media::AudioSinkParameters(base::UnguessableToken(),
                                           sink_id.Utf8()))
                .device_status());

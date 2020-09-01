@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "media/base/output_device_info.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace media {
 class AudioRendererSink;
@@ -34,7 +35,7 @@ class CONTENT_EXPORT AudioRendererSinkCache {
 
   // Returns output device information for a specified sink.
   virtual media::OutputDeviceInfo GetSinkInfo(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const base::UnguessableToken& session_id,
       const std::string& device_id) = 0;
 
@@ -42,7 +43,7 @@ class CONTENT_EXPORT AudioRendererSinkCache {
   // calling ReleaseSink(). The sink must be stopped by the user before
   // deletion, but after releasing it from the cache.
   virtual scoped_refptr<media::AudioRendererSink> GetSink(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const std::string& device_id) = 0;
 
   // Notifies the cache that the sink is not in use any more. Must be

@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "content/renderer/media/audio/audio_device_factory.h"
 #include "media/audio/audio_sink_parameters.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 
 namespace media {
@@ -27,23 +28,23 @@ class CastAudioDeviceFactory : public content::AudioDeviceFactory {
   ~CastAudioDeviceFactory() final;
 
   scoped_refptr<::media::AudioRendererSink> CreateFinalAudioRendererSink(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const ::media::AudioSinkParameters& params,
       base::TimeDelta auth_timeout) override;
 
   scoped_refptr<::media::AudioRendererSink> CreateAudioRendererSink(
       blink::WebAudioDeviceSourceType source_type,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const ::media::AudioSinkParameters& params) override;
 
   scoped_refptr<::media::SwitchableAudioRendererSink>
   CreateSwitchableAudioRendererSink(
       blink::WebAudioDeviceSourceType source_type,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const ::media::AudioSinkParameters& params) override;
 
   scoped_refptr<::media::AudioCapturerSource> CreateAudioCapturerSource(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const ::media::AudioSourceParameters& params) override;
 
  private:

@@ -11,11 +11,11 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "media/audio/audio_source_parameters.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace base {
 class SequencedTaskRunner;
 class SingleThreadTaskRunner;
-class UnguessableToken;
 }  // namespace base
 
 namespace media {
@@ -44,7 +44,7 @@ class CONTENT_EXPORT AudioInputIPCFactory {
 
   // The returned object may only be used on io_task_runner().
   std::unique_ptr<media::AudioInputIPC> CreateAudioInputIPC(
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const media::AudioSourceParameters& source_params) const;
 
  private:

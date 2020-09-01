@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "media/audio/audio_sink_parameters.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
@@ -28,7 +29,7 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
   // Callback to be used for AudioRendererSink creation
   using CreateSinkCallback =
       base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
-          const base::UnguessableToken& frame_token,
+          const blink::LocalFrameToken& frame_token,
           const media::AudioSinkParameters& params)>;
 
   // |cleanup_task_runner| will be used to delete sinks when they are unused,
@@ -41,15 +42,14 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
 
   ~AudioRendererSinkCacheImpl() final;
 
+  // AudioSinkCache implementation:
   media::OutputDeviceInfo GetSinkInfo(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const base::UnguessableToken& session_id,
       const std::string& device_id) final;
-
   scoped_refptr<media::AudioRendererSink> GetSink(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const std::string& device_id) final;
-
   void ReleaseSink(const media::AudioRendererSink* sink_ptr) final;
 
  private:
@@ -71,15 +71,15 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
                   bool force_delete_used);
 
   CacheContainer::iterator FindCacheEntry_Locked(
-      const base::UnguessableToken& source_frame_token,
+      const blink::LocalFrameToken& source_frame_token,
       const std::string& device_id,
       bool unused_only);
 
-  void CacheOrStopUnusedSink(const base::UnguessableToken& source_frame_token,
+  void CacheOrStopUnusedSink(const blink::LocalFrameToken& source_frame_token,
                              const std::string& device_id,
                              scoped_refptr<media::AudioRendererSink> sink);
 
-  void DropSinksForFrame(const base::UnguessableToken& source_frame_token);
+  void DropSinksForFrame(const blink::LocalFrameToken& source_frame_token);
 
   // To avoid publishing CacheEntry structure in the header.
   int GetCacheSizeForTesting();

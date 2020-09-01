@@ -79,7 +79,7 @@ class NonSwitchableAudioRendererSink
 };
 
 scoped_refptr<::media::AudioOutputDevice> NewOutputDevice(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const ::media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   auto device = base::MakeRefCounted<::media::AudioOutputDevice>(
@@ -101,7 +101,7 @@ CastAudioDeviceFactory::~CastAudioDeviceFactory() {
 
 scoped_refptr<::media::AudioRendererSink>
 CastAudioDeviceFactory::CreateFinalAudioRendererSink(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const ::media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   // Use default implementation.
@@ -111,7 +111,7 @@ CastAudioDeviceFactory::CreateFinalAudioRendererSink(
 scoped_refptr<::media::AudioRendererSink>
 CastAudioDeviceFactory::CreateAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const ::media::AudioSinkParameters& params) {
   // Use default implementation.
   return nullptr;
@@ -120,7 +120,7 @@ CastAudioDeviceFactory::CreateAudioRendererSink(
 scoped_refptr<::media::SwitchableAudioRendererSink>
 CastAudioDeviceFactory::CreateSwitchableAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const ::media::AudioSinkParameters& params) {
   return base::MakeRefCounted<NonSwitchableAudioRendererSink>(
       NewOutputDevice(frame_token, params, base::TimeDelta::FromSeconds(100)));
@@ -128,7 +128,7 @@ CastAudioDeviceFactory::CreateSwitchableAudioRendererSink(
 
 scoped_refptr<::media::AudioCapturerSource>
 CastAudioDeviceFactory::CreateAudioCapturerSource(
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const ::media::AudioSourceParameters& params) {
   // Use default implementation.
   return nullptr;

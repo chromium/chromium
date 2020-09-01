@@ -124,7 +124,7 @@ std::unique_ptr<AudioRendererMixerManager> AudioRendererMixerManager::Create() {
 
 scoped_refptr<media::AudioRendererMixerInput>
 AudioRendererMixerManager::CreateInput(
-    const base::UnguessableToken& source_frame_token,
+    const blink::LocalFrameToken& source_frame_token,
     const base::UnguessableToken& session_id,
     const std::string& device_id,
     media::AudioLatency::LatencyType latency) {
@@ -136,11 +136,11 @@ AudioRendererMixerManager::CreateInput(
   // NewAudioRenderingMixingStrategy didn't ship, https://crbug.com/870836.
   DCHECK(session_id.is_empty());
   return base::MakeRefCounted<media::AudioRendererMixerInput>(
-      this, source_frame_token, device_id, latency);
+      this, source_frame_token.value(), device_id, latency);
 }
 
 media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
-    const base::UnguessableToken& source_frame_token,
+    const blink::LocalFrameToken& source_frame_token,
     const media::AudioParameters& input_params,
     media::AudioLatency::LatencyType latency,
     const media::OutputDeviceInfo& sink_info,
@@ -182,6 +182,29 @@ media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
   return mixer;
 }
 
+scoped_refptr<media::AudioRendererSink> AudioRendererMixerManager::GetSink(
+    const blink::LocalFrameToken& source_frame_token,
+    const std::string& device_id) {
+  return create_sink_cb_.Run(
+      source_frame_token,
+      media::AudioSinkParameters(base::UnguessableToken(), device_id));
+}
+
+media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
+    const base::UnguessableToken& source_frame_token,
+    const media::AudioParameters& input_params,
+    media::AudioLatency::LatencyType latency,
+    const media::OutputDeviceInfo& sink_info,
+    scoped_refptr<media::AudioRendererSink> sink) {
+  // Ownership of the sink must be given to GetMixer().
+  DCHECK(sink->HasOneRef());
+  // Forward to the strongly typed version. We move the |sink| as GetMixer
+  // expects to be the sole owner at this point.
+  DCHECK(source_frame_token);
+  return GetMixer(blink::LocalFrameToken(source_frame_token), input_params,
+                  latency, sink_info, std::move(sink));
+}
+
 void AudioRendererMixerManager::ReturnMixer(media::AudioRendererMixer* mixer) {
   base::AutoLock auto_lock(mixers_lock_);
   auto it = std::find_if(
@@ -202,13 +225,13 @@ void AudioRendererMixerManager::ReturnMixer(media::AudioRendererMixer* mixer) {
 scoped_refptr<media::AudioRendererSink> AudioRendererMixerManager::GetSink(
     const base::UnguessableToken& source_frame_token,
     const std::string& device_id) {
-  return create_sink_cb_.Run(
-      source_frame_token,
-      media::AudioSinkParameters(base::UnguessableToken(), device_id));
+  // Forward to the strongly typed version.
+  DCHECK(source_frame_token);
+  return GetSink(blink::LocalFrameToken(source_frame_token), device_id);
 }
 
 AudioRendererMixerManager::MixerKey::MixerKey(
-    const base::UnguessableToken& source_frame_token,
+    const blink::LocalFrameToken& source_frame_token,
     const media::AudioParameters& params,
     media::AudioLatency::LatencyType latency,
     const std::string& device_id)
@@ -218,5 +241,7 @@ AudioRendererMixerManager::MixerKey::MixerKey(
       device_id(device_id) {}
 
 AudioRendererMixerManager::MixerKey::MixerKey(const MixerKey& other) = default;
+
+AudioRendererMixerManager::MixerKey::~MixerKey() = default;
 
 }  // namespace content
