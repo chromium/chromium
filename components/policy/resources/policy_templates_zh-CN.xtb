@@ -172,7 +172,7 @@
 <translation id="1252536192437793850">允许网站请求用户授权其访问串行端口</translation>
 <translation id="1257550411839719984">设置默认下载目录</translation>
 <translation id="1265053460044691532">限制通过SAML验证身份的用户可离线登录的时长</translation>
-<translation id="1271840407438458464">如果此政策设为有效值，<ph name="PRODUCT_NAME" /> 将不会使用低于指定版本的 SSL/TLS 版本。无法识别的值都会被忽略。
+<translation id="1271840407438458464">如果将此政策设为有效值，<ph name="PRODUCT_NAME" /> 将不会使用低于指定版本的 SSL/TLS 版本。无法识别的值都会被忽略。
 
       如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会使用默认的最低版本（即 TLS 1.0）。</translation>
 <translation id="127264587838521316">启用 <ph name="PRODUCT_NAME" /> 扩展程序安装请求</translation>
@@ -1504,19 +1504,19 @@
 
       * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH" />：如果设为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH_TRUE" />，用户将能够触发 Powerwash 流程以安装 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新。
 
-      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" />（<ph name="PRODUCT_NAME" /> 68 版及更高版本提供此选项）：如果设为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" />，用户可以调用 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新流程，此流程会保留设备级状态（包括企业注册），但不会保留用户数据。
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" />（<ph name="PRODUCT_NAME" /> 68 版及更高版本提供此选项）：如果设为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" />，用户可以调用 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新流程，此流程会保留设备级状态（包括企业注册情况），但不会保留用户数据。
 
       * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" />（<ph name="PRODUCT_NAME" /> 75 版及更高版本提供此选项）：控制如何对容易受到攻击的 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件强制执行自动 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新。所有流程都会保留本地设备状态。如果设为：
 
         * 1 或未设置，系统不会强制执行 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新。
 
-        * 2，系统将在用户确认更新后的下次重新启动时更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件。
+        * 2，在用户确认更新后，系统将在下次重新启动时更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件。
 
         * 3，系统将在下次重新启动时更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件。
 
         * 4，系统将在注册后且用户登录前更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件。
 
-      如果您不设置此政策，<ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新将不可用。</translation>
+      如果您未设置此政策，<ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新将不可用。</translation>
 <translation id="3236046242843493070">允许的扩展程序、应用和用户脚本安装源的网址格式</translation>
 <translation id="3240609035816615922">打印机配置访问政策。</translation>
 <translation id="324062325008698789">配置打印机列表</translation>
@@ -1600,7 +1600,7 @@
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
 <translation id="3367868895271989224">如果此政策已启用，系统会隔离所有网站。（每个网站都在自己的进程内运行。）如果此政策已停用或未设置，系统将不会关闭网站隔离功能，但用户可以选择停用此功能（例如，使用 chrome://flags 中的“停用网站隔离”）。
 
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 还可用于微调来源。在 <ph name="PRODUCT_OS_NAME" /> 76 版及更低版本中，请将 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 设备政策设为相同的值。（因为如果这两项政策的值不一致，当进入用户会话时，系统可能会出现延迟。）
+      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 还可用于精确地调整来源。在 <ph name="PRODUCT_OS_NAME" /> 76 版及更低版本中，请将 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 设备政策设为相同的值。（因为如果这两项政策的值不一致，当进入用户会话时，系统可能会出现延迟。）
 
       注意：对于 Android 设备，请改用 <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="3373381043600809954">启用“<ph name="PRODUCT_NAME" />”。</translation>
@@ -1662,11 +1662,11 @@
       日后，当内嵌登录全面支持所有 SSO 登录流程时，该实验性设置将会取消。</translation>
 <translation id="3435796032110614169">允许删除打印任务记录</translation>
 <translation id="3437924696598384725">允许用户管理 VPN 连接</translation>
-<translation id="3451951038162074887">如果此政策已启用或未设置，系统会禁止第三方软件将可执行代码插入到 <ph name="PRODUCT_NAME" /> 进程中。
+<translation id="3451951038162074887">如果此政策已启用或未设置，系统会禁止第三方软件将可执行代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
 
-      如果此政策已停用，系统会允许第三方软件将此类代码插入到 <ph name="PRODUCT_NAME" /> 进程中。
+      如果此政策已停用，系统会允许第三方软件将此类代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
 
-      无论此政策的值是什么，在已加入 <ph name="MS_AD_NAME" /> 网域的计算机上，浏览器都不会禁止第三方软件将可执行代码插入到其进程中。</translation>
+      无论此政策的值是什么，在已加入 <ph name="MS_AD_NAME" /> 网域的计算机上，浏览器都不会禁止第三方软件将可执行代码注入到其进程中。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3461279434465463233">报告电源状态</translation>
 <translation id="346731943813722404">指定是否仅在会话内察觉到首个用户活动后才开始计算电源管理延迟和会话长度限制。
@@ -1726,7 +1726,7 @@
 <translation id="350443680860256679">配置 ARC</translation>
 <translation id="350797926066071931">启用翻译</translation>
 <translation id="3508047333410537654">在登录屏幕上启用“单声道音频”</translation>
-<translation id="3509819648242653622">通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。屏蔽名单提供了一系列网址格式，从而指定了会禁止加载哪些网址。如果您不设置此政策，任何网址都能在浏览器中加载。网址格式必须符合此格式 ( https://www.chromium.org/administrators/url-blacklist-filter-format )。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1000 个例外情况。
+<translation id="3509819648242653622">通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。此政策列出了一系列网址格式，用于指定禁止加载的网址。如果您未设置此政策，则任何网址都能在浏览器中加载。网址格式必须符合此页面所述格式：https://www.chromium.org/administrators/url-blacklist-filter-format。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1000 个例外情况。
 
       从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
 
@@ -2230,7 +2230,7 @@
 
           注意：<ph name="CHARGE_START_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_END_TIME_FIELD_NAME" /> 所允许的 <ph name="MINUTE_FIELD_NAME" /> 字段值为 0、15、30、45。</translation>
 <translation id="4224610387358583899">屏幕锁定延迟时间</translation>
-<translation id="4228745249339680042">通过设置此政策，您可以指定，当哪些网址和网域所对应的网站请求安全密钥认证证书时，系统将不会显示任何提示。此外，系统还会向安全密钥发送信号，以表明可使用单项认证。如果此政策未设置，当网站请求安全密钥的认证时，<ph name="PRODUCT_NAME" /> 65 版及更高版本将会提示用户。
+<translation id="4228745249339680042">通过设置此政策，您可以指定，当哪些网址和网域所对应的网站请求安全密钥认证证书时，系统将不会显示任何提示。此外，系统还会向安全密钥发送信号，表明可使用特定的单项认证。如果您未设置此政策，在网站请求安全密钥的认证时，<ph name="PRODUCT_NAME" /> 65 版及更高版本将向用户显示提示。
 
       网址将仅匹配为 U2F appID。网域将仅匹配为 webauthn RP ID。因此，如需全面涵盖 U2F API 和 webauthn API，请务必将相应网站的 appID 网址和网域都罗列出来。</translation>
 <translation id="4238997902172035160">配置 <ph name="PRODUCT_NAME" /> 将用于存储个人资料漫游副本的目录。
@@ -2774,7 +2774,7 @@
 <translation id="5152787786897382519">Chromium 和 Google Chrome 均有一些政策组，其中的政策以相互依赖的方式来控制某项功能。这些集合由以下政策组表示。如果相关政策有多个来源，系统仅会应用来源优先级最高的值。同一组中来源优先级较低的值会被忽略。<ph name="POLICY_PRIORITY_DOC_URL" /> 中定义了优先级顺序。</translation>
 <translation id="515816885693899426">此政策已被弃用，请改用“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策。
 
-      通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。屏蔽名单提供了一系列网址格式，从而指定了会禁止加载哪些网址。如果您不设置此政策，任何网址都能在浏览器中加载。网址格式必须符合此格式 ( https://www.chromium.org/administrators/url-blacklist-filter-format )。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1000 个例外情况。
+      通过设置此政策，您可禁止加载已列入黑名单的网址所对应的网页。此政策列出了一系列网址格式，用于指定禁止加载的网址。如果您未设置此政策，则任何网址都能在浏览器中加载。网址格式必须符合此页面所述格式：https://www.chromium.org/administrators/url-blacklist-filter-format。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1000 个例外情况。
 
       从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
 
@@ -3221,11 +3221,11 @@
       如果此政策设为 False，系统将一律不会使用内置 DNS 客户端。
 
       如果此政策未设置，那么在 macOS、Android（当专用 DNS 和 VPN 均未启用时）和 ChromeOS 中，内置 DNS 客户端将会默认处于启用状态，而且用户将能够通过修改 chrome://flags 或指定命令行标记来更改是否使用内置 DNS 客户端。</translation>
-<translation id="5624946025057772960">通过设置此政策，您可列出允许访问的网址，以作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，您可将 * 列入屏蔽名单以屏蔽所有请求，并且使用此政策允许访问少量的网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况。最具体的过滤条件将决定某个网址是否会遭到屏蔽。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1000 个条目。
+<translation id="5624946025057772960">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，您可以利用 * 来屏蔽所有请求，并且通过此政策允许访问您所列出的少量网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况。某个网址是否会遭到屏蔽取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1000 个条目。
 
       通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
 
-      如果您不设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
+      如果您未设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="5628811596950455942">此政策旨在以列表形式控制用户可配置和使用哪些快速解锁模式来解锁屏幕。
@@ -3578,11 +3578,11 @@
 <translation id="6195802366906945965">确定是否会使用内置的证书验证程序来验证服务器证书</translation>
 <translation id="6199780467005360782">此政策已被弃用，请改用“<ph name="URL_ALLOWLIST_POLICY_NAME" />”政策。
 
-      通过设置此政策，您可列出允许访问的网址，以作为网址屏蔽名单的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，您可将 * 列入屏蔽名单以屏蔽所有请求，并且使用此政策允许访问少量的网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况。最具体的过滤条件将决定某个网址是否会遭到屏蔽。许可名单的优先级高于屏蔽名单。此政策最多只能包含 1000 个条目。
+      通过设置此政策，您可列出允许访问的网址，以便将这些网址作为网址屏蔽名单的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，您可以利用 * 来屏蔽所有请求，并且通过此政策允许访问您所列出的少量网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况。某个网址是否会遭到屏蔽取决于最具体的过滤条件。许可名单的优先级高于屏蔽名单。此政策最多只能包含 1000 个条目。
 
       通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
 
-      如果您不设置此政策，网址屏蔽名单将不会有任何例外情况。
+      如果您未设置此政策，网址屏蔽名单将不会有任何例外情况。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="6205094657236844092">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
@@ -3875,11 +3875,11 @@
       </translation>
 <translation id="6621839881150363218">如果此政策已启用，系统会隔离所有网站（每个网站都在自己的进程内运行）。如果此政策已停用，则意味着不会发生明确的网站隔离，IsolateOriginsAndroid 和 SitePerProcessAndroid 的现场试验也将关闭。不过，用户仍可以手动开启此政策。
 
-      如果您不设置此政策，用户便能更改此设置。
+      如果您未设置此政策，用户便能更改此设置。
 
-      要想既能实现隔离，又能减少给用户带来的影响，请使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 来指定您想隔离的一系列网站。
+      如果想要既实现隔离，又减少给用户带来的影响，请使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 来指定您想隔离的一系列网站。
 
-      注意：针对 Android 设备的网站隔离支持将会不断完善，但目前它可能会导致性能问题。此政策仅适用于在符合条件（RAM 稳超 1 GB）的设备上运行的 Android 版 Chrome。如需在非 Android 平台上应用此政策，请改用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
+      注意：针对 Android 设备的网站隔离支持将会不断完善，但目前它可能会导致性能问题。此政策仅适用于在符合条件（RAM 不小于 1 GB）的设备上运行的 Android 版 Chrome。如需在非 Android 平台上应用此政策，请改用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
 <translation id="66265932317331474">报告 CPU 信息</translation>
 <translation id="6628043374475466084">不针对其检查上传内容是否违反敏感数据保护规则的网址格式</translation>
 <translation id="6628120204569232711">报告存储状态</translation>
@@ -4749,7 +4749,7 @@
           如果启用该设置，那么用户在访问主机时必须提供有效的双重代码。
 
           如果停用或不设置该设置，那么系统将不启用双重身份验证，并采用由用户定义 PIN 这一默认行为。</translation>
-<translation id="7749402921503577264">如果此政策已启用或未设置，用户便可点击 <ph name="PRODUCT_NAME" /> 在用户访问含 SSL 错误的网站时显示的警告页面。
+<translation id="7749402921503577264">如果此政策已启用或未设置，则用户在访问含 SSL 错误的网站时，可点击 <ph name="PRODUCT_NAME" /> 显示的警告页面并浏览该网站。
 
       如果此政策已停用，用户将无法点击任何警告页面。</translation>
 <translation id="7750991880413385988">打开新标签页</translation>

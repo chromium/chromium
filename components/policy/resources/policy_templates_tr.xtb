@@ -418,7 +418,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       izin verilmez.</translation>
 <translation id="1634770710106162474">Politika Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> desteklenmeyen bir bilgisayarda veya işletim sisteminde çalışırken görüntülenen uyarı gizlenir.
 
-      Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa desteklenmeyen sistemlerde uyarı görüntülenir.</translation>
+      Politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa desteklenmeyen sistemlerde uyarı görüntülenir.</translation>
 <translation id="1634989431648355062">Bu sitelerde <ph name="FLASH_PLUGIN_NAME" /> eklentisine izin ver</translation>
 <translation id="1635112116013359810">İndirilen içeriğin yerel depolama alanına kaydedilmeden önce hassas verileri koruma kuralı ihlalleri için denetlenmesini gerektiren URL kalıplarının listesi.  Bu politika, yalnızca <ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> etkinleştirilmiş olarak ayarlanmışsa kullanılır.
 
@@ -1612,7 +1612,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
           Politika değeri milisaniye olarak belirtilmelidir. Değerler boşta kalma gecikmesinin altında veya o gecikmeye eşit olacak şekilde ayarlanır.
 
           Uyarı mesajı yalnızca boşta kalma işlemi, çıkış yapma veya cihazı kapatma olduğunda gösterilir.</translation>
-<translation id="3367868895271989224">Politika Etkin değerine ayarlanırsa tüm siteler izole edilir. (Her site kendi işleminde çalışır.) Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa site izolasyonu kapatılmaz ancak kullanıcıların devre dışı bırakmasına izin verilir (örneğin, chrome:/flags'te Site izolasyonunu devre dışı bırak seçeneğini kullanarak).
+<translation id="3367868895271989224">Politika Etkin değerine ayarlanırsa tüm siteler izole edilir. (Her site kendi işleminde çalışır.) Politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa site izolasyonu kapatılmaz ancak kullanıcıların devre dışı bırakmasına izin verilir (örneğin, chrome:/flags'te Site izolasyonunu devre dışı bırak seçeneğini kullanarak).
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> politikası ek kaynaklara ince ayar için de faydalı olabilir. <ph name="PRODUCT_OS_NAME" /> 76 ve önceki sürümlerde <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> cihaz politikasını aynı değere ayarlayın. (Aksi halde, değerlerin eşleşmemesi durumunda kullanıcı oturumuna giriş sırasında gecikme yaşanabilir.)
 
@@ -1647,6 +1647,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 <translation id="3412937883532015092">Bu politika bir sayıya ayarlanırsa <ph name="PRODUCT_NAME" />, ayarlanan milisaniye süresince bir mesaj görüntüler, ardından alternatif tarayıcıyı açar.
 
       Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlanan bir URL'ye gidildiğinde URL hemen alternatif tarayıcıda açılır.</translation>
+<translation id="3415954062311826850">Bu politika Arc dahilinde desteklenmemektedir.</translation>
 <translation id="34160070798637152">Cihaz genelindeki ağ yapılandırmasını kontrol eder.</translation>
 <translation id="3417130629744653218">Web sitelerinin kullanılabilir ödeme yöntemlerini sorgulamalarına izin ver.</translation>
 <translation id="3417418267404583991">Bu politika true olarak ayarlanırsa veya hiçbir şekilde ayarlanmazsa, <ph name="PRODUCT_OS_NAME" /> misafir modunda giriş yapılmasına izin verir. misafir girişleri adsız kullanıcı oturumlarıdır ve şifre gerektirmez.
@@ -1677,7 +1678,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 <translation id="3437924696598384725">Kullanıcının VPN bağlantılarını yönetmesine izin verme</translation>
 <translation id="3451951038162074887">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf yazılımlarının <ph name="PRODUCT_NAME" /> işlemlerine çalıştırılabilir kod yerleştirmesi önlenir.
 
-      Politika Devre dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.
+      Politika Devre Dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.
 
       Bu politikanın değerinden bağımsız olarak tarayıcı, üçüncü taraf yazılımlarının bir <ph name="MS_AD_NAME" /> alan adına katılmış makinedeki işlemlerine çalıştırılabilir kod yerleştirmesini engellemeyecektir.</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
@@ -1967,6 +1968,13 @@ Bu politika yanlış seçeneğine ayarlanırsa kiosk oturum bilgileri rapor edil
 <translation id="3870300103958000506"><ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />, False (Yanlış) olarak ayarlanmamış ve <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> seçeneğine, 1 verilmiş veya herhangi bir değer verilmemişse tüm sitelerde reklamlara izin verilir.
 
       Politikayı 2 değerine ayarlayarak sitelerde araya giren reklamları engelleyebilirsiniz.</translation>
+<translation id="387226665655554104">Politika, kullanıcılar tarafından yapılandırılabilen ve kilit ekranının kilidini açmak için kullanılabilen hızlı kilit açma modlarının bir listesini kontrol eder.
+
+          Bu değer, dizelerden oluşan bir liste olup geçerli liste girişleri şunlardır: "all", "PIN", "FINGERPRINT". Listeye "all" değeri eklenirse kullanıcı, gelecekte eklenecek olanlar da dahil olmak üzere tüm hızlı kilit açma modlarını kullanabilir. Aksi halde yalnızca listede bulunan hızlı kilit açma modları kullanılabilir.
+
+          Örneğin, tüm hızlı kilit açma modlarına izin vermek için ["all"] değerini kullanın. Yalnızca PIN ile kilit açmaya izin vermek için ["PIN"] değerini kullanın. PIN ve parmak izine izin vermek için ["PIN", "FINGERPRINT"] değerini kullanın.
+
+          Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen cihazlarda hızlı kilit açma modları kullanılamaz</translation>
 <translation id="3877517141460819966">Entegre iki etmenli kimlik doğrulama modu</translation>
 <translation id="3879196885908353077">İndirmeler için hassas verileri koruma kuralı ihlallerini denetle</translation>
 <translation id="3879208481373875102">Zorunlu yüklenmiş Web Uygulamaları listesini yapılandır</translation>
@@ -3251,13 +3259,22 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politika false (yanlış) değerine ayarlanırsa dahili DNS istemcisi hiçbir zaman kullanılmaz.
 
       Bu politika ayarlanmadan bırakılırsa dahili DNS istemcisi; macOS, Android (Gizli DNS veya VPN etkinleştirilmediğinde) ve ChromeOS'ta varsayılan olarak etkinleştirilir ve kullanıcılar, dahili DNS istemcisini chrome://flags sayfasını düzenleyerek mi yoksa bir komut satırı işareti belirterek mi kullanacaklarını değiştirebilirler.</translation>
-<translation id="5624946025057772960">Politikanın ayarlanması <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, * yasaklanarak tüm istekler engellenebilir ve bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları ve belirli yollara ilişkin istisnaları açmak için kullanın. En belirgin filtre, bir URL'nin engellenip engellenmediğini belirler. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
+<translation id="5624946025057772960">Politikanın ayarlanması <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, * yasaklanarak tüm istekler engellenebilir ve bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları ve belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
 
       Bu politika ayrıca "tel:" veya "ssh:" gibi listelenmiş protokoller için protokol işleyici olarak kayıtlı harici uygulamanın tarayıcısı üzerinden otomatik çağrının etkinleştirilmesine izin verir.
 
       Politika ayarlanmadan bırakılırsa <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.
 
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
+<translation id="5628811596950455942">Politika, kullanıcılar tarafından yapılandırılabilen ve kilit ekranının kilidini açmak için kullanılabilen hızlı kilit açma modlarının bir listesini kontrol eder.
+
+          Bu değer, dizelerden oluşan bir liste olup geçerli liste girişleri şunlardır: "all", "PIN", "FINGERPRINT". Listeye "all" değeri eklenirse kullanıcı, gelecekte eklenecek olanlar da dahil olmak üzere tüm hızlı kilit açma modlarını kullanabilir. Aksi halde yalnızca listede bulunan hızlı kilit açma modları kullanılabilir.
+
+          Örneğin, tüm hızlı kilit açma modlarına izin vermek için ["all"] değerini kullanın. Yalnızca PIN ile kilit açmaya izin vermek için ["PIN"] değerini kullanın. PIN ve parmak izine izin vermek için ["PIN", "FINGERPRINT"] değerini kullanın.
+
+          Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen cihazlarda hızlı kilit açma modları kullanılamaz
+
+          Bu politika kullanımdan kaldırılmıştır. Bunun yerine lütfen <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> politikasını kullanın=</translation>
 <translation id="5630352020869108293">Son oturumu geri yükle</translation>
 <translation id="5633871703004128675">Metin imlecini vurgulama erişilebilirlik özelliğini etkinleştir</translation>
 <translation id="5641279111657132737">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen '<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />' politikasını kullanın.
@@ -3598,7 +3615,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="6195802366906945965">Yerleşik sertifika doğrulayıcının sunucu sertifikalarını doğrulamak için kullanılıp kullanılmayacağını belirler.</translation>
 <translation id="6199780467005360782">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen '<ph name="URL_ALLOWLIST_POLICY_NAME" />' politikasını kullanın.
 
-      Politikanın ayarlanması engellenen URL'ler listesine istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, * yasaklanarak tüm istekler engellenebilir ve bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları ve belirli yollara ilişkin istisnaları açmak için kullanın. En belirgin filtre, bir URL'nin engellenip engellenmediğini belirler. İzin verilenler listesi, engellenenler listesine göre önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
+      Politikanın ayarlanması engellenen URL'ler listesine istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, * yasaklanarak tüm istekler engellenebilir ve bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları ve belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler. İzin verilenler listesi, engellenenler listesine göre önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
 
       Bu politika ayrıca "tel:" veya "ssh:" gibi listelenmiş protokoller için protokol işleyici olarak kayıtlı harici uygulamanın tarayıcısı üzerinden otomatik çağrının etkinleştirilmesine izin verir.
 
@@ -3894,7 +3911,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       True (Doğru) değerine ayarlanırsa cihazın Powerwash fonksiyonunu tetiklemesine izin verir.
       Ayarlanmadan bırakılırsa varsayılan olarak True (Doğru) değerini alır, yani cihazın Powerwash fonksiyonunu tetiklemesine izin verir.
       </translation>
-<translation id="6621839881150363218">Politika Etkin değerine ayarlanırsa tüm siteler izole edilir (her site kendi işleminde çalışır). Politika Devre dışı değerine ayarlanırsa açık site izolasyonu olmaz ve IsolateOriginsAndroid ve SitePerProcessAndroid'in saha denemeleri kapatılır. Kullanıcılar isterlerse politikayı manuel olarak etkinleştirmeye devam edebilir.
+<translation id="6621839881150363218">Politika Etkin değerine ayarlanırsa tüm siteler izole edilir (her site kendi işleminde çalışır). Politika Devre Dışı değerine ayarlanırsa açık site izolasyonu olmaz ve IsolateOriginsAndroid ve SitePerProcessAndroid'in saha denemeleri kapatılır. Kullanıcılar isterlerse politikayı manuel olarak etkinleştirmeye devam edebilir.
 
       Politika ayarlanmadan bırakılırsa kullanıcılar bu ayarı değiştirebilir.
 
@@ -4777,7 +4794,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
           Bu ayar devre dışı bırakılır veya ayarlanmazsa, iki öğeli kimlik doğrulama etkinleştirilmez ve varsayılan davranış olan kullanıcı tanımlı bir PIN kullanılır.</translation>
 <translation id="7749402921503577264">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcıların SSS hatalarına neden olan sitelere gittiklerinde <ph name="PRODUCT_NAME" /> tarafından gösterilen uyarı sayfalarını tıklamalarına izin verilir.
 
-      Politika Devre dışı değerine ayarlanırsa kullanıcıların uyarı sayfalarını tıklamalarına izin verilmez.</translation>
+      Politika Devre Dışı değerine ayarlanırsa kullanıcıların uyarı sayfalarını tıklamalarına izin verilmez.</translation>
 <translation id="7750991880413385988">Yeni Sekme Sayfasını aç</translation>
 <translation id="7754704193130578113">İndirmeden önce her dosyanın nereye kaydedileceğini sor</translation>
 <translation id="7758378441185523981">Ambiyans Kimlik Doğrulamasını profil türlerine göre etkinleştir.</translation>

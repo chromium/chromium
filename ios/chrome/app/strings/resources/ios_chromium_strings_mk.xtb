@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Помогнете да го подобриме Chromium со автоматско испраќање статистика за користење и извештаи за падови во Google.</translation>
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1257458525759135959">За да ги зачувате сликите, допрете на „Поставки“ за да овозможите Chromium да додава фотографии</translation>
+<translation id="1361748954329991663">Chromium е застарен. Ако нема достапно ажурирање во <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, можно е уредот веќе да не поддржува нови верзии на Chromium.</translation>
 <translation id="1472013873724362412">Сметката не работи на Chromium. Контактирајте го администраторот на доменот или употребете обична сметка на Google за да се најавите.</translation>
 <translation id="1507010443238049608">Помогнете да се подобрат функциите и изведбата на Chromium</translation>
 <translation id="1617663976202781617">Податоци од синхронизацијата на Chromium</translation>
@@ -11,6 +12,7 @@
 <translation id="1838412507805038478">Chromium потврди дека <ph name="ISSUER" /> го издал сертификатот за веб-сајтов.</translation>
 <translation id="1843424232666537147">Chromium има функции што помагаат во управувањето со интернет сообраќајот и со брзината на вчитување веб-страници.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="2006345422933397527">Chromium не можеше да провери дали има ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="2075400798887076382">Пристапувајте до картичките што ви се отворени на компјутерот тука. Само отворете го Chromium на компјутерот, појдете во менито и изберете „Најави се на Chromium…“</translation>
 <translation id="2168108852149185974">Некои додатоци предизвикуваат пад на Chromium. Деинсталирајте:</translation>
 <translation id="2178608107313874732">Chromium не може да ја користи камерата сега</translation>
@@ -22,15 +24,19 @@
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
 <translation id="3256316712990552818">Копирано на Chromium</translation>
 <translation id="3344973607274501920">Chromium не можеше да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
+<translation id="3472200483164753384">Не е поддржана на Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google.</translation>
 <translation id="3805899903892079518">Chromium нема пристап до фотографиите или видеата. Овозможете пристап во Поставки на iOS &gt; Приватност &gt; Фотографии.</translation>
+<translation id="4099085513035183040">Не е поддржана на Chromium Beta</translation>
 <translation id="4166206055865952171">Поставете го Chromium како стандарден прелистувач</translation>
 <translation id="4555020257205549924">Кога е вклучена функцијава, Chromium ќе нуди да преведува страници што се напишани на други јазици користејќи го „Преведи на Google“. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Вклучете го скенерот на Chromium</translation>
 <translation id="4787850887676698916">Картичките што сте ги отвориле во Chromium на другите уреди ќе се појават тука.</translation>
 <translation id="4828317641996116749">Chromium не можеше да ги провери сите лозинки. Обидете се повторно подоцна.</translation>
+<translation id="4985291216379576555">Офлајн сте. Chromium не може да провери дали има ажурирања</translation>
 <translation id="4999538639245140991">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chromium ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
+<translation id="5308226104666789935">Chromium не може да провери дали има ажурирања</translation>
 <translation id="5521125884468363740">За да ги гледате картичките секаде каде што користите Chromium, најавете се и вклучете синхронизација</translation>
 <translation id="5573014823074921752">Совет за Chromium: за повеќе опции за картичките, допрете го и задржете го копчето „Прикажи ги картичките“ во алатникот, што се наоѓа најдолу или најгоре на екранот.</translation>
 <translation id="5700709190537129682">Chromium не може да ги провери вашите лозинки</translation>
@@ -42,6 +48,7 @@
 <translation id="6424492062988593837">Chromium е подобрен! Достапна е нова верзија.</translation>
 <translation id="6604711459180487467">Добијте подобро искуство со Chromium според вашата локација.</translation>
 <translation id="6820823224820483452">Chromium не можеше да ги провери сите лозинки. Обидете се повторно утре.</translation>
+<translation id="7018284295775193585">Chromium не може да се ажурира</translation>
 <translation id="7099326575020694068">Chromium не може да ја користи камерата во режимот „Поделен приказ“</translation>
 <translation id="7118091470949186573">Сега може да го користите Chromium секогаш кога ќе допрете линкови во пораките, документите и другите апликации.</translation>
 <translation id="7208566199746267865">Chromium ви заштедува време со тоа што ви ги носи сметките на Интернет. Може да додавате или отстранувате сметки во „Поставки“.</translation>
@@ -62,6 +69,7 @@
 <translation id="8013573822802650211">За да ги гледате картичките секаде каде што користите Chromium, најавете се на сите ваши уреди</translation>
 <translation id="8073677936375100957">Да се избришат податоците на Chromium од уредов?</translation>
 <translation id="8175055321229419309">Совет: <ph name="BEGIN_LINK" />преместете го Chromium во приклучокот<ph name="END_LINK" /></translation>
+<translation id="8240981428553046115">Chromium не можеше да провери дали има ажурирања. Обидете се повторно подоцна.</translation>
 <translation id="8252885722420466166">Добијте подобро искуство на Google со Chromium според вашата локација.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
 <translation id="8776843108004031667">Сметкава и сите незачувани податоци ќе се отстранат од Chromium.</translation>

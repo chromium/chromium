@@ -2011,7 +2011,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3428800329481094896">Preuzimaju se SSH ključevi za Linux kontejner</translation>
 <translation id="3429275422858276529">Obeležite ovu stranicu da biste je kasnije lakše pronašli</translation>
-<translation id="3431370546335300761">Prijavite se da biste se povezali sa proksijem</translation>
 <translation id="3432227430032737297">Ukloni sve prikazano</translation>
 <translation id="3432757130254800023">Šalji audio i video sadržaj ekranima na lokalnoj mreži</translation>
 <translation id="3432762828853624962">Deljeni resursi</translation>
@@ -5249,7 +5248,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7415454883318062233">Podešavanje je dovršeno</translation>
 <translation id="7416362041876611053">Nepoznata greška na mreži.</translation>
 <translation id="741906494724992817">Za ovu aplikaciju nisu potrebne nikakve posebne dozvole.</translation>
-<translation id="7420817660256886596">Proksi <ph name="PROXY" /> traži da potvrdite identitet pomoću korisničkog imena i lozinke</translation>
 <translation id="742130257665691897">Obeleživači su uklonjeni</translation>
 <translation id="7421925624202799674">&amp;Prikaži izvor stranice</translation>
 <translation id="7422192691352527311">Podešavanja...</translation>
@@ -5510,7 +5508,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7737115349420013392">Uparuje se sa „<ph name="DEVICE_NAME" />“ ...</translation>
 <translation id="7737238973539693982">Izbrišite Linux (beta)</translation>
 <translation id="7740996059027112821">Standardno</translation>
-<translation id="7741721175294046818">Povezivanje sa proksijem nije uspelo. Probajte ponovo</translation>
 <translation id="774377079771918250">Izaberite gde će biti sačuvano</translation>
 <translation id="7744047395460924128">Pogledajte istoriju štampanja</translation>
 <translation id="7744192722284567281">Pronađeno u upadu u podatke</translation>

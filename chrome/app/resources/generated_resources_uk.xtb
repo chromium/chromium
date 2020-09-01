@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">Ваші закладки, історія й інші налаштування буде синхронізовано з обліковим записом Google.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Домашня мережа, без роумінгу</translation>
+<translation id="1315144594965013365">Переконайтеся, що обидва пристрої розблоковані, розташовані поруч і на них увімкнено Bluetooth. Якщо ви хочете надіслати файли на комп'ютер Chromebook, увімкніть на ньому функцію "Передавання поблизу" (для цього відкрийте панель стану, натиснувши час, і виберіть "Передавання поблизу").</translation>
 <translation id="1316136264406804862">Пошук...</translation>
 <translation id="1316495628809031177">Синхронізацію призупинено</translation>
 <translation id="1317637799698924700">Док-станція працюватиме в режимі сумісності з USB Type-C.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Ваш пристрій можна розблоковувати за допомогою Smart Lock. Натисніть клавішу Enter, щоб розблокувати.</translation>
 <translation id="1361164813881551742">Додати вручну</translation>
 <translation id="1361655923249334273">Не використаний</translation>
+<translation id="1361707011052629095">Пристрої, які є поблизу, коли ви відкрили вікно функції "Передавання поблизу"</translation>
 <translation id="1361872463926621533">Відтворювати звук під час запуску</translation>
 <translation id="1362865166188278099">Механічна помилка. Перевірте принтер</translation>
 <translation id="1363585519747660921">USB-принтер потрібно налаштувати</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1556537182262721003">Не вдалося перемістити каталог розширення в профіль.</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
+<translation id="1562119309884184621">Якщо ви додасте цю людину в список контактів, вона зможе бачити ваш пристрій, коли буде поруч</translation>
 <translation id="1563702743503072935">Доки ви не вийдете з облікового запису, збережені в ньому паролі будуть доступні на цьому пристрої</translation>
 <translation id="1566049601598938765">Веб-сайт</translation>
 <translation id="15662109988763471">Вибраний принтер недоступний або його встановлено неправильно. Перевірте принтер або спробуйте вибрати інший.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">Закрити панель завантажень</translation>
 <translation id="1744060673522309905">Не вдається приєднати пристрій до домену. Переконайтеся, що ви не перевищили допустиму кількість доданих пристроїв.</translation>
 <translation id="1744108098763830590">фонова сторінка</translation>
+<translation id="1745732479023874451">Керувати контактами</translation>
 <translation id="1748563609363301860">Ви можете зберегти цей пароль в обліковому записі Google або лише на цьому пристрої</translation>
 <translation id="1750172676754093297">На вашому ключі безпеки не можна зберігати відбитки пальців</translation>
 <translation id="1751249301761991853">Персоналізація</translation>
@@ -742,6 +746,7 @@
 <translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1856715684130786728">Додати розташування…</translation>
 <translation id="1858585891038687145">Довіряти цьому сертифікату для ідентифікації виробників програмного забезпечення</translation>
+<translation id="1860346308203060432">Переглянути налаштування видимості пристрою</translation>
 <translation id="1861262398884155592">Ця папка порожня</translation>
 <translation id="1863182668524159459">Немає послідовних портів</translation>
 <translation id="1863316578636157783">Розширення "<ph name="EXTENSION_NAME" />" вимкнено, оскільки воно містить зловмисне програмне забезпечення</translation>
@@ -766,6 +771,7 @@
 <translation id="1880905663253319515">Видалити сертифікат "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Розкладка клавіатури</translation>
 <translation id="1884013283844450420">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Підключитися</translation>
+<translation id="1884340228047885921">Поточне налаштування видимості: "Деякі контакти"</translation>
 <translation id="1884705339276589024">Змінити розмір диска Linux</translation>
 <translation id="1885106732301550621">Місце на диску</translation>
 <translation id="1886996562706621347">Дозволити сайтам запитувати можливість ставати обробниками протоколів за умовчанням (рекомендовано)</translation>
@@ -1102,6 +1108,7 @@
 <translation id="2307462900900812319">Установити параметри мережі</translation>
 <translation id="230927227160767054">Ця сторінка хоче встановити обробника служби.</translation>
 <translation id="2309620859903500144">Доступ цього сайту до датчиків руху чи світла заблоковано.</translation>
+<translation id="2314165183524574721">Поточне налаштування видимості: "Приховано"</translation>
 <translation id="2314873619957287124">Визначте правила користування цифровим контентом, щоб вибрати для дитини час навчатися, гратися чи переглядати сайти</translation>
 <translation id="2315414688463285945">Не вдалося налаштувати файли Linux. Повторіть спробу.</translation>
 <translation id="2315587498123194634">Надіслати посилання на пристрій "<ph name="DEVICE_NAME" />"</translation>
@@ -1205,6 +1212,7 @@
 <translation id="2433507940547922241">Зовнішній вигляд</translation>
 <translation id="2433836460518180625">Розблокувати лише пристрій</translation>
 <translation id="2434449159125086437">Не вдалося налаштувати принтер. Перевірте конфігурацію й повторіть спробу.</translation>
+<translation id="2434758125294431199">Виберіть, хто може надсилати вам дані</translation>
 <translation id="2435248616906486374">Немає з’єднання з мережею</translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2436186046335138073">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" />?</translation>
@@ -1362,6 +1370,7 @@
 <translation id="2612676031748830579">Номер картки</translation>
 <translation id="2616366145935564096">Читати та змінювати свої дані на веб-сайті <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM-карту заблоковано</translation>
+<translation id="2618797463720777311">Налаштуйте функцію "Передавання поблизу"</translation>
 <translation id="2619761439309613843">Щоденне оновлення</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="262154978979441594">Навчити Google Асистента розпізнавати зразок голосу</translation>
@@ -1688,6 +1697,7 @@
 <translation id="3004391367407090544">Поверніться пізніше</translation>
 <translation id="3006881078666935414">Немає даних про використання</translation>
 <translation id="3007771295016901659">Ідентична вкладка</translation>
+<translation id="3008232374986381779">Запускайте інструменти Linux, редактори й ІСР на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Скинути дозволи</translation>
 <translation id="3009300415590184725">Дійсно скасувати процес налаштування служби передавання мобільних даних?</translation>
 <translation id="3009779501245596802">Проіндексовані бази даних</translation>
@@ -1715,6 +1725,7 @@
 <translation id="3029466929721441205">Показувати інструменти стилуса на панелі</translation>
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Виберіть елементи для імпорту:</translation>
+<translation id="3036041939445522540">Немає доступних контактів</translation>
 <translation id="3036327949511794916">Кінцевий термін повернення пристрою <ph name="DEVICE_TYPE" /> минув.</translation>
 <translation id="3036546437875325427">Увімкнути Flash</translation>
 <translation id="3037754279345160234">Неможливо виконати синтаксичний аналіз конфігурації приєднання домену. Зв’яжіться з адміністратором.</translation>
@@ -1829,6 +1840,7 @@
 <translation id="3183143381919926261">Мережі мобільного Інтернету</translation>
 <translation id="3183944777708523606">Налаштування екранів</translation>
 <translation id="3184536091884214176">Налаштувати принтери CUPS та керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">Фізична SIM-карта</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3188465121994729530">Середня швидкість переміщення курсора</translation>
 <translation id="3189187154924005138">Великий курсор</translation>
@@ -1978,6 +1990,7 @@
 <translation id="3388788256054548012">Цей файл зашифровано. Попросіть власника файлу розшифрувати його.</translation>
 <translation id="3390013585654699824">Дані про додаток</translation>
 <translation id="3390741581549395454">Створено резервні копії додатків і файлів Linux. Оновлення почнеться незабаром.</translation>
+<translation id="339507021360520688">Люди, чиї пристрої ви можете бачити, коли їхній екран розблоковано</translation>
 <translation id="3396800784455899911">Натиснувши кнопку "Прийняти та продовжити", ви дозволяєте цим сервісам Google обробляти ваші дані, як описано вище.</translation>
 <translation id="3399432415385675819">Сповіщення будуть вимкнені</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> герц) – з накладанням</translation>
@@ -2009,7 +2022,6 @@
 <translation id="3428747202529429621">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис</translation>
 <translation id="3428800329481094896">Отримання ключів SSH контейнера Linux</translation>
 <translation id="3429275422858276529">Створіть закладку цієї сторінки, щоб легко знайти її пізніше</translation>
-<translation id="3431370546335300761">Щоб підключитися до проксі, увійдіть в обліковий запис</translation>
 <translation id="3432227430032737297">Вилучити всі показані</translation>
 <translation id="3432757130254800023">Надсилати аудіо та відео на дисплеї в локальній мережі</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -2450,6 +2462,7 @@
 <translation id="3908393983276948098">Плагін <ph name="PLUGIN_NAME" /> застарів</translation>
 <translation id="3908501907586732282">Увімкнути розширення</translation>
 <translation id="3909791450649380159">Вирізат&amp;и</translation>
+<translation id="39103738135459590">Код активації</translation>
 <translation id="3911824782900911339">Сторінка нової вкладки</translation>
 <translation id="3915280005470252504">Пошук голосом</translation>
 <translation id="3916233823027929090">Перевірку безпеки завершено</translation>
@@ -2663,6 +2676,7 @@
 <translation id="4159681666905192102"><ph name="CUSTODIAN_EMAIL" /> і <ph name="SECOND_CUSTODIAN_EMAIL" /> керують цим обліковим записом для дітей.</translation>
 <translation id="4163560723127662357">Невідома клавіатура</translation>
 <translation id="4168015872538332605">Деякі налаштування, які встановив користувач <ph name="PRIMARY_EMAIL" />, доступні для вас. Ці налаштування впливають на ваш обліковий запис, лише коли використовується паралельний вхід.</translation>
+<translation id="4170256733935344210">Відскануйте QR-код за допомогою камери пристрою або введіть код активації, який надає ваш оператор</translation>
 <translation id="4170314459383239649">Очищати під час виходу</translation>
 <translation id="4175137578744761569">Світло-фіолетовий і білий</translation>
 <translation id="4175737294868205930">Постійна пам’ять</translation>
@@ -2751,6 +2765,7 @@
 <translation id="4296575653627536209">Додати контрольованого користувача</translation>
 <translation id="4297219207642690536">Перезапустити й скинути</translation>
 <translation id="4297813521149011456">Обертання дисплея</translation>
+<translation id="4299596693977045093">Налаштування eSim-карти</translation>
 <translation id="4301671483919369635">Ця сторінка може змінювати файли</translation>
 <translation id="4303079906735388947">Налаштуйте новий PIN-код для ключа безпеки</translation>
 <translation id="4305402730127028764">Копіювати на пристрій <ph name="DEVICE_NAME" /></translation>
@@ -3465,6 +3480,7 @@
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="52232769093306234">Помилка пакування.</translation>
 <translation id="5225324770654022472">Показувати ярлики додатків</translation>
+<translation id="52254442782792731">Видимість наразі не налаштовано</translation>
 <translation id="5227679487546032910">Стандартний бірюзовий аватар</translation>
 <translation id="5228088094491423618">Живі субтитри</translation>
 <translation id="5228579091201413441">Увімкнути синхронізацію</translation>
@@ -3946,6 +3962,7 @@
 <translation id="5799508265798272974">Віртуальна машина Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">З часу останнього завантаження кінцевий файл було скорочено або вилучено.</translation>
 <translation id="5801568494490449797">Налаштування</translation>
+<translation id="580297286642726158">Пристрої, на які ви можете надсилати дані</translation>
 <translation id="5804175651771201311">Роумінг вимкнено</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5805697420284793859">Диспетчер вікон</translation>
@@ -3962,6 +3979,7 @@
 <translation id="5826993284769733527">Напівпрозоро</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Друк...</translation>
+<translation id="5830659417568730973">Вибрані контакти, які є поблизу, коли ваш екран розблоковано</translation>
 <translation id="5830720307094128296">Зберегти сторінку &amp;як...</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="583281660410589416">Невідомий</translation>
@@ -4018,6 +4036,7 @@
 <translation id="5886009770935151472">Палець 1</translation>
 <translation id="5889282057229379085">Максимальна кількість проміжних ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Основні мережі Wi-Fi</translation>
+<translation id="5893589697005440881">Діліться файлами з людьми поруч</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5900302528761731119">Фото профілю Google</translation>
 <translation id="5900358982890952556">Оновити Linux (бета-версія)</translation>
@@ -4062,6 +4081,7 @@
 <translation id="5941153596444580863">Додати користувача…</translation>
 <translation id="5941343993301164315">Увійдіть у <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Згорнути</translation>
+<translation id="5942779427914696408">Видимість пристрою</translation>
 <translation id="5942964813783878922">Після оновлення пристрій <ph name="DEVICE_TYPE" /> перезавантажиться. Майбутні оновлення програмного забезпечення й системи безпеки встановлюватимуться автоматично.</translation>
 <translation id="5944869793365969636">Сканувати QR-код</translation>
 <translation id="5946591249682680882">Ідентифікатор звіту: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4130,6 +4150,7 @@
 <translation id="6031600495088157824">Параметри введення на панелі інструментів</translation>
 <translation id="6032715498678347852">Натисніть розширення, щоб надати йому доступ до цього сайту.</translation>
 <translation id="6032912588568283682">Файлова система</translation>
+<translation id="6035517790085323771">Хто може надсилати дані на ваш пристрій</translation>
 <translation id="6038929619733116134">Блокувати, якщо сайт показує нав’язливі чи оманливі оголошення</translation>
 <translation id="6039651071822577588">Словник власності в мережі має невірну структуру</translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -4212,6 +4233,7 @@
 <translation id="6122081475643980456">Ваше з’єднання з Інтернетом контролюється</translation>
 <translation id="6122095009389448667">Забороняти цьому сайту переглядати буфер обміну</translation>
 <translation id="6122191549521593678">Онлайн</translation>
+<translation id="6122600716821516697">Надіслати дані на цей пристрій?</translation>
 <translation id="6122831415929794347">Вимкнути Безпечний перегляд?</translation>
 <translation id="6122875415561139701">Операцію внесення змін заборонено на пристрої <ph name="DEVICE_NAME" />.</translation>
 <translation id="6124213551517593835">Буде видалено всі дані й файли cookie, збережені сайтом <ph name="SITE_GROUP_NAME" /> і сайтами його групи</translation>
@@ -4234,6 +4256,7 @@
 <translation id="6148576794665275391">Відкрити зараз</translation>
 <translation id="6149015141270619212">Не вдається під'єднати пристрій до Інтернету</translation>
 <translation id="614940544461990577">Спробуйте:</translation>
+<translation id="6150278227694566734">Деякі контакти</translation>
 <translation id="6150961653851236686">Ця мова використовується для перекладу сторінок</translation>
 <translation id="6151323131516309312">Натисніть <ph name="SEARCH_KEY" />, щоб здійснити пошук <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Файл уже є в папці завантажень.</translation>
@@ -4767,6 +4790,7 @@
 <translation id="6824584962142919697">&amp;Перевірити елементи</translation>
 <translation id="6825184156888454064">Сортувати за назвою</translation>
 <translation id="6826872289184051766">Підтвердити через USB</translation>
+<translation id="6827487342470222762">Немає доступних контактів. Щоб обмінюватися файлами з людьми зі свого списку контактів за допомогою функції "Передавання поблизу", додайте в цей список електронні адреси, зв'язані з обліковими записами Google відповідних користувачів.</translation>
 <translation id="6827623133556594466">Після 31 грудня Google Cloud Print більше не підтримуватиметься. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Дозволити вхід цим користувачам:</translation>
 <translation id="6828182567531805778">Щоб синхронізувати дані, введіть парольну фразу</translation>
@@ -5081,6 +5105,7 @@
 <translation id="7210499381659830293">Принтери розширення</translation>
 <translation id="7211890396916697230">Налаштувати eSIM-карту</translation>
 <translation id="7212097698621322584">Введіть поточний PIN-код, щоб змінити його. Якщо ви не знаєте його, необхідно скинути ключ безпеки, а тоді створити новий PIN-код.</translation>
+<translation id="7213903639823314449">Пошукова система, яка використовується в адресному рядку</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="7216595297012131718">Розмістіть мови в бажаному порядку</translation>
 <translation id="7220019174139618249">Не вдається експортувати паролі в папку "<ph name="FOLDER" />"</translation>
@@ -5239,7 +5264,6 @@
 <translation id="7415454883318062233">Налаштовано</translation>
 <translation id="7416362041876611053">Невідома помилка мережі.</translation>
 <translation id="741906494724992817">Цьому додатку не потрібні спеціальні дозволи.</translation>
-<translation id="7420817660256886596">Щоб отримати доступ до проксі <ph name="PROXY" />, пройдіть автентифікацію, ввівши ім'я користувача й пароль</translation>
 <translation id="742130257665691897">Закладки видалено</translation>
 <translation id="7421925624202799674">&amp;Переглянути джерело сторінки</translation>
 <translation id="7422192691352527311">Налаштування...</translation>
@@ -5500,7 +5524,6 @@
 <translation id="7737115349420013392">Підключення до пристрою "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737238973539693982">Видалення Linux (бета-версія)</translation>
 <translation id="7740996059027112821">Стандартно</translation>
-<translation id="7741721175294046818">Не вдається підключитися до проксі, повторіть спробу</translation>
 <translation id="774377079771918250">Виберіть місце зберігання</translation>
 <translation id="7744047395460924128">Перегляд історії друку</translation>
 <translation id="7744192722284567281">Знайдено в порушеннях безпеки даних</translation>
@@ -5572,6 +5595,7 @@
 <translation id="7819992334107904369">Синхронізація Chrome</translation>
 <translation id="782057141565633384">Копіювати адресу відео</translation>
 <translation id="7824864914877854148">Не вдалося створити резервну копію через помилку</translation>
+<translation id="7825666486843191125">Усі контакти, які є поблизу, коли ваш екран розблоковано</translation>
 <translation id="782590969421016895">Використати поточні сторінки</translation>
 <translation id="7826249772873145665">Налагодження ADB вимкнено</translation>
 <translation id="7826254698725248775">Конфліктний ідентифікатор пристрою.</translation>
@@ -5669,6 +5693,7 @@
 <translation id="7918257978052780342">Зареєструвати</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920363873148656176">Сайт <ph name="ORIGIN" /> може переглядати файл "<ph name="FILENAME" />"</translation>
+<translation id="7924080089023843180">Ніхто, якщо у вас закрите вікно функції "Передавання поблизу"</translation>
 <translation id="7924358170328001543">Не вдалося переадресувати порт</translation>
 <translation id="792514962475806987">Рівень масштабування закріпленої лупи:</translation>
 <translation id="7925247922861151263">Помилка перевірки AAA</translation>
@@ -5716,6 +5741,7 @@
 <translation id="7970673414865679092">Дані про мережу Ethernet</translation>
 <translation id="7970882136539140748">Не вдається зберегти картку</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
+<translation id="797394244396603170">Виберіть пристрій, якому хочете надіслати файли</translation>
 <translation id="7973962044839454485">Помилка автентифікації PPP через неправильне ім’я користувача або пароль</translation>
 <translation id="7974566588408714340">Повторити спробу, використовуючи розширення <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Облямівка екрана</translation>
@@ -6171,6 +6197,7 @@
 <translation id="8539766201049804895">Оновити</translation>
 <translation id="8540136935098276800">Введіть URL-адресу правильного формату</translation>
 <translation id="8540608333167683902">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
+<translation id="854071720451629801">Позначити як прочитане</translation>
 <translation id="8541462173655894684">На сервері друку немає принтерів</translation>
 <translation id="8542618328173222274">Запитувати, коли сайт хоче отримати доступ до даних або пристроїв віртуальної реальності</translation>
 <translation id="8543556556237226809">Маєте запитання? Зв’яжіться з особою, яка контролює ваш профіль.</translation>
@@ -6227,6 +6254,7 @@
 <translation id="8613164732773110792">Лише малі літери, цифри, символи підкреслення або тире</translation>
 <translation id="8613786722548417558">Не вдається перевірити безпеку файлу "<ph name="FILE_NAME" />", оскільки він завеликий. Ви можете відкривати файли розміром до 50 МБ.</translation>
 <translation id="8615618338313291042">Програма в режимі анонімного перегляду: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">Додати людину <ph name="CONTACT_NAME" /> в список контактів</translation>
 <translation id="8619803522055190423">Додати тінь</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Батьки ще не схвалили його</translation>
@@ -6445,6 +6473,7 @@
 <translation id="8846141544112579928">Пошук клавіатури…</translation>
 <translation id="8847523528195140327">Виходити з облікового запису, коли кришка закрита</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Приховано</translation>
 <translation id="8850251000316748990">Показати більше…</translation>
 <translation id="885246833287407341">Аргументи функції API</translation>
 <translation id="8853586775156634952">Картку буде збережено лише на цьому пристрої</translation>
@@ -6455,6 +6484,7 @@
 <translation id="8859402192569844210">Не вдалося завантажити Умови використання</translation>
 <translation id="8859662783913000679">Батьківський обліковий запис</translation>
 <translation id="8862003515646449717">Виберіть швидкий веб-переглядач</translation>
+<translation id="8863140399813345099">Видимість пристрою визначає, хто може надсилати вам дані, коли ваш екран розблоковано</translation>
 <translation id="8863753581171631212">Відкрити посилання в новому вікні додатка <ph name="APP" /></translation>
 <translation id="8864055848767439877">Додаток <ph name="APP_NAME" /> має доступ до вкладки <ph name="TAB_NAME" /></translation>
 <translation id="8864458770072227512">Обліковий запис <ph name="EMAIL" /> видалено з цього пристрою</translation>
@@ -6470,6 +6500,7 @@
 <translation id="8872777911145321141">Запитувати, коли сайт хоче отримати доступ до даних або пристроїв віртуальної реальності (рекомендовано)</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
 <translation id="8875520811099717934">Оновлення Linux</translation>
+<translation id="8875736897340638404">Виберіть налаштування видимості</translation>
 <translation id="8876307312329369159">Це налаштування не можна змінити в демонстраційному сеансі.</translation>
 <translation id="8877448029301136595">[батьківський каталог]</translation>
 <translation id="8879284080359814990">&amp;Показати як вкладку</translation>
@@ -6626,6 +6657,7 @@
 <translation id="9063208415146866933">Помилка в рядках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Увімкнути "Автозаповнення", щоб заповнювати форми одним кліком</translation>
 <translation id="9065203028668620118">Редагувати</translation>
+<translation id="9065772380960598487">Додати в розділ "Читати пізніше"</translation>
 <translation id="9066773882585798925">Озвучуйте текст</translation>
 <translation id="9066782832737749352">Синтез мовлення</translation>
 <translation id="9068849894565669697">Вибрати колір</translation>
@@ -6707,6 +6739,7 @@
 <translation id="9169496697824289689">Переглянути комбінації клавіш</translation>
 <translation id="916964310188958970">Чому ця пропозиція?</translation>
 <translation id="9169931577761441333">Додати додаток <ph name="APP_NAME" /> на головний екран</translation>
+<translation id="9170061643796692986">Поточне налаштування видимості: "Усі контакти"</translation>
 <translation id="9170848237812810038">&amp;Скасувати</translation>
 <translation id="9170884462774788842">Інша програма на вашому комп’ютері додала тему, яка може змінити роботу Chrome.</translation>
 <translation id="917350715406657904">Досягнено ліміту часу використання, який батьки встановили для додатка <ph name="APP_NAME" />. Завтра ти зможеш користуватися ним <ph name="TIME_LIMIT" />.</translation>

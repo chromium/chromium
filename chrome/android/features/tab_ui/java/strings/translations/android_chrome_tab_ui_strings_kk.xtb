@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
 <translation id="1657719826150349398">Қойындыны төмен жылжыту</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
+<translation id="2277224997687551299">Топтың атауын өзгерту</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан өшіру.}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан өшіру.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жию.}}</translation>
 <translation id="2569352796411618312">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
 <translation id="257674075312929031">Топ</translation>
 <translation id="2613747923081026172">Топ құру</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> қойындылар тобына <ph name="NUMBER_OF_TABS" /> қойынды қосыңыз.</translation>
 <translation id="2977480621796371840">Топтан өшіру</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> қойындылар тобын жию.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="4212246570487010370">Үздіксіз көру</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Көру</translation>
 <translation id="5073204694187207510">Толық экрандық торды жасыру</translation>
 <translation id="5082793167783849073">Топ жасай отырып, беттерді жылдам салыстырыңыз. Бастау үшін сілтемені басып ұстап тұрыңыз.</translation>
+<translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5533021382642990449">Кейінірек көрсету</translation>
+<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> қойындысы бар қойындылар тобын жабу</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> қойынды топтастырылды.</translation>
 <translation id="58326064309361797">Қойындыларды топтастыру үшін оларды сүйреңіз.</translation>
+<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> тобын жабу</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6510648526783655549">Қойындылар жолағын жабу</translation>
 <translation id="6562820390860419811">Қойындыны солға жылжыту</translation>
 <translation id="6615455863669487791">Маған көрсету</translation>
 <translation id="6840760312327750441">Қойындыларды топтау үшін қойындыны түртіп, ұстап тұрыңыз. Одан кейін басқа қойындыға сүйреңіз.</translation>
+<translation id="6856809498882026482">Бірнеше нұсқа таңдау режимін жасыру</translation>
 <translation id="7151209024774799310">Қойындыларды топтан өшіру</translation>
+<translation id="7204204600596740190">Бірнеше нұсқа таңдау режимі</translation>
+<translation id="753732157349120914">Қойынды ауыстырғышы</translation>
 <translation id="7559245342362162951">Топ қойындыларын толық экранда тор түрінде көрсету</translation>
 <translation id="7792771145871471484">Ұсыныстарды көріңіз.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таңдалған қойындыны топтау}other{<ph name="TABS_COUNT_MANY" /> таңдалған қойындыны топтау}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Қойындыны жоғары жылжыту</translation>
 <translation id="8304833501377495048">Қойындылар жолағы қайта көрсетілмесін бе?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны жабу}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны жабу}}</translation>
+<translation id="8557923272772633250">Қойындылар тобына <ph name="NUMBER_OF_TABS" /> қойынды қосыңыз.</translation>
 <translation id="8749939518995770034">Жабық қойындылар жолағы</translation>
 <translation id="9150694013019234766">Экранның төменгі жағындағы қойындылар тобында қойындылар арасында ауысуға болады.</translation>
 <translation id="9169594135889675189">Топқа жаңа қойынды енгізу</translation>

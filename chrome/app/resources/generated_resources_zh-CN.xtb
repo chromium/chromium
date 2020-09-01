@@ -2010,7 +2010,6 @@
 <translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3428800329481094896">正在提取 Linux 容器 SSH 密钥</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
-<translation id="3431370546335300761">登录即可连接到代理</translation>
 <translation id="3432227430032737297">移除显示的所有 Cookie</translation>
 <translation id="3432757130254800023">向本地网络上的显示屏发送音频和视频</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -5246,7 +5245,6 @@
 <translation id="7415454883318062233">设置已完成</translation>
 <translation id="7416362041876611053">未知网络错误。</translation>
 <translation id="741906494724992817">此应用不需要任何特殊权限。</translation>
-<translation id="7420817660256886596">代理 <ph name="PROXY" /> 要求您使用用户名和密码验证身份</translation>
 <translation id="742130257665691897">书签已移除</translation>
 <translation id="7421925624202799674">显示网页源代码(&amp;V)</translation>
 <translation id="7422192691352527311">偏好设置...</translation>
@@ -5507,7 +5505,6 @@
 <translation id="7737115349420013392">正在与“<ph name="DEVICE_NAME" />”配对…</translation>
 <translation id="7737238973539693982">删除 Linux（测试版）</translation>
 <translation id="7740996059027112821">标准</translation>
-<translation id="7741721175294046818">无法连接到代理，请重试</translation>
 <translation id="774377079771918250">选择所需的保存位置</translation>
 <translation id="7744047395460924128">查看您的打印记录</translation>
 <translation id="7744192722284567281">遭遇了数据泄露</translation>

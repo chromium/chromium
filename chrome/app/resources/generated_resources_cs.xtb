@@ -2013,7 +2013,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3428747202529429621">Zajišťuje vám bezpečí v Chromu a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="3428800329481094896">Načítání klíčů SSH kontejneru systému Linux</translation>
 <translation id="3429275422858276529">Přidejte si tuto stránku do záložek, abyste ji později snáze našli</translation>
-<translation id="3431370546335300761">Pokud se chcete připojit k proxy serveru, přihlaste se</translation>
 <translation id="3432227430032737297">Odstranit všechny zobrazené</translation>
 <translation id="3432757130254800023">Odesílat zvuk a video na displeje v místní síti</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -5249,7 +5248,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7415454883318062233">Nastavení je hotové</translation>
 <translation id="7416362041876611053">Neznámá chyba sítě.</translation>
 <translation id="741906494724992817">Tato aplikace nevyžaduje žádná speciální oprávnění.</translation>
-<translation id="7420817660256886596">Proxy <ph name="PROXY" /> vyžaduje ověření pomocí uživatelského jména a hesla</translation>
 <translation id="742130257665691897">Záložky byly odstraněny</translation>
 <translation id="7421925624202799674">Zobrazit zdrojo&amp;vý kód stránky</translation>
 <translation id="7422192691352527311">Nastavení...</translation>
@@ -5510,7 +5508,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7737115349420013392">Párování se zařízením <ph name="DEVICE_NAME" />…</translation>
 <translation id="7737238973539693982">Vymazat Linux (beta)</translation>
 <translation id="7740996059027112821">Standardně</translation>
-<translation id="7741721175294046818">K proxy se nelze připojit, zkuste to znovu</translation>
 <translation id="774377079771918250">Vyberte účet</translation>
 <translation id="7744047395460924128">Zobrazení historie tisku</translation>
 <translation id="7744192722284567281">Nalezeno v porušení zabezpečení údajů</translation>

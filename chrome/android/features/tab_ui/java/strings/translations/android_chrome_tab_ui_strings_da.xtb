@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Tryk for at se en anden fane</translation>
 <translation id="1657719826150349398">Flyt fane ned</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="2277224997687551299">Rediger gruppenavn</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Fjern <ph name="TABS_COUNT_ONE" /> valgt fane fra gruppen.}one{Fjern <ph name="TABS_COUNT_MANY" /> valgt fane fra gruppen.}other{Fjern <ph name="TABS_COUNT_MANY" /> valgte faner fra gruppen.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}one{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> fane.}other{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
 <translation id="257674075312929031">Gruppe</translation>
 <translation id="2613747923081026172">Opret gruppe</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> faner.</translation>
 <translation id="2977480621796371840">Fjern fra gruppe</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}one{Skjul fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Skjul fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
 <translation id="4212246570487010370">Fortsæt med at gennemse</translation>
 <translation id="4450893287417543264">Vis ikke igen</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Gennemgå</translation>
 <translation id="5073204694187207510">Skjul fuldskærmsgitter</translation>
 <translation id="5082793167783849073">Sammenlign hurtigt sider ved at oprette en gruppe. Hold et link nede for at starte.</translation>
+<translation id="5490235265819901748">Fanegruppen blev udvidet</translation>
 <translation id="5533021382642990449">Vis senere</translation>
+<translation id="5558362125926932819">Luk fanegruppe med <ph name="NUMBER_OF_TABS" /> faner</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> faner blev grupperet</translation>
 <translation id="58326064309361797">Træk og slip faner for at gruppere dem</translation>
+<translation id="5846292395804797011">Luk gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> faner</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6193448654517602979">Vælg faner</translation>
 <translation id="6510648526783655549">Luk fanelinje</translation>
 <translation id="6562820390860419811">Flyt fane til venstre</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
 <translation id="6840760312327750441">Du kan gruppere faner ved at holde en fane nede. Træk den derefter oven på en anden fane.</translation>
+<translation id="6856809498882026482">Skjul tilstanden Valg af flere</translation>
 <translation id="7151209024774799310">Fjern faner fra gruppe</translation>
+<translation id="7204204600596740190">Tilstanden Valg af flere</translation>
+<translation id="753732157349120914">Faneskift</translation>
 <translation id="7559245342362162951">Vis gruppens faner i et fuldskærmsgitter</translation>
 <translation id="7792771145871471484">Gennemgå forslagene.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Gruppér <ph name="TABS_COUNT_ONE" /> valgt fane}one{Gruppér <ph name="TABS_COUNT_MANY" /> valgt fane}other{Gruppér de <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Flyt fane op</translation>
 <translation id="8304833501377495048">Vil du skjule denne fanelinje permanent?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Luk <ph name="TABS_COUNT_ONE" /> valgt fane}one{Luk <ph name="TABS_COUNT_MANY" /> valgt fane}other{Luk de <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
+<translation id="8557923272772633250">Udvid fanegruppen med <ph name="NUMBER_OF_TABS" /> faner.</translation>
 <translation id="8749939518995770034">Fanelinjen er lukket</translation>
 <translation id="9150694013019234766">Skift mellem faner i din fanegruppe nederst på skærmen</translation>
 <translation id="9169594135889675189">Føj en ny fane til gruppen</translation>

@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
 <translation id="1856715684130786728">Дадаць размяшчэнне...</translation>
 <translation id="1858585891038687145">Давяраць гэтаму сертыфікату пры ідэнтыфікацыі стваральнікаў праграмнага забеспячэння</translation>
+<translation id="1860346308203060432">Прагледзець параметры бачнасці прылады</translation>
 <translation id="1861262398884155592">Гэта папка пустая</translation>
 <translation id="1863182668524159459">Паслядоўныя парты не знойдзены</translation>
 <translation id="1863316578636157783">Пашырэнне "<ph name="EXTENSION_NAME" />" выключана, бо яно ўтрымлівае шкоднае змесціва</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">Выдаліць сертыфікат "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Раскладка клавіятуры</translation>
 <translation id="1884013283844450420">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, падключыцца</translation>
+<translation id="1884340228047885921">Бягучая налада бачнасці: некаторыя кантакты</translation>
 <translation id="1884705339276589024">Змяненне памеру дыска Linux</translation>
 <translation id="1885106732301550621">Месца на дыску</translation>
 <translation id="1886996562706621347">Дазволіць сайтам запытваць права быць стандартнымі апрацоўшчыкамі пратаколаў (рэкамендуецца)</translation>
@@ -1102,6 +1104,7 @@
 <translation id="2307462900900812319">Наладзіць сетку</translation>
 <translation id="230927227160767054">Старонка спрабуе ўсталяваць апрацоўшчык сэрвісу.</translation>
 <translation id="2309620859903500144">Гэтаму сайту заблакіраваны доступ да датчыкаў руху або святла.</translation>
+<translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
 <translation id="2314873619957287124">Вызначыце асноўныя правілы карыстання лічбавым змесцівам, каб збалансаваць для дзіцяці час вучобы, гульні і вандровак у інтэрнэце</translation>
 <translation id="2315414688463285945">Памылка канфігурацыі файлаў Linux. Паўтарыце спробу.</translation>
 <translation id="2315587498123194634">Адправіць спасылку на прыладу "<ph name="DEVICE_NAME" />"</translation>
@@ -1688,6 +1691,7 @@
 <translation id="3004391367407090544">Вярніцеся пазней</translation>
 <translation id="3006881078666935414">Няма даных аб выкарыстанні</translation>
 <translation id="3007771295016901659">Дубліраваць укладку</translation>
+<translation id="3008232374986381779">Выкарыстоўвайце інструменты Linux, рэдактары і IDE на сваёй прыладзе <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Скінуць дазволы</translation>
 <translation id="3009300415590184725">Сапраўды скасаваць наладжванне сэрвісу мабільнай перадачы даных?</translation>
 <translation id="3009779501245596802">Індэксаваныя базы даных</translation>
@@ -1829,6 +1833,7 @@
 <translation id="3183143381919926261">Сеткі мабільнай перадачы даных</translation>
 <translation id="3183944777708523606">Размяшчэнне манітораў</translation>
 <translation id="3184536091884214176">Наладжванне прынтараў CUPS і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">Фізічная SIM-карта</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
 <translation id="3188465121994729530">Рухомае сярэдняе</translation>
 <translation id="3189187154924005138">Вялікі курсор</translation>
@@ -2009,7 +2014,6 @@
 <translation id="3428747202529429621">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="3428800329481094896">Атрыманне ключоў SSH для кантэйнера Linux</translation>
 <translation id="3429275422858276529">Дадайце гэту старонку ў закладкі, каб палегчыць яе пошук у далейшым</translation>
-<translation id="3431370546335300761">Каб падключыцца да проксі-сервера, выканайце ўваход ва ўліковы запіс</translation>
 <translation id="3432227430032737297">Выдаліць усе паказаныя</translation>
 <translation id="3432757130254800023">Адпраўка аўдыя і відэа на дысплэі ў лакальнай сетцы</translation>
 <translation id="3432762828853624962">Сумесныя рабочыя працэсы</translation>
@@ -2450,6 +2454,7 @@
 <translation id="3908393983276948098">Убудова <ph name="PLUGIN_NAME" /> састарэла</translation>
 <translation id="3908501907586732282">Уключыць пашырэнне</translation>
 <translation id="3909791450649380159">Вы&amp;разаць</translation>
+<translation id="39103738135459590">Код актывацыі</translation>
 <translation id="3911824782900911339">Старонка новай укладкі</translation>
 <translation id="3915280005470252504">Галасавы пошук</translation>
 <translation id="3916233823027929090">Праверка бяспекі выканана</translation>
@@ -2663,6 +2668,7 @@
 <translation id="4159681666905192102">Гэта ўліковы запіс для дзяцей, якім кіруюць <ph name="CUSTODIAN_EMAIL" /> і <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Невядомая клавіятура</translation>
 <translation id="4168015872538332605">Для вас дзейнічаюць некаторыя налады, зададзеныя карыстальнікам <ph name="PRIMARY_EMAIL" />. Гэтыя налады дзейнічаюць у вашым уліковым запісе, толькі калі ажыццёўлены ўваход у некалькі ўліковых запісаў.</translation>
+<translation id="4170256733935344210">Адсканіруйце QR-код камерай прылады або ўвядзіце код актывацыі, дадзены аператарам</translation>
 <translation id="4170314459383239649">Ачысціць пасля выхаду</translation>
 <translation id="4175137578744761569">Светла-фіялетавы і белы</translation>
 <translation id="4175737294868205930">Пастаяннае сховішча</translation>
@@ -2751,6 +2757,7 @@
 <translation id="4296575653627536209">Дадаць падкантрольнага карыстальніка</translation>
 <translation id="4297219207642690536">Перазапусціць і скінуць</translation>
 <translation id="4297813521149011456">Паварот дысплэя</translation>
+<translation id="4299596693977045093">Наладжванне eSim</translation>
 <translation id="4301671483919369635">Гэта старонка мае дазвол на змяненне файлаў</translation>
 <translation id="4303079906735388947">Наладзьце новы PIN-код для ключа бяспекі</translation>
 <translation id="4305402730127028764">Скапіраваць на прыладу "<ph name="DEVICE_NAME" />"</translation>
@@ -3465,6 +3472,7 @@
 <translation id="5222676887888702881">Выйсці</translation>
 <translation id="52232769093306234">Памылка запакоўвання.</translation>
 <translation id="5225324770654022472">Паказваць ярлык праграм</translation>
+<translation id="52254442782792731">Бягучая налада бачнасці: яшчэ не зададзена</translation>
 <translation id="5227679487546032910">Стандартны сіне-зялёны аватар</translation>
 <translation id="5228088094491423618">Імгненныя субцітры</translation>
 <translation id="5228579091201413441">Уключыць сінхранізацыю</translation>
@@ -4062,6 +4070,7 @@
 <translation id="5941153596444580863">Дадаць карыстальніка...</translation>
 <translation id="5941343993301164315">Увайдзіце ў <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Згарнуць</translation>
+<translation id="5942779427914696408">Бачнасць прылады</translation>
 <translation id="5942964813783878922">Пасля ўсталявання абнаўлення <ph name="DEVICE_TYPE" /> перазапусціцца. Наступныя версіі праграмнага забеспячэння і абнаўленні сістэмы бяспекі будуць усталёўвацца аўтаматычна.</translation>
 <translation id="5944869793365969636">Сканіраваць QR-код</translation>
 <translation id="5946591249682680882">Ідэнтыфікатар справаздачы <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4234,6 +4243,7 @@
 <translation id="6148576794665275391">Адкрыць</translation>
 <translation id="6149015141270619212">Не ўдалося падключыцца да інтэрнэту</translation>
 <translation id="614940544461990577">Паспрабуйце наступнае:</translation>
+<translation id="6150278227694566734">Некаторыя кантакты</translation>
 <translation id="6150961653851236686">На гэту мову перакладаюцца старонкі</translation>
 <translation id="6151323131516309312">Для пошуку на сайце <ph name="SITE_NAME" /> націсніце <ph name="SEARCH_KEY" /></translation>
 <translation id="6151771661215463137">Файл ужо існуе ў папцы спампоўвання.</translation>
@@ -5081,6 +5091,7 @@
 <translation id="7210499381659830293">Дабавачныя прынтары</translation>
 <translation id="7211890396916697230">Наладзіць eSIM-карту</translation>
 <translation id="7212097698621322584">Каб змяніць бягучы PIN-код, увядзіце яго. Калі вы не ведаеце PIN-код, вам трэба будзе скінуць ключ бяспекі, а затым стварыць новы PIN-код.</translation>
+<translation id="7213903639823314449">Пошукавая сістэма, якая выкарыстоўваецца ў адрасным радку</translation>
 <translation id="7216409898977639127">Сотавы аператар</translation>
 <translation id="7216595297012131718">Упарадкуйце мовы, як вам трэба</translation>
 <translation id="7220019174139618249">Не ўдалося экспартаваць паролі ў папку "<ph name="FOLDER" />"</translation>
@@ -5239,7 +5250,6 @@
 <translation id="7415454883318062233">Наладка завершана</translation>
 <translation id="7416362041876611053">Невядомая памылка сеткі.</translation>
 <translation id="741906494724992817">Гэта праграма не патрабуе спецыяльных дазволаў.</translation>
-<translation id="7420817660256886596">Проксі-сервер <ph name="PROXY" /> патрабуе правесці аўтэнтыфікацыю з выкарыстаннем імені карыстальніка і пароля</translation>
 <translation id="742130257665691897">Закладкі выдалены</translation>
 <translation id="7421925624202799674">&amp;Прагляд зыходнага тэксту старонкі</translation>
 <translation id="7422192691352527311">Параметры...</translation>
@@ -5500,7 +5510,6 @@
 <translation id="7737115349420013392">Ідзе спалучэнне з прыладай "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7737238973539693982">Выдаліць Linux (бэта-версія)</translation>
 <translation id="7740996059027112821">Стандартны</translation>
-<translation id="7741721175294046818">Не ўдалося падключыцца да проксі-сервера. Паўтарыце спробу</translation>
 <translation id="774377079771918250">Выберыце, куды захаваць</translation>
 <translation id="7744047395460924128">Праглядзець вашу гісторыю друку</translation>
 <translation id="7744192722284567281">Раскрыты пры ўцечцы даных</translation>
@@ -6170,6 +6179,7 @@
 <translation id="8539766201049804895">Абнавіць</translation>
 <translation id="8540136935098276800">Увядзіце URL-адрас у правільным фармаце</translation>
 <translation id="8540608333167683902">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
+<translation id="854071720451629801">Пазначыць як прачытанае</translation>
 <translation id="8541462173655894684">На серверы друку прынтараў не знойдзена</translation>
 <translation id="8542618328173222274">Пытацца, калі сайт запытвае дазвол выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
 <translation id="8543556556237226809">Засталіся пытанні? Звяжыцеся з тым, хто кантралюе ваш профіль.</translation>
@@ -6444,6 +6454,7 @@
 <translation id="8846141544112579928">Пошук клавіятуры...</translation>
 <translation id="8847523528195140327">Пры закрыцці вечка выходзіць з сістэмы</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Схавана</translation>
 <translation id="8850251000316748990">Яшчэ...</translation>
 <translation id="885246833287407341">Аргументы функцыі API</translation>
 <translation id="8853586775156634952">Гэта картка захаваецца толькі на гэту прыладу</translation>
@@ -6469,6 +6480,7 @@
 <translation id="8872777911145321141">Пытацца, калі сайт запытвае дазвол выкарыстоўваць даныя і прылады віртуальнай рэальнасці (рэкамендуецца)</translation>
 <translation id="8874184842967597500">Не падключана</translation>
 <translation id="8875520811099717934">Абнаўленне Linux</translation>
+<translation id="8875736897340638404">Выберыце параметры бачнасці</translation>
 <translation id="8876307312329369159">Гэту наладу нельга змяніць у дэманстрацыйным сеансе.</translation>
 <translation id="8877448029301136595">[бацькоўскі каталог]</translation>
 <translation id="8879284080359814990">&amp;Паказаць як укладку</translation>
@@ -6625,6 +6637,7 @@
 <translation id="9063208415146866933">Памылка з радка <ph name="ERROR_LINE_START" /> па <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Уключыць аўтазапаўненне для ўводу даных у формы адным націскам</translation>
 <translation id="9065203028668620118">Змяніць</translation>
+<translation id="9065772380960598487">Дадаць у спіс "Чытаць пазней"</translation>
 <translation id="9066773882585798925">Слухаць чытанне тэксту ўслых</translation>
 <translation id="9066782832737749352">Сінтэз маўлення</translation>
 <translation id="9068849894565669697">Выбар колеру</translation>
@@ -6706,6 +6719,7 @@
 <translation id="9169496697824289689">Паказаць спалучэнні клавіш</translation>
 <translation id="916964310188958970">Чаму паказваецца гэта прапанова?</translation>
 <translation id="9169931577761441333">Дадайце праграму "<ph name="APP_NAME" />" на галоўны экран</translation>
+<translation id="9170061643796692986">Бягучая налада бачнасці: усе кантакты</translation>
 <translation id="9170848237812810038">&amp;Адрабіць</translation>
 <translation id="9170884462774788842">Іншая праграма на камп'ютары дадала тэму, якая можа змяніць працу Chrome.</translation>
 <translation id="917350715406657904">Скончыўся ліміт часу, зададзены вашымі бацькамі для праграмы "<ph name="APP_NAME" />". Заўтра ёю можна будзе карыстацца <ph name="TIME_LIMIT" />.</translation>

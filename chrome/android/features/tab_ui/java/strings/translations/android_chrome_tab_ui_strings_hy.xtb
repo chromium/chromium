@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
+<translation id="2277224997687551299">Փոփոխել խմբի անունը</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Հեռացնել խմբից ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը։}one{Հեռացնել խմբից ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը։}other{Հեռացնել խմբից ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը։}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
 <translation id="2569352796411618312">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վաղուց չեք օգտագործել։ Փակե՞լ դրանք։</translation>
 <translation id="257674075312929031">Խումբ</translation>
 <translation id="2613747923081026172">Ստեղծել խումբ</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">Ծավալել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Դիտել</translation>
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>
 <translation id="5082793167783849073">Արագ համեմատեք էջերը՝ խումբ կազմելով: Սկսելու համար հպեք և պահեք հղումը:</translation>
+<translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5533021382642990449">Ցույց տալ ավելի ուշ</translation>
+<translation id="5558362125926932819">Փակել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած խումբը</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ներդիր խմբավորվեց</translation>
 <translation id="58326064309361797">Քաշեք ներդիրները՝ դրանք խմբավորելու համար</translation>
+<translation id="5846292395804797011">Փակել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6510648526783655549">Փակել ներդիրների հատվածը</translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
 <translation id="6840760312327750441">Ներդիրները խմբավորելու համար հպեք ներդիրին և պահեք։ Ապա այն քաշեք մյուս ներդիրի վրա։</translation>
+<translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
 <translation id="7151209024774799310">Հեռացնել ներդիները խմբից</translation>
+<translation id="7204204600596740190">Մի քանի ներդիրի ընտրության ռեժիմ</translation>
+<translation id="753732157349120914">Ներդիրների փոխարկիչ</translation>
 <translation id="7559245342362162951">Ցուցադրել խմբի ներդիրները լիաէկրան ցանցի ռեժիմում</translation>
 <translation id="7792771145871471484">Դիտել հուշումները։</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Խմբավորել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Խմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}other{Խմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Տեղափոխել ներդիրը վերև</translation>
 <translation id="8304833501377495048">Այլևս ցույց չտա՞լ ներդիրների հատվածը։</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
+<translation id="8557923272772633250">Ծավալել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած խումբը։</translation>
 <translation id="8749939518995770034">Ներդիրների հատվածը փակված է</translation>
 <translation id="9150694013019234766">Էկրանի ներքևի հատվածում գտնվող ներդիրների խմբում կարող եք անցնել մի ներդիրից մյուսը</translation>
 <translation id="9169594135889675189">Ավելացնել նոր ներդիր խմբում</translation>

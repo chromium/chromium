@@ -2013,7 +2013,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3428747202529429621">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas iniciada a sesión</translation>
 <translation id="3428800329481094896">Obtendo claves SSH do contedor de Linux</translation>
 <translation id="3429275422858276529">Engade esta páxina aos marcadores para atopala facilmente máis tarde</translation>
-<translation id="3431370546335300761">Inicia sesión para conectarte ao proxy</translation>
 <translation id="3432227430032737297">Eliminar todos os sitios mostrados</translation>
 <translation id="3432757130254800023">Enviar audio e vídeo ás pantallas que se atopan na rede local</translation>
 <translation id="3432762828853624962">Traballadores compartidos</translation>
@@ -5250,7 +5249,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7415454883318062233">Completouse a configuración</translation>
 <translation id="7416362041876611053">Erro de rede descoñecido.</translation>
 <translation id="741906494724992817">Esta aplicación non require permisos especiais.</translation>
-<translation id="7420817660256886596">O proxy <ph name="PROXY" /> require a túa autenticación cun nome de usuario e cun contrasinal</translation>
 <translation id="742130257665691897">Quitáronse os marcadores</translation>
 <translation id="7421925624202799674">&amp;Ver fonte da páxina</translation>
 <translation id="7422192691352527311">Preferencias...</translation>
@@ -5511,7 +5509,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7737115349420013392">Vinculando co dispositivo (<ph name="DEVICE_NAME" />)...</translation>
 <translation id="7737238973539693982">Eliminar Linux (beta)</translation>
 <translation id="7740996059027112821">Estándar</translation>
-<translation id="7741721175294046818">Non se puido establecer conexión co proxy. Téntao de novo</translation>
 <translation id="774377079771918250">Escolle onde gardar o contido</translation>
 <translation id="7744047395460924128">Ver o teu historial de impresión</translation>
 <translation id="7744192722284567281">O contrasinal viuse implicado nunha violación da seguranza dos datos</translation>

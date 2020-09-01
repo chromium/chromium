@@ -107,6 +107,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2012624427112548395">Ctrl+Recherche+H</translation>
 <translation id="2016340657076538683">Saisissez un message</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
+<translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2083190527011054446">Bonsoir <ph name="GIVEN_NAME" />,</translation>
@@ -375,6 +376,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="4975771730019223894">Afficher un badge sur l'application</translation>
 <translation id="5030687792513154421">Temps écoulé</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est associé à un nouveau téléphone</translation>
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>

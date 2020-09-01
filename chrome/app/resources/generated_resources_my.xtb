@@ -743,6 +743,7 @@
 <translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
 <translation id="1856715684130786728">တည်နေရာ ထည့်ပေးရန်...</translation>
 <translation id="1858585891038687145">ဆော့ဝဲပြုလုပ်သူများ၏ အထောက်အထားအဖြစ် ဤအသိအမှတ်ပြုလက်မှတ်ကို ယုံကြည်ပါ</translation>
+<translation id="1860346308203060432">စက်ပစ္စည်းမြင်နိုင်စွမ်းကို ကြည့်ရန်</translation>
 <translation id="1861262398884155592">ဤဖိုင်တွဲတွင် မည်သည့်အရာမျှ မရှိပါ</translation>
 <translation id="1863182668524159459">အစဉ်လိုက်ပို့တ်များ မရှိပါ</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" တွင် မဲလ်ဝဲပါဝင်သည့်အတွက် ၎င်းကို ပိတ်လိုက်သည်</translation>
@@ -767,6 +768,7 @@
 <translation id="1880905663253319515">လက်မှတ် "<ph name="CERTIFICATE_NAME" />"ကို ဖျက်ရမလား?</translation>
 <translation id="1881445033931614352">လက်ကွက် အပြင်အဆင်</translation>
 <translation id="1884013283844450420">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ ချိတ်ဆက်ရန်</translation>
+<translation id="1884340228047885921">လက်ရှိ မြင်နိုင်စွမ်းဆက်တင်မှာ အချို့သော အဆက်အသွယ်များ ဖြစ်သည်</translation>
 <translation id="1884705339276589024">Linux ဒစ်ခ်ကို အရွယ်အစားပြန်ပြင်ခြင်း</translation>
 <translation id="1885106732301550621">ဒစ်ခ်နေရာ</translation>
 <translation id="1886996562706621347">ဆိုက်များအား ပရိုတိုကောများ အတွက် ပုံသေ ကိုင်တွယ်သူများ ဖြစ်လာရန် တောင်းခွင့် ပြုရန်</translation>
@@ -1103,6 +1105,7 @@
 <translation id="2307462900900812319">ကွန်ရက် ပြုပြင်ရန်</translation>
 <translation id="230927227160767054">ဤစာမျက်နှာသည် ဝန်ဆောင်မှု ကိုင်တွယ်ကိရိယာအား ထည့်သွင်းလိုသည်။</translation>
 <translation id="2309620859903500144">သင်၏လှုပ်ရှားမှု သို့မဟုတ် အလင်းရောင် အာရုံခံကိရိယာ အသုံးပြုခွင့်ကို ဤဝဘ်ဆိုက်အတွက် ပိတ်ထားပါသည်။</translation>
+<translation id="2314165183524574721">လက်ရှိ မြင်နိုင်စွမ်းဆက်တင်ကို ဝှက်ထားသည်</translation>
 <translation id="2314873619957287124">သင့်ကလေး လေ့လာခြင်း၊ ကစားခြင်းနှင့် စူးစမ်းရှာဖွေခြင်းတို့တွင် ကူညီရန် အခြေခံဒစ်ဂျစ်တယ် စည်းမျဉ်းများ သတ်မှတ်ပါ</translation>
 <translation id="2315414688463285945">Linux ဖိုင်များကို စီစဉ်သတ်မှတ်ရာတွင် အမှားအယွင်းရှိနေသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2315587498123194634">လင့်ခ်ကို <ph name="DEVICE_NAME" /> သို့ ပို့ရန်</translation>
@@ -1689,6 +1692,7 @@
 <translation id="3004391367407090544">နောက်မှ ပြန်လာပါ</translation>
 <translation id="3006881078666935414">ဒေတာအသုံးပြုမှု မရနိုင်ပါ</translation>
 <translation id="3007771295016901659">တဘ်ကို ပွားယူရန်</translation>
+<translation id="3008232374986381779">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Linux ကိရိယာ၊ တည်းဖြတ်စနစ်နှင့် IDE များဖွင့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="3009300415590184725">မိုဘိုင်းအချက်လက်ဝန်ဆောင်မှု တပ်ဆင်ခြင်းလုပ်ငန်းကို ပယ်ဖျက်ရန် သင်လိုလားပါသလား?</translation>
 <translation id="3009779501245596802">လမ်းညွှန်ထားသည့် ဒေတာဘေ့စ်များ</translation>
@@ -1830,6 +1834,7 @@
 <translation id="3183143381919926261">မိုဘိုင်းဒေတာ ကွန်ရက်များ</translation>
 <translation id="3183944777708523606">မော်နီတာ အစီအစဉ်</translation>
 <translation id="3184536091884214176">CUPS ပုံနှိပ်စက်များကို စနစ်ထည့်သွင်းပါ သို့မဟုတ် စီမံပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">ဆင်းမ်ကဒ်</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3188465121994729530">ပျမ်းမျှ ရွေ့ပေးနေ</translation>
 <translation id="3189187154924005138">ကာဆာ အကြီး</translation>
@@ -2010,7 +2015,6 @@
 <translation id="3428747202529429621">Chrome တွင် ဘေးကင်းစေပြီး သင်လက်မှတ်ထိုးဝင်သည့်အခါ အခြား Google အက်ပ်များတွင် သင့်လုံခြုံရေး ပိုကောင်းမွန်စေရန် အသုံးပြုနိုင်သည်</translation>
 <translation id="3428800329481094896">Linux ကွန်တိန်နာ ssh သော့များ ရယူနေသည်</translation>
 <translation id="3429275422858276529">နောင်တွင် အလွယ်တကူပြန်ရှာနိုင်ရန် ဤစာမျက်နှာ၏လိပ်စာကို မှတ်ထားပါ</translation>
-<translation id="3431370546335300761">ပရောက်စီသို့ ချိတ်ဆက်ရန် လက်မှတ်ထိုး ဝင်ပါ</translation>
 <translation id="3432227430032737297">ပြသထားသည်များအားလုံးကို ဖယ်ရှားရန်</translation>
 <translation id="3432757130254800023">အသံ နှင့် ဗီဒီယိုများကို ဒေသခံ ကွန်ရက်များပေါ်က မျက်နှာပြင်များသို့ ပို့ပါ</translation>
 <translation id="3432762828853624962">မျှဝေထားသော လုပ်သားများ</translation>
@@ -2451,6 +2455,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> မှာ ဟောင်းနေပါပြီ</translation>
 <translation id="3908501907586732282">တိုးချဲ့မှုကို ဖွင့်ပေးရန်</translation>
 <translation id="3909791450649380159">ဖြ&amp;တ်ရန်</translation>
+<translation id="39103738135459590">စသုံးရန် ကုဒ်</translation>
 <translation id="3911824782900911339">တဘ် စာမျက်နှာ အသစ်</translation>
 <translation id="3915280005470252504">အသံဖြင့် ရှာဖွေမှု</translation>
 <translation id="3916233823027929090">လုံခြုံရေး စစ်ဆေးမှုများ လုပ်ပြီးပြီ</translation>
@@ -2663,6 +2668,7 @@
 <translation id="4159681666905192102">၄င်းသည်  <ph name="CUSTODIAN_EMAIL" /> နှင့် <ph name="SECOND_CUSTODIAN_EMAIL" /> မှ စီမံသော ကလေးများအတွက် အကောင့်တစ်ခုဖြစ်သည်။</translation>
 <translation id="4163560723127662357">အမည်မသိ ကီးဘုတ်</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> နှင့်သက်ဆိုင်သည့် အချို့ဆက်တင်များအား သင်နှင့် မျှဝေထားသည်။ များစွာဝင်ရောက်ခြင်း အသုံးပြုနေစဉ်သာ ဤဆက်တင်များ သင့်အကောင့်ကို အကျိုးသက်ရောက်မှု ရှိသည်။</translation>
+<translation id="4170256733935344210">စက်ကင်မရာကိုသုံး၍ QR ကုဒ်ကို စကင်ဖတ်ပါ (သို့) သင်၏ ဖုန်းကုမ္ပဏီက ပေးအပ်ထားသည့် စသုံးရန်ကုဒ်ကို ထည့်ပါ</translation>
 <translation id="4170314459383239649">ထွက်လျှင် ဖယ်ရှားရန်</translation>
 <translation id="4175137578744761569">ခရမ်းဖျော့နှင့် အဖြူ</translation>
 <translation id="4175737294868205930">တည်မြဲသည့် သိုလှောင်ခန်း</translation>
@@ -2751,6 +2757,7 @@
 <translation id="4296575653627536209">ကြီးကြပ်မှုခံ အသုံးပြုသူ ထည့်ရန်</translation>
 <translation id="4297219207642690536">ပြန်လည်စတင်ပြီး ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="4297813521149011456">ဖန်သားပြင်ပြသမှု လှည့်ခြင်း</translation>
+<translation id="4299596693977045093">eSim စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="4301671483919369635">ဖိုင်များတည်းဖြတ်ရန် ဤစာမျက်နှာကို ခွင့်ပြုထားသည်</translation>
 <translation id="4303079906735388947">သင့်လုံခြုံရေးကီးအတွက် ပင်နံပါတ်အသစ် ထည့်သွင်းပါ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> သို့ မိတ္တူကူးခြင်း</translation>
@@ -3465,6 +3472,7 @@
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
 <translation id="52232769093306234">ထုပ်ပိုးခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="5225324770654022472">အက်ပ်များ၏ ဖြတ်လမ်းကို ပြပေးရန်</translation>
+<translation id="52254442782792731">လက်ရှိမြင်နိုင်စွမ်းဆက်တင်ကို မသတ်မှတ်ရသေးပါ</translation>
 <translation id="5227679487546032910">မူရင်းရေစစ္စလီငှက်ချန်နယ်ပုံ</translation>
 <translation id="5228088094491423618">တိုက်ရိုက်စာတန်း</translation>
 <translation id="5228579091201413441">စင့်က် ဖွင့်ထားရန်</translation>
@@ -4061,6 +4069,7 @@
 <translation id="5941153596444580863">လူကို ထည့်ရန်...</translation>
 <translation id="5941343993301164315">ကျေးဇူးပြု၍ <ph name="TOKEN_NAME" /> သို့ ၐင်ရောက်ပါ။</translation>
 <translation id="5941711191222866238">အနည်းဆုံး လုပ်ရန်</translation>
+<translation id="5942779427914696408">စက်ကို မြင်နိုင်စွမ်း</translation>
 <translation id="5942964813783878922">ဤအပ်ဒိတ်ပြီးသွားလျှင် သင့် <ph name="DEVICE_TYPE" /> ပြန်လည်စတင်ပါမည်။ အနာဂတ် ဆော့ဖ်ဝဲနှင့် လုံခြုံရေးအပ်ဒိတ်များကို အလိုအလျောက် ထည့်သွင်းသွားပါမည်။</translation>
 <translation id="5944869793365969636">QR ကုဒ်ကို စကင်ဖတ်ခြင်း</translation>
 <translation id="5946591249682680882">ID အစီရင်ခံရန် <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4233,6 +4242,7 @@
 <translation id="6148576794665275391">ယခုဖွင့်ရန်</translation>
 <translation id="6149015141270619212">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ</translation>
 <translation id="614940544461990577">စမ်းကြည့်ပါ −</translation>
+<translation id="6150278227694566734">အဆက်အသွယ် အချို့</translation>
 <translation id="6150961653851236686">စာမျက်နှာများ ပြန်ဆိုသည့်အခါ ဤဘာသာစကားကို အသုံးပြုသည်</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> ကိုရှာရန် <ph name="SEARCH_KEY" /> ကိုနှိပ်ပါ</translation>
 <translation id="6151771661215463137">ဖိုင်သည် သင်၏ဒေါင်းလုဒ်အကန့်တွင် ရှိနှင့်ပြီးသား ဖြစ်ပါသည်။</translation>
@@ -5079,6 +5089,7 @@
 <translation id="7210499381659830293">နောက်ဆက်တွဲ ပရင်တာများ</translation>
 <translation id="7211890396916697230">eSIM စနစ်ထည့်သွင်းရန်</translation>
 <translation id="7212097698621322584">သင်၏ လက်ရှိပင်နံပါတ် ပြောင်းရန် ၎င်းကိုထည့်ပါ။ သင်၏ ပင်နံပါတ်ကို မသိလျှင် သင့်လုံခြုံရေးကီးကို ပြင်ဆင်သတ်မှတ်ပြီး ပင်နံပါတ်အသစ် ပြုလုပ်ပါ။</translation>
+<translation id="7213903639823314449">လိပ်စာဘားတွင် အသုံးပြုသည့် ရှာဖွေရေးအင်ဂျင်</translation>
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7216595297012131718">ဘာသာစကားများကို သင့်စိတ်ကြိုက် စီပါ</translation>
 <translation id="7220019174139618249">"<ph name="FOLDER" />" သို့ စကားဝှက်ကို မတင်ပို့နိုင်ပါ</translation>
@@ -5237,7 +5248,6 @@
 <translation id="7415454883318062233">စနစ်ထည့်သွင်းခြင်း ပြီးပါပြီ</translation>
 <translation id="7416362041876611053">အမည်မသိ ကွန်ရက် မှားယွင်းမှု။</translation>
 <translation id="741906494724992817">ဤ အက်ပ် သည် မည်သည့် အထူးခွင့်ပြုချက်များမှ မလိုအပ်ပါ။</translation>
-<translation id="7420817660256886596">ဤပရောက်စီ <ph name="PROXY" /> က သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို အတည်ပြုပေးရန်လိုသည်</translation>
 <translation id="742130257665691897">ဝဘ်လိပ်စာကို ဖယ်ရှားပြီးပါပြီ</translation>
 <translation id="7421925624202799674">&amp;စာမျက်နှာ အရင်းမြစ်အား ကြည့်ရန်</translation>
 <translation id="7422192691352527311">ဦးစားပေးမှုများ...</translation>
@@ -5498,7 +5508,6 @@
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" နှင့် တွဲချိတ်နေသည် ...</translation>
 <translation id="7737238973539693982">Linux (စမ်းသပ်ဆော့ဖ်ဝဲ) ကို ဖျက်ခြင်း</translation>
 <translation id="7740996059027112821">ပုံမှန်</translation>
-<translation id="7741721175294046818">ဤပရောက်စီသို့ ချိတ်ဆက်၍မရသောကြောင့် ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="774377079771918250">သိမ်းမည့်နေရာ ရွေးပါ</translation>
 <translation id="7744047395460924128">သင်၏ပုံနှိပ်မှတ်တမ်းကို ကြည့်ပါ</translation>
 <translation id="7744192722284567281">ဒေတာကျိုးပေါက်မှုတွင် တွေ့ထားသည်</translation>
@@ -6168,6 +6177,7 @@
 <translation id="8539766201049804895">အဆင့်မြှင့်ရန်</translation>
 <translation id="8540136935098276800">မှန်ကန်စွာ ဖော်မက်ချထားသည့် URL ကို ထည့်ပါ</translation>
 <translation id="8540608333167683902">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
+<translation id="854071720451629801">ဖတ်ပြီးအဖြစ် မှတ်သားရန်</translation>
 <translation id="8541462173655894684">ပုံနှိပ်စက်ဆာဗာတွင် မည်သည့်ပုံနှိပ်စက်မျှ မတွေ့ပါ</translation>
 <translation id="8542618328173222274">ဝဘ်ဆိုက်က သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို အသုံးပြုလိုသည့်အခါ မေးမြန်းရန်</translation>
 <translation id="8543556556237226809">မေးစရာများ ရှိပါသလား။ သင်၏ ပရိုဖိုင်ကို ကြီးကြပ်သူထံ ဆက်သွယ်ပါ။</translation>
@@ -6442,6 +6452,7 @@
 <translation id="8846141544112579928">ကီးဘုတ် အတွက် ရှာနေ...</translation>
 <translation id="8847523528195140327">အဖုံးပိတ်လိုက်သည့်အခါ ထွက်ရန်</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">ဖျောက်ထားသည်</translation>
 <translation id="8850251000316748990">ပိုမို ကြည့်ရှုရန်...</translation>
 <translation id="885246833287407341">API လုပ်ဆောင်ချက် အကြောင်းပြချက်များ</translation>
 <translation id="8853586775156634952">ဤကတ်ကို ယခုစက်တစ်ခုတွင်သာ သိမ်းပါမည်</translation>
@@ -6467,6 +6478,7 @@
 <translation id="8872777911145321141">သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို ဝဘ်ဆိုက်က အသုံးပြုလိုသည့်အခါ မေးမြန်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="8874184842967597500">ချိတ်ဆက် မထား</translation>
 <translation id="8875520811099717934">Linux အဆင့်မြှင့်ရန်</translation>
+<translation id="8875736897340638404">သင်၏မြင်နိုင်စွမ်းကို ရွေးရန်</translation>
 <translation id="8876307312329369159">အစမ်းသုံးချိန်အတွင်း ဤဆက်တင်ကို ပြောင်း၍မရနိုင်ပါ။</translation>
 <translation id="8877448029301136595">[မိဘ ဒါရိုက်ထရီ]</translation>
 <translation id="8879284080359814990">&amp;တဘ် အဖြစ် ပြရန်</translation>
@@ -6623,6 +6635,7 @@
 <translation id="9063208415146866933">စာကြောင်း <ph name="ERROR_LINE_START" /> မှ <ph name="ERROR_LINE_END" /> အထိ အမှားအယွင်း ရှိနေသည်</translation>
 <translation id="9064275926664971810">ဖောင်များကို တစ်ချက်နှိပ်ရုံဖြင့် ဖြည့်စွက်နိုင်ရန် အလိုအလျောက်ဖြည့်စွက်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
+<translation id="9065772380960598487">'နောက်မှဖတ်ရန်' သို့ ထည့်ရန်</translation>
 <translation id="9066773882585798925">စာသားကို အသံထွက်ဖတ်ပေးပါမည်</translation>
 <translation id="9066782832737749352">စာသားမှ-စကားပြောအဖြစ်သို့</translation>
 <translation id="9068849894565669697">အရောင်ကို ရွေးရန်</translation>
@@ -6704,6 +6717,7 @@
 <translation id="9169496697824289689">ကီးဘုတ် ဖြတ်လမ်းများကို ကြည့်ရန်</translation>
 <translation id="916964310188958970">ဘာကြောင့် ဤအကြံပြုချက် ပေးပါသလဲ။</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ကို ပင်မစာမျက်နှာသို့ ထည့်ရန်</translation>
+<translation id="9170061643796692986">လက်ရှိ မြင်နိုင်စွမ်းဆက်တင်မှာ အဆက်အသွယ်အားလုံး ဖြစ်သည်</translation>
 <translation id="9170848237812810038">&amp;တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="9170884462774788842">Chrome အလုပ်လုပ်ပုံပေါင်းလဲသွားစေမည့် အရောင်အဖွဲ့ တစ်ခုကို သင့်ကွန်ပျူတာရှိ အခြား ပရိုဂရမ်မှ ပေါင်းထည့်ခဲ့သည်။</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> အတွက် သင့်မိဘသတ်မှတ်ထားသော အချိန်ကန့်သတ်ချက် ပြည့်သွားပြီ။ မနက်ဖြန်တွင် ၎င်းကို <ph name="TIME_LIMIT" /> ကြာ အသုံးပြုနိုင်သည်။</translation>

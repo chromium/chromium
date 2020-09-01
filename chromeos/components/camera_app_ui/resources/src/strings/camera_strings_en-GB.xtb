@@ -51,6 +51,9 @@
 <translation id="6233780560267770709">3 by 3</translation>
 <translation id="6243827288366940320">Golden ratio</translation>
 <translation id="6248749904681914629">External camera</translation>
+<translation id="6353688143752491039">Thanks for giving feedback on the Camera app.
+
+If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="6681668084120808868">Take photo</translation>
 <translation id="6778482348691154169">Unable to take photo</translation>

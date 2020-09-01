@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
 <translation id="1975584088563498795">அஞ்சல் பெட்டி 10</translation>
 <translation id="1978555033938440688">நிலைப்பொருளின் பதிப்பு</translation>
+<translation id="1988881251331415125">எழுத்துப்பிழை இல்லையெனில் <ph name="BEGIN_LINK" />இணைப்புநிலை சரிபார்ப்பை இயக்கிப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">குக்கீகளையும் தளத்தின் தரவையும் அணுக விரும்புகிறது.
 
@@ -306,6 +307,7 @@
 <translation id="2154054054215849342">உங்கள் டொமைனுக்கு ஒத்திசைத்தல் சேவை முடக்கப்பட்டுள்ளது</translation>
 <translation id="2154484045852737596">கார்டைத் திருத்தவும்</translation>
 <translation id="2161656808144014275">உரை</translation>
+<translation id="2164510882479075877"><ph name="HOST_NAME" /> என்பதில் எழுத்துப்பிழை உள்ளதா எனப் பார்க்கவும்.</translation>
 <translation id="2166049586286450108">முழு நிர்வாகி அணுகல்</translation>
 <translation id="2166378884831602661">இந்தத் தளத்தால் பாதுகாப்பான இணைப்பை வழங்க முடியவில்லை</translation>
 <translation id="2169984857010174799">Kaku2 (என்வலப்)</translation>
@@ -1657,7 +1659,6 @@
 <translation id="7791011319128895129">வெளியிடப்படவில்லை</translation>
 <translation id="7791196057686275387">பேல்</translation>
 <translation id="7791543448312431591">சேர்</translation>
-<translation id="7792318290931435557">ஒரு பக்கப்பார்வை</translation>
 <translation id="7798389633136518089">கிளவுட் ஆதாரம் மூலம் அமைக்கப்படாததால் கொள்கை புறக்கணிக்கப்பட்டது.</translation>
 <translation id="7800304661137206267">செய்தி அங்கீகரிப்பிற்காக, <ph name="KX" /> ஐ விசைப் பரிமாற்ற செயல்முறையாகக் கொண்டு, <ph name="MAC" /> உடன் <ph name="CIPHER" /> ஐப் பயன்படுத்தி இணைப்பானது என்க்ரிப்ட் செய்யப்பட்டது.</translation>
 <translation id="7802523362929240268">தளமானது சட்டப்பூர்வமானது</translation>
@@ -1680,6 +1681,7 @@
 <translation id="7887683347370398519">CVCஐச் சோதித்து, மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="7887885240995164102">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறைக்கு செல்</translation>
 <translation id="7888575728750733395">அச்சு ரென்டரிங் இன்டென்ட்</translation>
+<translation id="7894280532028510793">எழுத்துப்பிழை இல்லையெனில் <ph name="BEGIN_LINK" />நெட்வொர்க் சரிபார்ப்பை இயக்கிப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (என்வலப்)</translation>
 <translation id="7932579305932748336">கோட்</translation>
 <translation id="79338296614623784">சரியான ஃபோன் எண்ணை உள்ளிடவும்</translation>
@@ -1826,6 +1828,7 @@
 <translation id="8508648098325802031">தேடல் ஐகான்</translation>
 <translation id="8522552481199248698">உங்கள் Google கணக்கைப் பாதுகாக்கவும் கடவுச்சொல்லை மாற்றவும் Chrome உதவும்.</translation>
 <translation id="8530813470445476232">Chrome அமைப்புகளில் உலாவல் வரலாறு, குக்கீகள் தற்காலிக சேமிப்பு ஆகியவற்றை அழி</translation>
+<translation id="8533619373899488139">தடைசெய்யப்பட்ட URLகளின் பட்டியலையும் உங்கள் சிஸ்டம் நிர்வாகி செயல்படுத்தியுள்ள பிற கொள்கைகளையும் பார்க்க &lt;strong&gt;chrome://policy&lt;/strong&gt; என்பதற்குச் செல்லவும்.</translation>
 <translation id="8541158209346794904">புளூடூத் சாதனம்</translation>
 <translation id="8542014550340843547">டிரிப்பில் ஸ்டேப்பில் பாட்டம்</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />கண்டறிவதில் சிக்கல் இருப்பதைப் புகாரளிக்கலாம்<ph name="END_ERROR_LINK" /> அல்லது உங்கள் பாதுகாப்பிற்கு ஏற்படக்கூடிய ஆபத்துகளைப் புரிந்துகொண்டிருந்தால், <ph name="BEGIN_LINK" />இந்தப் பாதுகாப்பற்ற தளத்திற்குச் செல்லலாம்<ph name="END_LINK" />.</translation>
@@ -1885,6 +1888,7 @@
 <translation id="884923133447025588">திரும்பப்பெறுதல் செயல்முறை காணப்படவில்லை.</translation>
 <translation id="885730110891505394">Google உடன் பகிர்பவை</translation>
 <translation id="8858065207712248076">பிற தளங்களில் உங்கள் <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> கடவுச்சொல்லை மீண்டும் பயன்படுத்தினால், அதை மீட்டமைக்கும்படி Chrome பரிந்துரைக்கிறது.</translation>
+<translation id="885906927438988819">எழுத்துப்பிழை இல்லையெனில் <ph name="BEGIN_LINK" />Windows நெட்வொர்க் சரிபார்ப்பை இயக்கிப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">கொள்கை அமைப்புகளை அலசுவதில் பிழை</translation>
 <translation id="8866928039507595380">ஃபோல்டு</translation>
 <translation id="886872106311861689">B3</translation>

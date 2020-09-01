@@ -3,6 +3,7 @@
 <translationbundle lang="ms">
 <translation id="1282031177488366470">Bantu Tingkatkan Ciri dan Prestasi Chrome</translation>
 <translation id="1479202195792305274">Chrome boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
+<translation id="1504372625950710826">Chrome tidak dapat menyemak kemas kini. Cuba periksa sambungan internet anda.</translation>
 <translation id="1682483655351012182">Segerakkan Data Chrome Anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chrome dan apl Google yang lain pada peranti ini.</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chrome, log masuk ke semua peranti anda</translation>
 <translation id="2576431527583832481">Chrome telah dipertingkatkan! Versi baharu kini boleh didapati.</translation>
 <translation id="257708665678654955">Adakah anda ingin Google Chrome menawarkan halaman <ph name="LANGUAGE_NAME" /> dari tapak ini diterjemahkan pada masa akan datang?</translation>
+<translation id="2695886661449553974">Chrome tidak dapat menyemak kemas kini. Cuba lagi nanti.</translation>
 <translation id="2732745070297234559">Chrome tidak dapat menyemak semua kata laluan. Cuba lagi esok.</translation>
 <translation id="2919738076569633423">Dengan menggunakan Chrome, anda bersetuju untuk menerima <ph name="BEGIN_LINK_TOS" />Syarat Perkhidmatan<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Akaun Google anda.</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">Google Chrome tidak mempunyai akses ke foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
 <translation id="4099578267706723511">Bantu jadikan Chrome lebih baik dengan menghantar laporan perangkaan penggunaan dan ranap sistem kepada Google.</translation>
 <translation id="415767770115540173">Dapatkan pengalaman yang lebih baik dalam Chrome berdasarkan lokasi anda.</translation>
+<translation id="417201473131094001">Tidak disokong pada Chrome Canary</translation>
 <translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4249068189593983585">Petua Chrome. Untuk melihat lebih banyak pilihan tab, sentuh &amp; tahan butang Tunjukkan Tab dalam bar alat, yang terletak di bahagian bawah atau atas skrin anda.</translation>
 <translation id="4523886039239821078">Beberapa tambahan menyebabkan Chrome ranap. Sila nyahpasang:</translation>
+<translation id="4633328489441962921">Chrome tidak dapat menyemak kemas kini</translation>
 <translation id="4698415050768537821">Chrome tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda.<ph name="END_LINK" /></translation>
+<translation id="484033449593719797">Tidak disokong pada Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, tapak web yang tidak selamat dan pelbagai lagi.</translation>
+<translation id="5162467219239570114">Chrome sudah lapuk. Jika tiada kemas kini tersedia dalam <ph name="BEGIN_LINK" />Gedung Apl<ph name="END_LINK" />, mungkin peranti anda sudah tidak menyokong versi baharu Chrome lagi.</translation>
 <translation id="5389212809648216794">Google Chrome tidak dapat menggunakan kamera anda kerana kamera sedang digunakan oleh aplikasi lain</translation>
 <translation id="5639704535586432836">Buka Tetapan &gt; Privasi &gt; Kamera &gt; Google Chrome dan hidupkan kamera.</translation>
 <translation id="5642200033778930880">Google Chrome tidak dapat menggunakan kamera anda dalam mod Paparan Pisah</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">Luar Talian, Chrome tidak dapat menyemak kemas kini</translation>
 <translation id="5854621639439811139">Petua Chrome. Sesetengah butang kini terletak di bahagian bawah skrin anda, seperti Kembali, Ke Hadapan dan Carian.</translation>
 <translation id="6036420186814142909">Google Chrome mempunyai ciri-ciri yang membantu anda mengurus data internet anda dan berapa cepat anda mampu memuatkan halaman web.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         2. Ketik Apl Penyemak Imbas Lalai.
         3. Pilih Chrome.</translation>
 <translation id="6822673484890854830">Chrome tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
+<translation id="7161390184744336561">Google Chrome sudah lapuk</translation>
 <translation id="7165736900384873061">Mula menggunakan pengimbas QR Google Chrome</translation>
 <translation id="7172660552945675509">Petua: <ph name="BEGIN_LINK" />Alihkan Chrome ke dok anda<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome menggunakan ID Wajah untuk memastikan akses yang dibenarkan kepada kata laluan anda.</translation>
@@ -65,6 +73,7 @@
 <translation id="766361182512894255">Kata laluan anda terdedah dalam suatu pelanggaran data. Chrome mengesyorkan supaya kata laluan ditukar sekarang.</translation>
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera Anda</translation>
 <translation id="7855730255114109580">Google Chrome adalah yang terkini</translation>
+<translation id="8160472928944011082">Chrome tidak dapat mengemas kini</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
 <translation id="840168496893712993">Beberapa tambahan menyebabkan Chrome ranap. Sila cuba menyahpasang tambahan tersebut.</translation>
 <translation id="8459495907675268833">Data yang dipilih telah dialih keluar daripada Chrome dan peranti yang disegerakkan. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain seperti carian dan aktiviti daripada perkhidmatan Google yang lain di history.google.com.</translation>

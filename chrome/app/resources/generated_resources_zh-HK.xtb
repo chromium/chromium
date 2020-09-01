@@ -742,7 +742,7 @@
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置…</translation>
 <translation id="1858585891038687145">信任這個用於識別軟件製造商的憑證</translation>
-<translation id="1860346308203060432">查看裝置瀏覽權限</translation>
+<translation id="1860346308203060432">查看裝置分享設定</translation>
 <translation id="1861262398884155592">此資料夾中沒有內容</translation>
 <translation id="1863182668524159459">找不到序列連接埠</translation>
 <translation id="1863316578636157783">由於「<ph name="EXTENSION_NAME" />」含有惡意軟件，因此已被停用</translation>
@@ -767,7 +767,7 @@
 <translation id="1880905663253319515">要刪除憑證「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="1881445033931614352">鍵盤版面配置</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，連接</translation>
-<translation id="1884340228047885921">目前的瀏覽權限設定是部分聯絡人</translation>
+<translation id="1884340228047885921">目前嘅分享設定係部分聯絡人</translation>
 <translation id="1884705339276589024">調整 Linux 磁碟大小</translation>
 <translation id="1885106732301550621">磁碟空間</translation>
 <translation id="1886996562706621347">允許網站要求成為通訊協定的預設處理常式 (建議)</translation>
@@ -1104,7 +1104,7 @@
 <translation id="2307462900900812319">設定網絡</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">系統已封鎖此網站存取您的動作或光線感應器。</translation>
-<translation id="2314165183524574721">目前的瀏覽權限設定是隱藏</translation>
+<translation id="2314165183524574721">目前嘅分享設定係隱藏</translation>
 <translation id="2314873619957287124">設定數碼裝置基本使用規則，協助子女學習、遊玩和探索</translation>
 <translation id="2315414688463285945">設定 Linux 檔案時發生錯誤，請再試一次。</translation>
 <translation id="2315587498123194634">傳送連結至 <ph name="DEVICE_NAME" /></translation>
@@ -1690,7 +1690,7 @@
 <translation id="3004391367407090544">請稍後再返回查看</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="3007771295016901659">複製標籤</translation>
-<translation id="3008232374986381779">在 <ph name="DEVICE_TYPE" /> 上執行 Linux 工具、編輯器和 IDE。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上執行 Linux 工具、編輯器和整合開發環境 (IDE)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="3009300415590184725">您確定要取消流動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引數據庫</translation>
@@ -2013,7 +2013,6 @@
 <translation id="3428747202529429621">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
 <translation id="3428800329481094896">正在擷取 Linux 容器 SSH 密鑰</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
-<translation id="3431370546335300761">請登入帳戶以連線至 Proxy</translation>
 <translation id="3432227430032737297">移除所有顯示項目</translation>
 <translation id="3432757130254800023">傳送要在區域網絡顯示的音效檔案和影片</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -2454,7 +2453,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> 版本過舊</translation>
 <translation id="3908501907586732282">啟用擴充功能</translation>
 <translation id="3909791450649380159">剪下(&amp;T)</translation>
-<translation id="39103738135459590">啟用代碼</translation>
+<translation id="39103738135459590">啟動碼</translation>
 <translation id="3911824782900911339">新分頁</translation>
 <translation id="3915280005470252504">語音搜尋</translation>
 <translation id="3916233823027929090">已完成安全檢查</translation>
@@ -2668,7 +2667,7 @@
 <translation id="4159681666905192102">這是一個兒童帳戶 (由 <ph name="CUSTODIAN_EMAIL" /> 和 <ph name="SECOND_CUSTODIAN_EMAIL" /> 管理)。</translation>
 <translation id="4163560723127662357">未知的鍵盤</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> 的部分設定已與您共用。不過只有使用多重登入時，這些設定才會影響您的帳戶。</translation>
-<translation id="4170256733935344210">請使用裝置相機掃描 QR 圖碼，或輸入電信業者提供的啟用代碼</translation>
+<translation id="4170256733935344210">請使用裝置相機掃瞄二維條碼，或輸入流動網絡供應商提供的啟動碼</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="4175137578744761569">淺紫色和白色</translation>
 <translation id="4175737294868205930">永久儲存空間</translation>
@@ -3472,7 +3471,7 @@
 <translation id="5222676887888702881">登出</translation>
 <translation id="52232769093306234">無法封裝。</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
-<translation id="52254442782792731">目前的瀏覽權限設定是尚未設定</translation>
+<translation id="52254442782792731">目前嘅分享設定仲未設定</translation>
 <translation id="5227679487546032910">預設藍綠色圖片</translation>
 <translation id="5228088094491423618">即時字幕</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
@@ -4070,7 +4069,7 @@
 <translation id="5941153596444580863">新增使用者…</translation>
 <translation id="5941343993301164315">請登入 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
-<translation id="5942779427914696408">裝置瀏覽權限</translation>
+<translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5942964813783878922">完成更新後，您的 <ph name="DEVICE_TYPE" /> 將會重新啟動。日後的軟件及安全性更新將會自動安裝。</translation>
 <translation id="5944869793365969636">掃瞄二維條碼</translation>
 <translation id="5946591249682680882">報告 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -5250,7 +5249,6 @@
 <translation id="7415454883318062233">設定完成</translation>
 <translation id="7416362041876611053">不明的網絡錯誤</translation>
 <translation id="741906494724992817">這個應用程式不需要任何特殊權限。</translation>
-<translation id="7420817660256886596">Proxy <ph name="PROXY" /> 要求您透過使用者名稱和密碼進行驗證</translation>
 <translation id="742130257665691897">移除咗書籤</translation>
 <translation id="7421925624202799674">檢視網頁原始碼(&amp;V)</translation>
 <translation id="7422192691352527311">偏好設定…</translation>
@@ -5511,7 +5509,6 @@
 <translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
 <translation id="7737238973539693982">刪除 Linux (Beta 版本)</translation>
 <translation id="7740996059027112821">標準</translation>
-<translation id="7741721175294046818">無法連線至 Proxy，請再試一次</translation>
 <translation id="774377079771918250">選擇新的儲存位置</translation>
 <translation id="7744047395460924128">查看您的列印記錄</translation>
 <translation id="7744192722284567281">發生資料外洩事件</translation>
@@ -6181,7 +6178,7 @@
 <translation id="8539766201049804895">升級</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳情</translation>
-<translation id="854071720451629801">標示為已讀取</translation>
+<translation id="854071720451629801">標示為已讀</translation>
 <translation id="8541462173655894684">在列印伺服器中找不到任何打印機</translation>
 <translation id="8542618328173222274">在網站要求使用您的虛擬實境裝置和資料時詢問您</translation>
 <translation id="8543556556237226809">有問題嗎？請與您個人資料的監管者聯絡。</translation>
@@ -6482,7 +6479,7 @@
 <translation id="8872777911145321141">在網站要求使用您的虛擬實境裝置和資料時詢問您 (建議)</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8875520811099717934">Linux 升級</translation>
-<translation id="8875736897340638404">選擇瀏覽權限</translation>
+<translation id="8875736897340638404">選擇分享設定</translation>
 <translation id="8876307312329369159">此設定無法在示範工作階段中變更。</translation>
 <translation id="8877448029301136595">[上層目錄]</translation>
 <translation id="8879284080359814990">以分頁顯示(&amp;S)</translation>
@@ -6721,7 +6718,7 @@
 <translation id="9169496697824289689">查看鍵盤快速鍵</translation>
 <translation id="916964310188958970">為什麼會顯示此建議？</translation>
 <translation id="9169931577761441333">將「<ph name="APP_NAME" />」新增至主畫面</translation>
-<translation id="9170061643796692986">目前的瀏覽權限設定是所有聯絡人</translation>
+<translation id="9170061643796692986">目前嘅分享設定係所有聯絡人</translation>
 <translation id="9170848237812810038">復原(&amp;U)</translation>
 <translation id="9170884462774788842">電腦中其他程式所新增的主題可能會變更 Chrome 的工作方式。</translation>
 <translation id="917350715406657904">您已達到家長為 <ph name="APP_NAME" /> 設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>

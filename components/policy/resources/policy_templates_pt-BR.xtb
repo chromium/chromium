@@ -1530,7 +1530,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
         * 4, o firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" /> será atualizado após a inscrição e antes de o usuário fazer login.
 
-      Deixar a política sem definição fará com que as atualizações de firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" /> não fiquem disponíveis.</translation>
+      Deixar a política sem definição tornará indisponíveis as atualizações de firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
 <translation id="3236046242843493070">Padrões de URL para permitir instalação de extensões, aplicativos e scripts do usuário a partir de</translation>
 <translation id="3240609035816615922">Política de acesso à configuração de impressoras.</translation>
 <translation id="324062325008698789">Configura uma lista de impressoras</translation>

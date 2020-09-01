@@ -1514,11 +1514,11 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH" />: se viene impostato su <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH_TRUE" />, gli utenti possono attivare il flusso della funzione Powerwash per l'installazione di un aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
-      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (disponibile a partire dalla versione 68 di <ph name="PRODUCT_NAME" />): se viene impostato su <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" />, gli utenti possono richiamare il flusso di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> che conserva lo stato a livello di dispositivo, inclusa la registrazione aziendale, ma che comporta la perdita dei dati utente.
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (disponibile a partire da <ph name="PRODUCT_NAME" /> 68): se viene impostato su <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" />, gli utenti possono richiamare il flusso di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> che conserva lo stato a livello di dispositivo, inclusa la registrazione aziendale, ma che comporta la perdita dei dati utente.
 
-      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (disponibile a partire dalla versione 75 di <ph name="PRODUCT_NAME" />): consente di controllare in che modo gli aggiornamenti automatici del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> vengono applicati per contrastare la vulnerabilità del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />. Tutti i flussi conservano lo stato del dispositivo locale. Se il criterio viene impostato su:
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (disponibile a partire da <ph name="PRODUCT_NAME" /> 75): consente di controllare in che modo gli aggiornamenti automatici del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> vengono applicati per contrastare la vulnerabilità del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />. Tutti i flussi conservano lo stato del dispositivo locale. Se il criterio viene impostato su:
 
-        * 1 o se non viene configurato, gli aggiornamenti del firmware<ph name="TPM_FIRMWARE_UPDATE_TPM" /> non vengono applicati.
+        * 1 o se non viene configurato, gli aggiornamenti del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> non vengono applicati.
 
         * 2, il firware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> viene aggiornato al riavvio successivo, in seguito alla conferma dell'aggiornamento da parte dell'utente.
 
@@ -1647,6 +1647,7 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
 <translation id="3412937883532015092">Se per il criterio viene impostato un numero, <ph name="PRODUCT_NAME" /> mostra un messaggio relativo al numero di millisecondi impostato, quindi apre un browser alternativo.
 
       Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL definito, l'URL viene aperto subito in un browser alternativo.</translation>
+<translation id="3415954062311826850">Il criterio non è supportato in Arc.</translation>
 <translation id="34160070798637152">Consente di controllare la configurazione di rete a livello di dispositivo.</translation>
 <translation id="3417130629744653218">Consenti ai siti web di chiedere se esistono metodi di pagamento disponibili</translation>
 <translation id="3417418267404583991">Se questa norma viene impostata su true o non viene configurata, in <ph name="PRODUCT_OS_NAME" /> verranno attivati gli accessi come ospite. Gli accessi come ospite sono sessioni utente anonime che non richiedono password.
@@ -1740,7 +1741,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="350443680860256679">Configura ARC</translation>
 <translation id="350797926066071931">Abilita traduzione</translation>
 <translation id="3508047333410537654">Attiva l'audio in formato mono sulla schermata di accesso</translation>
-<translation id="3509819648242653622">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL proibiti. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. Un pattern URL deve essere nel formato indicato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+<translation id="3509819648242653622">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL proibiti. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
 
       A partire da <ph name="PRODUCT_NAME" /> 73, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
 
@@ -1967,6 +1968,13 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3870300103958000506">A meno che <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> venga impostato su false, se <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> viene impostato su 1 o se non viene configurato, gli annunci sono consentiti su tutti i siti.
 
       Se il criterio viene impostato su 2, gli annunci sono bloccati sui siti con annunci invasivi.</translation>
+<translation id="387226665655554104">Il criterio controlla un elenco di modalità di sblocco rapido che gli utenti possono configurare e utilizzare per sbloccare la schermata di blocco.
+
+          Questo valore è un elenco di stringhe; voci di elenco valide sono "tutte", "PIN" "IMPRONTA". Aggiungendo "tutte" all'elenco, ogni modalità di sblocco rapido è disponibile per l'utente, comprese quelle che verranno implementate in futuro. In caso contrario, solo le modalità di sblocco rapido presenti nell'elenco saranno disponibili.
+
+          Ad esempio, per consentire tutte le modalità di sblocco rapido utilizza ["tutte"]. Per consentire solo lo sblocco tramite PIN, utilizza ["PIN"]. Per consentire PIN e impronta, utilizza ["PIN", "IMPRONTA"].
+
+          Se il criterio non è impostato o è impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti</translation>
 <translation id="3877517141460819966">Modalità di autenticazione a due fattori integrata</translation>
 <translation id="3879196885908353077">Verifica eventuali violazioni delle regole relative alla protezione dei dati sensibili dei download</translation>
 <translation id="3879208481373875102">Configura l'elenco delle app web con installazione forzata</translation>
@@ -2794,7 +2802,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5152787786897382519">Chromium e Google Chrome hanno alcuni gruppi di criteri che dipendono gli uni dagli altri per fornire il controllo di una funzionalità. Questi insiemi sono rappresentati dai seguenti gruppi di criteri. Dato che i criteri possono avere diverse origini, vengono applicati soltanto i valori provenienti dall'origine con la priorità massima. I valori dello stesso gruppo provenienti da un'origine con priorità inferiore vengono ignorati. L'ordine di priorità è definito in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Questo criterio è obsoleto. Usa il criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />".
 
-      La configurazione del criterio consente di impedire il caricamento delle pagine web con URL proibiti. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. Un pattern URL deve essere nel formato indicato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+      La configurazione del criterio consente di impedire il caricamento delle pagine web con URL proibiti. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
 
       A partire da <ph name="PRODUCT_NAME" /> 73, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
 
@@ -3249,6 +3257,15 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="5628811596950455942">Il criterio controlla un elenco di modalità di sblocco rapido che gli utenti possono configurare e utilizzare per sbloccare la schermata di blocco.
+
+          Questo valore è un elenco di stringhe; voci di elenco valide sono "tutte", "PIN" "IMPRONTA". Aggiungendo "tutte" all'elenco, ogni modalità di sblocco rapido è disponibile per l'utente, comprese quelle che verranno implementate in futuro. In caso contrario, solo le modalità di sblocco rapido presenti nell'elenco saranno disponibili.
+
+          Ad esempio, per consentire tutte le modalità di sblocco rapido utilizza ["tutte"]. Per consentire solo lo sblocco tramite PIN, utilizza ["PIN"]. Per consentire PIN e impronta, utilizza ["PIN", "IMPRONTA"].
+
+          Se il criterio non è impostato o è impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti
+
+          Questa norma è deprecata, utilizzare <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />=</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>
 <translation id="5641279111657132737">Questo criterio è deprecato. Usa il criterio "<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />".

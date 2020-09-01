@@ -16,7 +16,7 @@
 <translation id="2759453070259087442">Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sbalit <ph name="TABS_COUNT_ONE" /> kartu.}few{Sbalit <ph name="TITLE_OF_GROUP" /> skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami.}many{Sbalit <ph name="TITLE_OF_GROUP" /> skupinu karet s <ph name="TABS_COUNT_MANY" /> karty.}other{Sbalit <ph name="TITLE_OF_GROUP" /> skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sbalit <ph name="TABS_COUNT_ONE" /> kartu.}few{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami.}many{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty.}other{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="4133493477912226187">Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>

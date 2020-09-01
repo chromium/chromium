@@ -2014,7 +2014,6 @@
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3428800329481094896">Linux コンテナの SSH 認証鍵を取得しています</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
-<translation id="3431370546335300761">プロキシに接続するにはログインしてください</translation>
 <translation id="3432227430032737297">表示中のサイトをすべて削除</translation>
 <translation id="3432757130254800023">映像と音声をローカル ネットワーク経由でディスプレイに送信する</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
@@ -5251,7 +5250,6 @@
 <translation id="7415454883318062233">設定完了</translation>
 <translation id="7416362041876611053">不明なネットワーク エラーが発生しました。</translation>
 <translation id="741906494724992817">このアプリの使用に特別な権限は必要ありません。</translation>
-<translation id="7420817660256886596">プロキシ <ph name="PROXY" /> に接続するには、ユーザー名とパスワードの認証が必要です</translation>
 <translation id="742130257665691897">ブックマークを削除しました</translation>
 <translation id="7421925624202799674">ページのソースを表示(&amp;V)</translation>
 <translation id="7422192691352527311">環境設定...</translation>
@@ -5512,7 +5510,6 @@
 <translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
 <translation id="7737238973539693982">Linux（ベータ版）の削除</translation>
 <translation id="7740996059027112821">標準</translation>
-<translation id="7741721175294046818">プロキシに接続できませんでした。もう一度お試しください</translation>
 <translation id="774377079771918250">保存先を選択</translation>
 <translation id="7744047395460924128">印刷履歴の表示</translation>
 <translation id="7744192722284567281">データ侵害で漏洩</translation>

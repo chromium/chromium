@@ -1667,6 +1667,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3412937883532015092">Nếu bạn đặt chính sách này thành một số, thì <ph name="PRODUCT_NAME" /> sẽ hiển thị một thông báo trong khoảng thời gian tính bằng mili giây đó rồi mới mở trình duyệt thay thế.
 
       Nếu bạn đặt chính sách này thành 0 hoặc không đặt, thì URL đã chỉ định sẽ mở trong trình duyệt thay thế ngay khi người dùng truy cập vào URL đó.</translation>
+<translation id="3415954062311826850">Chính sách này không được hỗ trợ trong Arc.</translation>
 <translation id="34160070798637152">Kiểm soát cấu hình mạng cho toàn bộ thiết bị.</translation>
 <translation id="3417130629744653218">Cho phép các trang web truy vấn phương thức thanh toán có sẵn.</translation>
 <translation id="3417418267404583991">Nếu chính sách này được đặt thành đúng hoặc không được định cấu hình, <ph name="PRODUCT_OS_NAME" /> sẽ bật tính năng đăng nhập với tư cách khách. Các đăng nhập với tư cách khách là các phiên người dùng ẩn danh và không yêu cầu mật khẩu.
@@ -1990,6 +1991,13 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3870300103958000506">Nếu bạn không đặt <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> thành False, thì việc đặt <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> thành 1 hoặc không đặt sẽ cho phép quảng cáo chạy trên tất cả trang web.
 
       Việc đặt chính sách thành 2 sẽ chặn quảng cáo xâm nhập trên các trang web.</translation>
+<translation id="387226665655554104">Chính sách này kiểm soát danh sách chế độ mở khóa nhanh mà người dùng có thể định cấu hình và áp dụng để mở màn hình khóa.
+
+          Giá trị này là một danh sách chuỗi; các mục hợp lệ trong danh sách này là: "all", "PIN", "FINGERPRINT". Khi bạn thêm "all" vào danh sách này, người dùng có thể áp dụng mọi chế độ mở khóa nhanh, bao gồm cả những chế độ được triển khai trong tương lai. Nếu không, người dùng sẽ chỉ sử dụng được các chế độ có trong danh sách này.
+
+          Ví dụ: để cho phép mọi chế độ mở khóa nhanh, hãy sử dụng ["all"]. Để chỉ cho phép mở khóa bằng mã PIN, hãy sử dụng ["PIN"]. Để cho phép mở khóa bằng mã PIN và vân tay, hãy sử dụng ["PIN", "FINGERPRINT"].
+
+          Nếu bạn không đặt hoặc đặt chính sách này thành danh sách trống, thì các thiết bị được quản lý sẽ không sử dụng được chế độ mở khóa nhanh</translation>
 <translation id="3877517141460819966">Chế độ xác thực hai yếu tố tích hợp</translation>
 <translation id="3879196885908353077">Kiểm tra tệp đã tải xuống xem có vi phạm quy tắc bảo vệ dữ liệu nhạy cảm hay không</translation>
 <translation id="3879208481373875102">Định cấu hình danh sách Ứng dụng web buộc cài đặt</translation>
@@ -3286,6 +3294,15 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Việc không đặt chính sách này sẽ không cho phép trường hợp ngoại lệ đối với <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
+<translation id="5628811596950455942">Chính sách này kiểm soát danh sách chế độ mở khóa nhanh mà người dùng có thể định cấu hình và áp dụng để mở màn hình khóa.
+
+          Giá trị này là một danh sách chuỗi; các mục hợp lệ trong danh sách này là: "all", "PIN", "FINGERPRINT". Khi bạn thêm "all" vào danh sách này, người dùng có thể áp dụng mọi chế độ mở khóa nhanh, bao gồm cả những chế độ được triển khai trong tương lai. Nếu không, người dùng sẽ chỉ sử dụng được các chế độ có trong danh sách này.
+
+          Ví dụ: để cho phép mọi chế độ mở khóa nhanh, hãy sử dụng ["all"]. Để chỉ cho phép mở khóa bằng mã PIN, hãy sử dụng ["PIN"]. Để cho phép mở khóa bằng mã PIN và vân tay, hãy sử dụng ["PIN", "FINGERPRINT"].
+
+          Nếu bạn không đặt hoặc đặt chính sách này thành danh sách trống, thì các thiết bị được quản lý sẽ không sử dụng được chế độ mở khóa nhanh
+
+          Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
 <translation id="5630352020869108293">Khôi phục phiên trước đó</translation>
 <translation id="5633871703004128675">Bật tính năng hỗ trợ tiếp cận về làm nổi bật dấu chèn</translation>
 <translation id="5641279111657132737">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />".

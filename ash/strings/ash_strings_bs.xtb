@@ -107,7 +107,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2012624427112548395">Ctrl + Search + H</translation>
 <translation id="2016340657076538683">Napišite poruku</translation>
 <translation id="2018630726571919839">Ispričaj mi vic</translation>
-<translation id="2049240716062114887">Naziv radne površine promijenjen je u <ph name="DESK_NAME" /></translation>
+<translation id="2049240716062114887">Naziv radne površine je promijenjen u <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
 <translation id="2083190527011054446">Laku noć <ph name="GIVEN_NAME" />,</translation>
@@ -376,7 +376,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="495046168593986294">Klizni prema gore</translation>
 <translation id="4961318399572185831">Emitiraj ekran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
-<translation id="4975771730019223894">Dodavanje oznake u aplikaciju</translation>
+<translation id="4975771730019223894">Označavanje aplikacija</translation>
 <translation id="5030687792513154421">Vrijeme je isteklo</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> je povezan na novi telefon</translation>
 <translation id="5035389544768382859">Potvrdite konfiguraciju ekrana</translation>

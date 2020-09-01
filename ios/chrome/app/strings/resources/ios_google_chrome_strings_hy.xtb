@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1282031177488366470">Օգնել ավել լավը դարձնել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="1479202195792305274">Chrome-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
+<translation id="1504372625950710826">Chrome-ին չհաջողվեց ստուգել թարմացումների առկայությունը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="1682483655351012182">Համաժամացնել Chrome-ի տվյալները</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Այս հաշիվը և բոլոր չպահված տվյալները կհեռացվեն Chrome-ից և Google-ի մյուս հավելվածներից այս սարքում։</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">Chrome-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար մտեք հաշիվ բոլոր սարքերում։</translation>
 <translation id="2576431527583832481">Chrome-ը բարելավվել է: Մատչելի է նոր տարբերակ:</translation>
 <translation id="257708665678654955">Ուզո՞ւմ եք, որ Google Chrome-ն այսուհետ առաջարկի թարգմանել այս կայքի <ph name="LANGUAGE_NAME" /> էջերը:</translation>
+<translation id="2695886661449553974">Chrome-ին չհաջողվեց ստուգել թարմացումների առկայությունը։ Փորձեք ավելի ուշ։</translation>
 <translation id="2732745070297234559">Chrome-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք։</translation>
 <translation id="2919738076569633423">Օգտագործելով Chrom-ը՝ դուք ընդունում եք <ph name="BEGIN_LINK_TOS" />Օգտագործման պայմանները<ph name="END_LINK_TOS" />։</translation>
 <translation id="3030414234702425231">Դուք դուրս եք գալիս <ph name="SIGNOUT_MANAGED_DOMAIN" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Նկատի առեք, որ Chrome-ի տվյալները սարքից կհեռացվեն, սակայն կմնան ձեր Google հաշվում:</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">Google Chrome-ին հասանելի չեն ձեր լուսանկարները կամ տեսանյութերը: Անցեք iOS Կարգավորումներ &gt; Գաղտնիություն &gt; Լուսանկարներ (Settings &gt; Privacy &gt; Photos) և միացրեք մուտքի թույլտվությունը:</translation>
 <translation id="4099578267706723511">Աջակցեք Google Chrome-ի կատարելագործմանը՝ Google-ին ավտոմատ կերպով ուղարկելով օգտագործման վիճակագրություն և խափանումների մասին հաղորդագրություններ:</translation>
 <translation id="415767770115540173">Ավելի հարմարեցրեք Google-ի օգտագործումը Chrome-ում՝ ըստ ձեր տեղադրության տվյալների:</translation>
+<translation id="417201473131094001">Չի աջակցվում Chrome Canary-ում</translation>
 <translation id="424864128008805179">Դուրս գա՞լ Chrome-ից:</translation>
 <translation id="4249068189593983585">Խորհուրդ Chrome-ից: Հպեք և պահեք գործիքագոտու «Ցուցադրել ներդիրները» կոճակը՝ այլ ընտրանքներ տեսնելու համար: Գործիքագոտին սովորաբար գտնվում է էկրանի վերևի կամ ներքևի հատվածում:</translation>
 <translation id="4523886039239821078">Որոշ հավելումներ առաջացնում են Chrome-ի աշխատանքի խափանում: Հեռացրեք դրանք՝</translation>
+<translation id="4633328489441962921">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
 <translation id="4698415050768537821">Chrome-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
+<translation id="484033449593719797">Չի աջակցվում Chrome-ի բետա տարբերակում</translation>
 <translation id="5030102366287574140">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից։</translation>
+<translation id="5162467219239570114">Chrome-ը հնացած է։ Եթե <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />-ում թարմացում հասանելի չէ, ապա հնարավոր է՝ ձեր սարքը Chrome-ի նոր տարբերակներն այլևս չի աջակցում։</translation>
 <translation id="5389212809648216794">Google Chrome-ը չի կարող օգտագործել ձեր ֆոտոխցիկը, քանի որ այն օգտագործվում է մեկ այլ հավելվածի կողմից</translation>
 <translation id="5639704535586432836">Անցեք Կարգավորումներ &gt; Գաղտնիություն &gt; Տեսախցիկ &gt; Google Chrome և միացրեք ֆոտոխցիկը։</translation>
 <translation id="5642200033778930880">Google Chrome-ը չի կարող օգտագործել ֆոտոխցիկը տրոհված տեսքի ռեժիմում</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">Chrome-ին չհաջողվեց ստուգել թարմացումների առկայությունը, քանի որ կապ չկա։</translation>
 <translation id="5854621639439811139">Խորհուրդ Chrome-ից: Որոշ կոճակներ (օրինակ՝ Հետ, Առաջ և Որոնել) այժմ ձեր էկրանի ներքևի հատվածում են:</translation>
 <translation id="6036420186814142909">Google Chrome-ն ունի գործառույթներ, որոնք օգնում են կառավարել ձեր համացանցի տվյալները և ոստայնէջերն արագ բեռնելու ունակությունը:
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         2. Հպեք «Դիտարկիչի կանխադրված հավելված»։
         3. Ընտրեք Chrome-ը։</translation>
 <translation id="6822673484890854830">Chrome-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>
+<translation id="7161390184744336561">Google Chrome-ը հնացած է</translation>
 <translation id="7165736900384873061">Ինչպես օգտագործել Google Chrome QR սկաները</translation>
 <translation id="7172660552945675509">Խորհուրդ․ <ph name="BEGIN_LINK" />տեղափոխել Chrome-ը Dock վահանակ<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome-ն օգտագործում է Face ID տեխնոլոգիան՝ ձեր գաղտնաբառերի անվտանգությունն ապահովելու համար։</translation>
@@ -66,6 +74,7 @@
 <translation id="766361182512894255">Տվյալների արտահոսքի արդյունքում ձեր գաղտնաբառը հայտնի է դարձել կողմնակի անձանց։ Chrome-ը խորհուրդ է տալիս փոխել գաղտնաբառը։</translation>
 <translation id="7698568245838009292">Chrome-ն ուզում է օգտագործել տեսախցիկը</translation>
 <translation id="7855730255114109580">Google Chrome-ը թարմացված է</translation>
+<translation id="8160472928944011082">Չհաջողվեց թարմացնել Chrome-ը</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />։ Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="840168496893712993">Որոշ հավելումներ առաջացնում են Chrome-ի աշխատանքի խափանում: Փորձեք հեռացնել դրանք:</translation>
 <translation id="8459495907675268833">Ընտրված տվյալները հեռացվել են Chrome-ից և համաժամացված սարքերից: Պատմությունը կարող է պահվել նաև ձեր Google հաշվում, օրինակ՝ որոնումների և Google-ի ծառայություններում ձեր գործողությունների տեսքով: Այդ տվյալները կարող եք գտնել history.google.com էջում:</translation>

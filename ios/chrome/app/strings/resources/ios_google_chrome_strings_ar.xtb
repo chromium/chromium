@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1282031177488366470">‏المساعدة على تحسين ميزات Chrome وأدائه</translation>
 <translation id="1479202195792305274">‏يجب تسجيل الدخول إلى حسابك على Google ليتمكّن Chrome من التحقُّق من كلمات المرور.</translation>
+<translation id="1504372625950710826">‏تعذّر على Chrome البحث عن تحديثات. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="1682483655351012182">‏مزامنة بيانات Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">‏ستتم إزالة هذا الحساب بالإضافة إلى أي بيانات لم يتم حفظها من Chrome وتطبيقات Google الأخرى على هذا الجهاز.</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، سجِّل الدخول على جميع أجهزتك.</translation>
 <translation id="2576431527583832481">‏لقد أصبح Chrome أفضل من ذي قبل! يتوفر إصدار جديد.</translation>
 <translation id="257708665678654955">‏هل تريد أن يعرض Google Chrome ترجمة صفحات <ph name="LANGUAGE_NAME" /> من الموقع الإلكتروني هذا في المرة القادمة؟</translation>
+<translation id="2695886661449553974">‏تعذّر على Chrome البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2732745070297234559">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="2919738076569633423">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK_TOS" />بنود الخدمة<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">‏لا تتوفر لدي Google Chrome إمكانية الدخول إلى الصور أو الفيديوهات. تستطيع تفعيل الدخول في إعدادات iOS &gt; الخصوصية &gt; الصور.</translation>
 <translation id="4099578267706723511">‏يمكنك المساعدة في تحسين Chrome عن طريق إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google.</translation>
 <translation id="415767770115540173">‏احصل على تجربة أفضل لاستخدام Google في Chrome استنادًا إلى موقعك.</translation>
+<translation id="417201473131094001">‏غير متاح على Chrome Canary</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4249068189593983585">‏نصيحة لاستخدام Chrome: لمزيد من خيارات علامات التبويب، يمكنك النقر مع الاستمرار على الزر "إظهار علامات التبويب" في شريط الأدوات الموجود أسفل الشاشة أو أعلاها.</translation>
 <translation id="4523886039239821078">‏تتسبب بعض الإضافات في تعطل Chrome. يُرجى إزالتها:</translation>
+<translation id="4633328489441962921">‏يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="4698415050768537821">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
+<translation id="484033449593719797">‏غير متاح على الإصدار التجريبي من Chrome</translation>
 <translation id="5030102366287574140">‏يستطيع Chrome مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
+<translation id="5162467219239570114">‏إصدار Chrome قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chrome.</translation>
 <translation id="5389212809648216794">‏يتعذر على Google Chrome استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
 <translation id="5639704535586432836">‏افتح الإعدادات &gt; الخصوصية &gt; الكاميرا &gt; Google Chrome وشغِّل الكاميرا.</translation>
 <translation id="5642200033778930880">‏يتعذر على Google Chrome استخدام الكاميرا في وضع تقسيم العرض</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">‏بلا اتصال بالإنترنت، يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="5854621639439811139">‏نصيحة لاستخدام Chrome: تظهر حاليًّا بعض الأزرار في أسفل الشاشة، مثل زر "الرجوع" و"التالي" و"البحث".</translation>
 <translation id="6036420186814142909">‏يشتمل Google Chrome على ميزات من شأنها مساعدتك على إدارة بيانات الإنترنت والوقوف على مدى السرعة التي يمكنك تحميل صفحات الويب من خلالها.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         2- انقر على Default Browser App (تطبيق المتصفِّح التلقائي).
         3- اختَر Chrome.</translation>
 <translation id="6822673484890854830">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="7161390184744336561">‏إصدار Google Chrome قديم.</translation>
 <translation id="7165736900384873061">‏بدء استخدام الماسح الضوئي للاستجابة السريعة في Google Chrome</translation>
 <translation id="7172660552945675509">‏نصيحة: <ph name="BEGIN_LINK" />نقل Chrome إلى شريط الإرساء<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">‏يستخدم Chrome تقنية "التعرُّف على الوجه" لضمان الدخول المصرَّح به إلى كلمات المرور.</translation>
@@ -65,6 +73,7 @@
 <translation id="766361182512894255">‏تم الكشف عن كلمة المرور الخاصة بك في عملية اختراق بيانات. لذا ينصح Chrome بتغيير كلمة المرور الآن.</translation>
 <translation id="7698568245838009292">‏متصفِّح Chrome يريد الوصول إلى الكاميرا</translation>
 <translation id="7855730255114109580">‏Google Chrome محدّث</translation>
+<translation id="8160472928944011082">‏يتعذّر تحديث Chrome.</translation>
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="840168496893712993">‏تتسبب بعض الإضافات في تعطل Chrome. يُرجى محاولة إزالتها.</translation>
 <translation id="8459495907675268833">‏تمت إزالة البيانات المُحددة من متصفح Chrome والأجهزة التي تمت مزامنتها. قد يحتوي حسابك في Google على نماذج أخرى من سجل التصفح، مثل عمليات البحث والأنشطة من خدمات Google الأخرى في history.google.com.</translation>
