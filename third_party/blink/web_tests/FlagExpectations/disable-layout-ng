@@ -401,6 +401,7 @@ crbug.com/591099 fast/writing-mode/flipped-blocks-inline-map-local-to-container.
 ### external/wpt/html/rendering
 crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-vertical.html [ Failure ]
 crbug.com/875235 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-painting-order.html [ Failure ]
+crbug.com/1119400 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/second-legend-becomes-rendered-legend-crash.html [ Skip ]
 
 ### virtual/text-antialias/
 crbug.com/591099 virtual/text-antialias/justify-ideograph-simple.html [ Failure ]
