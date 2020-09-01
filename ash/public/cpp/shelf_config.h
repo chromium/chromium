@@ -144,12 +144,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   int hidden_shelf_in_screen_portion() const {
     return hidden_shelf_in_screen_portion_;
   }
-  SkColor shelf_ink_drop_base_color() const {
-    return shelf_ink_drop_base_color_;
-  }
-  float shelf_ink_drop_visible_opacity() const {
-    return shelf_ink_drop_visible_opacity_;
-  }
   SkColor shelf_icon_color() const { return shelf_icon_color_; }
   int status_indicator_offset_from_shelf_edge() const {
     return status_indicator_offset_from_shelf_edge_;
@@ -184,6 +178,12 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   bool is_virtual_keyboard_shown() const { return is_virtual_keyboard_shown_; }
 
   bool in_tablet_mode() const { return in_tablet_mode_; }
+
+  // Ink drop color for shelf items.
+  SkColor GetInkDropBaseColor() const;
+
+  // Opacity of the ink drop ripple for shelf items when the ripple is visible.
+  float GetInkDropVisibleOpacity() const;
 
   // Gets the current color for the shelf control buttons.
   SkColor GetShelfControlButtonColor() const;
@@ -305,12 +305,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   // Portion of the shelf that's within the screen bounds when auto-hidden.
   const int hidden_shelf_in_screen_portion_;
-
-  // Ink drop color for shelf items.
-  const SkColor shelf_ink_drop_base_color_;
-
-  // Opacity of the ink drop ripple for shelf items when the ripple is visible.
-  const float shelf_ink_drop_visible_opacity_;
 
   // The foreground color of the icons used in the shelf (launcher,
   // notifications, etc).

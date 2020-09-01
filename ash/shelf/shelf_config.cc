@@ -125,8 +125,6 @@ ShelfConfig::ShelfConfig()
       workspace_area_visible_inset_(2),
       workspace_area_auto_hide_inset_(5),
       hidden_shelf_in_screen_portion_(3),
-      shelf_ink_drop_base_color_(SK_ColorWHITE),
-      shelf_ink_drop_visible_opacity_(0.2f),
       shelf_icon_color_(SK_ColorWHITE),
       status_indicator_offset_from_shelf_edge_(1),
       scrollable_shelf_ripple_padding_(2),
@@ -443,6 +441,15 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
     return in_app_shelf_size();
 
   return is_dense_ ? 48 : 56;
+}
+
+SkColor ShelfConfig::GetInkDropBaseColor() const {
+  return AshColorProvider::Get()->GetInkDropBaseColor(
+      AshColorProvider::AshColorMode::kDark);
+}
+
+float ShelfConfig::GetInkDropVisibleOpacity() const {
+  return AshColorProvider::Get()->GetInkDropVisibleOpacity();
 }
 
 SkColor ShelfConfig::GetShelfControlButtonColor() const {
