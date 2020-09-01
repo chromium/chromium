@@ -634,6 +634,22 @@ ConfigureBottomSheetProto::PeekMode Controller::GetPeekMode() {
   return peek_mode_;
 }
 
+BottomSheetState Controller::GetBottomSheetState() {
+  return bottom_sheet_state_;
+}
+
+void Controller::SetBottomSheetState(BottomSheetState state) {
+  bottom_sheet_state_ = state;
+}
+
+bool Controller::IsTabSelected() {
+  return tab_selected_;
+}
+
+void Controller::SetTabSelected(bool selected) {
+  tab_selected_ = selected;
+}
+
 void Controller::SetOverlayColors(std::unique_ptr<OverlayColors> colors) {
   overlay_colors_ = std::move(colors);
   if (overlay_colors_) {

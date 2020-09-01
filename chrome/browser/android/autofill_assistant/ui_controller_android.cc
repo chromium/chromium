@@ -40,6 +40,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/event_handler.h"
@@ -283,7 +284,8 @@ UiControllerAndroid::UiControllerAndroid(
       header_delegate_(this),
       collect_user_data_delegate_(this),
       form_delegate_(this),
-      generic_ui_delegate_(this) {
+      generic_ui_delegate_(this),
+      bottom_bar_delegate_(this) {
   java_object_ = Java_AutofillAssistantUiController_create(
       env, jactivity,
       /* allowTabSwitching= */
@@ -303,6 +305,8 @@ UiControllerAndroid::UiControllerAndroid(
   Java_AssistantCollectUserDataModel_setDelegate(
       env, GetCollectUserDataModel(),
       collect_user_data_delegate_.GetJavaObject());
+  Java_AssistantModel_setBottomBarDelegate(
+      env, GetModel(), bottom_bar_delegate_.GetJavaObject());
 }
 
 void UiControllerAndroid::Attach(content::WebContents* web_contents,
@@ -327,61 +331,23 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
   auto java_web_contents = web_contents->GetJavaWebContents();
   Java_AutofillAssistantUiController_setWebContents(env, java_object_,
                                                     java_web_contents);
-  Java_AssistantModel_setWebContents(env, GetModel(), java_web_contents);
   Java_AssistantCollectUserDataModel_setWebContents(
       env, GetCollectUserDataModel(), java_web_contents);
   OnClientSettingsChanged(ui_delegate_->GetClientSettings());
 
-  if (ui_delegate->GetState() != AutofillAssistantState::INACTIVE) {
+  if (ui_delegate->GetState() != AutofillAssistantState::INACTIVE &&
+      ui_delegate->IsTabSelected()) {
     // The UI was created for an existing Controller.
-    OnStatusMessageChanged(ui_delegate->GetStatusMessage());
-    OnBubbleMessageChanged(ui_delegate->GetBubbleMessage());
-    auto step_progress_bar_configuration =
-        ui_delegate->GetStepProgressBarConfiguration();
-    if (step_progress_bar_configuration.has_value()) {
-      OnStepProgressBarConfigurationChanged(*step_progress_bar_configuration);
-      if (step_progress_bar_configuration->use_step_progress_bar()) {
-        auto active_step = ui_delegate_->GetProgressActiveStep();
-        if (active_step.has_value()) {
-          OnProgressActiveStepChanged(*active_step);
-        }
-        OnProgressBarErrorStateChanged(ui_delegate->GetProgressBarErrorState());
-      }
-    } else {
-      OnStepProgressBarConfigurationChanged(
-          ShowProgressBarProto::StepProgressBarConfiguration());
-      OnProgressChanged(ui_delegate->GetProgress());
-    }
-    OnProgressVisibilityChanged(ui_delegate->GetProgressVisible());
-    OnInfoBoxChanged(ui_delegate_->GetInfoBox());
-    OnDetailsChanged(ui_delegate->GetDetails());
-    OnUserActionsChanged(ui_delegate_->GetUserActions());
-    OnCollectUserDataOptionsChanged(ui_delegate->GetCollectUserDataOptions());
-    OnUserDataChanged(ui_delegate->GetUserData(), UserData::FieldChange::ALL);
-    OnGenericUserInterfaceChanged(ui_delegate->GetGenericUiProto());
-
-    std::vector<RectF> area;
-    ui_delegate->GetTouchableArea(&area);
-    std::vector<RectF> restricted_area;
-    ui_delegate->GetRestrictedArea(&restricted_area);
-    RectF visual_viewport;
-    ui_delegate->GetVisualViewport(&visual_viewport);
-    OnTouchableAreaChanged(visual_viewport, area, restricted_area);
-    OnViewportModeChanged(ui_delegate->GetViewportMode());
-    OnPeekModeChanged(ui_delegate->GetPeekMode());
-    OnFormChanged(ui_delegate->GetForm(), ui_delegate->GetFormResult());
-    // TODO(b/145204744): Store the collapsed or expanded state from the bottom
-    // sheet when detaching the UI so that it can be restored appropriately
-    // here.
-
-    UiDelegate::OverlayColors colors;
-    ui_delegate->GetOverlayColors(&colors);
-    OnOverlayColorsChanged(colors);
-
-    OnStateChanged(ui_delegate->GetState());
+    RestoreUi();
+  } else if (ui_delegate->GetState() == AutofillAssistantState::INACTIVE) {
+    SetVisible(true);
   }
-
-  SetVisible(true);
+  // The call to set the web contents will, for some edge cases, trigger a call
+  // from the Java side to the onTabSelected method.
+  // We want this to happen only after the AttachUI method was fully executed,
+  // as it would otherwise find that IsTabSelected() is true when deciding if
+  // restoring the UI.
+  Java_AssistantModel_setWebContents(env, GetModel(), java_web_contents);
 }
 
 void UiControllerAndroid::Detach() {
@@ -441,7 +407,7 @@ void UiControllerAndroid::SetupForState() {
       SetOverlayState(OverlayState::HIDDEN);
       SetSpinPoodle(false);
 
-      if (should_prompt_action_expand_sheet)
+      if (should_prompt_action_expand_sheet && ui_delegate_->IsTabSelected())
         ShowContentAndExpandBottomSheet();
       return;
 
@@ -449,7 +415,7 @@ void UiControllerAndroid::SetupForState() {
       SetOverlayState(OverlayState::PARTIAL);
       SetSpinPoodle(false);
 
-      if (should_prompt_action_expand_sheet)
+      if (should_prompt_action_expand_sheet && ui_delegate_->IsTabSelected())
         ShowContentAndExpandBottomSheet();
       return;
 
@@ -468,7 +434,8 @@ void UiControllerAndroid::SetupForState() {
       SetSpinPoodle(false);
 
       // Make sure the user sees the error message.
-      ShowContentAndExpandBottomSheet();
+      if (ui_delegate_->IsTabSelected())
+        ShowContentAndExpandBottomSheet();
       ResetGenericUiControllers();
       return;
 
@@ -673,6 +640,81 @@ void UiControllerAndroid::SetVisible(bool visible) {
   }
 }
 
+void UiControllerAndroid::RestoreUi() {
+  if (ui_delegate_ == nullptr)
+    return;
+
+  OnStatusMessageChanged(ui_delegate_->GetStatusMessage());
+  OnBubbleMessageChanged(ui_delegate_->GetBubbleMessage());
+  auto step_progress_bar_configuration =
+      ui_delegate_->GetStepProgressBarConfiguration();
+  if (step_progress_bar_configuration.has_value()) {
+    OnStepProgressBarConfigurationChanged(*step_progress_bar_configuration);
+    if (step_progress_bar_configuration->use_step_progress_bar()) {
+      auto active_step = ui_delegate_->GetProgressActiveStep();
+      if (active_step.has_value()) {
+        OnProgressActiveStepChanged(*active_step);
+      }
+      OnProgressBarErrorStateChanged(ui_delegate_->GetProgressBarErrorState());
+    }
+  } else {
+    OnStepProgressBarConfigurationChanged(
+        ShowProgressBarProto::StepProgressBarConfiguration());
+    OnProgressChanged(ui_delegate_->GetProgress());
+  }
+  OnProgressVisibilityChanged(ui_delegate_->GetProgressVisible());
+  OnInfoBoxChanged(ui_delegate_->GetInfoBox());
+  OnDetailsChanged(ui_delegate_->GetDetails());
+  OnUserActionsChanged(ui_delegate_->GetUserActions());
+  OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
+  OnUserDataChanged(ui_delegate_->GetUserData(), UserData::FieldChange::ALL);
+  OnGenericUserInterfaceChanged(ui_delegate_->GetGenericUiProto());
+
+  std::vector<RectF> area;
+  ui_delegate_->GetTouchableArea(&area);
+  std::vector<RectF> restricted_area;
+  ui_delegate_->GetRestrictedArea(&restricted_area);
+  RectF visual_viewport;
+  ui_delegate_->GetVisualViewport(&visual_viewport);
+  OnTouchableAreaChanged(visual_viewport, area, restricted_area);
+  OnViewportModeChanged(ui_delegate_->GetViewportMode());
+  OnPeekModeChanged(ui_delegate_->GetPeekMode());
+  OnFormChanged(ui_delegate_->GetForm(), ui_delegate_->GetFormResult());
+  UiDelegate::OverlayColors colors;
+  ui_delegate_->GetOverlayColors(&colors);
+  OnOverlayColorsChanged(colors);
+  SetVisible(true);
+  Java_AutofillAssistantUiController_restoreBottomSheetState(
+      AttachCurrentThread(), java_object_,
+      ui_controller_android_utils::ToJavaBottomSheetState(
+          ui_delegate_->GetBottomSheetState()));
+}
+
+void UiControllerAndroid::OnTabSwitched(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint state) {
+  if (ui_delegate_ == nullptr) {
+    return;
+  }
+
+  ui_delegate_->SetBottomSheetState(
+      ui_controller_android_utils::ToNativeBottomSheetState(state));
+  ui_delegate_->SetTabSelected(false);
+}
+
+void UiControllerAndroid::OnTabSelected(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  if (ui_delegate_ == nullptr) {
+    return;
+  }
+  if (!ui_delegate_->IsTabSelected()) {
+    RestoreUi();
+    ui_delegate_->SetTabSelected(true);
+  }
+}
+
 // Actions carousels related methods.
 
 void UiControllerAndroid::UpdateActions(
@@ -829,13 +871,13 @@ void UiControllerAndroid::OnKeyboardVisibilityChanged(
       !visible);
 }
 
-bool UiControllerAndroid::OnBackButtonClicked(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller) {
+bool UiControllerAndroid::OnBackButtonClicked() {
   // If the keyboard is currently shown, clicking the back button should
   // hide the keyboard rather than close autofill assistant.
-  if (Java_AutofillAssistantUiController_isKeyboardShown(env, java_object_)) {
-    Java_AutofillAssistantUiController_hideKeyboard(env, java_object_);
+  if (Java_AutofillAssistantUiController_isKeyboardShown(AttachCurrentThread(),
+                                                         java_object_)) {
+    Java_AutofillAssistantUiController_hideKeyboard(AttachCurrentThread(),
+                                                    java_object_);
     return true;
   }
 

@@ -25,10 +25,14 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyObservable;
+import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -128,12 +132,25 @@ public class AutofillAssistantUiController {
         mActivity = activity;
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringHandler,
                 onboardingCoordinator == null ? null : onboardingCoordinator.transferControls(),
-                this::safeNativeOnKeyboardVisibilityChanged, this::safeNativeOnBackButtonClicked);
+                this::safeNativeOnKeyboardVisibilityChanged);
         mActivityTabObserver =
-                new ActivityTabProvider.ActivityTabTabObserver(activity.getActivityTabProvider()) {
+                new ActivityTabProvider.ActivityTabTabObserver(
+                        activity.getActivityTabProvider(), /* shouldTrigger = */ true) {
                     @Override
                     protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                        if (mWebContents == null) return;
+                        if (mWebContents == null) {
+                            if (!hint) {
+                                // This particular scenario would happen only if we're switching
+                                // from a tab with no Autofill Assistant running to a tab with AA
+                                // running with no tab switching hinting (i.e. a first notification
+                                // with |hint| set to true).
+                                // In this case the native side is not yet fully initialized, so we
+                                // need to wait for the web contents to be set from native before
+                                // notifying native that the tab was selected.
+                                setWebContentObserver(tab);
+                            }
+                            return;
+                        }
 
                         if (!allowTabSwitching) {
                             if (tab == null || tab.getWebContents() != mWebContents) {
@@ -149,6 +166,7 @@ public class AutofillAssistantUiController {
                         dismissSnackbar();
 
                         if (tab == null) {
+                            safeOnTabSwitched(getModel().getBottomSheetState());
                             // A null tab indicates that there's no selected tab; Most likely, we're
                             // in the process of selecting a new tab. Hide the UI for possible reuse
                             // later.
@@ -156,15 +174,23 @@ public class AutofillAssistantUiController {
                         } else if (tab.getWebContents() == mWebContents) {
                             // The original tab was re-selected. Show it again and force an
                             // expansion on the bottom sheet.
-                            safeNativeSetVisible(true);
-                            if (mCoordinator.getBottomBarCoordinator() != null) {
-                                showContentAndExpandBottomSheet();
+                            if (!hint) {
+                                // Here and below, we're only interested in restoring the UI for the
+                                // case where hint is false, meaning that the tab is shown. This is
+                                // the only way to be sure that the bottomsheet is unsuppressed when
+                                // we try to restore the status to what it was prior to switching.
+                                safeOnTabSelected();
                             }
                         } else {
+                            //
+                            safeOnTabSwitched(getModel().getBottomSheetState());
                             // A new tab was selected. If Autofill Assistant is running on it,
                             // attach the UI to that other instance, otherwise destroy the UI.
                             AutofillAssistantClient.fromWebContents(mWebContents)
                                     .transferUiTo(tab.getWebContents());
+                            if (!hint) {
+                                safeOnTabSelected();
+                            }
                         }
                     }
 
@@ -179,6 +205,7 @@ public class AutofillAssistantUiController {
                                 return;
                             }
 
+                            safeOnTabSwitched(getModel().getBottomSheetState());
                             // If we have an open snackbar, execute the callback immediately. This
                             // may shut down the Autofill Assistant.
                             if (mSnackbarController != null) {
@@ -188,6 +215,23 @@ public class AutofillAssistantUiController {
                         }
                     }
                 };
+    }
+
+    private void setWebContentObserver(Tab tab) {
+        getModel().addObserver(new PropertyObserver<PropertyKey>() {
+            @Override
+            public void onPropertyChanged(
+                    PropertyObservable<PropertyKey> source, @Nullable PropertyKey propertyKey) {
+                if (AssistantModel.WEB_CONTENTS == propertyKey) {
+                    getModel().removeObserver(this);
+                    if (tab != null
+                            && tab.getWebContents()
+                                    == getModel().get(AssistantModel.WEB_CONTENTS)) {
+                        safeOnTabSelected();
+                    }
+                }
+            }
+        });
     }
 
     // Native => Java methods.
@@ -229,7 +273,8 @@ public class AutofillAssistantUiController {
 
     @CalledByNative
     private void showContentAndExpandBottomSheet() {
-        mCoordinator.getBottomBarCoordinator().showContentAndExpand();
+        mCoordinator.getBottomBarCoordinator().showContent(
+                /* shouldExpand = */ true, /* animate = */ true);
     }
 
     @CalledByNative
@@ -255,6 +300,11 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private void hideKeyboard() {
         mCoordinator.getKeyboardCoordinator().hideKeyboard();
+    }
+
+    @CalledByNative
+    private void restoreBottomSheetState(@SheetState int state) {
+        mCoordinator.getBottomBarCoordinator().restoreState(state);
     }
 
     @CalledByNative
@@ -424,18 +474,24 @@ public class AutofillAssistantUiController {
         }
     }
 
-    private boolean safeNativeOnBackButtonClicked() {
-        if (mNativeUiController != 0) {
-            return AutofillAssistantUiControllerJni.get().onBackButtonClicked(
-                    mNativeUiController, AutofillAssistantUiController.this);
-        }
-        return false;
-    }
-
     private void safeNativeSetVisible(boolean visible) {
         if (mNativeUiController != 0) {
             AutofillAssistantUiControllerJni.get().setVisible(
                     mNativeUiController, AutofillAssistantUiController.this, visible);
+        }
+    }
+
+    private void safeOnTabSwitched(@SheetState int state) {
+        if (mNativeUiController != 0) {
+            AutofillAssistantUiControllerJni.get().onTabSwitched(
+                    mNativeUiController, AutofillAssistantUiController.this, state);
+        }
+    }
+
+    private void safeOnTabSelected() {
+        if (mNativeUiController != 0) {
+            AutofillAssistantUiControllerJni.get().onTabSelected(
+                    mNativeUiController, AutofillAssistantUiController.this);
         }
     }
 
@@ -455,9 +511,10 @@ public class AutofillAssistantUiController {
                 long nativeUiControllerAndroid, AutofillAssistantUiController caller);
         void onKeyboardVisibilityChanged(long nativeUiControllerAndroid,
                 AutofillAssistantUiController caller, boolean visible);
-        boolean onBackButtonClicked(
-                long nativeUiControllerAndroid, AutofillAssistantUiController caller);
         void setVisible(long nativeUiControllerAndroid, AutofillAssistantUiController caller,
                 boolean visible);
+        void onTabSwitched(long nativeUiControllerAndroid, AutofillAssistantUiController caller,
+                @SheetState int state);
+        void onTabSelected(long nativeUiControllerAndroid, AutofillAssistantUiController caller);
     }
 }

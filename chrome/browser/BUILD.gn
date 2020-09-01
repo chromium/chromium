@@ -2219,6 +2219,8 @@ static_library("browser") {
       "android/accessibility/font_size_prefs_android.cc",
       "android/accessibility/font_size_prefs_android.h",
       "android/android_theme_resources.h",
+      "android/autofill_assistant/assistant_bottom_bar_delegate.cc",
+      "android/autofill_assistant/assistant_bottom_bar_delegate.h",
       "android/autofill_assistant/assistant_collect_user_data_delegate.cc",
       "android/autofill_assistant/assistant_collect_user_data_delegate.h",
       "android/autofill_assistant/assistant_form_delegate.cc",

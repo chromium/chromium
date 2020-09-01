@@ -12,6 +12,7 @@ import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
@@ -21,24 +22,20 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  * practice, this allows to replace the onboarding by the actual Autofill Assistant content).
  */
 class AssistantBottomSheetContent implements BottomSheetContent {
-    interface Delegate {
-        boolean onBackButtonPressed();
-    }
-
     private final View mToolbarView;
     private final SizeListenableLinearLayout mContentView;
     @Nullable
     private ScrollView mContentScrollableView;
-    @Nullable
-    private Delegate mDelegate;
+    private Supplier<AssistantBottomBarDelegate> mBottomBarDelegateSupplier;
 
-    public AssistantBottomSheetContent(Context context, @Nullable Delegate delegate) {
+    public AssistantBottomSheetContent(
+            Context context, Supplier<AssistantBottomBarDelegate> supplier) {
         mToolbarView = LayoutInflater.from(context).inflate(
                 R.layout.autofill_assistant_bottom_sheet_toolbar, /* root= */ null);
         mContentView = new SizeListenableLinearLayout(context);
         mContentView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mDelegate = delegate;
+        mBottomBarDelegateSupplier = supplier;
     }
 
     public void setContent(View content, ScrollView scrollableView) {
@@ -133,10 +130,11 @@ class AssistantBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean handleBackPress() {
-        if (mDelegate == null) {
+        AssistantBottomBarDelegate bottomBarDelegate = mBottomBarDelegateSupplier.get();
+        if (bottomBarDelegate == null) {
             return false;
         }
 
-        return mDelegate.onBackButtonPressed();
+        return bottomBarDelegate.onBackButtonPressed();
     }
 }

@@ -11,6 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/optional.h"
+#include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
@@ -79,6 +80,13 @@ void ShowJavaInfoPopup(JNIEnv* env,
 std::string SafeConvertJavaStringToNative(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jstring);
+
+// Creates a BottomSheetState from the Android SheetState enum defined in
+// components/browser_ui/bottomsheet/BottomSheetController.java.
+BottomSheetState ToNativeBottomSheetState(int state);
+
+// Converts a BottomSheetState to the Android SheetState enum.
+int ToJavaBottomSheetState(BottomSheetState state);
 
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant

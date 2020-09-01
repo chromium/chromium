@@ -10,9 +10,11 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -104,12 +106,21 @@ class AssistantPeekHeightCoordinator {
 
     private void onHeaderHeightChanged(int height) {
         mHeaderHeight = height;
-        updateToolbarPadding();
+        maybeUpdateToolBarPadding();
     }
 
     private void onActionsHeightChanged(int height) {
         mActionsHeight = height;
-        updateToolbarPadding();
+        maybeUpdateToolBarPadding();
+    }
+
+    private void maybeUpdateToolBarPadding() {
+        if (mPeekMode != PeekMode.UNDEFINED) {
+            // TODO(b/164389932): Investigate proper fix for HANDLE_HEADER peek state not working as
+            // expected when switching from CCT to browser. Without the postTask, it shows in the
+            // HEADER mode with no pull handle displayed.
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateToolbarPadding);
+        }
     }
 
     private void maybeShowOnlyCarousels() {

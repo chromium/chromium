@@ -25,6 +25,10 @@ class AssistantModel extends PropertyModel {
     static final WritableBooleanPropertyKey ALLOW_SOFT_KEYBOARD = new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey ALLOW_TALKBACK_ON_WEBSITE =
             new WritableBooleanPropertyKey();
+
+    static final WritableObjectPropertyKey<AssistantBottomBarDelegate> BOTTOM_BAR_DELEGATE =
+            new WritableObjectPropertyKey<>();
+    static final WritableIntPropertyKey BOTTOM_SHEET_STATE = new WritableIntPropertyKey();
     static final WritableFloatPropertyKey TALKBACK_SHEET_SIZE_FRACTION =
             new WritableFloatPropertyKey();
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
@@ -48,8 +52,8 @@ class AssistantModel extends PropertyModel {
     }
 
     AssistantModel(AssistantOverlayModel overlayModel) {
-        super(ALLOW_SOFT_KEYBOARD, VISIBLE, WEB_CONTENTS, ALLOW_TALKBACK_ON_WEBSITE,
-                TALKBACK_SHEET_SIZE_FRACTION);
+        super(ALLOW_SOFT_KEYBOARD, ALLOW_TALKBACK_ON_WEBSITE, BOTTOM_BAR_DELEGATE,
+                BOTTOM_SHEET_STATE, TALKBACK_SHEET_SIZE_FRACTION, VISIBLE, WEB_CONTENTS);
         mOverlayModel = overlayModel;
     }
 
@@ -92,6 +96,18 @@ class AssistantModel extends PropertyModel {
         return mGenericUiModel;
     }
 
+    public AssistantBottomBarDelegate getBottomBarDelegate() {
+        return get(BOTTOM_BAR_DELEGATE);
+    }
+
+    public int getBottomSheetState() {
+        return get(BOTTOM_SHEET_STATE);
+    }
+
+    public void setBottomSheetState(int state) {
+        set(BOTTOM_SHEET_STATE, state);
+    }
+
     @CalledByNative
     private void setAllowSoftKeyboard(boolean allowed) {
         set(ALLOW_SOFT_KEYBOARD, allowed);
@@ -100,6 +116,11 @@ class AssistantModel extends PropertyModel {
     @CalledByNative
     private void setAllowTalkbackOnWebsite(boolean allowed) {
         set(ALLOW_TALKBACK_ON_WEBSITE, allowed);
+    }
+
+    @CalledByNative
+    private void setBottomBarDelegate(AssistantBottomBarDelegate delegate) {
+        set(BOTTOM_BAR_DELEGATE, delegate);
     }
 
     @CalledByNative

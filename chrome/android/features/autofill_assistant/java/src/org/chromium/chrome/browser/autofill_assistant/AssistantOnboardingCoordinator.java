@@ -98,14 +98,19 @@ class AssistantOnboardingCoordinator {
                 mContext, mBrowserControls, mCompositorViewHolder, mScrimCoordinator, overlayModel);
         overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
 
-        mContent = new AssistantBottomSheetContent(mContext, () -> {
-            onUserAction(
-                    /* accept= */ false, callback, OnBoarding.OB_NO_ANSWER,
-                    DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
-            return true;
-        });
+        mContent =
+                new AssistantBottomSheetContent(mContext, () -> new AssistantBottomBarDelegate() {
+                    @Override
+                    public boolean onBackButtonPressed() {
+                        onUserAction(
+                                /* accept= */ false, callback, OnBoarding.OB_NO_ANSWER,
+                                DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
+                        return true;
+                    }
+                });
         initContent(callback);
-        BottomSheetUtils.showContentAndExpand(mController, mContent, mAnimate);
+        BottomSheetUtils.showContentAndMaybeExpand(
+                mController, mContent, /* shouldExpand = */ true, mAnimate);
     }
 
     /**
