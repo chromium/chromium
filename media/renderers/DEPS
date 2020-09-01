@@ -7,6 +7,7 @@ include_rules = [
   "+media/base/bind_to_current_loop.h",
   "+media/base/speech_recognition_client.h",
   "+third_party/khronos/GLES2",
+  "+third_party/khronos/GLES3",
   "+ul/gl/gl_enums.h",
 ]
 
