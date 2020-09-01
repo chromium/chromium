@@ -175,8 +175,15 @@ constexpr int kErrorApplicationInstallerFailed = kCustomInstallErrorBase + 3;
 //
 // The server process may exit with any of these exit codes.
 constexpr int kErrorOk = 0;
+
+// The server could not acquire the lock needed to run.
 constexpr int kErrorFailedToLockPrefsMutex = 1;
+
+// The server candidate failed to promote itself to active.
 constexpr int kErrorFailedToSwap = 2;
+
+// The server has finished qualification and will not do further operations.
+constexpr int kErrorQualificationExit = 3;
 
 // Policy Management constants.
 extern const char kProxyModeDirect[];

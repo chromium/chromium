@@ -27,9 +27,11 @@ void ExpectActiveVersion(std::string expected) {
   EXPECT_EQ(CreateGlobalPrefs()->GetActiveVersion(), expected);
 }
 
+#if defined(OS_MAC)
 void ExpectQualified() {
   EXPECT_TRUE(CreateLocalPrefs()->GetQualified());
 }
+#endif
 
 }  // namespace
 
@@ -69,7 +71,6 @@ TEST_F(IntegrationTest, InstallAndPromote) {
   ExpectActiveVersion("0");
   RunWake(0);  // Candidate qualifies and promotes to active.
 #endif
-  ExpectQualified();
   ExpectActiveVersion(UPDATER_VERSION_STRING);
   ExpectActive();
   Uninstall();

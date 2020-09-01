@@ -11,6 +11,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
@@ -81,13 +82,18 @@ class AppServerTestCase : public testing::Test {
 }  // namespace
 
 TEST_F(AppServerTestCase, SimpleQualify) {
+  {
+    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+    global_prefs->SetActiveVersion("0.0.0.1");
+    PrefsCommitPendingWrites(global_prefs->GetPrefService());
+  }
   auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to qualify and then Shutdown(0).
+  // Expect the app to qualify and then shutdown.
   EXPECT_CALL(*app, ActiveDuty).Times(0);
   EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
   EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), 0);
+  EXPECT_EQ(app->Run(), kErrorQualificationExit);
   EXPECT_TRUE(CreateLocalPrefs()->GetQualified());
 }
 
@@ -123,6 +129,21 @@ TEST_F(AppServerTestCase, SelfPromote) {
   EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
   EXPECT_CALL(*app, UninstallSelf).Times(0);
   EXPECT_EQ(app->Run(), 0);
+  std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+  EXPECT_FALSE(global_prefs->GetSwapping());
+  EXPECT_EQ(global_prefs->GetActiveVersion(), UPDATER_VERSION_STRING);
+}
+
+TEST_F(AppServerTestCase, InstallAutoPromotes) {
+  auto app = base::MakeRefCounted<AppServerTest>();
+
+  // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
+  // In this case it bypasses qualification.
+  EXPECT_CALL(*app, ActiveDuty).Times(1);
+  EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
+  EXPECT_CALL(*app, UninstallSelf).Times(0);
+  EXPECT_EQ(app->Run(), 0);
+  EXPECT_FALSE(CreateLocalPrefs()->GetQualified());
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), UPDATER_VERSION_STRING);

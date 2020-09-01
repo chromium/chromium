@@ -25,10 +25,6 @@ void AppServer::Initialize() {
 }
 
 base::OnceClosure AppServer::ModeCheck() {
-  std::unique_ptr<LocalPrefs> local_prefs = CreateLocalPrefs();
-  if (!local_prefs->GetQualified())
-    return base::BindOnce(&AppServer::Qualify, this, std::move(local_prefs));
-
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   if (!global_prefs) {
     return base::BindOnce(&AppServer::Shutdown, this,
@@ -37,8 +33,18 @@ base::OnceClosure AppServer::ModeCheck() {
 
   base::Version this_version(UPDATER_VERSION_STRING);
   base::Version active_version(global_prefs->GetActiveVersion());
-  if (this_version < active_version)
+  if (this_version < active_version) {
+    global_prefs = nullptr;
     return base::BindOnce(&AppServer::UninstallSelf, this);
+  }
+
+  if (active_version != base::Version("0")) {
+    std::unique_ptr<LocalPrefs> local_prefs = CreateLocalPrefs();
+    if (!local_prefs->GetQualified()) {
+      global_prefs = nullptr;
+      return base::BindOnce(&AppServer::Qualify, this, std::move(local_prefs));
+    }
+  }
 
   if (this_version > active_version || global_prefs->GetSwapping()) {
     if (!SwapVersions(global_prefs.get()))
@@ -62,7 +68,7 @@ void AppServer::Qualify(std::unique_ptr<LocalPrefs> local_prefs) {
   // For now, assume qualification succeeds.
   local_prefs->SetQualified(true);
   PrefsCommitPendingWrites(local_prefs->GetPrefService());
-  Shutdown(kErrorOk);
+  Shutdown(kErrorQualificationExit);
 }
 
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
