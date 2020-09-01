@@ -111,7 +111,8 @@ class FakeFidoHidManager : public device::mojom::HidManager {
       mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
       mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
       ConnectCallback callback) override;
-  void AddReceiver(mojo::PendingReceiver<device::mojom::HidManager> receiver);
+  void AddReceiver(
+      mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void AddDevice(device::mojom::HidDeviceInfoPtr device);
   void AddDeviceAndSetConnection(
       device::mojom::HidDeviceInfoPtr device,

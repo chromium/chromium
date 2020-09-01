@@ -32,7 +32,12 @@ class HidManagerImpl : public mojom::HidManager, public HidService::Observer {
   // passed |hid_service|.
   static void SetHidServiceForTesting(std::unique_ptr<HidService> hid_service);
 
-  void AddReceiver(mojo::PendingReceiver<mojom::HidManager> receiver);
+  // IsHidServiceTesting() will return true when the next call to the
+  // constructor will use the HidService instance set by
+  // SetHidServiceForTesting().
+  static bool IsHidServiceTesting();
+
+  void AddReceiver(mojo::PendingReceiver<mojom::HidManager> receiver) override;
 
   // mojom::HidManager implementation:
   void GetDevicesAndSetClient(

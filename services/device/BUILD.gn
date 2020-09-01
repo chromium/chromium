@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//testing/test.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -29,6 +30,7 @@ source_set("lib") {
 
   deps = [
     ":binder_overrides",
+    "//build:lacros_buildflags",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
@@ -70,6 +72,13 @@ source_set("lib") {
 
   if (is_serial_enabled_platform) {
     deps += [ "//services/device/serial" ]
+  }
+
+  if (chromeos_is_browser_only) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
   }
 }
 

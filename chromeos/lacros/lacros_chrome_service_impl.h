@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/hid.mojom.h"
 
 namespace chromeos {
 
@@ -85,6 +86,13 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return attestation_remote_;
   }
 
+  // This must be called on the affine sequence. It exposes a remote that can
+  // be used to support HID devices.
+  mojo::Remote<device::mojom::HidManager>& hid_manager_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    return hid_manager_remote_;
+  }
+
   // This may be called on any thread.
   void BindScreenManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
@@ -113,6 +121,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // constructor and it is immediately available for use.
   mojo::Remote<crosapi::mojom::MessageCenter> message_center_remote_;
   mojo::Remote<crosapi::mojom::SelectFile> select_file_remote_;
+  mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
 
   // This member allows lacros-chrome to use the Attestation interface. This
   // member is affine to the affine sequence. It is initialized in the

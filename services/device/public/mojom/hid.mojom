@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1110184): We have to mark this mojom as [Stable] before
+// lacros begins the process of launching.
+
 module device.mojom;
 
 enum HidBusType {
@@ -372,6 +375,9 @@ interface HidManager {
           pending_remote<HidConnectionClient>? connection_client,
           pending_remote<HidConnectionWatcher>? watcher)
       => (pending_remote<HidConnection>? connection);
+
+  // Binds a HidManager endpoint.
+  AddReceiver@3(pending_receiver<HidManager> receiver);
 };
 
 // Provides an interface for communication with a HID device. The HID spec

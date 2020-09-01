@@ -1,4 +1,6 @@
 include_rules = [
+  "+chromeos/crosapi",
+  "+chromeos/lacros",
   "+device",
   "+services/device/usb/jni_headers",
   "+services/network/public/cpp",

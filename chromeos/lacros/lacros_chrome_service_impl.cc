@@ -105,6 +105,12 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindSelectFile(std::move(pending_receiver));
   }
 
+  void BindHidManagerReceiver(
+      mojo::PendingReceiver<device::mojom::HidManager> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindHidManager(std::move(pending_receiver));
+  }
+
   void BindScreenManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -211,6 +217,15 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       base::BindOnce(
           &LacrosChromeServiceNeverBlockingState::BindAttestationReceiver,
           weak_sequenced_state_, std::move(attestation_pending_receiver)));
+
+  mojo::PendingReceiver<device::mojom::HidManager>
+      hid_manager_pending_receiver =
+          hid_manager_remote_.BindNewPipeAndPassReceiver();
+  never_blocking_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LacrosChromeServiceNeverBlockingState::BindHidManagerReceiver,
+          weak_sequenced_state_, std::move(hid_manager_pending_receiver)));
 
   DCHECK(!g_instance);
   g_instance = this;

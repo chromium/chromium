@@ -100,6 +100,11 @@ void FakeHidManager::Bind(mojo::PendingReceiver<mojom::HidManager> receiver) {
 }
 
 // mojom::HidManager implementation:
+void FakeHidManager::AddReceiver(
+    mojo::PendingReceiver<mojom::HidManager> receiver) {
+  Bind(std::move(receiver));
+}
+
 void FakeHidManager::GetDevicesAndSetClient(
     mojo::PendingAssociatedRemote<mojom::HidManagerClient> client,
     GetDevicesCallback callback) {

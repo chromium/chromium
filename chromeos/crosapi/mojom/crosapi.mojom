@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1110184): We have to mark this mojom and its dependencies as
+// [Stable] before lacros begins the process of launching.
+
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/attestation.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
+import "services/device/public/mojom/hid.mojom";
 
 // AshChromeService defines the APIs that live in ash-chrome and are
 // accessed from lacros-chrome.
@@ -24,6 +28,9 @@ interface AshChromeService {
 
   // Binds the SelectFile interface for open/save dialogs.
   BindSelectFile@0(pending_receiver<SelectFile> receiver);
+
+  // Binds the HidManager interface for support HID devices.
+  BindHidManager@4(pending_receiver<device.mojom.HidManager> receiver);
 };
 
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,

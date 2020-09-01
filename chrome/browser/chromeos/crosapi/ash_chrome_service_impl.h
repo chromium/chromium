@@ -35,6 +35,8 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
       mojo::PendingReceiver<mojom::ScreenManager> receiver) override;
   void BindSelectFile(
       mojo::PendingReceiver<mojom::SelectFile> receiver) override;
+  void BindHidManager(
+      mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
 
  private:
   mojo::Receiver<mojom::AshChromeService> receiver_;

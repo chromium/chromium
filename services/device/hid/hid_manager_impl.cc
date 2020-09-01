@@ -38,6 +38,11 @@ void HidManagerImpl::SetHidServiceForTesting(
   g_hid_service.Get() = std::move(hid_service);
 }
 
+// static
+bool HidManagerImpl::IsHidServiceTesting() {
+  return g_hid_service.IsCreated();
+}
+
 void HidManagerImpl::AddReceiver(
     mojo::PendingReceiver<mojom::HidManager> receiver) {
   receivers_.Add(this, std::move(receiver));

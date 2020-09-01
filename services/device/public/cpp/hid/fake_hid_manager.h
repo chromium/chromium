@@ -50,6 +50,7 @@ class FakeHidManager : public mojom::HidManager {
   void Bind(mojo::PendingReceiver<mojom::HidManager> receiver);
 
   // mojom::HidManager implementation:
+  void AddReceiver(mojo::PendingReceiver<mojom::HidManager> receiver) override;
   void GetDevicesAndSetClient(
       mojo::PendingAssociatedRemote<mojom::HidManagerClient> client,
       GetDevicesCallback callback) override;
