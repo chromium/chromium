@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
@@ -831,11 +830,6 @@ bool ExtensionService::UninstallExtension(
                                                          reason);
 
   delayed_installs_.Remove(extension->id());
-  if (extension->from_bookmark() &&
-      web_app::ShouldRegisterShortcutsMenuWithOs()) {
-    web_app::UnregisterShortcutsMenuWithOs(extension->id(),
-                                           profile_->GetPath());
-  }
   extension_prefs_->OnExtensionUninstalled(
       extension->id(), extension->location(), external_uninstall);
 
