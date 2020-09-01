@@ -255,6 +255,14 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         availableSpace: availableSpace,
         totalSpace: 1125900006842624,
       }
+    },
+    bluetoothResult: {
+      bluetoothAdapterInfo: [{
+        name: 'hci0',
+        address: 'ab:cd:ef:12:34:56',
+        powered: true,
+        numConnectedDevices: 4294967295
+      }]
     }
   });
 });

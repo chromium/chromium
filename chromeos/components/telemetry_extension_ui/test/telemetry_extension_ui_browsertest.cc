@@ -306,6 +306,21 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
     telemetry_info->stateful_partition_result = chromeos::cros_healthd::mojom::
         StatefulPartitionResult::NewPartitionInfo(std::move(partition_info));
   }
+  {
+    auto bluetooth_info =
+        chromeos::cros_healthd::mojom::BluetoothAdapterInfo::New();
+    bluetooth_info->name = "hci0";
+    bluetooth_info->address = "ab:cd:ef:12:34:56";
+    bluetooth_info->powered = true;
+    bluetooth_info->num_connected_devices = 4294967295;
+
+    std::vector<chromeos::cros_healthd::mojom::BluetoothAdapterInfoPtr> infos;
+    infos.push_back(std::move(bluetooth_info));
+
+    telemetry_info->bluetooth_result =
+        chromeos::cros_healthd::mojom::BluetoothResult::NewBluetoothAdapterInfo(
+            std::move(infos));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 

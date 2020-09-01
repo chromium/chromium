@@ -409,7 +409,8 @@ class TelemetryProxy {
   /**
    * This method converts Mojo types to WebIDL types applying next rules:
    *   1. remove null objects from arrays;
-   *   2. convert objects like { value: X } to X, where X is a number;
+   *   2. convert objects like { value: X } to X, where X is either a number or
+   *      a boolean;
    *   3. omit null/undefined properties;
    *   4. convert objects without properties to null.
    * @param {?Object|string|number|null|undefined} input
@@ -439,9 +440,11 @@ class TelemetryProxy {
 
     // At this point, closure compiler knows that the input is {!Object}.
 
-    // Rule #2: convert objects like { value: X } to X, where X is a number.
+    // Rule #2: convert objects like { value: X } to X, where X is either a
+    // number or a boolean.
     if (Object.entries(input).length === 1 &&
-        typeof input['value'] === 'number') {
+        (typeof input['value'] === 'number' ||
+         typeof input['value'] === 'boolean')) {
       return input['value'];
     }
 

@@ -160,6 +160,10 @@ TEST_F(
       assertEquals(telemetryProxy.convert({value: 15}), 15);
       assertEquals(telemetryProxy.convert({value: 777.555}), 777.555);
 
+      // {value: X} --> X if X is a booelan.
+      assertEquals(telemetryProxy.convert({value: false}), false);
+      assertEquals(telemetryProxy.convert({value: true}), true);
+
       // {value: X} --> {value: X} if X is not a number.
       assertDeepEquals(telemetryProxy.convert({value: 'ABC'}), {value: 'ABC'});
       assertDeepEquals(
