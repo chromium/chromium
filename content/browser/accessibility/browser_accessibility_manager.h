@@ -589,11 +589,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   static base::Optional<int32_t> last_focused_node_id_;
   static base::Optional<ui::AXTreeID> last_focused_node_tree_id_;
 
-  // For debug only: True when handling OnAccessibilityEvents.
-#if DCHECK_IS_ON()
-  bool in_on_accessibility_events_ = false;
-#endif  // DCHECK_IS_ON()
-
  private:
   // The underlying tree of accessibility objects.
   std::unique_ptr<ui::AXSerializableTree> tree_;

@@ -2708,7 +2708,7 @@ String AXNodeObject::TextAlternative(bool recursive,
     return text_alternative;
 
   // Step 2F / 2G from: http://www.w3.org/TR/accname-aam-1.1
-  if (in_aria_labelled_by_traversal || SupportsNameFromContents(recursive)) {
+  if (in_aria_labelled_by_traversal || NameFromContents(recursive)) {
     Node* node = GetNode();
     if (!IsA<HTMLSelectElement>(node)) {  // Avoid option descendant text
       name_from = ax::mojom::blink::NameFrom::kContents;

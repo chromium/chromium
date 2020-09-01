@@ -1,1 +1,10 @@
 Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document
+Text_TextChanged on role=document

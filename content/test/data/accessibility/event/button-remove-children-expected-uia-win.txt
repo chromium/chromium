@@ -1,3 +1,2 @@
 StructureChanged/ChildRemoved on role=button
 StructureChanged/ChildrenReordered on role=button
-Text_TextChanged on role=document

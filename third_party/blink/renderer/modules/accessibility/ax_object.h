@@ -616,20 +616,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // This is a simpler high-level interface to |name| used by Inspector.
   String ComputedName() const;
 
-  // Internal function used to determine whether the result of calling |GetName|
-  // on this object would return text that came from the an HTML label element
-  // or not. This is intended to be faster than calling |GetName| or
-  // |TextAlternative|, and without side effects (it won't call
-  // AXObjectCache->GetOrCreate).
+  // Internal function used to determine whether the result of calling |name| on
+  // this object would return text that came from the an HTML label element or
+  // not. This is intended to be faster than calling |name| or
+  // |textAlternative|, and without side effects (it won't call
+  // axObjectCache->getOrCreate).
   virtual bool NameFromLabelElement() const { return false; }
-
-  // Internal function used to determine whether the element supports deriving
-  // its accessible name from its descendants. The result of calling |GetName|
-  // may be derived by other means even when this returns true.
-  // This is intended to be faster than calling |GetName| or
-  // |TextAlternative|, and without side effects (it won't call
-  // AXObjectCache->GetOrCreate).
-  bool SupportsNameFromContents(bool recursive) const;
 
   //
   // Properties of static elements.
@@ -1276,6 +1268,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return nullptr;
   }
 
+  bool NameFromContents(bool recursive) const;
   bool NameFromSelectedOption(bool recursive) const;
 
   ax::mojom::blink::Role ButtonRoleType() const;
