@@ -44,6 +44,7 @@ using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using password_manager::kWellKnownChangePasswordPath;
 using password_manager::kWellKnownNotExistingResourcePath;
+using password_manager::WellKnownChangePasswordResult;
 
 constexpr char kMockChangePasswordPath[] = "/change-password-override";
 

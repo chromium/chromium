@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/change_password_url_service.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -24,6 +25,36 @@ class SharedURLLoaderFactory;
 }
 
 namespace password_manager {
+
+extern const char kGetChangePasswordUrlMetricName[];
+extern const char kChangePasswordUrlServiceFetchResultMetricName[];
+extern const char kGstaticFetchErrorCodeMetricName[];
+extern const char kGstaticFetchHttpResponseCodeMetricName[];
+extern const char kGstaticFetchTimeMetricName[];
+
+// Used to record metrics for the usage and timing of the GetChangePasswordUrl
+// call. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class GetChangePasswordUrlMetric {
+  // Used when GetChangePasswordUrl is called before the gstatic response
+  // arrives.
+  kNotFetchedYet = 0,
+  // Used when a url was in the gsatic file.
+  kUrlOverrideUsed = 1,
+  // Used when no override url was available
+  kNoUrlOverrideAvailable = 2,
+  kMaxValue = kNoUrlOverrideAvailable,
+};
+
+// Used to log the response of the request to the gstatic file. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class ChangePasswordUrlServiceFetchResult {
+  kSuccess = 0,
+  kFailure = 1,
+  kMalformed = 2,
+  kMaxValue = kMalformed,
+};
 
 class ChangePasswordUrlServiceImpl
     : public password_manager::ChangePasswordUrlService {
@@ -42,13 +73,23 @@ class ChangePasswordUrlServiceImpl
       "change_password_urls.json";
 
  private:
+  enum class FetchState {
+    // Default state, no request started.
+    kNoRequestStarted,
+    // Active while gstatic file is fetched.
+    kIsLoading,
+    // Set when the fetch succeeded.
+    kFetchSucceeded,
+    // Set when the fetch failed.
+    kFetchFailed,
+    // Set when the password manager is disabled and the gstatic file is not
+    // fetched.
+    kUrlOverridesDisabled,
+  };
   // Callback for the the request to gstatic.
   void OnFetchComplete(std::unique_ptr<std::string> response_body);
 
-  // Stores if the request is already started to only fetch once.
-  bool started_fetching_ = false;
-  // True when the gstatic response arrived.
-  bool fetch_complete_ = false;
+  FetchState state_ = FetchState::kNoRequestStarted;
   // Stores the JSON result for the url overrides.
   base::flat_map<std::string, GURL> change_password_url_map_;
   // URL loader object for the gstatic request.
@@ -56,9 +97,9 @@ class ChangePasswordUrlServiceImpl
   // SharedURLLoaderFactory for the gstatic request, argument in the
   // constructor.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  // We are only fetching the gstatic file if PasswordManager is enabled.
-  // We use the PrefService to check if the PasswordManager is enabled.
   PrefService* pref_service_;
+  // Timer to track the response time of the gstatic request.
+  base::ElapsedTimer fetch_timer_;
 };
 
 }  // namespace password_manager

@@ -197,6 +197,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/ios",
+    "//components/ukm:test_support",
     "//google_apis",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state:test_support",

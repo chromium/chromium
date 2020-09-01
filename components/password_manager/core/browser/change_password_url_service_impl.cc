@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -21,9 +22,22 @@ namespace {
 using network::SimpleURLLoader;
 
 constexpr size_t kMaxDownloadSize = 50 * 1024;
+
 }  // namespace
 
 namespace password_manager {
+
+const char kGetChangePasswordUrlMetricName[] =
+    "PasswordManager.WellKnownChangePassword.GetChangePasswordUsage";
+const char kChangePasswordUrlServiceFetchResultMetricName[] =
+    "PasswordManager.WellKnownChangePassword."
+    "GstaticFetchResult";
+const char kGstaticFetchErrorCodeMetricName[] =
+    "PasswordManager.WellKnownChangePassword.GstaticFetchErrorCode";
+const char kGstaticFetchHttpResponseCodeMetricName[] =
+    "PasswordManager.WellKnownChangePassword.GstaticFetchHttpResponseCode";
+const char kGstaticFetchTimeMetricName[] =
+    "PasswordManager.WellKnownChangePassword.GstaticFetchTime";
 
 constexpr char ChangePasswordUrlServiceImpl::kChangePasswordUrlOverrideUrl[];
 
@@ -36,15 +50,13 @@ ChangePasswordUrlServiceImpl::ChangePasswordUrlServiceImpl(
 ChangePasswordUrlServiceImpl::~ChangePasswordUrlServiceImpl() = default;
 
 void ChangePasswordUrlServiceImpl::PrefetchURLs() {
-  if (started_fetching_) {
-    return;
-  }
-  started_fetching_ = true;
-
-  // Don't fetch the gstatic file when PasswordManager policy is disabled.
   if (!pref_service_->GetBoolean(
           password_manager::prefs::kCredentialsEnableService)) {
-    fetch_complete_ = true;
+    state_ = FetchState::kUrlOverridesDisabled;
+    return;
+  }
+  if (state_ == FetchState::kIsLoading ||
+      state_ == FetchState::kFetchSucceeded) {
     return;
   }
 
@@ -91,7 +103,8 @@ void ChangePasswordUrlServiceImpl::PrefetchURLs() {
         })");
   url_loader_ =
       SimpleURLLoader::Create(std::move(resource_request), traffic_annotation);
-
+  // Start Timer.
+  fetch_timer_ = base::ElapsedTimer();
   // Binding the callback to |this| is safe, because the navigationthrottle
   // defers if the request is not received yet. Thereby the throttle still exist
   // when the response arrives.
@@ -100,16 +113,33 @@ void ChangePasswordUrlServiceImpl::PrefetchURLs() {
       base::BindOnce(&ChangePasswordUrlServiceImpl::OnFetchComplete,
                      base::Unretained(this)),
       kMaxDownloadSize);
+  state_ = FetchState::kIsLoading;
 }
 
 GURL ChangePasswordUrlServiceImpl::GetChangePasswordUrl(const GURL& url) {
-  DCHECK(started_fetching_) << "Call PrefetchURLs() before.";
-  std::string domain_and_registry =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  auto it = change_password_url_map_.find(domain_and_registry);
-  if (it != change_password_url_map_.end()) {
-    return it->second;
+  DCHECK_NE(state_, FetchState::kNoRequestStarted)
+      << "Call PrefetchURLs() before.";
+  // Metrics for GetChangePasswordUrl are only logged when the request is still
+  // ongoing or if it succeeded. Network erros are logged in the resonse
+  // callback.
+  if (state_ == FetchState::kIsLoading) {
+    base::UmaHistogramEnumeration(kGetChangePasswordUrlMetricName,
+                                  GetChangePasswordUrlMetric::kNotFetchedYet);
+  } else if (state_ == FetchState::kFetchSucceeded) {
+    std::string domain_and_registry =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    auto it = change_password_url_map_.find(domain_and_registry);
+    if (it != change_password_url_map_.end()) {
+      base::UmaHistogramEnumeration(
+          kGetChangePasswordUrlMetricName,
+          GetChangePasswordUrlMetric::kUrlOverrideUsed);
+      return it->second;
+    } else {
+      base::UmaHistogramEnumeration(
+          kGetChangePasswordUrlMetricName,
+          GetChangePasswordUrlMetric::kNoUrlOverrideAvailable);
+    }
   }
   // Fallback if no valid change-password url available no response available.
   return GURL();
@@ -117,11 +147,15 @@ GURL ChangePasswordUrlServiceImpl::GetChangePasswordUrl(const GURL& url) {
 
 void ChangePasswordUrlServiceImpl::OnFetchComplete(
     std::unique_ptr<std::string> response_body) {
-  fetch_complete_ = true;
+  base::UmaHistogramTimes(kGstaticFetchTimeMetricName, fetch_timer_.Elapsed());
   // TODO(crbug.com/1086141): Log error codes in histograms.
   if (response_body) {
     base::Optional<base::Value> data = base::JSONReader::Read(*response_body);
     if (data && data->is_dict()) {
+      state_ = FetchState::kFetchSucceeded;
+      base::UmaHistogramEnumeration(
+          kChangePasswordUrlServiceFetchResultMetricName,
+          ChangePasswordUrlServiceFetchResult::kSuccess);
       for (auto&& url_pair : data->DictItems()) {
         if (url_pair.second.is_string()) {
           GURL url = GURL(url_pair.second.GetString());
@@ -131,7 +165,26 @@ void ChangePasswordUrlServiceImpl::OnFetchComplete(
           }
         }
       }
+    } else {
+      state_ = FetchState::kFetchFailed;
+      base::UmaHistogramEnumeration(
+          kChangePasswordUrlServiceFetchResultMetricName,
+          ChangePasswordUrlServiceFetchResult::kMalformed);
     }
+  } else {
+    state_ = FetchState::kFetchFailed;
+    int response_code = -1;
+    if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+      response_code = url_loader_->ResponseInfo()->headers->response_code();
+    }
+    base::UmaHistogramSparse(kGstaticFetchHttpResponseCodeMetricName,
+                             response_code);
+    // Network error codes are negative. See: src/net/base/net_error_list.h.
+    base::UmaHistogramSparse(kGstaticFetchErrorCodeMetricName,
+                             -url_loader_->NetError());
+    base::UmaHistogramEnumeration(
+        kChangePasswordUrlServiceFetchResultMetricName,
+        ChangePasswordUrlServiceFetchResult::kFailure);
   }
 }
 

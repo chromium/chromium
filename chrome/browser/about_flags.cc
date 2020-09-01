@@ -6367,6 +6367,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kVideoToolboxVp9Decoding)},
 #endif
 
+    {"well-known-change-password",
+     flag_descriptions::kWellKnownChangePasswordName,
+     flag_descriptions::kWellKnownChangePasswordDescription, kOsAll,
+     FEATURE_VALUE_TYPE(password_manager::features::kWellKnownChangePassword)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

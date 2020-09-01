@@ -668,6 +668,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAutofillPasswordReauthIOSName,
      flag_descriptions::kEnableAutofillPasswordReauthIOSDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableAutofillPasswordReauthIOS)},
+    {"well-known-change-password",
+     flag_descriptions::kWellKnownChangePasswordName,
+     flag_descriptions::kWellKnownChangePasswordDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kWellKnownChangePassword)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -8,7 +8,6 @@
 #include "chrome/browser/password_manager/change_password_url_service_factory.h"
 #include "components/password_manager/core/browser/change_password_url_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
-#include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -29,6 +28,7 @@ using content::NavigationHandle;
 using content::NavigationThrottle;
 using content::WebContents;
 using password_manager::IsWellKnownChangePasswordUrl;
+using password_manager::WellKnownChangePasswordResult;
 using password_manager::WellKnownChangePasswordState;
 
 // Used to scope the posted navigation task to the lifetime of |web_contents|.

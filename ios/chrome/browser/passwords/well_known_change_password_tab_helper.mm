@@ -7,12 +7,14 @@
 #import <Foundation/Foundation.h>
 
 #include "base/logging.h"
-#include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "net/base/mac/url_conversions.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -124,12 +126,19 @@ void WellKnownChangePasswordTabHelper::OnProcessingFinished(bool is_supported) {
   if (is_supported) {
     std::move(response_policy_callback_)
         .Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
+    RecordMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
   } else {
     std::move(response_policy_callback_)
         .Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
     GURL redirect_url =
         change_password_url_service_->GetChangePasswordUrl(request_url_);
-    Redirect(redirect_url.is_valid() ? redirect_url : request_url_.GetOrigin());
+    if (redirect_url.is_valid()) {
+      RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
+      Redirect(redirect_url);
+    } else {
+      RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
+      Redirect(request_url_.GetOrigin());
+    }
   }
 }
 
@@ -141,6 +150,14 @@ void WellKnownChangePasswordTabHelper::Redirect(const GURL& url) {
                                         ui::PAGE_TRANSITION_LINK, false);
     web_state_->OpenURL(params);
   }
+}
+
+void WellKnownChangePasswordTabHelper::RecordMetric(
+    WellKnownChangePasswordResult result) {
+  ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state_);
+  ukm::builders::PasswordManager_WellKnownChangePasswordResult(source_id)
+      .SetWellKnownChangePasswordResult(static_cast<int64_t>(result))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(WellKnownChangePasswordTabHelper)

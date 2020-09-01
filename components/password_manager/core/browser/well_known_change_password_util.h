@@ -11,6 +11,15 @@ class GURL;
 
 namespace password_manager {
 
+// Used to report UKMs about the support for .well-known/change-password.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WellKnownChangePasswordResult {
+  kFallbackToOriginUrl = 0,
+  kFallbackToOverrideUrl = 1,
+  kUsedWellKnownChangePassword = 2,
+};
+
 // Path for Well-Known change password url
 // Spec: https://wicg.github.io/change-password-url/
 extern const char kWellKnownChangePasswordPath[];

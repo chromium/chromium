@@ -6,6 +6,7 @@
 
 #include "components/password_manager/core/browser/change_password_url_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
+#include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "ios/web/public/navigation/web_state_policy_decider.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -67,6 +68,8 @@ class WellKnownChangePasswordTabHelper
   void OnProcessingFinished(bool is_supported) override;
   // Redirects to a given URL in the same tab.
   void Redirect(const GURL& url);
+  // Records the given UKM metric.
+  void RecordMetric(WellKnownChangePasswordResult result);
 
   web::WebState* web_state_ = nullptr;
   ProcessingState processing_state_ = kWaitingForFirstRequest;

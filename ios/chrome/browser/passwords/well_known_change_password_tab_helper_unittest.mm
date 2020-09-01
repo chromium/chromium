@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_client.h"
@@ -24,6 +25,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -41,6 +43,7 @@ using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using password_manager::kWellKnownChangePasswordPath;
 using password_manager::kWellKnownNotExistingResourcePath;
+using password_manager::WellKnownChangePasswordResult;
 
 // ServerResponse describes how a server should respond to a given path.
 struct ServerResponse {
@@ -77,6 +80,8 @@ class TestChangePasswordUrlService
 class WellKnownChangePasswordTabHelperTest : public web::TestWebClient,
                                              public web::WebTestWithWebState {
  public:
+  using UkmBuilder =
+      ukm::builders::PasswordManager_WellKnownChangePasswordResult;
   WellKnownChangePasswordTabHelperTest() {
     feature_list_.InitAndEnableFeature(
         password_manager::features::kWellKnownChangePassword);
@@ -104,6 +109,7 @@ class WellKnownChangePasswordTabHelperTest : public web::TestWebClient,
     SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
+    test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   // Sets a response for the |test_url_loader_factory_| with the |test_server_|
@@ -112,6 +118,15 @@ class WellKnownChangePasswordTabHelperTest : public web::TestWebClient,
                             net::HttpStatusCode status_code) {
     test_url_loader_factory_.AddResponse(test_server_->GetURL(path).spec(), "",
                                          status_code);
+  }
+
+  void ExpectUkmMetric(WellKnownChangePasswordResult expected) {
+    auto entries = test_recorder_->GetEntriesByName(UkmBuilder::kEntryName);
+    // Expect one recorded metric.
+    ASSERT_EQ(1, static_cast<int>(entries.size()));
+    test_recorder_->ExpectEntryMetric(
+        entries[0], UkmBuilder::kWellKnownChangePasswordResultName,
+        static_cast<int64_t>(expected));
   }
   // Waits until the navigation is complete and waits for backgroundtasks to
   // complete. Returns false when timed out.
@@ -124,6 +139,7 @@ class WellKnownChangePasswordTabHelperTest : public web::TestWebClient,
   std::unique_ptr<EmbeddedTestServer> test_server_ =
       std::make_unique<EmbeddedTestServer>();
   TestChangePasswordUrlService* url_service_ = nullptr;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_recorder_;
 
  private:
   // Returns a response for the given request. Uses |path_response_map_| to
@@ -185,6 +201,7 @@ TEST_F(WellKnownChangePasswordTabHelperTest, SupportForChangePassword) {
                      test_server_->GetURL(kWellKnownChangePasswordPath));
   ASSERT_TRUE(WaitUntilLoaded());
   EXPECT_EQ(GetNavigatedUrl().path(), kWellKnownChangePasswordPath);
+  ExpectUkmMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
 }
 
 TEST_F(WellKnownChangePasswordTabHelperTest,
@@ -200,6 +217,7 @@ TEST_F(WellKnownChangePasswordTabHelperTest,
                      test_server_->GetURL(kWellKnownChangePasswordPath));
   ASSERT_TRUE(WaitUntilLoaded());
   EXPECT_EQ(GetNavigatedUrl().path(), "/change-password");
+  ExpectUkmMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
 }
 
 TEST_F(WellKnownChangePasswordTabHelperTest,
@@ -212,6 +230,7 @@ TEST_F(WellKnownChangePasswordTabHelperTest,
                      test_server_->GetURL(kWellKnownChangePasswordPath));
   ASSERT_TRUE(WaitUntilLoaded());
   EXPECT_EQ(GetNavigatedUrl().path(), "/");
+  ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
 }
 
 TEST_F(WellKnownChangePasswordTabHelperTest, NoSupportForChangePassword_Ok) {
@@ -223,6 +242,7 @@ TEST_F(WellKnownChangePasswordTabHelperTest, NoSupportForChangePassword_Ok) {
                      test_server_->GetURL(kWellKnownChangePasswordPath));
   ASSERT_TRUE(WaitUntilLoaded());
   EXPECT_EQ(GetNavigatedUrl().path(), "/");
+  ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
 }
 
 TEST_F(WellKnownChangePasswordTabHelperTest,
@@ -235,6 +255,7 @@ TEST_F(WellKnownChangePasswordTabHelperTest,
                      test_server_->GetURL(kWellKnownChangePasswordPath));
   ASSERT_TRUE(WaitUntilLoaded());
   EXPECT_EQ(GetNavigatedUrl().path(), "/");
+  ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
 }
 
 TEST_F(WellKnownChangePasswordTabHelperTest,
@@ -248,4 +269,5 @@ TEST_F(WellKnownChangePasswordTabHelperTest,
                      test_server_->GetURL(kWellKnownChangePasswordPath));
   ASSERT_TRUE(WaitUntilLoaded());
   EXPECT_EQ(GetNavigatedUrl().path(), kMockChangePasswordPath);
+  ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
 }
