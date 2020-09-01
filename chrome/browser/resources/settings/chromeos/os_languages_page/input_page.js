@@ -50,6 +50,15 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private {!chrome.languageSettingsPrivate.InputMethod} */
+    inputMethodToRemove_: Object,
+
+    /** @private */
+    showRemoveInputMethodDialog_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private {?settings.LanguagesMetricsProxy} */
@@ -186,6 +195,28 @@ Polymer({
   onAddInputMethodsDialogClose_() {
     this.showAddInputMethodsDialog_ = false;
     cr.ui.focusWithoutInk(assert(this.$.addInputMethod));
+  },
+
+  /**
+   * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
+   * @private
+   */
+  getRemoveInputMethodTooltip_(inputMethod) {
+    return this.i18n('removeInputMethodLabel', inputMethod.displayName);
+  },
+
+  /**
+   * @param {!{model: !{item: chrome.languageSettingsPrivate.InputMethod}}} e
+   * @private
+   */
+  onRemoveInputMethodClick_(e) {
+    this.inputMethodToRemove_ = e.model.item;
+    this.showRemoveInputMethodDialog_ = true;
+  },
+
+  /** @private */
+  onRemoveInputMethodDialogClose_() {
+    this.showRemoveInputMethodDialog_ = false;
   },
 
   /**

@@ -286,6 +286,8 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_LIST_TITLE},
       {"openOptionsPage", IDS_OS_SETTINGS_LANGUAGES_OPEN_OPTIONS_PAGE_LABEL},
       {"addInputMethodLabel", IDS_OS_SETTINGS_LANGUAGES_ADD_INPUT_METHOD_LABEL},
+      {"removeInputMethodLabel",
+       IDS_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_LABEL},
       {"spellCheckTitle", IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE},
       {"spellCheckDisabledReason",
        IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_DISABLED_REASON},

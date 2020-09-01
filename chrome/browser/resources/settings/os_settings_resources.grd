@@ -749,6 +749,12 @@
       <structure name="IDR_OS_SETTINGS_LANGUAGES_INPUT_METHOD_UTIL_JS"
                  file="chromeos/os_languages_page/input_method_util.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_DIALOG_HTML"
+                 file="chromeos/os_languages_page/remove_input_method_dialog.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_DIALOG_JS"
+                 file="chromeos/os_languages_page/remove_input_method_dialog.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_LANGUAGES_SMART_INPUTS_PAGE_HTML"
                  file="chromeos/os_languages_page/smart_inputs_page.html"
                  compress="false" type="chrome_html" />

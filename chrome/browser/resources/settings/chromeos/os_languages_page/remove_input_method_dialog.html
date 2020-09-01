@@ -1,0 +1,22 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+
+<dom-module id="os-settings-remove-input-method-dialog">
+  <template>
+    <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+      <div slot="title">[[getTitle_(inputMethod)]]</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelButtonTap_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onActionButtonTap_">
+          $i18n{remove}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="remove_input_method_dialog.js"></script>
+</dom-module>

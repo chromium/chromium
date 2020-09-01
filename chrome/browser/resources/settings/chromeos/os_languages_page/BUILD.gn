@@ -19,6 +19,7 @@ js_type_check("closure_compile") {
     ":os_languages_page",
     ":os_languages_page_v2",
     ":os_languages_section",
+    ":remove_input_method_dialog",
     ":smart_inputs_page",
     "../../languages_page:languages",
     "../../languages_page:languages_browser_proxy",
@@ -144,6 +145,9 @@ js_library("os_add_languages_dialog") {
   ]
 }
 
+js_library("remove_input_method_dialog") {
+}
+
 js_library("smart_inputs_page") {
   deps = [
     "../../prefs:prefs_behavior",
@@ -165,6 +169,7 @@ js_type_check("closure_compile_module") {
     ":os_languages_page.m",
     ":os_languages_page_v2.m",
     ":os_languages_section.m",
+    ":remove_input_method_dialog.m",
     ":smart_inputs_page.m",
   ]
 }
@@ -306,6 +311,11 @@ js_library("os_languages_section.m") {
   extra_deps = [ ":os_languages_section_module" ]
 }
 
+js_library("remove_input_method_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/remove_input_method_dialog.m.js" ]
+  extra_deps = [ ":remove_input_method_dialog_module" ]
+}
+
 js_library("smart_inputs_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/smart_inputs_page.m.js" ]
   deps = [
@@ -329,6 +339,7 @@ group("polymer3_elements") {
     ":os_languages_page_module",
     ":os_languages_page_v2_module",
     ":os_languages_section_module",
+    ":remove_input_method_dialog_module",
     ":smart_inputs_page_module",
     "../../languages_page:languages_module",
     "../../languages_page:modulize",
@@ -410,6 +421,15 @@ polymer_modulizer("input_method_options_page") {
 polymer_modulizer("input_page") {
   js_file = "input_page.js"
   html_file = "input_page.html"
+  html_type = "dom-module"
+  migrated_imports = settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("remove_input_method_dialog") {
+  js_file = "remove_input_method_dialog.js"
+  html_file = "remove_input_method_dialog.html"
   html_type = "dom-module"
   migrated_imports = settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

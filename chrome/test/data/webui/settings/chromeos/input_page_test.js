@@ -97,6 +97,40 @@ suite('input page', () => {
           router.getQueryParameters().get('id'),
           '_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng');
     });
+
+    test('removes an input method', () => {
+      const inputMethodName = 'US keyboard';
+
+      let inputMethodsList = inputPage.$.inputMethodsList;
+      let items = inputMethodsList.querySelectorAll('.list-item');
+      assertEquals(3, items.length);
+      assertEquals(
+          inputMethodName,
+          items[0].querySelector('.display-name').textContent.trim());
+      assertFalse(!!inputPage.$$('os-settings-remove-input-method-dialog'));
+
+      // opens the remove input method dialog.
+      items[0].querySelector('.icon-clear').click();
+      Polymer.dom.flush();
+
+      const dialog = inputPage.$$('os-settings-remove-input-method-dialog');
+      assertTrue(!!dialog);
+      assertTrue(
+          dialog.$$('[slot=title]').textContent.includes(inputMethodName));
+
+      // removes the input method.
+      const actionButton = dialog.$$('.action-button');
+      assertTrue(!!actionButton);
+      actionButton.click();
+      Polymer.dom.flush();
+
+      inputMethodsList = inputPage.$.inputMethodsList;
+      items = inputMethodsList.querySelectorAll('.list-item');
+      assertEquals(2, items.length);
+      assertTrue(
+          items[0].querySelector('.display-name').textContent.trim() !==
+          inputMethodName);
+    });
   });
 
   suite('add input methods dialog', () => {

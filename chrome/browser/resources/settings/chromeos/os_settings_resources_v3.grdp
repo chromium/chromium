@@ -144,6 +144,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+    <include name="IDR_OS_SETTINGS_LANGUAGES_PAGE_REMOVE_INPUT_METHOD_DIALOG_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/os_languages_page/remove_input_method_dialog.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_LANGUAGES_PAGE_SMART_INPUTS_PAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/os_languages_page/smart_inputs_page.m.js"
            use_base_dir="false"

@@ -9,6 +9,7 @@
 <link rel="import" href="add_input_methods_dialog.html">
 <link rel="import" href="input_method_util.html">
 <link rel="import" href="languages_metrics_proxy.html">
+<link rel="import" href="remove_input_method_dialog.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
@@ -101,6 +102,11 @@
                   </cr-icon-button>
                 </div>
               </template>
+              <div class="separator"></div>
+              <cr-icon-button class="icon-clear"
+                  on-click="onRemoveInputMethodClick_"
+                  title="[[getRemoveInputMethodTooltip_(item)]]">
+              </cr-icon-button>
             </div>
           </template>
           <div class="list-item">
@@ -124,6 +130,13 @@
       <os-settings-add-input-methods-dialog
           on-close="onAddInputMethodsDialogClose_">
       </os-settings-add-input-methods-dialog>
+    </template>
+    <template is="dom-if" if="[[showRemoveInputMethodDialog_]]" restamp>
+      <os-settings-remove-input-method-dialog
+          input-method="[[inputMethodToRemove_]]"
+          language-helper="[[languageHelper]]"
+          on-close="onRemoveInputMethodDialogClose_">
+      </os-settings-remove-input-method-dialog>
     </template>
   </template>
   <script src="input_page.js"></script>
