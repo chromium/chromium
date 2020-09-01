@@ -225,6 +225,14 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         posix: 'MST7MDT,M3.2.0,M11.1.0',
         region: 'America/Denver',
       }
+    },
+    memoryResult: {
+      memoryInfo: {
+        totalMemoryKib: 2147483648,
+        freeMemoryKib: 2147573648,
+        availableMemoryKib: 2147571148,
+        pageFaultsSinceLastBoot: 2199971148
+      }
     }
   });
 });

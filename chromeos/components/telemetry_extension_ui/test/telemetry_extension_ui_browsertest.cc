@@ -263,6 +263,17 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         chromeos::cros_healthd::mojom::TimezoneResult::NewTimezoneInfo(
             std::move(timezone_info));
   }
+  {
+    auto memory_info = chromeos::cros_healthd::mojom::MemoryInfo::New();
+    memory_info->total_memory_kib = 2147483648;
+    memory_info->free_memory_kib = 2147573648;
+    memory_info->available_memory_kib = 2147571148;
+    memory_info->page_faults_since_last_boot = 2199971148;
+
+    telemetry_info->memory_result =
+        chromeos::cros_healthd::mojom::MemoryResult::NewMemoryInfo(
+            std::move(memory_info));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 
