@@ -7,6 +7,7 @@
 
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
 
@@ -137,7 +138,7 @@ class SharedImageRepresentationOverlayImpl
 // Implementation of SharedImageBacking that creates a GL Texture that is backed
 // by a GLImage and stores it as a gles2::Texture. Can be used with the legacy
 // mailbox implementation.
-class SharedImageBackingGLImage
+class GPU_GLES2_EXPORT SharedImageBackingGLImage
     : public SharedImageBacking,
       public SharedImageRepresentationGLTextureClient {
  public:

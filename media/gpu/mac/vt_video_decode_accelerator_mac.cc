@@ -34,7 +34,13 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/version.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
+#include "gpu/command_buffer/service/shared_image_factory.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/filters/vp9_parser.h"
@@ -457,9 +463,12 @@ VTVideoDecodeAccelerator::Frame::Frame(int32_t bitstream_id)
 
 VTVideoDecodeAccelerator::Frame::~Frame() {}
 
+VTVideoDecodeAccelerator::PictureInfo::PictureInfo()
+    : uses_shared_images(true) {}
+
 VTVideoDecodeAccelerator::PictureInfo::PictureInfo(uint32_t client_texture_id,
                                                    uint32_t service_texture_id)
-    : bitstream_id(0),
+    : uses_shared_images(false),
       client_texture_id(client_texture_id),
       service_texture_id(service_texture_id) {}
 
@@ -1231,12 +1240,18 @@ void VTVideoDecodeAccelerator::AssignPictureBuffers(
     DCHECK(!picture_info_map_.count(picture.id()));
     assigned_picture_ids_.insert(picture.id());
     available_picture_ids_.push_back(picture.id());
-    DCHECK_LE(1u, picture.client_texture_ids().size());
-    DCHECK_LE(1u, picture.service_texture_ids().size());
-    picture_info_map_.insert(std::make_pair(
-        picture.id(),
-        std::make_unique<PictureInfo>(picture.client_texture_ids()[0],
-                                      picture.service_texture_ids()[0])));
+    if (picture.client_texture_ids().empty() &&
+        picture.service_texture_ids().empty()) {
+      picture_info_map_.insert(
+          std::make_pair(picture.id(), std::make_unique<PictureInfo>()));
+    } else {
+      DCHECK_LE(1u, picture.client_texture_ids().size());
+      DCHECK_LE(1u, picture.service_texture_ids().size());
+      picture_info_map_.insert(std::make_pair(
+          picture.id(),
+          std::make_unique<PictureInfo>(picture.client_texture_ids()[0],
+                                        picture.service_texture_ids()[0])));
+    }
   }
 
   // Pictures are not marked as uncleared until after this method returns, and
@@ -1260,9 +1275,13 @@ void VTVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_id) {
 
   // Drop references to allow the underlying buffer to be released.
   PictureInfo* picture_info = it->second.get();
-  gl_client_.bind_image.Run(picture_info->client_texture_id,
-                            gpu::GetPlatformSpecificTextureTarget(), nullptr,
-                            false);
+  if (picture_info->uses_shared_images) {
+    picture_info->scoped_shared_image = nullptr;
+  } else {
+    gl_client_.bind_image.Run(picture_info->client_texture_id,
+                              gpu::GetPlatformSpecificTextureTarget(), nullptr,
+                              false);
+  }
   picture_info->gl_image = nullptr;
   picture_info->bitstream_id = 0;
 
@@ -1482,14 +1501,22 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   PictureInfo* picture_info = it->second.get();
   DCHECK(!picture_info->gl_image);
 
+  const gfx::BufferFormat buffer_format =
+      config_.profile == VP9PROFILE_PROFILE2
+          ? gfx::BufferFormat::P010
+          : gfx::BufferFormat::YUV_420_BIPLANAR;
+  // TODO(https://crbug.com/1108909): BGRA is not an appropriate value for
+  // these parameters.
+  const GLenum gl_format = GL_BGRA_EXT;
+  const viz::ResourceFormat viz_resource_format =
+      viz::ResourceFormat::BGRA_8888;
+
   scoped_refptr<gl::GLImageIOSurface> gl_image(
-      gl::GLImageIOSurface::Create(frame.image_size, GL_BGRA_EXT));
+      gl::GLImageIOSurface::Create(frame.image_size, gl_format));
   if (!gl_image->InitializeWithCVPixelBuffer(
           frame.image.get(),
           gfx::GenericSharedMemoryId(g_cv_pixel_buffer_ids.GetNext()),
-          config_.profile == VP9PROFILE_PROFILE2
-              ? gfx::BufferFormat::P010
-              : gfx::BufferFormat::YUV_420_BIPLANAR)) {
+          buffer_format)) {
     NOTIFY_STATUS("Failed to initialize GLImageIOSurface", PLATFORM_FAILURE,
                   SFT_PLATFORM_ERROR);
   }
@@ -1497,12 +1524,62 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   gfx::ColorSpace color_space = GetImageBufferColorSpace(frame.image);
   gl_image->SetColorSpaceForYUVToRGBConversion(color_space);
 
-  if (!gl_client_.bind_image.Run(picture_info->client_texture_id,
-                                 gpu::GetPlatformSpecificTextureTarget(),
-                                 gl_image, false)) {
-    DLOG(ERROR) << "Failed to bind image";
-    NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
-    return false;
+  scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
+  if (picture_info->uses_shared_images) {
+    gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();
+    DCHECK(shared_image_stub);
+    const uint32_t shared_image_usage =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+
+    gpu::SharedImageBackingGLCommon::InitializeGLTextureParams gl_params;
+    gl_params.target = GL_TEXTURE_RECTANGLE_ARB;
+    gl_params.internal_format = gl_format;
+    gl_params.format = gl_format;
+    gl_params.type = GL_UNSIGNED_BYTE;
+    gl_params.is_cleared = true;
+    gpu::SharedImageBackingGLCommon::UnpackStateAttribs gl_attribs;
+
+    // TODO(https://crbug.com/1108909): Plumb the correct value of
+    // |is_passthrough|, or deprecate the non-passthrough path.
+    const bool is_passthrough = true;
+    auto shared_image = std::make_unique<gpu::SharedImageBackingGLImage>(
+        gl_image, mailbox, viz_resource_format, frame.image_size, color_space,
+        kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,
+        gl_params, gl_attribs, is_passthrough);
+
+    const bool success = shared_image_stub->factory()->RegisterBacking(
+        std::move(shared_image), /* legacy_mailbox */ true);
+    if (!success) {
+      DLOG(ERROR) << "Failed to register shared image";
+      NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
+      return false;
+    }
+
+    // Wrap the destroy callback in a lambda that ensures that it be called on
+    // the appropriate thread.
+    auto destroy_shared_image_lambda =
+        [](gpu::SharedImageStub::SharedImageDestructionCallback callback,
+           scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+          task_runner->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), gpu::SyncToken()));
+        };
+    auto destroy_shared_image_callback = base::BindOnce(
+        destroy_shared_image_lambda,
+        shared_image_stub->GetSharedImageDestructionCallback(mailbox),
+        gpu_task_runner_);
+    scoped_shared_image = scoped_refptr<Picture::ScopedSharedImage>(
+        new Picture::ScopedSharedImage(
+            mailbox, GL_TEXTURE_RECTANGLE_ARB,
+            std::move(destroy_shared_image_callback)));
+  } else {
+    if (!gl_client_.bind_image.Run(picture_info->client_texture_id,
+                                   gpu::GetPlatformSpecificTextureTarget(),
+                                   gl_image, false)) {
+      DLOG(ERROR) << "Failed to bind image";
+      NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
+      return false;
+    }
   }
   picture_info->gl_image = gl_image;
   picture_info->bitstream_id = frame.bitstream_id;
@@ -1524,6 +1601,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   // we don't need to use them when the image is never bound? Bindings are
   // typically only created when WebGL is in use.
   picture.set_read_lock_fences_enabled(true);
+  picture.set_scoped_shared_image(scoped_shared_image);
   client_->PictureReady(std::move(picture));
   return true;
 }

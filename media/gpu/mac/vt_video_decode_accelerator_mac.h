@@ -10,8 +10,6 @@
 #include <map>
 #include <memory>
 
-#include <VideoToolbox/VideoToolbox.h>
-
 #include "base/containers/queue.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/macros.h"
@@ -26,7 +24,12 @@
 #include "media/video/h264_poc.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_io_surface.h"
+
+// This must be included after gl_bindings.h, or the various GL headers on the
+// system and in the source tree will conflict with each other.
+#include <VideoToolbox/VideoToolbox.h>
 
 namespace media {
 class VP9ConfigChangeDetector;
@@ -130,16 +133,26 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   };
 
   struct PictureInfo {
+    // A PictureInfo that specifies no texture IDs will be used for shared
+    // images.
+    PictureInfo();
     PictureInfo(uint32_t client_texture_id, uint32_t service_texture_id);
     ~PictureInfo();
 
+    // If true, then |scoped_shared_image| is used and |client_texture_id| and
+    // |service_texture_id| are not used.
+    const bool uses_shared_images;
+
     // Information about the currently bound image, for OnMemoryDump().
     scoped_refptr<gl::GLImageIOSurface> gl_image;
-    int32_t bitstream_id;
+    int32_t bitstream_id = 0;
 
     // Texture IDs for the image buffer.
-    const uint32_t client_texture_id;
-    const uint32_t service_texture_id;
+    const uint32_t client_texture_id = 0;
+    const uint32_t service_texture_id = 0;
+
+    // The shared image holder that will be passed to the client.
+    scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(PictureInfo);

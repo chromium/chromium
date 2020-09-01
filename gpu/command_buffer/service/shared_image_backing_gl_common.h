@@ -13,7 +13,7 @@ namespace gpu {
 
 // Common helper functions for SharedImageBackingGLTexture and
 // SharedImageBackingPassthroughGLImage.
-class SharedImageBackingGLCommon {
+class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
  public:
   // These parameters are used to explicitly initialize a GL texture.
   struct InitializeGLTextureParams {

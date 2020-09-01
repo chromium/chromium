@@ -47,6 +47,7 @@ source_set("mac") {
     ":vt_beta_stubs",
     "//base",
     "//components/crash/core/common:crash_key",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
     "//media",
     "//media/gpu:common",
