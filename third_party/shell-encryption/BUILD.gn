@@ -94,63 +94,65 @@ source_set("shell_encryption") {
   ]
 }
 
-source_set("shell_encryption_test_library") {
-  testonly = true
-  public_configs = [ ":shell_encryption_config1" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  public = [
-    "src/prng/integral_prng_testing_types.h",
-    "src/testing/coefficient_polynomial.h",
-    "src/testing/coefficient_polynomial_ciphertext.h",
-    "src/testing/parameters.h",
-    "src/testing/protobuf_matchers.h",
-    "src/testing/status_matchers.h",
-    "src/testing/status_testing.h",
-    "src/testing/testing_prng.h",
-    "src/testing/testing_utils.h",
-  ]
-  public_deps = [
-    ":coefficient_polynomial_proto",
-    ":shell_encryption",
-    "//testing/gmock:gmock",
-    "//testing/gtest:gtest",
-  ]
-}
+if (is_chromeos) {
+  source_set("shell_encryption_test_library") {
+    testonly = true
+    public_configs = [ ":shell_encryption_config1" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [
+      "src/prng/integral_prng_testing_types.h",
+      "src/testing/coefficient_polynomial.h",
+      "src/testing/coefficient_polynomial_ciphertext.h",
+      "src/testing/parameters.h",
+      "src/testing/protobuf_matchers.h",
+      "src/testing/status_matchers.h",
+      "src/testing/status_testing.h",
+      "src/testing/testing_prng.h",
+      "src/testing/testing_utils.h",
+    ]
+    public_deps = [
+      ":coefficient_polynomial_proto",
+      ":shell_encryption",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest",
+    ]
+  }
 
-source_set("shell_encryption_test") {
-  testonly = true
-  public_configs = [ ":shell_encryption_config1" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  sources = [
-    "src/bits_util_test.cc",
-    "src/context_test.cc",
-    "src/error_params_test.cc",
-    "src/galois_key_test.cc",
-    "src/int256_test.cc",
-    "src/montgomery_test.cc",
-    "src/ntt_parameters_test.cc",
-    "src/polynomial_test.cc",
-    "src/prng/prng_test.cc",
-    "src/prng/single_thread_chacha_prng_test.cc",
-    "src/relinearization_key_test.cc",
-    "src/sample_error_test.cc",
-    "src/status_macros_test.cc",
-    "src/statusor_test.cc",
-    "src/symmetric_encryption_test.cc",
-    "src/symmetric_encryption_with_prng_test.cc",
-    "src/testing/coefficient_polynomial_ciphertext_test.cc",
-    "src/testing/coefficient_polynomial_test.cc",
-    "src/testing/protobuf_matchers_test.cc",
-    "src/transcription_test.cc",
-  ]
-  deps = [
-    ":shell_encryption_test_library",
-    "//testing/gtest:gtest_main",
-  ]
-}
+  source_set("shell_encryption_test") {
+    testonly = true
+    public_configs = [ ":shell_encryption_config1" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    sources = [
+      "src/bits_util_test.cc",
+      "src/context_test.cc",
+      "src/error_params_test.cc",
+      "src/galois_key_test.cc",
+      "src/int256_test.cc",
+      "src/montgomery_test.cc",
+      "src/ntt_parameters_test.cc",
+      "src/polynomial_test.cc",
+      "src/prng/prng_test.cc",
+      "src/prng/single_thread_chacha_prng_test.cc",
+      "src/relinearization_key_test.cc",
+      "src/sample_error_test.cc",
+      "src/status_macros_test.cc",
+      "src/statusor_test.cc",
+      "src/symmetric_encryption_test.cc",
+      "src/symmetric_encryption_with_prng_test.cc",
+      "src/testing/coefficient_polynomial_ciphertext_test.cc",
+      "src/testing/coefficient_polynomial_test.cc",
+      "src/testing/protobuf_matchers_test.cc",
+      "src/transcription_test.cc",
+    ]
+    deps = [
+      ":shell_encryption_test_library",
+      "//testing/gtest:gtest_main",
+    ]
+  }
 
-test("shell_encryption_unittests") {
-  deps = [ ":shell_encryption_test" ]
+  test("shell_encryption_unittests") {
+    deps = [ ":shell_encryption_test" ]
+  }
 }

@@ -75,29 +75,31 @@ source_set("private_membership") {
   ]
 }
 
-test("private_membership_unittests") {
-  testonly = true
-  public_configs = [ ":private_membership_config" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  public = [ "src/internal/testing/constants.h" ]
-  sources = [
-    "src/internal/aes_ctr_256_with_fixed_iv_test.cc",
-    "src/internal/crypto_utils_test.cc",
-    "src/internal/encrypted_bucket_id_test.cc",
-    "src/internal/hashed_bucket_id_test.cc",
-    "src/internal/id_utils_test.cc",
-    "src/internal/oprf_utils_test.cc",
-    "src/internal/rlwe_id_utils_test.cc",
-    "src/internal/utils_test.cc",
-    "src/membership_response_map_test.cc",
-    "src/private_membership_rlwe_client_regression_test.cc",
-  ]
-  public_deps = [
-    ":private_membership",
-    ":private_membership_proto",
-    "//testing/gmock:gmock",
-    "//testing/gtest:gtest_main",
-    "//third_party/shell-encryption:shell_encryption_test_library",
-  ]
+if (is_chromeos) {
+  test("private_membership_unittests") {
+    testonly = true
+    public_configs = [ ":private_membership_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [ "src/internal/testing/constants.h" ]
+    sources = [
+      "src/internal/aes_ctr_256_with_fixed_iv_test.cc",
+      "src/internal/crypto_utils_test.cc",
+      "src/internal/encrypted_bucket_id_test.cc",
+      "src/internal/hashed_bucket_id_test.cc",
+      "src/internal/id_utils_test.cc",
+      "src/internal/oprf_utils_test.cc",
+      "src/internal/rlwe_id_utils_test.cc",
+      "src/internal/utils_test.cc",
+      "src/membership_response_map_test.cc",
+      "src/private_membership_rlwe_client_regression_test.cc",
+    ]
+    public_deps = [
+      ":private_membership",
+      ":private_membership_proto",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest_main",
+      "//third_party/shell-encryption:shell_encryption_test_library",
+    ]
+  }
 }
