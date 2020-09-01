@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/grit/chromeos_scanning_app_resources.h"
 #include "chromeos/grit/chromeos_scanning_app_resources_map.h"
@@ -45,8 +46,9 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 }  // namespace
 
-ScanningUI::ScanningUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+ScanningUI::ScanningUI(content::WebUI* web_ui, BindScanServiceCallback callback)
+    : ui::MojoWebUIController(web_ui),
+      bind_pending_receiver_callback_(std::move(callback)) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIScanningAppHost));
   html_source->OverrideContentSecurityPolicy(
@@ -59,10 +61,20 @@ ScanningUI::ScanningUI(content::WebUI* web_ui)
   SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
                        IDR_SCANNING_APP_INDEX_HTML);
 
+  html_source->AddResourcePath("scanning.mojom-lite.js",
+                               IDR_SCANNING_MOJO_LITE_JS);
+
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }
 
 ScanningUI::~ScanningUI() = default;
+
+void ScanningUI::BindInterface(
+    mojo::PendingReceiver<scanning::mojom::ScanService> pending_receiver) {
+  bind_pending_receiver_callback_.Run(std::move(pending_receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ScanningUI)
 
 }  // namespace chromeos

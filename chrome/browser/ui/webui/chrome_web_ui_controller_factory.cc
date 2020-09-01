@@ -161,6 +161,8 @@
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
+#include "chrome/browser/chromeos/scanning/scan_service.h"
+#include "chrome/browser/chromeos/scanning/scan_service_factory.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/chromeos/web_applications/chrome_help_app_ui_delegate.h"
@@ -362,6 +364,24 @@ NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>(
   return new chromeos::printing::printing_manager::PrintManagementUI(
       web_ui,
       base::BindRepeating(&BindPrintManagement, Profile::FromWebUI(web_ui)));
+}
+
+void BindScanService(
+    Profile* profile,
+    mojo::PendingReceiver<chromeos::scanning::mojom::ScanService>
+        pending_receiver) {
+  chromeos::ScanService* service =
+      chromeos::ScanServiceFactory::GetForBrowserContext(profile);
+  if (service)
+    service->BindInterface(std::move(pending_receiver));
+}
+
+template <>
+WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
+                                                const GURL& url) {
+  return new chromeos::ScanningUI(
+      web_ui,
+      base::BindRepeating(&BindScanService, Profile::FromWebUI(web_ui)));
 }
 
 void BindMultiDeviceSetup(

@@ -14,8 +14,13 @@
     <includes>
       <!-- Privileged app host contents. -->
       <include name="IDR_SCANNING_APP_INDEX_HTML" file="index.html" type="BINDATA" compress="gzip" />
+      <include name="IDR_SCANNING_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/scanning/mojom/scanning.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SCANNING_APP_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanning_app.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_ICON" file="app_icon_192.png" type="BINDATA" />
     </includes>
+
+    <structures>
+      <structure name="IDR_SCANNING_APP_MOJO_INTERFACE_PROVIDER_JS" file="mojo_interface_provider.js" type="chrome_html" />
+    </structures>
   </release>
 </grit>

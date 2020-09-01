@@ -210,7 +210,10 @@ grit("print_management_resources") {
 grit("scanning_app_resources") {
   source = "../components/scanning/resources/scanning_app_resources.grd"
 
-  deps = [ "../components/scanning/resources:web_components" ]
+  deps = [
+    "../components/scanning/mojom:mojom_js",
+    "../components/scanning/resources:web_components",
+  ]
 
   outputs = [
     "chromeos_scanning_app_resources.pak",

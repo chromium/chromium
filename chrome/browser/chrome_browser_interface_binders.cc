@@ -175,6 +175,8 @@
 #include "chromeos/components/multidevice/debug_webui/proximity_auth_ui.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "chromeos/components/print_management/print_management_ui.h"
+#include "chromeos/components/scanning/mojom/scanning.mojom.h"
+#include "chromeos/components/scanning/scanning_ui.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -639,6 +641,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines,
       chromeos::NetworkUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<chromeos::scanning::mojom::ScanService,
+                                         chromeos::ScanningUI>(map);
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)

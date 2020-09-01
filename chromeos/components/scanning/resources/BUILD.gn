@@ -9,12 +9,23 @@ import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":scanning_app" ]
+  deps = [
+    ":mojo_interface_provider",
+    ":scanning_app",
+  ]
 }
 
 js_library("scanning_app") {
   deps = [
+    ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 

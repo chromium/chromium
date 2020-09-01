@@ -368,9 +368,10 @@
   },
   "chromeos/components/scanning/resources/scanning_app_resources.grd": {
     "includes": [2645],
+    "structures": [2650],
   },
   "chromeos/components/telemetry_extension_ui/resources/telemetry_extension_resources.grd": {
-    "includes": [2650],
+    "includes": [2655],
   },
   "chromeos/resources/chromeos_resources.grd": {
     "includes": [2660],
