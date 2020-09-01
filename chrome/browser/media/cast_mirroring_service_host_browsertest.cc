@@ -182,18 +182,6 @@ class CastMirroringServiceHostBrowserTest
     host_.reset();
   }
 
-  void CloseWebContents() {
-    TabStripModel* const tab_strip = browser()->tab_strip_model();
-    content::WebContents* const web_contents =
-        tab_strip->GetActiveWebContents();
-    // Add a new tab so the browser doesn't close.
-    AddBlankTabAndShow(browser());
-    EXPECT_CALL(*this, DidStop()).Times(1);
-    tab_strip->CloseWebContentsAt(
-        tab_strip->GetIndexOfWebContents(web_contents),
-        TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
-  }
-
   void RequestRefreshFrame() {
     base::RunLoop run_loop;
     EXPECT_CALL(*video_frame_receiver_, OnBufferReadyCall(_))
@@ -265,11 +253,6 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, CaptureTabAudio) {
   StartTabMirroring();
   CreateAudioLoopbackStream();
   StopMirroring();
-}
-
-IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabClosed) {
-  StartTabMirroring();
-  CloseWebContents();
 }
 
 IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
