@@ -6,6 +6,7 @@ module gfx.mojom;
 
 import "skia/public/mojom/bitmap.mojom";
 
+[Stable]
 struct ImageSkiaRep {
   // Transport of the bitmap in this representation.
   skia.mojom.Bitmap bitmap;
@@ -17,6 +18,7 @@ struct ImageSkiaRep {
 // Mojo transport for an ImageSkia via shared buffer. Note that transporting an
 // ImageSkia over mojo will load all of its image representations for supported
 // scales.
+[Stable]
 struct ImageSkia {
   array<ImageSkiaRep> image_reps;
 };
