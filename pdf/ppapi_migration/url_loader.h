@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/containers/span.h"
@@ -16,6 +17,12 @@
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/cpp/instance_handle.h"
 #include "ppapi/cpp/url_loader.h"
+#include "third_party/blink/public/web/web_associated_url_loader_client.h"
+
+namespace blink {
+class WebAssociatedURLLoader;
+class WebLocalFrame;
+}  // namespace blink
 
 namespace chrome_pdf {
 
@@ -65,7 +72,6 @@ struct UrlResponse final {
 };
 
 // Abstraction for a Blink or Pepper URL loader.
-// TODO(crbug.com/1099022): Implement the Blink URL loader.
 class UrlLoader : public base::RefCounted<UrlLoader> {
  public:
   UrlLoader(const UrlLoader&) = delete;
@@ -99,6 +105,59 @@ class UrlLoader : public base::RefCounted<UrlLoader> {
   friend class base::RefCounted<UrlLoader>;
 
   UrlResponse response_;
+};
+
+// A Blink URL loader. This implementation tries to emulate a combination of
+// `content::PepperURLLoaderHost` and `ppapi::proxy::URLLoaderResource`.
+class BlinkUrlLoader final : public UrlLoader,
+                             public blink::WebAssociatedURLLoaderClient {
+ public:
+  // Client interface required by `BlinkUrlLoader`. Instances should be passed
+  // using weak pointers, as the loader can be shared, and may outlive the
+  // client.
+  class Client {
+   public:
+    // Returns the current local frame. May return `nullptr` if the local frame
+    // no longer exists.
+    virtual blink::WebLocalFrame* GetFrame() = 0;
+
+   protected:
+    ~Client() = default;
+  };
+
+  explicit BlinkUrlLoader(base::WeakPtr<Client> client);
+  BlinkUrlLoader(const BlinkUrlLoader&) = delete;
+  BlinkUrlLoader& operator=(const BlinkUrlLoader&) = delete;
+
+  // UrlLoader:
+  void GrantUniversalAccess() override;
+  void Open(const UrlRequest& request, ResultCallback callback) override;
+  bool GetDownloadProgress(int64_t& bytes_received,
+                           int64_t& total_bytes_to_be_received) const override;
+  void ReadResponseBody(base::span<char> buffer,
+                        ResultCallback callback) override;
+  void Close() override;
+
+  // blink::WebAssociatedURLLoaderClient:
+  bool WillFollowRedirect(
+      const blink::WebURL& new_url,
+      const blink::WebURLResponse& redirect_response) override;
+  void DidSendData(uint64_t bytes_sent,
+                   uint64_t total_bytes_to_be_sent) override;
+  void DidReceiveResponse(const blink::WebURLResponse& response) override;
+  void DidDownloadData(uint64_t data_length) override;
+  void DidReceiveData(const char* data, int data_length) override;
+  void DidReceiveCachedMetadata(const char* data, int data_length) override;
+  void DidFinishLoading() override;
+  void DidFail(const blink::WebURLError& error) override;
+
+ private:
+  // Private because the class is RefCounted.
+  ~BlinkUrlLoader() override;
+
+  base::WeakPtr<Client> client_;
+
+  std::unique_ptr<blink::WebAssociatedURLLoader> blink_loader_;
 };
 
 // A Pepper URL loader.

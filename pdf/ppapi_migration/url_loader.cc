@@ -10,6 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/trusted/ppb_url_loader_trusted.h"
@@ -20,6 +23,9 @@
 #include "ppapi/cpp/url_request_info.h"
 #include "ppapi/cpp/url_response_info.h"
 #include "ppapi/cpp/var.h"
+#include "third_party/blink/public/web/web_associated_url_loader.h"
+#include "third_party/blink/public/web/web_associated_url_loader_options.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace chrome_pdf {
 
@@ -39,6 +45,91 @@ UrlResponse::~UrlResponse() = default;
 
 UrlLoader::UrlLoader() = default;
 UrlLoader::~UrlLoader() = default;
+
+BlinkUrlLoader::BlinkUrlLoader(base::WeakPtr<Client> client)
+    : client_(std::move(client)) {}
+
+BlinkUrlLoader::~BlinkUrlLoader() = default;
+
+void BlinkUrlLoader::GrantUniversalAccess() {
+  NOTIMPLEMENTED();
+}
+
+// Modeled on `content::PepperURLLoaderHost::OnHostMsgOpen()`.
+void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
+  if (!client_) {
+    std::move(callback).Run(PP_ERROR_FAILED);
+    return;
+  }
+
+  blink::WebLocalFrame* frame = client_->GetFrame();
+  if (!frame) {
+    std::move(callback).Run(PP_ERROR_FAILED);
+    return;
+  }
+
+  blink::WebAssociatedURLLoaderOptions options;
+  blink_loader_.reset(frame->CreateAssociatedURLLoader(options));
+  DCHECK(blink_loader_);
+
+  NOTIMPLEMENTED();
+}
+
+bool BlinkUrlLoader::GetDownloadProgress(
+    int64_t& bytes_received,
+    int64_t& total_bytes_to_be_received) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void BlinkUrlLoader::ReadResponseBody(base::span<char> buffer,
+                                      ResultCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void BlinkUrlLoader::Close() {
+  NOTIMPLEMENTED();
+}
+
+bool BlinkUrlLoader::WillFollowRedirect(
+    const blink::WebURL& new_url,
+    const blink::WebURLResponse& redirect_response) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void BlinkUrlLoader::DidSendData(uint64_t bytes_sent,
+                                 uint64_t total_bytes_to_be_sent) {
+  // Doesn't apply to PDF viewer requests.
+  NOTREACHED();
+}
+
+void BlinkUrlLoader::DidReceiveResponse(const blink::WebURLResponse& response) {
+  NOTIMPLEMENTED();
+}
+
+void BlinkUrlLoader::DidDownloadData(uint64_t data_length) {
+  // Doesn't apply to PDF viewer requests.
+  NOTREACHED();
+}
+
+void BlinkUrlLoader::DidReceiveData(const char* data, int data_length) {
+  NOTIMPLEMENTED();
+}
+
+void BlinkUrlLoader::DidReceiveCachedMetadata(const char* data,
+                                              int data_length) {
+  // Doesn't apply to PDF viewer requests.
+  NOTREACHED();
+}
+
+void BlinkUrlLoader::DidFinishLoading() {
+  NOTIMPLEMENTED();
+}
+
+void BlinkUrlLoader::DidFail(const blink::WebURLError& error) {
+  NOTIMPLEMENTED();
+}
 
 PepperUrlLoader::PepperUrlLoader(pp::InstanceHandle plugin_instance)
     : plugin_instance_(plugin_instance), pepper_loader_(plugin_instance) {}

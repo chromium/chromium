@@ -208,6 +208,7 @@ if (enable_pdf) {
       "//base",
       "//ppapi/cpp:objects",
       "//skia",
+      "//third_party/blink/public:blink",
       "//ui/base",
     ]
   }
