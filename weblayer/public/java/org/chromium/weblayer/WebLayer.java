@@ -157,6 +157,11 @@ public class WebLayer {
         return sLoader;
     }
 
+    /** Returns whether WebLayer loading has at least started. */
+    static boolean hasWebLayerInitializationStarted() {
+        return sLoader != null;
+    }
+
     IWebLayer getImpl() {
         return mImpl;
     }
