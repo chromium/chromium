@@ -269,11 +269,9 @@ cr.define('settings', function() {
     r.MANAGE_TTS_SETTINGS = createSubpage(
         r.MANAGE_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
         Subpage.kTextToSpeech);
-    if (loadTimeData.getBoolean('showExperimentalAccessibilitySwitchAccess')) {
-      r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
-          r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
-          Subpage.kSwitchAccessOptions);
-    }
+    r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
+        r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
+        Subpage.kSwitchAccessOptions);
     r.MANAGE_CAPTION_SETTINGS = createSubpage(
         r.MANAGE_ACCESSIBILITY, mojom.CAPTIONS_SUBPAGE_PATH, Subpage.kCaptions);
 

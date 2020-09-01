@@ -157,7 +157,7 @@
         pref="{{prefs.settings.a11y.caret_highlight}}"
         label="$i18n{caretHighlightLabel}">
     </settings-toggle-button>
-    <template is="dom-if" if="[[shouldShowExperimentalSwitchAccess_]]">
+    <template is="dom-if" if="[[!isKioskModeActive_]]">
       <settings-toggle-button
           class="hr"
           pref="{{prefs.settings.a11y.switch_access.enabled}}"
@@ -171,8 +171,6 @@
             role-description="$i18n{subpageArrowRoleDescription}" embedded>
         </cr-link-row>
       </iron-collapse>
-    </template>
-    <template is="dom-if" if="[[!isKioskModeActive_]]">
       <cr-link-row id="keyboardSubpageButton" class="hr"
           label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardTap_"
           sub-label="$i18n{keyboardSettingsDescription}"

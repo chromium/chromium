@@ -51,18 +51,6 @@ Polymer({
     },
 
     /**
-     * Whether to show Switch Access.
-     * @private {boolean}
-     */
-    showExperimentalSwitchAccess_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean(
-            'showExperimentalAccessibilitySwitchAccess');
-      },
-    },
-
-    /**
      * Whether the user is in kiosk mode.
      * @private
      */

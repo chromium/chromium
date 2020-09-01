@@ -201,12 +201,6 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTextToSpeechVoice}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetA11ySwitchAccessSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_ENABLE_SWITCH_ACCESS,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -300,11 +294,6 @@ bool AreLiveCaptionsAllowed() {
 
 bool IsCursorColorAllowed() {
   return features::IsAccessibilityCursorColorEnabled();
-}
-
-bool IsSwitchAccessAllowed() {
-  // TODO(anastasi): Remove this method.
-  return true;
 }
 
 bool IsSwitchAccessTextAllowed() {
@@ -530,8 +519,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("a11yLearnMoreUrl",
                          chrome::kChromeAccessibilityHelpURL);
 
-  html_source->AddBoolean("showExperimentalAccessibilitySwitchAccess",
-                          IsSwitchAccessAllowed());
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
@@ -658,7 +645,6 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.RemoveSearchTags(GetA11yLabelsSearchConcepts());
   }
 
-  updater.RemoveSearchTags(GetA11ySwitchAccessSearchConcepts());
   updater.RemoveSearchTags(GetA11ySwitchAccessOnSearchConcepts());
   updater.RemoveSearchTags(GetA11ySwitchAccessKeyboardSearchConcepts());
 
@@ -673,11 +659,6 @@ void AccessibilitySection::UpdateSearchTags() {
   } else {
     updater.RemoveSearchTags(GetA11yCursorColorSearchConcepts());
   }
-
-  if (!IsSwitchAccessAllowed())
-    return;
-
-  updater.AddSearchTags(GetA11ySwitchAccessSearchConcepts());
 
   if (!pref_service_->GetBoolean(
           ash::prefs::kAccessibilitySwitchAccessEnabled)) {

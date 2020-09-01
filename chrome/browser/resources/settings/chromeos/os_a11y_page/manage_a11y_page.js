@@ -144,14 +144,6 @@ Polymer({
       },
     },
 
-    allowExperimentalSwitchAccess_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean(
-            'showExperimentalAccessibilitySwitchAccess');
-      },
-    },
-
     /** @private */
     shouldShowExperimentalCursorColor_: {
       type: Boolean,
@@ -170,14 +162,6 @@ Polymer({
       value() {
         return loadTimeData.getBoolean('isKioskModeActive');
       }
-    },
-
-    /** @private */
-    shouldShowExperimentalSwitchAccess_: {
-      type: Boolean,
-      computed: 'computeShouldShowExperimentalSwitchAccess_(' +
-          'allowExperimentalSwitchAccess_,' +
-          'isKioskModeActive_)',
     },
 
     /** @private */
@@ -501,13 +485,5 @@ Polymer({
    */
   shouldShowAdditionalFeaturesLink_(isKiosk, isGuest) {
     return !isKiosk && !isGuest;
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowExperimentalSwitchAccess_() {
-    return this.allowExperimentalSwitchAccess_ && !this.isKioskModeActive_;
   },
 });
