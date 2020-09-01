@@ -95,6 +95,7 @@ class ScriptExecutorDelegate {
   virtual void SetProgress(int progress) = 0;
   virtual void SetProgressActiveStep(int active_step) = 0;
   virtual void SetProgressVisible(bool visible) = 0;
+  virtual void SetProgressBarErrorState(bool error) = 0;
   virtual void SetStepProgressBarConfiguration(
       const ShowProgressBarProto::StepProgressBarConfiguration&
           configuration) = 0;

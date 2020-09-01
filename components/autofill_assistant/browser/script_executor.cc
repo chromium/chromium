@@ -560,6 +560,10 @@ void ScriptExecutor::SetProgressVisible(bool visible) {
   delegate_->SetProgressVisible(visible);
 }
 
+void ScriptExecutor::SetProgressBarErrorState(bool error) {
+  delegate_->SetProgressBarErrorState(error);
+}
+
 void ScriptExecutor::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {
   delegate_->SetStepProgressBarConfiguration(configuration);

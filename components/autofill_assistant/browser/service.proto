@@ -1189,6 +1189,12 @@ message ShowProgressBarProto {
     int32 active_step = 8;
   }
 
+  // Whether the step progress bar should go into an error state.
+  // If the active step is smaller than |N|, this will simply mark the last icon
+  // as failed. If the active step is |N|, meaning that all steps have been
+  // completed, this will mark the entire progress bar as failed.
+  optional bool error_state = 10;
+
   // Hide the progress bar in the UI.
   optional bool hide = 7;
 

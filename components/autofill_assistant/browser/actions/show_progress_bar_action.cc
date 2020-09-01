@@ -59,6 +59,12 @@ void ShowProgressBarAction::InternalProcessAction(
       }
 
       delegate_->SetProgressActiveStep(active_step);
+
+      if (proto_.show_progress_bar().has_error_state()) {
+        delegate_->SetProgressBarErrorState(
+            proto_.show_progress_bar().error_state());
+      }
+
       break;
     }
     default:

@@ -253,6 +253,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(SetProgress, void(int progress));
   MOCK_METHOD1(SetProgressActiveStep, void(int active_step));
   MOCK_METHOD1(SetProgressVisible, void(bool visible));
+  MOCK_METHOD1(SetProgressBarErrorState, void(bool error));
   MOCK_METHOD1(SetStepProgressBarConfiguration,
                void(const ShowProgressBarProto::StepProgressBarConfiguration&
                         configuration));

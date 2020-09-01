@@ -345,6 +345,9 @@ class ActionDelegate {
   // Shows the progress bar when |visible| is true. Hides it when false.
   virtual void SetProgressVisible(bool visible) = 0;
 
+  // Sets the error state of the progress bar to |error|.
+  virtual void SetProgressBarErrorState(bool error) = 0;
+
   // Sets a new step progress bar configuration.
   virtual void SetStepProgressBarConfiguration(
       const ShowProgressBarProto::StepProgressBarConfiguration&

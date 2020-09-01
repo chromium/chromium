@@ -107,6 +107,8 @@ void FakeScriptExecutorDelegate::SetProgressActiveStep(int active_step) {}
 
 void FakeScriptExecutorDelegate::SetProgressVisible(bool visible) {}
 
+void FakeScriptExecutorDelegate::SetProgressBarErrorState(bool error) {}
+
 void FakeScriptExecutorDelegate::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {}
 
