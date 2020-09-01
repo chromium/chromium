@@ -156,9 +156,8 @@ int g_min_log_level = 0;
 int g_logging_destination = LOG_DEFAULT;
 
 #if defined(OS_CHROMEOS)
-// Specifies the format of log header. If set to LOG_FORMAT_SYSLOG, each
-// LogMessage will generate a syslog-like log header.
-LogFormat g_log_format = LogFormat::LOG_FORMAT_CHROME;
+// Specifies the format of log header for chrome os.
+LogFormat g_log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif
 
 // For LOG_ERROR and above, always print to stderr.

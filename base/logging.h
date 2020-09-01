@@ -218,8 +218,9 @@ enum LogLockingState { LOCK_LOG_FILE, DONT_LOCK_LOG_FILE };
 enum OldFileDeletionState { DELETE_OLD_LOG_FILE, APPEND_TO_OLD_LOG_FILE };
 
 #if defined(OS_CHROMEOS)
-// Used to set log format for Chrome OS. It is set to LOG_FORMAT_CHROME by
-// default which is the traditional Chrome log format.
+// Defines the log message prefix format to use.
+// LOG_FORMAT_SYSLOG indicates syslog-like message prefixes.
+// LOG_FORMAT_CHROME indicates the normal Chrome format.
 enum class BASE_EXPORT LogFormat { LOG_FORMAT_CHROME, LOG_FORMAT_SYSLOG };
 #endif
 
@@ -239,9 +240,8 @@ struct BASE_EXPORT LoggingSettings {
   // of the FILE. If there's an error writing to this file, no fallback paths
   // will be opened.
   FILE* log_file = nullptr;
-  // Setting this to LogFormat::LOG_FORMAT_SYSLOG makes logging generate header
-  // in syslog-compatible format.
-  LogFormat log_format = LogFormat::LOG_FORMAT_CHROME;
+  // ChromeOS uses the syslog log format by default.
+  LogFormat log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif
 };
 
