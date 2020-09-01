@@ -54,9 +54,7 @@ void WebAppShortcutManager::GetShortcutInfoForApp(
       app->downloaded_icon_sizes(IconPurpose::ANY),
       GetDesiredIconSizesForShortcut());
 
-  // Optimistic check to help debug low-frequency crash.
-  // TODO(crbug.com/1113276): Make this a DCHECK before hitting stable.
-  CHECK(icon_manager_);
+  DCHECK(icon_manager_);
   if (!icon_sizes_in_px.empty()) {
     icon_manager_->ReadIcons(app_id, IconPurpose::ANY, icon_sizes_in_px,
                              base::BindOnce(&WebAppShortcutManager::OnIconsRead,
