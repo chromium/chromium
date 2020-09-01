@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -128,17 +129,18 @@ public class ContextualSearchManager
      */
     private final ContextualSearchInteractionRecorder mInteractionRecorder;
 
+    @VisibleForTesting
+    protected final ContextualSearchTranslation mTranslateController;
     private final ContextualSearchSelectionClient mContextualSearchSelectionClient;
+    private final ContextualSearchIPH mInProductHelp;
 
     private final ScrimCoordinator mScrimCoordinator;
 
     private ContextualSearchSelectionController mSelectionController;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;
+    @NonNull
     private ContextualSearchPolicy mPolicy;
     private ContextualSearchInternalStateController mInternalStateController;
-
-    @VisibleForTesting
-    protected ContextualSearchTranslation mTranslateController;
 
     // The Overlay panel.
     private ContextualSearchPanel mSearchPanel;
@@ -151,7 +153,6 @@ public class ContextualSearchManager
     private OverlayPanelContentViewDelegate mSearchContentViewDelegate;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private ContextualSearchIPH mInProductHelp;
 
     private boolean mDidStartLoadingResolvedSearchRequest;
     private long mLoadedSearchUrlTimeMs;
@@ -1258,7 +1259,7 @@ public class ContextualSearchManager
         mInProductHelp.onPanelFinishedShowing(mWasActivatedByTap, profile);
         // Try to figure out the language of the selection and show an IPH if a translation
         // is needed.
-        if (mPolicy.isUserUndecided()
+        if (mContext != null && mPolicy.isUserUndecided()
                 && mTranslateController.needsTranslation(mContext.getDetectedLanguage())) {
             mInProductHelp.onTranslationNeeded(profile);
         }
