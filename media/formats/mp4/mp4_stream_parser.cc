@@ -73,10 +73,8 @@ MasteringMetadata ConvertMdcvToMasteringMetadata(
   mastering_metadata.white_point =
       MasteringMetadata::Chromaticity(mdcv.white_point_x, mdcv.white_point_y);
 
-  mastering_metadata.luminance_max =
-      static_cast<float>(mdcv.max_display_mastering_luminance);
-  mastering_metadata.luminance_min =
-      static_cast<float>(mdcv.min_display_mastering_luminance);
+  mastering_metadata.luminance_max = mdcv.max_display_mastering_luminance;
+  mastering_metadata.luminance_min = mdcv.min_display_mastering_luminance;
 
   return mastering_metadata;
 }

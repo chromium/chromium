@@ -711,6 +711,9 @@ TEST_F(MP4StreamParserTest, Vp9) {
                             VideoColorSpace::TransferID::SMPTEST2084,
                             VideoColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED));
+
+  // TODO(crbug.com/1123430): We need a test file that actually has HDR metadata
+  // to test the SmDm and CoLL parsing.
 }
 
 TEST_F(MP4StreamParserTest, FourCCToString) {

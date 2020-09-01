@@ -92,6 +92,27 @@ bool ReadMdcvColorCoordinate(BoxReader* reader,
   return true;
 }
 
+// Read "fixed point" value as defined in the
+// SMPTE2086MasteringDisplayMetadataBox ('SmDm') box. See
+// https://www.webmproject.org/vp9/mp4/#data-types-and-fields
+bool ReadFixedPoint16(float fixed_point_divisor,
+                      BoxReader* reader,
+                      float* normalized_value_in_float) {
+  uint16_t value;
+  RCHECK(reader->Read2(&value));
+  *normalized_value_in_float = value / fixed_point_divisor;
+  return true;
+}
+
+bool ReadFixedPoint32(float fixed_point_divisor,
+                      BoxReader* reader,
+                      float* normalized_value_in_float) {
+  uint32_t value;
+  RCHECK(reader->Read4(&value));
+  *normalized_value_in_float = value / fixed_point_divisor;
+  return true;
+}
+
 VideoColorSpace ConvertColorParameterInformationToColorSpace(
     const ColorParameterInformation& info) {
   auto primary_id =
@@ -879,6 +900,7 @@ FourCC MasteringDisplayColorVolume::BoxType() const {
 bool MasteringDisplayColorVolume::Parse(BoxReader* reader) {
   // Technically the color coordinates may be in any order.  The spec recommends
   // GBR and it is assumed that the color coordinates are in such order.
+  constexpr float kUnitOfMasteringLuminance = 10000;
   RCHECK(ReadMdcvColorCoordinate(reader, &display_primaries_gx) &&
          ReadMdcvColorCoordinate(reader, &display_primaries_gy) &&
          ReadMdcvColorCoordinate(reader, &display_primaries_bx) &&
@@ -887,18 +909,38 @@ bool MasteringDisplayColorVolume::Parse(BoxReader* reader) {
          ReadMdcvColorCoordinate(reader, &display_primaries_ry) &&
          ReadMdcvColorCoordinate(reader, &white_point_x) &&
          ReadMdcvColorCoordinate(reader, &white_point_y) &&
-         reader->Read4(&max_display_mastering_luminance) &&
-         reader->Read4(&min_display_mastering_luminance));
-
-  const uint32_t kUnitOfMasteringLuminance = 10000;
-  max_display_mastering_luminance /= kUnitOfMasteringLuminance;
-  min_display_mastering_luminance /= kUnitOfMasteringLuminance;
-
+         ReadFixedPoint32(kUnitOfMasteringLuminance, reader,
+                          &max_display_mastering_luminance) &&
+         ReadFixedPoint32(kUnitOfMasteringLuminance, reader,
+                          &min_display_mastering_luminance));
   return true;
 }
 
 FourCC SMPTE2086MasteringDisplayMetadataBox::BoxType() const {
   return FOURCC_SMDM;
+}
+
+bool SMPTE2086MasteringDisplayMetadataBox::Parse(BoxReader* reader) {
+  constexpr float kColorCoordinateUnit = 1 << 16;
+  constexpr float kLuminanceMaxUnit = 1 << 8;
+  constexpr float kLuminanceMinUnit = 1 << 14;
+
+  // Technically the color coordinates may be in any order.  The spec recommends
+  // RGB and it is assumed that the color coordinates are in such order.
+  RCHECK(
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_rx) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_ry) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_gx) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_gy) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_bx) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &display_primaries_by) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &white_point_x) &&
+      ReadFixedPoint16(kColorCoordinateUnit, reader, &white_point_y) &&
+      ReadFixedPoint32(kLuminanceMaxUnit, reader,
+                       &max_display_mastering_luminance) &&
+      ReadFixedPoint32(kLuminanceMinUnit, reader,
+                       &min_display_mastering_luminance));
+  return true;
 }
 
 ContentLightLevelInformation::ContentLightLevelInformation() = default;
