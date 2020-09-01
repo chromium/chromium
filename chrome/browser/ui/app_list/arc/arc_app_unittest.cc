@@ -253,6 +253,19 @@ void RemoveNonArcApps(Profile* profile,
           model_updater->RemoveItem(update.AppId());
         }
       });
+  base::RunLoop().RunUntilIdle();
+}
+
+// Remove all ARC apps.
+void RemoveArcApps(Profile* profile, FakeAppListModelUpdater* model_updater) {
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForEachApp([&model_updater](const apps::AppUpdate& update) {
+        if (update.AppType() == apps::mojom::AppType::kArc) {
+          model_updater->RemoveItem(update.AppId());
+        }
+      });
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace
@@ -694,6 +707,7 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
     FlushMojoCallsForAppService();
     apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_.get());
     arc_test()->TearDown();
+    RemoveArcApps(profile_.get(), model_updater());
     ResetBuilder();
   }
 
@@ -707,7 +721,8 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
   DISALLOW_COPY_AND_ASSIGN(ArcAppModelBuilderRecreate);
 };
 
-class ArcAppModelIconTest : public ArcAppModelBuilderRecreate {
+class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
+                            public ArcAppListPrefs::Observer {
  public:
   ArcAppModelIconTest() = default;
   ~ArcAppModelIconTest() override = default;
@@ -733,15 +748,27 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate {
   std::string StartApp(int package_version) {
     DCHECK(!fake_apps().empty());
 
-    const arc::mojom::AppInfo app = test_app();
-    const std::string app_id = ArcAppTest::GetAppId(app);
-
     ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
     DCHECK(prefs);
+
+    icon_updated_count_ = 0;
+    arc_test()->arc_app_list_prefs()->AddObserver(this);
+
+    const arc::mojom::AppInfo app = test_app();
+    const std::string app_id = ArcAppTest::GetAppId(app);
 
     SendRefreshAppList({app});
     AddPackage(CreatePackageWithVersion(app.package_name, package_version));
     return app_id;
+  }
+
+  // Wait the icon to be updated twice for the 2 scales separately.
+  void WaitForIconUpdate() {
+    if (icon_updated_count_ < 2) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      icon_update_callback_ = run_loop_->QuitClosure();
+      run_loop_->Run();
+    }
   }
 
   // Simulates package of the test app is updated.
@@ -770,11 +797,27 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate {
     WaitForIconUpdates(profile_.get(), app_id);
   }
 
+  // ArcAppListPrefs::Observer overrides.
+  void OnAppIconUpdated(const std::string& app_id,
+                        const ArcAppIconDescriptor& descriptor) override {
+    icon_updated_count_++;
+    // The icon should be updated twice for the 2 scales separately.
+    if (icon_updated_count_ >= 2) {
+      if (icon_update_callback_)
+        std::move(icon_update_callback_).Run();
+      ArcAppListPrefs::Get(profile_.get())->RemoveObserver(this);
+    }
+  }
+
   arc::mojom::AppInfo test_app() const { return fake_apps()[0]; }
 
  private:
   std::unique_ptr<ui::test::ScopedSetSupportedScaleFactors>
       scoped_supported_scale_factors_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+  base::OnceClosure icon_update_callback_;
+  int icon_updated_count_;
+
   DISALLOW_COPY_AND_ASSIGN(ArcAppModelIconTest);
 };
 
@@ -2361,12 +2404,14 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnIconVersionUpdate) {
   ASSERT_TRUE(prefs);
 
   const std::string app_id = StartApp(1 /* package_version */);
+  WaitForIconUpdate();
 
   // Simulate ARC restart.
   RestartArc();
   // Simulate new icons version.
   ArcAppListPrefs::UprevCurrentIconsVersionForTesting();
   StartApp(1 /* package_version */);
+  WaitForIconUpdate();
 
   // Requests to reload icons are issued for all supported scales.
   EnsureIconsUpdated();
