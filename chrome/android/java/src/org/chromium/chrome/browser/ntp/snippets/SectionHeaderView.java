@@ -107,8 +107,27 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                     mHeader.isExpanded() ? 0 : R.drawable.hairline_border_card_background);
         }
     }
+
     /** Shows an IPH on the feed header menu button. */
     public void showMenuIph(UserEducationHelper helper) {
+        final ViewRectProvider rectProvider = new ViewRectProvider(mMenuView) {
+            // ViewTreeObserver.OnPreDrawListener implementation.
+            @Override
+            public boolean onPreDraw() {
+                boolean result = super.onPreDraw();
+
+                int minRectBottomPosPx =
+                        getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        + mMenuView.getHeight() / 2;
+                // Notify that the rectangle is hidden to dismiss the popup if the anchor is
+                // positioned too high.
+                if (getRect().bottom < minRectBottomPosPx) {
+                    notifyRectHidden();
+                }
+
+                return result;
+            }
+        };
         helper.requestShowIPH(new IPHCommandBuilder(mMenuView.getContext().getResources(),
                 FeatureConstants.FEED_HEADER_MENU_FEATURE, R.string.ntp_feed_menu_iph,
                 R.string.accessibility_ntp_feed_menu_iph)
@@ -116,8 +135,9 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                                       .setCircleHighlight(true)
                                       .setShouldHighlight(true)
                                       .setDismissOnTouch(false)
-                                      .setInsetRect(new Rect(0, 0, 0, 0))
+                                      .setInsetRect(new Rect(0, -1, 0, -1))
                                       .setAutoDismissTimeout(5 * 1000)
+                                      .setViewRectProvider(rectProvider)
                                       .build());
     }
 

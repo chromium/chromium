@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * Builder for (@see IPHCommand.java). Use this instead of constructing an IPHCommand directly.
@@ -35,6 +36,7 @@ public class IPHCommandBuilder {
     private Runnable mOnDismissCallback;
     private Rect mInsetRect;
     private long mAutoDismissTimeout = TextBubble.NO_TIMEOUT;
+    private ViewRectProvider mViewRectProvider;
 
     /**
      * Constructor for IPHCommandBuilder when you would like your strings to be resolved for you.
@@ -142,6 +144,17 @@ public class IPHCommandBuilder {
 
     /**
      *
+     * @param viewRectProvider Custom ViewRectProvider to replace the default one. Note that the
+     *                         provided insets will still be applied on the rectangle from the
+     *                         custom provider.
+     */
+    public IPHCommandBuilder setViewRectProvider(ViewRectProvider viewRectProvider) {
+        mViewRectProvider = viewRectProvider;
+        return this;
+    }
+
+    /**
+     *
      * @return an (@see IPHCommand) containing the accumulated state of this builder.
      */
     public IPHCommand build() {
@@ -170,6 +183,6 @@ public class IPHCommandBuilder {
 
         return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mCircleHighlight,
                 mShouldHighlight, mDismissOnTouch, mAnchorView, mOnDismissCallback, mOnShowCallback,
-                mInsetRect, mAutoDismissTimeout);
+                mInsetRect, mAutoDismissTimeout, mViewRectProvider);
     }
 }

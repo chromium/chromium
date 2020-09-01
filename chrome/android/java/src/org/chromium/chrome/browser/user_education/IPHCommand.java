@@ -9,6 +9,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.ui.widget.ViewRectProvider;
+
 /**
  * Class encapsulating the data needed to show in-product help (IPH).
  */
@@ -26,11 +28,12 @@ public class IPHCommand {
     public final Runnable onShowCallback;
     public final Rect insetRect;
     public final long autoDismissTimeout;
+    public final ViewRectProvider viewRectProvider;
 
     IPHCommand(String featureName, String contentString, String accessibilityText,
             boolean circleHighlight, boolean shouldHighlight, boolean dismissOnTouch,
             View anchorView, Runnable onDismissCallback, Runnable onShowCallback, Rect insetRect,
-            long autoDismissTimeout) {
+            long autoDismissTimeout, ViewRectProvider viewRectProvider) {
         this.featureName = featureName;
         this.contentString = contentString;
         this.accessibilityText = accessibilityText;
@@ -42,5 +45,6 @@ public class IPHCommand {
         this.onShowCallback = onShowCallback;
         this.insetRect = insetRect;
         this.autoDismissTimeout = autoDismissTimeout;
+        this.viewRectProvider = viewRectProvider;
     }
 }
