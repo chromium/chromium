@@ -125,8 +125,8 @@ void CryptAuthEciesEncryptorImpl::OnBatchEncryptionStarted() {
   remaining_batch_size_ = id_to_input_map_.size();
 
   secure_message_delegate_->GenerateKeyPair(
-      base::Bind(&CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated,
-                 base::Unretained(this)));
+      base::BindOnce(&CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated,
+                     base::Unretained(this)));
 }
 
 void CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated(
@@ -135,7 +135,7 @@ void CryptAuthEciesEncryptorImpl::OnSessionKeyPairGenerated(
   for (const auto& id_input_pair : id_to_input_map_) {
     secure_message_delegate_->DeriveKey(
         session_private_key, id_input_pair.second.key,
-        base::Bind(
+        base::BindOnce(
             &CryptAuthEciesEncryptorImpl::OnDiffieHellmanEncryptionKeyDerived,
             base::Unretained(this), id_input_pair.first, session_public_key));
   }
@@ -152,8 +152,8 @@ void CryptAuthEciesEncryptorImpl::OnDiffieHellmanEncryptionKeyDerived(
 
   secure_message_delegate_->CreateSecureMessage(
       id_to_input_map_[id].payload, dh_key, options,
-      base::Bind(&CryptAuthEciesEncryptorImpl::OnSecureMessageCreated,
-                 base::Unretained(this), id));
+      base::BindOnce(&CryptAuthEciesEncryptorImpl::OnSecureMessageCreated,
+                     base::Unretained(this), id));
 }
 
 void CryptAuthEciesEncryptorImpl::OnSecureMessageCreated(
@@ -195,7 +195,7 @@ void CryptAuthEciesEncryptorImpl::OnBatchDecryptionStarted() {
 
     secure_message_delegate_->DeriveKey(
         id_input_pair.second.key, *session_public_key,
-        base::Bind(
+        base::BindOnce(
             &CryptAuthEciesEncryptorImpl::OnDiffieHellmanDecryptionKeyDerived,
             base::Unretained(this), id_input_pair.first,
             id_input_pair.second.payload));
@@ -212,8 +212,8 @@ void CryptAuthEciesEncryptorImpl::OnDiffieHellmanDecryptionKeyDerived(
 
   secure_message_delegate_->UnwrapSecureMessage(
       serialized_encrypted_secure_message, dh_key, options,
-      base::Bind(&CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped,
-                 base::Unretained(this), id));
+      base::BindOnce(&CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped,
+                     base::Unretained(this), id));
 }
 
 void CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped(

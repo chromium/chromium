@@ -505,10 +505,10 @@ void CryptAuthMetadataSyncerImpl::MakeSyncMetadataCall() {
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->SyncMetadata(
       request,
-      base::Bind(&CryptAuthMetadataSyncerImpl::OnSyncMetadataSuccess,
-                 base::Unretained(this)),
-      base::Bind(&CryptAuthMetadataSyncerImpl::OnSyncMetadataFailure,
-                 base::Unretained(this)));
+      base::BindOnce(&CryptAuthMetadataSyncerImpl::OnSyncMetadataSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&CryptAuthMetadataSyncerImpl::OnSyncMetadataFailure,
+                     base::Unretained(this)));
 }
 
 void CryptAuthMetadataSyncerImpl::OnSyncMetadataSuccess(

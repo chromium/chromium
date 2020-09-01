@@ -101,8 +101,8 @@ void CryptAuthKeyCreatorImpl::CreateKeys(
   if (IsClientEphemeralDhKeyNeeded(keys_to_create_)) {
     DCHECK(server_ephemeral_dh && server_ephemeral_dh->IsAsymmetricKey());
     secure_message_delegate_->GenerateKeyPair(
-        base::Bind(&CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated,
-                   base::Unretained(this), *server_ephemeral_dh));
+        base::BindOnce(&CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated,
+                       base::Unretained(this), *server_ephemeral_dh));
     return;
   }
 
@@ -129,7 +129,7 @@ void CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated(
 
   secure_message_delegate_->DeriveKey(
       client_ephemeral_dh_->private_key(), server_ephemeral_dh.public_key(),
-      base::Bind(
+      base::BindOnce(
           &CryptAuthKeyCreatorImpl::OnDiffieHellmanHandshakeSecretDerived,
           base::Unretained(this)));
 }
@@ -190,8 +190,8 @@ void CryptAuthKeyCreatorImpl::StartKeyCreation(
     }
 
     secure_message_delegate_->GenerateKeyPair(
-        base::Bind(&CryptAuthKeyCreatorImpl::OnAsymmetricKeyPairGenerated,
-                   base::Unretained(this), key_to_create.first));
+        base::BindOnce(&CryptAuthKeyCreatorImpl::OnAsymmetricKeyPairGenerated,
+                       base::Unretained(this), key_to_create.first));
   }
 }
 

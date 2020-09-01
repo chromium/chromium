@@ -147,8 +147,8 @@ void RemoteDeviceProviderImpl::LoadV1RemoteDevices() {
       v1_device_manager_->GetSyncedDevices(), user_email_, user_private_key_,
       multidevice::SecureMessageDelegateImpl::Factory::Create());
   remote_device_v1_loader_->Load(
-      base::Bind(&RemoteDeviceProviderImpl::OnV1RemoteDevicesLoaded,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&RemoteDeviceProviderImpl::OnV1RemoteDevicesLoaded,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RemoteDeviceProviderImpl::LoadV2RemoteDevices() {

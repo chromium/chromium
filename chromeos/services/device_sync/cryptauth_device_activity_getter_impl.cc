@@ -134,10 +134,10 @@ void CryptAuthDeviceActivityGetterImpl::OnAttemptStarted() {
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->GetDevicesActivityStatus(
       request,
-      base::Bind(
+      base::BindOnce(
           &CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusSuccess,
           base::Unretained(this)),
-      base::Bind(
+      base::BindOnce(
           &CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusFailure,
           base::Unretained(this)));
 }

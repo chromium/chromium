@@ -379,7 +379,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chromecast/media/',
   '^chromeos/attestation/',
   '^chromeos/components/',
-  '^chromeos/services/',
   '^components/arc/',
   '^components/autofill/',
   '^components/autofill_assistant/',

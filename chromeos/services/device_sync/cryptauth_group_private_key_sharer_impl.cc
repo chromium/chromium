@@ -306,10 +306,10 @@ void CryptAuthGroupPrivateKeySharerImpl::OnGroupPrivateKeysEncrypted(
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->ShareGroupPrivateKey(
       request,
-      base::Bind(
+      base::BindOnce(
           &CryptAuthGroupPrivateKeySharerImpl::OnShareGroupPrivateKeySuccess,
           base::Unretained(this)),
-      base::Bind(
+      base::BindOnce(
           &CryptAuthGroupPrivateKeySharerImpl::OnShareGroupPrivateKeyFailure,
           base::Unretained(this)));
 }

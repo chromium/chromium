@@ -842,10 +842,10 @@ void CryptAuthDeviceManagerImpl::OnSyncRequested(
       })");
   cryptauth_client_->GetMyDevices(
       request,
-      base::Bind(&CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&CryptAuthDeviceManagerImpl::OnGetMyDevicesFailure,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&CryptAuthDeviceManagerImpl::OnGetMyDevicesFailure,
+                     weak_ptr_factory_.GetWeakPtr()),
       partial_traffic_annotation);
 }
 

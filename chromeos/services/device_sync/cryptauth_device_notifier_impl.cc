@@ -179,10 +179,12 @@ void CryptAuthDeviceNotifierImpl::ProcessRequestQueue() {
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->BatchNotifyGroupDevices(
       request,
-      base::Bind(&CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesSuccess,
-                 base::Unretained(this)),
-      base::Bind(&CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesFailure,
-                 base::Unretained(this)));
+      base::BindOnce(
+          &CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesSuccess,
+          base::Unretained(this)),
+      base::BindOnce(
+          &CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesFailure,
+          base::Unretained(this)));
 }
 
 void CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesSuccess(

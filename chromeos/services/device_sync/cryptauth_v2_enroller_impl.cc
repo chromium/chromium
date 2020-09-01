@@ -426,10 +426,10 @@ void CryptAuthV2EnrollerImpl::OnAttemptStarted(
   cryptauth_client_->SyncKeys(
       BuildSyncKeysRequest(client_metadata, client_app_metadata,
                            client_directive_policy_reference),
-      base::Bind(&CryptAuthV2EnrollerImpl::OnSyncKeysSuccess,
-                 base::Unretained(this)),
-      base::Bind(&CryptAuthV2EnrollerImpl::OnSyncKeysFailure,
-                 base::Unretained(this)));
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnSyncKeysSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnSyncKeysFailure,
+                     base::Unretained(this)));
 }
 
 void CryptAuthV2EnrollerImpl::SetState(State state) {
@@ -809,10 +809,10 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->EnrollKeys(
       request,
-      base::Bind(&CryptAuthV2EnrollerImpl::OnEnrollKeysSuccess,
-                 base::Unretained(this), new_key_directives, new_keys),
-      base::Bind(&CryptAuthV2EnrollerImpl::OnEnrollKeysFailure,
-                 base::Unretained(this)));
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnEnrollKeysSuccess,
+                     base::Unretained(this), new_key_directives, new_keys),
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnEnrollKeysFailure,
+                     base::Unretained(this)));
 }
 
 void CryptAuthV2EnrollerImpl::OnEnrollKeysSuccess(

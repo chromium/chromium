@@ -553,10 +553,10 @@ void DeviceSyncImpl::SetSoftwareFeatureState(
 
   software_feature_manager_->SetSoftwareFeatureState(
       device_public_key, software_feature, enabled,
-      base::Bind(&DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&DeviceSyncImpl::OnSetSoftwareFeatureStateError,
-                 weak_ptr_factory_.GetWeakPtr(), request_id),
+      base::BindOnce(&DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DeviceSyncImpl::OnSetSoftwareFeatureStateError,
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
       is_exclusive);
 }
 
@@ -628,10 +628,10 @@ void DeviceSyncImpl::FindEligibleDevices(
   auto callback_holder = base::AdaptCallbackForRepeating(std::move(callback));
   software_feature_manager_->FindEligibleDevices(
       software_feature,
-      base::Bind(&DeviceSyncImpl::OnFindEligibleDevicesSuccess,
-                 weak_ptr_factory_.GetWeakPtr(), callback_holder),
-      base::Bind(&DeviceSyncImpl::OnFindEligibleDevicesError,
-                 weak_ptr_factory_.GetWeakPtr(), callback_holder));
+      base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), callback_holder),
+      base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesError,
+                     weak_ptr_factory_.GetWeakPtr(), callback_holder));
 }
 
 void DeviceSyncImpl::NotifyDevices(

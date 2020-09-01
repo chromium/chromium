@@ -220,10 +220,10 @@ void CryptAuthFeatureStatusGetterImpl::OnAttemptStarted(
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->BatchGetFeatureStatuses(
       request,
-      base::Bind(
+      base::BindOnce(
           &CryptAuthFeatureStatusGetterImpl::OnBatchGetFeatureStatusesSuccess,
           base::Unretained(this), device_ids),
-      base::Bind(
+      base::BindOnce(
           &CryptAuthFeatureStatusGetterImpl::OnBatchGetFeatureStatusesFailure,
           base::Unretained(this)));
 }

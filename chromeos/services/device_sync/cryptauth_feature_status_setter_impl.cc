@@ -197,10 +197,10 @@ void CryptAuthFeatureStatusSetterImpl::ProcessRequestQueue() {
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->BatchSetFeatureStatuses(
       request,
-      base::Bind(
+      base::BindOnce(
           &CryptAuthFeatureStatusSetterImpl::OnBatchSetFeatureStatusesSuccess,
           base::Unretained(this)),
-      base::Bind(
+      base::BindOnce(
           &CryptAuthFeatureStatusSetterImpl::OnBatchSetFeatureStatusesFailure,
           base::Unretained(this)));
 }

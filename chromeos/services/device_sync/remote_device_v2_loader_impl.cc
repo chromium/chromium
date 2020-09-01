@@ -81,8 +81,9 @@ void RemoteDeviceV2LoaderImpl::Load(
     secure_message_delegate_->DeriveKey(
         user_private_key,
         id_device_pair.second.better_together_device_metadata->public_key(),
-        base::Bind(&RemoteDeviceV2LoaderImpl::OnPskDerived,
-                   base::Unretained(this), id_device_pair.second, user_email));
+        base::BindOnce(&RemoteDeviceV2LoaderImpl::OnPskDerived,
+                       base::Unretained(this), id_device_pair.second,
+                       user_email));
   }
 }
 

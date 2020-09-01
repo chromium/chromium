@@ -125,7 +125,7 @@ class FakeSoftwareFeatureManagerDelegate
     : public FakeSoftwareFeatureManager::Delegate {
  public:
   explicit FakeSoftwareFeatureManagerDelegate(
-      base::Closure on_delegate_call_closure)
+      base::RepeatingClosure on_delegate_call_closure)
       : on_delegate_call_closure_(on_delegate_call_closure) {}
 
   ~FakeSoftwareFeatureManagerDelegate() override = default;
@@ -140,7 +140,7 @@ class FakeSoftwareFeatureManagerDelegate
   }
 
  private:
-  base::Closure on_delegate_call_closure_;
+  base::RepeatingClosure on_delegate_call_closure_;
 };
 
 // Delegate which invokes the Closure provided to its constructor when a
@@ -149,7 +149,7 @@ class FakeCryptAuthFeatureStatusSetterDelegate
     : public FakeCryptAuthFeatureStatusSetter::Delegate {
  public:
   explicit FakeCryptAuthFeatureStatusSetterDelegate(
-      base::Closure on_delegate_call_closure)
+      base::RepeatingClosure on_delegate_call_closure)
       : on_delegate_call_closure_(on_delegate_call_closure) {}
 
   ~FakeCryptAuthFeatureStatusSetterDelegate() override = default;
@@ -158,7 +158,7 @@ class FakeCryptAuthFeatureStatusSetterDelegate
   void OnSetFeatureStatusCalled() override { on_delegate_call_closure_.Run(); }
 
  private:
-  base::Closure on_delegate_call_closure_;
+  base::RepeatingClosure on_delegate_call_closure_;
 };
 
 // Delegate which invokes the Closure provided to its constructor when a
@@ -167,7 +167,7 @@ class FakeCryptAuthDeviceNotifierDelegate
     : public FakeCryptAuthDeviceNotifier::Delegate {
  public:
   explicit FakeCryptAuthDeviceNotifierDelegate(
-      base::Closure on_delegate_call_closure)
+      base::RepeatingClosure on_delegate_call_closure)
       : on_delegate_call_closure_(on_delegate_call_closure) {}
 
   ~FakeCryptAuthDeviceNotifierDelegate() override = default;
@@ -176,7 +176,7 @@ class FakeCryptAuthDeviceNotifierDelegate
   void OnNotifyDevicesCalled() override { on_delegate_call_closure_.Run(); }
 
  private:
-  base::Closure on_delegate_call_closure_;
+  base::RepeatingClosure on_delegate_call_closure_;
 };
 
 class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {

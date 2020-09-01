@@ -298,8 +298,8 @@ void CryptAuthEnrollmentManagerImpl::OnSyncRequested(
 void CryptAuthEnrollmentManagerImpl::DoCryptAuthEnrollment() {
   if (GetUserPublicKey().empty() || GetUserPrivateKey().empty()) {
     secure_message_delegate_->GenerateKeyPair(
-        base::Bind(&CryptAuthEnrollmentManagerImpl::OnKeyPairGenerated,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&CryptAuthEnrollmentManagerImpl::OnKeyPairGenerated,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     DoCryptAuthEnrollmentWithKeys();
   }
@@ -347,8 +347,8 @@ void CryptAuthEnrollmentManagerImpl::DoCryptAuthEnrollmentWithKeys() {
   cryptauth_enroller_ = enroller_factory_->CreateInstance();
   cryptauth_enroller_->Enroll(
       GetUserPublicKey(), GetUserPrivateKey(), device_info, invocation_reason,
-      base::Bind(&CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace device_sync

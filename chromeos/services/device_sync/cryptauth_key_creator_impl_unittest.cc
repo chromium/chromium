@@ -101,9 +101,9 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
     std::string derived_key;
     fake_secure_message_delegate()->DeriveKey(
         client_ephemeral_dh.private_key(), server_ephemeral_dh.public_key(),
-        base::Bind([](std::string* derived_key,
-                      const std::string& key) { *derived_key = key; },
-                   &derived_key));
+        base::BindOnce([](std::string* derived_key,
+                          const std::string& key) { *derived_key = key; },
+                       &derived_key));
     return derived_key;
   }
 

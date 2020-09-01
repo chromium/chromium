@@ -108,8 +108,8 @@ void RemoteDeviceLoader::Load(RemoteDeviceCallback callback) {
   for (const auto& device : all_devices_to_convert) {
     secure_message_delegate_->DeriveKey(
         user_private_key_, device.public_key(),
-        base::Bind(&RemoteDeviceLoader::OnPSKDerived,
-                   weak_ptr_factory_.GetWeakPtr(), device));
+        base::BindOnce(&RemoteDeviceLoader::OnPSKDerived,
+                       weak_ptr_factory_.GetWeakPtr(), device));
   }
 }
 
