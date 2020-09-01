@@ -30,7 +30,7 @@ def get_names(xml_files):
   doc = merge_xml.MergeFiles(files=xml_files)
   histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
   if had_errors:
-    raise Error("Error parsing inputs.")
+    raise ValueError("Error parsing inputs.")
   return extract_histograms.ExtractNames(histograms)
 
 
@@ -61,8 +61,10 @@ def get_diff(revision):
 
   current_histogram_names = set(get_names(histogram_xml_files()))
   prev_histogram_names = set(
-      get_names(
-          [get_file_at_revision(p) for p in histogram_paths.ALL_XMLS_RELATIVE]))
+      get_names([
+          get_file_at_revision(os.path.normpath(p))
+          for p in histogram_paths.ALL_XMLS_RELATIVE
+      ]))
 
   added_names = sorted(list(current_histogram_names - prev_histogram_names))
   removed_names = sorted(list(prev_histogram_names - current_histogram_names))
