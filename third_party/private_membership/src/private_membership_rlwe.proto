@@ -100,17 +100,11 @@ enum RlweUseCase {
   TEST_USE_CASE2 = 2;
   TEST_USE_CASE3 = 3;
 
-  // DO NOT USE. Use CROS_DEVICE_STATE instead.
-  CROS_INITIAL_STATE = 4;
+  reserved 4;
 
   // The device state of Chrome OS device, used for Zero Touch,
   // License Packaging and Forced Reenrollment.
   CROS_DEVICE_STATE = 5;
-
-  // Safe Browsing API test use case.
-  SAFEBROWSING_API_TEST = 6;
-
-  // Add more use cases.
 }
 
 // Parameters for the hashed buckets (first level).

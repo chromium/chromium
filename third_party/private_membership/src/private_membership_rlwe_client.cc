@@ -17,7 +17,7 @@
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/internal/crypto_utils.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
-#include "private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/internal/constants.h"
 #include "third_party/private_membership/src/internal/encrypted_bucket_id.h"
 #include "third_party/private_membership/src/internal/hashed_bucket_id.h"
@@ -36,33 +36,64 @@ namespace rlwe {
 PrivateMembershipRlweClient::Create(
     private_membership::rlwe::RlweUseCase use_case,
     const std::vector<RlwePlaintextId>& plaintext_ids) {
+  return CreateInternal(use_case, plaintext_ids, absl::optional<std::string>(),
+                        internal::PrngSeedGenerator::Create());
+}
+
+::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>>
+PrivateMembershipRlweClient::CreateForTesting(
+    private_membership::rlwe::RlweUseCase use_case,
+    const std::vector<RlwePlaintextId>& plaintext_ids,
+    const std::string& ec_cipher_key, const std::string& seed) {
+  RLWE_ASSIGN_OR_RETURN(auto prng_seed_generator,
+                        internal::PrngSeedGenerator::CreateDeterministic(seed));
+  return CreateInternal(use_case, plaintext_ids,
+                        absl::optional<std::string>(ec_cipher_key),
+                        std::move(prng_seed_generator));
+}
+
+::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>>
+PrivateMembershipRlweClient::CreateInternal(
+    private_membership::rlwe::RlweUseCase use_case,
+    const std::vector<RlwePlaintextId>& plaintext_ids,
+    absl::optional<std::string> ec_cipher_key,
+    std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator) {
   if (use_case == private_membership::rlwe::RLWE_USE_CASE_UNDEFINED) {
     return absl::InvalidArgumentError("Use case must be defined.");
   }
   if (plaintext_ids.empty()) {
     return absl::InvalidArgumentError("Plaintext ids must not be empty.");
   }
-  auto status_or_ec_cipher =
-      private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
-          kCurveId,
-          private_join_and_compute::ECCommutativeCipher::HashType::SHA256);
+
+  // Create the cipher with new key or from existing key depending on whether
+  // the key was provided.
+  auto status_or_ec_cipher = ec_cipher_key.has_value()
+          ? private_join_and_compute::ECCommutativeCipher::CreateFromKey(
+                kCurveId, ec_cipher_key.value(),
+                private_join_and_compute::ECCommutativeCipher::HashType::SHA256)
+          : private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
+                kCurveId, private_join_and_compute::ECCommutativeCipher::HashType::SHA256);
 
   if (!status_or_ec_cipher.ok()) {
     return absl::InvalidArgumentError(status_or_ec_cipher.status().message());
   }
   auto ec_cipher = std::move(status_or_ec_cipher).ValueOrDie();
+
   return absl::WrapUnique<PrivateMembershipRlweClient>(
       new PrivateMembershipRlweClient(use_case, plaintext_ids,
-                                      std::move(ec_cipher)));
+                                      std::move(ec_cipher),
+                                      std::move(prng_seed_generator)));
 }
 
 PrivateMembershipRlweClient::PrivateMembershipRlweClient(
     private_membership::rlwe::RlweUseCase use_case,
     const std::vector<RlwePlaintextId>& plaintext_ids,
-    std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher)
+    std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher,
+    std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator)
     : use_case_(use_case),
       plaintext_ids_(plaintext_ids),
-      ec_cipher_(std::move(ec_cipher)) {}
+      ec_cipher_(std::move(ec_cipher)),
+      prng_seed_generator_(std::move(prng_seed_generator)) {}
 
 ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
 PrivateMembershipRlweClient::CreateOprfRequest() {
@@ -100,7 +131,8 @@ PrivateMembershipRlweClient::CreateQueryRequest(
   int encrypted_buckets_count = 1 << encrypted_bucket_id_length;
   RLWE_ASSIGN_OR_RETURN(
       pir_client_, internal::PirClient::Create(oprf_response.rlwe_parameters(),
-                                               encrypted_buckets_count));
+                                               encrypted_buckets_count,
+                                               prng_seed_generator_.get()));
 
   private_membership::rlwe::PrivateMembershipRlweQueryRequest request;
   request.set_use_case(use_case_);
@@ -233,10 +265,41 @@ PrivateMembershipRlweClient::CheckMembership(
 
 namespace internal {
 
+std::unique_ptr<PrngSeedGenerator> PrngSeedGenerator::Create() {
+  return absl::WrapUnique<PrngSeedGenerator>(new PrngSeedGenerator());
+}
+
+::rlwe::StatusOr<std::unique_ptr<PrngSeedGenerator>>
+PrngSeedGenerator::CreateDeterministic(const std::string& seed) {
+  RLWE_ASSIGN_OR_RETURN(auto prng_seed_generator,
+                        SingleThreadPrng::Create(seed));
+  return absl::WrapUnique<PrngSeedGenerator>(
+      new PrngSeedGenerator(std::move(prng_seed_generator)));
+}
+
+::rlwe::StatusOr<std::string> PrngSeedGenerator::GeneratePrngSeed() const {
+  if (deterministic_prng_seed_generator_.has_value()) {
+    std::string res(SingleThreadPrng::SeedLength(), 0);
+    for (int i = 0; i < res.length(); ++i) {
+      RLWE_ASSIGN_OR_RETURN(
+          res[i], deterministic_prng_seed_generator_.value()->Rand8());
+    }
+    return res;
+  }
+  return SingleThreadPrng::GenerateSeed();
+}
+
+PrngSeedGenerator::PrngSeedGenerator(
+    std::unique_ptr<SingleThreadPrng> prng_seed_generator)
+    : deterministic_prng_seed_generator_(
+          absl::optional<std::unique_ptr<SingleThreadPrng>>(
+              std::move(prng_seed_generator))) {}
+
 template <typename ModularInt>
 ::rlwe::StatusOr<std::unique_ptr<PirClientImpl<ModularInt>>>
-PirClientImpl<ModularInt>::Create(const RlweParameters& rlwe_params,
-                                  int total_entry_count) {
+PirClientImpl<ModularInt>::Create(
+    const RlweParameters& rlwe_params, int total_entry_count,
+    const PrngSeedGenerator* prng_seed_generator) {
   if (rlwe_params.log_degree() < 0 ||
       rlwe_params.log_degree() > kMaxLogDegree) {
     return absl::InvalidArgumentError(
@@ -274,7 +337,7 @@ PirClientImpl<ModularInt>::Create(const RlweParameters& rlwe_params,
   }
 
   RLWE_ASSIGN_OR_RETURN(std::string prng_seed,
-                        SingleThreadPrng::GenerateSeed());
+                        prng_seed_generator->GeneratePrngSeed());
   RLWE_ASSIGN_OR_RETURN(auto prng, SingleThreadPrng::Create(prng_seed));
   RLWE_ASSIGN_OR_RETURN(
       auto key,
@@ -284,7 +347,7 @@ PirClientImpl<ModularInt>::Create(const RlweParameters& rlwe_params,
 
   return absl::WrapUnique<>(new PirClientImpl(
       rlwe_params, std::move(modulus_params), std::move(ntt_params),
-      std::move(error_params), key, total_entry_count));
+      std::move(error_params), key, total_entry_count, prng_seed_generator));
 }
 
 template <typename ModularInt>
@@ -296,13 +359,15 @@ PirClientImpl<ModularInt>::PirClientImpl(
         ntt_params,
     std::vector<std::unique_ptr<const ::rlwe::ErrorParams<ModularInt>>>
         error_params,
-    const ::rlwe::SymmetricRlweKey<ModularInt>& key, int total_entry_count)
+    const ::rlwe::SymmetricRlweKey<ModularInt>& key, int total_entry_count,
+    const PrngSeedGenerator* prng_seed_generator)
     : rlwe_params_(rlwe_params),
       modulus_params_(std::move(modulus_params)),
       ntt_params_(std::move(ntt_params)),
       error_params_(std::move(error_params)),
       key_(key),
-      total_entry_count_(total_entry_count) {}
+      total_entry_count_(total_entry_count),
+      prng_seed_generator_(prng_seed_generator) {}
 
 template <typename ModularInt>
 ::rlwe::StatusOr<PirRequest> PirClientImpl<ModularInt>::CreateRequest(
@@ -365,11 +430,12 @@ template <typename ModularInt>
     items_in_block = (items_in_block + branching_factor - 1) / branching_factor;
   }
 
-  RLWE_ASSIGN_OR_RETURN(auto prng_seed, SingleThreadPrng::GenerateSeed());
+  RLWE_ASSIGN_OR_RETURN(auto prng_seed,
+                        prng_seed_generator_->GeneratePrngSeed());
   req.set_prng_seed(prng_seed);
   RLWE_ASSIGN_OR_RETURN(auto prng, SingleThreadPrng::Create(prng_seed));
   RLWE_ASSIGN_OR_RETURN(std::string prng_encryption_seed,
-                        SingleThreadPrng::GenerateSeed());
+                        prng_seed_generator_->GeneratePrngSeed());
   RLWE_ASSIGN_OR_RETURN(auto prng_encryption,
                         SingleThreadPrng::Create(prng_encryption_seed));
   RLWE_ASSIGN_OR_RETURN(std::vector<::rlwe::Polynomial<ModularInt>> ciphertexts,
@@ -433,18 +499,21 @@ PirClientImpl<ModularInt>::ProcessResponse(const PirResponse& response) {
 
 ::rlwe::StatusOr<std::unique_ptr<internal::PirClient>>
 internal::PirClient::Create(const RlweParameters& rlwe_params,
-                            int total_entry_count) {
+                            int total_entry_count,
+                            const PrngSeedGenerator* prng_seed_generator) {
   if (rlwe_params.modulus_size() <= 0) {
     return absl::InvalidArgumentError("Must provide at least one modulus.");
   }
   if (rlwe_params.modulus(0).hi() > 0 ||
       (rlwe_params.modulus(0).lo() >> 62) > 0) {
-    RLWE_ASSIGN_OR_RETURN(auto client, PirClientImpl<ModularInt128>::Create(
-                                           rlwe_params, total_entry_count));
+    RLWE_ASSIGN_OR_RETURN(
+        auto client, PirClientImpl<ModularInt128>::Create(
+                         rlwe_params, total_entry_count, prng_seed_generator));
     return std::unique_ptr<internal::PirClient>(std::move(client));
   } else {
-    RLWE_ASSIGN_OR_RETURN(auto client, PirClientImpl<ModularInt64>::Create(
-                                           rlwe_params, total_entry_count));
+    RLWE_ASSIGN_OR_RETURN(
+        auto client, PirClientImpl<ModularInt64>::Create(
+                         rlwe_params, total_entry_count, prng_seed_generator));
     return std::unique_ptr<internal::PirClient>(std::move(client));
   }
 }

@@ -18,7 +18,8 @@
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
 #include "third_party/private_membership/src/membership_response_map.h"
-#include "private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/internal/constants.h"
 #include "third_party/shell-encryption/src/montgomery.h"
 #include "third_party/shell-encryption/src/statusor.h"
 #include "third_party/shell-encryption/src/symmetric_encryption.h"
@@ -27,6 +28,29 @@ namespace private_membership {
 namespace rlwe {
 
 namespace internal {
+
+// PRNG seed generator which supports deterministic seed generation.
+class PrngSeedGenerator {
+ public:
+  // Creates a non deterministic PRNG seed generator.
+  static std::unique_ptr<PrngSeedGenerator> Create();
+
+  // Creates a deterministic PRNG seed generator.
+  static ::rlwe::StatusOr<std::unique_ptr<PrngSeedGenerator>>
+  CreateDeterministic(const std::string& seed);
+
+  // Generates a PRNG seed.
+  ::rlwe::StatusOr<std::string> GeneratePrngSeed() const;
+
+ private:
+  PrngSeedGenerator() = default;
+
+  explicit PrngSeedGenerator(
+      std::unique_ptr<SingleThreadPrng> prng_seed_generator);
+
+  const absl::optional<std::unique_ptr<SingleThreadPrng>>
+      deterministic_prng_seed_generator_;
+};
 
 // Lightweight wrapper for processing PIR related requests and responses.
 // Thread safe.
@@ -39,7 +63,8 @@ class PirClient {
   PirClient& operator=(const PirClient&) = delete;
 
   static ::rlwe::StatusOr<std::unique_ptr<PirClient>> Create(
-      const RlweParameters& rlwe_params, int total_entry_count);
+      const RlweParameters& rlwe_params, int total_entry_count,
+      const PrngSeedGenerator* prng_seed_generator);
 
   // Creates a PIR request to retrieve the entry located at index `index`.
   virtual ::rlwe::StatusOr<PirRequest> CreateRequest(int index) = 0;
@@ -57,7 +82,8 @@ template <typename ModularInt>
 class PirClientImpl : public PirClient {
  public:
   static ::rlwe::StatusOr<std::unique_ptr<PirClientImpl<ModularInt>>> Create(
-      const RlweParameters& rlwe_params, int total_entry_count);
+      const RlweParameters& rlwe_params, int total_entry_count,
+      const PrngSeedGenerator* prng_seed_generator);
 
   ::rlwe::StatusOr<PirRequest> CreateRequest(int index) override;
 
@@ -73,7 +99,8 @@ class PirClientImpl : public PirClient {
           ntt_params,
       std::vector<std::unique_ptr<const ::rlwe::ErrorParams<ModularInt>>>
           error_params,
-      const ::rlwe::SymmetricRlweKey<ModularInt>& key, int total_entry_count);
+      const ::rlwe::SymmetricRlweKey<ModularInt>& key, int total_entry_count,
+      const PrngSeedGenerator* prng_seed_generator);
 
   // Maximum allowed plaintext entry size is 10 MB.
   static constexpr int64_t kMaxPlaintextEntrySize = 10000000;
@@ -104,6 +131,9 @@ class PirClientImpl : public PirClient {
 
   // Total number of entries in the database.
   const int total_entry_count_;
+
+  // Generates the PRNG seed.
+  const PrngSeedGenerator* prng_seed_generator_;
 };
 
 }  // namespace internal
@@ -122,6 +152,17 @@ class PrivateMembershipRlweClient {
   static ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>> Create(
       private_membership::rlwe::RlweUseCase use_case,
       const std::vector<RlwePlaintextId>& plaintext_ids);
+
+  // Creates a client for testing the Private Membership RLWE protocol.
+  //
+  // Instead of the client generating the EC cipher key internally, it will
+  // instantiate the cipher with the given key. This also uses deterministic
+  // PRNG, which makes the PIR request deterministic. Thus, this should never be
+  // used in prod.
+  static ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>>
+  CreateForTesting(private_membership::rlwe::RlweUseCase use_case,
+                   const std::vector<RlwePlaintextId>& plaintext_ids,
+                   const std::string& ec_cipher_key, const std::string& seed);
 
   // Creates a request proto for the first phase of the protocol.
   ::rlwe::StatusOr<private_membership::rlwe::PrivateMembershipRlweOprfRequest>
@@ -143,10 +184,18 @@ class PrivateMembershipRlweClient {
           query_response);
 
  private:
+  static ::rlwe::StatusOr<std::unique_ptr<PrivateMembershipRlweClient>>
+  CreateInternal(
+      private_membership::rlwe::RlweUseCase use_case,
+      const std::vector<RlwePlaintextId>& plaintext_ids,
+      absl::optional<std::string> ec_cipher_key,
+      std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator);
+
   PrivateMembershipRlweClient(
       private_membership::rlwe::RlweUseCase use_case,
       const std::vector<RlwePlaintextId>& plaintext_ids,
-      std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher);
+      std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher,
+      std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator);
 
   // Checks whether the id corresponding to the `server_encrypted_id` is in the
   // encrypted bucket and if so, returns an associated value if there is one.
@@ -165,6 +214,9 @@ class PrivateMembershipRlweClient {
 
   // EC commutative cipher for encrypting/decrypting.
   const std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher_;
+
+  // Generates PRNG seed.
+  const std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator_;
 
   private_join_and_compute::Context context_;
 

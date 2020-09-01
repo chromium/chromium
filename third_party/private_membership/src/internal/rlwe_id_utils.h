@@ -17,7 +17,7 @@
 
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
-#include "private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/shell-encryption/src/statusor.h"
 
 namespace private_membership {

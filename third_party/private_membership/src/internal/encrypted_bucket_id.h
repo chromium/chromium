@@ -16,7 +16,7 @@
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ENCRYPTED_BUCKET_ID_H_
 
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
-#include "private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "absl/hash/hash.h"
 #include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/statusor.h"

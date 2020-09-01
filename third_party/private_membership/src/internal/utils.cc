@@ -50,7 +50,6 @@ namespace rlwe {
                  (static_cast<unsigned char>(bytes[1]) << 16) |
                  (static_cast<unsigned char>(bytes[2]) << 8) |
                  static_cast<unsigned char>(bytes[3]);
-
   return res >> (32 - bit_length);
 }
 

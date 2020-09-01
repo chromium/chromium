@@ -15,7 +15,7 @@
 #include "third_party/private_membership/src/internal/hashed_bucket_id.h"
 
 #include "third_party/private_membership/src/private_membership.pb.h"
-#include "private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include "third_party/shell-encryption/src/testing/protobuf_matchers.h"

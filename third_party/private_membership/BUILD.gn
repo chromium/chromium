@@ -6,7 +6,7 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 config("private_membership_config") {
-  # TOTO(crbug.com/1072732) Reenable the deprecated warning, after updating the upstream.
+  # TODO(crbug.com/1072732) Reenable the deprecated warning, after updating the upstream.
   cflags = [ "-Wno-deprecated-declarations" ]
   include_dirs = [
     # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
@@ -25,6 +25,7 @@ config("private_membership_config") {
 
 proto_library("private_membership_proto") {
   sources = [
+    "src/internal/testing/regression_test_data/regression_test_data.proto",
     "src/private_membership.proto",
     "src/private_membership_rlwe.proto",
   ]
@@ -90,6 +91,7 @@ test("private_membership_unittests") {
     "src/internal/rlwe_id_utils_test.cc",
     "src/internal/utils_test.cc",
     "src/membership_response_map_test.cc",
+    "src/private_membership_rlwe_client_regression_test.cc",
   ]
   public_deps = [
     ":private_membership",

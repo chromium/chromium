@@ -15,7 +15,8 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_PARAMS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_PARAMS_H_
 
-#include "private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+#include "third_party/shell-encryption/src/context.h"
 #include "third_party/shell-encryption/src/error_params.h"
 #include "third_party/shell-encryption/src/montgomery.h"
 #include "third_party/shell-encryption/src/ntt_parameters.h"
@@ -23,6 +24,11 @@
 
 namespace private_membership {
 namespace rlwe {
+
+template <typename ModularInt>
+::rlwe::StatusOr<
+    std::vector<std::unique_ptr<const ::rlwe::RlweContext<ModularInt>>>>
+CreateContexts(const RlweParameters& rlwe_params);
 
 template <typename ModularInt>
 ::rlwe::StatusOr<std::unique_ptr<const typename ModularInt::Params>>
