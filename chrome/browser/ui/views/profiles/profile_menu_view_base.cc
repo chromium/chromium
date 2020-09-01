@@ -255,11 +255,6 @@ class AvatarImageView : public views::ImageView {
   AvatarImageView(const ui::ImageModel& avatar_image,
                   const ProfileMenuViewBase* root_view)
       : avatar_image_(avatar_image), root_view_(root_view) {
-    if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-      SetBorder(views::CreateRoundedRectBorder(
-          kIdentityImageBorder, /*radius=*/(kIdentityImageSizeInclBorder) / 2,
-          GetBackgroundColor()));
-    }
     if (avatar_image_.IsEmpty()) {
       // This can happen if the account image hasn't been fetched yet, if there
       // is no image, or in tests.
@@ -277,7 +272,11 @@ class AvatarImageView : public views::ImageView {
     gfx::ImageSkia sized_avatar_image =
         SizeImageModel(avatar_image_, GetNativeTheme(),
                        ProfileMenuViewBase::kIdentityImageSize);
-
+    if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+      sized_avatar_image =
+          AddCircularBackground(sized_avatar_image, GetBackgroundColor(),
+                                kIdentityImageSizeInclBorder);
+    }
     gfx::ImageSkia sized_badge = AddCircularBackground(
         SizeImage(root_view_->GetSyncIcon(), kBadgeSize), GetBackgroundColor(),
         kBadgeSize + 2 * kBadgePadding);
