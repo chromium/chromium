@@ -127,9 +127,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  base::UkmSourceId source_id =
-      base::UkmSourceId::FromOtherId(navigation_handle()->GetNavigationId(),
-                                     base::UkmSourceId::Type::NAVIGATION_ID);
+  base::UkmSourceId source_id = base::UkmSourceId::FromInt64(
+      navigation_handle()->GetNextPageUkmSourceId());
 
   // If the navigation is to an unknown or disabled extension, block it.
   if (!target_extension) {

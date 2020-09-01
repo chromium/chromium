@@ -248,6 +248,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // NavigationHandle implementation:
   int64_t GetNavigationId() override;
+  ukm::SourceId GetNextPageUkmSourceId() override;
   const GURL& GetURL() override;
   SiteInstanceImpl* GetStartingSiteInstance() override;
   SiteInstanceImpl* GetSourceSiteInstance() override;
@@ -1410,7 +1411,7 @@ class CONTENT_EXPORT NavigationRequest
 #endif
 
   // UKM source associated with the page we are navigated away from.
-  const ukm::SourceId previous_page_load_ukm_source_id_;
+  const ukm::SourceId previous_page_ukm_source_id_;
 
   // If true, changes to the user-agent override require a reload. If false, a
   // reload is not necessary.

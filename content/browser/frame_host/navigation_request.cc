@@ -1059,7 +1059,7 @@ NavigationRequest::NavigationRequest(
       initiator_routing_id_(initiator_routing_id),
       client_security_state_(network::mojom::ClientSecurityState::New()),
       coop_status_(frame_tree_node, common_params_->initiator_origin),
-      previous_page_load_ukm_source_id_(
+      previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()) {
   DCHECK(browser_initiated_ || common_params_->initiator_origin.has_value());
   DCHECK(!IsRendererDebugURL(common_params_->url));
@@ -1649,7 +1649,7 @@ NavigationRequest::TakeCoepReporter() {
 }
 
 ukm::SourceId NavigationRequest::GetPreviousPageUkmSourceId() {
-  return previous_page_load_ukm_source_id_;
+  return previous_page_ukm_source_id_;
 }
 
 NavigationEntry* NavigationRequest::GetNavigationEntry() {
@@ -4479,6 +4479,21 @@ bool NavigationRequest::HasPrefetchedAlternativeSubresourceSignedExchange() {
 
 int64_t NavigationRequest::GetNavigationId() {
   return navigation_id_;
+}
+
+ukm::SourceId NavigationRequest::GetNextPageUkmSourceId() {
+  // If the navigation is restoring from back-forward cache, the UKM id
+  // will get restored, too.
+  if (rfh_restored_from_back_forward_cache_)
+    return rfh_restored_from_back_forward_cache_->GetPageUkmSourceId();
+
+  // If this is the same document or a child frame navigation the UKM id will
+  // not change from it.
+  if (IsSameDocument() || !IsInMainFrame())
+    return previous_page_ukm_source_id_;
+
+  return ukm::ConvertToSourceId(navigation_id_,
+                                base::UkmSourceId::Type::NAVIGATION_ID);
 }
 
 const GURL& NavigationRequest::GetURL() {

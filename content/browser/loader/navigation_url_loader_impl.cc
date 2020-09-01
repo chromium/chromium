@@ -1166,9 +1166,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         ->browser()
         ->RegisterNonNetworkNavigationURLLoaderFactories(
             frame_tree_node_id_,
-            base::UkmSourceId::FromOtherId(
-                frame_tree_node->navigation_request()->GetNavigationId(),
-                base::UkmSourceId::Type::NAVIGATION_ID),
+            base::UkmSourceId::FromInt64(frame_tree_node->navigation_request()
+                                             ->GetNextPageUkmSourceId()),
             &non_network_url_loader_factories_);
 
     // The embedder may want to proxy all network-bound URLLoaderFactory

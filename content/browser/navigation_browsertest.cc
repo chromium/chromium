@@ -2648,6 +2648,102 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
   }
 }
 
+// Test that NavigationRequest::GetNextPageUkmSourceId returns the eventual
+// value of RenderFrameHost::GetPageUkmSourceId() --- unremarkable top-level
+// navigation case.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       NavigationRequest_GetNextPageUkmSourceId_Basic) {
+  const GURL kUrl(embedded_test_server()->GetURL("/title1.html"));
+  TestNavigationManager manager(shell()->web_contents(), kUrl);
+  shell()->LoadURL(kUrl);
+
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetMainFrame()
+                            ->frame_tree_node();
+  ASSERT_TRUE(root->navigation_request());
+
+  ukm::SourceId nav_request_id =
+      root->navigation_request()->GetNextPageUkmSourceId();
+
+  EXPECT_TRUE(manager.WaitForResponse());
+  manager.WaitForNavigationFinished();
+  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+            nav_request_id);
+}
+
+// Test that NavigationRequest::GetNextPageUkmSourceId returns the eventual
+// value of RenderFrameHost::GetPageUkmSourceId() --- child frame case.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       NavigationRequest_GetNextPageUkmSourceId_ChildFrame) {
+  const GURL kUrl(
+      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  const GURL kDestUrl(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetMainFrame()
+                            ->frame_tree_node();
+  FrameTreeNode* subframe = root->child_at(0);
+  ASSERT_TRUE(subframe);
+
+  TestNavigationManager manager(shell()->web_contents(), kDestUrl);
+  EXPECT_TRUE(
+      ExecJs(subframe, JsReplace("location.href = $1", kDestUrl.spec())));
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  ASSERT_TRUE(subframe->navigation_request());
+
+  ukm::SourceId nav_request_id =
+      subframe->navigation_request()->GetNextPageUkmSourceId();
+
+  EXPECT_TRUE(manager.WaitForResponse());
+  manager.WaitForNavigationFinished();
+
+  // Should have the same page UKM ID in navigation as page post commit, and as
+  // the top-level frame.
+  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+            nav_request_id);
+  EXPECT_EQ(subframe->current_frame_host()->GetPageUkmSourceId(),
+            nav_request_id);
+}
+
+// Test that NavigationRequest::GetNextPageUkmSourceId returns the eventual
+// value of RenderFrameHost::GetPageUkmSourceId() --- same document navigation.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       NavigationRequest_GetNextPageUkmSourceId_SameDocument) {
+  const GURL kUrl(embedded_test_server()->GetURL("/title1.html"));
+  const GURL kFragment(kUrl.Resolve("#here"));
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetMainFrame()
+                            ->frame_tree_node();
+
+  NavigationHandleObserver handle_observer(shell()->web_contents(), kFragment);
+  EXPECT_TRUE(ExecJs(root, JsReplace("location.href = $1", kFragment.spec())));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_TRUE(handle_observer.is_same_document());
+  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+            handle_observer.next_page_ukm_source_id());
+}
+
+// Test that NavigationRequest::GetNextPageUkmSourceId returns the eventual
+// value of RenderFrameHost::GetPageUkmSourceId() --- back navigation;
+// this case matters because of back-forward cache.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       NavigationRequest_GetNextPageUkmSourceId_Back) {
+  const GURL kUrl1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL kUrl2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl1));
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl2));
+
+  NavigationHandleObserver handle_observer(shell()->web_contents(), kUrl1);
+  shell()->web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+            handle_observer.next_page_ukm_source_id());
+}
+
 // Tests for cookies. Provides an HTTPS server.
 class NavigationCookiesBrowserTest : public NavigationBaseBrowserTest {
  protected:

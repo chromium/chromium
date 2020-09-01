@@ -27,6 +27,10 @@ class MockNavigationHandle : public NavigationHandle {
 
   // NavigationHandle implementation:
   int64_t GetNavigationId() override { return navigation_id_; }
+  ukm::SourceId GetNextPageUkmSourceId() override {
+    return ukm::ConvertToSourceId(navigation_id_,
+                                  base::UkmSourceId::Type::NAVIGATION_ID);
+  }
   const GURL& GetURL() override { return url_; }
   const GURL& GetPreviousURL() override { return previous_url_; }
   SiteInstance* GetStartingSiteInstance() override {

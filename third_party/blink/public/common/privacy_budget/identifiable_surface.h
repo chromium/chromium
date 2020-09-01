@@ -91,7 +91,11 @@ class IdentifiableSurface {
     // GenericFamilyType.
     kGenericFontLookup = 4,
 
-    // Attempt to access extension URLs.
+    // Represents an attempt to access files made publicly accessible by
+    // extensions via web_accessible_resources. This may be recorded both in the
+    // renderer and the browser. Browser-side events will be associated with
+    // the top frame's navigation ID, not a child frame. Render-side events are
+    // associated with document's ID.
     kExtensionFileAccess = 5,
 
     // Extension running content-script.

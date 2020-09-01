@@ -9,6 +9,7 @@
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 
@@ -36,6 +37,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   net::Error net_error_code() { return net_error_code_; }
   int64_t navigation_id() { return navigation_id_; }
   bool is_download() { return is_download_; }
+  ukm::SourceId next_page_ukm_source_id() { return next_page_ukm_source_id_; }
   base::Optional<net::AuthChallengeInfo> auth_challenge_info() {
     return auth_challenge_info_;
   }
@@ -67,6 +69,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   net::Error net_error_code_ = net::OK;
   int64_t navigation_id_ = -1;
   bool is_download_ = false;
+  ukm::SourceId next_page_ukm_source_id_ = ukm::kInvalidSourceId;
   base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
   net::ResolveErrorInfo resolve_error_info_;
   base::TimeTicks navigation_start_;
