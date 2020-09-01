@@ -5,27 +5,35 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_SOURCE_ATTACHMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_SOURCE_ATTACHMENT_H_
 
+#include <memory>
+#include "third_party/blink/public/platform/web_time_range.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
+#include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
-class MediaSource;
+class HTMLMediaElement;
 class MediaSourceRegistry;
+class TimeRanges;
+class TrackBase;
+class WebMediaSource;
 
 // Interface for concrete non-oilpan types to coordinate potentially
-// cross-context registration, deregistration, and lookup of a MediaSource via
-// the MediaSourceRegistry. Upon successful lookup, enables the extension of an
-// HTMLMediaElement by the MSE API, aka attachment. This type is not managed by
-// oilpan due to the potentially varying context lifetimes. Concrete
-// implementations of this handle same-thread (main thread) attachments
-// distinctly from cross-context (MSE-in-Worker, HTMLMediaElement in main
-// thread) attachments due to the increased complexity for handling the latter.
-// Concrete implementations of this interface are reference counted to ensure
-// they are available potentially cross-thread and from the registry.
+// cross-context registration, deregistration, lookup of a MediaSource via the
+// MediaSourceRegistry, and for proxying operations on an attached MediaSource.
+// Upon successful lookup, enables the extension of an HTMLMediaElement by the
+// MSE API, aka attachment. This type is not managed by oilpan due to the
+// potentially varying context lifetimes. Concrete implementations of this
+// handle same-thread (main thread) attachments distinctly from cross-context
+// (MSE-in-Worker, HTMLMediaElement in main thread) attachments due to the
+// increased complexity for handling the latter. Concrete implementations of
+// this interface are reference counted to ensure they are available potentially
+// cross-thread and from the registry.
 //
 // TODO(https://crbug.com/878133): This is not yet implementing the multi-thread
 // aspect.
@@ -39,37 +47,68 @@ class CORE_EXPORT MediaSourceAttachment
 
   // Services lookup calls, expected from HTMLMediaElement during its load
   // algorithm. If |url| is not known by MediaSourceRegistry, returns nullptr.
-  // Otherwise, returns the MediaSource associated with |url|.
-  // TODO(https://crbug.com/878133): Change this to return the refcounted
-  // attachment itself, so that further operation by HTMLMediaElement on the
-  // MediaSource is moderated by the attachment instance.
-  static MediaSource* LookupMediaSource(const String& url);
+  // Otherwise, returns the MediaSourceAttachment associated with |url|.
+  static scoped_refptr<MediaSourceAttachment> LookupMediaSource(
+      const String& url);
 
-  // The only intended caller of this constructor is
-  // URLMediaSource::createObjectUrl. The raw pointer is then adopted into a
-  // scoped_refptr in MediaSourceRegistryImpl::RegisterURL.
-  explicit MediaSourceAttachment(MediaSource* media_source);
+  MediaSourceAttachment();
+  ~MediaSourceAttachment() override;
 
   // This is called on the main thread when the URLRegistry unregisters the
-  // objectURL for this attachment. It releases the strong reference to the
-  // MediaSource such that GC might collect it if there is no active attachment
-  // represented by other strong references.
-  void Unregister();
+  // objectURL for this attachment. Concrete implementation overrides should use
+  // this signal to release their strong reference to the MediaSource such that
+  // GC might collect it if there is no active attachment represented by other
+  // strong references.
+  virtual void Unregister() = 0;
 
   // URLRegistrable
   URLRegistry& Registry() const override { return *registry_; }
 
+  // These two methods are called in sequence when an HTMLMediaElement is
+  // attempting to attach to the MediaSource object using this attachment
+  // instance. The WebMediaSource is not available to the element initially, so
+  // between the two calls, the attachment could be considered partially setup.
+  // If already attached, StartAttachingToMediaElement() returns nullptr.
+  // Otherwise, the underlying MediaSource must be in 'closed' state, and
+  // indicates success by returning a tracer object useful in at least
+  // same-thread attachments for enabling automatic idle unreferenced
+  // same-thread attachment object garbage collection.
+  // CompleteAttachingToMediaElement() provides the attached MediaSource with
+  // the underlying WebMediaSource, enabling parsing of media provided by the
+  // application for playback, for example.
+  // Once attached, the MediaSource and the HTMLMediaElement use each other via
+  // this attachment to accomplish the extended API.
+  // The MediaSourceTracer argument to calls in this interface enables the
+  // attachment to dynamically retrieve the Oilpan-managed objects without
+  // itself being managed by oilpan. Alternatives like requiring the (non-GC'ed)
+  // attachment to remember the tracer as a Persistent would break the ability
+  // for automatic collection of idle unreferenced same-thread HTMLME+MSE object
+  // collections. The tracer argument must be the same as that returned by the
+  // most recent call to the attachment's StartAttachingToMediaElement. We
+  // cannot have the tracer as a Member, and using Persistent to hold it instead
+  // would break the ability for automatic collection of idle unreferenced
+  // same-thread attached HTMLMediaElement + MediaSource object groups.
+  virtual MediaSourceTracer* StartAttachingToMediaElement(
+      HTMLMediaElement*) = 0;
+  virtual void CompleteAttachingToMediaElement(
+      MediaSourceTracer* tracer,
+      std::unique_ptr<WebMediaSource>) = 0;
+
+  virtual void Close(MediaSourceTracer* tracer) = 0;
+  virtual bool IsClosed(MediaSourceTracer* tracer) const = 0;
+  virtual double duration(MediaSourceTracer* tracer) const = 0;
+
+  // 'Internal' in these methods doesn't mean private, it means that they are
+  // internal to chromium and are not exposed to JavaScript.
+  virtual WebTimeRanges BufferedInternal(MediaSourceTracer* tracer) const = 0;
+  virtual WebTimeRanges SeekableInternal(MediaSourceTracer* tracer) const = 0;
+  virtual TimeRanges* Buffered(MediaSourceTracer* tracer) const = 0;
+  virtual void OnTrackChanged(MediaSourceTracer* tracer, TrackBase*) = 0;
+
  private:
   friend class WTF::ThreadSafeRefCounted<MediaSourceAttachment>;
-  ~MediaSourceAttachment() override;
 
   static URLRegistry* registry_;
-
-  // Cache of the registered MediaSource for this initial same-thread-only
-  // migration of the registrable from MediaSource to MediaSourceAttachment.
-  // TODO(https://crbug.com/878133): Refactor this to be mostly internal to the
-  // concrete implementations of this attachment type in modules.
-  Persistent<MediaSource> registered_media_source_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachment);
 };

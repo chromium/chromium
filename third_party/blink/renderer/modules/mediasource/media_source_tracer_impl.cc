@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/modules/mediasource/media_source_tracer_impl.h"
 
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
-#include "third_party/blink/renderer/modules/mediasource/media_source_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source.h"
 
 namespace blink {
 
 MediaSourceTracerImpl::MediaSourceTracerImpl(HTMLMediaElement* media_element,
-                                             MediaSourceImpl* media_source)
+                                             MediaSource* media_source)
     : media_element_(media_element), media_source_(media_source) {}
 
 void MediaSourceTracerImpl::Trace(Visitor* visitor) const {

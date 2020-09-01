@@ -77,7 +77,6 @@
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/html/media/media_error.h"
 #include "third_party/blink/renderer/core/html/media/media_fragment_uri_parser.h"
-#include "third_party/blink/renderer/core/html/media/media_source.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
 #include "third_party/blink/renderer/core/html/time_ranges.h"
@@ -1211,14 +1210,16 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
 
   SetPlayerPreload();
 
-  DCHECK(!media_source_);
+  DCHECK(!media_source_attachment_);
   DCHECK(!media_source_tracer_);
 
   bool attempt_load = true;
 
-  media_source_ = MediaSourceAttachment::LookupMediaSource(url.GetString());
-  if (media_source_) {
-    media_source_tracer_ = media_source_->StartAttachingToMediaElement(this);
+  media_source_attachment_ =
+      MediaSourceAttachment::LookupMediaSource(url.GetString());
+  if (media_source_attachment_) {
+    media_source_tracer_ =
+        media_source_attachment_->StartAttachingToMediaElement(this);
     if (media_source_tracer_) {
       // If the associated feature is enabled, auto-revoke the MediaSource
       // object URL that was used for attachment on successful (start of)
@@ -1231,9 +1232,9 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
         URLFileAPI::revokeObjectURL(GetExecutionContext(), url.GetString());
       }
     } else {
-      // Forget our reference to the MediaSource, so we leave it alone
+      // Forget our reference to the MediaSourceAttachment, so we leave it alone
       // while processing remainder of load failure.
-      media_source_ = nullptr;
+      media_source_attachment_.reset();
       attempt_load = false;
     }
   }
@@ -1425,7 +1426,7 @@ void HTMLMediaElement::DeferredLoadTimerFired(TimerBase*) {
 }
 
 WebMediaPlayer::LoadType HTMLMediaElement::GetLoadType() const {
-  if (media_source_)
+  if (media_source_attachment_)
     return WebMediaPlayer::kLoadTypeMediaSource;
 
   if (src_object_)
@@ -2006,15 +2007,15 @@ void HTMLMediaElement::ProgressEventTimerFired(TimerBase*) {
     previous_progress_time_ = base::ElapsedTimer();
     sent_stalled_event_ = false;
     UpdateLayoutObject();
-  } else if (!media_source_ &&
+  } else if (!media_source_attachment_ &&
              previous_progress_time_->Elapsed() >
                  kStalledNotificationInterval &&
              !sent_stalled_event_) {
-    // Note the !media_source_ condition above. The 'stalled' event is not
-    // fired when using MSE. MSE's resource is considered 'local' (we don't
-    // manage the donwload - the app does), so the HTML5 spec text around
-    // 'stalled' does not apply. See discussion in https://crbug.com/517240
-    // We also don't need to take any action wrt delaying-the-load-event.
+    // Note the !media_source_attachment_ condition above. The 'stalled' event
+    // is not fired when using MSE. MSE's resource is considered 'local' (we
+    // don't manage the download - the app does), so the HTML5 spec text around
+    // 'stalled' does not apply. See discussion in https://crbug.com/517240 We
+    // also don't need to take any action wrt delaying-the-load-event.
     // MediaSource disables the delayed load when first attached.
     ScheduleEvent(event_type_names::kStalled);
     sent_stalled_event_ = true;
@@ -2646,11 +2647,11 @@ void HTMLMediaElement::FlingingStopped() {
 }
 
 void HTMLMediaElement::CloseMediaSource() {
-  if (!media_source_)
+  if (!media_source_attachment_)
     return;
 
-  media_source_->Close();
-  media_source_ = nullptr;
+  media_source_attachment_->Close(media_source_tracer_);
+  media_source_attachment_.reset();
   media_source_tracer_ = nullptr;
 }
 
@@ -2865,8 +2866,8 @@ void HTMLMediaElement::AudioTrackChanged(AudioTrack* track) {
 
   audioTracks().ScheduleChangeEvent();
 
-  if (media_source_)
-    media_source_->OnTrackChanged(track);
+  if (media_source_attachment_)
+    media_source_attachment_->OnTrackChanged(media_source_tracer_, track);
 
   if (!audio_tracks_timer_.IsActive())
     audio_tracks_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
@@ -2921,8 +2922,8 @@ void HTMLMediaElement::SelectedVideoTrackChanged(VideoTrack* track) {
 
   videoTracks().ScheduleChangeEvent();
 
-  if (media_source_)
-    media_source_->OnTrackChanged(track);
+  if (media_source_attachment_)
+    media_source_attachment_->OnTrackChanged(media_source_tracer_, track);
 
   WebMediaPlayer::TrackId id = track->id();
   GetWebMediaPlayer()->SelectedVideoTrackChanged(track->selected() ? &id
@@ -3483,8 +3484,8 @@ void HTMLMediaElement::SizeChanged() {
 }
 
 WebTimeRanges HTMLMediaElement::BufferedInternal() const {
-  if (media_source_)
-    return media_source_->BufferedInternal();
+  if (media_source_attachment_)
+    return media_source_attachment_->BufferedInternal(media_source_tracer_);
 
   if (!GetWebMediaPlayer())
     return {};
@@ -3513,8 +3514,8 @@ WebTimeRanges HTMLMediaElement::SeekableInternal() const {
   if (!GetWebMediaPlayer())
     return {};
 
-  if (media_source_)
-    return media_source_->SeekableInternal();
+  if (media_source_attachment_)
+    return media_source_attachment_->SeekableInternal(media_source_tracer_);
 
   return GetWebMediaPlayer()->Seekable();
 }
@@ -3724,7 +3725,7 @@ bool HTMLMediaElement::HasPendingActivityInternal() const {
   //
   // We use the WebMediaPlayer's network state instead of |network_state_| since
   // it's value is unreliable prior to ready state kHaveMetadata.
-  if (!media_source_) {
+  if (!media_source_attachment_) {
     const auto* wmp = GetWebMediaPlayer();
     if (!wmp) {
       if (network_state_ == kNetworkLoading)
@@ -4060,8 +4061,8 @@ void HTMLMediaElement::SetCcLayer(cc::Layer* cc_layer) {
 
 void HTMLMediaElement::MediaSourceOpened(WebMediaSource* web_media_source) {
   SetShouldDelayLoadEvent(false);
-  media_source_->CompleteAttachingToMediaElement(
-      base::WrapUnique(web_media_source));
+  media_source_attachment_->CompleteAttachingToMediaElement(
+      media_source_tracer_, base::WrapUnique(web_media_source));
 }
 
 bool HTMLMediaElement::IsInteractiveContent() const {
@@ -4075,7 +4076,6 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
   visitor->Trace(current_source_node_);
   visitor->Trace(next_child_node_to_consider_);
-  visitor->Trace(media_source_);
   visitor->Trace(media_source_tracer_);
   visitor->Trace(audio_tracks_);
   visitor->Trace(video_tracks_);

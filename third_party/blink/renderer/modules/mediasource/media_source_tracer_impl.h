@@ -11,23 +11,31 @@
 namespace blink {
 
 class HTMLMediaElement;
-class MediaSourceImpl;
+class MediaSource;
 
 // Concrete MediaSourceTracer that enables an HTMLMediaElement and its attached
-// MediaSourceImpl on the same (main) thread to trace into each other. This
-// enables garbage collection to automatically detect and collect idle
-// attachments of these objects that have no other strong references.
+// MediaSource on the same (main) thread to trace into each other. This enables
+// garbage collection to automatically detect and collect idle attachments of
+// these objects that have no other strong references.
+// A MediaSourceAttachmentImpl uses a MediaSourceTracerImpl as the authoritative
+// reference holder for each side of the attachment.
 class MediaSourceTracerImpl final : public MediaSourceTracer {
  public:
   MediaSourceTracerImpl(HTMLMediaElement* media_element,
-                        MediaSourceImpl* media_source);
+                        MediaSource* media_source);
   ~MediaSourceTracerImpl() override = default;
 
   void Trace(Visitor* visitor) const override;
 
+  bool IsCrossThreadForDebugging() const override { return false; }
+
+  HTMLMediaElement* GetMediaElement() { return media_element_; }
+
+  MediaSource* GetMediaSource() { return media_source_; }
+
  private:
   Member<HTMLMediaElement> media_element_;
-  Member<MediaSourceImpl> media_source_;
+  Member<MediaSource> media_source_;
 };
 
 }  // namespace blink

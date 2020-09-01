@@ -1,34 +1,8 @@
-/*
- * Copyright (C) 2013 Google Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- * copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the
- * distribution.
- *     * Neither the name of Google Inc. nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediasource/media_source_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source.h"
 
 #include <memory>
 
@@ -83,7 +57,7 @@ enum class MseExecutionContext {
 static bool ThrowExceptionIfClosed(bool is_open,
                                    ExceptionState& exception_state) {
   if (!is_open) {
-    MediaSourceImpl::LogAndThrowDOMException(
+    MediaSource::LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "The MediaSource's readyState is not 'open'.");
     return true;
@@ -99,7 +73,7 @@ static bool ThrowExceptionIfClosedOrUpdating(bool is_open,
     return true;
 
   if (is_updating) {
-    MediaSourceImpl::LogAndThrowDOMException(
+    MediaSource::LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "The 'updating' attribute is true on one or more of this MediaSource's "
         "SourceBuffers.");
@@ -109,26 +83,26 @@ static bool ThrowExceptionIfClosedOrUpdating(bool is_open,
   return false;
 }
 
-const AtomicString& MediaSourceImpl::OpenKeyword() {
+const AtomicString& MediaSource::OpenKeyword() {
   DEFINE_STATIC_LOCAL(const AtomicString, open, ("open"));
   return open;
 }
 
-const AtomicString& MediaSourceImpl::ClosedKeyword() {
+const AtomicString& MediaSource::ClosedKeyword() {
   DEFINE_STATIC_LOCAL(const AtomicString, closed, ("closed"));
   return closed;
 }
 
-const AtomicString& MediaSourceImpl::EndedKeyword() {
+const AtomicString& MediaSource::EndedKeyword() {
   DEFINE_STATIC_LOCAL(const AtomicString, ended, ("ended"));
   return ended;
 }
 
-MediaSourceImpl* MediaSourceImpl::Create(ExecutionContext* context) {
-  return MakeGarbageCollected<MediaSourceImpl>(context);
+MediaSource* MediaSource::Create(ExecutionContext* context) {
+  return MakeGarbageCollected<MediaSource>(context);
 }
 
-MediaSourceImpl::MediaSourceImpl(ExecutionContext* context)
+MediaSource::MediaSource(ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
       ready_state_(ClosedKeyword()),
       async_event_queue_(
@@ -166,27 +140,26 @@ MediaSourceImpl::MediaSourceImpl(ExecutionContext* context)
       << "MSE is not yet supported from workers";
 }
 
-MediaSourceImpl::~MediaSourceImpl() {
+MediaSource::~MediaSource() {
   DVLOG(1) << __func__ << " this=" << this;
 }
 
-void MediaSourceImpl::LogAndThrowDOMException(ExceptionState& exception_state,
-                                              DOMExceptionCode error,
-                                              const String& message) {
+void MediaSource::LogAndThrowDOMException(ExceptionState& exception_state,
+                                          DOMExceptionCode error,
+                                          const String& message) {
   DVLOG(1) << __func__ << " (error=" << ToExceptionCode(error)
            << ", message=" << message << ")";
   exception_state.ThrowDOMException(error, message);
 }
 
-void MediaSourceImpl::LogAndThrowTypeError(ExceptionState& exception_state,
-                                           const String& message) {
+void MediaSource::LogAndThrowTypeError(ExceptionState& exception_state,
+                                       const String& message) {
   DVLOG(1) << __func__ << " (message=" << message << ")";
   exception_state.ThrowTypeError(message);
 }
 
-SourceBuffer* MediaSourceImpl::addSourceBuffer(
-    const String& type,
-    ExceptionState& exception_state) {
+SourceBuffer* MediaSource::addSourceBuffer(const String& type,
+                                           ExceptionState& exception_state) {
   DVLOG(2) << __func__ << " this=" << this << " type=" << type;
 
   // 2.2
@@ -266,8 +239,8 @@ SourceBuffer* MediaSourceImpl::addSourceBuffer(
   return buffer;
 }
 
-void MediaSourceImpl::removeSourceBuffer(SourceBuffer* buffer,
-                                         ExceptionState& exception_state) {
+void MediaSource::removeSourceBuffer(SourceBuffer* buffer,
+                                     ExceptionState& exception_state) {
   DVLOG(2) << __func__ << " this=" << this << " buffer=" << buffer;
 
   // 2.2
@@ -298,8 +271,8 @@ void MediaSourceImpl::removeSourceBuffer(SourceBuffer* buffer,
   //     SourceBuffer::removedFromMediaSource (steps 2-8) above.
 }
 
-void MediaSourceImpl::OnReadyStateChange(const AtomicString& old_state,
-                                         const AtomicString& new_state) {
+void MediaSource::OnReadyStateChange(const AtomicString& old_state,
+                                     const AtomicString& new_state) {
   if (IsOpen()) {
     ScheduleEvent(event_type_names::kSourceopen);
     return;
@@ -324,7 +297,7 @@ void MediaSourceImpl::OnReadyStateChange(const AtomicString& old_state,
   ScheduleEvent(event_type_names::kSourceclose);
 }
 
-bool MediaSourceImpl::IsUpdating() const {
+bool MediaSource::IsUpdating() const {
   // Return true if any member of |m_sourceBuffers| is updating.
   for (unsigned i = 0; i < source_buffers_->length(); ++i) {
     if (source_buffers_->item(i)->updating())
@@ -335,8 +308,8 @@ bool MediaSourceImpl::IsUpdating() const {
 }
 
 // static
-bool MediaSourceImpl::isTypeSupported(ExecutionContext* context,
-                                      const String& type) {
+bool MediaSource::isTypeSupported(ExecutionContext* context,
+                                  const String& type) {
   // Section 2.2 isTypeSupported() method steps.
   // https://dvcs.w3.org/hg/html-media/raw-file/tip/media-source/media-source.html#widl-MediaSource-isTypeSupported-boolean-DOMString-type
   // 1. If type is an empty string, then return false.
@@ -391,9 +364,9 @@ bool MediaSourceImpl::isTypeSupported(ExecutionContext* context,
   return result;
 }
 
-void MediaSourceImpl::RecordIdentifiabilityMetric(ExecutionContext* context,
-                                                  const String& type,
-                                                  bool result) {
+void MediaSource::RecordIdentifiabilityMetric(ExecutionContext* context,
+                                              const String& type,
+                                              bool result) {
   blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
       .Set(blink::IdentifiableSurface::FromTypeAndToken(
                blink::IdentifiableSurface::Type::kMediaSource_IsTypeSupported,
@@ -402,15 +375,15 @@ void MediaSourceImpl::RecordIdentifiabilityMetric(ExecutionContext* context,
       .Record(context->UkmRecorder());
 }
 
-const AtomicString& MediaSourceImpl::InterfaceName() const {
+const AtomicString& MediaSource::InterfaceName() const {
   return event_target_names::kMediaSource;
 }
 
-ExecutionContext* MediaSourceImpl::GetExecutionContext() const {
+ExecutionContext* MediaSource::GetExecutionContext() const {
   return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
-void MediaSourceImpl::Trace(Visitor* visitor) const {
+void MediaSource::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
   visitor->Trace(attached_element_);
   visitor->Trace(source_buffers_);
@@ -420,11 +393,11 @@ void MediaSourceImpl::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void MediaSourceImpl::CompleteAttachingToMediaElement(
+void MediaSource::CompleteAttachingToMediaElement(
     std::unique_ptr<WebMediaSource> web_media_source) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "media", "MediaSourceImpl::StartAttachingToMediaElement",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("media",
+                                  "MediaSource::StartAttachingToMediaElement",
+                                  TRACE_ID_LOCAL(this));
   DCHECK(web_media_source);
   DCHECK(!web_media_source_);
   DCHECK(attached_element_);
@@ -432,12 +405,12 @@ void MediaSourceImpl::CompleteAttachingToMediaElement(
   SetReadyState(OpenKeyword());
 }
 
-double MediaSourceImpl::duration() const {
+double MediaSource::duration() const {
   return IsClosed() ? std::numeric_limits<float>::quiet_NaN()
                     : web_media_source_->Duration();
 }
 
-WebTimeRanges MediaSourceImpl::BufferedInternal() const {
+WebTimeRanges MediaSource::BufferedInternal() const {
   // Implements MediaSource algorithm for HTMLMediaElement.buffered.
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#htmlmediaelement-extensions
   Vector<WebTimeRanges> ranges(active_source_buffers_->length());
@@ -489,11 +462,11 @@ WebTimeRanges MediaSourceImpl::BufferedInternal() const {
   return intersection_ranges;
 }
 
-TimeRanges* MediaSourceImpl::Buffered() const {
+TimeRanges* MediaSource::Buffered() const {
   return MakeGarbageCollected<TimeRanges>(BufferedInternal());
 }
 
-WebTimeRanges MediaSourceImpl::SeekableInternal() const {
+WebTimeRanges MediaSource::SeekableInternal() const {
   DCHECK(attached_element_)
       << "Seekable should only be used when attached to HTMLMediaElement";
 
@@ -548,7 +521,7 @@ WebTimeRanges MediaSourceImpl::SeekableInternal() const {
   return ranges;
 }
 
-void MediaSourceImpl::OnTrackChanged(TrackBase* track) {
+void MediaSource::OnTrackChanged(TrackBase* track) {
   DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
   SourceBuffer* source_buffer =
       SourceBufferTrackBaseSupplement::sourceBuffer(*track);
@@ -569,8 +542,8 @@ void MediaSourceImpl::OnTrackChanged(TrackBase* track) {
   SetSourceBufferActive(source_buffer, is_active);
 }
 
-void MediaSourceImpl::setDuration(double duration,
-                                  ExceptionState& exception_state) {
+void MediaSource::setDuration(double duration,
+                              ExceptionState& exception_state) {
   DVLOG(3) << __func__ << " this=" << this << " : duration=" << duration;
 
   // 2.1 https://www.w3.org/TR/media-source/#widl-MediaSource-duration
@@ -601,8 +574,8 @@ void MediaSourceImpl::setDuration(double duration,
   DurationChangeAlgorithm(duration, exception_state);
 }
 
-void MediaSourceImpl::DurationChangeAlgorithm(double new_duration,
-                                              ExceptionState& exception_state) {
+void MediaSource::DurationChangeAlgorithm(double new_duration,
+                                          ExceptionState& exception_state) {
   // http://w3c.github.io/media-source/#duration-change-algorithm
   // 1. If the current value of duration is equal to new duration, then return.
   if (new_duration == duration())
@@ -669,7 +642,7 @@ void MediaSourceImpl::DurationChangeAlgorithm(double new_duration,
   attached_element_->DurationChanged(new_duration, request_seek);
 }
 
-void MediaSourceImpl::SetReadyState(const AtomicString& state) {
+void MediaSource::SetReadyState(const AtomicString& state) {
   DCHECK(state == OpenKeyword() || state == ClosedKeyword() ||
          state == EndedKeyword());
 
@@ -689,8 +662,8 @@ void MediaSourceImpl::SetReadyState(const AtomicString& state) {
   OnReadyStateChange(old_state, state);
 }
 
-void MediaSourceImpl::endOfStream(const AtomicString& error,
-                                  ExceptionState& exception_state) {
+void MediaSource::endOfStream(const AtomicString& error,
+                              ExceptionState& exception_state) {
   DEFINE_STATIC_LOCAL(const AtomicString, network, ("network"));
   DEFINE_STATIC_LOCAL(const AtomicString, decode, ("decode"));
 
@@ -714,13 +687,13 @@ void MediaSourceImpl::endOfStream(const AtomicString& error,
     EndOfStreamAlgorithm(WebMediaSource::kEndOfStreamStatusNoError);
 }
 
-void MediaSourceImpl::endOfStream(ExceptionState& exception_state) {
+void MediaSource::endOfStream(ExceptionState& exception_state) {
   endOfStream("", exception_state);
 }
 
-void MediaSourceImpl::setLiveSeekableRange(double start,
-                                           double end,
-                                           ExceptionState& exception_state) {
+void MediaSource::setLiveSeekableRange(double start,
+                                       double end,
+                                       ExceptionState& exception_state) {
   DVLOG(3) << __func__ << " this=" << this << " : start=" << start
            << ", end=" << end;
 
@@ -752,7 +725,7 @@ void MediaSourceImpl::setLiveSeekableRange(double start,
   live_seekable_range_ = MakeGarbageCollected<TimeRanges>(start, end);
 }
 
-void MediaSourceImpl::clearLiveSeekableRange(ExceptionState& exception_state) {
+void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
   DVLOG(3) << __func__ << " this=" << this;
 
   // http://w3c.github.io/media-source/#widl-MediaSource-clearLiveSeekableRange-void
@@ -772,12 +745,12 @@ void MediaSourceImpl::clearLiveSeekableRange(ExceptionState& exception_state) {
     live_seekable_range_ = MakeGarbageCollected<TimeRanges>();
 }
 
-bool MediaSourceImpl::IsOpen() const {
+bool MediaSource::IsOpen() const {
   return readyState() == OpenKeyword();
 }
 
-void MediaSourceImpl::SetSourceBufferActive(SourceBuffer* source_buffer,
-                                            bool is_active) {
+void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
+                                        bool is_active) {
   if (!is_active) {
     DCHECK(active_source_buffers_->Contains(source_buffer));
     active_source_buffers_->Remove(source_buffer);
@@ -806,11 +779,11 @@ void MediaSourceImpl::SetSourceBufferActive(SourceBuffer* source_buffer,
   active_source_buffers_->insert(insert_position, source_buffer);
 }
 
-HTMLMediaElement* MediaSourceImpl::MediaElement() const {
+HTMLMediaElement* MediaSource::MediaElement() const {
   return attached_element_.Get();
 }
 
-void MediaSourceImpl::EndOfStreamAlgorithm(
+void MediaSource::EndOfStreamAlgorithm(
     const WebMediaSource::EndOfStreamStatus eos_status) {
   // https://www.w3.org/TR/media-source/#end-of-stream-algorithm
   // 1. Change the readyState attribute value to "ended".
@@ -844,29 +817,29 @@ void MediaSourceImpl::EndOfStreamAlgorithm(
   }
 }
 
-bool MediaSourceImpl::IsClosed() const {
+bool MediaSource::IsClosed() const {
   return readyState() == ClosedKeyword();
 }
 
-void MediaSourceImpl::Close() {
+void MediaSource::Close() {
   SetReadyState(ClosedKeyword());
 }
 
-MediaSourceTracer* MediaSourceImpl::StartAttachingToMediaElement(
+MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
     HTMLMediaElement* element) {
   if (attached_element_)
     return nullptr;
 
   DCHECK(IsClosed());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "media", "MediaSourceImpl::StartAttachingToMediaElement",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media",
+                                    "MediaSource::StartAttachingToMediaElement",
+                                    TRACE_ID_LOCAL(this));
   attached_element_ = element;
   return MakeGarbageCollected<MediaSourceTracerImpl>(element, this);
 }
 
-void MediaSourceImpl::OpenIfInEndedState() {
+void MediaSource::OpenIfInEndedState() {
   if (ready_state_ != EndedKeyword())
     return;
 
@@ -874,7 +847,7 @@ void MediaSourceImpl::OpenIfInEndedState() {
   web_media_source_->UnmarkEndOfStream();
 }
 
-bool MediaSourceImpl::HasPendingActivity() const {
+bool MediaSource::HasPendingActivity() const {
   // Note that an unrevoked MediaSource objectUrl for an otherwise inactive,
   // unreferenced HTMLME with MSE still attached will prevent GC of the whole
   // group of objects. This is unfortunate, because it's conceivable that the
@@ -886,13 +859,13 @@ bool MediaSourceImpl::HasPendingActivity() const {
   return async_event_queue_->HasPendingEvents();
 }
 
-void MediaSourceImpl::ContextDestroyed() {
+void MediaSource::ContextDestroyed() {
   if (!IsClosed())
     SetReadyState(ClosedKeyword());
   web_media_source_.reset();
 }
 
-std::unique_ptr<WebSourceBuffer> MediaSourceImpl::CreateWebSourceBuffer(
+std::unique_ptr<WebSourceBuffer> MediaSource::CreateWebSourceBuffer(
     const String& type,
     const String& codecs,
     ExceptionState& exception_state) {
@@ -931,7 +904,7 @@ std::unique_ptr<WebSourceBuffer> MediaSourceImpl::CreateWebSourceBuffer(
   return nullptr;
 }
 
-void MediaSourceImpl::ScheduleEvent(const AtomicString& event_name) {
+void MediaSource::ScheduleEvent(const AtomicString& event_name) {
   DCHECK(async_event_queue_);
 
   Event* event = Event::Create(event_name);

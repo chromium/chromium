@@ -496,7 +496,6 @@ blink_core_sources("html") {
     "media/media_fragment_uri_parser.h",
     "media/media_remoting_interstitial.cc",
     "media/media_remoting_interstitial.h",
-    "media/media_source.h",
     "media/media_source_attachment.cc",
     "media/media_source_attachment.h",
     "media/media_source_registry.h",

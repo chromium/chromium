@@ -34,7 +34,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
-#include "third_party/blink/renderer/modules/mediasource/media_source_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_attachment_impl.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -43,7 +44,7 @@ namespace blink {
 
 // static
 String URLMediaSource::createObjectURL(ScriptState* script_state,
-                                       MediaSourceImpl* source) {
+                                       MediaSource* source) {
   // Since WebWorkers cannot obtain MediaSource objects (yet), we should be on
   // the main thread.
   // TODO(https://crbug.com/878133): Let DedicatedWorkers create MediaSource
@@ -58,9 +59,11 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
   // This creation of a ThreadSafeRefCounted object should have a refcount of 1
   // immediately. It will be adopted into a scoped_refptr in
   // MediaSourceRegistryImpl::RegisterURL. See also MediaSourceAttachment (and
-  // usage in HTMLMediaElement, MediaSourceRegistry{Impl}, and
-  // MediaSource{Impl}) for further detail.
-  MediaSourceAttachment* attachment = new MediaSourceAttachment(source);
+  // usage in HTMLMediaElement, MediaSourceRegistry{Impl}, and MediaSource) for
+  // further detail.
+  // TODO(https://crbug.com/878133): Support creation of a cross-thread
+  // attachment.
+  MediaSourceAttachment* attachment = new MediaSourceAttachmentImpl(source);
   DCHECK(attachment->HasOneRef());
 
   String url = DOMURL::CreatePublicURL(execution_context, attachment);

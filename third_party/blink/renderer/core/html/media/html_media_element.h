@@ -65,11 +65,11 @@ class Event;
 class EventQueue;
 class ExceptionState;
 class HTMLMediaElementControlsList;
-class MediaSource;
-class MediaSourceTracer;
 class HTMLSourceElement;
 class HTMLTrackElement;
 class MediaError;
+class MediaSourceAttachment;
+class MediaSourceTracer;
 class MediaStreamDescriptor;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -329,7 +329,7 @@ class CORE_EXPORT HTMLMediaElement
 
   WebMediaPlayer::LoadType GetLoadType() const;
 
-  bool HasMediaSource() const { return media_source_; }
+  bool HasMediaSource() const { return media_source_attachment_.get(); }
 
   // Return true if element is paused and won't resume automatically if it
   // becomes visible again.
@@ -631,7 +631,12 @@ class CORE_EXPORT HTMLMediaElement
   std::unique_ptr<WebMediaPlayer> web_media_player_;
   cc::Layer* cc_layer_;
 
-  Member<MediaSource> media_source_;
+  // These two fields must be carefully set and reset: the actual derived type
+  // of the attachment (same-thread vs cross-thread, for instance) must be the
+  // same semantic as the actual derived type of the tracer. Further, if there
+  // is no attachment, then there must be no tracer that's tracking an active
+  // attachment.
+  scoped_refptr<MediaSourceAttachment> media_source_attachment_;
   Member<MediaSourceTracer> media_source_tracer_;
 
   // Stores "official playback position", updated periodically from "current

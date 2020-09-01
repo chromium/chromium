@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
 
-#include "third_party/blink/renderer/modules/mediasource/media_source_impl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {

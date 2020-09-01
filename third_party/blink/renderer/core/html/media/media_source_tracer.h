@@ -19,6 +19,10 @@ class CORE_EXPORT MediaSourceTracer
  public:
   virtual ~MediaSourceTracer() = default;
   virtual void Trace(Visitor*) const;
+
+  // Returns true iff the concrete tracer implementation supports cross-thread
+  // attachments, for debug check only.
+  virtual bool IsCrossThreadForDebugging() const = 0;
 };
 
 }  // namespace blink
