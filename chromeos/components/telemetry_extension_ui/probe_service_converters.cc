@@ -336,6 +336,8 @@ health::mojom::ErrorType Convert(cros_healthd::mojom::ErrorType input) {
       return health::mojom::ErrorType::kParseError;
     case cros_healthd::mojom::ErrorType::kSystemUtilityError:
       return health::mojom::ErrorType::kSystemUtilityError;
+    case cros_healthd::mojom::ErrorType::kServiceUnavailable:
+      return health::mojom::ErrorType::kServiceUnavailable;
   }
   NOTREACHED();
 }

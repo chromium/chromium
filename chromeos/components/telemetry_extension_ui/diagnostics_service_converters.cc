@@ -71,6 +71,8 @@ health::mojom::DiagnosticRoutineStatusEnum Convert(
       return health::mojom::DiagnosticRoutineStatusEnum::kRemoved;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelling:
       return health::mojom::DiagnosticRoutineStatusEnum::kCancelling;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnsupported:
+      return health::mojom::DiagnosticRoutineStatusEnum::kUnsupported;
   }
   NOTREACHED();
   return static_cast<health::mojom::DiagnosticRoutineStatusEnum>(

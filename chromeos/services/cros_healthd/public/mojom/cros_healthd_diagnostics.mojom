@@ -52,6 +52,7 @@ enum DiagnosticRoutineStatusEnum {
   kFailedToStart = 7,  // Routine could not be created.
   kRemoved = 8,  // Routine has been removed and is no longer valid.
   kCancelling = 9,  // Routine is in the process of being cancelled.
+  kUnsupported = 10,  // Routine is not supported by the device.
 };
 
 // Enumeration of each of the messages a diagnostics routine can pass back.

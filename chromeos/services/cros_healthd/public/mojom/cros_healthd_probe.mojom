@@ -10,6 +10,8 @@
 
 module chromeos.cros_healthd.mojom;
 
+import "chromeos/services/network_health/public/mojom/network_health.mojom";
+
 // An enumeration of CPU architectures.
 [Extensible]
 enum CpuArchitectureEnum {
@@ -32,6 +34,7 @@ enum ProbeCategoryEnum {
   kStatefulPartition,
   kBluetooth,
   kSystem,
+  kNetwork,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -44,6 +47,8 @@ enum ErrorType {
   kParseError,
   // An error using a system utility.
   kSystemUtilityError,
+  // The external service used to probe the information is not available.
+  kServiceUnavailable,
 };
 
 // Structure that contains error information for a telemetry probe.
@@ -453,6 +458,15 @@ struct SystemInfo {
   string? product_name;
 };
 
+// Network probe result. Can either be populated with the NetworkHealthSnapshot
+// or an error retrieving the information.
+union NetworkResult {
+  // Valid NetworkHealthSnapshot.
+  chromeos.network_health.mojom.NetworkHealthState network_health;
+  // The error that occurred attempting to retrieve the NetworkHealthSnapshot.
+  ProbeError error;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -493,4 +507,8 @@ struct TelemetryInfo {
   // Information about the system from various sources. Only present when
   // kSystem was included in the categories input to ProbeTelemetryInfo.
   SystemResult? system_result;
+  // Information about the networking devices and associated networks of the
+  // system. Only present when kNetwork was included in the categories input to
+  // ProbeTelemetryInfo.
+  NetworkResult? network_result;
 };

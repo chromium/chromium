@@ -65,6 +65,9 @@ TEST(ProbeServiceConvertors, ErrorType) {
 
   EXPECT_EQ(Convert(cros_healthd::mojom::ErrorType::kSystemUtilityError),
             health::mojom::ErrorType::kSystemUtilityError);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::ErrorType::kServiceUnavailable),
+            health::mojom::ErrorType::kServiceUnavailable);
 }
 
 TEST(ProbeServiceConvertors, ProbeErrorPtr) {

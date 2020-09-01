@@ -88,6 +88,8 @@ enum ErrorType {
   kParseError,
   // An error using a system utility.
   kSystemUtilityError,
+  // The external service used to probe the information is not available.
+  kServiceUnavailable,
 };
 
 // Structure that contains error information for a telemetry probe.

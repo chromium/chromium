@@ -35,6 +35,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
             health::DiagnosticRoutineStatusEnum::kRemoved);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kCancelling),
             health::DiagnosticRoutineStatusEnum::kCancelling);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kUnsupported),
+            health::DiagnosticRoutineStatusEnum::kUnsupported);
 }
 
 TEST(DiagnosticsServiceConvertersTest,

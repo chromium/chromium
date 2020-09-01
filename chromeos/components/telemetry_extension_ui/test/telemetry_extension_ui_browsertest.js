@@ -101,6 +101,8 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
   assertEquals(diagnosticsProxy.convertStatus(statusEnum.kRemoved), 'removed');
   assertEquals(
       diagnosticsProxy.convertStatus(statusEnum.kCancelling), 'cancelling');
+  assertEquals(
+      diagnosticsProxy.convertStatus(statusEnum.kUnsupported), 'unsupported');
 
   // Unit tests for convertUserMessage
   const userMessageEnum =

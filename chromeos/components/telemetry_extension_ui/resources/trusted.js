@@ -99,6 +99,7 @@ class DiagnosticsProxy {
       [statusEnum.kFailedToStart, 'failed-to-start'],
       [statusEnum.kRemoved, 'removed'],
       [statusEnum.kCancelling, 'cancelling'],
+      [statusEnum.kUnsupported, 'unsupported'],
     ]);
 
     if (this.enumToStatus_.size !== statusEnum.MAX_VALUE + 1) {
