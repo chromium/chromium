@@ -6,7 +6,6 @@ package org.chromium.chrome.features.start_surface;
 
 import android.os.SystemClock;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 
@@ -144,9 +143,9 @@ public interface StartSurface {
     TabSwitcher.TabListDelegate getTabListDelegate();
 
     /**
-     * @return {@link Supplier} that provides dialog visibility.
+     * @return TabDialogDelegation implementation that can be used to access the Tab Dialog.
      */
-    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
+    TabSwitcher.TabDialogDelegation getTabDialogDelegate();
 
     /**
      * Called after the Chrome activity is launched. This is only called if the StartSurface is

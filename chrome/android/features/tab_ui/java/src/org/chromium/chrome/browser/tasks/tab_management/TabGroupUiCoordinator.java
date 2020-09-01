@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -138,14 +137,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 tabModelSelector.getModel(false).removeObserver(this);
             }
         });
-    }
-
-    /**
-     * @return {@link Supplier} that provides dialog visibility.
-     */
-    @Override
-    public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        return mTabGridDialogCoordinator::isVisible;
     }
 
     /**

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -46,12 +45,6 @@ public interface TasksSurface {
      */
     @Nullable
     TabSwitcher.TabListDelegate getTabListDelegate();
-
-    /**
-     * @return {@link Supplier} that provides dialog visibility.
-     */
-    @Nullable
-    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
 
     /**
      * Get the view container {@link ViewGroup} of the tasks surface body.

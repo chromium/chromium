@@ -1472,31 +1472,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mContentContainer = (ViewGroup) findViewById(android.R.id.content);
         mControlContainer = (ToolbarControlContainer) findViewById(R.id.control_container);
 
-        Supplier<Boolean> dialogVisibilitySupplier = null;
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
-            dialogVisibilitySupplier = () -> {
-                assert mStartSurface != null;
-                assert getToolbarManager().getBottomToolbarCoordinator() != null;
-                // Return true if dialog from either tab switcher or tab strip is visible.
-                Supplier<Boolean> tabGroupUiDialogVisibilitySupplier =
-                        getToolbarManager()
-                                .getBottomToolbarCoordinator()
-                                .getTabGridDialogVisibilitySupplier();
-                Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
-                        mStartSurface.getTabGridDialogVisibilitySupplier();
-                boolean isDialogVisible = false;
-                if (tabGroupUiDialogVisibilitySupplier != null) {
-                    isDialogVisible = tabGroupUiDialogVisibilitySupplier.get();
-                }
-                if (tabSwitcherDialogVisibilitySupplier != null) {
-                    isDialogVisible = isDialogVisible || tabSwitcherDialogVisibilitySupplier.get();
-                }
-                return isDialogVisible;
-            };
-        }
-
         mUndoBarPopupController = new UndoBarController(this, mTabModelSelectorImpl,
-                this::getSnackbarManager, mOverviewModeBehaviorSupplier, dialogVisibilitySupplier);
+                this::getSnackbarManager, mOverviewModeBehaviorSupplier);
 
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
