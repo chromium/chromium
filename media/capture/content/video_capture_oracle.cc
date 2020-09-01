@@ -88,6 +88,7 @@ VideoCaptureOracle::VideoCaptureOracle(bool enable_auto_throttling)
       num_frames_pending_(0),
       smoothing_sampler_(kDefaultMinCapturePeriod),
       content_sampler_(kDefaultMinCapturePeriod),
+      min_capture_period_(kDefaultMinCapturePeriod),
       buffer_pool_utilization_(base::TimeDelta::FromMicroseconds(
           kBufferUtilizationEvaluationMicros)),
       estimated_capable_area_(base::TimeDelta::FromMicroseconds(
@@ -100,6 +101,7 @@ VideoCaptureOracle::~VideoCaptureOracle() = default;
 
 void VideoCaptureOracle::SetMinCapturePeriod(base::TimeDelta period) {
   DCHECK_GT(period, base::TimeDelta());
+  min_capture_period_ = period;
   smoothing_sampler_.SetMinCapturePeriod(period);
   content_sampler_.SetMinCapturePeriod(period);
 }
@@ -217,8 +219,12 @@ bool VideoCaptureOracle::ObserveEventAndDecideCapture(
   } else if (capture_size_ != resolution_chooser_.capture_size()) {
     const base::TimeDelta time_since_last_change =
         event_time - buffer_pool_utilization_.reset_time();
-    if (time_since_last_change >= min_size_change_period_)
+    if (time_since_last_change >= min_size_change_period_ ||
+        capture_size_throttling_mode_ != kThrottlingActive) {
+      // Unless autothrottling has become active resolution should be changed
+      // ASAP.
       CommitCaptureSizeAndReset(GetFrameTimestamp(next_frame_number_ - 1));
+    }
   }
 
   SetFrameTimestamp(next_frame_number_, event_time);
@@ -334,6 +340,36 @@ void VideoCaptureOracle::CancelAllCaptures() {
 void VideoCaptureOracle::RecordConsumerFeedback(
     int frame_number,
     const media::VideoFrameFeedback& feedback) {
+  // Max frame-rate constraint.
+
+  base::TimeDelta period;
+  if (std::isfinite(feedback.max_framerate_fps) &&
+      feedback.max_framerate_fps > 0.0) {
+    period = std::max(min_capture_period_,
+                      base::TimeDelta::FromHz(feedback.max_framerate_fps));
+  } else {
+    period = min_capture_period_;
+  }
+  smoothing_sampler_.SetMinCapturePeriod(period);
+  content_sampler_.SetMinCapturePeriod(period);
+
+  // Max pixels constraint. Only respected if auto-throttling is off because
+  // consumers could just rescale the image.
+
+  if (capture_size_throttling_mode_ != kThrottlingActive) {
+    int limit;
+    if (feedback.max_pixels < std::numeric_limits<int>::max()) {
+      // +1 so that |FindSmallerFrameSize| could return exact |max_pixels| size.
+      limit = feedback.max_pixels + 1;
+    } else {
+      limit = std::numeric_limits<int>::max();
+    }
+    int area = resolution_chooser_.FindSmallerFrameSize(limit, 1).GetArea();
+    resolution_chooser_.SetTargetFrameArea(area);
+  }
+
+  // resource_utilization feedback.
+
   if (capture_size_throttling_mode_ == kThrottlingDisabled)
     return;
 

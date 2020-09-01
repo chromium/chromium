@@ -19,6 +19,8 @@ SmoothEventSampler::SmoothEventSampler(base::TimeDelta min_capture_period)
 
 void SmoothEventSampler::SetMinCapturePeriod(base::TimeDelta period) {
   DCHECK_GT(period, base::TimeDelta());
+  if (period == min_capture_period_)
+    return;
   min_capture_period_ = period;
   token_bucket_capacity_ = period + period / 2;
   token_bucket_ = std::min(token_bucket_capacity_, token_bucket_);

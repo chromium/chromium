@@ -109,9 +109,9 @@ class CAPTURE_EXPORT VideoCaptureOracle {
                               const media::VideoFrameFeedback& feedback);
 
   // Sets the minimum amount of time that must pass between changes to the
-  // capture size. This throttles the rate of size changes, to avoid stressing
-  // consumers and to allow the end-to-end system sufficient time to stabilize
-  // before re-evaluating the capture size.
+  // capture size due to autothrottling. This throttles the rate of size
+  // changes, to avoid stressing consumers and to allow the end-to-end system
+  // sufficient time to stabilize before re-evaluating the capture size.
   void SetMinSizeChangePeriod(base::TimeDelta period);
 
   // Returns the oracle's estimate of the duration of the next frame.  This
@@ -232,6 +232,11 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // playback) and decides which events to sample to "lock into" that content.
   SmoothEventSampler smoothing_sampler_;
   AnimatedContentSampler content_sampler_;
+
+  // This is the overall setting, provided in the last call to
+  // SetMinCapturePeriod(), but the live setting in |smoothing_sampler_| and
+  // |content_sampler_| could be greater if the consumer feedback requests it.
+  base::TimeDelta min_capture_period_;
 
   // Determines video capture frame sizes.
   CaptureResolutionChooser resolution_chooser_;
