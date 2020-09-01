@@ -131,7 +131,10 @@ void OverlayPresenterImpl::SetActiveWebState(
   if (active_web_state_ == web_state)
     return;
 
-  OverlayRequest* previously_active_request = GetActiveRequest();
+  OverlayRequest* previously_active_request =
+      removed_request_awaiting_dismissal_ != nullptr
+          ? removed_request_awaiting_dismissal_.get()
+          : GetActiveRequest();
 
   // The UI should be cancelled instead of hidden if the presenter does not
   // expect to show any more overlay UI for previously active WebState in the UI
