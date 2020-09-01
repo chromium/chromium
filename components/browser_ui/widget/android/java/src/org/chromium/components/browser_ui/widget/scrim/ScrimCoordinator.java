@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
@@ -31,10 +30,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public class ScrimCoordinator {
     /**
-     * A delegate to expose functionality that changes the scrim over the status bar. This will only
-     * affect Android versions >= M.
+     * A delegate to expose functionality that changes the scrim over the system UI.
      */
-    public interface StatusBarScrimDelegate {
+    public interface SystemUiScrimDelegate {
         /**
          * Set the amount of scrim over the status bar. The implementor may choose to not respect
          * the value provided to this method.
@@ -42,6 +40,14 @@ public class ScrimCoordinator {
          *                      completely shown.
          */
         void setStatusBarScrimFraction(float scrimFraction);
+
+        /**
+         * Set the amount of scrim over the navigation bar. The implementor may choose to not
+         * respect the value provided to this method.
+         * @param scrimFraction The scrim fraction over the status bar. 0 is completely hidden, 1 is
+         *                      completely shown.
+         */
+        void setNavigationBarScrimFraction(float scrimFraction);
     }
 
     /** A mechanism for delegating motion events out to the mediator. */
@@ -73,18 +79,18 @@ public class ScrimCoordinator {
 
     /**
      * @param context An Android {@link Context} for creating the view.
-     * @param scrimDelegate A means of changing the scrim over the status bar.
+     * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      * @param parent The {@link ViewGroup} the scrim should exist in.
      * @param defaultColor The default color of the scrim.
      */
-    public ScrimCoordinator(Context context, @Nullable StatusBarScrimDelegate scrimDelegate,
+    public ScrimCoordinator(Context context, SystemUiScrimDelegate systemUiScrimDelegate,
             ViewGroup parent, @ColorInt int defaultColor) {
         mMediator = new ScrimMediator(() -> {
             if (mChangeProcessor != null) mChangeProcessor.destroy();
             if (mView != null) UiUtils.removeViewFromParent(mView);
             mView = null;
             mChangeProcessor = null;
-        }, scrimDelegate);
+        }, systemUiScrimDelegate);
         mScrimViewBuilder = () -> {
             ScrimView view = new ScrimView(context, parent, defaultColor, mMediator);
             return view;

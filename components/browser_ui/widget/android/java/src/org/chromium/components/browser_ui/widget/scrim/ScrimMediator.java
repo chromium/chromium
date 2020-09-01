@@ -9,12 +9,10 @@ import android.animation.ValueAnimator;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.StatusBarScrimDelegate;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,11 +21,11 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     /** The duration for the fading animation. */
     private static final int FADE_DURATION_MS = 300;
 
-    /** A means of changing the statusbar color. */
-    private final StatusBarScrimDelegate mStatusBarScrimDelegate;
-
     /** A callback that is run when the scrim has completely hidden. */
     private final Runnable mScrimHiddenRunnable;
+
+    /** A means of changing the system UI color. */
+    private ScrimCoordinator.SystemUiScrimDelegate mSystemUiScrimDelegate;
 
     /** The animator for fading the view in. */
     private ValueAnimator mOverlayFadeInAnimator;
@@ -55,13 +53,13 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     /**
      * @param scrimHiddenRunnable A mechanism for hiding the scrim.
-     * @param statusBarDelegate A means of changing the scrim over the status bar.
+     * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      */
     ScrimMediator(@NonNull Runnable scrimHiddenRunnable,
-            @Nullable StatusBarScrimDelegate statusBarDelegate) {
+            ScrimCoordinator.SystemUiScrimDelegate systemUiScrimDelegate) {
         mScrimHiddenRunnable = scrimHiddenRunnable;
+        mSystemUiScrimDelegate = systemUiScrimDelegate;
         mFadeDurationMs = FADE_DURATION_MS;
-        mStatusBarScrimDelegate = statusBarDelegate;
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */
@@ -153,8 +151,13 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         if (mModel == null) return;
         if (MathUtils.areFloatsEqual(alpha, mModel.get(ScrimProperties.ALPHA))) return;
         mModel.set(ScrimProperties.ALPHA, alpha);
-        if (mModel.get(ScrimProperties.AFFECTS_STATUS_BAR) && mStatusBarScrimDelegate != null) {
-            mStatusBarScrimDelegate.setStatusBarScrimFraction(alpha);
+        if (mModel.get(ScrimProperties.AFFECTS_STATUS_BAR) && mSystemUiScrimDelegate != null) {
+            mSystemUiScrimDelegate.setStatusBarScrimFraction(alpha);
+        }
+        if (mModel.getAllSetProperties().contains(ScrimProperties.AFFECTS_NAVIGATION_BAR)
+                && mModel.get(ScrimProperties.AFFECTS_NAVIGATION_BAR)
+                && mSystemUiScrimDelegate != null) {
+            mSystemUiScrimDelegate.setNavigationBarScrimFraction(alpha);
         }
 
         boolean isVisible = alpha > 0;

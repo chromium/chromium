@@ -72,6 +72,8 @@ class ScrimViewBinder {
 
         } else if (ScrimProperties.GESTURE_DETECTOR == propertyKey) {
             // Noop; gesture handling is delegated out to the mediator.
+        } else if (ScrimProperties.AFFECTS_NAVIGATION_BAR == propertyKey) {
+            // Noop; the mediator handles this interaction.
         }
     }
 }

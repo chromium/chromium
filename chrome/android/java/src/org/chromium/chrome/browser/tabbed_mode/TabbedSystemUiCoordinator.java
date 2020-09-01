@@ -40,6 +40,15 @@ public class TabbedSystemUiCoordinator {
         }
     }
 
+    /**
+     * Gets the {@link TabbedNavigationBarColorController}. Note that this returns null for version
+     * lower than {@link Build.VERSION_CODES#O_MR1}.
+     */
+    @Nullable
+    TabbedNavigationBarColorController getNavigationBarColorController() {
+        return mNavigationBarColorController;
+    }
+
     public void destroy() {
         if (mNavigationBarColorController != null) mNavigationBarColorController.destroy();
     }

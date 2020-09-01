@@ -12,10 +12,12 @@ import android.os.Build;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.vr.VrModeObserver;
 
 /**
@@ -40,6 +43,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
     private final Window mWindow;
     private final ViewGroup mRootView;
     private final Resources mResources;
+    private final @ColorInt int mDefaultScrimColor;
 
     // May be null if we return from the constructor early. Otherwise will be set.
     private final @Nullable TabModelSelector mTabModelSelector;
@@ -51,6 +55,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
 
     private boolean mUseLightNavigation;
     private boolean mOverviewModeHiding;
+    private float mNavigationBarScrimFraction;
 
     /**
      * Creates a new {@link TabbedNavigationBarColorController} instance.
@@ -67,6 +72,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
         mWindow = window;
         mRootView = (ViewGroup) mWindow.getDecorView().getRootView();
         mResources = mRootView.getResources();
+        mDefaultScrimColor = ApiCompatibilityUtils.getColor(mResources, R.color.black_alpha_65);
 
         // If we're not using a light navigation bar, it will always be black so there's no need
         // to register observers and manipulate coloring.
@@ -193,5 +199,39 @@ class TabbedNavigationBarColorController implements VrModeObserver {
                                     mResources, R.color.bottom_system_nav_divider_color)
                             : Color.BLACK);
         }
+    }
+
+    /**
+     * Update the scrim amount on the navigation bar. Note that we only update when the navigation
+     * bar color is in light mode.
+     * @param fraction The scrim fraction in range [0, 1].
+     */
+    public void setNavigationBarScrimFraction(float fraction) {
+        if (!mUseLightNavigation) {
+            return;
+        }
+        mNavigationBarScrimFraction = fraction;
+        mWindow.setNavigationBarColor(applyCurrentScrimToColor(
+                ApiCompatibilityUtils.getColor(mResources, R.color.bottom_system_nav_color)));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mWindow.setNavigationBarDividerColor(
+                    applyCurrentScrimToColor(ApiCompatibilityUtils.getColor(
+                            mResources, R.color.bottom_system_nav_divider_color)));
+        }
+
+        // Adjust the color of navigation bar icons based on color state of the navigation bar.
+        if (MathUtils.areFloatsEqual(1f, fraction)) {
+            UiUtils.setNavigationBarIconColor(mRootView, false);
+        } else if (MathUtils.areFloatsEqual(0f, fraction)) {
+            UiUtils.setNavigationBarIconColor(mRootView, true);
+        }
+    }
+
+    private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {
+        // Apply a color overlay.
+        float scrimColorAlpha = (mDefaultScrimColor >>> 24) / 255f;
+        int scrimColorOpaque = mDefaultScrimColor & 0xFF000000;
+        return ColorUtils.getColorWithOverlay(
+                color, scrimColorOpaque, mNavigationBarScrimFraction * scrimColorAlpha, true);
     }
 }
