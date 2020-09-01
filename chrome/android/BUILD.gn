@@ -1934,6 +1934,7 @@ template("chrome_public_apk_or_module_tmpl") {
                              "is_base_module",
                              "jni_registration_header",
                              "target_type",
+                             "enable_lint",
                              "enable_multidex",
                              "lint_suppressions_dep",
                              "lint_suppressions_file",
