@@ -3,11 +3,9 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_view_manager/cr_view_manager.html">
-<link rel="import" href="../../shared/nearby_page_template.html">
-<!-- NOTE: The above import is just so this file gets included in the bundle
-           for testing purposes. It will be removed when the actual pages are
-           added in a follow up CL.
--->
+<link rel="import" href="../../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="nearby_share_confirm_page.html">
+<link rel="import" href="nearby_share_high_visibility_page.html">
 
 <dom-module id="nearby-share-receive-dialog">
   <template>
@@ -19,6 +17,11 @@
     <cr-dialog id="dialog" show-on-attach>
       <div id="content" slot="body">
         <cr-view-manager id="viewManager">
+          <nearby-share-high-visibility-page id="[[Page.HIGH_VISIBILITY]]"
+              slot="view" device-name="[[settings.deviceName]]">
+          </nearby-share-high-visibility-page>
+          <nearby-share-confirm-page id="[[Page.CONFIRM]]" slot="view">
+          </nearby-share-confirm-page>
         </cr-view-manager>
       </div>
     </cr-dialog>

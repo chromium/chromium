@@ -235,6 +235,14 @@ Polymer({
 
       if (queryParams.has('receive')) {
         this.showReceiveDialog_ = true;
+        Polymer.dom.flush();
+        this.$$('#receiveDialog').showHighVisibilityPage();
+      }
+
+      if (queryParams.has('confirm')) {
+        this.showReceiveDialog_ = true;
+        Polymer.dom.flush();
+        this.$$('#receiveDialog').showConfirmPage();
       }
     }
   },

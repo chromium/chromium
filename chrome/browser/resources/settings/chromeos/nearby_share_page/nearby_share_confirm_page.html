@@ -1,0 +1,18 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="../../shared/nearby_page_template.html">
+
+<dom-module id="nearby-share-confirm-page">
+  <template>
+    <nearby-page-template title="$i18n{nearbyShareReceiveConfirmPageTitle}"
+        action-button-label="$i18n{confirm}"
+        action-button-event-name="confirm"
+        cancel-button-label="$i18n{cancel}"
+        cancel-button-event-name="reject">
+      <div slot="content">
+        <!-- TODO(vecore): add page body -->
+      </div>
+    </nearby-page-template>
+  </template>
+  <script src="nearby_share_confirm_page.js"></script>
+</dom-module>

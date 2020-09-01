@@ -33,7 +33,17 @@ suite('NearbyShare', function() {
     return test_util.isChildVisible(dialog, selector, false);
   }
 
-  test('dialog resolves to a polymer element', function() {
-    assertTrue('attached' in dialog);
+  test('show high visibility page', function() {
+    dialog.showHighVisibilityPage();
+    Polymer.dom.flush();
+    assertTrue(isVisible('nearby-share-high-visibility-page'));
+    assertFalse(isVisible('nearby-share-confirm-page'));
+  });
+
+  test('show confirm page', function() {
+    dialog.showConfirmPage();
+    Polymer.dom.flush();
+    assertFalse(isVisible('nearby-share-high-visibility-page'));
+    assertTrue(isVisible('nearby-share-confirm-page'));
   });
 });

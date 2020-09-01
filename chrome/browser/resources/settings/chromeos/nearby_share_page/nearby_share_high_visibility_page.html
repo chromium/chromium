@@ -1,0 +1,61 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="../localized_link/localized_link.html">
+<link rel="import" href="../../shared/nearby_page_template.html">
+<link rel="import" href="../../shared/nearby_shared_icons.html">
+
+<dom-module id="nearby-share-high-visibility-page">
+  <template>
+    <style>
+      #content {
+        background: radial-gradient(160% 50% at 0 100%,
+            rgba(138, 180, 248, 0.25),rgba(255, 255, 255, 0));
+        display: flex;
+        flex-direction: column-reverse;
+        height: 100%;
+        width: 100%;
+      }
+
+      #help {
+        align-items: center;
+        color: var(--google-gray-500);
+        display: flex;
+        flex-direction: row;
+        margin-inline-end: 24px;
+        margin-inline-start: 24px;
+        padding: 8px;
+      }
+
+      #helpText {
+        font-size: .8rem;
+        line-height: .8rem;
+        margin: auto;
+      }
+
+      #infoIcon {
+        height: 20px;
+        margin-inline-end: 12px;
+        width: 20px;
+      }
+    </style>
+    <nearby-page-template title="$i18n{nearbyShareFeatureName}"
+        sub-title="[[getSubTitle_(deviceName)]]"
+        cancel-button-label="$i18n{cancel}">
+      <div id="content" slot="content">
+        <div id="help">
+          <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
+          <div id="helpText">
+            <!-- TODO(vecore): add correct url for learn more link -->
+            <settings-localized-link
+                localized-string="$i18n{nearbyShareHighVisibilityHelpText}"
+                link-url="https://google.com">
+            </settings-localized-link>
+          </div>
+        </div>
+      </div>
+    </nearby-page-template>
+  </template>
+  <script src="nearby_share_high_visibility_page.js"></script>
+</dom-module>

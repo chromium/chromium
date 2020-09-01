@@ -1316,6 +1316,12 @@
       <structure name="IDR_OS_SETTINGS_MULTIDEVICE_TETHER_ITEM_JS"
                  file="chromeos/multidevice_page/multidevice_tether_item.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONFIRM_PAGE_HTML"
+                 file="chromeos/nearby_share_page/nearby_share_confirm_page.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONFIRM_PAGE_JS"
+                 file="chromeos/nearby_share_page/nearby_share_confirm_page.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_DIALOG_HTML"
                  file="chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.html"
                  compress="false" type="chrome_html" />
@@ -1327,6 +1333,12 @@
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_JS"
                  file="chromeos/nearby_share_page/nearby_share_device_name_dialog.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_PAGE_HTML"
+                 file="chromeos/nearby_share_page/nearby_share_high_visibility_page.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_PAGE_JS"
+                 file="chromeos/nearby_share_page/nearby_share_high_visibility_page.js"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_RECEIVE_DIALOG_HTML"
                  file="chromeos/nearby_share_page/nearby_share_receive_dialog.html"

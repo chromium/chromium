@@ -130,6 +130,20 @@
     {COUNT, plural, =1 {1 item} other {# items}}
   </message>
 
+  <!-- High Visibility Page Strings -->
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE" desc="Describes to the user that their device is visible to nearby devices with a specific device name. This is used on the sub-title of the of high visibility receive dialog for the Nearby Share feature.">
+    Visible to nearby devices as <ph name="DEVICE_NAME">$1<ex>Rea’s Chromebook</ex></ph>
+  </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_HELP_TEXT" desc="Describes to the user that their device is visible to nearby devices with a specific device name. This is used on the sub-title of the of high visibility receive dialog for the Nearby Share feature.">
+    Make sure both devices are unlocked, close together, and have Bluetooth turned on. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+
+  <!-- Receive Confirmation Page Strings -->
+  <message name="IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE" desc="The title of the recieve confirmation page which askign the user to confirm receving a share from a specific device.">
+    Receive from this device?
+  </message>
+
+
   <!-- Settings Strings -->
   <message name="IDS_NEARBY_VISIBLITY_ALL_CONTACTS" desc="Describes the user preference state for the user to be visibile to all their contacts in the Nearby Share feature.">
     All contacts

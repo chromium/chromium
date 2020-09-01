@@ -122,6 +122,11 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareVisibilityPageSubtitle",
        IDS_NEARBY_VISIBILITY_PAGE_SUBTITLE},
       {"nearbyShareVisibilityPageTitle", IDS_NEARBY_VISIBILITY_PAGE_TITLE},
-  };
+      {"nearbyShareHighVisibilitySubTitle",
+       IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE},
+      {"nearbyShareHighVisibilityHelpText",
+       IDS_NEARBY_HIGH_VISIBILITY_HELP_TEXT},
+      {"nearbyShareReceiveConfirmPageTitle",
+       IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE}};
   webui::AddLocalizedStringsBulk(data_source, kLocalizedStrings);
 }
