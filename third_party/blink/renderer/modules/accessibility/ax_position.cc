@@ -9,12 +9,10 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
-#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
-#include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
-#include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
-#include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -240,15 +238,37 @@ const AXPosition AXPosition::FromPosition(
     AXPosition ax_position(*container);
     // Convert from a DOM offset that may have uncompressed white space to a
     // character offset.
-    // TODO(nektar): Use LayoutNG offset mapping instead of
-    // |TextIterator|.
-    TextIteratorBehavior::Builder iterator_builder;
-    const TextIteratorBehavior text_iterator_behavior =
-        iterator_builder.SetDoesNotEmitSpaceBeyondRangeEnd(true).Build();
-    const auto first_position = Position::FirstPositionInNode(*container_node);
-    int offset = TextIterator::RangeLength(
-        first_position, parent_anchored_position, text_iterator_behavior);
-    ax_position.text_offset_or_child_index_ = offset;
+    LayoutBlockFlow* formatting_context =
+        NGOffsetMapping::GetInlineFormattingContextOf(
+            *container_node->GetLayoutObject());
+    const NGOffsetMapping* container_offset_mapping =
+        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                           : nullptr;
+    if (!container_offset_mapping) {
+      // We are unable to compute the text offset in the accessibility tree that
+      // corresponds to the DOM offset. We do the next best thing by returning
+      // either the first or the last AX position in |container| based on the
+      // |adjustment_behavior|.
+      switch (adjustment_behavior) {
+        case AXPositionAdjustmentBehavior::kMoveRight:
+          return CreateLastPositionInObject(*container, adjustment_behavior);
+        case AXPositionAdjustmentBehavior::kMoveLeft:
+          return CreateFirstPositionInObject(*container, adjustment_behavior);
+      }
+    }
+
+    // We can now compute the text offset that corresponds to the given DOM
+    // position from the beginning of our formatting context. We also need to
+    // subtract the text offset of our |container| from the beginning of the
+    // same formatting context.
+    int container_offset = container->TextOffsetInFormattingContext(0);
+    int text_offset =
+        int{container_offset_mapping
+                ->GetTextContentOffset(parent_anchored_position)
+                .value_or(static_cast<unsigned int>(container_offset))} -
+        container_offset;
+    DCHECK_GE(text_offset, 0);
+    ax_position.text_offset_or_child_index_ = text_offset;
     ax_position.affinity_ = affinity;
 #if DCHECK_IS_ON()
     String failure_reason;
@@ -392,10 +412,13 @@ int AXPosition::MaxTextOffset() const {
     return 0;
   }
 
+  // TODO(nektar): Make AXObject::TextLength() public and use throughout this
+  // method.
   if (container_object_->IsNativeTextControl())
     return container_object_->StringValue().length();
 
-  if (container_object_->IsAXInlineTextBox() || !container_object_->GetNode()) {
+  const Node* container_node = container_object_->GetNode();
+  if (container_object_->IsAXInlineTextBox() || !container_node) {
     // 1. The |Node| associated with an inline text box contains all the text in
     // the static text object parent, whilst the inline text box might contain
     // only part of it.
@@ -405,16 +428,20 @@ int AXPosition::MaxTextOffset() const {
     return container_object_->ComputedName().length();
   }
 
-  // TODO(nektar): Use LayoutNG offset mapping instead of |TextIterator|.
-  TextIteratorBehavior::Builder iterator_builder;
-  const TextIteratorBehavior text_iterator_behavior =
-      iterator_builder.SetDoesNotEmitSpaceBeyondRangeEnd(true).Build();
-  const auto first_position =
-      Position::FirstPositionInNode(*container_object_->GetNode());
-  const auto last_position =
-      Position::LastPositionInNode(*container_object_->GetNode());
-  return TextIterator::RangeLength(first_position, last_position,
-                                   text_iterator_behavior);
+  LayoutBlockFlow* formatting_context =
+      NGOffsetMapping::GetInlineFormattingContextOf(
+          *container_node->GetLayoutObject());
+  const NGOffsetMapping* container_offset_mapping =
+      formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                         : nullptr;
+  if (!container_offset_mapping)
+    return container_object_->ComputedName().length();
+  const base::span<const NGOffsetMappingUnit> mapping_units =
+      container_offset_mapping->GetMappingUnitsForNode(*container_node);
+  if (mapping_units.empty())
+    return container_object_->ComputedName().length();
+  return int{mapping_units.back().TextContentEnd() -
+             mapping_units.front().TextContentStart()};
 }
 
 TextAffinity AXPosition::Affinity() const {
@@ -688,7 +715,7 @@ const AXPosition AXPosition::AsValidDOMPosition(
   // positions are also considered to be virtual since they don't have an
   // associated DOM node.
 
-  // More Explaination:
+  // In more detail:
   // If the child after a tree position doesn't have an associated node in the
   // DOM tree, we adjust to the next or previous position because a
   // corresponding child node will not be found in the DOM tree. We need a
@@ -826,20 +853,60 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
                                 affinity_);
   }
 
-  // TODO(nektar): Use LayoutNG offset mapping instead of |TextIterator|.
-  TextIteratorBehavior::Builder iterator_builder;
-  const TextIteratorBehavior text_iterator_behavior =
-      iterator_builder.SetDoesNotEmitSpaceBeyondRangeEnd(true).Build();
-  const auto first_position = Position::FirstPositionInNode(*container_node);
-  const auto last_position = Position::LastPositionInNode(*container_node);
-  CharacterIterator character_iterator(first_position, last_position,
-                                       text_iterator_behavior);
-  unsigned text_offset_in_container =
-      adjusted_position.container_object_->TextOffsetInContainer(
+  // Convert from a text offset, which may have white space collapsed, to a DOM
+  // offset which should have uncompressed white space.
+  LayoutBlockFlow* formatting_context =
+      NGOffsetMapping::GetInlineFormattingContextOf(
+          *container_node->GetLayoutObject());
+  const NGOffsetMapping* container_offset_mapping =
+      formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                         : nullptr;
+  if (!container_offset_mapping) {
+    // We are unable to compute the text offset in the accessibility tree that
+    // corresponds to the DOM offset. We do the next best thing by returning
+    // either the first or the last DOM position in |container_node| based on
+    // the |adjustment_behavior|.
+    switch (adjustment_behavior) {
+      case AXPositionAdjustmentBehavior::kMoveRight:
+        return PositionWithAffinity(
+            Position::LastPositionInNode(*container_node), affinity_);
+      case AXPositionAdjustmentBehavior::kMoveLeft:
+        return PositionWithAffinity(
+            Position::FirstPositionInNode(*container_node), affinity_);
+    }
+  }
+
+  int text_offset_in_formatting_context =
+      adjusted_position.container_object_->TextOffsetInFormattingContext(
           adjusted_position.TextOffset());
-  const EphemeralRange range = character_iterator.CalculateCharacterSubrange(
-      0, text_offset_in_container);
-  return PositionWithAffinity(range.EndPosition(), affinity_);
+  DCHECK_GE(text_offset_in_formatting_context, 0);
+
+  // An "after text" position in the accessibility tree should map to a text
+  // position in the DOM tree that is after the DOM node's text, but before any
+  // collapsed white space at the node's end. In all other cases, the text
+  // offset in the accessibility tree should be translated to a DOM offset that
+  // is after any collapsed white space. For example, look at the inline text
+  // box with the word "Hello" and observe how the white space in the DOM, both
+  // before and after the word, is mapped from the equivalent accessibility
+  // position.
+  //
+  // AX text position in "InlineTextBox" name="Hello", 0
+  // DOM position #text "   Hello   "@offsetInAnchor[3]
+  // AX text position in "InlineTextBox" name="Hello", 5
+  // DOM position #text "   Hello   "@offsetInAnchor[8]
+  Position dom_position =
+      adjusted_position.TextOffset() < adjusted_position.MaxTextOffset()
+          ? container_offset_mapping->GetLastPosition(
+                static_cast<unsigned int>(text_offset_in_formatting_context))
+          : container_offset_mapping->GetFirstPosition(
+                static_cast<unsigned int>(text_offset_in_formatting_context));
+
+  // When there is no uncompressed white space at the end of our
+  // |container_node|, and this is an "after text" position, we might get back
+  // the NULL position if this is the last node in the DOM.
+  if (dom_position.IsNull())
+    dom_position = Position::LastPositionInNode(*container_node);
+  return PositionWithAffinity(dom_position, affinity_);
 }
 
 const Position AXPosition::ToPosition(

@@ -1681,10 +1681,15 @@ TEST_F(AccessibilityTest, PositionInInvalidMapLayout) {
 
 TEST_P(ParameterizedAccessibilityTest,
        ToPositionWithAffinityWithMultipleInlineTextBoxes) {
+  // This test expects the starting offset of the last InlineTextBox object to
+  // equate the sum of the previous inline text boxes' length, without the
+  // collapsed white-spaces.
+  //
   // "&#10" is a Line Feed ("\n").
   SetBodyInnerHTML(
       R"HTML(<style>p { white-space: pre-line; }</style>
       <p id="paragraph">Hello &#10; world</p>)HTML");
+
   const Node* text = GetElementById("paragraph")->firstChild();
   ASSERT_NE(nullptr, text);
   ASSERT_TRUE(text->IsTextNode());
@@ -1695,16 +1700,19 @@ TEST_P(ParameterizedAccessibilityTest,
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
   ax_static_text->LoadInlineTextBoxes();
-  ASSERT_EQ(3, ax_static_text->ChildCountIncludingIgnored());
+  ASSERT_EQ(3, ax_static_text->UnignoredChildCount());
 
-  // This test expects the starting offset of the last InlineTextBox object to
-  // equates the sum of the previous inline text boxes length, without the
-  // collapsed white-spaces.
-  const auto ax_position = AXPosition::CreatePositionBeforeObject(
-      *(ax_static_text->LastChildIncludingIgnored()));
+  // The last inline text box should be:
+  // "InlineTextBox" name="world"
+  const AXObject* ax_last_inline_box =
+      ax_static_text->LastChildIncludingIgnored();
+  const auto ax_position =
+      AXPosition::CreatePositionBeforeObject(*ax_last_inline_box);
   const auto position = ax_position.ToPositionWithAffinity();
-  EXPECT_EQ(LayoutNGEnabled() ? 7 : 6,
-            position.GetPosition().OffsetInContainerNode());
+  // The resulting DOM position should be:
+  // DOM position #text "Hello \n world"@offsetInAnchor[8]
+  ASSERT_TRUE(position.GetPosition().IsOffsetInAnchor());
+  EXPECT_EQ(8, position.GetPosition().OffsetInContainerNode());
 }
 
 }  // namespace test
