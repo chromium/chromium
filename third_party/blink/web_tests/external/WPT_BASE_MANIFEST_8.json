@@ -9451,7 +9451,7 @@
    },
    "screen-wake-lock": {
     "wakelock-document-hidden-manual.https.html": [
-     "550dc831cbcd4909746893a5675c5a0308425805",
+     "05368bdfb89b2fd9e4ea442b4124fa784babfc10",
      [
       null,
       {}
@@ -43823,6 +43823,19 @@
        [
         [
          "/css/css-backgrounds/reference/first-letter-space-not-selected-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "inline-background-rtl-001.html": [
+      "a7149e2f3c83acf175b5de4f8bcbf63a2c20d4f1",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/inline-background-rtl-001-ref.html",
          "=="
         ]
        ],
@@ -168522,6 +168535,10 @@
        "21a22bd273688115b3916691b4c4557f30d063d8",
        []
       ],
+      "inline-background-rtl-001-ref.html": [
+       "fe2ac8bdb1994fe6bd36ba85d7c71f49b7d7cf89",
+       []
+      ],
       "ref-filled-black-96px-square.xht": [
        "7309746e54f73c9d0f978d1986b6df40e950793b",
        []
@@ -226169,6 +226186,10 @@
     "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html.headers": [
      "6bc94277cf9a4610c33274bd5b984e41d389622a",
      []
+    ],
+    "wakelock-released.https-expected.txt": [
+     "f16dbd5af5552414a3e63667c5900410329f9343",
+     []
     ]
    },
    "screen_enumeration": {
@@ -240550,6 +240571,10 @@
     ],
     "RTCPeerConnection-mandatory-getStats.https-expected.txt": [
      "dde77f5c31eab133d8d3fe315603bddac9a348b6",
+     []
+    ],
+    "RTCPeerConnection-perfect-negotiation-helper.js": [
+     "28c476ec409e1b5f53eae41aff934868abeb692d",
      []
     ],
     "RTCPeerConnection-restartIce.https-expected.txt": [
@@ -381272,6 +381297,15 @@
       }
      ]
     ],
+    "wakelock-released.https.html": [
+     "13520578527d819996eb40d221395b895511a058",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "wakelock-request-denied.https.html": [
      "b222ef342a6566a9d424044713b1acf2666679eb",
      [
@@ -405984,8 +406018,26 @@
       {}
      ]
     ],
+    "RTCPeerConnection-perfect-negotiation-stress-glare-linear.https.html": [
+     "cf8bdf22e2de53a0d28263150cd83f5d954b6d14",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "RTCPeerConnection-perfect-negotiation-stress-glare.https.html": [
+     "6134eb2006366cac61c7190b8dc11144d0681332",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "RTCPeerConnection-perfect-negotiation.https.html": [
-     "bd1a7c1bcb9a1e1a26a599ad611c308bf096df9b",
+     "d01b11616263661e721d44451215931ea8e4f3c1",
      [
       null,
       {
