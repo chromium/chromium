@@ -3,6 +3,7 @@
 <translationbundle lang="ur">
 <translation id="1282031177488366470">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="1479202195792305274">‏جب آپ اپنے Google اکاؤنٹ سے سائن ان ہوتے ہیں تو Chrome آپ کے پاس ورڈز کو چیک کر سکتا ہے۔</translation>
+<translation id="1504372625950710826">‏Chrome اپ ڈیٹس چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="1682483655351012182">‏اپنے Chrome ڈیٹا کو مطابقت پذیر بنائیں</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">‏اس اکاؤنٹ اور کسی بھی غیر محفوظ ڈیٹا کو اس آلہ پر Chrome اور دیگر Google ایپس سے ہٹا دیا جائے گا۔</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں بھی آپ Chrome استعمال کرتے ہیں، اپنے تمام آلات پر سائن ان کریں</translation>
 <translation id="2576431527583832481">‏Chrome اب بہتر ہو گیا! ایک نیا ورژن دستیاب ہے۔</translation>
 <translation id="257708665678654955">‏کیا آپ چاہیں گے کہ Google Chrome اگلی بار اس سائٹ سے <ph name="LANGUAGE_NAME" /> صفحات کا ترجمہ کرنے کی پیشکش کرے؟</translation>
+<translation id="2695886661449553974">‏Chrome اپ ڈیٹس چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2732745070297234559">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ کل دوبارہ کوشش کریں۔</translation>
 <translation id="2919738076569633423">‏Chrome استعمال کر کے، آپ <ph name="BEGIN_LINK_TOS" />سروس کی شرائط<ph name="END_LINK_TOS" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="3030414234702425231">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chrome ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">‏Google Chrome کو آپ کی تصاویر یا ویڈیوز تک رسائی حاصل نہیں ہے۔ iOS ترتیبات &gt; رازداری &gt; تصاویر میں رسائی کو فعال کریں۔</translation>
 <translation id="4099578267706723511">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chrome کو بہتر بنانے میں مدد کریں۔</translation>
 <translation id="415767770115540173">‏اپنے مقام کی بنیاد پر Chrome میں ایک بہتر Google تجربہ حاصل کریں۔</translation>
+<translation id="417201473131094001">‏Chrome Canary پر تعاون یافتہ نہیں ہے</translation>
 <translation id="424864128008805179">‏Chrome سے سائن آؤٹ کریں؟</translation>
 <translation id="4249068189593983585">‏Chrome تجویز۔ ٹیب کے مزید اختیارات کیلئے، ٹول بار میں اس "ٹیبز دکھائيں" بٹن کو ٹچ کریں اور دبائے رکھیں جو آپ کی اسکرین کے نیچے یا اوپر ہوتا ہے۔</translation>
 <translation id="4523886039239821078">‏کچھ اضافے Chrome کے کریش ہونے کا سبب بنتے ہیں۔ براہ کرم اَن انسٹال کریں:</translation>
+<translation id="4633328489441962921">‏Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="4698415050768537821">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
+<translation id="484033449593719797">‏Chrome بی ٹا پر تعاون یافتہ نہیں ہے</translation>
 <translation id="5030102366287574140">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹس اور بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
+<translation id="5162467219239570114">‏Chrome پرانا ہے۔ اگر کوئی اپ ڈیٹ <ph name="BEGIN_LINK" />App اسٹور<ph name="END_LINK" /> میں دستیاب نہیں ہے تو، یہ ممکن ہے کہ آپ کا آلہ مزید Chrome کے نئے ورژنز کو سپورٹ نہیں کرتا ہے۔</translation>
 <translation id="5389212809648216794">‏Google Chrome آپ کا کیمرا استعمال نہیں کر سکتا ہے کیونکہ یہ کسی دوسری ایپلیکیشن کے زیر استعمال ہے</translation>
 <translation id="5639704535586432836">‏ترتیبات &gt; رازداری &gt; کیمرا &gt; Google Chrome کھولیں اور کیمرا آن کریں۔</translation>
 <translation id="5642200033778930880">‏Google Chrome تقسیم کے منظر کی وضع میں آپ کا کیمرا استعمال نہیں کر سکتا ہے</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">‏آف لائن، Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے۔</translation>
 <translation id="5854621639439811139">‏Chrome تجویز۔ واپس جائیں، فارورڈ کریں، اور تلاش کریں جیسے بعض بٹنز اب آپ کی اسکرین کے نیچے ہیں۔</translation>
 <translation id="6036420186814142909">‏Google Chrome میں ایسی خصوصیات ہیں جو آپ کے انٹرنیٹ ڈیٹا اور کتنی جلدی آپ ویب صفحات کو لوڈ کرنے کیلئے اہل ہیں اس کا نظم کرنے میں آپ کی مدد کرتی ہیں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         2۔ ڈیفالٹ براؤزر ایپ تھپتھپائیں۔
         3۔ Chrome منتخب کریں۔</translation>
 <translation id="6822673484890854830">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="7161390184744336561">‏Google Chrome پرانا ہے</translation>
 <translation id="7165736900384873061">‏Google Chrome QR اسکینر استعمال کرنا شروع کریں</translation>
 <translation id="7172660552945675509">‏تجویز: <ph name="BEGIN_LINK" />Chrome کو اپنے ڈاک میں منتقل کریں<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">‏Chrome آپ کے پاس ورڈز تک مجاز رسائی کو یقینی بنانے کیلئے Face ID کا استعمال کرتا ہے۔</translation>
@@ -65,6 +73,7 @@
 <translation id="766361182512894255">‏ڈیٹا کی خلاف ورزی میں آپ کا پاس ورڈ افشاء ہو گیا۔ Chrome کی تجویز ہے کہ آپ ابھی پاس ورڈ تبدیل کریں۔</translation>
 <translation id="7698568245838009292">‏Chrome کیمرے تک رسائی حاصل کرنا چاہے گا</translation>
 <translation id="7855730255114109580">‏Google Chrome اپ ٹو ڈیٹ ہے</translation>
+<translation id="8160472928944011082">‏Chrome اپ ڈیٹ نہیں کیا جا سکتا</translation>
 <translation id="8370517070665726704">‏کاپی رائٹ<ph name="YEAR" /> Google LLC۔ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="840168496893712993">‏کچھ اضافے Chrome کو کریش کر دیتے ہیں۔ براہ کرم ان کو اَن انسٹال کرنے کی کوشش کریں۔</translation>
 <translation id="8459495907675268833">‏Chrome اور مطابقت پذیر آلات سے منتخب ڈیٹا کو ہٹا دیا گیا ہے۔ ممکن ہے کہ history.google.com پر آپ کے Google اکاؤنٹ میں دیگر Google سروسز سے تلاشیں اور سرگرمی جیسی براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔l</translation>

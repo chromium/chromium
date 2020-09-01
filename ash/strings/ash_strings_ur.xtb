@@ -107,6 +107,7 @@
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">پیغام ٹائپ کریں</translation>
 <translation id="2018630726571919839">مجھے کوئی لطیفہ سنائيں</translation>
+<translation id="2049240716062114887">ڈیسک کا نام تبدیل کر کے <ph name="DESK_NAME" /> کر دیا گیا تھا۔</translation>
 <translation id="2050339315714019657">پورٹریٹ</translation>
 <translation id="2067602449040652523">کی بورڈ کی چمک</translation>
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
@@ -375,6 +376,7 @@
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="4969092041573468113">h <ph name="MINUTES" />m <ph name="SECONDS" />s<ph name="HOURS" /></translation>
+<translation id="4975771730019223894">ایپ بیج سازی</translation>
 <translation id="5030687792513154421">وقت ختم ہو گیا</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> نئے فون سے منسلک ہو گیا</translation>
 <translation id="5035389544768382859">ڈسپلے کنفیگریشن کی تصدیق کریں</translation>

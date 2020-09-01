@@ -738,6 +738,7 @@
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1856715684130786728">स्थान थप्नुहोस्...</translation>
 <translation id="1858585891038687145">सफ्टवेयर निर्माताहरूको पहिचान गर्न यस प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>
+<translation id="1860346308203060432">यन्त्रको भिजिबिलिटी हेर्नुहोस्</translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1863182668524159459">कुनै पनि सिरियल पोर्ट फेला परेन</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" मा मालवेयर भएका कारण यो एक्सटेन्सनलाई असक्षम पारिएको छ</translation>
@@ -762,6 +763,7 @@
 <translation id="1880905663253319515">प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" लाई मेटाउने?</translation>
 <translation id="1881445033931614352">किबोर्ड लेआउट</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, जोड्नुहोस्</translation>
+<translation id="1884340228047885921">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: सम्पर्क सूचीमा भएका केही मान्छेहरू</translation>
 <translation id="1884705339276589024">Linux को डिस्कको आकार बदल्नुहोस्</translation>
 <translation id="1885106732301550621">डिस्कको भण्डारण स्थान</translation>
 <translation id="1886996562706621347">प्रोटोकलहरूको लागि पूर्वनिर्धारित हेन्डलर बन्न अनुरोध गर्न साइटहरूलाई अनुमति दिनुहोस् (सिफारिश गरिएको)</translation>
@@ -1098,6 +1100,7 @@
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
 <translation id="230927227160767054">यस पृष्ठले एक सेवा सञ्चालनकर्ता स्थापना गर्न चाहन्छ।</translation>
 <translation id="2309620859903500144">यो साइटलाई तपाईंको चाल वा प्रकाशसम्बन्धी सेन्सरहरूको पहुँच राख्नबाट रोक लागाइएको छ।</translation>
+<translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ लुकाइएको छ</translation>
 <translation id="2314873619957287124">आफ्ना बच्चालाई सिक्न, खेल्न र अन्वेषण गर्न सघाउन आधारभूत डिजिटल नियमहरू स्थापित गर्नुहोस्</translation>
 <translation id="2315414688463285945">Linux का फाइलहरू कन्फिगर गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" /> मा लिंक पठाउनुहोस्</translation>
@@ -1685,6 +1688,7 @@
 <translation id="3004391367407090544">कृपया पछि फर्केर आउनुहोस्</translation>
 <translation id="3006881078666935414">उपयोगसम्बन्धी कुनै डेटा छैन</translation>
 <translation id="3007771295016901659">प्रतिलिपि गरिएको ट्याब</translation>
+<translation id="3008232374986381779">आफ्नो <ph name="DEVICE_TYPE" /> मा Linux का टुल, एडिटर र IDE हरू चलाउनुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">अनुमतिहरू रिसेट गर्नुहोस्</translation>
 <translation id="3009300415590184725">के तपाइँ यकीन हुनुहुन्छ की तपाइँ मोबाइल लगत सेवा सेटअप प्रक्रिया रद्द गर्न चाहनुहुन्छ?</translation>
 <translation id="3009779501245596802">सूचित डेटाबेसहरू</translation>
@@ -1826,6 +1830,7 @@
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
 <translation id="3183944777708523606">मनिटरको सेटिङ</translation>
 <translation id="3184536091884214176">CUPS प्रिन्टरहरूको सेटअप वा व्यवस्थापन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">भौतिक SIM</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3188465121994729530">औसत चलायमान</translation>
 <translation id="3189187154924005138">ठुलो कर्सर</translation>
@@ -2446,6 +2451,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> को म्याद सकिएको छ</translation>
 <translation id="3908501907586732282">एक्स्टेन्सन सक्षम बनाउनुहोस्</translation>
 <translation id="3909791450649380159">काँ&amp;ट्नुहोस्</translation>
+<translation id="39103738135459590">सक्रिय गर्ने कोड</translation>
 <translation id="3911824782900911339">नयाँ ट्याब पृष्ठ</translation>
 <translation id="3915280005470252504">आवाजद्वारा खोज्नुहोस्</translation>
 <translation id="3916233823027929090">सुरक्षासम्बन्धी जाँचहरू गरिए</translation>
@@ -2658,6 +2664,7 @@
 <translation id="4159681666905192102">यो बच्चाहरूको लागि खाता <ph name="CUSTODIAN_EMAIL" /> र <ph name="SECOND_CUSTODIAN_EMAIL" /> द्वारा व्यवस्थित गरिएको हो।</translation>
 <translation id="4163560723127662357">अज्ञात कुँजीपाटी</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> का केही सेटिङहरू तपाइँसँग साझा भइरहेको छ। यस सेटिङहरूले बहुविध साइन-इन प्रयोग गर्दै मात्रै तपाइँको खातालाई असर गर्छ।</translation>
+<translation id="4170256733935344210">यन्त्रको क्यामेरा प्रयोग गरी QR कोड स्क्यान गर्नुहोस् वा आफ्नो मोबाइल सेवा प्रदायकले उपलब्ध गराएको सक्रिय गर्ने कोड प्रविष्टि गर्नुहोस्</translation>
 <translation id="4170314459383239649">बाहिर निस्कँदा मेट्नुहोस्‌</translation>
 <translation id="4175137578744761569">हल्का बैजनी र सेतो</translation>
 <translation id="4175737294868205930">स्थायी भण्डारण</translation>
@@ -2746,6 +2753,7 @@
 <translation id="4296575653627536209">निर्देशित प्रयोगकर्ता थप्नुहोस्</translation>
 <translation id="4297219207642690536">पुनः सुरु गरी रिसेट गर्नुहोस्</translation>
 <translation id="4297813521149011456">डिस्प्ले रोटेसन</translation>
+<translation id="4299596693977045093">eSim सेटअप गर्ने प्रक्रिया</translation>
 <translation id="4301671483919369635">यस पृष्ठलाई फाइलहरू सम्पादन गर्ने अनुमति छ</translation>
 <translation id="4303079906735388947">आफ्नो सुरक्षा साँचो प्रयोग गर्नका लागि नयाँ PIN सेटअप गर्नुहोस्</translation>
 <translation id="4305402730127028764">प्रतिलिपि गरेर <ph name="DEVICE_NAME" /> मा टाँस्नुहोस्</translation>
@@ -3460,6 +3468,7 @@
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="52232769093306234">प्याकिङ गर्न सकिएन।</translation>
 <translation id="5225324770654022472">एप्स शर्टकट देखाउनुहोस्</translation>
+<translation id="52254442782792731">हालको भिजिबिलिटी सेटिङ अझसम्म सेट गरिएको छैन</translation>
 <translation id="5227679487546032910">पूर्वनिर्धारित कलहॉंसको अवतार</translation>
 <translation id="5228088094491423618">लाइभ क्याप्सन</translation>
 <translation id="5228579091201413441">सिंकलाई सक्रिय गर्नुहोस्</translation>
@@ -4056,6 +4065,7 @@
 <translation id="5941153596444580863">व्यक्ति थप्नुहोस्...</translation>
 <translation id="5941343993301164315">कृपया <ph name="TOKEN_NAME" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="5941711191222866238">सानो बनाउनुहोस</translation>
+<translation id="5942779427914696408">यन्त्रको भिजिबिलिटी</translation>
 <translation id="5942964813783878922">यो अद्यावधिक भएपछि तपाईंको <ph name="DEVICE_TYPE" /> पुनः सुरु हुने छ। भविष्यमा सफ्टवेयर र सुरक्षासम्बन्धी अद्यावधिकहरू स्वतः स्थापना गरिने छन्।</translation>
 <translation id="5944869793365969636">QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="5946591249682680882">रिपोर्ट आईडी <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4228,6 +4238,7 @@
 <translation id="6148576794665275391">अहिले खुला छ</translation>
 <translation id="6149015141270619212">इन्टरनेटमा जोड्न सकिएन</translation>
 <translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
+<translation id="6150278227694566734">सम्पर्क सूचीमा भएका केही मान्छेहरू</translation>
 <translation id="6150961653851236686">पृष्ठहरूलाई अनुवाद गर्दा यो भाषा प्रयोग गरिन्छ</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> खोज्नको लागि <ph name="SEARCH_KEY" /> थिच्नुहोस्</translation>
 <translation id="6151771661215463137">उक्त फाइल तपाईंको डाउनलोड फोल्डरमा पहिलादेखि नै अवस्थित छ।</translation>
@@ -5075,6 +5086,7 @@
 <translation id="7210499381659830293">विस्तारसम्बन्धी प्रिन्टरहरू</translation>
 <translation id="7211890396916697230">eSIM सेटअप गर्नुहोस्</translation>
 <translation id="7212097698621322584">यसलाई बदल्न आफ्नो हालको PIN प्रविष्टि गर्नुहोस्। तपाईंलाई आफ्नो PIN थाहा छैन भने तपाईंले सुरक्षा साँचो रिसेट गर्नु पर्छ र त्यसपछि नयाँ PIN सिर्जना गर्नु पर्छ।</translation>
+<translation id="7213903639823314449">ठेगाना पट्टीमा प्रयोग गरिने खोज इन्जिन</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
 <translation id="7216595297012131718">आफ्नो प्राथमिकताका आधारमा भाषाहरूको क्रम मिलाउनुहोस्</translation>
 <translation id="7220019174139618249">"<ph name="FOLDER" />" मा पासवर्डहरू निर्यात गर्न सकिँदैन</translation>
@@ -6162,6 +6174,7 @@
 <translation id="8539766201049804895">स्तरवृद्धि गर्नुहोस्</translation>
 <translation id="8540136935098276800">सही ढाँचा भएको URL प्रविष्टि गर्नुहोस्</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
+<translation id="854071720451629801">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="8541462173655894684">प्रिन्ट सर्भरमा कुनै पनि प्रिन्टर फेला परेन</translation>
 <translation id="8542618328173222274">कुनै साइटले भर्चुअल रियालिटी चल्ने तपाईंका यन्त्रहरू र तिनमा भएका डेटा प्रयोग गर्ने अनुमति माग्दा सोध्नुहोस्</translation>
 <translation id="8543556556237226809">कुनै प्रश्न छन्? आफ्नो प्रोफाइल सञ्चालन गर्ने व्यक्तिलाई सम्पर्क गर्नुहोस्।</translation>
@@ -6436,6 +6449,7 @@
 <translation id="8846141544112579928">कुञ्जीपाठ खोज्दै...</translation>
 <translation id="8847523528195140327">कभर बन्द गरिएको बेला साइन आउट गर्नुहोस्</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">लुकाइएको</translation>
 <translation id="8850251000316748990">थप हेर्नुहोस्...</translation>
 <translation id="885246833287407341">API कार्यसम्बन्धी आर्गुमेन्टहरू</translation>
 <translation id="8853586775156634952">यस कार्डलाई यस यन्त्रमा मात्र सुरक्षित गरिने छ</translation>
@@ -6461,6 +6475,7 @@
 <translation id="8872777911145321141">कुनै साइटले भर्चुअल रियालिटी चल्ने तपाईंका यन्त्रहरू र तिनमा भएका डेटा प्रयोग गर्ने अनुमति माग्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="8874184842967597500">जडित छैन</translation>
 <translation id="8875520811099717934">Linux अपग्रेड गर्नुहोस्</translation>
+<translation id="8875736897340638404">भिजिबिलिटीसम्बन्धी आफ्नो प्राथमिकता छनौट गर्नुहोस्</translation>
 <translation id="8876307312329369159">डेमो सत्रमा यो सेटिङ परिवर्तन गर्न सकिँदैन।</translation>
 <translation id="8877448029301136595">[आमाबाबु डाइरेक्टरी]</translation>
 <translation id="8879284080359814990">ट्याबको रूपमा &amp;देखाउनुहोस्</translation>
@@ -6617,6 +6632,7 @@
 <translation id="9063208415146866933">हरफ <ph name="ERROR_LINE_START" /> देखि हरफ <ph name="ERROR_LINE_END" /> सम्म त्रुटि छ</translation>
 <translation id="9064275926664971810">एकै क्लिकमा वेबका फारामहरू भर्न स्वत: भरणलाई सक्रिय गर्नुहोस्</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
+<translation id="9065772380960598487">'पछि पढ्नुहोस्' मा थप्नुहोस्</translation>
 <translation id="9066773882585798925">पाठलाई ठुलो स्वरमा पढेको सुन्नुहोस्</translation>
 <translation id="9066782832737749352">पाठवाचक</translation>
 <translation id="9068849894565669697">रङ्ग चयन गर्नुहोस्</translation>
@@ -6698,6 +6714,7 @@
 <translation id="9169496697824289689">किबोर्ड शर्टकटरहरू हेर्नुहोस्</translation>
 <translation id="916964310188958970">यो सुझाव किन देखाइयो?</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> लाई गृह स्क्रिनमा थप्नुहोस्‌</translation>
+<translation id="9170061643796692986">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: सम्पर्क सूचीमा भएका सबै मान्छेहरू</translation>
 <translation id="9170848237812810038">&amp;पूर्वस्थितिमा फर्काउनुहोस्</translation>
 <translation id="9170884462774788842">तपाईंको कम्प्युटरमा रहेको अर्को कार्यक्रमले एउटा थिम थपेको छ जसले Chrome ले काम गर्ने तरिकालाई बदल्न सक्छ।</translation>
 <translation id="917350715406657904">तपाईं आफ्ना अभिभावकले <ph name="APP_NAME" /> मा निर्धारण गर्नुभएको समयको सीमामा पुग्नुभयो। तपाईं भोलि यसलाई <ph name="TIME_LIMIT" /> प्रयोग गर्न सक्नुहुन्छ।</translation>

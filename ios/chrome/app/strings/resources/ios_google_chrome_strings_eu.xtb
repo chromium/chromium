@@ -3,6 +3,7 @@
 <translationbundle lang="eu">
 <translation id="1282031177488366470">Lagundu Chrome-ren eginbideak eta funtzionamendua hobetzen</translation>
 <translation id="1479202195792305274">Saioa Google-ko kontu batekin hasten baduzu, Chrome-k pasahitzak egiazta ditzake.</translation>
+<translation id="1504372625950710826">Chrome-k ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="1682483655351012182">Sinkronizatu Chrome-ko datuak</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik eta gailuko beste Google-ren aplikazio batzuetatik.</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2576431527583832481">Chrome hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
 <translation id="257708665678654955">Webgune honetara zatozen hurrengo aldian Google Chrome-k <ph name="LANGUAGE_NAME" /> hizkuntzan dauden orriak itzultzea eskaintzea nahi duzu?</translation>
+<translation id="2695886661449553974">Chrome-k ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>
 <translation id="2732745070297234559">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
 <translation id="2919738076569633423">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK_TOS" />Zerbitzu-baldintzak<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chrome-n dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">Google Chrome-k ez du argazki eta bideoetarako sarbiderik. Gaitu ezazu iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="4099578267706723511">Hobetu Chrome Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
 <translation id="415767770115540173">Atera etekin handiagoa Chrome-ri Google-n, zure kokapenaren arabera.</translation>
+<translation id="417201473131094001">Ez da bateragarria Chrome Canary-rekin</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4249068189593983585">Chrome-ri buruzko aholkua: fitxetako aukera gehiago ikusteko, eduki sakatuta tresna-barrako Erakutsi fitxak botoia. Pantailaren goiko edo beheko aldean aurkituko duzu.</translation>
 <translation id="4523886039239821078">Gehigarri batzuek Chrome huts egitea eragiten dute. Desinstala itzazu.</translation>
+<translation id="4633328489441962921">Chrome-k ezin ditu egiaztatu eguneratzeak</translation>
 <translation id="4698415050768537821">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
+<translation id="484033449593719797">Ez da bateragarria Chrome Beta-rekin</translation>
 <translation id="5030102366287574140">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chrome-k.</translation>
+<translation id="5162467219239570114">Chrome zaharkituta dago. Ez badago eguneratzerik <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> dendan, baliteke gailua Chrome-ren bertsio berriekin bateragarria ez izatea.</translation>
 <translation id="5389212809648216794">Google Chrome-k ezin du erabili kamera, beste aplikazio bat ari delako hura erabiltzen</translation>
 <translation id="5639704535586432836">Ireki Ezarpenak &gt; Pribatutasuna &gt; Kamera &gt; Google Chrome, eta aktibatu kamera.</translation>
 <translation id="5642200033778930880">Google Chrome-k ezin du erabili kamera Ikuspegi zatitua moduan</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">Interneteko konexiorik gabe, Chrome-k ezin ditu bilatu eguneratzeak</translation>
 <translation id="5854621639439811139">Chrome-ri buruzko aholkua: botoi batzuk pantailaren behealdean daude; esaterako, Atzera, Aurrera eta Bilaketa botoiak.</translation>
 <translation id="6036420186814142909">Google Chrome-ren eginbide batzuekin errazagoa da Interneteko datuak eta web-orriak kargatzeko behar den denbora kudeatzea.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         2. Sakatu Arakatzaile lehenetsia atala.
         3. Hautatu Chrome.</translation>
 <translation id="6822673484890854830">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
+<translation id="7161390184744336561">Google Chrome zaharkituta dago</translation>
 <translation id="7165736900384873061">Hasi Google Chrome QR eskanerra erabiltzen</translation>
 <translation id="7172660552945675509">Aholkua: <ph name="BEGIN_LINK" />ainguratu Chrome dock-ean<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome-k aurpegi bidezko identifikazioa erabiltzen du pasahitzak baimena dutenek bakarrik atzitzen dituztela ziurtatzeko.</translation>
@@ -65,6 +73,7 @@
 <translation id="766361182512894255">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Pasahitza berehala aldatzea gomendatzen du Chrome-k.</translation>
 <translation id="7698568245838009292">Chrome-k kamera atzitu nahi du</translation>
 <translation id="7855730255114109580">Eguneratuta dago Google Chrome</translation>
+<translation id="8160472928944011082">Ezin da eguneratu Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="840168496893712993">Gehigarri batzuek Chrome huts egitea eragiten dute. Saiatu horiek desinstalatzen.</translation>
 <translation id="8459495907675268833">Kendu dira hautatutako datuak Chrome-tik eta sinkronizatutako gailuetatik. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta beste Google-ren zerbitzu batzuetako jarduerak) edukitzea history.google.com webgunean.</translation>

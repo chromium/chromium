@@ -264,6 +264,7 @@
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1975584088563498795">میل باکس 10</translation>
 <translation id="1978555033938440688">فرم ویئر ورژن</translation>
+<translation id="1988881251331415125">اگر ہجے درست ہے تو، <ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">کوکیز اور سائٹ کے ڈیٹا تک رسائی حاصل کریں۔
 
@@ -307,6 +308,7 @@
 <translation id="2154054054215849342">مطابقت پذیری آپ کے ڈومین کیلئے دستیاب نہیں ہے</translation>
 <translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
 <translation id="2161656808144014275">متن</translation>
+<translation id="2164510882479075877">چیک کریں کہ آیا <ph name="HOST_NAME" /> میں کوئی ٹائپو موجود ہے۔</translation>
 <translation id="2166049586286450108">منتظم کیلئے مکمل رسائی</translation>
 <translation id="2166378884831602661">یہ سائٹ ایک محفوظ کنکشن فراہم نہیں کر سکتی ہے</translation>
 <translation id="2169984857010174799">Kaku2 ‎(Envelope‎)‎</translation>
@@ -1690,6 +1692,7 @@
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7887885240995164102">'تصویر میں تصویر' میں داخل ہوں</translation>
 <translation id="7888575728750733395">پرنٹ رینڈرنگ انٹینٹ</translation>
+<translation id="7894280532028510793">اگر ہجے درست ہے تو، <ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="7904208859782148177">C3 ‎(Envelope‎)‎</translation>
 <translation id="7932579305932748336">کوٹ</translation>
 <translation id="79338296614623784">ایک درست فون نمبر درج کریں</translation>
@@ -1836,6 +1839,7 @@
 <translation id="8508648098325802031">تلاش کا آئیکن</translation>
 <translation id="8522552481199248698">‏Chrome آپ کی اپنا Google اکاؤنٹ محفوظ اور پاس ورڈ تبدیل کرنے میں مدد کر سکتا ہے۔</translation>
 <translation id="8530813470445476232">‏Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، کیش اور بہت کچھ کو صاف کریں</translation>
+<translation id="8533619373899488139">‏مسدود کردہ URLs کی فہرست اور اپنے سسٹم کے منتظم کے ذریعے نافذ کردہ دیگر پالیسیاں دیکھنے کے لیے &lt;strong&gt;chrome://policy&lt;/strong&gt; ملاحظہ کریں۔</translation>
 <translation id="8541158209346794904">بلوٹوتھ آلہ</translation>
 <translation id="8542014550340843547">نیچے تین سٹیپل</translation>
 <translation id="8543181531796978784">آپ <ph name="BEGIN_ERROR_LINK" />پتا لگانے کے مسئلہ کی اطلاع<ph name="END_ERROR_LINK" /> دے سکتے ہیں یا اگر آپ اپنی سیکیورٹی کے خطروں کو سمجھتے ہيں تو آپ <ph name="BEGIN_LINK" />یہ غیر محفوظ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
@@ -1895,6 +1899,7 @@
 <translation id="884923133447025588">کوئی منسوخی کا میکانزم نہیں ملا۔</translation>
 <translation id="885730110891505394">‏Google کے ساتھ اشتراک کرنا</translation>
 <translation id="8858065207712248076">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chrome آپ کو اپنا <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="885906927438988819">‏اگر ہجے درست ہے تو، <ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="8866481888320382733">پالیسی کی ترتیبات کو پارس کرنے میں خرابی</translation>
 <translation id="8866928039507595380">فولڈ</translation>
 <translation id="886872106311861689">B3</translation>

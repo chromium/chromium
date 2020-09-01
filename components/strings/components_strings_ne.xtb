@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">उन्नत</translation>
 <translation id="1975584088563498795">मेलबक्स १०</translation>
 <translation id="1978555033938440688">फर्मवेयरको संस्करण</translation>
+<translation id="1988881251331415125">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'कनेक्टिभिटीका निदानहरू' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">कुकीहरू र साइटको डेटामाथि पहुँच राख्न।
 
@@ -306,6 +307,7 @@
 <translation id="2154054054215849342">तपाईंको डोमेनको लागि सिंंक उपलब्ध छैन</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2161656808144014275">पाठ</translation>
+<translation id="2164510882479075877"><ph name="HOST_NAME" /> मा कुनै हिज्जे गलत छ कि छैन भन्ने कुरा जाँच्नुहोस्।</translation>
 <translation id="2166049586286450108">पूर्ण प्रशासक पहुँच</translation>
 <translation id="2166378884831602661">यो साइटले सुरक्षित जडान प्रदान गर्न सक्दैन</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
@@ -1682,6 +1684,7 @@
 <translation id="7887683347370398519">तपाईँको CVC जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7887885240995164102">picture-in-picture मोडमा प्रविष्टि गर्नुहोस्‌</translation>
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
+<translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका निदानहरू' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फोन नम्बर प्रविष्टि गर्नुहोस्</translation>
@@ -1828,6 +1831,7 @@
 <translation id="8508648098325802031">खोज आइकन</translation>
 <translation id="8522552481199248698">Chrome ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र आफ्नो पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
 <translation id="8530813470445476232">Chrome का सेटिङमा गई आफ्नो ब्राउजिङ इतिहास, कुकी, क्यास र अन्य डेटा मेटाउनुहोस्</translation>
+<translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>
 <translation id="8541158209346794904">ब्लुटुथ यन्त्र</translation>
 <translation id="8542014550340843547">फेदमा तीन स्टिच</translation>
 <translation id="8543181531796978784">तपाईं <ph name="BEGIN_ERROR_LINK" />एक पत्ता लगाउने समस्या रिपोर्ट गर्न<ph name="END_ERROR_LINK" /> सक्नुहुन्छ, यदि तपाईं आफ्नो सुरक्षाको जोखिम बुझ्नुहुन्छ भने, <ph name="BEGIN_LINK" />असुरक्षित साइटको भ्रमण गर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -1887,6 +1891,7 @@
 <translation id="884923133447025588">कुनैपनि खण्डन संयन्त्र फेला परेन।</translation>
 <translation id="885730110891505394">Google सँग साझेदारी</translation>
 <translation id="8858065207712248076">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chrome ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
+<translation id="885906927438988819">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'Windows नेटवर्कका निदानहरू' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="8866481888320382733">नीति सेटिङहरू पार्स गर्नमा त्रुटि</translation>
 <translation id="8866928039507595380">फोल्ड</translation>
 <translation id="886872106311861689">B3</translation>

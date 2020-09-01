@@ -107,6 +107,7 @@
 <translation id="2012624427112548395">CTRL + ПОИСК + H</translation>
 <translation id="2016340657076538683">Введите сообщение</translation>
 <translation id="2018630726571919839">Расскажи анекдот</translation>
+<translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Книжная</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2083190527011054446">Доброй ночи, <ph name="GIVEN_NAME" />!</translation>
@@ -375,6 +376,7 @@
 <translation id="495046168593986294">Прокрутить вверх</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> мин. <ph name="SECONDS" /> сек.</translation>
+<translation id="4975771730019223894">Число уведомлений на значке приложения</translation>
 <translation id="5030687792513154421">Время вышло</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
 <translation id="5035389544768382859">Подтвердите конфигурацию экрана</translation>

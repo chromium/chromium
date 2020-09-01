@@ -6,6 +6,9 @@
 <translation id="125153950246128346">ਕਿਸੇ ਹੋਰ ਟੈਬ ਨੂੰ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="1657719826150349398">ਟੈਬ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
+<translation id="2277224997687551299">ਗਰੁੱਪ ਦੇ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_ONE" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}one{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}other{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀਆਂ ਹੋਈਆਂ ਟੈਬਾਂ ਨੂੰ ਹਟਾਓ।}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਸਮੇਟੋ।}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}}</translation>
 <translation id="2569352796411618312">ਸੁਝਾਅ: ਤੁਹਾਡੀਆਂ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਦੀ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੋਂ ਨਹੀਂ ਹੋਈ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="257674075312929031">ਸਮੂਹ</translation>
 <translation id="2613747923081026172">ਗਰੁੱਪ ਬਣਾਓ</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦਾ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਨਾਲ ਵਿਸਤਾਰ ਕਰੋ।</translation>
 <translation id="2977480621796371840">ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
 <translation id="3328308545011660196">ਸੁਝਾਅ: <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਸੰਬੰਧਿਤ ਲੱਗਦੀਆਂ ਹਨ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਸਮੇਟੋ।}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਸੰਬੰਧਿਤ ਲੱਗਦੀਆਂ ਹਨ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4212246570487010370">ਬ੍ਰਾਊਜ਼ਿੰਗ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4450893287417543264">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="5073204694187207510">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਗ੍ਰਿਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="5082793167783849073">ਗਰੁੱਪ ਬਣਾ ਕੇ ਪੰਨਿਆਂ ਦੀ ਤੁਲਨਾ ਜਲਦੀ ਕਰੋ। ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਕਿਸੇ ਲਿੰਕ ਨੂੰ ਸਪੱਰਸ਼ ਕਰਕੇ ਰੱਖੋ।</translation>
+<translation id="5490235265819901748">ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5533021382642990449">ਬਾਅਦ ਵਿੱਚ ਦਿਖਾਓ</translation>
+<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ਟੈਬਾਂ ਗਰੁੱਪਬੱਧ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
 <translation id="58326064309361797">ਟੈਬਾਂ ਨੂੰ ਇਕੱਠਾ ਕਰਨ ਲਈ ਉਹਨਾਂ ਨੂੰ ਘਸੀਟੋ</translation>
+<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6193448654517602979">ਟੈਬਾਂ ਚੁਣੋ</translation>
 <translation id="6510648526783655549">ਟੈਬ ਪੱਟੀ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6562820390860419811">ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="6615455863669487791">ਮੈਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="6840760312327750441">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਉਣ ਲਈ, ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ। ਫਿਰ, ਇਸਨੂੰ ਕਿਸੇ ਹੋਰ ਟੈਬ 'ਤੇ ਘਸੀਟੋ।</translation>
+<translation id="6856809498882026482">ਬਹੁ-ਚੋਣ ਮੋਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="7151209024774799310">ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
+<translation id="7204204600596740190">ਬਹੁ-ਚੋਣ ਮੋਡ</translation>
+<translation id="753732157349120914">ਟੈਬ ਸਵਿੱਚਰ</translation>
 <translation id="7559245342362162951">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਗ੍ਰਿਡ ਵਿੱਚ ਗਰੁੱਪ ਦੀਆਂ ਟੈਬਾਂ ਦਿਖਾਓ</translation>
 <translation id="7792771145871471484">ਸੁਝਾਵਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}one{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}other{ਚੁਣੀਆਂ ਗਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">ਟੈਬ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ</translation>
 <translation id="8304833501377495048">ਕੀ ਟੈਬ ਪੱਟੀ ਨੂੰ ਦੁਬਾਰਾ ਨਹੀਂ ਦਿਖਾਉਣਾ ਹੈ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਬੰਦ ਕਰੋ}other{ਚੁਣੀਆਂ ਹੋਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਬੰਦ ਕਰੋ}}</translation>
+<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।</translation>
 <translation id="8749939518995770034">ਬੰਦ ਕੀਤੀ ਟੈਬ ਪੱਟੀ</translation>
 <translation id="9150694013019234766">ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਟੈਬਾਂ ਦੀ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="9169594135889675189">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
