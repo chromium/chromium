@@ -254,6 +254,15 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         chromeos::cros_healthd::mojom::CpuResult::NewCpuInfo(
             std::move(cpu_info));
   }
+  {
+    auto timezone_info = chromeos::cros_healthd::mojom::TimezoneInfo::New();
+    timezone_info->posix = "MST7MDT,M3.2.0,M11.1.0";
+    timezone_info->region = "America/Denver";
+
+    telemetry_info->timezone_result =
+        chromeos::cros_healthd::mojom::TimezoneResult::NewTimezoneInfo(
+            std::move(timezone_info));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 

@@ -219,6 +219,12 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
           {modelName: 'i9-low-powered', logicalCpus: []}
         ]
       }
+    },
+    timezoneResult: {
+      timezoneInfo: {
+        posix: 'MST7MDT,M3.2.0,M11.1.0',
+        region: 'America/Denver',
+      }
     }
   });
 });
