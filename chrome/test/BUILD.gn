@@ -2543,6 +2543,7 @@ if (!is_android) {
         "../browser/chromeos/startup_settings_cache_browsertest.cc",
         "../browser/chromeos/system/device_disabling_browsertest.cc",
         "../browser/chromeos/system/tray_accessibility_browsertest.cc",
+        "../browser/chromeos/web_applications/diagnostics_app_integration_browsertest.cc",
         "../browser/chromeos/web_applications/help_app_integration_browsertest.cc",
         "../browser/chromeos/web_applications/media_app_integration_browsertest.cc",
         "../browser/chromeos/web_applications/print_management_app_integration_browsertest.cc",

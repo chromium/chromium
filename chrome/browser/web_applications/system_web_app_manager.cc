@@ -46,6 +46,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
+#include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/scanning_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/terminal_source.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
@@ -117,6 +118,14 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
     infos.at(SystemAppType::CAMERA).enabled_origin_trials =
         OriginTrialsMap({{GetOrigin("chrome://camera-app"),
                           {"FileHandling", "NativeFileSystem2"}}});
+  }
+
+  if (SystemWebAppManager::IsAppEnabled(SystemAppType::DIAGNOSTICS)) {
+    infos.emplace(
+        SystemAppType::DIAGNOSTICS,
+        SystemAppInfo(
+            "Diagnostics", GURL("chrome://diagnostics"),
+            base::BindRepeating(&CreateWebAppInfoForDiagnosticsSystemWebApp)));
   }
 
   infos.emplace(
@@ -306,6 +315,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
           chromeos::features::kPrintJobManagementApp);
     case SystemAppType::SCANNING:
       return base::FeatureList::IsEnabled(chromeos::features::kScanningUI);
+    case SystemAppType::DIAGNOSTICS:
+      return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
 #if !defined(OFFICIAL_BUILD)
     case SystemAppType::TELEMETRY:
       return base::FeatureList::IsEnabled(

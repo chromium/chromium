@@ -55,6 +55,7 @@ enum class SystemAppType {
   HELP,
   PRINT_MANAGEMENT,
   SCANNING,
+  DIAGNOSTICS,
 #if !defined(OFFICIAL_BUILD)
   TELEMETRY,
   SAMPLE,
