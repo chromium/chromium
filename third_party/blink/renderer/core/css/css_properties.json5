@@ -413,13 +413,11 @@
     },
 
     // - priority: "High"
-    // The priority level for computing the property. Valid values are
-    // "Animation" (highest), "High" and "Low". Properties with the same
-    // priority level are grouped and computed in alphabetical order. The
-    // default value is "Low".
+    // The priority level for computing the property. Properties with the same
+    // priority level are grouped and computed in alphabetical order.
     priority: {
       default: "Low",
-      valid_values: ["Animation", "High", "Low"],
+      valid_values: ["High", "Low"],
     },
 
     // - layout_dependent
@@ -511,7 +509,6 @@
       style_builder_template_args: {
         attribute: "Delay",
       },
-      priority: "Animation",
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
@@ -526,7 +523,6 @@
       style_builder_template_args: {
         attribute: "Direction",
       },
-      priority: "Animation",
       separator: ",",
       valid_for_marker: true,
     },
@@ -538,7 +534,6 @@
       style_builder_template_args: {
         attribute: "Duration",
       },
-      priority: "Animation",
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
@@ -550,7 +545,6 @@
       style_builder_template_args: {
         attribute: "FillMode",
       },
-      priority: "Animation",
       keywords: ["none", "forwards", "backwards", "both"],
       typedom_types: ["Keyword"],
       separator: ",",
@@ -565,7 +559,6 @@
       style_builder_template_args: {
         attribute: "IterationCount",
       },
-      priority: "Animation",
       keywords: ["infinite"],
       typedom_types: ["Keyword", "Number"],
       separator: ",",
@@ -578,7 +571,6 @@
       style_builder_template_args: {
         attribute: "Name",
       },
-      priority: "Animation",
       keywords: ["none"],
       typedom_types: ["Keyword"],
       separator: ",",
@@ -591,7 +583,6 @@
       style_builder_template_args: {
         attribute: "PlayState",
       },
-      priority: "Animation",
       keywords: ["running", "paused"],
       typedom_types: ["Keyword"],
       separator: ",",
@@ -604,7 +595,6 @@
       style_builder_template_args: {
         attribute: "Timeline",
       },
-      priority: "Animation",
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
       separator: ",",
@@ -618,7 +608,6 @@
       style_builder_template_args: {
         attribute: "TimingFunction",
       },
-      priority: "Animation",
       keywords: [
         "linear",
         "ease",
@@ -643,7 +632,6 @@
       style_builder_template_args: {
         attribute: "Delay",
       },
-      priority: "Animation",
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
@@ -657,7 +645,6 @@
       style_builder_template_args: {
         attribute: "Duration",
       },
-      priority: "Animation",
       valid_for_marker: true,
     },
     {
@@ -667,7 +654,6 @@
       style_builder_template_args: {
         attribute: "Property",
       },
-      priority: "Animation",
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_marker: true,
@@ -679,7 +665,6 @@
       style_builder_template_args: {
         attribute: "TimingFunction",
       },
-      priority: "Animation",
       keywords: [
         "linear",
         "ease",

@@ -142,7 +142,7 @@ class CSSProperties(object):
             self.expand_parameters(property_)
             validate_property(property_)
             # This order must match the order in CSSPropertyPriority.h.
-            priority_numbers = {'Animation': 0, 'High': 1, 'Low': 2}
+            priority_numbers = {'High': 0, 'Low': 1}
             priority = priority_numbers[property_['priority']]
             name_without_leading_dash = property_['name'].original
             if name_without_leading_dash.startswith('-'):

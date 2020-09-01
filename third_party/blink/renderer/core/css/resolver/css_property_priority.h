@@ -17,11 +17,7 @@ namespace blink {
 // TODO(sashab): Generate the methods in this file.
 
 enum CSSPropertyPriority {
-  kResolveVariables = 0,
-  kAnimationPropertyPriority,
   kHighPropertyPriority,
-  kLowPropertyPriority,
-  kPropertyPriorityCount,
 };
 
 template <CSSPropertyPriority priority>
@@ -37,50 +33,10 @@ class CSSPropertyPriorityData {
 };
 
 template <>
-constexpr CSSPropertyID CSSPropertyPriorityData<kResolveVariables>::First() {
-  static_assert(
-      static_cast<int>(CSSPropertyID::kVariable) == kIntFirstCSSProperty - 1,
-      "CSSPropertyID::kVariable should be directly before the first CSS "
-      "property.");
-  return CSSPropertyID::kVariable;
-}
-
-template <>
-constexpr CSSPropertyID CSSPropertyPriorityData<kResolveVariables>::Last() {
-  return CSSPropertyID::kVariable;
-}
-
-template <>
-constexpr CSSPropertyID
-CSSPropertyPriorityData<kAnimationPropertyPriority>::First() {
-  static_assert(CSSPropertyID::kAnimationDelay == firstCSSProperty,
-                "CSSPropertyID::kAnimationDelay should be the first animation "
-                "priority property");
-  return CSSPropertyID::kAnimationDelay;
-}
-
-template <>
-constexpr CSSPropertyID
-CSSPropertyPriorityData<kAnimationPropertyPriority>::Last() {
-  static_assert(
-      static_cast<int>(CSSPropertyID::kTransitionTimingFunction) ==
-          static_cast<int>(CSSPropertyID::kAnimationDelay) + 12,
-      "CSSPropertyID::kTransitionTimingFunction should be the end of the high "
-      "priority property range");
-  static_assert(
-      static_cast<int>(CSSPropertyID::kColor) ==
-          static_cast<int>(CSSPropertyID::kTransitionTimingFunction) + 1,
-      "CSSPropertyID::kTransitionTimingFunction should be immediately before "
-      "CSSPropertyID::kColor");
-  return CSSPropertyID::kTransitionTimingFunction;
-}
-
-template <>
 constexpr CSSPropertyID
 CSSPropertyPriorityData<kHighPropertyPriority>::First() {
   static_assert(
-      static_cast<int>(CSSPropertyID::kColor) ==
-          static_cast<int>(CSSPropertyID::kTransitionTimingFunction) + 1,
+      CSSPropertyID::kColor == firstCSSProperty,
       "CSSPropertyID::kColor should be the first high priority property");
   return CSSPropertyID::kColor;
 }
@@ -96,38 +52,6 @@ constexpr CSSPropertyID CSSPropertyPriorityData<kHighPropertyPriority>::Last() {
                 "CSSPropertyID::kWritingMode should be immediately before "
                 "CSSPropertyID::kZoom");
   return CSSPropertyID::kZoom;
-}
-
-template <>
-constexpr CSSPropertyID CSSPropertyPriorityData<kLowPropertyPriority>::First() {
-  static_assert(static_cast<int>(CSSPropertyID::kAdvanceOverride) ==
-                    static_cast<int>(CSSPropertyID::kZoom) + 1,
-                "CSSPropertyID::kAdvanceOverride should be the first low "
-                "priority property");
-  return CSSPropertyID::kAdvanceOverride;
-}
-
-template <>
-constexpr CSSPropertyID CSSPropertyPriorityData<kLowPropertyPriority>::Last() {
-  return static_cast<CSSPropertyID>(lastCSSProperty);
-}
-
-constexpr CSSPropertyPriority PriorityForProperty(CSSPropertyID property) {
-  if (CSSPropertyPriorityData<kLowPropertyPriority>::PropertyHasPriority(
-          property)) {
-    return kLowPropertyPriority;
-  }
-  if (CSSPropertyPriorityData<kHighPropertyPriority>::PropertyHasPriority(
-          property)) {
-    return kHighPropertyPriority;
-  }
-  if (CSSPropertyPriorityData<kAnimationPropertyPriority>::PropertyHasPriority(
-          property)) {
-    return kAnimationPropertyPriority;
-  }
-  DCHECK(CSSPropertyPriorityData<kResolveVariables>::PropertyHasPriority(
-      property));
-  return kResolveVariables;
 }
 
 }  // namespace blink
