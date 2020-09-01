@@ -1662,8 +1662,6 @@ Status ExecutePerformActions(Session* session,
                 event.delta_y = delta_y;
                 buttons[id] |= StringToModifierMouseButton(button_type[id]);
                 session->mouse_position = WebPoint(event.x, event.y);
-                session->input_cancel_list.emplace_back(
-                    action_input_states[j], &event, nullptr, nullptr);
                 dispatch_wheel_events.push_back(event);
                 Status status = web_view->DispatchMouseEvents(
                     dispatch_wheel_events, session->GetCurrentFrameId(),
