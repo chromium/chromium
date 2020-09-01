@@ -2021,6 +2021,7 @@ void ThreadedInputHandler::ClearCurrentlyScrollingNode() {
   latched_scroll_type_.reset();
   last_scroll_update_state_.reset();
   last_scroll_begin_state_.reset();
+  compositor_delegate_.DidEndScroll();
 }
 
 bool ThreadedInputHandler::ScrollAnimationUpdateTarget(

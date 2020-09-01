@@ -393,7 +393,6 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   void SetViewportDamage(const gfx::Rect& damage_rect);
   void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
 
-  // Interface for ThreadedInputHandler
   ScrollTree& GetScrollTree() const override;
   bool HasAnimatedScrollbars() const override;
   // Already overridden for BrowserControlsOffsetManagerClient which declares a
@@ -406,6 +405,7 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   void DidUpdatePinchZoom() override;
   void DidEndPinchZoom() override;
   void DidStartScroll() override;
+  void DidEndScroll() override;
   void DidMouseLeave() override;
   bool IsInHighLatencyMode() const override;
   void WillScrollContent(ElementId element_id) override;
@@ -1194,6 +1194,13 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   // Use to track when doing a synchronous draw.
   bool doing_sync_draw_ = false;
 #endif
+
+  // This is used to tell the scheduler there are active scroll handlers on the
+  // page so we should prioritize latency during a scroll to try to keep
+  // scroll-linked effects up to data.
+  // TODO(bokan): This is quite old and scheduling has become much more
+  // sophisticated since so it's not clear how much value it's still providing.
+  bool scroll_affects_scroll_handler_ = false;
 
   // Provides support for PaintWorklets which depend on input properties that
   // are being animated by the compositor (aka 'animated' PaintWorklets).

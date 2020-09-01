@@ -92,6 +92,7 @@ class CompositorDelegateForInput {
   virtual void DidUpdatePinchZoom() = 0;
   virtual void DidEndPinchZoom() = 0;
   virtual void DidStartScroll() = 0;
+  virtual void DidEndScroll() = 0;
   virtual void DidMouseLeave() = 0;
   virtual bool IsInHighLatencyMode() const = 0;
   virtual void WillScrollContent(ElementId element_id) = 0;

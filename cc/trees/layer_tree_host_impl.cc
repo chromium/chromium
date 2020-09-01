@@ -312,7 +312,12 @@ void LayerTreeHostImpl::DidUpdatePinchZoom() {
 }
 
 void LayerTreeHostImpl::DidStartScroll() {
+  scroll_affects_scroll_handler_ = active_tree()->have_scroll_event_handlers();
   client_->RenewTreePriority();
+}
+
+void LayerTreeHostImpl::DidEndScroll() {
+  scroll_affects_scroll_handler_ = false;
 }
 
 void LayerTreeHostImpl::DidMouseLeave() {
@@ -3031,8 +3036,7 @@ bool LayerTreeHostImpl::IsActivelyPrecisionScrolling() const {
 
 bool LayerTreeHostImpl::ScrollAffectsScrollHandler() const {
   return settings_.enable_synchronized_scrolling &&
-         input_delegate_->IsCurrentlyScrolling() &&
-         active_tree()->have_scroll_event_handlers();
+         scroll_affects_scroll_handler_;
 }
 
 void LayerTreeHostImpl::CreatePendingTree() {
