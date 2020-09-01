@@ -57,6 +57,8 @@ def _FirebaseDeploy(project_dir):
 def _CopyStaticFiles(project_static_dir):
   """Copy over static files from the static directory."""
   static_files = os.path.join(os.path.dirname(__file__), 'static')
+  if not os.path.exists(os.path.join(static_files, 'caspian_web.js')):
+    raise Exception('static/caspian_web.js is missing. See caspian/README.md')
   shutil.copytree(static_files, project_static_dir)
 
 
@@ -78,7 +80,7 @@ def _Prompt(message):
 
 def main():
   message = (
-"""This script deploys the contents of //tools/binary_size/libsupersize/static
+  """This script deploys the contents of //tools/binary_size/libsupersize/static
 to firebase hosting at chrome-supersize.firebaseapp.com. Please ensure you have
 read the instructions at //tools/binary_size/libsupersize/static/README.md first
 before running this. Are you sure you want to continue?""")
