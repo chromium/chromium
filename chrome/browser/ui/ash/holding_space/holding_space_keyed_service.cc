@@ -29,17 +29,16 @@ ProfileManager* GetProfileManager() {
 }  // namespace
 
 // TODO(dmblack): Add a delegate for downloads.
-HoldingSpaceKeyedService::HoldingSpaceKeyedService(
-    content::BrowserContext* context,
-    const AccountId& account_id)
-    : browser_context_(context),
+HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
+                                                   const AccountId& account_id)
+    : profile_(profile),
       account_id_(account_id),
-      holding_space_client_(Profile::FromBrowserContext(context)),
-      thumbnail_loader_(Profile::FromBrowserContext(context)) {
+      holding_space_client_(profile),
+      thumbnail_loader_(profile) {
   // The associated profile may not be ready yet. If it is, we can immediately
   // proceed with profile dependent initialization.
   ProfileManager* const profile_manager = GetProfileManager();
-  if (profile_manager->IsValidProfile(Profile::FromBrowserContext(context))) {
+  if (profile_manager->IsValidProfile(profile)) {
     OnProfileReady();
     return;
   }
@@ -87,8 +86,8 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
 void HoldingSpaceKeyedService::AddScreenshot(
     const base::FilePath& screenshot_file,
     const gfx::ImageSkia& image) {
-  GURL file_system_url = holding_space_util::ResolveFileSystemUrl(
-      Profile::FromBrowserContext(browser_context_), screenshot_file);
+  GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile_, screenshot_file);
   if (file_system_url.is_empty())
     return;
 
@@ -99,8 +98,8 @@ void HoldingSpaceKeyedService::AddScreenshot(
 
 void HoldingSpaceKeyedService::AddDownload(
     const base::FilePath& download_file) {
-  GURL file_system_url = holding_space_util::ResolveFileSystemUrl(
-      Profile::FromBrowserContext(browser_context_), download_file);
+  GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile_, download_file);
   if (file_system_url.is_empty())
     return;
 
@@ -126,7 +125,7 @@ void HoldingSpaceKeyedService::Shutdown() {
 }
 
 void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
-  if (profile == Profile::FromBrowserContext(browser_context_)) {
+  if (profile == profile_) {
     profile_manager_observer_.Remove(GetProfileManager());
     OnProfileReady();
   }
@@ -166,18 +165,16 @@ void HoldingSpaceKeyedService::RemoveDownloadManagerObservers() {
 }
 
 void HoldingSpaceKeyedService::OnProfileReady() {
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
-
   // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
   delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
-      profile, &holding_space_model_,
+      profile_, &holding_space_model_,
       /*file_removed_callback=*/
       base::BindRepeating(&HoldingSpaceKeyedService::OnFileRemoved,
                           weak_factory_.GetWeakPtr())));
 
   // The `HoldingSpacePersistenceDelegate` manages holding space persistence.
   delegates_.push_back(std::make_unique<HoldingSpacePersistenceDelegate>(
-      profile, &holding_space_model_,
+      profile_, &holding_space_model_,
       /*item_restored_callback=*/
       base::BindRepeating(&HoldingSpaceKeyedService::AddItem,
                           weak_factory_.GetWeakPtr()),
@@ -214,8 +211,7 @@ void HoldingSpaceKeyedService::OnModelRestored() {
 
   // Once the `holding_space_model_` has been restored from persistence, we can
   // start to observe the `download_manager_` to track downloaded files.
-  download_manager_ =
-      content::BrowserContext::GetDownloadManager(browser_context_);
+  download_manager_ = content::BrowserContext::GetDownloadManager(profile_);
   download_manager_->AddObserver(this);
   RetrieveDownloadHistory();
 }

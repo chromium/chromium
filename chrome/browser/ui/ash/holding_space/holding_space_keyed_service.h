@@ -28,10 +28,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -54,8 +50,7 @@ class HoldingSpaceKeyedService : public KeyedService,
                                  public content::DownloadManager::Observer,
                                  public download::DownloadItem::Observer {
  public:
-  HoldingSpaceKeyedService(content::BrowserContext* context,
-                           const AccountId& account_id);
+  HoldingSpaceKeyedService(Profile* profile, const AccountId& account_id);
   HoldingSpaceKeyedService(const HoldingSpaceKeyedService& other) = delete;
   HoldingSpaceKeyedService& operator=(const HoldingSpaceKeyedService& other) =
       delete;
@@ -136,7 +131,7 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   void RetrieveDownloadHistory();
 
-  content::BrowserContext* const browser_context_;
+  Profile* const profile_;
   const AccountId account_id_;
 
   HoldingSpaceClientImpl holding_space_client_;
