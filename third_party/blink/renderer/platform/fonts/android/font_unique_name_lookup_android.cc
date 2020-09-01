@@ -28,7 +28,7 @@ void FontUniqueNameLookupAndroid::PrepareFontUniqueNameLookup(
 
   EnsureServiceConnected();
 
-  service_->GetUniqueNameLookupTable(base::BindOnce(
+  firmware_font_lookup_service_->GetUniqueNameLookupTable(base::BindOnce(
       &FontUniqueNameLookupAndroid::ReceiveReadOnlySharedMemoryRegion,
       base::Unretained(this)));
 }
@@ -53,8 +53,8 @@ bool FontUniqueNameLookupAndroid::IsFontUniqueNameLookupReadyForSyncLookup() {
 
   bool sync_available_from_mojo = false;
   base::ReadOnlySharedMemoryRegion shared_memory_region;
-  service_->GetUniqueNameLookupTableIfAvailable(&sync_available_from_mojo,
-                                                &shared_memory_region);
+  firmware_font_lookup_service_->GetUniqueNameLookupTableIfAvailable(
+      &sync_available_from_mojo, &shared_memory_region);
   sync_available_ = sync_available_from_mojo;
 
   if (*sync_available_) {
@@ -74,20 +74,15 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueName(
     const String& font_unique_name) {
   if (!IsFontUniqueNameLookupReadyForSyncLookup())
     return nullptr;
-  base::Optional<FontTableMatcher::MatchResult> match_result =
-      font_table_matcher_->MatchName(font_unique_name.Utf8().c_str());
-  if (!match_result)
-    return nullptr;
-  return SkTypeface::MakeFromFile(match_result->font_path.c_str(),
-                                  match_result->ttc_index);
+  return MatchUniqueNameFromFirmwareFonts(font_unique_name);
 }
 
 void FontUniqueNameLookupAndroid::EnsureServiceConnected() {
-  if (service_)
+  if (firmware_font_lookup_service_)
     return;
 
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      service_.BindNewPipeAndPassReceiver());
+      firmware_font_lookup_service_.BindNewPipeAndPassReceiver());
 }
 
 void FontUniqueNameLookupAndroid::ReceiveReadOnlySharedMemoryRegion(
@@ -100,4 +95,13 @@ void FontUniqueNameLookupAndroid::ReceiveReadOnlySharedMemoryRegion(
   }
 }
 
+sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueNameFromFirmwareFonts(
+    const String& font_unique_name) {
+  base::Optional<FontTableMatcher::MatchResult> match_result =
+      font_table_matcher_->MatchName(font_unique_name.Utf8().c_str());
+  if (!match_result)
+    return nullptr;
+  return SkTypeface::MakeFromFile(match_result->font_path.c_str(),
+                                  match_result->ttc_index);
+}
 }  // namespace blink

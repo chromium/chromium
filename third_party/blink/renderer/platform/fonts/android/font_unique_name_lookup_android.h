@@ -33,7 +33,10 @@ class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
   void ReceiveReadOnlySharedMemoryRegion(
       base::ReadOnlySharedMemoryRegion shared_memory_region);
 
-  mojo::Remote<mojom::blink::FontUniqueNameLookup> service_;
+  sk_sp<SkTypeface> MatchUniqueNameFromFirmwareFonts(const String&);
+
+  mojo::Remote<mojom::blink::FontUniqueNameLookup>
+      firmware_font_lookup_service_;
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
   base::Optional<bool> sync_available_;
 
