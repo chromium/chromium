@@ -24,6 +24,7 @@ message PowerRailsMetric {
   optional float story_wifi_j = 6 [(unit) = "J_smallerIsBetter"];
   optional float story_display_j = 7 [(unit) = "J_smallerIsBetter"];
   optional float story_duration_ms = 8 [(unit) = "ms"];
+  optional float story_cpu_and_system_j = 9 [(unit) = "J_smallerIsBetter"];
 
   // interaction_* values - power consumption over the combined duration
   // of Interaction.* events, e.g. Interaction.Gesture_ScrollAction.
@@ -37,6 +38,8 @@ message PowerRailsMetric {
   optional float interaction_wifi_j = 16 [(unit) = "J_smallerIsBetter"];
   optional float interaction_display_j = 17 [(unit) = "J_smallerIsBetter"];
   optional float interaction_duration_ms = 18 [(unit) = "ms"];
+  optional float interaction_cpu_and_system_j = 19
+      [(unit) = "J_smallerIsBetter"];
 }
 
 extend TraceMetrics {

@@ -104,6 +104,9 @@ SELECT PowerRailsMetric(
       (SELECT drain_j FROM story_drain WHERE subsystem = 'wifi'),
   'story_display_j',
       (SELECT drain_j FROM story_drain WHERE subsystem = 'display'),
+  'story_cpu_and_system_j',
+      (SELECT sum(drain_j) FROM story_drain WHERE
+          subsystem IN ('cpu_big', 'cpu_little', 'soc')),
   'story_duration_ms',
       (SELECT dur_ms FROM story_drain WHERE subsystem = 'display'),
   'interaction_total_j',
@@ -120,6 +123,9 @@ SELECT PowerRailsMetric(
       (SELECT drain_j FROM interaction_drain WHERE subsystem = 'wifi'),
   'interaction_display_j',
       (SELECT drain_j FROM interaction_drain WHERE subsystem = 'display'),
+  'interaction_cpu_and_system_j',
+      (SELECT sum(drain_j) FROM interaction_drain WHERE
+          subsystem IN ('cpu_big', 'cpu_little', 'soc')),
   'interaction_duration_ms',
       (SELECT dur_ms FROM interaction_drain WHERE subsystem = 'display')
 );
