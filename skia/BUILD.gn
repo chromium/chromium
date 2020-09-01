@@ -948,10 +948,9 @@ test("skia_unittests") {
   if (!is_ios) {
     sources += [ "public/mojom/test/mojom_traits_unittest.cc" ]
     deps += [
-      # TODO: Fix this test to not depend on cc.
-      "//cc:test_support",
       "//mojo/public/cpp/bindings",
-      "//skia/public/mojom:test_interfaces",
+      "//mojo/public/cpp/test_support:test_utils",
+      "//skia/public/mojom",
     ]
   }
 

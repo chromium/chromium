@@ -97,10 +97,3 @@ mojom("mojom") {
   cpp_typemaps = shared_skia_cpp_typemaps
   blink_cpp_typemaps = shared_skia_cpp_typemaps
 }
-
-mojom("test_interfaces") {
-  testonly = true
-  sources = [ "test/traits_test_service.mojom" ]
-
-  public_deps = [ ":mojom" ]
-}
