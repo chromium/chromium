@@ -718,6 +718,8 @@ class NGInlineNodeDataEditor final {
   // TODO(yosin): Once we can reproduce invalid |ShapeResult| offsets, we
   // should make this function works only for |DCHECK_IS_ON()|.
   void VerifyItems(const Vector<NGInlineItem>& items) const {
+    if (items.IsEmpty())
+      return;
     unsigned last_offset = items.front().start_offset_;
     for (const NGInlineItem& item : items) {
       CHECK_LE(item.start_offset_, item.end_offset_);

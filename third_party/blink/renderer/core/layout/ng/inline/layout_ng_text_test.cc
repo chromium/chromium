@@ -238,6 +238,21 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetDeleteWithBidiControl) {
             GetItemsAsString(*text.GetLayoutObject()));
 }
 
+// http://crbug.com/1123251
+TEST_F(LayoutNGTextTest, SetTextWithOffsetEditingTextCollapsedSpace) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  SetBodyInnerHTML(u"<p id=target></p>");
+  // Simulate: insertText("A") + InsertHTML("X ")
+  Text& text = *GetDocument().CreateEditingTextNode("AX ");
+  GetElementById("target")->appendChild(&text);
+  UpdateAllLifecyclePhasesForTest();
+
+  text.replaceData(0, 2, " ", ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ("*{''}\n", GetItemsAsString(*text.GetLayoutObject()));
+}
+
 TEST_F(LayoutNGTextTest, SetTextWithOffsetInsert) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
