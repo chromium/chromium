@@ -5,7 +5,7 @@
 // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-iterator-interface
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Iterator {
     [CallWith=ScriptState, RaisesException] any next(optional any value);
 };

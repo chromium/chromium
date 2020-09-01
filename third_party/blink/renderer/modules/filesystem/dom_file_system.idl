@@ -32,7 +32,7 @@
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-FileSystem
 [
     ActiveScriptWrappable,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface DOMFileSystem {
     readonly attribute DOMString name;
     readonly attribute DirectoryEntry root;

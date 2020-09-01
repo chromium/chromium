@@ -8,7 +8,7 @@
 // automatically for use in initializing a ReadableStream.
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ]
 interface UnderlyingSourceBase {
     [CallWith=ScriptState, ImplementedAs=startWrapper] Promise<void> start(any stream);

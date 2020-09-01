@@ -31,7 +31,7 @@ typedef sequence<any> ObjectArray;
 
 // https://www.w3.org/TR/webdatabase/#sqltransaction
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface SQLTransaction {
     // The spec defines |arguments| to be an "optional ObjectArray" though it defines the
     // behavior when null is being passed.

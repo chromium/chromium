@@ -28,7 +28,7 @@
 
 // https://www.w3.org/TR/webdatabase/#sqlresultset
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface SQLResultSet {
     readonly attribute SQLResultSetRowList rows;
 

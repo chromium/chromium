@@ -4880,8 +4880,9 @@ def _make_property_entries_and_callback_defs(
                 for_world=world,
                 v8_callback_type=CodeGenContext.
                 V8_ACCESSOR_NAME_GETTER_CALLBACK)
-        elif "NoInterfaceObject" in exposed_construct.extended_attributes:
-            return  # Skip due to [NoInterfaceObject].
+        elif ("LegacyNoInterfaceObject" in
+              exposed_construct.extended_attributes):
+            return  # Skip due to [LegacyNoInterfaceObject].
         else:
             cgc = cg_context.make_copy(
                 exposed_construct=exposed_construct,
@@ -5030,9 +5031,9 @@ def _make_install_prototype_object(cg_context):
         nodes.extend([
             TextNode("""\
 // [Unscopable]
-// 3.6.3. Interface prototype object
+// 3.7.3. Interface prototype object
 // https://heycam.github.io/webidl/#interface-prototype-object
-// step 8. If interface has any member declared with the [Unscopable]
+// step 10. If interface has any member declared with the [Unscopable]
 //   extended attribute, then:\
 """),
             ListNode([
@@ -5050,14 +5051,14 @@ bindings::InstallUnscopablePropertyNames(
 """),
         ])
 
-    if "NoInterfaceObject" in class_like.extended_attributes:
+    if "LegacyNoInterfaceObject" in class_like.extended_attributes:
         nodes.append(
             TextNode("""\
-// [NoInterfaceObject]
-// 3.6.3. Interface prototype object
+// [LegacyNoInterfaceObject]
+// 3.7.3. Interface prototype object
 // https://heycam.github.io/webidl/#interface-prototype-object
-// step 12. If the [NoInterfaceObject] extended attribute was not specified
-//   on interface, then:
+// step 13. If the [LegacyNoInterfaceObject] extended attribute was not
+//   specified on interface, then:
 //
 // V8 defines "constructor" property on the prototype object by default.
 ${prototype_object}->Delete(

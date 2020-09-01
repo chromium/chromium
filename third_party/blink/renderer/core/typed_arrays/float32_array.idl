@@ -6,6 +6,6 @@
 
 [
     ImplementedAs=DOMFloat32Array,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Float32Array : ArrayBufferView {
 };

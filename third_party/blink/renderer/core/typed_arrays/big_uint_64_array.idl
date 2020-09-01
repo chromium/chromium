@@ -6,6 +6,6 @@
 
 [
     ImplementedAs=DOMBigUint64Array,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface BigUint64Array : ArrayBufferView {
 };

@@ -5,7 +5,7 @@
 // https://github.com/WICG/reporting/blob/master/EXPLAINER.md#reportingobserver---observing-reports-from-javascript
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Report {
     readonly attribute DOMString type;
     readonly attribute DOMString url;

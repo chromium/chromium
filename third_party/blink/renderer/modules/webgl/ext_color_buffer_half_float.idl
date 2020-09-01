@@ -26,6 +26,6 @@
 // https://www.khronos.org/registry/webgl/extensions/EXT_color_buffer_half_float
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface EXTColorBufferHalfFloat {
 };

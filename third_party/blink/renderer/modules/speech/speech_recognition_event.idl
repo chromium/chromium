@@ -29,7 +29,7 @@
     LegacyWindowAlias=webkitSpeechRecognitionEvent,
     LegacyWindowAlias_Measure,
     LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface SpeechRecognitionEvent : Event {
     constructor(DOMString type, optional SpeechRecognitionEventInit initDict = {});
     readonly attribute unsigned long resultIndex;

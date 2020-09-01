@@ -5,7 +5,7 @@
 // https://w3c.github.io/webappsec-feature-policy/document-policy.html#reporting
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface DocumentPolicyViolationReportBody : ReportBody {
   readonly attribute DOMString featureId;
   readonly attribute DOMString? sourceFile;

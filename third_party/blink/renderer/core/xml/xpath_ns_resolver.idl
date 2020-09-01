@@ -26,7 +26,7 @@
 // is what Gecko does. crbug.com/345529
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface XPathNSResolver {
     DOMString? lookupNamespaceURI(optional DOMString prefix = "undefined");
 };

@@ -6,6 +6,6 @@
 
 [
     ImplementedAs=DOMInt8Array,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Int8Array : ArrayBufferView {
 };

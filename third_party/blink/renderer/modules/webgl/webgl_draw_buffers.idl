@@ -26,7 +26,7 @@
 // https://www.khronos.org/registry/webgl/extensions/WEBGL_draw_buffers/
 
 [
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     DoNotCheckConstants
 ] interface WebGLDrawBuffers {
     const GLenum COLOR_ATTACHMENT0_WEBGL = 0x8CE0;

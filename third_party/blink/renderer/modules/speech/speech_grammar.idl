@@ -29,7 +29,7 @@
     LegacyWindowAlias=webkitSpeechGrammar,
     LegacyWindowAlias_Measure,
     LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface SpeechGrammar {
     [Measure] constructor();
     [URL,CallWith=ScriptState] attribute DOMString src;

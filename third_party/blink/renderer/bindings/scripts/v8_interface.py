@@ -421,10 +421,11 @@ def interface_context(interface, interfaces, component_info):
     # https://html.spec.whatwg.org/C/#html-element-constructors
     if has_html_constructor:
         if ('Constructor' in extended_attributes
-                or 'NoInterfaceObject' in extended_attributes):
-            raise Exception('[HTMLConstructor] cannot be specified with '
-                            '[Constructor] or [NoInterfaceObject], or on '
-                            'a mixin : %s' % interface.name)
+                or 'LegacyNoInterfaceObject' in extended_attributes):
+            raise Exception(
+                '[HTMLConstructor] cannot be specified with '
+                '[Constructor] or [LegacyNoInterfaceObject], or on '
+                'a mixin : %s' % interface.name)
         includes.add('bindings/core/v8/v8_html_constructor.h')
 
     # [NamedConstructor]

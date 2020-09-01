@@ -65,6 +65,7 @@ HTMLConstructor
 ImmutablePrototype
 ImplementedAs=*
 LegacyLenientThis
+LegacyNoInterfaceObject
 LegacyOverrideBuiltins
 LegacyTreatAsPartialInterface
 LegacyTreatNonObjectAsNull
@@ -83,7 +84,6 @@ MeasureAs=*
 NamedConstructor=*
 NamedConstructor_CallWith=Document
 NamedConstructor_RaisesException
-NoInterfaceObject
 NotEnumerable
 PartialInterfaceImplementedAs=*
 PermissiveDictionaryConversion

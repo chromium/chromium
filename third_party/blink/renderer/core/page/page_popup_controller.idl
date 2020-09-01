@@ -32,7 +32,7 @@
 // implementations, and it's not exposed to the Web. WebPagePopupImpl class
 // enables this interface by provideContextFeaturesTo().
 [
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     RuntimeEnabled=PagePopup
 ] interface PagePopupController {
     void setValueAndClosePopup(long numberValue, DOMString stringValue);

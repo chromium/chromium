@@ -32,7 +32,7 @@
 // TODO(foolip): Remove this interface. https://crbug.com/692839
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface StyleMedia {
     [MeasureAs=StyleMediaType] readonly attribute DOMString type;
     [MeasureAs=StyleMediaMatchMedium] boolean matchMedium(optional DOMString mediaquery = "undefined");

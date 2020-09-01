@@ -24,7 +24,7 @@
  */
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface RTCStatsResponse {
     sequence<RTCLegacyStatsReport> result();
     RTCLegacyStatsReport namedItem(optional DOMString name = "undefined");

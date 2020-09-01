@@ -5,7 +5,7 @@
 // https://wicg.github.io/feature-policy/#reporting
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface FeaturePolicyViolationReportBody : ReportBody {
   readonly attribute DOMString featureId;
   readonly attribute DOMString? sourceFile;

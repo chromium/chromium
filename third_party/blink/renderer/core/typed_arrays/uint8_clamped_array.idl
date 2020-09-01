@@ -6,6 +6,6 @@
 
 [
     ImplementedAs=DOMUint8ClampedArray,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Uint8ClampedArray : ArrayBufferView {
 };

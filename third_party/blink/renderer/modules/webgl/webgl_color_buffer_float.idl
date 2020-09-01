@@ -26,6 +26,6 @@
 // https://www.khronos.org/registry/webgl/extensions/WebGL_color_buffer_float/
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface WebGLColorBufferFloat {
 };

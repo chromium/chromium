@@ -24,7 +24,7 @@
  */
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface GamepadList {
     readonly attribute unsigned long length;
     Gamepad item(optional unsigned long index = 0);

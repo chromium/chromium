@@ -248,11 +248,11 @@ Calling the `[EnforceRange]` version of `setColorEnforced()` with an out of rang
 
 Standard: [Exposed](http://heycam.github.io/webidl/#Exposed)
 
-Summary: Indicates on which global object or objects (e.g., Window, WorkerGlobalScope) the interface property is generated, i.e., in which global scope or scopes an interface exists. This is primarily of interest for the constructor, i.e., the [interface object Call method](https://heycam.github.io/webidl/#es-interface-call). If `[Exposed]` is not present or overridden by a standard extended attribute `[NoInterfaceObject]` (the value of the property on the global object corresponding to the interface is called the **interface object**), which results in no interface property being generated.
+Summary: Indicates on which global object or objects (e.g., Window, WorkerGlobalScope) the interface property is generated, i.e., in which global scope or scopes an interface exists. This is primarily of interest for the constructor, i.e., the [interface object Call method](https://heycam.github.io/webidl/#es-interface-call). If `[Exposed]` is not present or overridden by a standard extended attribute `[LegacyNoInterfaceObject]` (the value of the property on the global object corresponding to the interface is called the **interface object**), which results in no interface property being generated.
 
-As with `[NoInterfaceObject]` does not affect generated code for the interface itself, only the code for the corresponding global object. A partial interface is generated at build time, containing an attribute for each interface property on that global object.
+As with `[LegacyNoInterfaceObject]` does not affect generated code for the interface itself, only the code for the corresponding global object. A partial interface is generated at build time, containing an attribute for each interface property on that global object.
 
-All non-callback interfaces without `[NoInterfaceObject]` have a corresponding interface property on the global object. Note that in the Web IDL spec, callback interfaces with constants also have interface properties, but in Blink callback interfaces only have methods (no constants or attributes), so this is not applicable. `[Exposed]` can be used with different values to indicate on which global object or objects the property should be generated. Valid values are:
+All non-callback interfaces without `[LegacyNoInterfaceObject]` have a corresponding interface property on the global object. Note that in the Web IDL spec, callback interfaces with constants also have interface properties, but in Blink callback interfaces only have methods (no constants or attributes), so this is not applicable. `[Exposed]` can be used with different values to indicate on which global object or objects the property should be generated. Valid values are:
 
 * `Window`
 * [Worker](http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#the-workerglobalscope-common-interface)
@@ -264,7 +264,7 @@ For reference, see [ECMAScript 5.1: 15.1 The Global Object](http://www.ecma-inte
 
 It is possible to have the global constructor generated on several interfaces by listing them, e.g. `[Exposed=(Window,WorkerGlobalScope)]`.
 
-Usage: `[Exposed]` can be specified on interfaces that do not have the `[NoInterfaceObject]` extended attribute.
+Usage: `[Exposed]` can be specified on interfaces that do not have the `[LegacyNoInterfaceObject]` extended attribute.
 
 ```webidl
 [
@@ -300,7 +300,7 @@ Standard: [HTMLConstructor](https://html.spec.whatwg.org/C/#html-element-constru
 
 Summary: HTML Elements have special constructor behavior. Interface object of given interface with the `[HTMLConstructor]` attribute will have specific behavior when called.
 
-Usage: Must take no arguments, and must not appear on anything other than an interface. It must appear once on an interface, and the interface cannot be annotated with `[Constructor]` or `[NoInterfaceObject]` extended attributes. It must not be used on a callback interface.
+Usage: Must take no arguments, and must not appear on anything other than an interface. It must appear once on an interface, and the interface cannot be annotated with `[Constructor]` or `[LegacyNoInterfaceObject]` extended attributes. It must not be used on a callback interface.
 
 ### [LenientSetter] _(a)_
 
@@ -377,32 +377,32 @@ Summary: Signals that a method that returns an object type always returns a new 
 
 When a method returns an interface type, this extended attribute generates a test in debug mode to ensure that no wrapper object for the returned DOM object exists yet. Also see `[DoNotTestNewObject]`. When a method returns a Promise, this extended attribute currently does nothing.
 
-### [NoInterfaceObject] _(i)_
+### [LegacyNoInterfaceObject] _(i)_
 
-Standard: [NoInterfaceObject](https://heycam.github.io/webidl/#NoInterfaceObject)
+Standard: [LegacyNoInterfaceObject](https://heycam.github.io/webidl/#NoInterfaceObject)
 
-Summary: If the `[NoInterfaceObject]` extended attribute appears on an interface, it indicates that an interface object will not exist for the interface in the ECMAScript binding. See also the standard `[Exposed=xxx]` extended attribute; these two do _not_ change the generated code for the interface itself.
+Summary: If the `[LegacyNoInterfaceObject]` extended attribute appears on an interface, it indicates that an interface object will not exist for the interface in the ECMAScript binding. See also the standard `[Exposed=xxx]` extended attribute; these two do _not_ change the generated code for the interface itself.
 
 Note that every interface has a corresponding property on the ECMAScript global object, _except:_
 
 * callback interfaces with no constants, and
-* non-callback interface with the `[NoInterfaceObject]` extended attribute,
+* non-callback interface with the `[LegacyNoInterfaceObject]` extended attribute,
 
-Usage: `[NoInterfaceObject]` can be specified on interfaces.
+Usage: `[LegacyNoInterfaceObject]` can be specified on interfaces.
 
 ```webidl
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface XXX {
     ...
 };
 ```
 
-Note that `[NoInterfaceObject]` **MUST** be specified on testing interfaces, as follows:
+Note that `[LegacyNoInterfaceObject]` **MUST** be specified on testing interfaces, as follows:
 
 ```webidl
 [
-    NoInterfaceObject  // testing interfaces do not appear on global objects
+    LegacyNoInterfaceObject  // testing interfaces do not appear on global objects
 ] interface TestingInterfaceX {
     ...
 };

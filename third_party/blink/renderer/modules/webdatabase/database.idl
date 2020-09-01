@@ -28,7 +28,7 @@
 
 // https://www.w3.org/TR/webdatabase/#database
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Database {
     readonly attribute DOMString version;
     // TODO(crbug.com/841185): |callback|, |errorCallback|, and

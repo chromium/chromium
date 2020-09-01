@@ -30,7 +30,7 @@
     LegacyWindowAlias=webkitSpeechRecognition,
     LegacyWindowAlias_Measure,
     LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface SpeechRecognition : EventTarget {
     [CallWith=ExecutionContext, Measure] constructor();
     // recognition parameters

@@ -8,7 +8,7 @@
 // https://www.ecma-international.org/ecma-262/9.0/index.html#sec-asynciterator-interface
 [
     SecureContext,
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     RuntimeEnabled=FontAccess
 ] interface FontIterator {
   [CallWith=ScriptState] Promise<any> next();

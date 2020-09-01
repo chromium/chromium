@@ -83,12 +83,12 @@ def record_global_constructors(idl_filename):
     interface_name = get_first_interface_name_from_idl(idl_file_contents)
 
     # An interface property is produced for every non-callback interface
-    # that does not have [NoInterfaceObject].
+    # that does not have [LegacyNoInterfaceObject].
     # http://heycam.github.io/webidl/#es-interfaces
     if (not should_generate_impl_file_from_idl(idl_file_contents)
             or is_non_legacy_callback_interface_from_idl(idl_file_contents)
             or is_interface_mixin_from_idl(idl_file_contents)
-            or 'NoInterfaceObject' in extended_attributes):
+            or 'LegacyNoInterfaceObject' in extended_attributes):
         return
 
     exposed_arguments = get_interface_exposed_arguments(idl_file_contents)

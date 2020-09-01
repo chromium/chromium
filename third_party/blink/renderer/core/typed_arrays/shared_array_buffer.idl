@@ -5,7 +5,7 @@
 // Draft spec: https://github.com/lars-t-hansen/ecmascript_sharedmem
 [
     ImplementedAs=DOMSharedArrayBuffer,
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     RuntimeEnabled=SharedArrayBuffer
 ] interface SharedArrayBuffer {
     readonly attribute unsigned long byteLength;

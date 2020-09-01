@@ -192,7 +192,7 @@ function outputProperty(property) {
     outputFunc('    ' + property);
 }
 
-// FIXME: List interfaces with NoInterfaceObject specified in their IDL file.
+// FIXME: List interfaces with LegacyNoInterfaceObject specified in their IDL file.
 outputFunc('[INTERFACES]');
 var interfaceNames = Object.getOwnPropertyNames(this)
                            .filter(isWebIDLConstructor)

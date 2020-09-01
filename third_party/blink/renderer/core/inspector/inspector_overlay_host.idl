@@ -29,7 +29,7 @@
  */
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface InspectorOverlayHost {
     void send(DOMString command);
 };

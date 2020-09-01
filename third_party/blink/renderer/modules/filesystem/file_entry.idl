@@ -30,7 +30,7 @@
 
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-FileEntry
 [
-  NoInterfaceObject
+  LegacyNoInterfaceObject
 ] interface FileEntry : Entry {
   // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
   void createWriter(FileWriterCallback successCallback,

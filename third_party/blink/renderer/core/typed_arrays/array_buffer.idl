@@ -6,7 +6,7 @@
 
 [
     ImplementedAs=DOMArrayBuffer,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface ArrayBuffer {
     readonly attribute unsigned long byteLength;
 };

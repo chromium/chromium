@@ -1,4 +1,4 @@
-Tests that the following classes are not manipulable by JavaScript (NoInterfaceObject).
+Tests that the following classes are not manipulable by JavaScript (LegacyNoInterfaceObject).
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 

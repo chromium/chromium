@@ -7,7 +7,7 @@
 // UnderlyingSinkBase, and a JavaScript object can then be generated
 // automatically for use in initializing a WritableStream.
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ]
 interface UnderlyingSinkBase {
     [CallWith=ScriptState, RaisesException] Promise<void> start(any controller);

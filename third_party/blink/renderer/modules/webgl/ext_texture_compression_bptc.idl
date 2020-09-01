@@ -5,7 +5,7 @@
 // https://www.khronos.org/registry/webgl/extensions/EXT_texture_compression_bptc/
 
 [
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     DoNotCheckConstants
 ] interface EXTTextureCompressionBPTC {
     const unsigned long COMPRESSED_RGBA_BPTC_UNORM_EXT = 0x8E8C;

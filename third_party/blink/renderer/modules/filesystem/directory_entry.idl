@@ -30,7 +30,7 @@
 
 // https://wicg.github.io/entries-api/#api-directoryentry
 [
-  NoInterfaceObject
+  LegacyNoInterfaceObject
 ] interface DirectoryEntry : Entry {
   DirectoryReader createReader();
 

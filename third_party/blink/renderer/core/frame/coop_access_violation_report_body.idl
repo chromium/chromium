@@ -5,7 +5,7 @@
 // https://html.spec.whatwg.org/#cross-origin-opener-policies
 
 [
-  NoInterfaceObject
+  LegacyNoInterfaceObject
 ] interface CoopAccessViolationReportBody : ReportBody {
   readonly attribute DOMString? sourceFile;
   readonly attribute unsigned long? lineNumber;

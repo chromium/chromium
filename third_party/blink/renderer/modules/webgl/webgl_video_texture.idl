@@ -7,7 +7,7 @@
 [
     RuntimeEnabled=WebGLDraftExtensions,
     DoNotCheckConstants,
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface WebGLVideoTexture {
     const GLenum TEXTURE_VIDEO_IMAGE = 0x9248;
     const GLenum SAMPLER_VIDEO_IMAGE = 0x9249;
