@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
@@ -24,6 +26,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -40,9 +43,12 @@ public class ToolbarPhoneTest {
     public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
             new ChromeActivityTestRule<>(ChromeActivity.class);
 
+    @Mock
+    private MenuButtonCoordinator mMenuButtonCoordinator;
+
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
-    private MenuButton mMenuButtonSpy;
+    private MenuButton mMenuButton;
 
     @Before
     public void setUp() {
@@ -50,8 +56,9 @@ public class ToolbarPhoneTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         mToolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        mMenuButtonSpy = Mockito.spy((MenuButton) mToolbar.getMenuButtonWrapper());
-        mToolbar.setMenuButtonWrapperForTesting(mMenuButtonSpy);
+        mMenuButton = Mockito.spy(mToolbar.findViewById(R.id.menu_button_wrapper));
+        mToolbar.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
+        doReturn(mMenuButton).when(mMenuButtonCoordinator).getMenuButton();
     }
 
     @Test
@@ -59,11 +66,11 @@ public class ToolbarPhoneTest {
     public void testDrawTabSwitcherAnimation_menuButtonDrawn() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mToolbar.drawTabSwitcherAnimationOverlay(mCanvas, 0);
-            verify(mMenuButtonSpy).drawTabSwitcherAnimationOverlay(mCanvas, 255);
+            verify(mMenuButton).drawTabSwitcherAnimationOverlay(mCanvas, 255);
 
             mToolbar.setTextureCaptureMode(true);
             mToolbar.draw(mCanvas);
-            verify(mMenuButtonSpy, times(2)).drawTabSwitcherAnimationOverlay(mCanvas, 255);
+            verify(mMenuButton, times(2)).drawTabSwitcherAnimationOverlay(mCanvas, 255);
             mToolbar.setTextureCaptureMode(false);
         });
     }
