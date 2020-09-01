@@ -106,7 +106,6 @@ instrumentation_test_apk("chrome_java_test_wpr_tests") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/embedder_support/android:util_java",
-    "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:com_android_support_drawerlayout_java",
