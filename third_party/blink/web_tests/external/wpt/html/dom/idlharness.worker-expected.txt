@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 791 tests; 775 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 803 tests; 787 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -491,6 +491,18 @@ PASS EventSource interface: attribute onopen
 PASS EventSource interface: attribute onmessage
 PASS EventSource interface: attribute onerror
 PASS EventSource interface: operation close()
+PASS EventSource must be primary interface of new EventSource("http://invalid")
+PASS Stringification of new EventSource("http://invalid")
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "url" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "withCredentials" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "CONNECTING" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "OPEN" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "CLOSED" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "readyState" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "onopen" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "onmessage" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "onerror" with the proper type
+PASS EventSource interface: new EventSource("http://invalid") must inherit property "close()" with the proper type
 PASS WebSocket interface: existence and properties of interface object
 PASS WebSocket interface object length
 PASS WebSocket interface object name
@@ -520,32 +532,32 @@ PASS WebSocket interface: operation send(USVString)
 PASS WebSocket interface: operation send(Blob)
 PASS WebSocket interface: operation send(ArrayBuffer)
 PASS WebSocket interface: operation send(ArrayBufferView)
-PASS WebSocket must be primary interface of new WebSocket("ws://foo")
-PASS Stringification of new WebSocket("ws://foo")
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "url" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "CONNECTING" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "OPEN" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "CLOSING" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "CLOSED" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "readyState" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "bufferedAmount" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "onopen" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "onerror" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "onclose" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "extensions" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "protocol" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "close(optional unsigned short, optional USVString)" with the proper type
-PASS WebSocket interface: calling close(optional unsigned short, optional USVString) on new WebSocket("ws://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "onmessage" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "binaryType" with the proper type
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "send(USVString)" with the proper type
-PASS WebSocket interface: calling send(USVString) on new WebSocket("ws://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "send(Blob)" with the proper type
-PASS WebSocket interface: calling send(Blob) on new WebSocket("ws://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "send(ArrayBuffer)" with the proper type
-PASS WebSocket interface: calling send(ArrayBuffer) on new WebSocket("ws://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://foo") must inherit property "send(ArrayBufferView)" with the proper type
-PASS WebSocket interface: calling send(ArrayBufferView) on new WebSocket("ws://foo") with too few arguments must throw TypeError
+PASS WebSocket must be primary interface of new WebSocket("ws://invalid")
+PASS Stringification of new WebSocket("ws://invalid")
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "url" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CONNECTING" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "OPEN" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CLOSING" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CLOSED" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "readyState" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "bufferedAmount" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onopen" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onerror" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onclose" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "extensions" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "protocol" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "close(optional unsigned short, optional USVString)" with the proper type
+PASS WebSocket interface: calling close(optional unsigned short, optional USVString) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onmessage" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "binaryType" with the proper type
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(USVString)" with the proper type
+PASS WebSocket interface: calling send(USVString) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(Blob)" with the proper type
+PASS WebSocket interface: calling send(Blob) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(ArrayBuffer)" with the proper type
+PASS WebSocket interface: calling send(ArrayBuffer) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(ArrayBufferView)" with the proper type
+PASS WebSocket interface: calling send(ArrayBufferView) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
 PASS CloseEvent interface: existence and properties of interface object
 PASS CloseEvent interface object length
 PASS CloseEvent interface object name

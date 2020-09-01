@@ -992,7 +992,6 @@ class InternalRefTestImplementation(RefTestImplementation):
                                 for key, value in iteritems(
                                     self.executor.group_metadata.get("url_count", {}))
                                 if value > 1}
-        self.executor.protocol.marionette.set_context(self.executor.protocol.marionette.CONTEXT_CHROME)
         self.executor.protocol.marionette._send_message("reftest:setup", data)
 
     def reset(self, screenshot=None):
@@ -1024,7 +1023,6 @@ class InternalRefTestImplementation(RefTestImplementation):
         try:
             if self.executor.protocol.marionette and self.executor.protocol.marionette.session_id:
                 self.executor.protocol.marionette._send_message("reftest:teardown", {})
-                self.executor.protocol.marionette.set_context(self.executor.protocol.marionette.CONTEXT_CONTENT)
                 # the reftest runner opens/closes a window with focus, so as
                 # with after closing a window we need to give a new window
                 # focus

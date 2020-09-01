@@ -8,11 +8,12 @@
 <script src="/resources/testdriver-actions.js"></script>
 <div contenteditable></div>
 <script>
-const kDeleteKey = "\uE017";
-const kShift =     "\uE008";
-const kMeta =      "\uE03d";
-const kControl =   "\uE009";
-const kAlt =       "\uE00A";
+const kDeleteKey =  "\uE017";
+const kArrowRight = "\uE014";
+const kShift =      "\uE008";
+const kMeta =       "\uE03d";
+const kControl =    "\uE009";
+const kAlt =        "\uE00A";
 
 let selection = getSelection();
 let editor = document.querySelector("div[contenteditable]");
@@ -98,6 +99,13 @@ function sendDeleteKey(modifier) {
       .keyDown(kDeleteKey)
       .keyUp(kDeleteKey)
       .keyUp(modifier)
+      .send();
+}
+
+function sendArrowRightKey() {
+  return new test_driver.Actions()
+      .keyDown(kArrowRight)
+      .keyUp(kArrowRight)
       .send();
 }
 
@@ -762,6 +770,46 @@ promise_test(async () => {
   });
   checkGetTargetRangesOfInputOnDoNothing();
 }, 'Delete at "<table><caption>{}<br></caption><tr><td>cell</td></tr></table>"');
+
+// If caret is not adjacent of deleting character, browser may not delete the
+// character, but update the caret position for next deletion.
+promise_test(async () => {
+  reset();
+  editor.innerHTML = "<p>hello&#x5E9;&#x5DC;&#x5D5;&#x5DD;</p>";
+  let text1 = editor.querySelector("p").firstChild;
+  let text2 = text1.nextSibling;
+  selection.collapse(text1, 4);
+  await sendArrowRightKey();
+  await sendDeleteKey();
+  assert_in_array(editor.innerHTML, ["<p>hello\u05E9\u05DC\u05D5\u05DD</p>",
+                                     "<p>hello\u05DC\u05D5\u05DD</p>",
+                                     "<p>hello\u05E9\u05DC\u05D5</p>"]);
+  if (editor.innerHTML === "<p>hello\u05E9\u05DC\u05D5\u05DD</p>") {
+    checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+      startContainer: text2 ? text2 : text1,
+      startOffset: text2 ? 0 : 5,
+      endContainer: text2 ? text2 : text1,
+      endOffset: text2 ? 0 : 5,
+    });
+    checkGetTargetRangesOfInputOnDoNothing();
+  } else if (editor.innerHTML === "<p>hello\u05DC\u05D5\u05DD</p>") {
+    checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+      startContainer: text2 ? text2: text1,
+      startOffset: text2 ? 0 : 5,
+      endContainer: text2 ? text2 : text1,
+      endOffset: text2 ? 1 : 6,
+    });
+    checkGetTargetRangesOfInputOnDeleteSomething();
+  } else {
+    checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+      startContainer: text2 ? text2: text1,
+      startOffset: text2 ? 3 : 8,
+      endContainer: text2 ? text2 : text1,
+      endOffset: text2 ? 4 : 9,
+    });
+    checkGetTargetRangesOfInputOnDeleteSomething();
+  }
+}, 'Delete at "<p>hello[]&#x5E9;&#x5DC;&#x5D5;&#x5DD;</p>"');
 
 // The following tests check whether the range returned from
 // `beforeinput[0].getTargetRanges()` is modified or different range is

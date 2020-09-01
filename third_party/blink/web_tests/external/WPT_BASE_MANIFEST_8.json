@@ -202234,7 +202234,7 @@
      []
     ],
     "README.md": [
-     "60bbea3f3b97921780f8c4ad1e4847cdeaaff32f",
+     "e19a0ba6c7448e9a069fb1a5eb9d80c18b733aff",
      []
     ],
     "dedicated-worker": {
@@ -208945,7 +208945,7 @@
       []
      ],
      "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
-      "7968f85556da5f0881b2ca3a60c1d32fd4522b1c",
+      "d245355a7776e640e121ce89eadf322613119376",
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
@@ -208957,7 +208957,7 @@
       []
      ],
      "idlharness.worker-expected.txt": [
-      "760a80f904d3ffbd221287135b49470ce3d3a338",
+      "30bd14b7ab67d6e9bfb6cb128f9d9e7f4e287597",
       []
      ],
      "new-harness.js": [
@@ -230600,12 +230600,6 @@
      }
     },
     "pservers": {
-     "parsing": {
-      "stop-color-invalid-expected.txt": [
-       "571f48d10188a25053e9e3ca06f5528b9dfb23e1",
-       []
-      ]
-     },
      "reftests": {
       "gradient-inheritance-not-in-rendertree-01.tentative.svg": [
        "8f80b2d94456da9db42e9dee7dbf08d57d533088",
@@ -237467,7 +237461,7 @@
         []
        ],
        "executormarionette.py": [
-        "e0e6aba0f57853e863355a308ade56c24575da72",
+        "f2a1b598f47b1e2510ebb78f8b5e231a77ef2ba5",
         []
        ],
        "executoropera.py": [
@@ -312780,13 +312774,6 @@
       {}
      ]
     ],
-    "idlharness.html": [
-     "2935927fd325f1de6624136e79e311138ad5dce9",
-     [
-      null,
-      {}
-     ]
-    ],
     "request-accept.htm": [
      "6032cb6ff35589d195705424907f6c7cde09251b",
      [
@@ -339377,7 +339364,7 @@
       ]
      ],
      "idlharness.https.html": [
-      "05b1f69ebb91c9a5789f28b4508648c62644f2c9",
+      "1a95e481da550d624eaaa0800377648bbc742edb",
       [
        "html/dom/idlharness.https.html?exclude=(Document|Window|HTML.*)",
        {
@@ -339398,7 +339385,7 @@
       ]
      ],
      "idlharness.worker.js": [
-      "feddaf54c9235dbb766f79990f729c8e441cbbec",
+      "872657d383cc5dbe43c26a3c05d5a64bc7c6e2d4",
       [
        "html/dom/idlharness.worker.html",
        {}
@@ -356677,7 +356664,7 @@
      ]
     ],
     "input-events-get-target-ranges-backspace.tentative.html": [
-     "de598dda0f7083431641ac2df7527fc377552054",
+     "2a166710f548654ce0795b1bf9f455d46825a2c6",
      [
       null,
       {
@@ -356686,7 +356673,7 @@
      ]
     ],
     "input-events-get-target-ranges-forwarddelete.tentative.html": [
-     "1ed6860f14c76f04795ff1c83d139cbb8d4f28fb",
+     "18e10ac660d570299c86c8c4d656e11615a973fd",
      [
       null,
       {

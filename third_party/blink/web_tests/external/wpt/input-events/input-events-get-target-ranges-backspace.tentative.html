@@ -9,6 +9,7 @@
 <div contenteditable></div>
 <script>
 const kBackspaceKey = "\uE003";
+const kArrowLeft =    "\uE012";
 const kShift =        "\uE008";
 const kMeta =         "\uE03d";
 const kControl =      "\uE009";
@@ -98,6 +99,13 @@ function sendBackspaceKey(modifier) {
       .keyDown(kBackspaceKey)
       .keyUp(kBackspaceKey)
       .keyUp(modifier)
+      .send();
+}
+
+function sendArrowLeftKey() {
+  return new test_driver.Actions()
+      .keyDown(kArrowLeft)
+      .keyUp(kArrowLeft)
       .send();
 }
 
@@ -766,6 +774,46 @@ promise_test(async () => {
   });
   checkGetTargetRangesOfInputOnDoNothing();
 }, 'Backspace at "<p>abc</p><table><caption>{}<br></caption><tr><td>cell</td></tr></table>"');
+
+// If caret is not adjacent of deleting character, browser may not delete the
+// character, but update the caret position for next deletion.
+promise_test(async () => {
+  reset();
+  editor.innerHTML = "<p>&#x5E9;&#x5DC;&#x5D5;&#x5DD;hello</p>";
+  let text1 = editor.querySelector("p").firstChild;
+  let text2 = text1.nextSibling;
+  selection.collapse(text2 ? text2 : text1, text2 ? 1 : 5);
+  await sendArrowLeftKey();
+  await sendBackspaceKey();
+  assert_in_array(editor.innerHTML, ["<p>\u05E9\u05DC\u05D5\u05DDhello</p>",
+                                     "<p>\u05DC\u05D5\u05DDhello</p>",
+                                     "<p>\u05E9\u05DC\u05D5hello</p>"]);
+  if (editor.innerHTML === "<p>\u05E9\u05DC\u05D5\u05DDhello</p>") {
+    checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+      startContainer: text2 ? text2 : text1,
+      startOffset: text2 ? 0 : 4,
+      endContainer: text2 ? text2 : text1,
+      endOffset: text2 ? 0 : 4,
+    });
+    checkGetTargetRangesOfInputOnDoNothing();
+  } else if (editor.innerHTML === "<p>\u05DC\u05D5\u05DDhello</p>") {
+    checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+      startContainer: text1,
+      startOffset: 0,
+      endContainer: text1,
+      endOffset: 1,
+    });
+    checkGetTargetRangesOfInputOnDeleteSomething();
+  } else {
+    checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+      startContainer: text1,
+      startOffset: 3,
+      endContainer: text1,
+      endOffset: 4,
+    });
+    checkGetTargetRangesOfInputOnDeleteSomething();
+  }
+}, 'Backspace at "<p>&#x5E9;&#x5DC;&#x5D5;&#x5DD;[]hello</p>"');
 
 // The following tests check whether the range returned from
 // `beforeinput[0].getTargetRanges()` is modified or different range is
