@@ -53,17 +53,12 @@ void TabSearchButton::FrameColorsChanged() {
 
 void TabSearchButton::ButtonPressed(views::Button* sender,
                                     const ui::Event& event) {
-  if (bubble_)
-    return;
-  bubble_ = TabSearchBubbleView::CreateTabSearchBubble(
-      tab_strip()->controller()->GetProfile(), this);
-  observed_bubble_widget_.Add(bubble_);
-
-  // Hold the pressed lock while the |bubble_| is active.
-  pressed_lock_ = menu_button_controller_->TakeLock();
-
-  base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
-                                GetActionForEvent(event));
+  // Only log the open action if it resulted in creating a new instance of the
+  // Tab Search bubble.
+  if (ShowTabSearchBubble()) {
+    base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
+                                  GetActionForEvent(event));
+  }
 }
 
 void TabSearchButton::OnWidgetClosing(views::Widget* widget) {
@@ -72,6 +67,18 @@ void TabSearchButton::OnWidgetClosing(views::Widget* widget) {
   bubble_ = nullptr;
   pressed_lock_.reset();
   tab_strip()->OnTabSearchBubbleClosed();
+}
+
+bool TabSearchButton::ShowTabSearchBubble() {
+  if (bubble_)
+    return false;
+  bubble_ = TabSearchBubbleView::CreateTabSearchBubble(
+      tab_strip()->controller()->GetProfile(), this);
+  observed_bubble_widget_.Add(bubble_);
+
+  // Hold the pressed lock while the |bubble_| is active.
+  pressed_lock_ = menu_button_controller_->TakeLock();
+  return true;
 }
 
 bool TabSearchButton::IsBubbleVisible() const {

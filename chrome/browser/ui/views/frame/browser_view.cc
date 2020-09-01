@@ -2622,12 +2622,12 @@ const views::Widget* BrowserView::GetWidget() const {
 }
 
 void BrowserView::CreateTabSearchBubble() {
-  // TODO(tluk): This should be triggering the TabSearchButton in the tab strip
-  // rather than creating the Tab Search bubble directly.
-  TabSearchBubbleView::CreateTabSearchBubble(browser_->profile(),
-                                             tabstrip_->tab_search_button());
-  base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
-                                TabSearchOpenAction::kKeyboardShortcut);
+  // Only log the open action if it resulted in creating a new instance of the
+  // Tab Search bubble.
+  if (tabstrip_->tab_search_button()->ShowTabSearchBubble()) {
+    base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
+                                  TabSearchOpenAction::kKeyboardShortcut);
+  }
 }
 
 void BrowserView::RevealTabStripIfNeeded() {
