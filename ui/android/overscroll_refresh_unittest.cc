@@ -269,15 +269,13 @@ TEST_F(OverscrollRefreshTest, OverscrollBehaviorYAutoTriggersStart) {
 
 TEST_F(OverscrollRefreshTest, OverscrollBehaviorYContainPreventsTriggerStart) {
   auto ob = cc::OverscrollBehavior();
-  ob.y = cc::OverscrollBehavior::OverscrollBehaviorType::
-      kOverscrollBehaviorTypeContain;
+  ob.y = cc::OverscrollBehavior::Type::kContain;
   TestOverscrollBehavior(ob, gfx::Vector2dF(0, 10), false);
 }
 
 TEST_F(OverscrollRefreshTest, OverscrollBehaviorYNonePreventsTriggerStart) {
   auto ob = cc::OverscrollBehavior();
-  ob.y = cc::OverscrollBehavior::OverscrollBehaviorType::
-      kOverscrollBehaviorTypeNone;
+  ob.y = cc::OverscrollBehavior::Type::kNone;
   TestOverscrollBehavior(ob, gfx::Vector2dF(0, 10), false);
 }
 
@@ -287,15 +285,13 @@ TEST_F(OverscrollRefreshTest, OverscrollBehaviorXAutoTriggersStart) {
 
 TEST_F(OverscrollRefreshTest, OverscrollBehaviorXContainPreventsTriggerStart) {
   auto ob = cc::OverscrollBehavior();
-  ob.x = cc::OverscrollBehavior::OverscrollBehaviorType::
-      kOverscrollBehaviorTypeContain;
+  ob.x = cc::OverscrollBehavior::Type::kContain;
   TestOverscrollBehavior(ob, gfx::Vector2dF(10, 0), false);
 }
 
 TEST_F(OverscrollRefreshTest, OverscrollBehaviorXNonePreventsTriggerStart) {
   auto ob = cc::OverscrollBehavior();
-  ob.x = cc::OverscrollBehavior::OverscrollBehaviorType::
-      kOverscrollBehaviorTypeNone;
+  ob.x = cc::OverscrollBehavior::Type::kNone;
   TestOverscrollBehavior(ob, gfx::Vector2dF(10, 0), false);
 }
 

@@ -145,9 +145,7 @@ BOOL forceMagicMouse = NO;
 
 - (void)onOverscrolled:(const ui::DidOverscrollParams&)params {
   _overscrollTriggeredByRenderer =
-      params.overscroll_behavior.x ==
-      cc::OverscrollBehavior::OverscrollBehaviorType::
-          kOverscrollBehaviorTypeAuto;
+      params.overscroll_behavior.x == cc::OverscrollBehavior::Type::kAuto;
 }
 
 - (void)beginGestureWithEvent:(NSEvent*)event {

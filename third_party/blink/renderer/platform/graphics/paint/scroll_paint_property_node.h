@@ -59,8 +59,8 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     // The scrolling element id is stored directly on the scroll node and not
     // on the associated TransformPaintPropertyNode used for scroll offset.
     CompositorElementId compositor_element_id;
-    cc::OverscrollBehavior overscroll_behavior = cc::OverscrollBehavior(
-        cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto);
+    cc::OverscrollBehavior overscroll_behavior =
+        cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto);
     base::Optional<cc::SnapContainerData> snap_container_data;
 
     PaintPropertyChangeType ComputeChange(const State& other) const {
@@ -117,11 +117,11 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
 
   const ScrollPaintPropertyNode& Unalias() const = delete;
 
-  cc::OverscrollBehavior::OverscrollBehaviorType OverscrollBehaviorX() const {
+  cc::OverscrollBehavior::Type OverscrollBehaviorX() const {
     return state_.overscroll_behavior.x;
   }
 
-  cc::OverscrollBehavior::OverscrollBehaviorType OverscrollBehaviorY() const {
+  cc::OverscrollBehavior::Type OverscrollBehaviorY() const {
     return state_.overscroll_behavior.y;
   }
 

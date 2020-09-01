@@ -218,17 +218,13 @@ void OverscrollControllerAndroid::OnOverscrolled(
   gfx::Vector2dF overscroll_location = gfx::ScaleVector2d(
       params.causal_event_viewport_point.OffsetFromOrigin(), scale_factor);
 
-  if (params.overscroll_behavior.x ==
-      cc::OverscrollBehavior::OverscrollBehaviorType::
-          kOverscrollBehaviorTypeNone) {
+  if (params.overscroll_behavior.x == cc::OverscrollBehavior::Type::kNone) {
     accumulated_overscroll.set_x(0);
     latest_overscroll_delta.set_x(0);
     current_fling_velocity.set_x(0);
   }
 
-  if (params.overscroll_behavior.y ==
-      cc::OverscrollBehavior::OverscrollBehaviorType::
-          kOverscrollBehaviorTypeNone) {
+  if (params.overscroll_behavior.y == cc::OverscrollBehavior::Type::kNone) {
     accumulated_overscroll.set_y(0);
     latest_overscroll_delta.set_y(0);
     current_fling_velocity.set_y(0);

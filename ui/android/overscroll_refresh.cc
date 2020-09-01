@@ -80,8 +80,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
   bool navigate_forward = false;
   if (ydelta > 0 && in_y_direction) {
     // Pull-to-refresh. Check overscroll-behavior-y
-    if (behavior.y != cc::OverscrollBehavior::OverscrollBehaviorType::
-                          kOverscrollBehaviorTypeAuto) {
+    if (behavior.y != cc::OverscrollBehavior::Type::kAuto) {
       Reset();
       return;
     }
@@ -90,8 +89,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
              (scroll_begin_x_ < edge_width_ ||
               viewport_width_ - scroll_begin_x_ < edge_width_)) {
     // Swipe-to-navigate. Check overscroll-behavior-x
-    if (behavior.x != cc::OverscrollBehavior::OverscrollBehaviorType::
-                          kOverscrollBehaviorTypeAuto) {
+    if (behavior.x != cc::OverscrollBehavior::Type::kAuto) {
       Reset();
       return;
     }

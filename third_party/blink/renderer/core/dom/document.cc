@@ -2277,8 +2277,7 @@ void Document::PropagateStyleToViewport() {
         overflow_anchor = EOverflowAnchor::kAuto;
 
       if (IsInMainFrame()) {
-        using OverscrollBehaviorType =
-            cc::OverscrollBehavior::OverscrollBehaviorType;
+        using OverscrollBehaviorType = cc::OverscrollBehavior::Type;
         GetPage()->GetChromeClient().SetOverscrollBehavior(
             *GetFrame(),
             cc::OverscrollBehavior(static_cast<OverscrollBehaviorType>(

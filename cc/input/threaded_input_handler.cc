@@ -419,8 +419,7 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   scroll_result.unused_scroll_delta = unused_root_delta;
   scroll_result.overscroll_behavior =
       scroll_state->is_scroll_chain_cut()
-          ? OverscrollBehavior(OverscrollBehavior::OverscrollBehaviorType::
-                                   kOverscrollBehaviorTypeNone)
+          ? OverscrollBehavior(OverscrollBehavior::Type::kNone)
           : ActiveTree().overscroll_behavior();
 
   if (scroll_result.did_scroll) {
@@ -1792,9 +1791,9 @@ bool ThreadedInputHandler::CanPropagate(ScrollNode* scroll_node,
                                         float x,
                                         float y) {
   return (x == 0 || scroll_node->overscroll_behavior.x ==
-                        OverscrollBehavior::kOverscrollBehaviorTypeAuto) &&
+                        OverscrollBehavior::Type::kAuto) &&
          (y == 0 || scroll_node->overscroll_behavior.y ==
-                        OverscrollBehavior::kOverscrollBehaviorTypeAuto);
+                        OverscrollBehavior::Type::kAuto);
 }
 
 ScrollNode* ThreadedInputHandler::FindNodeToLatch(ScrollState* scroll_state,

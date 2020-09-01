@@ -1961,11 +1961,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
 
       state.compositor_element_id = scrollable_area->GetScrollElementId();
 
-      state.overscroll_behavior = cc::OverscrollBehavior(
-          static_cast<cc::OverscrollBehavior::OverscrollBehaviorType>(
-              box.StyleRef().OverscrollBehaviorX()),
-          static_cast<cc::OverscrollBehavior::OverscrollBehaviorType>(
-              box.StyleRef().OverscrollBehaviorY()));
+      state.overscroll_behavior =
+          cc::OverscrollBehavior(static_cast<cc::OverscrollBehavior::Type>(
+                                     box.StyleRef().OverscrollBehaviorX()),
+                                 static_cast<cc::OverscrollBehavior::Type>(
+                                     box.StyleRef().OverscrollBehaviorY()));
 
       state.snap_container_data =
           box.GetScrollableArea() &&

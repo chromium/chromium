@@ -417,9 +417,8 @@ TEST_F(ElasticOverscrollControllerExponentialTest, OverscrollBehavior) {
   SendGestureScrollBegin(NonMomentumPhase);
   SendGestureScrollUpdate(
       NonMomentumPhase, Vector2dF(10, 0), Vector2dF(10, 0),
-      cc::OverscrollBehavior(
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeNone,
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto));
+      cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kNone,
+                             cc::OverscrollBehavior::Type::kAuto));
   EXPECT_EQ(0, helper_.set_stretch_amount_count());
   EXPECT_EQ(0.f, helper_.StretchAmount().x());
   EXPECT_EQ(0.f, helper_.StretchAmount().y());
@@ -433,9 +432,8 @@ TEST_F(ElasticOverscrollControllerExponentialTest, OverscrollBehavior) {
   SendGestureScrollBegin(NonMomentumPhase);
   SendGestureScrollUpdate(
       NonMomentumPhase, Vector2dF(0, 10), Vector2dF(0, 10),
-      cc::OverscrollBehavior(
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeNone,
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto));
+      cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kNone,
+                             cc::OverscrollBehavior::Type::kAuto));
   EXPECT_EQ(2, helper_.set_stretch_amount_count());
   EXPECT_EQ(0.f, helper_.StretchAmount().x());
   EXPECT_LT(0.f, helper_.StretchAmount().y());
@@ -449,9 +447,8 @@ TEST_F(ElasticOverscrollControllerExponentialTest, OverscrollBehavior) {
   SendGestureScrollBegin(NonMomentumPhase);
   SendGestureScrollUpdate(
       NonMomentumPhase, Vector2dF(0, 10), Vector2dF(0, 10),
-      cc::OverscrollBehavior(
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto,
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeNone));
+      cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto,
+                             cc::OverscrollBehavior::Type::kNone));
   EXPECT_EQ(3, helper_.set_stretch_amount_count());
   EXPECT_EQ(0.f, helper_.StretchAmount().x());
   EXPECT_EQ(0.f, helper_.StretchAmount().y());
@@ -465,9 +462,8 @@ TEST_F(ElasticOverscrollControllerExponentialTest, OverscrollBehavior) {
   SendGestureScrollBegin(NonMomentumPhase);
   SendGestureScrollUpdate(
       NonMomentumPhase, Vector2dF(10, 0), Vector2dF(10, 0),
-      cc::OverscrollBehavior(
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto,
-          cc::OverscrollBehavior::kOverscrollBehaviorTypeNone));
+      cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto,
+                             cc::OverscrollBehavior::Type::kNone));
   EXPECT_EQ(5, helper_.set_stretch_amount_count());
   EXPECT_LT(0.f, helper_.StretchAmount().x());
   EXPECT_EQ(0.f, helper_.StretchAmount().y());

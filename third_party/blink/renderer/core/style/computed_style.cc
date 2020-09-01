@@ -2343,11 +2343,11 @@ bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {
                      });
 }
 
-STATIC_ASSERT_ENUM(cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto,
+STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
                    EOverscrollBehavior::kAuto);
-STATIC_ASSERT_ENUM(cc::OverscrollBehavior::kOverscrollBehaviorTypeContain,
+STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,
                    EOverscrollBehavior::kContain);
-STATIC_ASSERT_ENUM(cc::OverscrollBehavior::kOverscrollBehaviorTypeNone,
+STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kNone,
                    EOverscrollBehavior::kNone);
 
 }  // namespace blink

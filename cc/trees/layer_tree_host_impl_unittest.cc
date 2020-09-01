@@ -2918,9 +2918,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 30), CurrentScrollOffset(scroll_layer));
   EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
-  GetScrollNode(overflow)->overscroll_behavior =
-      OverscrollBehavior(OverscrollBehavior::kOverscrollBehaviorTypeContain,
-                         OverscrollBehavior::kOverscrollBehaviorTypeAuto);
+  GetScrollNode(overflow)->overscroll_behavior = OverscrollBehavior(
+      OverscrollBehavior::Type::kContain, OverscrollBehavior::Type::kAuto);
 
   DrawFrame();
 
@@ -2982,9 +2981,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // Changing scroll-boundary-behavior to y axis.
-  GetScrollNode(overflow)->overscroll_behavior =
-      OverscrollBehavior(OverscrollBehavior::kOverscrollBehaviorTypeAuto,
-                         OverscrollBehavior::kOverscrollBehaviorTypeContain);
+  GetScrollNode(overflow)->overscroll_behavior = OverscrollBehavior(
+      OverscrollBehavior::Type::kAuto, OverscrollBehavior::Type::kContain);
 
   DrawFrame();
 
@@ -3047,9 +3045,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
   // Gesture scroll should latch to the first scroller that has non-auto
   // overscroll-behavior.
-  GetScrollNode(overflow)->overscroll_behavior =
-      OverscrollBehavior(OverscrollBehavior::kOverscrollBehaviorTypeContain,
-                         OverscrollBehavior::kOverscrollBehaviorTypeContain);
+  GetScrollNode(overflow)->overscroll_behavior = OverscrollBehavior(
+      OverscrollBehavior::Type::kContain, OverscrollBehavior::Type::kContain);
 
   DrawFrame();
 

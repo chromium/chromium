@@ -255,16 +255,13 @@ std::string GetHTMLStringForReferrerPolicy(const std::string& meta_policy,
 const int kTouchPointPadding = 32;
 
 const cc::OverscrollBehavior kOverscrollBehaviorAuto =
-    cc::OverscrollBehavior(cc::OverscrollBehavior::OverscrollBehaviorType::
-                               kOverscrollBehaviorTypeAuto);
+    cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto);
 
 const cc::OverscrollBehavior kOverscrollBehaviorContain =
-    cc::OverscrollBehavior(cc::OverscrollBehavior::OverscrollBehaviorType::
-                               kOverscrollBehaviorTypeContain);
+    cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kContain);
 
 const cc::OverscrollBehavior kOverscrollBehaviorNone =
-    cc::OverscrollBehavior(cc::OverscrollBehavior::OverscrollBehaviorType::
-                               kOverscrollBehaviorTypeNone);
+    cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kNone);
 
 class WebFrameTest : public testing::Test {
  protected:

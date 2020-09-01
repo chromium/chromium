@@ -195,11 +195,9 @@ void ElasticOverscrollController::Overscroll(
 
   // Don't allow overscrolling in a direction that has
   // OverscrollBehaviorTypeNone.
-  if (overscroll_behavior_.x ==
-      cc::OverscrollBehavior::kOverscrollBehaviorTypeNone)
+  if (overscroll_behavior_.x == cc::OverscrollBehavior::Type::kNone)
     adjusted_overscroll_delta.set_x(0);
-  if (overscroll_behavior_.y ==
-      cc::OverscrollBehavior::kOverscrollBehaviorTypeNone)
+  if (overscroll_behavior_.y == cc::OverscrollBehavior::Type::kNone)
     adjusted_overscroll_delta.set_y(0);
 
   // Require a minimum of 10 units of overscroll before starting the rubber-band

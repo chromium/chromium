@@ -14,9 +14,8 @@
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT COMPONENT_EXPORT(CC_IPC)
 
-IPC_ENUM_TRAITS_MAX_VALUE(
-    cc::OverscrollBehavior::OverscrollBehaviorType,
-    cc::OverscrollBehavior::OverscrollBehaviorType::kOverscrollBehaviorTypeMax)
+IPC_ENUM_TRAITS_MAX_VALUE(cc::OverscrollBehavior::Type,
+                          cc::OverscrollBehavior::Type::kMax)
 
 IPC_STRUCT_TRAITS_BEGIN(cc::OverscrollBehavior)
   IPC_STRUCT_TRAITS_MEMBER(x)

@@ -519,13 +519,13 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
   // Do not start a new gesture-nav if overscroll-behavior-x is not auto.
   if ((new_mode == OverscrollMode::OVERSCROLL_EAST ||
        new_mode == OverscrollMode::OVERSCROLL_WEST) &&
-      behavior.x != cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto) {
+      behavior.x != cc::OverscrollBehavior::Type::kAuto) {
     return;
   }
 
   // Do not start a new pull-to-refresh if overscroll-behavior-y is not auto.
   if (new_mode == OverscrollMode::OVERSCROLL_SOUTH &&
-      behavior.y != cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto) {
+      behavior.y != cc::OverscrollBehavior::Type::kAuto) {
     return;
   }
 
