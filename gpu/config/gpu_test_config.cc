@@ -191,8 +191,14 @@ void GPUTestBotConfig::AddGPUVendor(uint32_t gpu_vendor) {
 }
 
 bool GPUTestBotConfig::SetGPUInfo(const GPUInfo& gpu_info) {
-  if (gpu_info.gpu.device_id == 0 || gpu_info.gpu.vendor_id == 0)
+  if (gpu_info.gpu.vendor_id == 0)
     return false;
+#if !defined(OS_MAC)
+  // ARM-based Mac GPUs do not have valid PCI device IDs.
+  // https://crbug.com/1110421
+  if (gpu_info.gpu.device_id == 0)
+    return false;
+#endif
   ClearGPUVendor();
   AddGPUVendor(gpu_info.gpu.vendor_id);
   set_gpu_device_id(gpu_info.gpu.device_id);
