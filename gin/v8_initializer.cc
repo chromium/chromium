@@ -263,6 +263,13 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
                                sizeof(no_reclaim_unmodified_wrappers) - 1);
   }
 
+  if (!base::FeatureList::IsEnabled(features::kV8LocalHeaps)) {
+    // The --local-heaps flag is enabled by default, so we need to explicitly
+    // disabled it if kV8LocalHeaps is disabled.
+    static constexpr char no_local_heaps[] = "--no-local-heaps";
+    v8::V8::SetFlagsFromString(no_local_heaps, sizeof(no_local_heaps) - 1);
+  }
+
   if (IsolateHolder::kStrictMode == mode) {
     static const char use_strict[] = "--use_strict";
     v8::V8::SetFlagsFromString(use_strict, sizeof(use_strict) - 1);
