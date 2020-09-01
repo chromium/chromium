@@ -2655,7 +2655,7 @@ ci.fyi_coverage_builder(
 
 ci.fyi_coverage_builder(
     name = "ios-simulator-code-coverage",
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     console_view_entry = ci.console_view_entry(
         category = "code_coverage",
         short_name = "ios",
@@ -2804,7 +2804,7 @@ ci.fyi_ios_builder(
         category = "iOS|iOS13",
         short_name = "dev",
     ),
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
@@ -2818,7 +2818,7 @@ ci.fyi_ios_builder(
         category = "iOS|iOS13",
         short_name = "sdk13",
     ),
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
@@ -2847,7 +2847,7 @@ ci.fyi_ios_builder(
         category = "iOS|iOS14",
         short_name = "sdk14",
     ),
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
@@ -4318,7 +4318,7 @@ ci.mac_ios_builder(
 ci.mac_ios_builder(
     name = "ios-simulator-noncq",
     caches = [
-        xcode_cache.x12a8189h,
+        xcode_cache.x12a8189n,
     ],
     console_view_entry = ci.console_view_entry(
         category = "ios|default",
