@@ -5837,13 +5837,13 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
   <!-- Strings for the System-proxy notifications informing the user that System-proxy required credentials-->
   <message name="IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_TITLE" desc="Title of notification displayed when System-proxy requires user credentials to authenticate to a remote web proxy.">
-    Sign in to connect to the proxy
+    Sign in
   </message>
   <message name="IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_BODY" desc="Body of notification informing user that they need to provide username and password for System-proxy to connect to a remote web proxy.">
-    The proxy <ph name="PROXY">$1<ex>http://localhost:3128</ex></ph> requires you to authenticate with a username and password
+    Your username and password are required for the proxy <ph name="PROXY">$1<ex>http://localhost:3128</ex></ph> so the admin can configure your network
   </message>
   <message name="IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_ERROR_TITLE" desc="Title of notification displayed when System-proxy requires new user credentials because the previous ones were incorrect.">
-    Unable to connect to the proxy, please try again
+    Can’t connect to proxy, please sign in again
   </message>
 
 </grit-part>
