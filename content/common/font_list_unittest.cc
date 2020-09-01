@@ -51,7 +51,7 @@ TEST(FontList, GetFontList) {
         EXPECT_TRUE(HasFontWithName(*fonts, "MS Gothic", "MS Gothic"));
         EXPECT_TRUE(HasFontWithName(*fonts, "Segoe UI", "Segoe UI"));
         EXPECT_TRUE(HasFontWithName(*fonts, "Verdana", "Verdana"));
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
         EXPECT_TRUE(HasFontWithName(*fonts, "Arimo", "Arimo"));
 #else
         EXPECT_TRUE(HasFontWithName(*fonts, "Arial", "Arial"));
