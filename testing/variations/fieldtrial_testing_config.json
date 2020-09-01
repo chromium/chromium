@@ -2261,22 +2261,6 @@
             ]
         }
     ],
-    "EduCoexistence": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EduCoexistence",
-                        "EduCoexistenceConsentLog"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableAutofillPasswordReauthIOS": [
         {
             "platforms": [
@@ -7588,27 +7572,6 @@
                     "name": "WebContentsOcclusionWin",
                     "enable_features": [
                         "WebContentsOcclusion"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebPaymentsPerMethodCanMakePaymentQuota": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebPaymentsPerMethodCanMakePaymentQuota"
                     ]
                 }
             ]
