@@ -1,6 +1,9 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="../deep_linking_behavior.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../router.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../settings_shared_css.html">
 
@@ -8,10 +11,13 @@
   <template>
     <style include="settings-shared"></style>
 <if expr="_google_chrome">
-    <settings-toggle-button pref="{{prefs.cros.metrics.reportingEnabled}}"
+    <settings-toggle-button
+        id="enable-logging"
         class="hr"
+        pref="{{prefs.cros.metrics.reportingEnabled}}"
         label="$i18n{enableLogging}"
-        sub-label="$i18n{enableLoggingDesc}">
+        sub-label="$i18n{enableLoggingDesc}"
+        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]">
     </settings-toggle-button>
 </if>
     <template is="dom-if" if="[[showSuggestedContentToggle_]]">
@@ -25,9 +31,11 @@
       </settings-toggle-button>
     </template>
     <settings-toggle-button
+        id="enable-verified-access"
         class="hr"
         pref="{{prefs.cros.device.attestation_for_content_protection_enabled}}"
-        label="$i18n{enableContentProtectionAttestation}">
+        label="$i18n{enableContentProtectionAttestation}"
+        deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
     </settings-toggle-button>
   </template>
   <script src="os_privacy_page.js"></script>

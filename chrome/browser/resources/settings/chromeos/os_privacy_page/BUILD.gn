@@ -11,6 +11,9 @@ js_type_check("closure_compile") {
 
 js_library("os_privacy_page") {
   deps = [
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "../..:router",
     "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//ui/webui/resources/js:load_time_data",
   ]
@@ -24,6 +27,9 @@ js_type_check("closure_compile_module") {
 js_library("os_privacy_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/os_privacy_page.m.js" ]
   deps = [
+    "..:deep_linking_behavior.m",
+    "..:os_route.m",
+    "../..:router.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
