@@ -268,10 +268,21 @@ std::vector<RasterTestConfig> const kTestCases = {
 #endif  // defined(ENABLE_CC_VULKAN_TESTS)
 };
 
-INSTANTIATE_TEST_SUITE_P(B,
-                         LayerTreeHostBlendingPixelTest,
-                         ::testing::Combine(::testing::ValuesIn(kTestCases),
-                                            ::testing::ValuesIn(kBlendModes)));
+INSTANTIATE_TEST_SUITE_P(
+    B,
+    LayerTreeHostBlendingPixelTest,
+    ::testing::Combine(::testing::ValuesIn(kTestCases),
+                       ::testing::ValuesIn(kBlendModes)),
+    // Print a parameter label for blending tests. Use this instead of
+    // PrintTupleToStringParamName() because the PrintTo(SkBlendMode)
+    // implementation wasn't being used on some platforms (crbug.com/1123758).
+    [](const testing::TestParamInfo<
+        testing::tuple<RasterTestConfig, SkBlendMode>>& info) -> std::string {
+      std::stringstream ss;
+      PrintTo(testing::get<0>(info.param), &ss);
+      ss << "_" << SkBlendMode_Name(testing::get<1>(info.param));
+      return ss.str();
+    });
 
 TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithRoot) {
   const int kRootWidth = 2;
