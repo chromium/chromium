@@ -48,7 +48,6 @@ class CORE_EXPORT LayoutSlider final : public LayoutFlexibleBox {
       bool first_line,
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const override;
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
 };
 
 template <>

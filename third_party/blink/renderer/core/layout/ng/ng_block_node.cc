@@ -389,6 +389,25 @@ bool CanUseCachedIntrinsicInlineSizes(const MinMaxSizesInput& input,
   return true;
 }
 
+bool IsContentMinimumInlineSizeZero(const NGBlockNode& block_node) {
+  const auto* node = block_node.GetLayoutBox()->GetNode();
+  const auto* marquee_element = DynamicTo<HTMLMarqueeElement>(node);
+  if (marquee_element && marquee_element->IsHorizontal())
+    return true;
+  if (!block_node.Style().LogicalWidth().IsPercentOrCalc())
+    return false;
+  if (IsA<HTMLSelectElement>(node))
+    return true;
+  if (const auto* input_element = DynamicTo<HTMLInputElement>(node)) {
+    const AtomicString& type = input_element->type();
+    if (type == input_type_names::kFile)
+      return true;
+    if (type == input_type_names::kRange)
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
@@ -847,16 +866,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       NGLayoutAlgorithmParams(*this, fragment_geometry, *constraint_space),
       adjusted_input);
 
-  const auto* node = box_->GetNode();
-  const auto* html_marquee_element = DynamicTo<HTMLMarqueeElement>(node);
-  const auto* html_input_element = DynamicTo<HTMLInputElement>(node);
-  if (UNLIKELY((html_marquee_element && html_marquee_element->IsHorizontal()) ||
-               (IsA<HTMLSelectElement>(node) ||
-                (html_input_element &&
-                 html_input_element->type() == input_type_names::kFile)) &&
-                   Style().LogicalWidth().IsPercentOrCalc())) {
+  if (UNLIKELY(IsContentMinimumInlineSizeZero(*this)))
     result.sizes.min_size = border_padding.InlineSum();
-  }
 
   bool depends_on_percentage_block_size =
       uses_input_percentage_block_size &&

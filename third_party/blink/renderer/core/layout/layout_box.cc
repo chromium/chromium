@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
+#include "third_party/blink/renderer/core/layout/layout_slider.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
@@ -155,6 +156,12 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
   }
   return LayoutUnit(
       ceilf(std::max(min_default_label_width, default_label_width)));
+}
+
+LayoutUnit SliderIntrinsicInlineSize(const HTMLInputElement& input,
+                                     const LayoutBox& box) {
+  return LayoutUnit(LayoutSlider::kDefaultTrackLength *
+                    box.StyleRef().EffectiveZoom());
 }
 
 LayoutUnit ListBoxDefaultItemHeight(const LayoutBox& box) {
@@ -1005,8 +1012,13 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
     return MenuListIntrinsicInlineSize(*select, *this);
   }
   auto* input = DynamicTo<HTMLInputElement>(GetNode());
-  if (UNLIKELY(input && input->type() == input_type_names::kFile))
-    return FileUploadControlIntrinsicInlineSize(*input, *this);
+  if (UNLIKELY(input)) {
+    const AtomicString& type = input->type();
+    if (type == input_type_names::kFile)
+      return FileUploadControlIntrinsicInlineSize(*input, *this);
+    else if (type == input_type_names::kRange)
+      return SliderIntrinsicInlineSize(*input, *this);
+  }
   return kIndefiniteSize;
 }
 

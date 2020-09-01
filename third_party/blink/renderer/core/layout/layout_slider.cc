@@ -45,14 +45,4 @@ LayoutUnit LayoutSlider::BaselinePosition(
   return Size().Height() + MarginTop();
 }
 
-MinMaxSizes LayoutSlider::ComputeIntrinsicLogicalWidths() const {
-  MinMaxSizes sizes;
-  sizes += BorderAndPaddingLogicalWidth() + ScrollbarLogicalWidth();
-  sizes.max_size +=
-      LayoutUnit(kDefaultTrackLength * StyleRef().EffectiveZoom());
-  if (!StyleRef().Width().IsPercentOrCalc())
-    sizes.min_size = sizes.max_size;
-  return sizes;
-}
-
 }  // namespace blink
