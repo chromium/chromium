@@ -1556,6 +1556,10 @@ TEST_F('OSSettingsLanguagesPageTest', 'InputMethods', function() {
   mocha.grep(assert(os_languages_page_tests.TestNames.InputMethods)).run();
 });
 
+TEST_F('OSSettingsLanguagesPageTest', 'RecordMetrics', function() {
+  mocha.grep(assert(os_languages_page_tests.TestNames.RecordMetrics)).run();
+});
+
 // eslint-disable-next-line no-var
 var OSSettingsLanguagesPageV2Test = class extends OSSettingsBrowserTest {
   /** @override */
