@@ -57,14 +57,6 @@ class MojoMjpegDecodeAcceleratorService
               mojo::ScopedSharedBufferHandle output_handle,
               uint32_t output_buffer_size,
               DecodeCallback callback) override;
-  void DecodeWithFD(int32_t buffer_id,
-                    mojo::ScopedHandle input_fd,
-                    uint32_t input_buffer_size,
-                    int32_t coded_size_width,
-                    int32_t coded_size_height,
-                    mojo::ScopedHandle output_fd,
-                    uint32_t output_buffer_size,
-                    DecodeWithFDCallback callback) override;
   void DecodeWithDmaBuf(int32_t task_id,
                         mojo::ScopedHandle src_dmabuf_fd,
                         uint32_t src_size,
