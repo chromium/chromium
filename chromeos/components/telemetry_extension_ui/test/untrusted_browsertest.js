@@ -240,6 +240,11 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         maxBrightness: 536880912,
         brightness: 436880912,
       }]
+    },
+    fanResult: {
+      fanInfo: [{
+        speedRpm: 999880912,
+      }]
     }
   });
 });

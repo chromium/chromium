@@ -287,6 +287,16 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         chromeos::cros_healthd::mojom::BacklightResult::NewBacklightInfo(
             std::move(infos));
   }
+  {
+    auto fan_info = chromeos::cros_healthd::mojom::FanInfo::New();
+    fan_info->speed_rpm = 999880912;
+
+    std::vector<chromeos::cros_healthd::mojom::FanInfoPtr> infos;
+    infos.push_back(std::move(fan_info));
+
+    telemetry_info->fan_result =
+        chromeos::cros_healthd::mojom::FanResult::NewFanInfo(std::move(infos));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 
