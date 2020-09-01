@@ -31,11 +31,13 @@ constexpr base::TimeDelta kTabsChangeDelay =
 TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
-    content::WebUI* web_ui)
+    content::WebUI* web_ui,
+    Delegate* delegate)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(chrome::FindLastActive()),
       web_ui_(web_ui),
+      delegate_(delegate),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE,
           kTabsChangeDelay,
@@ -147,6 +149,10 @@ void TabSearchPageHandler::SwitchToTab(
   const TabDetails& details = optional_details.value();
   details.tab_strip_model->ActivateTabAt(details.index);
   details.browser->window()->Activate();
+}
+
+void TabSearchPageHandler::ShowUI() {
+  delegate_->ShowUI();
 }
 
 tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(

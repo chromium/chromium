@@ -56,10 +56,19 @@ void TabSearchUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void TabSearchUI::AddShowUICallback(base::OnceClosure callback) {
+  show_ui_callback_ = std::move(callback);
+}
+
+void TabSearchUI::ShowUI() {
+  if (show_ui_callback_)
+    std::move(show_ui_callback_).Run();
+}
+
 void TabSearchUI::CreatePageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) {
   DCHECK(page);
   page_handler_ = std::make_unique<TabSearchPageHandler>(
-      std::move(receiver), std::move(page), web_ui());
+      std::move(receiver), std::move(page), web_ui(), this);
 }
