@@ -30,6 +30,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="InflationSpeedComparison">
+  <variant name=".FasterThanInflation"/>
+  <variant name=".SlowerThanInflation"/>
+</variants>
+
 <variants name="LocalStorageSizes">
   <variant name="" summary=""/>
   <variant name="1MBTo5MB" summary="DB size between 1MB and 5MB."/>
@@ -90278,6 +90283,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>qinmin@chromium.org</owner>
   <summary>
     Android: Records various counts when requesting the storage permission.
+  </summary>
+</histogram>
+
+<histogram
+    name="MobileFre.CctTos.EnterprisePolicyCheckSpeed{InflationSpeedComparison}"
+    units="ms" expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records the time it takes from object initialization to the
+    enterprise policy check completing. This check is often skipped when its
+    result becomes irrelevant. Histogram has suffixes depending if the timing
+    was faster or slower than inflation.
+  </summary>
+  <token key="InflationSpeedComparison" variants="InflationSpeedComparison"/>
+</histogram>
+
+<histogram
+    name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed{InflationSpeedComparison}"
+    units="ms" expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records the time it takes from object initialization to the device
+    ownership check completing. Histogram has suffixes depending if the timing
+    was faster or slower than inflation.
+  </summary>
+  <token key="InflationSpeedComparison" variants="InflationSpeedComparison"/>
+</histogram>
+
+<histogram name="MobileFre.CctTos.LoadingDuration" units="ms"
+    expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records how long it takes to load the enterprise CCT/ToS fragment.
   </summary>
 </histogram>
 
