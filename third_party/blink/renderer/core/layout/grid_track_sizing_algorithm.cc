@@ -1268,9 +1268,9 @@ LayoutUnit GridTrackSizingAlgorithm::ItemSizeForTrackSizeComputationPhase(
     LayoutBox& grid_item) const {
   switch (phase) {
     case kResolveIntrinsicMinimums:
-    case kResolveIntrinsicMaximums:
       return strategy_->MinSizeForChild(grid_item);
     case kResolveContentBasedMinimums:
+    case kResolveIntrinsicMaximums:
       return strategy_->MinContentForChild(grid_item);
     case kResolveMaxContentMinimums:
     case kResolveMaxContentMaximums:
