@@ -28,6 +28,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -232,6 +233,10 @@ ProfileImpl::ProfileImpl(const std::string& name)
 }
 
 ProfileImpl::~ProfileImpl() {
+  // Destroy any scheduled WebContents. These implicitly refer to the
+  // BrowserContext and must be destroyed before the BrowserContext.
+  web_contents_to_delete_.clear();
+
   if (browser_context_) {
     BrowserContextDependencyManager::GetInstance()
         ->DestroyBrowserContextServices(browser_context_.get());
@@ -258,6 +263,16 @@ void ProfileImpl::AddProfileObserver(ProfileObserver* observer) {
 
 void ProfileImpl::RemoveProfileObserver(ProfileObserver* observer) {
   GetObservers().RemoveObserver(observer);
+}
+
+void ProfileImpl::DeleteWebContentsSoon(
+    std::unique_ptr<content::WebContents> web_contents) {
+  if (web_contents_to_delete_.empty()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ProfileImpl::DeleteScheduleWebContents,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+  web_contents_to_delete_.push_back(std::move(web_contents));
 }
 
 BrowserContextImpl* ProfileImpl::GetBrowserContext() {
@@ -665,6 +680,10 @@ int ProfileImpl::GetNumberOfBrowsers() {
   const auto& browsers = BrowserList::GetInstance()->browsers();
   return std::count_if(browsers.begin(), browsers.end(),
                        [this](BrowserImpl* b) { return b->profile() == this; });
+}
+
+void ProfileImpl::DeleteScheduleWebContents() {
+  web_contents_to_delete_.clear();
 }
 
 }  // namespace weblayer

@@ -882,4 +882,32 @@ public class NavigationTest {
             tab.getBrowser().destroyTab(tab);
         });
     }
+
+    /**
+     * This test verifies calling destroyTab() from within onNavigationFailed doesn't crash.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(86)
+    public void testDestroyTabInNavigationFailed() throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        runOnUiThreadBlocking(() -> {
+            NavigationController navigationController = activity.getTab().getNavigationController();
+            navigationController.registerNavigationCallback(new NavigationCallback() {
+                @Override
+                public void onNavigationFailed(Navigation navigation) {
+                    navigationController.unregisterNavigationCallback(this);
+                    Tab tab = activity.getTab();
+                    tab.getBrowser().destroyTab(tab);
+                    callbackHelper.notifyCalled();
+                }
+            });
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getTab().getNavigationController().navigate(
+                    Uri.parse("http://localhost:7/non_existent"));
+        });
+        callbackHelper.waitForFirst();
+    }
 }

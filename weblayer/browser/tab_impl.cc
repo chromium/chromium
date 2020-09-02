@@ -301,8 +301,7 @@ TabImpl::TabImpl(ProfileImpl* profile,
 
   sessions::SessionTabHelper::CreateForWebContents(
       web_contents_.get(),
-      base::BindRepeating(&TabImpl::GetSessionServiceTabHelperDelegate,
-                          base::Unretained(this)));
+      base::BindRepeating(&TabImpl::GetSessionServiceTabHelperDelegate));
 
   permissions::PermissionRequestManager::CreateForWebContents(
       web_contents_.get());
@@ -361,6 +360,18 @@ TabImpl::~TabImpl() {
 #endif
   Observe(nullptr);
   web_contents_->SetDelegate(nullptr);
+  if (navigation_controller_->should_delay_web_contents_deletion()) {
+    // Some user-data on WebContents directly or indirectly references this.
+    // Remove that linkage to avoid use-after-free.
+    web_contents_->RemoveUserData(&kWebContentsUserDataKey);
+    web_contents_->RemoveUserData(
+        autofill::ContentAutofillDriverFactory::
+            kContentAutofillDriverFactoryWebContentsUserDataKey);
+    // Have Profile handle the task posting to ensure the WebContents is
+    // deleted before Profile. To do otherwise means it would be possible for
+    // the Profile to outlive the WebContents, which is problematic (crash).
+    profile_->DeleteWebContentsSoon(std::move(web_contents_));
+  }
   web_contents_.reset();
   GetTabs().erase(this);
 }
@@ -568,7 +579,8 @@ static void JNI_TabImpl_DeleteTab(JNIEnv* env, jlong tab) {
   TabImpl* tab_impl = reinterpret_cast<TabImpl*>(tab);
   DCHECK(tab_impl);
   DCHECK(tab_impl->browser());
-  tab_impl->browser()->DestroyTab(tab_impl);
+  // Don't call Browser::DestroyTab() as it calls back to the java side.
+  tab_impl->browser()->DestroyTabFromJava(tab_impl);
 }
 
 ScopedJavaLocalRef<jobject> TabImpl::GetWebContents(JNIEnv* env) {
@@ -1246,10 +1258,11 @@ find_in_page::FindTabHelper* TabImpl::GetFindTabHelper() {
   return find_in_page::FindTabHelper::FromWebContents(web_contents_.get());
 }
 
+// static
 sessions::SessionTabHelperDelegate* TabImpl::GetSessionServiceTabHelperDelegate(
     content::WebContents* web_contents) {
-  DCHECK_EQ(web_contents, web_contents_.get());
-  return browser_ ? browser_->browser_persister() : nullptr;
+  TabImpl* tab = FromWebContents(web_contents);
+  return (tab && tab->browser_) ? tab->browser_->browser_persister() : nullptr;
 }
 
 bool TabImpl::SetDataInternal(const std::map<std::string, std::string>& data) {

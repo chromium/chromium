@@ -345,7 +345,7 @@ class TabImpl : public Tab,
   // Returns the FindTabHelper for the page, or null if none exists.
   find_in_page::FindTabHelper* GetFindTabHelper();
 
-  sessions::SessionTabHelperDelegate* GetSessionServiceTabHelperDelegate(
+  static sessions::SessionTabHelperDelegate* GetSessionServiceTabHelperDelegate(
       content::WebContents* web_contents);
 
 #if defined(OS_ANDROID)

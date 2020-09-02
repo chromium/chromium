@@ -14,6 +14,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "weblayer/public/browser.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/navigation_observer.h"
@@ -68,8 +69,11 @@ class NavigationObserverImpl : public NavigationObserver {
       completed_callback_.Run(navigation);
   }
   void NavigationFailed(Navigation* navigation) override {
-    if (failed_callback_)
-      failed_callback_.Run(navigation);
+    // As |this| may be deleted when running the callback, the callback must be
+    // copied before running. To do otherwise results in use-after-free.
+    auto callback = failed_callback_;
+    if (callback)
+      callback.Run(navigation);
   }
 
  private:
@@ -255,6 +259,25 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, StopInOnStart) {
       }));
   GetNavigationController()->Navigate(
       embedded_test_server()->GetURL("/simple_page.html"));
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, DestroyTabInNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Tab* new_tab = shell()->browser()->CreateTab();
+  base::RunLoop run_loop;
+  std::unique_ptr<NavigationObserverImpl> observer =
+      std::make_unique<NavigationObserverImpl>(
+          new_tab->GetNavigationController());
+  observer->SetFailedCallback(
+      base::BindLambdaForTesting([&](Navigation* navigation) {
+        observer.reset();
+        shell()->browser()->DestroyTab(new_tab);
+        run_loop.Quit();
+      }));
+  new_tab->GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("/simple_pageX.html"));
 
   run_loop.Run();
 }
