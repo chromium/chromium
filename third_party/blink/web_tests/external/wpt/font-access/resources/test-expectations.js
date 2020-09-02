@@ -228,6 +228,23 @@ const WIN_FONTS = [
   },
 ];
 
+const LINUX_FONTS = [
+  {
+    postscriptName: 'Ahem',
+    fullName: 'Ahem',
+    family: 'Ahem',
+    label: TEST_SIZE_CATEGORY.small,
+    expectedTables: [
+      // Tables related to TrueType.
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
+      'gasp',
+    ],
+  },
+];
+
 // The OpenType spec mentions that the follow tables are required for a font to
 // function correctly. We'll have all the tables listed except for OS/2, which
 // is not present in all fonts on Mac OS.
@@ -266,6 +283,9 @@ function getEnumerationTestSet(options) {
     output = MAC_FONTS;
   } else if (platform === 'win') {
     output = WIN_FONTS;
+  } else if (platform === 'linux') {
+    // Also includes ChromeOS, on which navigator.platform starts with 'Linux'.
+    output = LINUX_FONTS;
   }
 
   if (options.labelFilter.length && output.length) {
@@ -429,7 +449,9 @@ function promiseDocumentReady() {
 }
 
 function isPlatformSupported() {
-  if (navigator.platform.indexOf('Mac') != -1 || navigator.platform.indexOf('Win') != -1) {
+  if (navigator.platform.indexOf('Mac') != -1 ||
+      navigator.platform.indexOf('Win') != -1 ||
+      navigator.platform.indexOf('Linux') != -1) {
     return true;
   }
   return false;

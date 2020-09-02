@@ -2076,6 +2076,8 @@ source_set("browser") {
 
   if (is_linux || is_chromeos) {
     sources += [
+      "font_access/font_enumeration_cache_fontconfig.cc",
+      "font_access/font_enumeration_cache_fontconfig.h",
       "font_service.cc",
       "font_service.h",
       "zygote_host/zygote_host_impl_linux.cc",

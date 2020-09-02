@@ -172,7 +172,7 @@ TEST_F(FontAccessManagerImplTest, UserActivationPermissionManagerTriggered) {
 }
 #endif
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 namespace {
 
 void ValidateFontEnumerationBasic(FontEnumerationStatus status,

@@ -12,6 +12,8 @@
 
 #if defined(OS_WIN)
 #include "content/browser/font_access/font_enumeration_cache_win.h"
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "content/browser/font_access/font_enumeration_cache_fontconfig.h"
 #endif
 
 namespace content {
@@ -23,6 +25,8 @@ FontEnumerationCache::~FontEnumerationCache() = default;
 FontEnumerationCache* FontEnumerationCache::GetInstance() {
 #if defined(OS_WIN)
   return FontEnumerationCacheWin::GetInstance();
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+  return FontEnumerationCacheFontconfig::GetInstance();
 #endif
 
   return nullptr;
