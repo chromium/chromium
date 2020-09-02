@@ -43,6 +43,22 @@
              file="cr_components/chromeos/cellular_setup/final_page_success_2x.png"
              type="BINDATA"
              compress="gzip" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_PSIM_1X_PNG"
+             file="cr_components/chromeos/cellular_setup/psim_1x.png"
+             type="BINDATA"
+             compress="gzip" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_PSIM_2X_PNG"
+             file="cr_components/chromeos/cellular_setup/psim_2x.png"
+             type="BINDATA"
+             compress="gzip" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ESIM_1X_PNG"
+             file="cr_components/chromeos/cellular_setup/esim_1x.png"
+             type="BINDATA"
+             compress="gzip" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ESIM_2X_PNG"
+             file="cr_components/chromeos/cellular_setup/esim_2x.png"
+             type="BINDATA"
+             compress="gzip" />
 
     <!-- NetworkIcon Images -->
     <include name="IDR_CR_ELEMENTS_CELLULAR_0_WITH_X_SVG"

@@ -303,8 +303,14 @@
   <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_PSIM_LABEL" desc="Label for physical SIM (pSIM) setup flow card radio select button during cellular setup">
     Physical SIM
   </message>
+  <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_PSIM_MESSAGE" desc="Message for physical SIM (pSIM) setup flow card radio select button during cellular setup, informing the user to insert a physical SIM.">
+    Insert SIM before proceeding
+  </message>
   <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_ESIM_LABEL" desc="Label for electronic SIM (eSIM) setup flow card radio select button during cellular setup">
     eSim setup
+  </message>
+  <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_ESIM_MESSAGE" desc="Message for electronic SIM (eSIM) setup flow card radio select button during cellular setup, informing the user to establish an internet connection before proceeding.">
+    Establish an internet connection first
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
     Scan QR code using device camera or enter activation code provided by your carrier

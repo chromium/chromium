@@ -12,19 +12,79 @@
       #setup-flow-select-radio {
         display: flex;
         flex-direction: row;
+        justify-content: center;
       }
+
+      .sim-icon-container {
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 60px;
+      }
+
+      #psim-icon-container {
+        background-image: -webkit-image-set(
+            url(psim_1x.png) 1x,
+            url(psim_2x.png) 2x);
+      }
+
+      #esim-icon-container {
+        background-image: -webkit-image-set(
+            url(esim_1x.png) 1x,
+            url(esim_2x.png) 2x);
+      }
+
+      .sim-btn-text {
+        text-align: center;
+      }
+      .sim-btn-title {
+        font-weight: 600;  /* semibold */
+        margin-top: 15px;
+      }
+
+      .sim-btn-description {
+        margin-top: 10px;
+      }
+
     </style>
     <cr-radio-group
         name="setup-flow-selection"
         id="setup-flow-select-radio"
         selected="{{setupFlowSelection_}}"
         on-selected-changed="onSetupFlowRadioSelectedChange_">
-      <!-- TODO(crbug.com/1093185): Add icons for pSIM and eSIM-->
-      <cr-card-radio-button name="psim-flow-ui">
-        [[i18n('pSimFlowSetup')]]
+      <cr-card-radio-button
+          id="psim-flow-ui-btn"
+          name="psim-flow-ui"
+          aria-labeledby="psim-btn-title"
+          aria-describedby="psim-btn-descritpion">
+        <div id="psim-icon-container" class="sim-icon-container"></div>
+        <div id="psim-btn-title"
+            class="sim-btn-title sim-btn-text"
+            aria-hidden="true">
+          [[i18n('pSimFlowSetup')]]
+        </div>
+        <div id="psim-btn-descritpion"
+            class="sim-btn-description sim-btn-text"
+            aria-hidden="true">
+          [[i18n('pSimFlowSetupMessage')]]
+        </div>
       </cr-card-radio-button>
-      <cr-card-radio-button name="esim-flow-ui" >
-        [[i18n('eSimFlowSetup')]]
+      <cr-card-radio-button
+          id="esim-flow-ui-btn"
+          name="esim-flow-ui"
+          aria-labeledby="esim-btn-title"
+          aria-describedby="esim-btn-descritpion">
+        <div id="esim-icon-container" class="sim-icon-container"></div>
+        <div id="esim-btn-title"
+            class="sim-btn-title sim-btn-text"
+            aria-hidden="true">
+          [[i18n('eSimFlowSetup')]]
+        </div>
+        <div id="esim-btn-descrition"
+            class="sim-btn-description sim-btn-text"
+            aria-hidden="true">
+          [[i18n('eSimFlowSetupMessage')]]
+        </div>
       </cr-card-radio-button>
     </cr-radio-group>
   </template>
