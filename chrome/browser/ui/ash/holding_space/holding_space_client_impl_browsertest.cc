@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "base/bind_helpers.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
@@ -84,7 +85,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
   // Create a holding space item backed by a non-existing file.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, base::FilePath("foo"), GURL(),
-      std::make_unique<HoldingSpaceImage>(/*placeholder=*/gfx::ImageSkia()));
+      std::make_unique<HoldingSpaceImage>(
+          /*placeholder=*/gfx::ImageSkia(),
+          /*async_bitmap_resolver=*/base::DoNothing()));
 
   {
     // We expect `HoldingSpaceClient::OpenItem()` to fail when the backing file
@@ -103,7 +106,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
   holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, CreateTextFile(browser()->profile()),
       GURL(),
-      std::make_unique<HoldingSpaceImage>(/*placeholder=*/gfx::ImageSkia()));
+      std::make_unique<HoldingSpaceImage>(
+          /*placeholder=*/gfx::ImageSkia(),
+          /*async_bitmap_resolver=*/base::DoNothing()));
 
   {
     // We expect `HoldingSpaceClient::OpenItem()` to succeed when the backing

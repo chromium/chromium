@@ -48,6 +48,9 @@ class HoldingSpaceThumbnailLoader {
     const gfx::Size size;
   };
 
+  // Returns a weak pointer to this instance.
+  base::WeakPtr<HoldingSpaceThumbnailLoader> GetWeakPtr();
+
   using ImageCallback = base::OnceCallback<void(const SkBitmap* bitmap)>;
   // Starts a request for a thumbnail. `callback` called with the generated
   // bitmap. On error, the bitmap will be null.

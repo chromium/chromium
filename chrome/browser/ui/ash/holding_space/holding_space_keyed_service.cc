@@ -60,7 +60,8 @@ void HoldingSpaceKeyedService::AddPinnedFile(
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
       file_system_url.ToGURL(),
-      holding_space_util::ResolveImage(file_system_url.path())));
+      holding_space_util::ResolveImage(&thumbnail_loader_,
+                                       file_system_url.path())));
 }
 
 void HoldingSpaceKeyedService::RemovePinnedFile(
@@ -93,7 +94,7 @@ void HoldingSpaceKeyedService::AddScreenshot(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenshot, screenshot_file, file_system_url,
-      holding_space_util::ResolveImage(screenshot_file)));
+      holding_space_util::ResolveImage(&thumbnail_loader_, screenshot_file)));
 }
 
 void HoldingSpaceKeyedService::AddDownload(
@@ -105,7 +106,7 @@ void HoldingSpaceKeyedService::AddDownload(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, download_file, file_system_url,
-      holding_space_util::ResolveImage(download_file)));
+      holding_space_util::ResolveImage(&thumbnail_loader_, download_file)));
 }
 
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
@@ -140,7 +141,7 @@ void HoldingSpaceKeyedService::OnProfileReady() {
 
   // The `HoldingSpacePersistenceDelegate` manages holding space persistence.
   delegates_.push_back(std::make_unique<HoldingSpacePersistenceDelegate>(
-      profile_, &holding_space_model_,
+      profile_, &holding_space_model_, &thumbnail_loader_,
       /*item_restored_callback=*/
       base::BindRepeating(&HoldingSpaceKeyedService::AddItem,
                           weak_factory_.GetWeakPtr()),

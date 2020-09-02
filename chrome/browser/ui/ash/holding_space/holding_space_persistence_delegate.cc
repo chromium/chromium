@@ -19,9 +19,11 @@ constexpr char HoldingSpacePersistenceDelegate::kPersistencePath[];
 HoldingSpacePersistenceDelegate::HoldingSpacePersistenceDelegate(
     Profile* profile,
     HoldingSpaceModel* model,
+    HoldingSpaceThumbnailLoader* thumbnail_loader,
     ItemRestoredCallback item_restored_callback,
     ModelRestoredCallback model_restored_callback)
     : HoldingSpaceKeyedServiceDelegate(profile, model),
+      thumbnail_loader_(thumbnail_loader),
       item_restored_callback_(item_restored_callback),
       model_restored_callback_(std::move(model_restored_callback)) {}
 
@@ -92,7 +94,8 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
         base::Value::AsDictionaryValue(persisted_holding_space_item),
         base::BindOnce(&holding_space_util::ResolveFileSystemUrl,
                        base::Unretained(profile())),
-        base::BindOnce(&holding_space_util::ResolveImage)));
+        base::BindOnce(&holding_space_util::ResolveImage,
+                       base::Unretained(thumbnail_loader_))));
   }
 
   holding_space_util::PartitionItemsByExistence(

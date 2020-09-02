@@ -6,12 +6,12 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_IMAGE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback_forward.h"
 #include "base/observer_list.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
-// TODO(dmblack): Implement dynamic updating.
 // A wrapper around a `gfx::ImageSkia` that supports dynamic updates. When
 // updates occur or an instance is being destroyed, observers are notified.
 class ASH_PUBLIC_EXPORT HoldingSpaceImage {
@@ -28,7 +28,15 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
     virtual void OnHoldingSpaceImageDestroying(const HoldingSpaceImage*) {}
   };
 
-  explicit HoldingSpaceImage(const gfx::ImageSkia& placeholder);
+  // Returns a bitmap.
+  using BitmapCallback = base::OnceCallback<void(const SkBitmap*)>;
+
+  // Returns a bitmap asynchronously for a given size.
+  using AsyncBitmapResolver =
+      base::RepeatingCallback<void(const gfx::Size&, BitmapCallback)>;
+
+  HoldingSpaceImage(const gfx::ImageSkia& placeholder,
+                    AsyncBitmapResolver async_bitmap_resolver);
   HoldingSpaceImage(const HoldingSpaceImage&) = delete;
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
   ~HoldingSpaceImage();

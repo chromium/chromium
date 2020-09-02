@@ -4,8 +4,11 @@
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 
+#include <map>
 #include <memory>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skia_util.h"
 
@@ -15,8 +18,13 @@ namespace ash {
 
 class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
  public:
-  explicit ImageSkiaSource(const gfx::ImageSkia& placeholder)
-      : placeholder_(placeholder) {}
+  ImageSkiaSource(HoldingSpaceImage* owner,
+                  const gfx::ImageSkia& placeholder,
+                  AsyncBitmapResolver async_bitmap_resolver)
+      : owner_(owner),
+        placeholder_(placeholder),
+        async_bitmap_resolver_(async_bitmap_resolver) {}
+
   ImageSkiaSource(const ImageSkiaSource&) = delete;
   ImageSkiaSource& operator=(const ImageSkiaSource&) = delete;
   ~ImageSkiaSource() override = default;
@@ -24,17 +32,42 @@ class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
  private:
   // gfx::ImageSkiaSource:
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    // TODO(dmblack): Retrieve thumbnail and call `NotifyUpdated()` when ready.
+    // Use a cached representation when possible.
+    if (base::Contains(cache_, scale))
+      return cache_[scale].GetRepresentation(scale);
+
+    // When missing the cache, asynchronously resolve the bitmap for `scale`.
+    async_bitmap_resolver_.Run(
+        gfx::ScaleToCeiledSize(placeholder_.size(), scale),
+        base::BindOnce(&ImageSkiaSource::CacheImageForScale,
+                       weak_factory_.GetWeakPtr(), scale));
+
+    // Use `placeholder_` while we wait for the async bitmap to resolve.
     return placeholder_.GetRepresentation(scale);
   }
 
+  void CacheImageForScale(float scale, const SkBitmap* bitmap) {
+    if (bitmap) {
+      cache_[scale].AddRepresentation(gfx::ImageSkiaRep(*bitmap, scale));
+      owner_->NotifyUpdated(scale);
+    }
+  }
+
+  HoldingSpaceImage* const owner_;
   const gfx::ImageSkia placeholder_;
+  AsyncBitmapResolver async_bitmap_resolver_;
+  std::map<float, gfx::ImageSkia> cache_;
+
+  base::WeakPtrFactory<ImageSkiaSource> weak_factory_{this};
 };
 
 // HoldingSpaceImage -----------------------------------------------------------
 
-HoldingSpaceImage::HoldingSpaceImage(const gfx::ImageSkia& placeholder)
-    : image_skia_(std::make_unique<ImageSkiaSource>(placeholder),
+HoldingSpaceImage::HoldingSpaceImage(const gfx::ImageSkia& placeholder,
+                                     AsyncBitmapResolver async_bitmap_resolver)
+    : image_skia_(std::make_unique<ImageSkiaSource>(/*owner=*/this,
+                                                    placeholder,
+                                                    async_bitmap_resolver),
                   placeholder.size()) {}
 
 HoldingSpaceImage::~HoldingSpaceImage() {

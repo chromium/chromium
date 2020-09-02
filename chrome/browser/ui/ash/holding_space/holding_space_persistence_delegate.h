@@ -18,6 +18,8 @@ class PrefRegistrySyncable;
 namespace ash {
 
 class HoldingSpaceItem;
+class HoldingSpaceThumbnailLoader;
+
 using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
 
 // A delegate of `HoldingSpaceKeyedService` tasked with persistence of holding
@@ -41,6 +43,7 @@ class HoldingSpacePersistenceDelegate
   HoldingSpacePersistenceDelegate(
       Profile* profile,
       HoldingSpaceModel* model,
+      HoldingSpaceThumbnailLoader* thumbnail_loader,
       ItemRestoredCallback item_restored_callback,
       ModelRestoredCallback model_restored_callback);
   HoldingSpacePersistenceDelegate(const HoldingSpacePersistenceDelegate&) =
@@ -63,6 +66,9 @@ class HoldingSpacePersistenceDelegate
   void RestoreModelByExistence(
       std::vector<HoldingSpaceItemPtr> existing_items,
       std::vector<HoldingSpaceItemPtr> non_existing_items);
+
+  // Owned by `HoldingSpaceKeyedService`.
+  HoldingSpaceThumbnailLoader* const thumbnail_loader_;
 
   // Callback to invoke when an item has been restored from persistence.
   ItemRestoredCallback item_restored_callback_;

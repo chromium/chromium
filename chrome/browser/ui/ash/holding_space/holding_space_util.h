@@ -21,6 +21,7 @@ namespace ash {
 
 class HoldingSpaceImage;
 class HoldingSpaceItem;
+class HoldingSpaceThumbnailLoader;
 
 using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
 using HoldingSpaceItemPtrList = std::vector<HoldingSpaceItemPtr>;
@@ -48,6 +49,7 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);
 
 // Resolves the image associated with the specified `file_path`.
 std::unique_ptr<HoldingSpaceImage> ResolveImage(
+    HoldingSpaceThumbnailLoader* thumbnail_loader,
     const base::FilePath& file_path);
 
 }  // namespace holding_space_util

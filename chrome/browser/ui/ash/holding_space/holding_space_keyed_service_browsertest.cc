@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "base/bind_helpers.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
@@ -104,7 +105,9 @@ const HoldingSpaceItem* AddHoldingSpaceItem(Profile* profile) {
 
   holding_space_model->AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, CreateTextFile(profile), GURL(),
-      std::make_unique<HoldingSpaceImage>(/*placeholder=*/gfx::ImageSkia())));
+      std::make_unique<HoldingSpaceImage>(
+          /*placeholder=*/gfx::ImageSkia(),
+          /*async_bitmap_resolver=*/base::DoNothing())));
 
   run_loop.Run();
   return result;

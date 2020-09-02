@@ -347,11 +347,13 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
 
   const HoldingSpaceItem* item_1 = model->items()[0].get();
   EXPECT_EQ(item_1_full_path, item_1->file_path());
-  EXPECT_TRUE(
-      gfx::BitmapsAreEqual(*holding_space_util::ResolveImage(item_1_full_path)
-                                ->image_skia()
-                                .bitmap(),
-                           *item_1->image().image_skia().bitmap()));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           holding_space_service->thumbnail_loader_for_testing(),
+           item_1_full_path)
+           ->image_skia()
+           .bitmap(),
+      *item_1->image().image_skia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(
@@ -361,11 +363,13 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
 
   const HoldingSpaceItem* item_2 = model->items()[1].get();
   EXPECT_EQ(item_2_full_path, item_2->file_path());
-  EXPECT_TRUE(
-      gfx::BitmapsAreEqual(*holding_space_util::ResolveImage(item_2_full_path)
-                                ->image_skia()
-                                .bitmap(),
-                           *item_2->image().image_skia().bitmap()));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           holding_space_service->thumbnail_loader_for_testing(),
+           item_2_full_path)
+           ->image_skia()
+           .bitmap(),
+      *item_2->image().image_skia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(
@@ -421,7 +425,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
 
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         type, file_path, file_system_url,
-        holding_space_util::ResolveImage(file_path));
+        holding_space_util::ResolveImage(
+            primary_holding_space_service->thumbnail_loader_for_testing(),
+            file_path));
 
     // We do not persist `kDownload` type items.
     if (type != HoldingSpaceItem::Type::kDownload)
@@ -459,6 +465,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
   ScopedDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
 
+  HoldingSpaceKeyedService* const primary_holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+
   HoldingSpaceModel::ItemList restored_holding_space_items;
   base::ListValue persisted_holding_space_items_after_restoration;
 
@@ -480,7 +489,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
           auto fresh_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, file, file_system_url,
-                  holding_space_util::ResolveImage(file));
+                  holding_space_util::ResolveImage(
+                      primary_holding_space_service
+                          ->thumbnail_loader_for_testing(),
+                      file));
 
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());
@@ -500,7 +512,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
                   type,
                   base::FilePath(base::UnguessableToken::Create().ToString()),
                   GURL(),
-                  std::make_unique<HoldingSpaceImage>(gfx::ImageSkia()));
+                  std::make_unique<HoldingSpaceImage>(
+                      /*placeholder=*/gfx::ImageSkia(),
+                      /*async_bitmap_resolver=*/base::DoNothing()));
 
           // NOTE: While the `stale_holding_space_item` is persisted here, we do
           // *not* expect it to be restored or to be persisted after model

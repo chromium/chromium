@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "base/bind_helpers.h"
 #include "base/test/bind_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -36,7 +37,8 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
 
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), file_path, file_system_url,
-      std::make_unique<HoldingSpaceImage>(placeholder));
+      std::make_unique<HoldingSpaceImage>(
+          placeholder, /*async_bitmap_resolver=*/base::DoNothing()));
 
   const base::DictionaryValue serialized_holding_space_item =
       holding_space_item->Serialize();
@@ -48,7 +50,8 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
           [&](const base::FilePath& file_path) { return file_system_url; }),
       /*image_resolver=*/
       base::BindLambdaForTesting([&](const base::FilePath& file_path) {
-        return std::make_unique<HoldingSpaceImage>(placeholder);
+        return std::make_unique<HoldingSpaceImage>(
+            placeholder, /*async_bitmap_resolver=*/base::DoNothing());
       }));
 
   EXPECT_EQ(*deserialized_holding_space_item, *holding_space_item);
@@ -59,7 +62,8 @@ TEST_P(HoldingSpaceItemTest, DeserializeId) {
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"), GURL("file_system_url"),
       std::make_unique<HoldingSpaceImage>(
-          /*placeholder=*/gfx::test::CreateImageSkia(10, 10)));
+          /*placeholder=*/gfx::test::CreateImageSkia(10, 10),
+          /*async_bitmap_resolver=*/base::DoNothing()));
 
   const base::DictionaryValue serialized_holding_space_item =
       holding_space_item->Serialize();

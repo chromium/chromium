@@ -191,6 +191,11 @@ HoldingSpaceThumbnailLoader::ThumbnailRequest::ThumbnailRequest(
 
 HoldingSpaceThumbnailLoader::ThumbnailRequest::~ThumbnailRequest() = default;
 
+base::WeakPtr<HoldingSpaceThumbnailLoader>
+HoldingSpaceThumbnailLoader::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void HoldingSpaceThumbnailLoader::Load(const ThumbnailRequest& request,
                                        ImageCallback callback) {
   // Get the item's last modified time - this will be used for cache lookup in
