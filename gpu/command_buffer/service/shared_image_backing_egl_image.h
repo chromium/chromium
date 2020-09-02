@@ -82,10 +82,7 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
   const GLuint gl_format_;
   const GLuint gl_type_;
   gles2::Texture* source_texture_ = nullptr;
-
-#if DCHECK_IS_ON()
   gl::GLApi* created_on_context_;
-#endif
 
   // This class encapsulates the EGLImage object for android.
   scoped_refptr<gles2::NativeImageBuffer> egl_image_buffer_ GUARDED_BY(lock_);
