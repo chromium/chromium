@@ -227,6 +227,11 @@ idl_test(
       HTMLDirectoryElement: ['document.createElement("dir")'],
       HTMLFontElement: ['document.createElement("font")'],
       DOMStringList: ['location.ancestorOrigins'],
+      Storage: [
+        'localStorage',
+        'sessionStorage',
+      ],
+      StorageEvent: ['new StorageEvent("storage")']
     });
     idlArray.prevent_multiple_testing('HTMLElement');
     await waitForLoad;

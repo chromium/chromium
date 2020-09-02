@@ -326,6 +326,13 @@
        null,
        {}
       ]
+     ],
+     "placeholder-input-dynamic-crash.html": [
+      "28ab898a6d906bec3aab6891f1fe333d3ccf23f5",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-scroll-anchoring": {
@@ -82296,6 +82303,19 @@
        {}
       ]
      ],
+     "marker-hyphens.html": [
+      "a63e3deaf9be852bf4233eddf21c5b24b8747ee3",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-hyphens-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "marker-inherit-line-height.html": [
       "de34c2f7ae33654f6b19d65ba7b2acdf0bfc7b0f",
       [
@@ -82335,6 +82355,36 @@
        {}
       ]
      ],
+     "marker-letter-spacing.html": [
+      "8a89e1792159a6bf9b364aba96464c5f4eb91547",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-letter-spacing-ref-001.html",
+         "=="
+        ],
+        [
+         "/css/css-pseudo/marker-letter-spacing-ref-002.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-line-break.html": [
+      "7577822bce32335d6993d15f22850b95267d7e3b",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-line-break-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "marker-list-style-position.html": [
       "9b122bc3e9b6200fbf33c1c7d3da2ba155ff1691",
       [
@@ -82346,6 +82396,32 @@
         ],
         [
          "/css/css-pseudo/marker-list-style-position-ref-002.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-overflow-wrap.html": [
+      "29d9cf778493b365ec088c124cfe8b0e77b3c215",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-line-break-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-tab-size.html": [
+      "a521f58bc80c4445ac61714a4f099b7dadfbee4a",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-tab-size-ref.html",
          "=="
         ]
        ],
@@ -82437,6 +82513,32 @@
        [
         [
          "/css/css-pseudo/marker-unicode-bidi-normal-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-word-break.html": [
+      "4e3aeaebd88159cd0ac7b9a48c31151c4da99d3f",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-word-break-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-word-spacing.html": [
+      "a98f0bd7763f5bec7ccbabfe521b80cf0d7bc263",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-word-spacing-ref.html",
          "=="
         ]
        ],
@@ -183603,6 +183705,10 @@
       "a8fb980ff09cf8e326e6728976ac6dd8230866f3",
       []
      ],
+     "marker-hyphens-ref.html": [
+      "3f29ce441ff36ab04f01dd7d867b1ff486d63963",
+      []
+     ],
      "marker-inherit-line-height-ref.html": [
       "9bd8ca874a02bb4f9e87eeb347525e5ec6673ac2",
       []
@@ -183619,12 +183725,28 @@
       "bfae577499c5614d37ac3dc6ba695dbdf4457538",
       []
      ],
+     "marker-letter-spacing-ref-001.html": [
+      "e5f4aedfba7844fc5c95c7cb7beb9fb7c22caab1",
+      []
+     ],
+     "marker-letter-spacing-ref-002.html": [
+      "b4022699063aca5049d94c17e6520aaab3799112",
+      []
+     ],
+     "marker-line-break-ref.html": [
+      "75625c1ea2895d27baf9ca8afa9f7d32a91f2d14",
+      []
+     ],
      "marker-list-style-position-ref-001.html": [
       "2593194d298fe3ee8bb14ffe9923a654a19d5c8a",
       []
      ],
      "marker-list-style-position-ref-002.html": [
       "1c21789c079d3b97f7fc8628d6918453cbd04669",
+      []
+     ],
+     "marker-tab-size-ref.html": [
+      "2985ac2eeba46348f51eb3c5a9717ab8e38edd83",
       []
      ],
      "marker-text-combine-upright-ref.html": [
@@ -183639,17 +183761,25 @@
       "6f959dad676467abcd5696013ac99ff888b4d4f1",
       []
      ],
+     "marker-word-break-ref.html": [
+      "683eaf1c7f64f687cedf565728d63743662577b7",
+      []
+     ],
+     "marker-word-spacing-ref.html": [
+      "a81aeee44d67045cdf2102004d767b24958e23ca",
+      []
+     ],
      "outside-marker-paint-order-ref.html": [
       "441a354732fc6690ea0d8af93dd33d57c8049374",
       []
      ],
      "parsing": {
       "marker-supported-properties-expected.txt": [
-       "f84471ff6f80b6e8d49d3e10cc19d4896a5d5fa3",
+       "3430211bf92369cf5bcba5b59e30dc9f2ff67491",
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
-       "72f0fb51fb36867684b26665da7ea4d66e77f989",
+       "039be5c3af8f47e68cf9b51b600ec79d46169c9c",
        []
       ]
      },
@@ -208972,7 +209102,7 @@
       []
      ],
      "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
-      "9456b47d68450f85e5b2e0db32ce24b0f5cfa306",
+      "e49b7f058f3c6fb706ff354a40affe4a9b327e04",
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
@@ -241187,7 +241317,7 @@
      []
     ],
     "README.md": [
-     "6b70aa5ac9d3d6a9d4a42013455d3992fbb5b9e9",
+     "2bbc5fbfb6a1df0db59cca67435e9c39937cac02",
      []
     ],
     "eventTestHarness.js": [
@@ -281026,14 +281156,14 @@
      ],
      "parsing": {
       "marker-supported-properties-in-animation.html": [
-       "bc26e202696e9f3892fcacc92ca96a473ca86807",
+       "c93f6cad16f926cc8b829f610b3eb0f78bdc4984",
        [
         null,
         {}
        ]
       ],
       "marker-supported-properties.html": [
-       "669d040671bc62862721583cf6917b754b317a89",
+       "a2fc0bfff84fece13f573eb373dbeca6b7f80894",
        [
         null,
         {}
@@ -339405,7 +339535,7 @@
       ]
      ],
      "idlharness.https.html": [
-      "1a95e481da550d624eaaa0800377648bbc742edb",
+      "d79e09b46affacf4f981152109e11e8bd44eb158",
       [
        "html/dom/idlharness.https.html?exclude=(Document|Window|HTML.*)",
        {
@@ -367352,7 +367482,7 @@
      ]
     ],
     "secure-payment-confirmation.https.html": [
-     "539870b5d43bfb74226906464245ad6374385005",
+     "64f5144e52a4ce1c952bfd4002dc8c3fada3c4e6",
      [
       null,
       {}
@@ -368212,7 +368342,7 @@
       ]
      ],
      "pointerevent_mouse-pointer-preventdefault.html": [
-      "1165fa3d14847892a2037364d589129e37cfc521",
+      "c4990ff5f9db0bee3ca2638b43f8bba89119555a",
       [
        null,
        {
@@ -381037,7 +381167,7 @@
      ]
     ],
     "sanitizer.tentative.html": [
-     "c8ed24aebbe490638c1be4c3abc0189b0937afc7",
+     "6daeaace5dee1f54ea50c294974c92da112867a5",
      [
       null,
       {}
@@ -410947,24 +411077,6 @@
       null,
       {
        "timeout": "long"
-      }
-     ]
-    ],
-    "idlharness.window.js": [
-     "177eb607f7b7774a20e0cde57032720b8efde520",
-     [
-      "webstorage/idlharness.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ]
-       ]
       }
      ]
     ],
