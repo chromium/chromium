@@ -8,6 +8,7 @@
 
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/screens/update_screen.h"
 #include "chrome/grit/chromium_strings.h"
@@ -23,6 +24,11 @@ constexpr StaticOobeScreenId UpdateView::kScreenId;
 UpdateScreenHandler::UpdateScreenHandler(JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path("login.UpdateScreen.userActed");
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+  CHECK(accessibility_manager);
+  accessibility_subscription_ = accessibility_manager->RegisterCallback(
+      base::Bind(&UpdateScreenHandler::OnAccessibilityStatusChanged,
+                 base::Unretained(this)));
 }
 
 UpdateScreenHandler::~UpdateScreenHandler() {
@@ -50,6 +56,35 @@ void UpdateScreenHandler::Unbind() {
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
+void UpdateScreenHandler::OnAccessibilityStatusChanged(
+    const AccessibilityStatusEventDetails& details) {
+  if (details.notification_type == ACCESSIBILITY_MANAGER_SHUTDOWN) {
+    accessibility_subscription_.reset();
+    return;
+  }
+
+  CallJS("login.UpdateScreen.setAutoTransition",
+         !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+}
+
+void UpdateScreenHandler::SetUIState(UpdateView::UIState value) {
+  CallJS("login.UpdateScreen.setUIState", static_cast<int>(value));
+}
+
+void UpdateScreenHandler::SetUpdateStatusMessagePercent(
+    const base::string16& value) {
+  CallJS("login.UpdateScreen.setUpdateStatusMessagePercent", value);
+}
+
+void UpdateScreenHandler::SetUpdateStatusMessageTimeLeft(
+    const base::string16& value) {
+  CallJS("login.UpdateScreen.setUpdateStatusMessageTimeLeft", value);
+}
+
+void UpdateScreenHandler::SetBetterUpdateProgress(int value) {
+  CallJS("login.UpdateScreen.setBetterUpdateProgress", value);
+}
+
 void UpdateScreenHandler::SetEstimatedTimeLeft(int value) {
   CallJS("login.UpdateScreen.setEstimatedTimeLeft", value);
 }
@@ -60,10 +95,6 @@ void UpdateScreenHandler::SetShowEstimatedTimeLeft(bool value) {
 
 void UpdateScreenHandler::SetUpdateCompleted(bool value) {
   CallJS("login.UpdateScreen.setUpdateCompleted", value);
-}
-
-void UpdateScreenHandler::SetManualRebootNeeded(bool value) {
-  CallJS("login.UpdateScreen.setManualRebootNeeded", value);
 }
 
 void UpdateScreenHandler::SetShowCurtain(bool value) {
@@ -97,6 +128,7 @@ void UpdateScreenHandler::DeclareLocalizedValues(
                 ui::GetChromeOSDeviceName());
   builder->Add("updateCompeletedMsg", IDS_UPDATE_COMPLETED);
   builder->Add("updateCompeletedRebootingMsg", IDS_UPDATE_COMPLETED_REBOOTING);
+  builder->Add("updateStatusTitle", IDS_UPDATE_STATUS_TITLE);
   builder->Add("updateScreenAccessibleTitle",
                IDS_UPDATE_SCREEN_ACCESSIBLE_TITLE);
   builder->Add("checkingForUpdates", IDS_CHECKING_FOR_UPDATES);
@@ -107,6 +139,17 @@ void UpdateScreenHandler::DeclareLocalizedValues(
   builder->Add("downloadingTimeLeftStatusMinutes",
                IDS_DOWNLOADING_TIME_LEFT_STATUS_MINUTES);
   builder->Add("downloadingTimeLeftSmall", IDS_DOWNLOADING_TIME_LEFT_SMALL);
+
+  builder->Add("slideUpdateTitle", IDS_UPDATE_SLIDE_UPDATE_TITLE);
+  builder->Add("slideUpdateText", IDS_UPDATE_SLIDE_UPDATE_TEXT);
+  builder->Add("slideAntivirusTitle", IDS_UPDATE_SLIDE_ANTIVIRUS_TITLE);
+  builder->Add("slideAntivirusText", IDS_UPDATE_SLIDE_ANTIVIRUS_TEXT);
+  builder->Add("slideAppsTitle", IDS_UPDATE_SLIDE_APPS_TITLE);
+  builder->Add("slideAppsText", IDS_UPDATE_SLIDE_APPS_TEXT);
+  builder->Add("slideAccountTitle", IDS_UPDATE_SLIDE_ACCOUNT_TITLE);
+  builder->Add("slideAccountText", IDS_UPDATE_SLIDE_ACCOUNT_TEXT);
+  builder->Add("batteryWarningTitle", IDS_UPDATE_BATTERY_WARNING_TITLE);
+  builder->Add("batteryWarningText", IDS_UPDATE_BATTERY_WARNING_TEXT);
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   builder->Add("cancelUpdateHint", IDS_UPDATE_CANCEL);

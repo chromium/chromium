@@ -15,3 +15,10 @@ oobe-dialog {
   height: 264px;
   width: 264px;
 }
+
+.slide-view {
+  border: 1px solid var(--google-grey-400);
+  border-radius: 24px;
+  height: 248px;
+  overflow: hidden;
+}

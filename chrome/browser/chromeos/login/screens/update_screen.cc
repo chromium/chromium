@@ -8,10 +8,12 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/login/configuration_keys.h"
 #include "chrome/browser/chromeos/login/error_screens_histogram_helper.h"
@@ -20,8 +22,12 @@
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/network/network_state.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
 
@@ -224,7 +230,7 @@ void UpdateScreen::OnWaitForRebootTimeElapsed() {
   if (!view_)
     return;
   if (chromeos::features::IsBetterUpdateEnabled()) {
-    view_->SetManualRebootNeeded(true);
+    view_->SetUIState(UpdateView::UIState::kManualReboot);
   } else {
     view_->SetUpdateCompleted(true);
   }
@@ -287,6 +293,8 @@ void UpdateScreen::UpdateInfoChanged(
   bool need_refresh_view = true;
   switch (status.current_operation()) {
     case update_engine::Operation::CHECKING_FOR_UPDATE:
+      if (view_)
+        view_->SetUIState(UpdateView::UIState::kCheckingForUpdate);
       if (start_update_stage_.is_null())
         start_update_stage_ = tick_clock_->NowTicks();
       need_refresh_view = false;
@@ -299,6 +307,8 @@ void UpdateScreen::UpdateInfoChanged(
       need_refresh_view = false;
       break;
     case update_engine::Operation::UPDATE_AVAILABLE:
+      if (view_)
+        view_->SetUIState(UpdateView::UIState::kCheckingForUpdate);
       if (start_update_stage_.is_null())
         start_update_stage_ = tick_clock_->NowTicks();
       MakeSureScreenIsShown();
@@ -309,6 +319,10 @@ void UpdateScreen::UpdateInfoChanged(
       }
       break;
     case update_engine::Operation::DOWNLOADING:
+      if (view_)
+        view_->SetUIState(UpdateView::UIState::KUpdateInProgress);
+      SetUpdateStatusMessage(update_info.better_update_progress,
+                             update_info.total_time_left);
       MakeSureScreenIsShown();
       if (!is_critical_checked_) {
         // Because update engine doesn't send UPDATE_STATUS_UPDATE_AVAILABLE we
@@ -328,6 +342,10 @@ void UpdateScreen::UpdateInfoChanged(
       }
       break;
     case update_engine::Operation::VERIFYING:
+      if (view_)
+        view_->SetUIState(UpdateView::UIState::KUpdateInProgress);
+      SetUpdateStatusMessage(update_info.better_update_progress,
+                             update_info.total_time_left);
       // Make sure that VERIFYING and DOWNLOADING stages are recorded correctly.
       if (download_time_.is_zero()) {
         download_time_ = tick_clock_->NowTicks() - start_update_stage_;
@@ -336,6 +354,10 @@ void UpdateScreen::UpdateInfoChanged(
       MakeSureScreenIsShown();
       break;
     case update_engine::Operation::FINALIZING:
+      if (view_)
+        view_->SetUIState(UpdateView::UIState::KUpdateInProgress);
+      SetUpdateStatusMessage(update_info.better_update_progress,
+                             update_info.total_time_left);
       // Make sure that VERIFYING and FINALIZING stages are recorded correctly.
       if (verify_time_.is_zero()) {
         verify_time_ = tick_clock_->NowTicks() - start_update_stage_;
@@ -406,8 +428,33 @@ void UpdateScreen::PowerChanged(
 
 void UpdateScreen::ShowRebootInProgress() {
   MakeSureScreenIsShown();
-  if (view_)
-    view_->SetUpdateCompleted(true);
+  if (view_) {
+    if (chromeos::features::IsBetterUpdateEnabled()) {
+      view_->SetUIState(UpdateView::UIState::kRestartInProgress);
+    } else {
+      view_->SetUpdateCompleted(true);
+    }
+  }
+}
+
+void UpdateScreen::SetUpdateStatusMessage(int percent,
+                                          base::TimeDelta time_left) {
+  if (!view_)
+    return;
+  view_->SetUpdateStatusMessagePercent(l10n_util::GetStringFUTF16(
+      IDS_UPDATE_STATUS_SUBTITLE_PERCENT, base::FormatPercent(percent)));
+  if (time_left.InMinutes() == 0) {
+    view_->SetUpdateStatusMessageTimeLeft(l10n_util::GetStringFUTF16(
+        IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT,
+        l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS,
+                                         time_left.InSeconds())));
+  } else {
+    view_->SetUpdateStatusMessageTimeLeft(l10n_util::GetStringFUTF16(
+        IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT,
+        l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_MINS,
+                                         time_left.InMinutes())));
+  }
+  view_->SetBetterUpdateProgress(percent);
 }
 
 void UpdateScreen::UpdateBatteryWarningVisibility() {

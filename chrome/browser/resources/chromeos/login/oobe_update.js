@@ -14,6 +14,19 @@ const USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR = 'update-accept-cellular';
 const USER_ACTION_REJECT_UPDATE_OVER_CELLUAR = 'update-reject-cellular';
 const USER_ACTION_CANCEL_UPDATE_SHORTCUT = 'cancel-update';
 
+/**
+ * Enum for the UI states corresponding to sub steps inside update screen.
+ * These values must be kept in sync with UpdateView::UIState in C++ code.
+ * @enum {number}
+ */
+var UpdateUIState = {
+  CHECKING_FOR_UPDATE: 0,
+  UPDATE_IN_PROGRESS: 1,
+  RESTART_IN_PROGRESS: 2,
+  MANUAL_REBOOT: 3,
+};
+
+
 Polymer({
   is: 'oobe-update',
 
@@ -23,13 +36,17 @@ Polymer({
     'setEstimatedTimeLeft',
     'showEstimatedTimeLeft',
     'setUpdateCompleted',
-    'setManualRebootNeeded',
     'showUpdateCurtain',
     'setProgressMessage',
     'setUpdateProgress',
     'setRequiresPermissionForCellular',
     'setCancelUpdateShortcutEnabled',
     'showLowBatteryWarningMessage',
+    'setUIState',
+    'setUpdateStatusMessagePercent',
+    'setUpdateStatusMessageTimeLeft',
+    'setBetterUpdateProgress',
+    'setAutoTransition',
   ],
 
   properties: {
@@ -132,6 +149,41 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Current UI state which corresponds to a sub step in update process.
+     */
+    uiState: {type: Number, value: 0},
+
+    /**
+     * Message like "3% complete".
+     */
+    updateStatusMessagePercent: {
+      type: String,
+    },
+
+    /**
+     * Message like "About 5 minutes left".
+     */
+    updateStatusMessageTimeLeft: {
+      type: String,
+    },
+
+    /**
+     * Progress bar percent that is used in BetterUpdate version of the screen.
+     */
+    betterUpdateProgressValue: {
+      type: Number,
+      value: 0,
+    },
+
+    /**
+     * Whether auto-transition is enabled or not.
+     */
+    autoTransition: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   ready() {
@@ -221,13 +273,6 @@ Polymer({
   },
 
   /**
-   * @param {boolean} is_needed True if manual reboot after update is needed.
-   */
-  setManualRebootNeeded(is_needed) {
-    this.manualRebootNeeded = is_needed;
-  },
-
-  /**
    * Shows or hides update curtain.
    * @param {boolean} visible Are curtains visible?
    */
@@ -244,14 +289,93 @@ Polymer({
   },
 
   /**
-   * Calculates visibility of the reboot progress dialog.
-   * @param {Boolean} manualRebootNeeded If the automatic reboot timer has
-   * elapsed and manual reboot is needed.
-   * @param {Boolean} updateCompleted If update is completed and all
-   * intermediate status elements are hidden.
+   * Sets message above the progress bar.
+   * @param {string} message Message that should be set.
    */
-  isRebootProgressBarShown_(manualRebootNeeded, updateCompleted) {
-    return updateCompleted && !manualRebootNeeded;
+  setUpdateStatusMessagePercent(message) {
+    this.updateStatusMessagePercent = message;
   },
+
+  /**
+   * Sets message above the progress bar.
+   * @param {string} message Message that should be set.
+   */
+  setUpdateStatusMessageTimeLeft(message) {
+    this.updateStatusMessageTimeLeft = message;
+  },
+
+  /**
+   * Sets which dialog should be shown.
+   * @param {UpdateUIState} value Current UI state.
+   */
+  setUIState(value) {
+    this.uiState = value;
+  },
+
+  /**
+   * Sets percent to be shown in progress bar.
+   * @param {number} value Current progress
+   */
+  setBetterUpdateProgress(value) {
+    this.betterUpdateProgressValue = value;
+  },
+
+  /**
+   * Sets whether carousel should auto transit slides.
+   */
+  setAutoTransition(value) {
+    this.autoTransition = value;
+  },
+
+  /**
+   * Gets whether carousel should auto transit slides.
+   * @private
+   * @param {UpdateUIState} state Which UIState now.
+   * @param {boolean} autoTransition Is auto transition allowed.
+   */
+  getAutoTransition_(state, autoTransition) {
+    return state == UpdateUIState.UPDATE_IN_PROGRESS && autoTransition;
+  },
+
+  /**
+   * Sets whether checking for update dialog is shown.
+   * @private
+   * @param {UpdateUIState} state Which UIState now.
+   * @param {boolean} requiresPermission Is permission update dialog shown?
+   */
+  isCheckingForUpdate_(state, requiresPermission) {
+    return state == UpdateUIState.CHECKING_FOR_UPDATE && !requiresPermission;
+  },
+
+  /**
+   * Sets whether update in progress dialog is shown.
+   * @private
+   * @param {UpdateUIState} state Which UIState now.
+   * @param {boolean} requiresPermission Is permission update dialog shown?
+   */
+  isUpdateInProgress_(state, requiresPermission) {
+    return state == UpdateUIState.UPDATE_IN_PROGRESS && !requiresPermission;
+  },
+
+  /**
+   * Sets whether restart in progress dialog is shown.
+   * @private
+   * @param {UpdateUIState} state Which UIState now.
+   * @param {boolean} requiresPermission Is permission update dialog shown?
+   */
+  isRestartInProgress_(state, requiresPermission) {
+    return state == UpdateUIState.RESTART_IN_PROGRESS && !requiresPermission;
+  },
+
+  /**
+   * Sets whether manual reboot dialog is shown.
+   * @private
+   * @param {UpdateUIState} state Which UIState now.
+   * @param {boolean} requiresPermission Is permission update dialog shown?
+   */
+  isManualReboot_(state, requiresPermission) {
+    return state == UpdateUIState.MANUAL_REBOOT && !requiresPermission;
+  },
+
 });
 })();

@@ -18,6 +18,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/mock_network_portal_detector.h"
@@ -70,6 +71,7 @@ class UpdateScreenUnitTest : public testing::Test {
 
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
+    PowerManagerClient::InitializeFake();
     fake_update_engine_client_ = new FakeUpdateEngineClient();
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
@@ -96,6 +98,7 @@ class UpdateScreenUnitTest : public testing::Test {
     mock_error_screen_.reset();
     network_portal_detector::Shutdown();
     NetworkHandler::Shutdown();
+    PowerManagerClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

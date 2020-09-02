@@ -68,6 +68,10 @@ const test::UIPath kLowBatteryWarningMessage = {"oobe-update",
 const test::UIPath kErrorMessage = {"error-message"};
 
 // Paths for better update screen https://crbug.com/1101317
+const test::UIPath kBetterUpdateCheckingForUpdatesDialog = {
+    "oobe-update", "checking-for-updates-dialog"};
+const test::UIPath kUpdateInProgressDialog = {"oobe-update",
+                                              "update-in-progress-dialog"};
 const test::UIPath kRestartingDialog = {"oobe-update", "restarting-dialog"};
 const test::UIPath kBetterUpdateCompletedDialog = {
     "oobe-update", "better-update-complete-dialog"};
@@ -114,7 +118,10 @@ chromeos::OobeUI* GetOobeUI() {
 
 class UpdateScreenTest : public OobeBaseTest {
  public:
-  UpdateScreenTest() = default;
+  UpdateScreenTest() {
+    feature_list_.InitWithFeatures({},
+                                   {chromeos::features::kBetterUpdateScreen});
+  }
   ~UpdateScreenTest() override = default;
 
   void CheckPathVisiblity(std::initializer_list<base::StringPiece> element_ids,
@@ -177,6 +184,8 @@ class UpdateScreenTest : public OobeBaseTest {
   }
 
   base::OnceClosure screen_result_callback_;
+
+  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateScreenTest);
 };
@@ -926,10 +935,6 @@ IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest,
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
   test::OobeJS().CreateVisibilityWaiter(true, kRestartingDialog)->Wait();
-  test::OobeJS().ExpectHiddenPath(kCheckingForUpdatesDialog);
-  test::OobeJS().ExpectHiddenPath(kCellularPermissionDialog);
-  test::OobeJS().ExpectHiddenPath(kUpdatingDialog);
-  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
 
   // Make sure that after the screen is shown waiting timer starts.
   mocked_task_runner->RunUntilIdle();
@@ -946,6 +951,129 @@ IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest,
 
   test::OobeJS().ExpectHiddenPath(kRestartingDialog);
   test::OobeJS().ExpectVisiblePath(kBetterUpdateCompletedDialog);
+}
+
+IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest, UpdateScreenSteps) {
+  base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
+  SetTickClockAndDefaultDelaysForTesting(
+      mocked_task_runner->GetMockTickClock());
+  update_screen_->set_ignore_update_deadlines_for_testing(true);
+  ShowUpdateScreen();
+
+  update_engine::StatusResult status;
+  // CHECKING_FOR_UPDATE:
+  status.set_current_operation(update_engine::Operation::CHECKING_FOR_UPDATE);
+  status.set_new_version("latest and greatest");
+  status.set_new_size(1'000'000'000);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kBetterUpdateCheckingForUpdatesDialog)
+      ->Wait();
+  test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kRestartingDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
+
+  // UPDATE_AVAILABLE:
+  status.set_current_operation(update_engine::Operation::UPDATE_AVAILABLE);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  test::OobeJS().ExpectVisiblePath(kBetterUpdateCheckingForUpdatesDialog);
+  test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kRestartingDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
+
+  // DOWNLOADING:
+  status.set_current_operation(update_engine::Operation::DOWNLOADING);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kUpdateInProgressDialog)->Wait();
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
+  test::OobeJS().ExpectHiddenPath(kRestartingDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
+
+  // VERIFYING:
+  status.set_current_operation(update_engine::Operation::VERIFYING);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  test::OobeJS().ExpectVisiblePath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
+  test::OobeJS().ExpectHiddenPath(kRestartingDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
+
+  // FINALIZING:
+  status.set_current_operation(update_engine::Operation::FINALIZING);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  test::OobeJS().ExpectVisiblePath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
+  test::OobeJS().ExpectHiddenPath(kRestartingDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
+
+  // UPDATED_NEED_REBOOT:
+  status.set_current_operation(update_engine::Operation::UPDATED_NEED_REBOOT);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kRestartingDialog)->Wait();
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
+  test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
+
+  // Make sure that after the screen is shown waiting timer starts.
+  mocked_task_runner->RunUntilIdle();
+  // Show waiting for reboot screen for several seconds.
+  ASSERT_TRUE(update_screen_->GetWaitRebootTimerForTesting()->IsRunning());
+  mocked_task_runner->FastForwardBy(kTimeDefaultWaiting);
+
+  // UpdateStatusChanged(status) calls RebootAfterUpdate().
+  ASSERT_EQ(update_engine_client()->reboot_after_update_call_count(), 1);
+
+  // Simulate the situation where reboot does not happen in time.
+  ASSERT_TRUE(version_updater_->GetRebootTimerForTesting()->IsRunning());
+  mocked_task_runner->FastForwardBy(kTimeDefaultWaiting);
+
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
+  test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kRestartingDialog);
+  test::OobeJS().ExpectVisiblePath(kBetterUpdateCompletedDialog);
+}
+
+IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest, UpdateOverCellularShown) {
+  base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
+  SetTickClockAndDefaultDelaysForTesting(
+      mocked_task_runner->GetMockTickClock());
+  update_screen_->set_ignore_update_deadlines_for_testing(true);
+  ShowUpdateScreen();
+
+  update_engine::StatusResult status;
+  status.set_current_operation(
+      update_engine::Operation::NEED_PERMISSION_TO_UPDATE);
+  status.set_new_version("latest and greatest");
+  status.set_new_size(1'000'000'000);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
+
+  OobeScreenWaiter update_screen_waiter(UpdateView::kScreenId);
+  update_screen_waiter.set_assert_next_screen();
+  update_screen_waiter.Wait();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kCellularPermissionDialog)
+      ->Wait();
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
+
+  test::OobeJS().TapOnPath(kCellularPermissionNext);
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kBetterUpdateCheckingForUpdatesDialog)
+      ->Wait();
+  test::OobeJS().ExpectHiddenPath(kCellularPermissionDialog);
 }
 
 }  // namespace chromeos

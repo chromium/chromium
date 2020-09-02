@@ -23,11 +23,12 @@
   <template>
     <style>
       :host {
+        height: 100%;
         width: 100%;
       }
 
       #container {
-        height: 350px;
+        height: 100%;
         overflow: hidden;
         position: relative;
         white-space: nowrap;
@@ -36,13 +37,13 @@
 
       #slidesContainer {
         background: white;
-        height: 350px;
+        height: 100%;
         position: relative;
         width: 100%;
         will-change: transform;
       }
       #slidesContainer ::slotted(*) {
-        height: 350px;
+        height: 100%;
         overflow-x: hidden;
         position: absolute;
         width: 100%;
@@ -93,6 +94,10 @@
       .slider-dot[active] {
         background: var(--google-blue-600);
       }
+
+      .arrow-button {
+        --cr-icon-button-fill-color: var(--google-grey-400);
+      }
     </style>
     <div id="container">
       <div id="slidesContainer">
@@ -100,7 +105,7 @@
       </div>
       <div id="navigationContainer">
         <cr-icon-button id="left" class="buttons" iron-icon="cr:chevron-left"
-            on-click="movePrev"></cr-icon-button>
+            class="arrow-button" on-click="movePrev"></cr-icon-button>
         <div id="dotsContainer">
           <template is="dom-repeat" items="[[dots]]">
             <span class="slider-dot" aria-hidden="true"
@@ -108,7 +113,7 @@
           </template>
         </div>
         <cr-icon-button id="right" class="buttons" iron-icon="cr:chevron-right"
-            on-click="moveNext"></cr-icon-button>
+            class="arrow-button" on-click="moveNext"></cr-icon-button>
       </div>
     </div>
   </template>

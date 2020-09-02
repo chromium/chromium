@@ -371,6 +371,45 @@
   <message name="IDS_UPDATE_COMPLETED_REBOOTING" desc="Notification for update completed and reboot is in progress">
     Restarting to apply updates
   </message>
+  <message name="IDS_UPDATE_STATUS_TITLE" desc="Title of update screeen telling the status of update.">
+    Downloading the latest update
+  </message>
+  <message name="IDS_UPDATE_STATUS_SUBTITLE_PERCENT" desc="Subtitle of update screeen telling the status of update: percent complete and time left.">
+    <ph name="PERCENT">$1<ex>100%</ex></ph> complete
+  </message>
+  <message name="IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT" desc="Subtitle of update screeen telling the status of update: percent complete and time left.">
+    About <ph name="TIME_LEFT">$1<ex>5 minutes</ex></ph> left
+  </message>
+  <message name="IDS_UPDATE_SLIDE_UPDATE_TITLE" desc="Title of educative slide.">
+    After this, no waiting for updates
+  </message>
+  <message name="IDS_UPDATE_SLIDE_UPDATE_TEXT" desc="Text of educative slide.">
+    This is the only time you’ll wait for an update. On Chromebooks, software updates happen in the background.
+  </message>
+  <message name="IDS_UPDATE_SLIDE_ANTIVIRUS_TITLE" desc="Title of educative slide.">
+    Built-in virus protection
+  </message>
+  <message name="IDS_UPDATE_SLIDE_ANTIVIRUS_TEXT" desc="Text of educative slide.">
+    Chromebooks are designed for security. Your device is protected from malware automatically – no extra software required.
+  </message>
+  <message name="IDS_UPDATE_SLIDE_APPS_TITLE" desc="Title of educative slide.">
+    Find apps on the Google Play Store
+  </message>
+  <message name="IDS_UPDATE_SLIDE_APPS_TEXT" desc="Text of educative slide.">
+    Chromebooks use apps instead of traditional software. Get apps for productivity, entertainment, and more.
+  </message>
+  <message name="IDS_UPDATE_SLIDE_ACCOUNT_TITLE" desc="Title of educative slide.">
+    Your Google Account is your Chromebook sign-in
+  </message>
+  <message name="IDS_UPDATE_SLIDE_ACCOUNT_TEXT" desc="Text of educative slide.">
+    You’ll use your Google Account to sign in to your Chromebook – the same account you use for Gmail, Drive, YouTube, and more.
+  </message>
+  <message name="IDS_UPDATE_BATTERY_WARNING_TITLE" desc="Title of battery warning which is shown during update process if battery is running out.">
+    Charge your Chromebook
+  </message>
+  <message name="IDS_UPDATE_BATTERY_WARNING_TEXT" desc="Text of battery warning which is shown during update process if battery is running out.">
+    Looks like your Chromebook will run out of power before the update is complete. Make sure it's charging correctly to avoid interruption.
+  </message>
   <message name="IDS_UPDATE_COMPLETED" desc="Notification for update completed">
     System update complete. Please restart the system.
   </message>

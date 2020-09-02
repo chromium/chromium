@@ -25,36 +25,128 @@
           cancel-hint-key="[[cancelHint]]"
           downloading-updates-key="installingUpdateDesc">
       </checking-downloading-update>
-      <oobe-dialog hidden="[[!requiresPermissionForCellular]]" tabindex="0"
-          subtitle-key="updateOverCellularPromptMessage"
-          aria-live="polite" has-buttons footer-shrinkable
-          id="cellular-permission-dialog">
+    </div>
+    <oobe-dialog hidden="[[!requiresPermissionForCellular]]" tabindex="0"
+        subtitle-key="updateOverCellularPromptMessage"
+        aria-live="polite" has-buttons footer-shrinkable
+        id="cellular-permission-dialog">
+      <hd-iron-icon slot="oobe-icon"
+          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
+                        'productName')]]
+      </h1>
+      <div slot="footer" class="flex layout vertical center-justified center">
+        <img class="update-illustration oobe-illustration"
+            srcset="images/1x/updating_1x.svg 1x,
+                    images/2x/updating_2x.svg 2x">
+      </div>
+      <div slot="bottom-buttons" class="layout horizontal justified">
+        <oobe-back-button id="cellular-permission-back" inverse
+            on-click="onBackClicked_"></oobe-back-button>
+        <oobe-next-button id="cellular-permission-next" inverse
+            on-tap="onNextClicked_"></oobe-next-button>
+      </div>
+    </oobe-dialog>
+    <div hidden="[[!betterUpdateScreenFeatureEnabled_]]">
+      <oobe-dialog footer-shrinkable id="checking-for-updates-dialog"
+          hidden="[[!isCheckingForUpdate_(uiState,
+                                          requiresPermissionForCellular)]]"
+          title-key="checkingForUpdates" aria-live="polite">
         <hd-iron-icon slot="oobe-icon"
             icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
         </hd-iron-icon>
-        <h1 slot="title">
-          [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
-                          'productName')]]
-        </h1>
+        <paper-progress slot="progress" id="checking-progress" indeterminate>
+        </paper-progress>
         <div slot="footer" class="flex layout vertical center-justified center">
           <img class="update-illustration oobe-illustration"
               srcset="images/1x/updating_1x.svg 1x,
                       images/2x/updating_2x.svg 2x">
         </div>
-        <div slot="bottom-buttons" class="layout horizontal justified">
-          <oobe-back-button id="cellular-permission-back" inverse
-              on-click="onBackClicked_"></oobe-back-button>
-          <oobe-next-button id="cellular-permission-next" inverse
-              on-tap="onNextClicked_"></oobe-next-button>
+      </oobe-dialog>
+      <oobe-dialog footer-shrinkable id="update-in-progress-dialog"
+          hidden="[[!isUpdateInProgress_(uiState,
+                                         requiresPermissionForCellular)]]"
+          title-key="updateStatusTitle" aria-live="polite">
+        <hd-iron-icon slot="oobe-icon"
+            icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
+        </hd-iron-icon>
+        <div slot="subtitle">
+          <span>[[updateStatusMessagePercent]]</span>
+          <span> | </span>
+          <span>[[updateStatusMessageTimeLeft]]</span>
+        </div>
+        <paper-progress slot="progress" id="update-progress"
+            value="[[betterUpdateProgressValue]]">
+        </paper-progress>
+        <div hidden="[[!showLowBatteryWarning]]" id="battery-warning"
+            class="slide-view" slot="footer">
+          <oobe-slide is-warning>
+            <img slot="slide-img" class="update-illustration oobe-illustration"
+                srcset="images/1x/update-charge.svg 1x,
+                        images/2x/update-charge.svg 2x">
+            <div slot="title">
+              [[i18nDynamic(locale, 'batteryWarningTitle')]]
+            </div>
+            <div slot="text">
+              [[i18nDynamic(locale, 'batteryWarningText')]]
+            </div>
+          </oobe-slide>
+        </div>
+        <div hidden="[[showLowBatteryWarning]]" id="carousel" class="slide-view"
+            slot="footer">
+          <oobe-carousel slide-duration-in-seconds=3
+              auto-transition="[[getAutoTransition_(uiState, autoTransition)]]">
+            <oobe-slide slot="slides">
+              <img slot="slide-img"
+                  class="update-illustration oobe-illustration"
+                  srcset="images/1x/update-no-waiting.svg 1x,
+                          images/2x/update-no-waiting.svg 2x">
+              <div slot="title">
+                [[i18nDynamic(locale, 'slideUpdateTitle')]]
+              </div>
+              <div slot="text">[[i18nDynamic(locale, 'slideUpdateText')]]</div>
+            </oobe-slide>
+            <oobe-slide slot="slides">
+              <img slot="slide-img"
+                  class="update-illustration oobe-illustration"
+                  srcset="images/1x/update-antivirus.svg 1x,
+                          images/2x/update-antivirus.svg 2x">
+              <div slot="title">
+                [[i18nDynamic(locale, 'slideAntivirusTitle')]]
+              </div>
+              <div slot="text">
+                [[i18nDynamic(locale, 'slideAntivirusText')]]
+              </div>
+            </oobe-slide>
+            <oobe-slide slot="slides">
+              <img slot="slide-img"
+                  class="update-illustration oobe-illustration"
+                  srcset="images/1x/update-apps.svg 1x,
+                          images/2x/update-apps.svg 2x">
+              <div slot="title">[[i18nDynamic(locale, 'slideAppsTitle')]]</div>
+              <div slot="text">[[i18nDynamic(locale, 'slideAppsText')]]</div>
+            </oobe-slide>
+            <oobe-slide slot="slides">
+              <img slot="slide-img"
+                  class="update-illustration oobe-illustration"
+                  srcset="images/1x/google-accounts.svg 1x,
+                          images/2x/google-accounts.svg 2x">
+              <div slot="title">
+                [[i18nDynamic(locale, 'slideAccountTitle')]]
+              </div>
+              <div slot="text">
+                [[i18nDynamic(locale, 'slideAccountText')]]
+              </div>
+            </oobe-slide>
+          </oobe-carousel>
         </div>
       </oobe-dialog>
-    </div>
-    <div hidden="[[!betterUpdateScreenFeatureEnabled_]]">
       <oobe-dialog footer-shrinkable id="restarting-dialog"
-          hidden="[[!isRebootProgressBarShown_(manualRebootNeeded,
-                                               updateCompleted)]]"
-          title-key="updateCompeletedRebootingMsg"
-          aria-live="polite">
+          hidden="[[!isRestartInProgress_(uiState,
+                                          requiresPermissionForCellular)]]"
+          title-key="updateCompeletedRebootingMsg" aria-live="polite">
         <hd-iron-icon slot="oobe-icon"
             icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
         </hd-iron-icon>
@@ -62,17 +154,11 @@
         </paper-progress>
       </oobe-dialog>
       <oobe-dialog footer-shrinkable id="better-update-complete-dialog"
-          hidden="[[!manualRebootNeeded]]"
-          title-key="updateCompeletedMsg"
-          aria-live="polite">
+          hidden="[[!isManualReboot_(uiState, requiresPermissionForCellular)]]"
+          title-key="updateCompeletedMsg" aria-live="polite">
         <hd-iron-icon slot="oobe-icon"
             icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
         </hd-iron-icon>
-      </oobe-dialog>
-      <oobe-dialog hidden="[[!showLowBatteryWarning]]">
-        <div hidden="[[!showLowBatteryWarning]]" id="battery-warning"
-            slot="footer">
-        </div>
       </oobe-dialog>
     </div>
   </template>

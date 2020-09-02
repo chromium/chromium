@@ -49,6 +49,7 @@
         font-family: var(--oobe-header-font-family);
         font-size: 24px;
         font-weight: 500; /* medium */
+        line-height: 32px;
       }
 
       #slide-title[is-warning] ::slotted(*) {
@@ -60,10 +61,14 @@
       }
 
       #slide-text ::slotted(*) {
-        color: var(--google-grey-900);
+        color: var(--google-grey-700);
         font-family: var(--oobe-default-font-family);
         font-size: 14px;
         font-weight: 400; /* regular */
+      }
+
+      .multiline {
+        white-space: normal;
       }
     </style>
     <div id="slide-container" class="flex layout horizontal">
@@ -72,10 +77,10 @@
       </div>
       <div id="context-container" class="flex layout vertical center-justified">
         <div id="slide-title" is-warning$="[[isWarning]]">
-          <slot name="title"></slot>
+          <slot name="title" class="multiline"></slot>
         </div>
         <div id="slide-text">
-          <slot name="text"></slot>
+          <slot name="text" class="multiline"></slot>
         </div>
       </div>
     </div>

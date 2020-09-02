@@ -156,6 +156,9 @@ class UpdateScreen : public BaseScreen,
   // Show reboot waiting screen.
   void ShowRebootInProgress();
 
+  // Set update status message.
+  void SetUpdateStatusMessage(int percent, base::TimeDelta time_left);
+
   UpdateView* view_;
   ErrorScreen* error_screen_;
   ScreenExitCallback exit_callback_;
