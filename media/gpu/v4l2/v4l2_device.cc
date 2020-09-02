@@ -1274,6 +1274,19 @@ bool V4L2Queue::SupportsRequests() {
   return supports_requests_;
 }
 
+base::Optional<struct v4l2_format> V4L2Queue::SetModifierFormat(
+    uint64_t modifier,
+    const gfx::Size& size) {
+  if (DRM_FORMAT_MOD_QCOM_COMPRESSED == modifier) {
+    const uint32_t v4l2_pix_fmt_nv12_ubwc = v4l2_fourcc('Q', '1', '2', '8');
+    auto format = SetFormat(v4l2_pix_fmt_nv12_ubwc, size, 0);
+    if (!format)
+      VPLOGF(1) << "Failed to set magic modifier format.";
+    return format;
+  }
+  return base::nullopt;
+}
+
 // This class is used to expose V4L2Queue's constructor to this module. This is
 // to ensure that nobody else can create instances of it.
 class V4L2QueueFactory {

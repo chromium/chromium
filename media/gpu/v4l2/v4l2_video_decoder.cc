@@ -344,6 +344,24 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
                << " != " << layout->size().ToString();
       return false;
     }
+
+    if (layout->modifier() &&
+        layout->modifier() != gfx::NativePixmapHandle::kNoModifier) {
+      base::Optional<struct v4l2_format> modifier_format =
+          output_queue_->SetModifierFormat(layout->modifier(), size);
+      if (!modifier_format)
+        return false;
+
+      gfx::Size size_for_modifier_format(format->fmt.pix_mp.width,
+                                         format->fmt.pix_mp.height);
+      if (size_for_modifier_format != adjusted_size) {
+        VLOGF(1)
+            << "Buffers were allocated for " << adjusted_size.ToString()
+            << " but modifier format is expecting buffers to be allocated for "
+            << size_for_modifier_format.ToString();
+        return false;
+      }
+    }
   }
 
   return true;

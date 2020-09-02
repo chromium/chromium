@@ -397,6 +397,11 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // Returns true if requests are supported by this queue.
   bool SupportsRequests();
 
+  // TODO (b/166275274) : Remove this once V4L2 properly supports modifiers.
+  // Out of band method to configure V4L2 for modifier use.
+  base::Optional<struct v4l2_format> SetModifierFormat(uint64_t modifier,
+                                                       const gfx::Size& size);
+
  private:
   ~V4L2Queue();
 
