@@ -200,6 +200,42 @@ TEST_F(ShellSurfaceTest, Maximize) {
   EXPECT_FALSE(HasBackdrop());
 }
 
+TEST_F(ShellSurfaceTest, CanMaximizeResizableWindow) {
+  gfx::Size buffer_size(400, 300);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  // Make sure we've created a resizable window.
+  EXPECT_TRUE(shell_surface->CanResize());
+
+  // Assert: Resizable windows can be maximized.
+  EXPECT_TRUE(shell_surface->CanMaximize());
+}
+
+TEST_F(ShellSurfaceTest, CannotMaximizeNonResizableWindow) {
+  gfx::Size buffer_size(400, 300);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+
+  surface->Attach(buffer.get());
+  shell_surface->SetMinimumSize(buffer_size);
+  shell_surface->SetMaximumSize(buffer_size);
+  surface->Commit();
+
+  // Make sure we've created a non-resizable window.
+  EXPECT_FALSE(shell_surface->CanResize());
+
+  // Assert: Non-resizable windows cannot be maximized.
+  EXPECT_FALSE(shell_surface->CanMaximize());
+}
+
 TEST_F(ShellSurfaceTest, Minimize) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(

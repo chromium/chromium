@@ -56,6 +56,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // parent.
   void SetParent(ShellSurface* parent);
 
+  bool CanMaximize() const override;
+
   // Maximizes the shell surface.
   void Maximize();
 

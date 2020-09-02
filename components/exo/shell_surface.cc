@@ -181,6 +181,11 @@ void ShellSurface::SetParent(ShellSurface* parent) {
   SetParentWindow(parent ? parent->GetWidget()->GetNativeWindow() : nullptr);
 }
 
+bool ShellSurface::CanMaximize() const {
+  // Prevent non-resizable windows being resized via maximize.
+  return ShellSurfaceBase::CanMaximize() && CanResize();
+}
+
 void ShellSurface::Maximize() {
   TRACE_EVENT0("exo", "ShellSurface::Maximize");
 
