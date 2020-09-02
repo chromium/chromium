@@ -668,7 +668,6 @@ group("telemetry_gpu_integration_test_support") {
     "//media/test/data/four-colors-rot-90.mp4",
     "//media/test/data/four-colors-rot-180.mp4",
     "//media/test/data/four-colors-rot-270.mp4",
-    "//media/test/data/four-colors-vp8-incompatible-stride.webm",
     "//media/test/data/four-colors-vp9.webm",
     "//media/test/data/four-colors-vp9-i420a.webm",
 
