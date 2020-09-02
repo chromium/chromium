@@ -100,6 +100,12 @@
         await ConsoleTestRunner.dumpConsoleMessages();
         next();
       });
+      // Temporarily install sniffer on both methods until TS migration for RemoteObject.js is done.
+      // TODO(crbug.com/1011811): Remove once RemoteObject.js is TypeScript-ified.
+      TestRunner.addSniffer(TestRunner.RuntimeAgent, 'invoke_releaseObject', async () => {
+        await ConsoleTestRunner.dumpConsoleMessages();
+        next();
+      });
       obj1.setPropertyValue(nameFoo, '[1,2,3]');
     }
   ]);
