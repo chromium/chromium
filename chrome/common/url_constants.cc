@@ -320,8 +320,11 @@ const char kChromeOSAssetPath[] = "/usr/share/chromeos-assets/";
 const char kChromeOSCreditsPath[] =
     "/opt/google/chrome/resources/about_os_credits.html";
 
+// TODO(carpenterr): Have a solution for plink mapping in Help App.
+// The magic numbers in this url are the topic and article ids currently
+// required to navigate directly to a help article in the Help App.
 const char kChromeOSGestureEducationHelpURL[] =
-    "https://support.google.com/chromebook?p=tablet_mode_gestures";
+    "chrome://help-app/help/sub/3399710/id/9739838";
 
 const char kChromePaletteHelpURL[] =
     "https://support.google.com/chromebook?p=stylus_help";

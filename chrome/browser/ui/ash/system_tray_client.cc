@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/set_time_dialog.h"
 #include "chrome/browser/chromeos/system/system_clock.h"
+#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -284,11 +287,17 @@ void SystemTrayClient::ShowAccessibilitySettings() {
 }
 
 void SystemTrayClient::ShowGestureEducationHelp() {
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
   base::RecordAction(base::UserMetricsAction("ShowGestureEducationHelp"));
-  ShowSingletonTab(displayer.browser(),
-                   GURL(chrome::kChromeOSGestureEducationHelpURL));
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile)
+    return;
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
+  proxy->LaunchAppWithUrl(
+      chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
+      GURL(chrome::kChromeOSGestureEducationHelpURL),
+      apps::mojom::LaunchSource::kFromOtherApp, display::kDefaultDisplayId);
 }
 
 void SystemTrayClient::ShowPaletteHelp() {
