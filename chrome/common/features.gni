@@ -62,9 +62,6 @@ declare_args() {
   # Indicates if Wayland display server support is enabled.
   enable_wayland_server = is_chromeos
 
-  # Indicates if the build is using PGO.
-  pgo_build = chrome_pgo_phase > 0
-
   # optimize_webui was moved to ui/base/ui_features.gni
 }
 

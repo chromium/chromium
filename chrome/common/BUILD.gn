@@ -54,7 +54,6 @@ buildflag_header("buildflags") {
     "ENABLE_TAB_SEARCH=$enable_tab_search",
     "ENABLE_WAYLAND_SERVER=$enable_wayland_server",
     "ENABLE_WEBUI_TAB_STRIP=$enable_webui_tab_strip",
-    "PGO_BUILD=$pgo_build",
     "OPTIMIZE_WEBUI=$optimize_webui",
   ]
 }
