@@ -15,6 +15,9 @@ namespace network {
 
 class CSPContext;
 
+// Check if a CSP |source| matches the scheme-source grammar.
+bool CSPSourceIsSchemeOnly(const mojom::CSPSourcePtr& source);
+
 // Check if a |url| matches with a CSP |source| matches.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool CheckCSPSource(const mojom::CSPSourcePtr& source,

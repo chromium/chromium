@@ -22,10 +22,6 @@ bool HasHost(const mojom::CSPSourcePtr& source) {
   return !source->host.empty() || source->is_host_wildcard;
 }
 
-bool IsSchemeOnly(const mojom::CSPSourcePtr& source) {
-  return !HasHost(source);
-}
-
 bool DecodePath(const base::StringPiece& path, std::string* output) {
   url::RawCanonOutputT<base::char16> unescaped;
   url::DecodeURLEscapeSequences(path.data(), path.size(),
@@ -184,11 +180,15 @@ bool canUpgrade(const SchemeMatchingResult result) {
 
 }  // namespace
 
+bool CSPSourceIsSchemeOnly(const mojom::CSPSourcePtr& source) {
+  return !HasHost(source);
+}
+
 bool CheckCSPSource(const mojom::CSPSourcePtr& source,
                     const GURL& url,
                     CSPContext* context,
                     bool has_followed_redirect) {
-  if (IsSchemeOnly(source)) {
+  if (CSPSourceIsSchemeOnly(source)) {
     return SourceAllowScheme(source, url, context) !=
            SchemeMatchingResult::NotMatching;
   }
@@ -222,11 +222,11 @@ mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSourcePtr& source_a,
     return nullptr;
   }
 
-  if (IsSchemeOnly(source_a)) {
+  if (CSPSourceIsSchemeOnly(source_a)) {
     auto new_result = source_b->Clone();
     new_result->scheme = result->scheme;
     return new_result;
-  } else if (IsSchemeOnly(source_b)) {
+  } else if (CSPSourceIsSchemeOnly(source_b)) {
     auto new_result = source_a->Clone();
     new_result->scheme = result->scheme;
     return new_result;
@@ -284,9 +284,9 @@ bool CSPSourceSubsumes(const mojom::CSPSourcePtr& source_a,
     return false;
   }
 
-  if (IsSchemeOnly(source_a))
+  if (CSPSourceIsSchemeOnly(source_a))
     return true;
-  if (IsSchemeOnly(source_b))
+  if (CSPSourceIsSchemeOnly(source_b))
     return false;
 
   if (!SourceAllowHost(source_a, (source_b->is_host_wildcard ? "*." : "") +
@@ -309,7 +309,7 @@ bool CSPSourceSubsumes(const mojom::CSPSourcePtr& source_a,
 
 std::string ToString(const mojom::CSPSourcePtr& source) {
   // scheme
-  if (IsSchemeOnly(source))
+  if (CSPSourceIsSchemeOnly(source))
     return source->scheme + ":";
 
   std::stringstream text;
