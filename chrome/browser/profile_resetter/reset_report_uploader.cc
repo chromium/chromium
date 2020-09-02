@@ -86,11 +86,13 @@ void ResetReportUploader::DispatchReportInternal(
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
+  network::SimpleURLLoader* const simple_url_loader_ptr =
+      simple_url_loader.get();
   simple_url_loader->AttachStringForUpload(request_data,
                                            "application/octet-stream");
   auto it = simple_url_loaders_.insert(simple_url_loaders_.begin(),
                                        std::move(simple_url_loader));
-  it->get()->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&ResetReportUploader::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(it)));
