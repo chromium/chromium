@@ -376,6 +376,10 @@ void WebFrameWidgetBase::BindWidgetCompositor(
   widget_base_->BindWidgetCompositor(std::move(receiver));
 }
 
+void WebFrameWidgetBase::SetActive(bool active) {
+  View()->SetIsActive(active);
+}
+
 void WebFrameWidgetBase::CancelDrag() {
   // It's possible for this to be called while we're not doing a drag if
   // it's from a previous page that got unloaded.

@@ -39,6 +39,7 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/untrustworthy_context_menu_params.h"
+#include "content/public/test/fake_frame_widget.h"
 #include "ipc/message_filter.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -349,6 +350,15 @@ void RunUntilInputProcessed(RenderWidgetHost* host);
 // tests. The value `no-meta` indicates no tag should be created.
 std::string ReferrerPolicyToString(
     network::mojom::ReferrerPolicy referrer_policy);
+
+// For testing, bind FakeFrameWidget to a RenderWidgetHost associated
+// with a given RenderFrameHost
+mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
+BindFakeFrameWidgetInterfaces(RenderFrameHost* frame);
+
+// Set |active| state for a RenderWidgetHost associated with a given
+// RenderFrameHost
+void SimulateActiveStateForWidget(RenderFrameHost* frame, bool active);
 
 // Holds down modifier keys for the duration of its lifetime and releases them
 // upon destruction. This allows simulating multiple input events without

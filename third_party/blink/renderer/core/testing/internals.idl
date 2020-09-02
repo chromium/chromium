@@ -321,6 +321,10 @@
     // attribute returns the currently interested element on the page.
     readonly attribute Element? interestedElement;
 
+    // Returns true if page associated with current internals object is
+    // active.
+    boolean isActivated();
+
     boolean isInCanvasFontCache(Document document, DOMString fontString);
     unsigned long canvasFontCacheMaxFonts();
 

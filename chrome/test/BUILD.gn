@@ -6000,6 +6000,7 @@ if (!is_android) {
       "../browser/autofill/autofill_uitest.cc",
       "../browser/autofill/autofill_uitest.h",
       "../browser/browser_keyevents_browsertest.cc",
+      "../browser/chrome_render_widget_host_browsertests.cc",
       "../browser/devtools/devtools_sanity_interactive_browsertest.cc",
       "../browser/extensions/api/extension_action/browser_action_interactive_test.cc",
       "../browser/extensions/api/extension_action/page_action_interactive_test.cc",

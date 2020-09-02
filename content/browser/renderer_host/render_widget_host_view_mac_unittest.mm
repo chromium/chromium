@@ -364,6 +364,15 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
                              routing_id,
                              /*hidden=*/false,
                              std::make_unique<FrameTokenMessageQueue>()) {
+    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+    auto frame_widget_host_receiver =
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
+    auto frame_widget_receiver =
+        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+    BindFrameWidgetInterfaces(std::move(frame_widget_host_receiver),
+                              frame_widget.Unbind());
+
     set_renderer_initialized(true);
     lastWheelEventLatencyInfo = ui::LatencyInfo();
 
@@ -489,6 +498,14 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     host_ = base::WrapUnique(MockRenderWidgetHostImpl::Create(
         &delegate_, *agent_scheduling_group_host_,
         process_host_->GetNextRoutingID()));
+    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+    auto frame_widget_host_receiver =
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
+    auto frame_widget_receiver =
+        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+    host_->BindFrameWidgetInterfaces(std::move(frame_widget_host_receiver),
+                                     frame_widget.Unbind());
     host_->set_owner_delegate(&mock_owner_delegate_);
     rwhv_mac_ = new RenderWidgetHostViewMac(host_.get());
     rwhv_cocoa_.reset([rwhv_mac_->GetInProcessNSView() retain]);

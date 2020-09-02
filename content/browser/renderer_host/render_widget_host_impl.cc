@@ -1231,7 +1231,9 @@ void RenderWidgetHostImpl::LostCapture() {
 }
 
 void RenderWidgetHostImpl::SetActive(bool active) {
-  Send(new WidgetMsg_SetActive(routing_id_, active));
+  const bool is_frame_widget = owner_delegate_;
+  if (is_frame_widget)
+    blink_frame_widget_->SetActive(active);
 }
 
 void RenderWidgetHostImpl::LostMouseLock() {

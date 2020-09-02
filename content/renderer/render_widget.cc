@@ -356,7 +356,6 @@ bool RenderWidget::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(WidgetMsg_Close, OnClose)
     IPC_MESSAGE_HANDLER(WidgetMsg_WasHidden, OnWasHidden)
     IPC_MESSAGE_HANDLER(WidgetMsg_WasShown, OnWasShown)
-    IPC_MESSAGE_HANDLER(WidgetMsg_SetActive, OnSetActive)
     IPC_MESSAGE_HANDLER(WidgetMsg_SetBounds_ACK, OnRequestSetBoundsAck)
     IPC_MESSAGE_HANDLER(WidgetMsg_SetViewportIntersection,
                         OnSetViewportIntersection)
@@ -535,7 +534,7 @@ viz::FrameSinkId RenderWidget::GetFrameSinkIdAtPoint(const gfx::PointF& point,
   return GetFrameSinkId();
 }
 
-void RenderWidget::OnSetActive(bool active) {
+void RenderWidget::SetActive(bool active) {
   if (delegate())
     delegate()->SetActiveForWidget(active);
 }

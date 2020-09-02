@@ -682,6 +682,31 @@ std::string ReferrerPolicyToString(
   return "";
 }
 
+mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
+BindFakeFrameWidgetInterfaces(RenderFrameHost* frame) {
+  RenderWidgetHostImpl* render_widget_host_impl =
+      static_cast<RenderFrameHostImpl*>(frame)->GetRenderWidgetHost();
+
+  mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
+  auto blink_frame_widget_host_receiver =
+      blink_frame_widget_host
+          .BindNewEndpointAndPassDedicatedReceiverForTesting();
+
+  mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
+  auto blink_frame_widget_receiver =
+      blink_frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+
+  render_widget_host_impl->BindFrameWidgetInterfaces(
+      std::move(blink_frame_widget_host_receiver), blink_frame_widget.Unbind());
+
+  return blink_frame_widget_receiver;
+}
+
+void SimulateActiveStateForWidget(RenderFrameHost* frame, bool active) {
+  static_cast<RenderFrameHostImpl*>(frame)->GetRenderWidgetHost()->SetActive(
+      active);
+}
+
 void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
   // In many cases, the load may have finished before we get here.  Only wait if
   // the tab still has a pending navigation.

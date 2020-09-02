@@ -27,4 +27,12 @@ void FakeFrameWidget::GetStringAtPoint(const gfx::Point& point_in_local_root,
 }
 #endif
 
+base::Optional<bool> FakeFrameWidget::GetActive() const {
+  return active_;
+}
+
+void FakeFrameWidget::SetActive(bool active) {
+  active_ = active;
+}
+
 }  // namespace content

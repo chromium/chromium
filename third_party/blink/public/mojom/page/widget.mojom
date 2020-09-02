@@ -61,6 +61,13 @@ interface FrameWidget {
   // Changes the text direction of the currently selected input field (if any).
   SetTextDirection(mojo_base.mojom.TextDirection direction);
 
+  // Activate/deactivate the Widget.
+  // Focused window is the window that receives keyboard input.
+  // The focused window is always or is always contained by the Active window.
+  // Active window is the one that contains the focused element.
+  // https://www.chromium.org/developers/design-documents/aura/focus-and-activation
+  SetActive(bool active);
+
   // Only valid for sub frame local roots.
   //
   // Sets the inherited effective touch action on an out-of-process iframe.

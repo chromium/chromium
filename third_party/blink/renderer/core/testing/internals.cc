@@ -3164,6 +3164,13 @@ Element* Internals::interestedElement() {
       .GetInterestedElement();
 }
 
+bool Internals::isActivated() {
+  if (!GetFrame())
+    return false;
+
+  return GetFrame()->GetPage()->GetFocusController().IsActive();
+}
+
 bool Internals::isInCanvasFontCache(Document* document,
                                     const String& font_string) {
   return document->GetCanvasFontCache()->IsInCache(font_string);

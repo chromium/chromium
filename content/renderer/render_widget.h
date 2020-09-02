@@ -308,7 +308,7 @@ class CONTENT_EXPORT RenderWidget
   viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
                                          gfx::PointF* local_point);
 
-  void OnSetActive(bool active);
+  void SetActive(bool active);
 
   void UseSynchronousResizeModeForTesting(bool enable);
   void SetDeviceScaleFactorForTesting(float factor);

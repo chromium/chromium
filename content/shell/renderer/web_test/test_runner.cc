@@ -3116,7 +3116,7 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
     // This path simulates losing focus on the window, without moving it to
     // another window.
     if (widget->GetWebWidget()->HasFocus()) {
-      widget->OnSetActive(false);
+      widget->SetActive(false);
       widget->GetWebWidget()->SetFocus(false);
     }
     return;
@@ -3127,7 +3127,7 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
     if (other_main_frame != main_frame) {
       RenderWidget* other_widget = other_main_frame->GetLocalRootRenderWidget();
       if (other_widget->GetWebWidget()->HasFocus()) {
-        other_widget->OnSetActive(false);
+        other_widget->SetActive(false);
         other_widget->GetWebWidget()->SetFocus(false);
       }
     }
@@ -3135,7 +3135,7 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
 
   if (!widget->GetWebWidget()->HasFocus()) {
     widget->GetWebWidget()->SetFocus(true);
-    widget->OnSetActive(true);
+    widget->SetActive(true);
   }
 }
 

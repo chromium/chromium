@@ -500,6 +500,10 @@ class Internals final : public ScriptWrappable {
 
   Element* interestedElement();
 
+  // Check if frame associated with current internals object is
+  // active or not.
+  bool isActivated();
+
   bool isInCanvasFontCache(Document*, const String&);
   unsigned canvasFontCacheMaxFonts();
 

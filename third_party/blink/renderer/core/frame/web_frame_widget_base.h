@@ -381,6 +381,7 @@ class CORE_EXPORT WebFrameWidgetBase
                          WebDragOperation) override;
   void DragSourceSystemDragEnded() override;
   void SetBackgroundOpaque(bool opaque) override;
+  void SetActive(bool active) override;
   // For both mainframe and childframe change the text direction of the
   // currently selected input field (if any).
   void SetTextDirection(base::i18n::TextDirection direction) override;

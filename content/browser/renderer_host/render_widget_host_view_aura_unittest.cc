@@ -551,6 +551,17 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     parent_host_ = MockRenderWidgetHostImpl::Create(
         delegates_.back().get(), *agent_scheduling_group_host_, routing_id);
+    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>
+        parent_frame_widget_host;
+    auto parent_frame_widget_host_receiver =
+        parent_frame_widget_host
+            .BindNewEndpointAndPassDedicatedReceiverForTesting();
+    mojo::AssociatedRemote<blink::mojom::FrameWidget> parent_frame_widget;
+    auto parent_frame_widget_receiver =
+        parent_frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+    parent_host_->BindFrameWidgetInterfaces(
+        std::move(parent_frame_widget_host_receiver),
+        parent_frame_widget.Unbind());
     delegates_.back()->set_widget_host(parent_host_);
     delegates_.back()->set_frame_tree(GetFrameTree());
     parent_view_ = new RenderWidgetHostViewAura(parent_host_);
@@ -560,6 +571,14 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
                                           gfx::Rect());
     view_ = CreateView();
     widget_host_ = static_cast<MockRenderWidgetHostImpl*>(view_->host());
+    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+    auto frame_widget_host_receiver =
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
+    auto frame_widget_receiver =
+        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+    widget_host_->BindFrameWidgetInterfaces(
+        std::move(frame_widget_host_receiver), frame_widget.Unbind());
     // Set the mouse_wheel_phase_handler_ timer timeout to 100ms.
     view_->event_handler()->set_mouse_wheel_wheel_phase_handler_timeout(
         base::TimeDelta::FromMilliseconds(100));
