@@ -201,7 +201,7 @@ void ViewBlobInternalsJob::GenerateHTMLForBlobData(
         break;
       case BlobDataItem::Type::kFileFilesystem:
         AddHTMLListItem(kType, "filesystem", out);
-        AddHTMLListItem(kURL, item.filesystem_url().spec(), out);
+        AddHTMLListItem(kURL, item.filesystem_url().DebugString(), out);
         if (!item.expected_modification_time().is_null()) {
           AddHTMLListItem(kModificationTime, base::UTF16ToUTF8(
               TimeFormatFriendlyDateAndTime(item.expected_modification_time())),

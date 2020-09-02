@@ -156,8 +156,7 @@ void CreateBlobOnIOThread(
     // Use AppendFileSystemFile here, since we're streaming the file directly
     // from the file system backend, and the file thus might not actually be
     // backed by a file on disk.
-    blob_builder->AppendFileSystemFile(url.ToGURL(), 0, info.size,
-                                       info.last_modified,
+    blob_builder->AppendFileSystemFile(url, 0, info.size, info.last_modified,
                                        std::move(file_system_context));
   }
   blob_builder->set_content_type(content_type);

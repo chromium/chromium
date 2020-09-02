@@ -645,7 +645,9 @@ TEST_F(BlobRegistryImplTest, Register_FileSystemFile_Valid) {
   ASSERT_EQ(BlobStatus::DONE, handle->GetBlobStatus());
 
   BlobDataBuilder expected_blob_data(kId);
-  expected_blob_data.AppendFileSystemFile(url, 0, 16, base::Time(), nullptr);
+  expected_blob_data.AppendFileSystemFile(file_system_context_->CrackURL(url),
+                                          0, 16, base::Time(),
+                                          file_system_context_);
 
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
   EXPECT_EQ(0u, BlobsUnderConstruction());

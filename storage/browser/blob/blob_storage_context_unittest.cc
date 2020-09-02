@@ -32,8 +32,8 @@
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/test/fake_blob_data_handle.h"
+#include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 
 namespace storage {
 namespace {
@@ -80,6 +80,8 @@ class BlobStorageContextTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::ThreadRestrictions::SetIOAllowed(false);
     context_ = std::make_unique<BlobStorageContext>();
+    file_system_context_ =
+        CreateFileSystemContextForTesting(nullptr, base::FilePath());
   }
 
   void TearDown() override {
@@ -138,6 +140,7 @@ class BlobStorageContextTest : public testing::Test {
   std::vector<FileCreationInfo> files_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<TestSimpleTaskRunner> file_runner_ = new TestSimpleTaskRunner();
+  scoped_refptr<FileSystemContext> file_system_context_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<BlobStorageContext> context_;
@@ -453,8 +456,8 @@ TEST_F(BlobStorageContextTest, AddFinishedBlob_LargeOffset) {
   const std::string kId2("id2");
 
   auto builder1 = std::make_unique<BlobDataBuilder>(kId1);
-  builder1->AppendFileSystemFile(GURL(), 0, kLargeSize, base::Time::Now(),
-                                 nullptr);
+  builder1->AppendFileSystemFile(FileSystemURL(), 0, kLargeSize,
+                                 base::Time::Now(), file_system_context_);
   std::unique_ptr<BlobDataHandle> blob_data_handle1 =
       context_->AddFinishedBlob(std::move(builder1));
 

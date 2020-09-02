@@ -206,6 +206,11 @@ class BlobReaderTest : public ::testing::Test {
   BlobReaderTest() = default;
   ~BlobReaderTest() override = default;
 
+  void SetUp() override {
+    file_system_context_ =
+        CreateFileSystemContextForTesting(nullptr, base::FilePath());
+  }
+
   void TearDown() override {
     reader_.reset();
     blob_handle_.reset();
@@ -280,6 +285,7 @@ class BlobReaderTest : public ::testing::Test {
   std::unique_ptr<BlobDataHandle> blob_handle_;
   MockFileStreamReaderProvider* provider_ = nullptr;
   std::unique_ptr<BlobReader> reader_;
+  scoped_refptr<FileSystemContext> file_system_context_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BlobReaderTest);
@@ -347,10 +353,11 @@ TEST_F(BlobReaderTest, BasicFile) {
 
 TEST_F(BlobReaderTest, BasicFileSystem) {
   auto b = std::make_unique<BlobDataBuilder>("uuid");
-  const GURL kURL("file://test_file/here.txt");
+  const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(kURL, 0, kData.size(), kTime, nullptr);
+  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
+                          kTime, file_system_context_);
   this->InitializeReader(std::move(b));
   // Non-async reader.
   ExpectFileSystemCall(kURL, 0, kData.size(), kTime,
@@ -609,10 +616,11 @@ TEST_F(BlobReaderTest, FileAsync) {
 
 TEST_F(BlobReaderTest, FileSystemAsync) {
   auto b = std::make_unique<BlobDataBuilder>("uuid");
-  const GURL kURL("file://test_file/here.txt");
+  const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(kURL, 0, kData.size(), kTime, nullptr);
+  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
+                          kTime, file_system_context_);
   this->InitializeReader(std::move(b));
 
   std::unique_ptr<FakeFileStreamReader> reader(new FakeFileStreamReader(kData));

@@ -28,6 +28,7 @@ namespace storage {
 class BlobSliceTest;
 class BlobStorageContext;
 class BlobStorageRegistry;
+class FileSystemURL;
 
 // This class is used to build blobs. It also facilitates the operation of
 // 'pending' data, where the user knows the size and existence of a file or
@@ -136,7 +137,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
                   const BlobStorageRegistry& blob_registry);
 
   void AppendFileSystemFile(
-      const GURL& url,
+      const FileSystemURL& url,
       uint64_t offset,
       uint64_t length,
       const base::Time& expected_modification_time,

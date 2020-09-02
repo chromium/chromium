@@ -18,6 +18,7 @@
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -92,7 +93,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
                                                       uint64_t length,
                                                       uint64_t file_id);
   static scoped_refptr<BlobDataItem> CreateFileFilesystem(
-      const GURL& url,
+      const FileSystemURL& url,
       uint64_t offset,
       uint64_t length,
       base::Time expected_modification_time,
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
     return path_;
   }
 
-  const GURL& filesystem_url() const {
+  const FileSystemURL& filesystem_url() const {
     DCHECK_EQ(type_, Type::kFileFilesystem);
     return filesystem_url_;
   }
@@ -182,9 +183,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
   uint64_t offset_;
   uint64_t length_;
 
-  std::vector<uint8_t> bytes_;  // For Type::kBytes.
-  base::FilePath path_;         // For Type::kFile.
-  GURL filesystem_url_;         // For Type::kFileFilesystem.
+  std::vector<uint8_t> bytes_;    // For Type::kBytes.
+  base::FilePath path_;           // For Type::kFile.
+  FileSystemURL filesystem_url_;  // For Type::kFileFilesystem.
   base::Time
       expected_modification_time_;  // For Type::kFile and kFileFilesystem.
 

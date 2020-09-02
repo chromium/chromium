@@ -321,7 +321,7 @@ void BlobDataBuilder::AppendBlob(const std::string& uuid,
 }
 
 void BlobDataBuilder::AppendFileSystemFile(
-    const GURL& url,
+    const FileSystemURL& url,
     uint64_t offset,
     uint64_t length,
     const base::Time& expected_modification_time,
