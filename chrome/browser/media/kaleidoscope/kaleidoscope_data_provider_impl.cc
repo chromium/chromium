@@ -310,8 +310,10 @@ void KaleidoscopeDataProviderImpl::OnAccessTokenAvailable(
   DCHECK(token_fetcher_);
   token_fetcher_.reset();
 
-  if (error.state() == GoogleServiceAuthError::State::NONE)
+  if (error.state() == GoogleServiceAuthError::State::NONE) {
     credentials_->access_token = access_token_info.token;
+    credentials_->expiry_time = access_token_info.expiration_time;
+  }
 
   for (auto& callback : pending_callbacks_) {
     std::move(callback).Run(credentials_.Clone(),

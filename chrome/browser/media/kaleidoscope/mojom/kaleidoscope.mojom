@@ -5,6 +5,7 @@
 module media.mojom;
 
 import "chrome/browser/media/feeds/media_feeds_store.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 
 // The result of getting the credentials.
@@ -22,6 +23,9 @@ struct Credentials {
   // An OAuth access token scoped to the Kaleidoscope API for the currently
   // logged in user. If the user is not signed in then this will be empty.
   string? access_token;
+
+  // The time these credentials will expire.
+  mojo_base.mojom.Time? expiry_time;
 };
 
 enum KaleidoscopeTab {
