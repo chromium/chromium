@@ -1913,7 +1913,7 @@ test("content_unittests") {
     "../browser/scheduler/browser_task_queues_unittest.cc",
     "../browser/scheduler/browser_ui_thread_scheduler_unittest.cc",
     "../browser/scheduler/responsiveness/calculator_unittest.cc",
-    "../browser/scheduler/responsiveness/jank_monitor_unittest.cc",
+    "../browser/scheduler/responsiveness/jank_monitor_impl_unittest.cc",
     "../browser/scheduler/responsiveness/metric_source_unittest.cc",
     "../browser/scheduler/responsiveness/watcher_unittest.cc",
     "../browser/screen_orientation/screen_orientation_provider_unittest.cc",

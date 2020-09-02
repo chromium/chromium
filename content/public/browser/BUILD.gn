@@ -193,6 +193,7 @@ source_set("browser_sources") {
     "installed_payment_apps_finder.h",
     "invalidate_type.h",
     "is_uvpaa.h",
+    "jank_monitor.h",
     "javascript_dialog_manager.cc",
     "javascript_dialog_manager.h",
     "keyboard_event_processing_result.h",

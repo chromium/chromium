@@ -1667,8 +1667,8 @@ source_set("browser") {
     "scheduler/browser_ui_thread_scheduler.h",
     "scheduler/responsiveness/calculator.cc",
     "scheduler/responsiveness/calculator.h",
-    "scheduler/responsiveness/jank_monitor.cc",
-    "scheduler/responsiveness/jank_monitor.h",
+    "scheduler/responsiveness/jank_monitor_impl.cc",
+    "scheduler/responsiveness/jank_monitor_impl.h",
     "scheduler/responsiveness/message_loop_observer.cc",
     "scheduler/responsiveness/message_loop_observer.h",
     "scheduler/responsiveness/metric_source.cc",
@@ -2683,12 +2683,6 @@ source_set("browser") {
       "//chromeos/network",
       "//chromeos/system",
       "//components/session_manager/core",
-    ]
-  } else {
-    sources += [
-      # ChromeOS accessibility metrics provider is in chromeos_metrics_provider.
-      "accessibility/accessibility_metrics_provider.cc",
-      "accessibility/accessibility_metrics_provider.h",
     ]
   }
 

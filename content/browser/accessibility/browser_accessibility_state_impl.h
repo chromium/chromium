@@ -60,6 +60,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
   void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;
+  void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
   void SetCaretBrowsingState(bool enabled) override;
 
@@ -69,11 +70,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;
-
-  // Fire frequent metrics signals to ensure users keeping browser open multiple
-  // days are counted each day, not only at launch. This is necessary, because
-  // UMA only aggregates uniques on a daily basis,
-  void UpdateUniqueUserHistograms();
 
   // Accessibility objects can have the "hot tracked" state set when
   // the mouse is hovering over them, but this makes tests flaky because

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/scheduler/responsiveness/jank_monitor.h"
+#include "content/browser/scheduler/responsiveness/jank_monitor_impl.h"
 
 #include "base/bind_helpers.h"
 #include "base/callback.h"
@@ -33,8 +33,7 @@ class TestObserver : public JankMonitor::Observer {
 
 class TestMetricSource : public MetricSource {
  public:
-  TestMetricSource(Delegate* delegate)
-      : MetricSource(delegate) {}
+  explicit TestMetricSource(Delegate* delegate) : MetricSource(delegate) {}
   ~TestMetricSource() override {}
 
   std::unique_ptr<NativeEventObserver> CreateNativeEventObserver() override {
@@ -42,7 +41,7 @@ class TestMetricSource : public MetricSource {
   }
 };
 
-class TestJankMonitor : public JankMonitor {
+class TestJankMonitor : public JankMonitorImpl {
  public:
   TestJankMonitor() {}
 
@@ -54,7 +53,7 @@ class TestJankMonitor : public JankMonitor {
     on_destroyed_ = std::move(on_destroyed);
   }
 
-  using JankMonitor::timer_running;
+  using JankMonitorImpl::timer_running;
 
  protected:
   ~TestJankMonitor() override {
@@ -68,7 +67,7 @@ class TestJankMonitor : public JankMonitor {
 
   void DestroyOnMonitorThread() override {
     destroy_on_monitor_thread_called_ = true;
-    JankMonitor::DestroyOnMonitorThread();
+    JankMonitorImpl::DestroyOnMonitorThread();
   }
 
  private:
@@ -230,7 +229,7 @@ TEST_F(JankMonitorTest, JankUIThreadReentrant) {
 TEST_F(JankMonitorTest, ReentrantResponsive) {
   auto enclosing_task = [&]() {
     // Run 5 responsive tasks in the inner runloop.
-    for (int i  = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
       auto nested_responsive_task = [&]() {
         task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
 
@@ -357,14 +356,14 @@ TEST_F(JankMonitorTest, StartStopTimer) {
   EXPECT_FALSE(monitor_->timer_running());
 }
 
-class TestJankMonitorShutdownRace : public JankMonitor {
+class TestJankMonitorShutdownRace : public JankMonitorImpl {
  public:
   TestJankMonitorShutdownRace(base::WaitableEvent* shutdown_on_monitor_thread,
                               base::WaitableEvent* shutdown_on_ui_thread)
       : shutdown_on_monitor_thread_(shutdown_on_monitor_thread),
         shutdown_on_ui_thread_(shutdown_on_ui_thread) {}
 
-  using JankMonitor::timer_running;
+  using JankMonitorImpl::timer_running;
 
  protected:
   ~TestJankMonitorShutdownRace() override = default;
@@ -374,7 +373,7 @@ class TestJankMonitorShutdownRace : public JankMonitor {
   }
 
   void DestroyOnMonitorThread() override {
-    JankMonitor::DestroyOnMonitorThread();
+    JankMonitorImpl::DestroyOnMonitorThread();
 
     // Posts a task to the UI thread. Note that we run concurrently with the
     // destruction of MetricSource. Even if MetricSource is still active and
@@ -387,7 +386,7 @@ class TestJankMonitorShutdownRace : public JankMonitor {
   }
 
   void FinishDestroyMetricSource() override {
-    JankMonitor::FinishDestroyMetricSource();
+    JankMonitorImpl::FinishDestroyMetricSource();
 
     shutdown_on_ui_thread_->Signal();
   }
@@ -429,7 +428,7 @@ TEST(JankMonitorShutdownTest, ShutdownRace_TimerRestarted) {
   EXPECT_FALSE(jank_monitor->timer_running());
 }
 
-class TestJankMonitorShutdownRaceTimerFired : public JankMonitor {
+class TestJankMonitorShutdownRaceTimerFired : public JankMonitorImpl {
  public:
   TestJankMonitorShutdownRaceTimerFired(
       content::BrowserTaskEnvironment* task_environment)
@@ -449,11 +448,11 @@ class TestJankMonitorShutdownRaceTimerFired : public JankMonitor {
     // after MetricSource is destroyed.
     task_environment_->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
 
-    JankMonitor::FinishDestroyMetricSource();
+    JankMonitorImpl::FinishDestroyMetricSource();
   }
 
   void OnCheckJankiness() override {
-    JankMonitor::OnCheckJankiness();
+    JankMonitorImpl::OnCheckJankiness();
     monitor_timer_fired_ = true;
   }
 

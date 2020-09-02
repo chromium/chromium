@@ -65,6 +65,11 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // thread, for example something that may block or run slowly.
   virtual void AddOtherThreadHistogramCallback(base::OnceClosure callback) = 0;
 
+  // Fire frequent metrics signals to ensure users keeping browser open multiple
+  // days are counted each day, not only at launch. This is necessary, because
+  // UMA only aggregates uniques on a daily basis,
+  virtual void UpdateUniqueUserHistograms() = 0;
+
   virtual void UpdateHistogramsForTesting() = 0;
 
   // Update BrowserAccessibilityState with the current status of caret browsing.

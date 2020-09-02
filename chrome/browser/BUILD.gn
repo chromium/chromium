@@ -4095,6 +4095,10 @@ static_library("browser") {
   } else {  # Non - ChromeOS.
     sources += [
       "fullscreen.h",
+
+      # ChromeOS accessibility metrics provider is in chromeos_metrics_provider.
+      "metrics/accessibility_metrics_provider.cc",
+      "metrics/accessibility_metrics_provider.h",
       "policy/browser_signin_policy_handler.cc",
       "policy/browser_signin_policy_handler.h",
       "policy/cloud/user_cloud_policy_manager_builder.cc",
