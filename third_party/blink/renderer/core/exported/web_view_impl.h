@@ -706,6 +706,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   SkColor base_background_color_override_ = Color::kTransparent;
   bool background_color_override_enabled_ = false;
   SkColor background_color_override_ = Color::kTransparent;
+  base::Optional<SkColor> last_background_color_;
   float zoom_factor_override_ = 0.f;
 
   bool should_dispatch_first_visually_non_empty_layout_ = false;

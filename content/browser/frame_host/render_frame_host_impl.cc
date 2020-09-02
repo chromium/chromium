@@ -4066,6 +4066,11 @@ void RenderFrameHostImpl::DidChangeThemeColor(
   render_view_host_->OnThemeColorChanged(this, theme_color);
 }
 
+void RenderFrameHostImpl::DidChangeBackgroundColor(
+    const SkColor& background_color) {
+  render_view_host_->DidChangeBackgroundColor(this, background_color);
+}
+
 void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(
     CommitCallbackInterceptor* interceptor) {
   // This DCHECK's aims to avoid unexpected replacement of an interceptor.

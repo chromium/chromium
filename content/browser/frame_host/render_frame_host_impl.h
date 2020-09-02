@@ -1563,6 +1563,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EvictFromBackForwardCache() override;
   void VisibilityChanged(blink::mojom::FrameVisibility) override;
   void DidChangeThemeColor(const base::Optional<SkColor>& theme_color) override;
+  void DidChangeBackgroundColor(const SkColor& background_color) override;
   void DidFailLoadWithError(const GURL& url, int32_t error_code) override;
   void DidFocusFrame() override;
   void DidCallFocus() override;

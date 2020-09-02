@@ -55,6 +55,7 @@ class WebAppBrowserController : public AppBrowserController,
   gfx::ImageSkia GetWindowAppIcon() const override;
   gfx::ImageSkia GetWindowIcon() const override;
   base::Optional<SkColor> GetThemeColor() const override;
+  base::Optional<SkColor> GetBackgroundColor() const override;
   base::string16 GetTitle() const override;
   base::string16 GetAppShortName() const override;
   base::string16 GetFormattedUrlOrigin() const override;

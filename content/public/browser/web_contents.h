@@ -376,6 +376,10 @@ class WebContents : public PageNavigator,
   // theme-color meta tag if any.
   virtual base::Optional<SkColor> GetThemeColor() = 0;
 
+  // Returns the background color for the underlying content as set by CSS if
+  // any.
+  virtual base::Optional<SkColor> GetBackgroundColor() = 0;
+
   // Returns the committed WebUI if one exists, otherwise the pending one.
   virtual WebUI* GetWebUI() = 0;
   virtual WebUI* GetCommittedWebUI() = 0;

@@ -945,6 +945,11 @@ void LocalFrame::DidChangeThemeColor() {
   GetLocalFrameHostRemote().DidChangeThemeColor(sk_color);
 }
 
+void LocalFrame::DidChangeBackgroundColor(SkColor background_color) {
+  DCHECK(!Tree().Parent());
+  GetLocalFrameHostRemote().DidChangeBackgroundColor(background_color);
+}
+
 LocalFrame& LocalFrame::LocalFrameRoot() const {
   const LocalFrame* cur_frame = this;
   while (cur_frame && IsA<LocalFrame>(cur_frame->Tree().Parent()))

@@ -899,6 +899,16 @@ void RenderViewHostImpl::OnThemeColorChanged(
   delegate_->OnThemeColorChanged(this);
 }
 
+void RenderViewHostImpl::DidChangeBackgroundColor(
+    RenderFrameHostImpl* rfh,
+    const SkColor& background_color) {
+  if (GetMainFrame() != rfh)
+    return;
+
+  main_frame_background_color_ = background_color;
+  delegate_->OnBackgroundColorChanged(this);
+}
+
 void RenderViewHostImpl::SetContentsMimeType(const std::string mime_type) {
   contents_mime_type_ = mime_type;
 }

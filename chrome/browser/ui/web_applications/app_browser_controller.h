@@ -67,6 +67,9 @@ class AppBrowserController : public TabStripModelObserver,
           url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname |
           url_formatter::kFormatUrlOmitTrivialSubdomains);
 
+  // Initialise, must be called after construction (requires virtual dispatch).
+  void Init();
+
   // Returns a theme built from the current page or app's theme color.
   const ui::ThemeProvider* GetThemeProvider() const;
 
@@ -102,6 +105,9 @@ class AppBrowserController : public TabStripModelObserver,
 
   // Returns the color of the title bar.
   virtual base::Optional<SkColor> GetThemeColor() const;
+
+  // Returns the background color of the page.
+  virtual base::Optional<SkColor> GetBackgroundColor() const;
 
   // Returns the title to be displayed in the window title bar.
   virtual base::string16 GetTitle() const;
@@ -168,6 +174,7 @@ class AppBrowserController : public TabStripModelObserver,
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidChangeThemeColor() override;
+  void OnBackgroundColorChanged() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -205,6 +212,7 @@ class AppBrowserController : public TabStripModelObserver,
   scoped_refptr<BrowserThemePack> theme_pack_;
   std::unique_ptr<ui::ThemeProvider> theme_provider_;
   base::Optional<SkColor> last_theme_color_;
+  base::Optional<SkColor> last_background_color_;
 
   base::Optional<SystemAppType> system_app_type_;
 

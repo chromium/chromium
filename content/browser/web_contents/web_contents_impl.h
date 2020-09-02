@@ -344,6 +344,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ClosePage() override;
   RenderWidgetHostView* GetFullscreenRenderWidgetHostView() override;
   base::Optional<SkColor> GetThemeColor() override;
+  base::Optional<SkColor> GetBackgroundColor() override;
   WebUI* GetWebUI() override;
   WebUI* GetCommittedWebUI() override;
   void SetUserAgentOverride(const blink::UserAgentOverride& ua_override,
@@ -821,6 +822,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   RenderFrameHostImpl* GetPendingMainFrame() override;
   void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) override;
   void OnThemeColorChanged(RenderViewHostImpl* source) override;
+  void OnBackgroundColorChanged(RenderViewHostImpl* source) override;
 
   void RecomputeWebPreferencesSlow() override;
   bool IsWebPreferencesSet() const override;
@@ -1829,6 +1831,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // The last published theme color.
   base::Optional<SkColor> last_sent_theme_color_;
+
+  // The last published background color.
+  base::Optional<SkColor> last_sent_background_color_;
 
   // SourceId of the last committed navigation, either a cross-document or
   // same-document navigation.

@@ -198,8 +198,12 @@ interface LocalFrameHost {
   // Notifies the browser that the associated frame has changed theme color.
   // This will only be called on main-frames only. |theme_color| is optional
   // and indicates if a theme color has been specified or not, e.g. removal
-  // of a theme color meta tag  will generate a null value.
+  // of a theme color meta tag will generate a null value.
   DidChangeThemeColor(skia.mojom.SkColor? theme_color);
+
+  // Notifies the browser that the associated frame has changed its computed CSS
+  // background color. This will be called on main-frames only.
+  DidChangeBackgroundColor(skia.mojom.SkColor background_color);
 
   // Sent when the renderer fails to load with |error_code| which means a net
   // error code.

@@ -97,6 +97,8 @@ static_library("test_support") {
     "../public/test/audio_service_test_helper.h",
     "../public/test/back_forward_cache_util.cc",
     "../public/test/back_forward_cache_util.h",
+    "../public/test/background_color_change_waiter.cc",
+    "../public/test/background_color_change_waiter.h",
     "../public/test/background_sync_test_util.cc",
     "../public/test/background_sync_test_util.h",
     "../public/test/blink_test_environment.cc",

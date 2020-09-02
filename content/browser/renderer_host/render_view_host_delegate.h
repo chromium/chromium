@@ -207,6 +207,10 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // by theme-color meta tag has changed.
   virtual void OnThemeColorChanged(RenderViewHostImpl* source) {}
 
+  // Called when the CSS background color for the underlying document has
+  // changed.
+  virtual void OnBackgroundColorChanged(RenderViewHostImpl* source) {}
+
  protected:
   virtual ~RenderViewHostDelegate() {}
 };

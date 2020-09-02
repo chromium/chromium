@@ -1631,7 +1631,15 @@ void WebViewImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
 
   // There is no background color for non-composited WebViews (eg printing).
   if (does_composite_) {
-    MainFrameImpl()->FrameWidgetImpl()->SetBackgroundColor(BackgroundColor());
+    SkColor background_color = BackgroundColor();
+    MainFrameImpl()->FrameWidgetImpl()->SetBackgroundColor(background_color);
+    if (background_color != last_background_color_) {
+      last_background_color_ = background_color;
+      if (Page* page = AsView().page.Get()) {
+        if (auto* main_local_frame = DynamicTo<LocalFrame>(page->MainFrame()))
+          main_local_frame->DidChangeBackgroundColor(background_color);
+      }
+    }
   }
 
   if (LocalFrameView* view = MainFrameImpl()->GetFrameView()) {

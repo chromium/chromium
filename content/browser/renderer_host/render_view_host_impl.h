@@ -237,8 +237,15 @@ class CONTENT_EXPORT RenderViewHostImpl
   void OnThemeColorChanged(RenderFrameHostImpl* rfh,
                            const base::Optional<SkColor>& theme_color);
 
+  void DidChangeBackgroundColor(RenderFrameHostImpl* rfh,
+                                const SkColor& background_color);
+
   base::Optional<SkColor> theme_color() const {
     return main_frame_theme_color_;
+  }
+
+  base::Optional<SkColor> background_color() const {
+    return main_frame_background_color_;
   }
 
   void SetContentsMimeType(std::string mime_type);
@@ -392,6 +399,9 @@ class CONTENT_EXPORT RenderViewHostImpl
   // The theme color for the underlying document as specified
   // by theme-color meta tag.
   base::Optional<SkColor> main_frame_theme_color_;
+
+  // The background color for the underlying document as computed by CSS.
+  base::Optional<SkColor> main_frame_background_color_;
 
   // Contents MIME type for the main document. It can be used to check whether
   // we can do something for special contents.

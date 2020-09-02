@@ -1309,6 +1309,10 @@ base::Optional<SkColor> WebContentsImpl::GetThemeColor() {
   return GetRenderViewHost()->theme_color();
 }
 
+base::Optional<SkColor> WebContentsImpl::GetBackgroundColor() {
+  return GetRenderViewHost()->background_color();
+}
+
 void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
   if (mode == accessibility_mode_)
     return;
@@ -5057,18 +5061,16 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
     delegate_->DidNavigateMainFramePostCommit(this);
   view_->SetOverscrollControllerEnabled(CanOverscrollContent());
 
+  // The following events will not fire again if the page is restored from the
+  // BackForwardCache. So fire them ourselves if needed.
   if (details.is_navigation_to_different_page() &&
       GetRenderViewHost()->did_first_visually_non_empty_paint()) {
-    // This event will not fire again if the page is restored from the
-    // BackForwardCache. So fire it ourselves if needed.
     DidFirstVisuallyNonEmptyPaint(GetRenderViewHost());
   }
-
-  if (GetRenderViewHost()->theme_color() != last_sent_theme_color_) {
-    // This event will not fire again if the page is restored from the
-    // BackForwardCache. So fire it ourselves if needed.
+  if (GetRenderViewHost()->theme_color() != last_sent_theme_color_)
     OnThemeColorChanged(GetRenderViewHost());
-  }
+  if (GetRenderViewHost()->background_color() != last_sent_background_color_)
+    OnBackgroundColorChanged(GetRenderViewHost());
 }
 
 void WebContentsImpl::DidNavigateAnyFramePostCommit(
@@ -5107,6 +5109,16 @@ void WebContentsImpl::OnThemeColorChanged(RenderViewHostImpl* source) {
     observers_.ForEachObserver([&](WebContentsObserver* observer) {
       observer->DidChangeThemeColor();
     });
+  }
+}
+
+void WebContentsImpl::OnBackgroundColorChanged(RenderViewHostImpl* source) {
+  if (source->did_first_visually_non_empty_paint() &&
+      last_sent_background_color_ != source->background_color()) {
+    observers_.ForEachObserver([&](WebContentsObserver* observer) {
+      observer->OnBackgroundColorChanged();
+    });
+    last_sent_background_color_ = source->background_color();
   }
 }
 
@@ -5714,6 +5726,14 @@ void WebContentsImpl::DidFirstVisuallyNonEmptyPaint(
       observer->DidChangeThemeColor();
     });
     last_sent_theme_color_ = source->theme_color();
+  }
+
+  if (source->background_color() != last_sent_background_color_) {
+    // Background color should have updated by now if there was one.
+    observers_.ForEachObserver([&](WebContentsObserver* observer) {
+      observer->OnBackgroundColorChanged();
+    });
+    last_sent_background_color_ = source->background_color();
   }
 }
 

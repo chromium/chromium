@@ -140,6 +140,12 @@ base::Optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   return registrar().GetAppThemeColor(GetAppId());
 }
 
+base::Optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
+  if (auto color = AppBrowserController::GetBackgroundColor())
+    return color;
+  return registrar().GetAppBackgroundColor(GetAppId());
+}
+
 GURL WebAppBrowserController::GetAppLaunchURL() const {
   return registrar().GetAppLaunchURL(GetAppId());
 }

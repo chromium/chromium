@@ -538,6 +538,9 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Invoked when theme color is changed.
   virtual void DidChangeThemeColor() {}
 
+  // Invoked when background color is changed.
+  virtual void OnBackgroundColorChanged() {}
+
   // Called when a message is added to the console of the WebContents. This is
   // invoked before forwarding the message to the WebContents' delegate.
   virtual void OnDidAddMessageToConsole(
