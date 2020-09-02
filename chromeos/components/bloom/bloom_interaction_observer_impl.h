@@ -19,8 +19,7 @@ namespace bloom {
 // all bloom responses.
 class BloomInteractionObserverImpl : public BloomInteractionObserver {
  public:
-  explicit BloomInteractionObserverImpl(
-      ash::AssistantInteractionController* assistant_interaction_controller);
+  BloomInteractionObserverImpl();
   ~BloomInteractionObserverImpl() override;
 
   // BloomInteractionObserver implementation:
@@ -30,7 +29,9 @@ class BloomInteractionObserverImpl : public BloomInteractionObserver {
   void OnInteractionFinished(BloomInteractionResolution resolution) override;
 
  private:
-  ash::AssistantInteractionController* assistant_interaction_controller_;
+  // Return the current |AssistantInteractionController|. Can be nullptr
+  // (usually if the system is in the process of shutting down/logging out).
+  ash::AssistantInteractionController* assistant_interaction_controller();
 };
 
 }  // namespace bloom

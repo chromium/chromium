@@ -92,8 +92,7 @@ void AssistantClientImpl::MaybeInit(Profile* profile) {
   if (chromeos::assistant::features::IsBloomEnabled()) {
     bloom_controller_ = chromeos::bloom::BloomControllerFactory::Create(
         profile->GetURLLoaderFactory(),
-        IdentityManagerFactory::GetForProfile(profile),
-        ash::AssistantInteractionController::Get());
+        IdentityManagerFactory::GetForProfile(profile));
   }
 }
 

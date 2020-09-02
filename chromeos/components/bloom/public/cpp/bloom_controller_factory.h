@@ -10,10 +10,6 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 
-namespace ash {
-class AssistantInteractionController;
-}  // namespace ash
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -32,8 +28,7 @@ class COMPONENT_EXPORT(BLOOM) BloomControllerFactory {
   // Create the Bloom controller. Can only be invoked once.
   static std::unique_ptr<BloomController> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager,
-      ash::AssistantInteractionController* assistant_interaction_controller);
+      signin::IdentityManager* identity_manager);
 };
 
 }  // namespace bloom

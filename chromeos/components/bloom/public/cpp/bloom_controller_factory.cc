@@ -28,14 +28,12 @@ class FakeScreenshotGrabber : public ScreenshotGrabber {
 // static
 std::unique_ptr<BloomController> BloomControllerFactory::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager,
-    ash::AssistantInteractionController* assistant_interaction_controller) {
+    signin::IdentityManager* identity_manager) {
   auto result = std::make_unique<BloomControllerImpl>(
       identity_manager, std::make_unique<FakeScreenshotGrabber>(),
       std::make_unique<BloomServerProxyImpl>());
 
-  result->AddObserver(std::make_unique<BloomInteractionObserverImpl>(
-      assistant_interaction_controller));
+  result->AddObserver(std::make_unique<BloomInteractionObserverImpl>());
 
   return std::move(result);
 }

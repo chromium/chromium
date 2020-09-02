@@ -9,16 +9,13 @@
 namespace chromeos {
 namespace bloom {
 
-BloomInteractionObserverImpl::BloomInteractionObserverImpl(
-    ash::AssistantInteractionController* assistant_interaction_controller)
-    : assistant_interaction_controller_(assistant_interaction_controller) {
-  DCHECK(assistant_interaction_controller_);
-}
+BloomInteractionObserverImpl::BloomInteractionObserverImpl() = default;
 
 BloomInteractionObserverImpl::~BloomInteractionObserverImpl() = default;
 
 void BloomInteractionObserverImpl::OnInteractionStarted() {
-  assistant_interaction_controller_->StartBloomInteraction();
+  if (assistant_interaction_controller())
+    assistant_interaction_controller()->StartBloomInteraction();
 }
 
 void BloomInteractionObserverImpl::OnShowUI() {
@@ -32,6 +29,11 @@ void BloomInteractionObserverImpl::OnShowResult(const std::string& html) {
 void BloomInteractionObserverImpl::OnInteractionFinished(
     BloomInteractionResolution resolution) {
   // TODO(jeroendh): implement
+}
+
+ash::AssistantInteractionController*
+BloomInteractionObserverImpl::assistant_interaction_controller() {
+  return ash::AssistantInteractionController::Get();
 }
 
 }  // namespace bloom
