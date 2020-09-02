@@ -58,7 +58,8 @@ class CORE_EXPORT LayoutShiftTracker final
                           const LogicalOffset& old_starting_point,
                           const LogicalOffset& new_starting_point,
                           const PhysicalOffset& old_paint_offset,
-                          const PhysicalOffset& new_paint_offset);
+                          const PhysicalOffset& new_paint_offset,
+                          const LayoutUnit logical_height);
 
   void NotifyPrePaintFinished();
   void NotifyInput(const WebInputEvent&);
@@ -137,7 +138,6 @@ class CORE_EXPORT LayoutShiftTracker final
     PhysicalSize new_size_;
     PhysicalRect old_rect_;
     PhysicalRect new_rect_;
-    LayoutUnit max_text_shift_distance_;
   };
 
  private:

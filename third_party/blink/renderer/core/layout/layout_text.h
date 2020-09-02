@@ -332,8 +332,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void DetachAbstractInlineTextBoxesIfNeeded();
 
-  // Returns the logical location of the first line box.
-  LogicalOffset LogicalStartingPoint() const;
+  // Returns the logical location of the first line box, and the logical height
+  // of the LayoutText.
+  void LogicalStartingPointAndHeight(LogicalOffset& logical_starting_point,
+                                     LayoutUnit& logical_height) const;
 
   // For LayoutShiftTracker. Saves the value of LogicalStartingPoint() value
   // during the previous paint invalidation.

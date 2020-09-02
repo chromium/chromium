@@ -180,7 +180,9 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
 
   if (object.IsText()) {
     const auto& text = ToLayoutText(object);
-    LogicalOffset new_starting_point = text.LogicalStartingPoint();
+    LogicalOffset new_starting_point;
+    LayoutUnit logical_height;
+    text.LogicalStartingPointAndHeight(new_starting_point, logical_height);
     LogicalOffset old_starting_point = text.PreviousLogicalStartingPoint();
     if (new_starting_point == old_starting_point)
       return;
@@ -198,7 +200,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
         context.old_paint_offset -
             tree_builder_context.current
                 .additional_offset_to_layout_shift_root_delta,
-        tree_builder_context.current.paint_offset);
+        tree_builder_context.current.paint_offset, logical_height);
     return;
   }
 
