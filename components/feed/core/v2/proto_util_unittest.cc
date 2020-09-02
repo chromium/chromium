@@ -62,7 +62,7 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
                                     /*consistency_token=*/std::string())
           .feed_request();
 
-  ASSERT_EQ(9, request.client_capability_size());
+  ASSERT_EQ(10, request.client_capability_size());
   EXPECT_TRUE(HasCapability(request, feedwire::Capability::BASE_UI));
   EXPECT_TRUE(HasCapability(request, feedwire::Capability::REQUEST_SCHEDULE));
   EXPECT_TRUE(HasCapability(request, feedwire::Capability::OPEN_IN_TAB));
@@ -73,6 +73,7 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
   EXPECT_TRUE(HasCapability(request, feedwire::Capability::UI_THEME_V2));
   EXPECT_TRUE(
       HasCapability(request, feedwire::Capability::UNDO_FOR_DISMISS_COMMAND));
+  EXPECT_TRUE(HasCapability(request, feedwire::Capability::PREFETCH_METADATA));
 }
 
 TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
@@ -88,7 +89,7 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
                                     /*consistency_token=*/std::string())
           .feed_request();
 
-  ASSERT_EQ(8, request.client_capability_size());
+  ASSERT_EQ(9, request.client_capability_size());
 
   // Optional capabilities can be disabled.
   EXPECT_FALSE(HasCapability(request, feedwire::Capability::INFINITE_FEED));
@@ -104,6 +105,7 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   EXPECT_TRUE(HasCapability(request, feedwire::Capability::UI_THEME_V2));
   EXPECT_TRUE(
       HasCapability(request, feedwire::Capability::UNDO_FOR_DISMISS_COMMAND));
+  EXPECT_TRUE(HasCapability(request, feedwire::Capability::PREFETCH_METADATA));
 }
 
 }  // namespace
