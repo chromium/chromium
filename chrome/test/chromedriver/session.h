@@ -83,6 +83,7 @@ struct Session {
 
   const std::string id;
   bool w3c_compliant;
+  bool webSocketUrl = false;
   bool quit;
   bool detach;
   std::unique_ptr<Chrome> chrome;

@@ -373,6 +373,7 @@ Status ConfigureSession(Session* session,
   session->script_timeout = capabilities->script_timeout;
   session->strict_file_interactability =
       capabilities->strict_file_interactability;
+  session->webSocketUrl = capabilities->webSocketUrl;
   Log::Level driver_level = Log::kWarning;
   if (capabilities->logging_prefs.count(WebDriverLog::kDriverType))
     driver_level = capabilities->logging_prefs[WebDriverLog::kDriverType];
@@ -605,9 +606,7 @@ Status ExecuteInitSession(const InitSessionParams& bound_params,
     session->quit = true;
     if (session->chrome != NULL)
       session->chrome->Quit();
-  } else {
-    // TODO only do this when WebSocketUrl capability is specified
-    // https://bugs.chromium.org/p/chromedriver/issues/detail?id=3588
+  } else if (session->webSocketUrl) {
     bound_params.cmd_task_runner->PostTask(
         FROM_HERE, base::BindOnce(&InitSessionForWebSocketConnection,
                                   bound_params.session_map, session->id));
