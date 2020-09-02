@@ -11,8 +11,7 @@ ExtensionsGuestViewContainer::ExtensionsGuestViewContainer(
     : GuestViewContainer(render_frame) {
 }
 
-ExtensionsGuestViewContainer::~ExtensionsGuestViewContainer() {
-}
+ExtensionsGuestViewContainer::~ExtensionsGuestViewContainer() = default;
 
 void ExtensionsGuestViewContainer::OnDestroy(bool embedder_frame_destroyed) {
 }

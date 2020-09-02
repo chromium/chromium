@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "extensions/common/mojom/app_window.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,6 +22,9 @@ class ExtensionsRenderFrameObserver : public content::RenderFrameObserver,
  public:
   ExtensionsRenderFrameObserver(content::RenderFrame* render_frame,
                                 service_manager::BinderRegistry* registry);
+  ExtensionsRenderFrameObserver(const ExtensionsRenderFrameObserver&) = delete;
+  ExtensionsRenderFrameObserver& operator=(
+      const ExtensionsRenderFrameObserver&) = delete;
   ~ExtensionsRenderFrameObserver() override;
 
  private:
@@ -41,11 +43,9 @@ class ExtensionsRenderFrameObserver : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   // true if webview is overlayed with grey color.
-  bool webview_visually_deemphasized_;
+  bool webview_visually_deemphasized_ = false;
 
   mojo::ReceiverSet<mojom::AppWindow> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsRenderFrameObserver);
 };
 
 }  // namespace extensions

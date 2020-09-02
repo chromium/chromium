@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/mock_extension_system.h"
@@ -40,6 +38,8 @@ class ExtensionsTest : public testing::Test {
       : ExtensionsTest(
             std::make_unique<content::BrowserTaskEnvironment>(args...)) {}
 
+  ExtensionsTest(const ExtensionsTest&) = delete;
+  ExtensionsTest& operator=(const ExtensionsTest&) = delete;
   ~ExtensionsTest() override;
 
   // Allows setting a custom TestExtensionsBrowserClient. Must only be called
@@ -94,8 +94,6 @@ class ExtensionsTest : public testing::Test {
   // The existence of this object enables tests via
   // RenderViewHostTester.
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsTest);
 };
 
 }  // namespace extensions

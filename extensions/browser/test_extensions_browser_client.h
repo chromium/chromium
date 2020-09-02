@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/update_client/update_client.h"
@@ -33,6 +32,9 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   explicit TestExtensionsBrowserClient(content::BrowserContext* main_context);
   // Alternate constructor allowing |main_context_| to be set later.
   TestExtensionsBrowserClient();
+  TestExtensionsBrowserClient(const TestExtensionsBrowserClient&) = delete;
+  TestExtensionsBrowserClient& operator=(const TestExtensionsBrowserClient&) =
+      delete;
   ~TestExtensionsBrowserClient() override;
 
   void set_process_manager_delegate(ProcessManagerDelegate* delegate) {
@@ -149,23 +151,21 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
  private:
   // Not owned.
-  content::BrowserContext* main_context_;
-  // Not owned, defaults to nullptr.
-  content::BrowserContext* incognito_context_;
-  // Not owned, defaults to nullptr.
-  content::BrowserContext* lock_screen_context_;
+  content::BrowserContext* main_context_ = nullptr;
+  // Not owned.
+  content::BrowserContext* incognito_context_ = nullptr;
+  // Not owned.
+  content::BrowserContext* lock_screen_context_ = nullptr;
 
-  // Not owned, defaults to nullptr.
-  ProcessManagerDelegate* process_manager_delegate_;
+  // Not owned.
+  ProcessManagerDelegate* process_manager_delegate_ = nullptr;
 
-  // Not owned, defaults to nullptr.
-  ExtensionSystemProvider* extension_system_factory_;
+  // Not owned.
+  ExtensionSystemProvider* extension_system_factory_ = nullptr;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 
   base::Callback<update_client::UpdateClient*(void)> update_client_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionsBrowserClient);
 };
 
 }  // namespace extensions

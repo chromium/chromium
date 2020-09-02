@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_TEST_EXTENSIONS_RENDERER_CLIENT_H_
 #define EXTENSIONS_RENDERER_TEST_EXTENSIONS_RENDERER_CLIENT_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 
 namespace extensions {
@@ -13,6 +12,9 @@ namespace extensions {
 class TestExtensionsRendererClient : public ExtensionsRendererClient {
  public:
   TestExtensionsRendererClient();
+  TestExtensionsRendererClient(const TestExtensionsRendererClient&) = delete;
+  TestExtensionsRendererClient& operator=(const TestExtensionsRendererClient&) =
+      delete;
   ~TestExtensionsRendererClient() override;
 
   // ExtensionsRendererClient implementation.
@@ -22,9 +24,6 @@ class TestExtensionsRendererClient : public ExtensionsRendererClient {
   bool ExtensionAPIEnabledForServiceWorkerScript(
       const GURL& scope,
       const GURL& script_url) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionsRendererClient);
 };
 
 }  // namespace extensions

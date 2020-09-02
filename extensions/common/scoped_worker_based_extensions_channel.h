@@ -17,12 +17,14 @@ namespace extensions {
 class ScopedWorkerBasedExtensionsChannel {
  public:
   ScopedWorkerBasedExtensionsChannel();
+  ScopedWorkerBasedExtensionsChannel(
+      const ScopedWorkerBasedExtensionsChannel&) = delete;
+  ScopedWorkerBasedExtensionsChannel& operator=(
+      const ScopedWorkerBasedExtensionsChannel&) = delete;
   ~ScopedWorkerBasedExtensionsChannel();
 
  private:
   ScopedCurrentChannel worker_based_extensions_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWorkerBasedExtensionsChannel);
 };
 
 }  // namespace extensions

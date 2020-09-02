@@ -5,7 +5,8 @@
 #ifndef EXTENSIONS_SHELL_COMMON_SHELL_EXTENSIONS_API_PROVIDER_H_
 #define EXTENSIONS_SHELL_COMMON_SHELL_EXTENSIONS_API_PROVIDER_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "extensions/common/extensions_api_provider.h"
 
 namespace extensions {
@@ -13,6 +14,9 @@ namespace extensions {
 class ShellExtensionsAPIProvider : public ExtensionsAPIProvider {
  public:
   ShellExtensionsAPIProvider();
+  ShellExtensionsAPIProvider(const ShellExtensionsAPIProvider&) = delete;
+  ShellExtensionsAPIProvider& operator=(const ShellExtensionsAPIProvider&) =
+      delete;
   ~ShellExtensionsAPIProvider() override;
 
   // ExtensionsAPIProvider:
@@ -25,9 +29,6 @@ class ShellExtensionsAPIProvider : public ExtensionsAPIProvider {
   base::StringPiece GetAPISchema(const std::string& name) override;
   void RegisterPermissions(PermissionsInfo* permissions_info) override;
   void RegisterManifestHandlers() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionsAPIProvider);
 };
 
 }  // namespace extensions

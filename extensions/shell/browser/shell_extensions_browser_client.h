@@ -30,6 +30,9 @@ class ExtensionsAPIClient;
 class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
  public:
   ShellExtensionsBrowserClient();
+  ShellExtensionsBrowserClient(const ShellExtensionsBrowserClient&) = delete;
+  ShellExtensionsBrowserClient& operator=(const ShellExtensionsBrowserClient&) =
+      delete;
   ~ShellExtensionsBrowserClient() override;
 
   // ExtensionsBrowserClient overrides:
@@ -137,8 +140,6 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<ExtensionCache> extension_cache_;
 
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionsBrowserClient);
 };
 
 }  // namespace extensions

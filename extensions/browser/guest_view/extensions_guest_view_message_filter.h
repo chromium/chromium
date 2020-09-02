@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/guest_view_message_filter.h"
 #include "content/public/browser/browser_associated_interface.h"
@@ -43,6 +42,10 @@ class ExtensionsGuestViewMessageFilter
  public:
   ExtensionsGuestViewMessageFilter(int render_process_id,
                                    content::BrowserContext* context);
+  ExtensionsGuestViewMessageFilter(const ExtensionsGuestViewMessageFilter&) =
+      delete;
+  ExtensionsGuestViewMessageFilter& operator=(
+      const ExtensionsGuestViewMessageFilter&) = delete;
 
  private:
   friend class content::BrowserThread;
@@ -108,8 +111,6 @@ class ExtensionsGuestViewMessageFilter
       content::WebContents* web_contents);
 
   static const uint32_t kFilteredMessageClasses[];
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsGuestViewMessageFilter);
 };
 
 }  // namespace extensions

@@ -15,7 +15,7 @@
 
 namespace chrome_apps {
 
-ChromeAppsAPIProvider::ChromeAppsAPIProvider() {}
+ChromeAppsAPIProvider::ChromeAppsAPIProvider() = default;
 ChromeAppsAPIProvider::~ChromeAppsAPIProvider() = default;
 
 void ChromeAppsAPIProvider::AddAPIFeatures(

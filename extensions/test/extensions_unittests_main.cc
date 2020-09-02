@@ -6,7 +6,6 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_io_thread.h"
@@ -29,23 +28,24 @@ namespace {
 // be a persistent object available to tests?
 class ExtensionsContentClient : public content::ContentClient {
  public:
-  ExtensionsContentClient() {}
-  ~ExtensionsContentClient() override {}
+  ExtensionsContentClient() = default;
+  ExtensionsContentClient(const ExtensionsContentClient&) = delete;
+  ExtensionsContentClient& operator=(const ExtensionsContentClient&) = delete;
+  ~ExtensionsContentClient() override = default;
 
   // content::ContentClient overrides:
   void AddAdditionalSchemes(Schemes* schemes) override {
     schemes->standard_schemes.push_back(extensions::kExtensionScheme);
     schemes->savable_schemes.push_back(extensions::kExtensionScheme);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsContentClient);
 };
 
 // The test suite for extensions_unittests.
 class ExtensionsTestSuite : public content::ContentTestSuiteBase {
  public:
   ExtensionsTestSuite(int argc, char** argv);
+  ExtensionsTestSuite(const ExtensionsTestSuite&) = delete;
+  ExtensionsTestSuite& operator=(const ExtensionsTestSuite&) = delete;
   ~ExtensionsTestSuite() override;
 
  private:
@@ -54,8 +54,6 @@ class ExtensionsTestSuite : public content::ContentTestSuiteBase {
   void Shutdown() override;
 
   std::unique_ptr<extensions::TestExtensionsClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsTestSuite);
 };
 
 ExtensionsTestSuite::ExtensionsTestSuite(int argc, char** argv)

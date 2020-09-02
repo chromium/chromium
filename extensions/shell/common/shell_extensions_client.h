@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_SHELL_COMMON_SHELL_EXTENSIONS_CLIENT_H_
 #define EXTENSIONS_SHELL_COMMON_SHELL_EXTENSIONS_CLIENT_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/common/extensions_client.h"
 #include "url/gurl.h"
 
@@ -16,6 +14,8 @@ namespace extensions {
 class ShellExtensionsClient : public ExtensionsClient {
  public:
   ShellExtensionsClient();
+  ShellExtensionsClient(const ShellExtensionsClient&) = delete;
+  ShellExtensionsClient& operator=(const ShellExtensionsClient&) = delete;
   ~ShellExtensionsClient() override;
 
   // ExtensionsClient overrides:
@@ -42,8 +42,6 @@ class ShellExtensionsClient : public ExtensionsClient {
 
   const GURL webstore_base_url_;
   const GURL webstore_update_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionsClient);
 };
 
 }  // namespace extensions

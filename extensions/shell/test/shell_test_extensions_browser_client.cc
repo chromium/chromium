@@ -13,9 +13,9 @@ ShellTestExtensionsBrowserClient::ShellTestExtensionsBrowserClient(
     content::BrowserContext* main_context)
     : TestExtensionsBrowserClient(main_context) {}
 
-ShellTestExtensionsBrowserClient::ShellTestExtensionsBrowserClient() {}
+ShellTestExtensionsBrowserClient::ShellTestExtensionsBrowserClient() = default;
 
-ShellTestExtensionsBrowserClient::~ShellTestExtensionsBrowserClient() {}
+ShellTestExtensionsBrowserClient::~ShellTestExtensionsBrowserClient() = default;
 
 ExtensionWebContentsObserver*
 ShellTestExtensionsBrowserClient::GetExtensionWebContentsObserver(

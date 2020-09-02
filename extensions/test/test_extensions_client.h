@@ -5,7 +5,9 @@
 #ifndef EXTENSIONS_TEST_TEST_EXTENSIONS_CLIENT_H_
 #define EXTENSIONS_TEST_TEST_EXTENSIONS_CLIENT_H_
 
-#include "base/macros.h"
+#include <set>
+#include <string>
+
 #include "extensions/common/extensions_client.h"
 #include "url/gurl.h"
 
@@ -22,6 +24,8 @@ class TestExtensionsClient : public ExtensionsClient {
   };
 
   TestExtensionsClient();
+  TestExtensionsClient(const TestExtensionsClient&) = delete;
+  TestExtensionsClient& operator=(const TestExtensionsClient&) = delete;
   ~TestExtensionsClient() override;
 
   void AddBrowserImagePathsFilter(BrowserImagePathsFilter* filter);
@@ -58,8 +62,6 @@ class TestExtensionsClient : public ExtensionsClient {
 
   const GURL webstore_base_url_;
   GURL webstore_update_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionsClient);
 };
 
 }  // namespace extensions

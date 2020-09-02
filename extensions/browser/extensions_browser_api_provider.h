@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSIONS_BROWSER_API_PROVIDER_H_
 #define EXTENSIONS_BROWSER_EXTENSIONS_BROWSER_API_PROVIDER_H_
 
-#include "base/macros.h"
-
 class ExtensionFunctionRegistry;
 namespace extensions {
 
@@ -15,15 +13,15 @@ namespace extensions {
 // easily add or subtract features in different configurations.
 class ExtensionsBrowserAPIProvider {
  public:
-  ExtensionsBrowserAPIProvider() {}
-  virtual ~ExtensionsBrowserAPIProvider() {}
+  ExtensionsBrowserAPIProvider() = default;
+  ExtensionsBrowserAPIProvider(const ExtensionsBrowserAPIProvider&) = delete;
+  ExtensionsBrowserAPIProvider& operator=(const ExtensionsBrowserAPIProvider&) =
+      delete;
+  virtual ~ExtensionsBrowserAPIProvider() = default;
 
   // Registers any API functions in the given |registry|.
   virtual void RegisterExtensionFunctions(
       ExtensionFunctionRegistry* registry) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsBrowserAPIProvider);
 };
 
 }  // namespace extensions

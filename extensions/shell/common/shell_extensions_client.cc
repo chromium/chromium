@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/user_agent.h"
@@ -28,8 +27,12 @@ namespace {
 // code. For now, this implementation does nothing.
 class ShellPermissionMessageProvider : public PermissionMessageProvider {
  public:
-  ShellPermissionMessageProvider() {}
-  ~ShellPermissionMessageProvider() override {}
+  ShellPermissionMessageProvider() = default;
+  ShellPermissionMessageProvider(const ShellPermissionMessageProvider&) =
+      delete;
+  ShellPermissionMessageProvider& operator=(
+      const ShellPermissionMessageProvider&) = delete;
+  ~ShellPermissionMessageProvider() override = default;
 
   // PermissionMessageProvider implementation.
   PermissionMessages GetPermissionMessages(
@@ -50,9 +53,6 @@ class ShellPermissionMessageProvider : public PermissionMessageProvider {
       Manifest::Type extension_type) const override {
     return PermissionIDSet();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellPermissionMessageProvider);
 };
 
 base::LazyInstance<ShellPermissionMessageProvider>::DestructorAtExit

@@ -83,6 +83,8 @@ class UserScriptListener;
 class ExtensionsBrowserClient {
  public:
   ExtensionsBrowserClient();
+  ExtensionsBrowserClient(const ExtensionsBrowserClient&) = delete;
+  ExtensionsBrowserClient& operator=(const ExtensionsBrowserClient&) = delete;
   virtual ~ExtensionsBrowserClient();
 
   // Returns the single instance of |this|.
@@ -370,8 +372,6 @@ class ExtensionsBrowserClient {
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsBrowserClient);
 };
 
 }  // namespace extensions

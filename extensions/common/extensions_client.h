@@ -44,6 +44,8 @@ class ExtensionsClient {
   static void Set(ExtensionsClient* client);
 
   ExtensionsClient();
+  ExtensionsClient(const ExtensionsClient&) = delete;
+  ExtensionsClient& operator=(const ExtensionsClient&) = delete;
   virtual ~ExtensionsClient();
 
   // Create a FeatureProvider for a specific feature type, e.g. "permission".
@@ -155,8 +157,6 @@ class ExtensionsClient {
 
   // Whether DoInitialize() has been called.
   bool initialize_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsClient);
 };
 
 }  // namespace extensions
