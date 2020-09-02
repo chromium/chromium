@@ -35,7 +35,7 @@
 @property(nonatomic, readonly, strong) UIButton* menuButton;
 
 // Title label for the feed.
-@property(nonatomic, strong) UILabel* titleLabel;
+@property(nonatomic, copy) NSString* title;
 
 // Changes header UI based on Discover feed visibility.
 - (void)changeHeaderForFeedVisible:(BOOL)visible;
