@@ -33,6 +33,7 @@ PrivacyContainerView::PrivacyContainerView(AppListViewDelegate* view_delegate)
 
   auto metadata = std::make_unique<SearchResultMetadata>();
   metadata->id = "PrivacyInfoResult";
+  metadata->result_type = AppListSearchResultType::kInternalPrivacyInfo;
   result_.SetMetadata(std::move(metadata));
 
   // This container simply wraps around PrivacyInfoView.

@@ -740,8 +740,8 @@ void SearchBoxView::ButtonPressed(views::Button* sender,
 
 void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
     SearchResult* selected_result) {
-  // TODO(wrong): Filter by result type instead of id.
-  if (selected_result->id() == "PrivacyInfoResult") {
+  if (selected_result->result_type() ==
+      AppListSearchResultType::kInternalPrivacyInfo) {
     // Privacy view should not change the search box text.
     return;
   }
