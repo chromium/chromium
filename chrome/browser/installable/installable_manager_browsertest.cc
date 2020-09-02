@@ -22,13 +22,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -314,10 +314,10 @@ class InstallableManagerOfflineCapabilityBrowserTest
           is_service_worker_offline_supported_(std::get<1>(GetParam())) {
       if (is_offline_check_feature_enabled_) {
         scoped_feature_list_.InitAndEnableFeature(
-            features::kCheckOfflineCapability);
+            blink::features::kCheckOfflineCapability);
       } else {
         scoped_feature_list_.InitAndDisableFeature(
-            features::kCheckOfflineCapability);
+            blink::features::kCheckOfflineCapability);
       }
     }
     ~InstallableManagerOfflineCapabilityBrowserTest() override = default;

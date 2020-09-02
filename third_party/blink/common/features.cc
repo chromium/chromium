@@ -741,6 +741,12 @@ const base::Feature kContentCaptureUserActivatedDelay = {
 const base::Feature kTransferableStreams{"TransferableStreams",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Dispatches a fake fetch event to a service worker to check the offline
+// capability of the site before promoting installation.
+// See https://crbug.com/965802 for more details.
+const base::Feature kCheckOfflineCapability{"CheckOfflineCapability",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The "BackForwardCacheABExperimentControl" feature indicates the state of the
 // same-site BackForwardCache experiment. This information is used when sending
 // the "Sec-bfcache-experiment" HTTP Header on resource requests. The header

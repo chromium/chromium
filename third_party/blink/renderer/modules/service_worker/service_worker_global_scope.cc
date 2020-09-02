@@ -36,6 +36,7 @@
 #include "base/bind_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -1918,6 +1919,11 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
     DispatchFetchEventForMainResourceCallback callback) {
   DCHECK(IsContextThread());
 
+  // The timeout for offline events in a service worker. The default value is
+  // the same as the default timeout (5 mins) of all events.
+  static const base::FeatureParam<int> kCustomTimeoutForOfflineEvent{
+      &features::kCheckOfflineCapability, "timeout_second", 5 * 60};
+
   // We can use nullptr as a |corp_checker| for the main resource because it
   // must be the same origin.
   if (params->is_offline_capability_check) {
@@ -1926,7 +1932,8 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
                   WrapWeakPersistent(this), std::move(params),
                   /*corp_checker=*/nullptr, std::move(response_callback),
                   std::move(callback), base::nullopt),
-        CreateAbortCallback(&fetch_event_callbacks_), base::nullopt);
+        CreateAbortCallback(&fetch_event_callbacks_),
+        base::TimeDelta::FromSeconds(kCustomTimeoutForOfflineEvent.Get()));
   } else {
     event_queue_->EnqueueNormal(
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,

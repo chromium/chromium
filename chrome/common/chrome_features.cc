@@ -112,12 +112,6 @@ const base::Feature kCertDualVerificationTrialFeature{
 const base::Feature kChangePictureVideoMode{"ChangePictureVideoMode",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Dispatches a dummy fetch event to a service worker to check the offline
-// capability of the PWA site before promoting installation. See
-// https://crbug.com/965802 for more details.
-const base::Feature kCheckOfflineCapability{"CheckOfflineCapability",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_ANDROID)
 // Enables clearing of browsing data which is older than given time period.
 const base::Feature kClearOldBrowsingData{"ClearOldBrowsingData",

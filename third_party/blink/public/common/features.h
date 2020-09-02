@@ -303,6 +303,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kTransferableStreams;
 
+BLINK_COMMON_EXPORT extern const base::Feature kCheckOfflineCapability;
+
 BLINK_COMMON_EXPORT extern const base::Feature
     kBackForwardCacheABExperimentControl;
 BLINK_COMMON_EXPORT
