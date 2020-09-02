@@ -60,6 +60,15 @@ Polymer({
             loadTimeData.getBoolean('phoneHubEnabled');
       },
     },
+
+    /** @private */
+    wifiSyncEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('wifiSyncEnabled') &&
+            loadTimeData.getBoolean('wifiSyncEnabled');
+      },
+    },
   },
 
   behaviors: [
