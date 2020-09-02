@@ -42,20 +42,44 @@ struct KeypressResponseForRulebased {
   array<OperationForRulebased> operations;
 };
 
-// Information about a specific keypress.
-struct KeypressInfoForRulebased {
-  // Keypress Type (Eg; "keydown", "keyup", etc).
-  string type;
+enum KeyEventType {
+  kKeyDown = 0,
+  kKeyUp = 1,
+};
 
-  // Keypress key code (eg; "KeyA", "KeyB", "Enter", etc ).
+// Whether modifier keys are held down or not.
+// Modifier keys are specified by:
+// https://www.w3.org/TR/uievents-key/#keys-modifier
+struct ModifierState {
+  bool alt;
+  bool alt_graph;
+  bool caps_lock;
+  bool control;
+  bool meta;
+  bool shift;
+};
+
+// Information about a physical key event.
+struct PhysicalKeyEvent {
+  // Whether this is a key down or key up event.
+  KeyEventType type;
+
+  // The physical key event code, as specified by:
+  // https://www.w3.org/TR/uievents/#dom-keyboardevent-code
+  //
+  // A full list of valid key codes can be found in:
+  // https://www.w3.org/TR/uievents-code/
   string code;
 
-  // Booleans to indicate if an option key is active / pressed down.
-  bool shift;
-  bool altgr;
-  bool caps;
-  bool ctrl = false; // DEPRECATED
-  bool alt = false; // DEPRECATED
+  // A string corresponding to the character the user typed, or a special
+  // value for special keys (e.g. Shift), as specified by:
+  // https://www.w3.org/TR/uievents/#dom-keyboardevent-key
+  //
+  // If this information is not available, it is set to "Unidentifed":
+  // https://www.w3.org/TR/uievents-key/#key-Unidentified
+  string key;
+
+  ModifierState modifier_state;
 };
 
 // Manages access to a set of IME engines, implemented by the IME service
@@ -88,10 +112,10 @@ interface InputChannel {
   // protobuf message.
   ProcessMessage(array<uint8> message) => (array<uint8> result);
 
-  // Process a KeypressInfoForRulebased mojo object and return a
-  // KeypressResponseForRulebased object with a list of operations to be
-  // handled by the caller's callback (for rulebased logic).
-  ProcessKeypressForRulebased(KeypressInfoForRulebased message)
+  // Process a PhysicalKeyEvent using the rule-based engine and return a
+  // KeypressResponseForRulebased object with a list of operations to be handled
+  // by the caller.
+  ProcessKeypressForRulebased(PhysicalKeyEvent event)
                               => (KeypressResponseForRulebased result);
 
   // Resets the engine for rulebased logic.

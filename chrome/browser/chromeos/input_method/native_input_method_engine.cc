@@ -38,6 +38,17 @@ std::string NormalizeString(const std::string& str) {
   return normalized_str;
 }
 
+ime::mojom::ModifierStatePtr ModifierStateFromEvent(
+    const InputMethodEngineBase::KeyboardEvent& event) {
+  auto modifier_state = ime::mojom::ModifierState::New();
+  modifier_state->alt = event.alt_key;
+  modifier_state->alt_graph = event.altgr_key;
+  modifier_state->caps_lock = event.caps_lock;
+  modifier_state->control = event.ctrl_key;
+  modifier_state->shift = event.shift_key;
+  return modifier_state;
+}
+
 enum class ImeServiceEvent {
   kUnknown = 0,
   kInitSuccess = 1,
@@ -165,9 +176,10 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
   }
   if (ShouldEngineUseMojo(engine_id) && remote_to_engine_.is_bound()) {
     remote_to_engine_->ProcessKeypressForRulebased(
-        ime::mojom::KeypressInfoForRulebased::New(
-            event.type, event.code, event.shift_key, event.altgr_key,
-            event.caps_lock, event.ctrl_key, event.alt_key),
+        ime::mojom::PhysicalKeyEvent::New(
+            event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
+                                    : ime::mojom::KeyEventType::kKeyUp,
+            event.code, event.key, ModifierStateFromEvent(event)),
         base::BindOnce(&ImeObserver::OnKeyEventResponse, base::Unretained(this),
                        base::Time::Now(), std::move(callback)));
   } else {

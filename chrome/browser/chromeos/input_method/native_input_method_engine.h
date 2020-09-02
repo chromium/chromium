@@ -93,7 +93,7 @@ class NativeInputMethodEngine : public InputMethodEngine {
     void ProcessMessage(const std::vector<uint8_t>& message,
                         ProcessMessageCallback callback) override {}
     void ProcessKeypressForRulebased(
-        ime::mojom::KeypressInfoForRulebasedPtr message,
+        ime::mojom::PhysicalKeyEventPtr event,
         ProcessKeypressForRulebasedCallback callback) override {}
     void ResetForRulebased() override {}
     void GetRulebasedKeypressCountForTesting(

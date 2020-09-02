@@ -56,7 +56,7 @@ class TestClientChannel : mojom::InputChannel {
                void(const std::vector<uint8_t>& message,
                     ProcessMessageCallback));
   MOCK_METHOD2(ProcessKeypressForRulebased,
-               void(const mojom::KeypressInfoForRulebasedPtr message,
+               void(const mojom::PhysicalKeyEventPtr event,
                     ProcessKeypressForRulebasedCallback));
   MOCK_METHOD0(ResetForRulebased, void());
   MOCK_METHOD1(GetRulebasedKeypressCountForTesting,
@@ -129,18 +129,15 @@ TEST_F(ImeServiceTest, MultipleClientsRulebased) {
   remote_manager_.FlushForTesting();
 
   mojom::KeypressResponseForRulebased response;
-  mojom::KeypressInfoForRulebasedPtr keypress_info =
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyA", true, false,
-                                           false, false, false);
   remote_engine_1->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyA", true, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   remote_engine_1.FlushForTesting();
 
   remote_engine_2->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyA", true, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   remote_engine_2.FlushForTesting();
 
@@ -175,8 +172,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
   for (const auto* modifier_key : kModifierKeys) {
     mojom::KeypressResponseForRulebased response;
     to_engine_remote->ProcessKeypressForRulebased(
-        mojom::KeypressInfoForRulebased::New("keydown", modifier_key, false,
-                                             false, false, false, false),
+        mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown,
+                                     modifier_key, modifier_key,
+                                     mojom::ModifierState::New()),
         base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
     to_engine_remote.FlushForTesting();
 
@@ -199,12 +197,15 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
 
   mojom::KeypressResponseForRulebased response;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "ControlLeft", false,
-                                           false, false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "ControlLeft",
+                                   "Control", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+
+  auto modifier_state_with_control = mojom::ModifierState::New();
+  modifier_state_with_control->control = true;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "A", false, false, false,
-                                           true, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
+                                   modifier_state_with_control->Clone()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -226,12 +227,15 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
 
   mojom::KeypressResponseForRulebased response;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "AltLeft", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltLeft",
+                                   "Alt", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+
+  auto new_modifier_state = mojom::ModifierState::New();
+  new_modifier_state->alt = true;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "A", false, false, false,
-                                           false, true),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
+                                   std::move(new_modifier_state)),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -253,12 +257,15 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
 
   mojom::KeypressResponseForRulebased response;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "AltRight", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltRight",
+                                   "Alt", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+
+  auto modifier_state_with_alt = mojom::ModifierState::New();
+  modifier_state_with_alt->alt = true;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyA", false, false,
-                                           false, false, true),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
+                                   modifier_state_with_alt->Clone()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -281,9 +288,11 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // Test Shift+KeyA.
   mojom::KeypressResponseForRulebased response;
+  auto modifier_state_with_shift = mojom::ModifierState::New();
+  modifier_state_with_shift->shift = true;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyA", true, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "A",
+                                   modifier_state_with_shift->Clone()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -296,8 +305,8 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // Test KeyB
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyB", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyB", "b",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
   EXPECT_EQ(response.result, true);
@@ -309,16 +318,16 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // Test unhandled key.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "Enter", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Enter",
+                                   "Enter", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
   EXPECT_EQ(response.result, false);
 
   // Test keyup.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keyup", "Enter", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyUp, "Enter",
+                                   "Enter", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
   EXPECT_EQ(response.result, false);
@@ -328,8 +337,8 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // Test invalid request.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "", false, false, false,
-                                           false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "", "",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
   EXPECT_EQ(response.result, false);
@@ -353,8 +362,8 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // Test KeyN.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyN", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyN", "n",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -367,8 +376,8 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // Backspace.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "Backspace", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Backspace",
+                                   "Backspace", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -381,12 +390,12 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // KeyN + KeyC.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyN", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyN", "n",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyC", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyC", "c",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -400,8 +409,8 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // Space.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "Space", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Space", " ",
+                                   mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -426,12 +435,15 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
 
+  auto modifier_state_with_shift = mojom::ModifierState::New();
+  modifier_state_with_shift->shift = true;
+
   mojom::KeypressResponseForRulebased response;
 
   // Test Shift+Quote ('"').
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "Quote", true, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Quote", "\"",
+                                   modifier_state_with_shift->Clone()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -443,8 +455,8 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 
   // Backslash.
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "Backslash", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Backslash",
+                                   "\\", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -456,8 +468,8 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 
   // Shift+Comma ('<')
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "Comma", true, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Comma", "<",
+                                   modifier_state_with_shift->Clone()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
@@ -485,12 +497,15 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
   // We do not support AltGr for rule-based. We treat AltRight as AltGr.
   mojom::KeypressResponseForRulebased response;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "AltRight", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltRight",
+                                   "Alt", mojom::ModifierState::New()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+
+  auto modifier_state_with_alt = mojom::ModifierState::New();
+  modifier_state_with_alt->alt = true;
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "KeyA", false, false,
-                                           false, false, false),
+      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
+                                   modifier_state_with_alt->Clone()),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
