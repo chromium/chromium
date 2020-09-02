@@ -2170,22 +2170,6 @@
       'dawn_end2end_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
       },
-      'dawn_end2end_use_spvc_parser_tests': {
-        'mixins': ['dawn_end2end_gpu_test'],
-        'args': [
-          '--use-spvc',
-          '--use-spvc-parser',
-        ],
-        'test': 'dawn_end2end_tests',
-      },
-      'dawn_end2end_use_spvc_tests': {
-        'mixins': ['dawn_end2end_gpu_test'],
-        'args': [
-          '--use-spvc',
-          '--no-use-spvc-parser',
-        ],
-        'test': 'dawn_end2end_tests',
-      },
       'dawn_end2end_wire_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
