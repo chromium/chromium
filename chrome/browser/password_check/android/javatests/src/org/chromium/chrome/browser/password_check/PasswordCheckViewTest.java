@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_check;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -46,6 +47,8 @@ import static org.chromium.chrome.browser.password_manager.settings.Reauthentica
 import static org.chromium.content_public.browser.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -606,6 +609,30 @@ public class PasswordCheckViewTest {
                 .perform(click());
 
         assertThat(recordedConfirmation.get(), is(1));
+    }
+
+    @Test
+    @MediumTest
+    public void testCopyPasswordViewDialog() {
+        PasswordCheckDeletionDialogFragment.Handler fakeHandler =
+                new PasswordCheckDeletionDialogFragment.Handler() {
+                    @Override
+                    public void onDismiss() {}
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {}
+                };
+        ReauthenticationManager.recordLastReauth(
+                System.currentTimeMillis(), ReauthScope.ONE_AT_A_TIME);
+
+        mModel.set(VIEW_CREDENTIAL, ANA);
+        runOnUiThreadBlocking(() -> mModel.set(VIEW_DIALOG_HANDLER, fakeHandler));
+        onView(withId(R.id.view_dialog_copy_button)).perform(click());
+
+        ClipboardManager clipboard = (ClipboardManager) mPasswordCheckView.getActivity()
+                                             .getApplicationContext()
+                                             .getSystemService(Context.CLIPBOARD_SERVICE);
+        assertThat(clipboard.getPrimaryClip().getItemAt(0).getText().toString(),
+                is(ANA.getPassword()));
     }
 
     @Test

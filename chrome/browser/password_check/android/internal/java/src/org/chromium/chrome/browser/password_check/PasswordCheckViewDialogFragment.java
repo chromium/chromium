@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.password_check;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -39,6 +43,17 @@ public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment
         passwordView.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+
+        ClipboardManager clipboard =
+                (ClipboardManager) getActivity().getApplicationContext().getSystemService(
+                        Context.CLIPBOARD_SERVICE);
+        ImageButton copyButton = dialogContent.findViewById(R.id.view_dialog_copy_button);
+        copyButton.setClickable(true);
+        copyButton.setOnClickListener(unusedView -> {
+            ClipData clip = ClipData.newPlainText("password", mCredential.getPassword());
+            clipboard.setPrimaryClip(clip);
+        });
+
         AlertDialog viewDialog = new AlertDialog.Builder(getActivity())
                                          .setTitle(mCredential.getDisplayOrigin())
                                          .setNegativeButton(R.string.close, mHandler)
