@@ -50,16 +50,6 @@ function buy() { // eslint-disable-line no-unused-vars
 }
 
 /**
- * Show payment UI for Bob Pay or a complete credit card.
- */
-function show() { // eslint-disable-line no-unused-vars
-  var request = new PaymentRequest([bobPayMethod, visaMethod], defaultDetails);
-  run(() => {
-    return request.show();
-  });
-}
-
-/**
  * Checks for enrolled instrument of Bob Pay or a complete credit card.
  */
 function hasEnrolledInstrument() { // eslint-disable-line no-unused-vars

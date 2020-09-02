@@ -793,13 +793,6 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotSupportedError,
-                          not_supported_for_invalid_origin_or_ssl_error_));
-  }
-
   if (!payment_provider_.is_bound() || accept_resolver_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Already called show() once");
@@ -883,11 +876,6 @@ ScriptPromise PaymentRequest::abort(ScriptState* script_state,
 
 ScriptPromise PaymentRequest::canMakePayment(ScriptState* script_state,
                                              ExceptionState& exception_state) {
-  if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
-    return ScriptPromise::Cast(script_state,
-                               ScriptValue::From(script_state, false));
-  }
-
   if (!payment_provider_.is_bound() || GetPendingAcceptPromiseResolver() ||
       can_make_payment_resolver_ || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -905,11 +893,6 @@ ScriptPromise PaymentRequest::canMakePayment(ScriptState* script_state,
 ScriptPromise PaymentRequest::hasEnrolledInstrument(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
-    return ScriptPromise::Cast(script_state,
-                               ScriptValue::From(script_state, false));
-  }
-
   if (!payment_provider_.is_bound() || GetPendingAcceptPromiseResolver() ||
       has_enrolled_instrument_resolver_ || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -1485,12 +1468,7 @@ void PaymentRequest::OnError(PaymentErrorReason error,
       break;
 
     case PaymentErrorReason::NOT_SUPPORTED:
-      exception_code = exception_code = DOMExceptionCode::kNotSupportedError;
-      break;
-
-    case PaymentErrorReason::NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL:
       exception_code = DOMExceptionCode::kNotSupportedError;
-      not_supported_for_invalid_origin_or_ssl_error_ = error_message;
       break;
 
     case PaymentErrorReason::ALREADY_SHOWING:
@@ -1522,21 +1500,13 @@ void PaymentRequest::OnError(PaymentErrorReason error,
   }
 
   if (can_make_payment_resolver_) {
-    if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
-      can_make_payment_resolver_->Reject(false);
-    } else {
-      can_make_payment_resolver_->Reject(
-          MakeGarbageCollected<DOMException>(exception_code, error_message));
-    }
+    can_make_payment_resolver_->Reject(
+        MakeGarbageCollected<DOMException>(exception_code, error_message));
   }
 
   if (has_enrolled_instrument_resolver_) {
-    if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
-      has_enrolled_instrument_resolver_->Reject(false);
-    } else {
-      has_enrolled_instrument_resolver_->Reject(
-          MakeGarbageCollected<DOMException>(exception_code, error_message));
-    }
+    has_enrolled_instrument_resolver_->Reject(
+        MakeGarbageCollected<DOMException>(exception_code, error_message));
   }
 
   ClearResolversAndCloseMojoConnection();

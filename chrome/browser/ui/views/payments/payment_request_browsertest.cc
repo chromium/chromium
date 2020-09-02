@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InvalidSSL) {
   card.set_billing_address_id(billing_address.guid());
   AddCreditCard(card);  // Visa.
 
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  ResetEventWaiter(DialogEvent::NOT_SUPPORTED_ERROR);
 
   EXPECT_TRUE(content::ExecuteScript(
       GetActiveWebContents(),

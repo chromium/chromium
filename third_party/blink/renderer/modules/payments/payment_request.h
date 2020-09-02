@@ -174,11 +174,6 @@ class MODULES_EXPORT PaymentRequest final
   Member<ScriptPromiseResolver> abort_resolver_;
   Member<ScriptPromiseResolver> can_make_payment_resolver_;
   Member<ScriptPromiseResolver> has_enrolled_instrument_resolver_;
-
-  // When not null, reject show(), resolve canMakePayment() and
-  // hasEnrolledInstrument() with false.
-  String not_supported_for_invalid_origin_or_ssl_error_;
-
   HeapMojoRemote<payments::mojom::blink::PaymentRequest> payment_provider_;
   HeapMojoReceiver<payments::mojom::blink::PaymentRequestClient, PaymentRequest>
       client_receiver_;

@@ -136,6 +136,8 @@ void PaymentRequest::Init(
     return;
   }
 
+  // TODO(crbug.com/978471): Improve architecture for handling prohibited
+  // origins and invalid SSL certificates.
   bool allowed_origin =
       UrlUtil::IsOriginAllowedToUseWebPaymentApis(last_committed_url);
   if (!allowed_origin) {
@@ -154,10 +156,6 @@ void PaymentRequest::Init(
     // Intentionally don't set |spec_| and |state_|, so the UI is never shown.
     log_.Error(reject_show_error_message_);
     log_.Error(errors::kProhibitedOriginOrInvalidSslExplanation);
-    client_->OnError(
-        mojom::PaymentErrorReason::NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL,
-        reject_show_error_message_);
-    OnConnectionTerminated();
     return;
   }
 
@@ -267,6 +265,13 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
     client_->OnError(mojom::PaymentErrorReason::USER_CANCEL,
                      errors::kCannotShowInBackgroundTab);
     OnConnectionTerminated();
+    return;
+  }
+
+  if (!state_) {
+    // SSL is not valid. Reject show with NotSupportedError, disconnect the
+    // mojo pipe, and destroy this object.
+    AreRequestedMethodsSupportedCallback(false, reject_show_error_message_);
     return;
   }
 
@@ -480,7 +485,8 @@ void PaymentRequest::CanMakePayment() {
   if (observer_for_testing_)
     observer_for_testing_->OnCanMakePaymentCalled();
 
-  if (!delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled)) {
+  if (!delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled) ||
+      !state_) {
     CanMakePaymentCallback(/*can_make_payment=*/false);
   } else {
     state_->CanMakePayment(
@@ -501,7 +507,8 @@ void PaymentRequest::HasEnrolledInstrument() {
   if (observer_for_testing_)
     observer_for_testing_->OnHasEnrolledInstrumentCalled();
 
-  if (!delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled)) {
+  if (!delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled) ||
+      !state_) {
     HasEnrolledInstrumentCallback(/*has_enrolled_instrument=*/false);
   } else {
     state_->HasEnrolledInstrument(
@@ -592,7 +599,7 @@ base::WeakPtr<PaymentRequest> PaymentRequest::GetWeakPtr() {
 
 bool PaymentRequest::IsInitialized() const {
   return is_initialized_ && client_ && client_.is_bound() &&
-         receiver_.is_bound() && state_ && spec_;
+         receiver_.is_bound();
 }
 
 bool PaymentRequest::IsThisPaymentRequestShowing() const {

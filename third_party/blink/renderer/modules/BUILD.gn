@@ -383,7 +383,6 @@ source_set("unit_tests") {
     "payments/payment_address_test.cc",
     "payments/payment_event_data_conversion_test.cc",
     "payments/payment_request_details_test.cc",
-    "payments/payment_request_for_invalid_origin_or_ssl_test.cc",
     "payments/payment_request_optional_total_test.cc",
     "payments/payment_request_test.cc",
     "payments/payment_request_update_event_test.cc",
