@@ -74,7 +74,9 @@ public class UserEducationHelper {
         String accessibilityString = iphCommand.accessibilityText;
         assert (!contentString.isEmpty());
         assert (!accessibilityString.isEmpty());
-        ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
+        ViewRectProvider rectProvider = iphCommand.viewRectProvider != null
+                ? iphCommand.viewRectProvider
+                : new ViewRectProvider(anchorView);
 
         TextBubble textBubble =
                 new TextBubble(mActivity, anchorView, contentString, accessibilityString, true,
