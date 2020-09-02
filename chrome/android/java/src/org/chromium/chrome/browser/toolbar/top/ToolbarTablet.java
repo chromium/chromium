@@ -137,7 +137,14 @@ public class ToolbarTablet extends ToolbarLayout
 
         mBookmarkButton = findViewById(R.id.bookmark_button);
 
-        getMenuButtonCoordinator().setVisibility(View.VISIBLE);
+        final View menuButtonWrapper = getMenuButtonWrapper();
+        menuButtonWrapper.setVisibility(View.VISIBLE);
+
+        if (mAccessibilitySwitcherButton.getVisibility() == View.GONE
+                && menuButtonWrapper.getVisibility() == View.GONE) {
+            ViewCompat.setPaddingRelative((View) menuButtonWrapper.getParent(), 0, 0,
+                    getResources().getDimensionPixelSize(R.dimen.tablet_toolbar_end_padding), 0);
+        }
 
         mSaveOfflineButton = findViewById(R.id.save_offline_button);
 

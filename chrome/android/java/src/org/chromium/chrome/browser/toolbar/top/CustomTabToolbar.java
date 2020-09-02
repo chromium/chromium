@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -148,6 +147,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ImageButton mSecurityButton;
     private LinearLayout mCustomActionButtons;
     private ImageButton mCloseButton;
+    private ImageButton mMenuButton;
 
     // Whether dark tint should be applied to icons and text.
     private boolean mUseDarkColors;
@@ -205,14 +205,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mCustomActionButtons = findViewById(R.id.action_buttons);
         mCloseButton = findViewById(R.id.close_button);
         mCloseButton.setOnLongClickListener(this);
+        mMenuButton = findViewById(R.id.menu_button);
         mAnimDelegate = new CustomTabToolbarAnimationDelegate(
                 mSecurityButton, mTitleUrlContainer, R.dimen.location_bar_icon_width);
     }
 
     @Override
-    void initialize(ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
-            MenuButtonCoordinator menuButtonCoordinator) {
-        super.initialize(toolbarDataProvider, tabController, menuButtonCoordinator);
+    void initialize(ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController) {
+        super.initialize(toolbarDataProvider, tabController);
         mLocationBar.setToolbarDataProvider(toolbarDataProvider);
         mLocationBar.updateVisualsForState();
     }
@@ -373,8 +373,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateButtonsTint() {
-        getMenuButtonCoordinator().setImageTintList(
-                mUseDarkColors ? mDarkModeTint : mLightModeTint);
+        if (getMenuButton() != null) {
+            ApiCompatibilityUtils.setImageTintList(
+                    getMenuButton(), mUseDarkColors ? mDarkModeTint : mLightModeTint);
+        }
         updateButtonTint(mCloseButton);
         int numCustomActionButtons = mCustomActionButtons.getChildCount();
         for (int i = 0; i < numCustomActionButtons; i++) {
@@ -560,8 +562,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
+    View getMenuButtonWrapper() {
+        // This class has no menu button wrapper, so return the menu button instead.
+        return getMenuButton();
+    }
+
+    @Override
+    ImageButton getMenuButton() {
+        return mMenuButton;
+    }
+
+    @Override
     void onMenuButtonDisabled() {
         super.onMenuButtonDisabled();
+        mMenuButton = null;
         // In addition to removing the menu button, we also need to remove the margin on the custom
         // action button.
         ViewGroup.MarginLayoutParams p =

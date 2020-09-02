@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomTabSwitcherActionMenuCoo
 import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
 import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarVariationManager;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
@@ -306,12 +307,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         assert controlsVisibilityDelegate != null;
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
 
+        MenuButton menuButton = mActivity.findViewById(R.id.menu_button_wrapper);
         mMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
                 mControlsVisibilityDelegate, mActivity,
                 (focus, type)
                         -> setUrlBarFocus(focus, type),
                 mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
-                mActivity::isInOverviewMode);
+                mActivity::isInOverviewMode, menuButton);
 
         mToolbar = new TopToolbarCoordinator(controlContainer, mActivity.findViewById(R.id.toolbar),
                 identityDiscController, mLocationBarModel, mToolbarTabController,

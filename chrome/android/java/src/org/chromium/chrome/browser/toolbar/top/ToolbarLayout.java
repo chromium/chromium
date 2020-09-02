@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
@@ -67,6 +68,11 @@ public abstract class ToolbarLayout
             new ObserverList<>();
     private final int[] mTempPosition = new int[2];
 
+    /**
+     * The app menu button.
+     */
+    private MenuButton mMenuButtonWrapper;
+
     private final ColorStateList mDefaultTint;
 
     private ToolbarDataProvider mToolbarDataProvider;
@@ -83,8 +89,6 @@ public abstract class ToolbarLayout
     private boolean mFindInPageToolbarShowing;
 
     private ThemeColorProvider mThemeColorProvider;
-    private MenuButtonCoordinator mMenuButtonCoordinator;
-    private AppMenuButtonHelper mAppMenuButtonHelper;
 
     /**
      * Basic constructor for {@link ToolbarLayout}.
@@ -112,20 +116,25 @@ public abstract class ToolbarLayout
      * Initialize the external dependencies required for view interaction.
      * @param toolbarDataProvider The provider for toolbar data.
      * @param tabController       The controller that handles interactions with the tab.
-     * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
      */
-    void initialize(ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
-            MenuButtonCoordinator menuButtonCoordinator) {
+    void initialize(ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
-        mMenuButtonCoordinator = menuButtonCoordinator;
     }
 
     /**
      * @param appMenuButtonHelper The helper for managing menu button interactions.
      */
     void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
-        mAppMenuButtonHelper = appMenuButtonHelper;
+        if (mMenuButtonWrapper != null) {
+            mMenuButtonWrapper.setAppMenuButtonHelper(appMenuButtonHelper);
+        } else {
+            final ImageButton menuButton = getMenuButton();
+            if (menuButton != null) {
+                menuButton.setOnTouchListener(appMenuButtonHelper);
+                menuButton.setAccessibilityDelegate(appMenuButtonHelper.getAccessibilityDelegate());
+            }
+        }
     }
 
     /**
@@ -215,6 +224,8 @@ public abstract class ToolbarLayout
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mMenuButtonWrapper = findViewById(R.id.menu_button_wrapper);
+
         // Initialize the provider to an empty version to avoid null checking everywhere.
         mToolbarDataProvider = new ToolbarDataProvider() {
             @Override
@@ -302,6 +313,12 @@ public abstract class ToolbarLayout
                 return 0;
             }
         };
+
+        // Set menu button background in case it was previously called before inflation
+        // finished (i.e. mMenuButtonWrapper == null)
+        if (mMenuButtonWrapper != null) {
+            mMenuButtonWrapper.setMenuButtonHighlightDrawable();
+        }
     }
 
     @Override
@@ -354,21 +371,29 @@ public abstract class ToolbarLayout
     /**
      * @return The view containing the menu button and menu button badge.
      */
-    MenuButtonCoordinator getMenuButtonCoordinator() {
-        return mMenuButtonCoordinator;
+    View getMenuButtonWrapper() {
+        return mMenuButtonWrapper;
     }
 
     @VisibleForTesting
-    void setMenuButtonCoordinatorForTesting(MenuButtonCoordinator menuButtonCoordinator) {
-        mMenuButtonCoordinator = menuButtonCoordinator;
+    void setMenuButtonWrapperForTesting(MenuButton menuButton) {
+        mMenuButtonWrapper = menuButton;
     }
 
     /**
      * @return The {@link ImageButton} containing the menu button.
      */
     ImageButton getMenuButton() {
-        if (mMenuButtonCoordinator.getMenuButton() == null) return null;
-        return mMenuButtonCoordinator.getMenuButton().getImageButton();
+        if (mMenuButtonWrapper == null) return null;
+        return mMenuButtonWrapper.getImageButton();
+    }
+
+    /**
+     * @return The view containing the menu badge.
+     */
+    View getMenuBadge() {
+        if (mMenuButtonWrapper == null) return null;
+        return mMenuButtonWrapper.getMenuBadge();
     }
 
     /**
@@ -386,7 +411,8 @@ public abstract class ToolbarLayout
      * @return The helper for menu button UI interactions.
      */
     AppMenuButtonHelper getMenuButtonHelper() {
-        return mAppMenuButtonHelper;
+        if (mMenuButtonWrapper == null) return null;
+        return mMenuButtonWrapper.getAppMenuButtonHelper();
     }
 
     /**
@@ -684,7 +710,9 @@ public abstract class ToolbarLayout
 
     boolean shouldIgnoreSwipeGesture() {
         if (mUrlHasFocus || mFindInPageToolbarShowing) return true;
-        return mAppMenuButtonHelper != null && mAppMenuButtonHelper.isAppMenuActive();
+        if (mMenuButtonWrapper == null) return false;
+        final AppMenuButtonHelper appMenuButtonHelper = mMenuButtonWrapper.getAppMenuButtonHelper();
+        return appMenuButtonHelper != null && appMenuButtonHelper.isAppMenuActive();
     }
 
     /**
@@ -843,6 +871,15 @@ public abstract class ToolbarLayout
     @VisibleForTesting
     public View getOptionalButtonView() {
         return null;
+    }
+
+    /**
+     * Sets the menu button's background depending on whether or not we are highlighting and whether
+     * or not we are using light or dark assets.
+     */
+    void setMenuButtonHighlightDrawable() {
+        if (mMenuButtonWrapper == null) return;
+        mMenuButtonWrapper.setMenuButtonHighlightDrawable();
     }
 
     /**

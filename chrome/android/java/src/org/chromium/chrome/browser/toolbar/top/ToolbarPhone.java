@@ -374,8 +374,8 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
 
             setLayoutTransition(null);
 
-            if (getMenuButtonCoordinator() != null) {
-                getMenuButtonCoordinator().setVisibility(View.VISIBLE);
+            if (getMenuButtonWrapper() != null) {
+                getMenuButtonWrapper().setVisibility(View.VISIBLE);
             }
 
             inflateTabSwitchingResources();
@@ -1318,7 +1318,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         }
 
         // Draw the menu button if necessary.
-        final MenuButton menuButton = getMenuButtonCoordinator().getMenuButton();
+        final MenuButton menuButton = (MenuButton) getMenuButtonWrapper();
         if (menuButton != null) {
             canvas.save();
             translateCanvasToView(mToolbarButtonsContainer, menuButton, canvas);
@@ -2015,7 +2015,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         float toolbarButtonTranslationX =
                 MathUtils.flipSignIf(URL_FOCUS_TOOLBAR_BUTTONS_TRANSLATION_X_DP, isRtl) * density;
 
-        final View menuButtonWrapper = getMenuButtonCoordinator().getMenuButton();
+        final View menuButtonWrapper = getMenuButtonWrapper();
         if (menuButtonWrapper != null) {
             animator = ObjectAnimator.ofFloat(
                     menuButtonWrapper, TRANSLATION_X, toolbarButtonTranslationX);
@@ -2070,7 +2070,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
         animators.add(animator);
 
-        final View menuButtonWrapper = getMenuButtonCoordinator().getMenuButton();
+        final View menuButtonWrapper = getMenuButtonWrapper();
         if (menuButtonWrapper != null) {
             animator = ObjectAnimator.ofFloat(menuButtonWrapper, TRANSLATION_X, 0);
             animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
@@ -2535,8 +2535,10 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
             updateNtpTransitionAnimation();
         }
 
-        getMenuButtonCoordinator().setMenuButtonHighlightDrawable();
-        if (!mIsBottomToolbarVisible) getMenuButtonCoordinator().setVisibility(View.VISIBLE);
+        if (getMenuButtonWrapper() != null) {
+            setMenuButtonHighlightDrawable();
+            if (!mIsBottomToolbarVisible) getMenuButtonWrapper().setVisibility(View.VISIBLE);
+        }
 
         DrawableCompat.setTint(mLocationBarBackground,
                 isIncognito() ? Color.WHITE

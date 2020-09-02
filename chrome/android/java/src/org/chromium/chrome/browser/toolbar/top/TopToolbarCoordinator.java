@@ -136,7 +136,7 @@ public class TopToolbarCoordinator implements Toolbar {
         }
         controlContainer.setToolbar(this);
         HomepageManager.getInstance().addListener(mHomepageStateListener);
-        mToolbarLayout.initialize(toolbarDataProvider, tabController, menuButtonCoordinator);
+        mToolbarLayout.initialize(toolbarDataProvider, tabController);
 
         final MenuButton menuButtonWrapper = getMenuButtonWrapper();
         if (menuButtonWrapper != null) {
@@ -264,7 +264,9 @@ public class TopToolbarCoordinator implements Toolbar {
      * @return The wrapper for the browsing mode toolbar's menu button.
      */
     public MenuButton getMenuButtonWrapper() {
-        return mMenuButtonCoordinator.getMenuButton();
+        View menuButtonWrapper = mToolbarLayout.getMenuButtonWrapper();
+        if (menuButtonWrapper instanceof MenuButton) return (MenuButton) menuButtonWrapper;
+        return null;
     }
 
     /**

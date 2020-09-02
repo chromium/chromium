@@ -71,13 +71,10 @@ public class MenuButtonCoordinatorTest {
         mAppMenuSupplier = new ObservableSupplierImpl<>();
         mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
-        doReturn(mMenuButton)
-                .when(mActivity)
-                .findViewById(org.chromium.chrome.R.id.menu_button_wrapper);
 
         mMenuButtonCoordinator =
                 new MenuButtonCoordinator(mAppMenuSupplier, mControlsVisibilityDelegate, mActivity,
-                        mFocusFunction, mRequestRenderRunnable, true, () -> false);
+                        mFocusFunction, mRequestRenderRunnable, true, () -> false, mMenuButton);
     }
 
     @Test
@@ -150,7 +147,7 @@ public class MenuButtonCoordinatorTest {
     public void testAppMenuUpdateBadge_activityShouldNotShow() {
         MenuButtonCoordinator newCoordinator =
                 new MenuButtonCoordinator(mAppMenuSupplier, mControlsVisibilityDelegate, mActivity,
-                        mFocusFunction, mRequestRenderRunnable, false, () -> false);
+                        mFocusFunction, mRequestRenderRunnable, false, () -> false, mMenuButton);
 
         doReturn(true).when(mActivity).isDestroyed();
         newCoordinator.updateStateChanged();
