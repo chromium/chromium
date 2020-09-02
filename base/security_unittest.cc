@@ -49,7 +49,7 @@ NOINLINE Type HideValueFromCompiler(volatile Type value) {
 // - USE_TCMALLOC (should be set if compiled with use_allocator=="tcmalloc")
 // - ADDRESS_SANITIZER it has its own memory allocator
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && BUILDFLAG(USE_TCMALLOC) && \
-  !defined(ADDRESS_SANITIZER)
+                              !defined(ADDRESS_SANITIZER)
 #define MALLOC_OVERFLOW_TEST(function) function
 #else
 #define MALLOC_OVERFLOW_TEST(function) DISABLED_##function
