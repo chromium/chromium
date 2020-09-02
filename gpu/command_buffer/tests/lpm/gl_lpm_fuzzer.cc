@@ -116,8 +116,8 @@ const char* acceptable_errors[] = {
     // Uniform, const, input can't be modified
     "can't modify a",
     "global variable initializers must be constant expressions",
-    "must explicitly specify all locations when using multiple fragment "
-    "outputs",
+    ("must explicitly specify all locations when using multiple fragment "
+     "outputs"),
 };
 
 // Filter errors which we don't think interfere with fuzzing everything.
