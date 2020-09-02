@@ -105,7 +105,8 @@ class ThumbnailLoader {
         case ThumbnailLoader.LoadTarget.FILE_ENTRY:
           if (FileType.isImage(entry, mimeType) ||
               FileType.isVideo(entry, mimeType) ||
-              FileType.isRaw(entry, mimeType)) {
+              FileType.isRaw(entry, mimeType) ||
+              FileType.isPDF(entry, mimeType)) {
             this.thumbnailUrl_ = entry.toURL();
             this.transform_ =
                 opt_metadata.media && opt_metadata.media.imageTransform;

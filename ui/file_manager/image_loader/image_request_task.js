@@ -256,6 +256,37 @@ ImageRequestTask.prototype.saveToCache_ = function(width, height, data) {
 };
 
 /**
+ * Gets a file thumb from the browser hosted environment. If the thumbnail
+ * is returned it is assigned to this.image_ instance variable, which ultimately
+ * results in onsuccess function associated with the image being called.
+ * @param {string} url The URL of the file entry for which we get a thumbnail.
+ * @param {function()} onFailure a callback invoked if errors occur.
+ */
+ImageRequestTask.prototype.getExternalThumbnail = function(url, onFailure) {
+  window.webkitResolveLocalFileSystemURL(
+      url,
+      entry => {
+        chrome.fileManagerPrivate.getThumbnail(
+            /** @type {FileEntry} */ (entry), !!this.request_.crop,
+            thumbnail => {
+              if (chrome.runtime.lastError) {
+                console.error(chrome.runtime.lastError.message);
+                onFailure();
+              } else if (thumbnail) {
+                this.image_.src = thumbnail;
+                this.contentType_ = 'image/png';
+              } else {
+                onFailure();
+              }
+            });
+      },
+      error => {
+        console.error(error);
+        onFailure();
+      });
+};
+
+/**
  * Downloads an image directly or for remote resources using the XmlHttpRequest.
  *
  * @param {function()} onSuccess Success callback.
@@ -281,23 +312,11 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
   }
   const drivefsUrlMatches = this.request_.url.match(/^drivefs:(.*)/);
   if (drivefsUrlMatches) {
-    window.webkitResolveLocalFileSystemURL(
-        drivefsUrlMatches[1],
-        entry => {
-          chrome.fileManagerPrivate.getThumbnail(
-              /** @type {FileEntry} */ (entry), !!this.request_.crop,
-              thumbnail => {
-                if (!thumbnail) {
-                  onFailure();
-                  return;
-                }
-                this.image_.src = thumbnail;
-                this.contentType_ = 'image/png';
-              });
-        },
-        error => {
-          onFailure();
-        });
+    this.getExternalThumbnail(drivefsUrlMatches[1], onFailure);
+    return;
+  }
+  if (this.request_.url.endsWith('.pdf')) {
+    this.getExternalThumbnail(this.request_.url, onFailure);
     return;
   }
 

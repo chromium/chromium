@@ -587,6 +587,15 @@ FileType.isRaw = (entry, opt_mimeType) => {
 };
 
 /**
+ * @param {Entry} entry Reference to the file
+ * @param {string=} opt_mimeType Optional mime type for this file.
+ * @return {boolean} Whether or not this is a PDF file.
+ */
+FileType.isPDF = (entry, opt_mimeType) => {
+  return FileType.getType(entry, opt_mimeType).subtype === 'PDF';
+};
+
+/**
  * Files with more pixels won't have preview.
  * @param {!Array<string>} types
  * @param {Entry} entry Reference to the file.
