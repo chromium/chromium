@@ -36,11 +36,46 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   }
 };
 
+// eslint-disable-next-line no-var
+var OSSettingsInputPageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/input_page_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(
+          ['chromeos::features::kLanguageSettingsUpdate'])
+    };
+  }
+};
+
+TEST_F('OSSettingsInputPageV3Test', 'All', () => mocha.run());
+
+// eslint-disable-next-line no-var
+var OSSettingsOsLanguagesPageV2V3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_languages_page_v2_tests.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(
+          ['chromeos::features::kLanguageSettingsUpdate'])
+    };
+  }
+};
+
+TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'All', () => mocha.run());
+
 [['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
  ['InputMethodOptionPage', 'input_method_options_page_test.m.js'],
- ['InputPage', 'input_page_test.m.js'],
  ['LocalizedLink', 'localized_link_test.m.js'],
  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.m.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.m.js'],
@@ -48,7 +83,6 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
  ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.m.js'],
  ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
  ['OsLanguagesPage', 'os_languages_page_tests.m.js'],
- ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['NearbyShareSubPage', 'nearby_share_subpage_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],

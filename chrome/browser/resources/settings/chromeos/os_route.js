@@ -229,6 +229,9 @@ cr.define('settings', function() {
           r.OS_LANGUAGES, mojom.LANGUAGES_SUBPAGE_PATH, Subpage.kLanguages);
       r.OS_LANGUAGES_INPUT = createSubpage(
           r.OS_LANGUAGES, mojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
+      r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
+          r.OS_LANGUAGES_INPUT, mojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
+          Subpage.kInputMethodOptions);
     } else {
       r.OS_LANGUAGES_DETAILS = createSubpage(
           r.OS_LANGUAGES, mojom.LANGUAGES_AND_INPUT_DETAILS_SUBPAGE_PATH,

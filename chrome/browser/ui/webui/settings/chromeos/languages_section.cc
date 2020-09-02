@@ -436,6 +436,14 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::Subpage::kLanguages);
     generator->RegisterNestedSetting(mojom::Setting::kShowInputOptionsInShelf,
                                      mojom::Subpage::kInput);
+
+    // Input method options.
+    generator->RegisterNestedSubpage(
+        IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
+        mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kInputMethodOptionsSubpagePath);
   } else {
     static constexpr mojom::Setting kLanguagesAndInputDetailsSettings[] = {
         mojom::Setting::kAddLanguage,
@@ -443,6 +451,15 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
     };
     RegisterNestedSettingBulk(mojom::Subpage::kLanguagesAndInputDetails,
                               kLanguagesAndInputDetailsSettings, generator);
+
+    // Input method options.
+    generator->RegisterNestedSubpage(
+        IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
+        mojom::Subpage::kInputMethodOptions,
+        mojom::Subpage::kLanguagesAndInputDetails,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kInputMethodOptionsSubpagePath);
   }
 
   // Manage input methods.
@@ -452,14 +469,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kLanguagesAndInputDetails,
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kManageInputMethodsSubpagePath);
-
-  // Input method options.
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
-      mojom::Subpage::kInputMethodOptions,
-      mojom::Subpage::kLanguagesAndInputDetails,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kInputMethodOptionsSubpagePath);
 
   // Smart inputs.
   generator->RegisterTopLevelSubpage(

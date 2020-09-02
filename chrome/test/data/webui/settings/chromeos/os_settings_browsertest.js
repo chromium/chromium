@@ -1569,6 +1569,11 @@ var OSSettingsLanguagesPageV2Test = class extends OSSettingsBrowserTest {
   }
 
   /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kLanguageSettingsUpdate']};
+  }
+
+  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../fake_chrome_event.js',
@@ -1636,6 +1641,11 @@ var OSSettingsInputPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return super.browsePreload + 'chromeos/os_language_page/input_page.html';
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kLanguageSettingsUpdate']};
   }
 
   /** @override */
