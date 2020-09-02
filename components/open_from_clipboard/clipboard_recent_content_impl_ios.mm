@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 
@@ -73,6 +74,23 @@ NSString* const kPasteboardChangeDateKey = @"PasteboardChangeDate";
 
 // Returns whether the value of the clipboard should be returned.
 - (BOOL)shouldReturnValueOfClipboard;
+
+// Calls |completionHandler| with the result of whether or not the clipboard
+// currently contains data matching |contentType|.
+- (void)checkForContentType:(ContentType)contentType
+          completionHandler:(void (^)(BOOL))completionHandler;
+
+// Checks the clipboard for content matching |types| and calls
+// |completionHandler| once all types are checked. This method is called
+// recursively and partial results are passed in |results| until all types have
+// been checked.
+- (void)
+    hasContentMatchingRemainingTypes:(NSSet<ContentType>*)types
+                             results:
+                                 (NSMutableDictionary<ContentType, NSNumber*>*)
+                                     results
+                   completionHandler:
+                       (void (^)(NSSet<ContentType>*))completionHandler;
 
 @end
 
@@ -181,45 +199,64 @@ NSString* const kPasteboardChangeDateKey = @"PasteboardChangeDate";
               completionHandler:
                   (void (^)(NSSet<ContentType>*))completionHandler {
   [self updateIfNeeded];
-  if (![self shouldReturnValueOfClipboard]) {
+  if (![self shouldReturnValueOfClipboard] || ![types count]) {
     completionHandler([NSSet set]);
     return;
   }
 
-  __block NSMutableDictionary<ContentType, NSNumber*>* results =
-      [[NSMutableDictionary alloc] init];
+  [self hasContentMatchingRemainingTypes:types
+                                 results:[[NSMutableDictionary alloc] init]
+                       completionHandler:completionHandler];
+}
 
-  void (^checkResults)() = ^{
+- (void)
+    hasContentMatchingRemainingTypes:(NSSet<ContentType>*)types
+                             results:
+                                 (NSMutableDictionary<ContentType, NSNumber*>*)
+                                     results
+                   completionHandler:
+                       (void (^)(NSSet<ContentType>*))completionHandler {
+  if ([types count] == 0) {
     NSMutableSet<ContentType>* matchingTypes = [NSMutableSet set];
-    if ([results count] != [types count]) {
-      return;
-    }
-
     for (ContentType type in results) {
       if ([results[type] boolValue]) {
         [matchingTypes addObject:type];
       }
     }
     completionHandler(matchingTypes);
-  };
+    return;
+  }
 
-  for (ContentType type in types) {
-    if ([type isEqualToString:ContentTypeURL]) {
-      [self hasRecentURLFromClipboardInternal:^(BOOL hasURL) {
-        results[ContentTypeURL] = [NSNumber numberWithBool:hasURL];
-        checkResults();
-      }];
-    } else if ([type isEqualToString:ContentTypeText]) {
-      [self hasRecentTextFromClipboardInternal:^(BOOL hasText) {
-        results[ContentTypeText] = [NSNumber numberWithBool:hasText];
-        checkResults();
-      }];
-    } else if ([type isEqualToString:ContentTypeImage]) {
-      [self hasRecentImageFromClipboardInternal:^(BOOL hasImage) {
-        results[ContentTypeImage] = [NSNumber numberWithBool:hasImage];
-        checkResults();
-      }];
-    }
+  __weak __typeof(self) weakSelf = self;
+  ContentType type = [types anyObject];
+  [self checkForContentType:type
+          completionHandler:^(BOOL hasType) {
+            results[type] = @(hasType);
+
+            NSMutableSet* remainingTypes = [types mutableCopy];
+            [remainingTypes removeObject:type];
+            [weakSelf hasContentMatchingRemainingTypes:remainingTypes
+                                               results:results
+                                     completionHandler:completionHandler];
+          }];
+}
+
+- (void)checkForContentType:(ContentType)contentType
+          completionHandler:(void (^)(BOOL))completionHandler {
+  if ([contentType isEqualToString:ContentTypeText]) {
+    [self hasRecentTextFromClipboardInternal:^(BOOL hasText) {
+      completionHandler(hasText);
+    }];
+  } else if ([contentType isEqualToString:ContentTypeURL]) {
+    [self hasRecentURLFromClipboardInternal:^(BOOL hasURL) {
+      completionHandler(hasURL);
+    }];
+  } else if ([contentType isEqualToString:ContentTypeImage]) {
+    [self hasRecentImageFromClipboardInternal:^(BOOL hasImage) {
+      completionHandler(hasImage);
+    }];
+  } else {
+    NOTREACHED() << contentType;
   }
 }
 
@@ -325,6 +362,8 @@ NSString* const kPasteboardChangeDateKey = @"PasteboardChangeDate";
               completionHandler:^(
                   NSDictionary<UIPasteboardDetectionPattern, id>* values,
                   NSError* error) {
+                DCHECK(!error) << error.debugDescription;
+
                 NSURL* url = [NSURL
                     URLWithString:
                         values[UIPasteboardDetectionPatternProbableWebURL]];
