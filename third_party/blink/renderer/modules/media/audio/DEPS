@@ -1,8 +1,4 @@
 include_rules = [
-    # TODO(https://crbug.com/787252): Remove this include when WTF::HashMap.
-    # is used instead.
-    "+base/containers/flat_map.h",
-
     "+media/audio",
     "+media/base/audio_parameters.h",
     "+media/mojo",

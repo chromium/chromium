@@ -8,13 +8,13 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom-blink.h"
 #include "third_party/blink/renderer/modules/media/audio/mojo_audio_output_ipc.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -22,13 +22,13 @@ WebAudioOutputIPCFactory* WebAudioOutputIPCFactory::instance_ = nullptr;
 
 class WebAudioOutputIPCFactory::Impl {
  public:
-  using StreamFactoryMap = base::flat_map<
-      blink::LocalFrameToken,
+  using StreamFactoryMap = WTF::HashMap<
+      uint64_t,
       mojo::Remote<mojom::blink::RendererAudioOutputStreamFactory>>;
 
   explicit Impl(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : io_task_runner_(std::move(io_task_runner)) {}
-  ~Impl() { DCHECK(factory_remotes_.empty()); }
+  ~Impl() { DCHECK(factory_remotes_.IsEmpty()); }
 
   mojom::blink::RendererAudioOutputStreamFactory* GetRemoteFactory(
       const blink::LocalFrameToken& frame_token) const;
@@ -106,8 +106,8 @@ mojom::blink::RendererAudioOutputStreamFactory*
 WebAudioOutputIPCFactory::Impl::GetRemoteFactory(
     const blink::LocalFrameToken& frame_token) const {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  auto it = factory_remotes_.find(frame_token);
-  return it == factory_remotes_.end() ? nullptr : it->second.get();
+  auto it = factory_remotes_.find(LocalFrameToken::Hasher()(frame_token));
+  return it == factory_remotes_.end() ? nullptr : it->value.get();
 }
 
 void WebAudioOutputIPCFactory::Impl::RegisterRemoteFactoryOnIOThread(
@@ -115,14 +115,17 @@ void WebAudioOutputIPCFactory::Impl::RegisterRemoteFactoryOnIOThread(
     mojo::PendingRemote<mojom::blink::RendererAudioOutputStreamFactory>
         factory_pending_remote) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  std::pair<StreamFactoryMap::iterator, bool> emplace_result =
-      factory_remotes_.emplace(frame_token, std::move(factory_pending_remote));
+  mojo::Remote<mojom::blink::RendererAudioOutputStreamFactory> factory_remote(
+      std::move(factory_pending_remote));
 
-  DCHECK(emplace_result.second) << "Attempt to register a factory for a "
-                                   "frame which already has a factory "
-                                   "registered.";
+  auto emplace_result = factory_remotes_.insert(
+      LocalFrameToken::Hasher()(frame_token), std::move(factory_remote));
 
-  auto& emplaced_factory = emplace_result.first->second;
+  DCHECK(emplace_result.is_new_entry) << "Attempt to register a factory for a "
+                                         "frame which already has a factory "
+                                         "registered.";
+
+  auto& emplaced_factory = emplace_result.stored_value->value;
   DCHECK(emplaced_factory.is_bound())
       << "Factory is not bound to a remote implementation.";
 
@@ -140,7 +143,7 @@ void WebAudioOutputIPCFactory::Impl::MaybeDeregisterRemoteFactoryOnIOThread(
   // handler of the factory remote. Calling erase multiple times even though
   // there is nothing to erase is safe, so we don't have to handle this in any
   // particular way.
-  factory_remotes_.erase(frame_token);
+  factory_remotes_.erase(LocalFrameToken::Hasher()(frame_token));
 }
 
 }  // namespace blink
