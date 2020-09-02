@@ -59,7 +59,8 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
       network::mojom::CSPDirectiveName::ImgSrc, "img-src blob: data: 'self';");
   // Allow styles to include inline styling needed for Polymer elements.
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::StyleSrc, "style-src 'unsafe-inline';");
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' 'unsafe-inline';");
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
   return source;
