@@ -190268,6 +190268,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="VoiceInteraction.UnexpectedResultSource"
+    enum="VoiceInteractionEventSource" expires_after="2021-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    Android: The source of an incoming result that doesn't align with an
+    outgoing request from Chrome.
+  </summary>
+</histogram>
+
 <histogram name="VoiceInteraction.UserInteractionToRequestArrival" units="ms"
     expires_after="M85">
   <owner>muyuanli@chromium.org</owner>

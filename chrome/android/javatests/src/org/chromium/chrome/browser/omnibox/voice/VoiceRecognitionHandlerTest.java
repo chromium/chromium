@@ -59,6 +59,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -111,6 +112,8 @@ public class VoiceRecognitionHandlerTest {
         private int mDismissedSource = -1;
         @VoiceInteractionSource
         private int mFailureSource = -1;
+        @VoiceInteractionSource
+        private int mUnexpectedResultSource = -1;
         private Boolean mResult;
         private Float mVoiceConfidenceValue;
 
@@ -136,6 +139,11 @@ public class VoiceRecognitionHandlerTest {
         @Override
         protected void recordVoiceSearchDismissedEventSource(@VoiceInteractionSource int source) {
             mDismissedSource = source;
+        }
+
+        @Override
+        protected void recordVoiceSearchUnexpectedResultSource(@VoiceInteractionSource int source) {
+            mUnexpectedResultSource = source;
         }
 
         @Override
@@ -171,6 +179,11 @@ public class VoiceRecognitionHandlerTest {
         @VoiceInteractionSource
         public int getVoiceSearchFailureEventSource() {
             return mFailureSource;
+        }
+
+        @VoiceInteractionSource
+        public int getVoiceSearchUnexpectedResultSource() {
+            return mUnexpectedResultSource;
         }
 
         public Boolean getVoiceSearchResult() {
@@ -357,6 +370,7 @@ public class VoiceRecognitionHandlerTest {
         private Activity mActivity;
         private boolean mWasCancelableIntentShown;
         private Intent mCancelableIntent;
+        private IntentCallback mCallback;
 
         public TestWindowAndroid(Context context) {
             super(context);
@@ -386,10 +400,15 @@ public class VoiceRecognitionHandlerTest {
             return mCancelableIntent;
         }
 
+        public IntentCallback getIntentCallback() {
+            return mCallback;
+        }
+
         @Override
         public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
             mWasCancelableIntentShown = true;
             mCancelableIntent = intent;
+            mCallback = callback;
             if (mCancelableIntentSuccess) {
                 callback.onIntentCompleted(mWindowAndroid, mResultCode, mResults);
                 return 0;
@@ -572,17 +591,6 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
         Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
         verify(mAssistantVoiceSearchService).reportUserEligibility();
-    }
-
-    /**
-     * Kicks off voice recognition with the given source, for testing
-     * {@linkVoiceRecognitionHandler.VoiceRecognitionCompleteCallback}.
-     *
-     * @param source The source of the voice recognition initiation.
-     */
-    private void startVoiceRecognition(@VoiceInteractionSource int source) {
-        mPermissionDelegate.setHasPermission(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mHandler.startVoiceRecognition(source); });
     }
 
     @Test
@@ -787,7 +795,7 @@ public class VoiceRecognitionHandlerTest {
 
     @Test
     @SmallTest
-    public void teststopTrackingAndRecordQueryDuration() {
+    public void testStopTrackingAndRecordQueryDuration() {
         mHandler.setQueryStartTimeForTesting(100L);
         mHandler.stopTrackingAndRecordQueryDuration();
         Assert.assertEquals(1,
@@ -797,12 +805,35 @@ public class VoiceRecognitionHandlerTest {
 
     @Test
     @SmallTest
-    public void teststopTrackingAndRecordQueryDuration_calledWithNull() {
+    public void testStopTrackingAndRecordQueryDuration_calledWithNull() {
         mHandler.setQueryStartTimeForTesting(null);
         mHandler.stopTrackingAndRecordQueryDuration();
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "VoiceInteraction.QueryDuration.Android"));
+    }
+
+    @Test
+    @SmallTest
+    public void testCallback_CalledTwice() {
+        startVoiceRecognition(VoiceInteractionSource.NTP);
+        Assert.assertEquals(-1, mHandler.getVoiceSearchUnexpectedResultSource());
+
+        IntentCallback callback = mWindowAndroid.getIntentCallback();
+        callback.onIntentCompleted(mWindowAndroid, Activity.RESULT_CANCELED, null);
+        Assert.assertEquals(
+                VoiceInteractionSource.NTP, mHandler.getVoiceSearchUnexpectedResultSource());
+    }
+
+    /**
+     * Kicks off voice recognition with the given source, for testing
+     * {@linkVoiceRecognitionHandler.VoiceRecognitionCompleteCallback}.
+     *
+     * @param source The source of the voice recognition initiation.
+     */
+    private void startVoiceRecognition(@VoiceInteractionSource int source) {
+        mPermissionDelegate.setHasPermission(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mHandler.startVoiceRecognition(source); });
     }
 
     private static Bundle createDummyBundle(String text, float confidence) {

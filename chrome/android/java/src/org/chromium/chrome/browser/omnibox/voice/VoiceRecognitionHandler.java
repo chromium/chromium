@@ -213,6 +213,8 @@ public class VoiceRecognitionHandler {
         @VoiceInteractionSource
         private final int mSource;
 
+        private boolean mCallbackComplete;
+
         public VoiceRecognitionCompleteCallback(@VoiceInteractionSource int source) {
             mSource = source;
         }
@@ -220,6 +222,12 @@ public class VoiceRecognitionHandler {
         // WindowAndroid.IntentCallback implementation:
         @Override
         public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+            if (mCallbackComplete) {
+                recordVoiceSearchUnexpectedResultSource(mSource);
+                return;
+            }
+
+            mCallbackComplete = true;
             if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
                 if (resultCode == Activity.RESULT_CANCELED) {
                     recordVoiceSearchDismissedEventSource(mSource);
@@ -513,6 +521,17 @@ public class VoiceRecognitionHandler {
     @VisibleForTesting
     protected void recordVoiceSearchFailureEventSource(@VoiceInteractionSource int source) {
         RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.FailureEventSource", source,
+                VoiceInteractionSource.HISTOGRAM_BOUNDARY);
+    }
+
+    /**
+     * Records the source of an unexpected voice search result. Ideally this will always be 0.
+     * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
+     *        enum VoiceInteractionEventSource in enums.xml.
+     */
+    @VisibleForTesting
+    protected void recordVoiceSearchUnexpectedResultSource(@VoiceInteractionSource int source) {
+        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.UnexpectedResultSource", source,
                 VoiceInteractionSource.HISTOGRAM_BOUNDARY);
     }
 
