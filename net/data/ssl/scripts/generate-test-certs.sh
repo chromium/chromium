@@ -113,6 +113,14 @@ openssl req \
   -reqexts req_test_names \
   -config ee.cnf
 
+SUBJECT_NAME="req_dn" \
+openssl req \
+  -new \
+  -keyout out/ev-multi-oid.key \
+  -out out/ev-multi-oid.req \
+  -reqexts req_extensions \
+  -config ee.cnf \
+
 # Generate the leaf certificates
 CA_NAME="req_ca_dn" \
   openssl ca \
@@ -201,6 +209,16 @@ CA_NAME="req_ca_dn" \
     -out out/test_names.pem \
     -config ca.cnf
 
+## Certificate for testing EV with multiple OIDs
+CA_NAME="req_ca_dn" \
+  openssl ca \
+    -batch \
+    -extensions ev_multi_oid \
+    -days ${CERT_LIFETIME} \
+    -in out/ev-multi-oid.req \
+    -out out/ev-multi-oid.pem \
+    -config ca.cnf
+
 /bin/sh -c "cat out/ok_cert.key out/ok_cert.pem \
     > ../certificates/ok_cert.pem"
 /bin/sh -c "cat out/wildcard.key out/wildcard.pem \
@@ -227,6 +245,8 @@ CA_NAME="req_ca_dn" \
     > ../certificates/x509_verify_results.chain.pem"
 /bin/sh -c "cat out/test_names.key out/test_names.pem \
     > ../certificates/test_names.pem"
+/bin/sh -c "cat out/ev-multi-oid.pem \
+    > ../certificates/ev-multi-oid.pem"
 
 # Now generate the one-off certs
 ## Self-signed cert for SPDY/QUIC/HTTP2 pooling testing

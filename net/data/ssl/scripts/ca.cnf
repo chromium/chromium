@@ -118,3 +118,8 @@ CN = $ENV::CA_COMMON_NAME
 basicConstraints       = critical, CA:true
 keyUsage               = critical, keyCertSign, cRLSign
 subjectKeyIdentifier   = hash
+
+[ev_multi_oid]
+basicConstraints = critical, CA:false
+extendedKeyUsage = serverAuth, clientAuth
+certificatePolicies = 2.23.140.1.1, 1.2.3.4

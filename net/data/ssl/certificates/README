@@ -10,8 +10,6 @@ unit tests.
 - google.single.der
 - google.single.pem
 - thawte.single.pem : Certificates for testing parsing of different formats.
-- login.trustwave.com.pem :
-     Certificate for testing EV with multiple OIDs. Regression test for crbug.com/705285
 
 - googlenew.chain.pem : The refreshed Google certificate
      (valid until Sept 30 2013).
@@ -212,6 +210,9 @@ unit tests.
 - ev_test_state_only.pem
      Certificates for testing EV display (including regression test for
      https://crbug.com/1069113).
+
+- ev-multi-oid.pem :
+     Certificate for testing EV with multiple OIDs. Regression test for crbug.com/705285
 
 ===== From net/data/ssl/scripts/generate-weak-test-chains.sh
 - 2048-rsa-root.pem
