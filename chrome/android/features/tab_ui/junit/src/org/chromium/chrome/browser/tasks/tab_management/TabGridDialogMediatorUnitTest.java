@@ -229,7 +229,7 @@ public class TabGridDialogMediatorUnitTest {
         assertThat(mModel.get(TabGridPanelProperties.MENU_CLICK_LISTENER),
                 instanceOf(View.OnClickListener.class));
         verify(mTabSelectionEditorController)
-                .configureToolbar(eq(REMOVE_BUTTON_STRING),
+                .configureToolbar(eq(REMOVE_BUTTON_STRING), anyInt(),
                         any(TabSelectionEditorActionProvider.class), eq(1), eq(null));
     }
 

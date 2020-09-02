@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.test.filters.MediumTest;
 
@@ -251,7 +254,9 @@ public class TabSelectionEditorTest {
 
         int enableThreshold = 1;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabSelectionEditorController.configureToolbar("Test", null, enableThreshold, null);
+            mTabSelectionEditorController.configureToolbar("Test",
+                    R.plurals.accessibility_tab_selection_editor_group_button, null,
+                    enableThreshold, null);
             mTabSelectionEditorController.show(tabs);
         });
 
@@ -509,6 +514,28 @@ public class TabSelectionEditorTest {
         // Test selected tab
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         assertTrue(tabView.createAccessibilityNodeInfo().isChecked());
+    }
+
+    @Test
+    @MediumTest
+    public void testToolbarActionButtonContentDescription() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabSelectionEditorController.configureToolbar("Group",
+                    R.plurals.accessibility_tab_selection_editor_group_button, null, 2, null);
+            mTabSelectionEditorController.show(tabs);
+        });
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        Button actionButton =
+                mTabSelectionEditorLayout.getToolbar().findViewById(R.id.action_button);
+        assertNull(actionButton.getContentDescription());
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        assertEquals("Group 2 selected tabs", actionButton.getContentDescription());
     }
 
     private List<Tab> getTabsInCurrentTabModel() {

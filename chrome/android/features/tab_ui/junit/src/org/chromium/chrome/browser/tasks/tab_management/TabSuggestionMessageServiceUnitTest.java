@@ -153,7 +153,7 @@ public class TabSuggestionMessageServiceUnitTest {
 
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
         verify(mTabSelectionEditorController)
-                .configureToolbar(eq(closeSuggestionActionButtonText), any(),
+                .configureToolbar(eq(closeSuggestionActionButtonText), anyInt(), any(),
                         eq(expectedEnablingThreshold), any());
         verify(mTabSelectionEditorController).show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2));
 
@@ -221,7 +221,7 @@ public class TabSuggestionMessageServiceUnitTest {
 
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
         verify(mTabSelectionEditorController)
-                .configureToolbar(eq(groupSuggestionActionButtonText), any(),
+                .configureToolbar(eq(groupSuggestionActionButtonText), anyInt(), any(),
                         eq(expectedEnablingThreshold), any());
         verify(mTabSelectionEditorController).show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2));
 

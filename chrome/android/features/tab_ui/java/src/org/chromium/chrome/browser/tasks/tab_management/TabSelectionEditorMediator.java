@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -218,10 +219,10 @@ class TabSelectionEditorMediator
 
     @Override
     public void configureToolbar(@Nullable String actionButtonText,
+            @Nullable Integer actionButtonDescriptionResourceId,
             @Nullable TabSelectionEditorActionProvider actionProvider,
             int actionButtonEnablingThreshold,
-            @Nullable TabSelectionEditorCoordinator
-                    .TabSelectionEditorNavigationProvider navigationProvider) {
+            @Nullable TabSelectionEditorNavigationProvider navigationProvider) {
         if (actionButtonText != null) {
             mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT, actionButtonText);
         }
@@ -234,6 +235,10 @@ class TabSelectionEditorMediator
         }
         if (navigationProvider != null) {
             mNavigationProvider = navigationProvider;
+        }
+        if (actionButtonDescriptionResourceId != null) {
+            mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID,
+                    actionButtonDescriptionResourceId);
         }
     }
 
