@@ -51,7 +51,7 @@ void TestPendingAppManager::Install(ExternalInstallOptions install_options,
       FROM_HERE,
       base::BindLambdaForTesting([this, weak_ptr, install_options, result_code,
                                   callback = std::move(callback)]() mutable {
-        const GURL& url = install_options.url;
+        const GURL& url = install_options.install_url;
         // Use a WeakPtr to be able to simulate the Install callback running
         // after PendingAppManager gets deleted.
         if (weak_ptr) {

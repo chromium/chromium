@@ -160,7 +160,7 @@ class ScanDirForExternalWebAppsTest : public testing::Test {
         ScanApps(profile, GetTestDir(kUserTypesTestDir));
     ASSERT_EQ(expectations.size(), install_options_list.size());
     for (const auto& install_options : install_options_list)
-      ASSERT_EQ(1u, expectations.count(install_options.url));
+      ASSERT_EQ(1u, expectations.count(install_options.install_url));
   }
 #endif
 
@@ -245,7 +245,7 @@ TEST_F(ScanDirForExternalWebAppsTest, MixedJson) {
   // still pick up that one good JSON file: polytimer.json.
   EXPECT_EQ(1u, app_infos.size());
   if (app_infos.size() == 1) {
-    EXPECT_EQ(app_infos[0].url.spec(),
+    EXPECT_EQ(app_infos[0].install_url.spec(),
               std::string("https://polytimer.rocks/?homescreen=1"));
   }
 }

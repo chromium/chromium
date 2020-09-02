@@ -14,10 +14,10 @@
 namespace web_app {
 
 ExternalInstallOptions::ExternalInstallOptions(
-    const GURL& url,
+    const GURL& install_url,
     DisplayMode user_display_mode,
     ExternalInstallSource install_source)
-    : url(url),
+    : install_url(install_url),
       user_display_mode(user_display_mode),
       install_source(install_source) {}
 
@@ -34,7 +34,7 @@ ExternalInstallOptions& ExternalInstallOptions::operator=(
 
 bool ExternalInstallOptions::operator==(
     const ExternalInstallOptions& other) const {
-  return std::tie(url, user_display_mode, install_source,
+  return std::tie(install_url, user_display_mode, install_source,
                   add_to_applications_menu, add_to_desktop,
                   add_to_quick_launch_bar, add_to_search, add_to_management,
                   is_disabled, override_previous_user_uninstall,
@@ -42,11 +42,11 @@ bool ExternalInstallOptions::operator==(
                   force_reinstall, wait_for_windows_closed, install_placeholder,
                   reinstall_placeholder, uninstall_and_replace,
                   additional_search_terms) ==
-         std::tie(other.url, other.user_display_mode, other.install_source,
-                  other.add_to_applications_menu, other.add_to_desktop,
-                  other.add_to_quick_launch_bar, other.add_to_search,
-                  other.add_to_management, other.is_disabled,
-                  other.override_previous_user_uninstall,
+         std::tie(other.install_url, other.user_display_mode,
+                  other.install_source, other.add_to_applications_menu,
+                  other.add_to_desktop, other.add_to_quick_launch_bar,
+                  other.add_to_search, other.add_to_management,
+                  other.is_disabled, other.override_previous_user_uninstall,
                   other.bypass_service_worker_check, other.require_manifest,
                   other.force_reinstall, other.wait_for_windows_closed,
                   other.install_placeholder, other.reinstall_placeholder,
@@ -55,7 +55,8 @@ bool ExternalInstallOptions::operator==(
 
 std::ostream& operator<<(std::ostream& out,
                          const ExternalInstallOptions& install_options) {
-  return out << "url: " << install_options.url << "\n user_display_mode: "
+  return out << "install_url: " << install_options.install_url
+             << "\n user_display_mode: "
              << static_cast<int32_t>(install_options.user_display_mode)
              << "\n install_source: "
              << static_cast<int32_t>(install_options.install_source)
@@ -92,7 +93,7 @@ InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
 
   params.user_display_mode = install_options.user_display_mode;
 
-  params.fallback_start_url = install_options.url;
+  params.fallback_start_url = install_options.install_url;
 
   params.add_to_applications_menu = install_options.add_to_applications_menu;
   params.add_to_desktop = install_options.add_to_desktop;

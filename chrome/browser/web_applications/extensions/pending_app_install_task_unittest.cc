@@ -335,7 +335,7 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
     install_manager_->SetDataRetrieverFactoryForTesting(
         GetFactoryForRetriever(std::move(data_retriever)));
     auto manifest = std::make_unique<blink::Manifest>();
-    manifest->start_url = options.url;
+    manifest->start_url = options.install_url;
     manifest->name =
         base::NullableString16(base::ASCIIToUTF16("Manifest Name"));
 
@@ -347,10 +347,10 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
     data_retriever_->SetIcons(IconsMap{});
 
     install_finalizer_->SetNextFinalizeInstallResult(
-        options.url, InstallResultCode::kSuccessNewInstall);
+        options.install_url, InstallResultCode::kSuccessNewInstall);
 
     os_integration_manager_->SetNextCreateShortcutsResult(
-        install_finalizer_->GetAppIdForUrl(options.url), true);
+        install_finalizer_->GetAppIdForUrl(options.install_url), true);
 
     auto task = std::make_unique<PendingAppInstallTask>(
         profile(), registrar_, os_integration_manager_, ui_manager_,

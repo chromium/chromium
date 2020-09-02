@@ -144,7 +144,7 @@ void PendingAppInstallTask::UninstallPlaceholderApp(
     ResultCallback result_callback) {
   base::Optional<AppId> app_id =
       externally_installed_app_prefs_.LookupPlaceholderAppId(
-          install_options_.url);
+          install_options_.install_url);
 
   // If there is no placeholder app or the app is not installed,
   // then no need to uninstall anything.
@@ -155,7 +155,7 @@ void PendingAppInstallTask::UninstallPlaceholderApp(
 
   // Otherwise, uninstall the placeholder app.
   install_finalizer_->UninstallExternalWebAppByUrl(
-      install_options_.url, install_options_.install_source,
+      install_options_.install_url, install_options_.install_source,
       base::BindOnce(&PendingAppInstallTask::OnPlaceholderUninstalled,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
                      std::move(result_callback)));
@@ -167,7 +167,7 @@ void PendingAppInstallTask::OnPlaceholderUninstalled(
     bool uninstalled) {
   if (!uninstalled) {
     LOG(ERROR) << "Failed to uninstall placeholder for: "
-               << install_options_.url;
+               << install_options_.install_url;
     std::move(result_callback)
         .Run(Result(InstallResultCode::kFailedPlaceholderUninstall,
                     base::nullopt));
@@ -195,7 +195,7 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
 
   base::Optional<AppId> app_id =
       externally_installed_app_prefs_.LookupPlaceholderAppId(
-          install_options_.url);
+          install_options_.install_url);
   if (app_id.has_value() && registrar_->IsInstalled(app_id.value())) {
     // No need to install a placeholder app again.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -206,8 +206,8 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
   }
 
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::UTF8ToUTF16(install_options_.url.spec());
-  web_app_info.app_url = install_options_.url;
+  web_app_info.title = base::UTF8ToUTF16(install_options_.install_url.spec());
+  web_app_info.app_url = install_options_.install_url;
 
   switch (install_options_.user_display_mode) {
     case DisplayMode::kUndefined:
@@ -242,14 +242,15 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
 
   // If this is the first time the app has been installed, run a migration. This
   // will not happen again, even if the app is uninstalled and reinstalled.
-  if (!externally_installed_app_prefs_.LookupAppId(install_options_.url)) {
+  if (!externally_installed_app_prefs_.LookupAppId(
+          install_options_.install_url)) {
     ui_manager_->UninstallAndReplace(install_options().uninstall_and_replace,
                                      app_id);
   }
 
-  externally_installed_app_prefs_.Insert(install_options_.url, app_id,
+  externally_installed_app_prefs_.Insert(install_options_.install_url, app_id,
                                          install_options_.install_source);
-  externally_installed_app_prefs_.SetIsPlaceholder(install_options_.url,
+  externally_installed_app_prefs_.SetIsPlaceholder(install_options_.install_url,
                                                    is_placeholder);
 
   base::ScopedClosureRunner scoped_closure(

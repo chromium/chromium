@@ -17,8 +17,9 @@ void TestPendingAppManagerImpl::Install(ExternalInstallOptions install_options,
                                         OnceInstallCallback callback) {
   if (pre_install_callback_ && !pre_install_callback_.Run(install_options)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), install_options.url,
-                                  InstallResultCode::kWebAppDisabled));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), install_options.install_url,
+                       InstallResultCode::kWebAppDisabled));
     return;
   }
 

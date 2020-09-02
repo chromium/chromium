@@ -72,7 +72,7 @@ void PendingAppManager::SynchronizeInstalledApps(
 
   std::vector<GURL> desired_urls;
   for (const auto& info : desired_apps_install_options)
-    desired_urls.push_back(info.url);
+    desired_urls.push_back(info.install_url);
 
   std::sort(desired_urls.begin(), desired_urls.end());
 

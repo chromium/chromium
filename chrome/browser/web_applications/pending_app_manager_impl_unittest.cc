@@ -275,7 +275,7 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
                  ResultCallback callback) override {
       pending_app_manager_impl_->OnInstallCalled(install_options());
 
-      const GURL& install_url = install_options().url;
+      const GURL& install_url = install_options().install_url;
       DoInstall(install_url, install_options().install_source,
                 (url_loaded_result != WebAppUrlLoader::Result::kUrlLoaded),
                 std::move(callback));

@@ -23,7 +23,7 @@ using WebApplicationInfoFactory =
 enum class ExternalInstallSource;
 
 struct ExternalInstallOptions {
-  ExternalInstallOptions(const GURL& url,
+  ExternalInstallOptions(const GURL& install_url,
                          DisplayMode user_display_mode,
                          ExternalInstallSource install_source);
   ~ExternalInstallOptions();
@@ -33,7 +33,7 @@ struct ExternalInstallOptions {
 
   bool operator==(const ExternalInstallOptions& other) const;
 
-  GURL url;
+  GURL install_url;
   DisplayMode user_display_mode;
   ExternalInstallSource install_source;
 

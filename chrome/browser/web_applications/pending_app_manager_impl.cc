@@ -145,8 +145,8 @@ void PendingAppManagerImpl::MaybeStartNext() {
       return;
     }
 
-    base::Optional<AppId> app_id =
-        externally_installed_app_prefs_.LookupAppId(install_options.url);
+    base::Optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
+        install_options.install_url);
 
     // If the URL is not in ExternallyInstalledWebAppPrefs, then no external
     // source has installed it.
@@ -170,7 +170,7 @@ void PendingAppManagerImpl::MaybeStartNext() {
       // placeholder app and the client asked for it to be reinstalled.
       if (install_options.reinstall_placeholder &&
           externally_installed_app_prefs_
-              .LookupPlaceholderAppId(install_options.url)
+              .LookupPlaceholderAppId(install_options.install_url)
               .has_value()) {
         StartInstallationTask(std::move(front));
         return;
@@ -178,7 +178,7 @@ void PendingAppManagerImpl::MaybeStartNext() {
 
       // Otherwise no need to do anything.
       std::move(front->callback)
-          .Run(install_options.url,
+          .Run(install_options.install_url,
                InstallResultCode::kSuccessAlreadyInstalled);
       continue;
     }
@@ -189,7 +189,8 @@ void PendingAppManagerImpl::MaybeStartNext() {
     if (finalizer()->WasExternalAppUninstalledByUser(app_id.value()) &&
         !install_options.override_previous_user_uninstall) {
       std::move(front->callback)
-          .Run(install_options.url, InstallResultCode::kPreviouslyUninstalled);
+          .Run(install_options.install_url,
+               InstallResultCode::kPreviouslyUninstalled);
       continue;
     }
 
@@ -234,7 +235,7 @@ void PendingAppManagerImpl::StartInstallationTask(
 void PendingAppManagerImpl::OnWebContentsReady(WebAppUrlLoader::Result) {
   // TODO(crbug.com/1098139): Handle the scenario where WebAppUrlLoader fails to
   // load about:blank and flush WebContents states.
-  url_loader_->LoadUrl(current_install_->task->install_options().url,
+  url_loader_->LoadUrl(current_install_->task->install_options().install_url,
                        web_contents_.get(),
                        WebAppUrlLoader::UrlComparison::kSameOrigin,
                        base::BindOnce(&PendingAppManagerImpl::OnUrlLoaded,
@@ -299,7 +300,7 @@ void PendingAppManagerImpl::CurrentInstallationFinished(
   std::unique_ptr<TaskAndCallback> task_and_callback;
   task_and_callback.swap(current_install_);
   std::move(task_and_callback->callback)
-      .Run(task_and_callback->task->install_options().url, code);
+      .Run(task_and_callback->task->install_options().install_url, code);
 }
 
 }  // namespace web_app
