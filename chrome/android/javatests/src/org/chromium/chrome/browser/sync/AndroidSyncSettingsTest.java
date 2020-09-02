@@ -137,7 +137,12 @@ public class AndroidSyncSettingsTest {
         mCallbackHelper.waitForCallback(0, mNumberOfCallsToWait);
 
         mAuthority = mAndroidSyncSettings.getContractAuthority();
-        Assert.assertEquals(1, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
+            Assert.assertTrue(
+                    mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) <= 0);
+        } else {
+            Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) > 0);
+        }
 
         mSyncSettingsObserver = new MockSyncSettingsObserver();
         mAndroidSyncSettings.registerObserver(mSyncSettingsObserver);
@@ -429,8 +434,9 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
     public void testIsSyncableOnSigninAndNotOnSignout() throws TimeoutException {
-        Assert.assertEquals(1, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
+        Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) > 0);
 
         updateAccountWithCallback(null, (Boolean result) -> {
             Assert.assertTrue(result);
@@ -440,7 +446,7 @@ public class AndroidSyncSettingsTest {
 
         Assert.assertEquals(0, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
         updateAccount(mAccount);
-        Assert.assertEquals(1, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
+        Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) > 0);
     }
 
     /**
@@ -449,6 +455,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
     public void testSyncableIsAlwaysSetWhenEnablingSync() throws InterruptedException {
         // Setup bad state.
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
@@ -459,12 +466,12 @@ public class AndroidSyncSettingsTest {
         mSyncContentResolverDelegate.waitForLastNotificationCompleted();
         mSyncContentResolverDelegate.setIsSyncable(mAccount, mAuthority, 0);
         mSyncContentResolverDelegate.waitForLastNotificationCompleted();
-        Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) == 0);
+        Assert.assertEquals(0, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
         Assert.assertTrue(mSyncContentResolverDelegate.getSyncAutomatically(mAccount, mAuthority));
 
         // Ensure bug is fixed.
         enableChromeSyncOnUiThread();
-        Assert.assertEquals(1, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
+        Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) > 0);
         // Should still be enabled.
         Assert.assertTrue(mSyncContentResolverDelegate.getSyncAutomatically(mAccount, mAuthority));
     }

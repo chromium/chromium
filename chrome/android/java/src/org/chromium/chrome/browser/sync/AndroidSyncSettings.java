@@ -109,8 +109,8 @@ public class AndroidSyncSettings {
         mSyncContentResolverDelegate = syncContentResolverDelegate;
 
         mAccount = account;
-        updateSyncability(callback);
         updateCachedSettings();
+        updateSyncability(callback);
 
         mSyncContentResolverDelegate.addStatusChangeListener(
                 ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS,
@@ -234,7 +234,9 @@ public class AndroidSyncSettings {
      * This function must be called within a synchronized block.
      */
     private void updateSyncability(@Nullable final Callback<Boolean> callback) {
-        boolean shouldBeSyncable = mAccount != null;
+        boolean shouldBeSyncable = mAccount != null
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC);
         if (mIsSyncable == shouldBeSyncable) {
             if (callback != null) callback.onResult(false);
             return;
@@ -249,6 +251,8 @@ public class AndroidSyncSettings {
                 // This reduces unnecessary resource usage. See http://crbug.com/480688 for details.
                 mSyncContentResolverDelegate.removePeriodicSync(
                         mAccount, mContractAuthority, Bundle.EMPTY);
+            } else if (mAccount != null) {
+                mSyncContentResolverDelegate.setIsSyncable(mAccount, mContractAuthority, 0);
             }
         }
 
@@ -307,7 +311,7 @@ public class AndroidSyncSettings {
             if (mAccount != null) {
                 mIsSyncable =
                         mSyncContentResolverDelegate.getIsSyncable(mAccount, mContractAuthority)
-                        == 1;
+                        > 0;
                 mChromeSyncEnabled = mSyncContentResolverDelegate.getSyncAutomatically(
                         mAccount, mContractAuthority);
             } else {

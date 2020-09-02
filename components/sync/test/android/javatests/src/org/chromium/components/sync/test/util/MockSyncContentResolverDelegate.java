@@ -25,10 +25,12 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Mock implementation of the {@link SyncContentResolverDelegate}.
+ * Fake implementation of the {@link SyncContentResolverDelegate}.
  *
  * This implementation only supports status change listeners for the type
- * SYNC_OBSERVER_TYPE_SETTINGS.
+ * SYNC_OBSERVER_TYPE_SETTINGS. Differently from the real implementation, it
+ * doesn't allow calling the auto-sync methods (e.g. getIsSyncable()) with a null
+ * account.
  */
 public class MockSyncContentResolverDelegate implements SyncContentResolverDelegate {
     private final Set<String> mSyncAutomaticallySet;
@@ -84,21 +86,15 @@ public class MockSyncContentResolverDelegate implements SyncContentResolverDeleg
 
     @Override
     public boolean getSyncAutomatically(Account account, String authority) {
-        String key = createKey(account, authority);
         synchronized (mSyncableMapLock) {
-            return mSyncAutomaticallySet.contains(key);
+            return mSyncAutomaticallySet.contains(createKey(account, authority));
         }
     }
 
     @Override
     public void setSyncAutomatically(Account account, String authority, boolean sync) {
-        String key = createKey(account, authority);
         synchronized (mSyncableMapLock) {
-            if (!mIsSyncableMap.containsKey(key) || !mIsSyncableMap.get(key)) {
-                throw new IllegalArgumentException("Account " + account
-                        + " is not syncable for authority " + authority
-                        + ". Can not set sync state to " + sync);
-            }
+            String key = createKey(account, authority);
             if (sync) {
                 mSyncAutomaticallySet.add(key);
             } else if (mSyncAutomaticallySet.contains(key)) {
@@ -110,24 +106,14 @@ public class MockSyncContentResolverDelegate implements SyncContentResolverDeleg
 
     @Override
     public void setIsSyncable(Account account, String authority, int syncable) {
-        String key = createKey(account, authority);
-
         synchronized (mSyncableMapLock) {
-            switch (syncable) {
-                case 0:
-                    mIsSyncableMap.put(key, false);
-                    break;
-                case 1:
-                    mIsSyncableMap.put(key, true);
-                    break;
-                case -1:
-                    if (mIsSyncableMap.containsKey(key)) {
-                        mIsSyncableMap.remove(key);
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            "Unable to understand syncable argument: " + syncable);
+            String key = createKey(account, authority);
+            if (syncable > 0) {
+                mIsSyncableMap.put(key, true);
+            } else if (syncable == 0) {
+                mIsSyncableMap.put(key, false);
+            } else if (mIsSyncableMap.containsKey(key)) {
+                mIsSyncableMap.remove(key);
             }
         }
         notifyObservers();
@@ -135,13 +121,12 @@ public class MockSyncContentResolverDelegate implements SyncContentResolverDeleg
 
     @Override
     public int getIsSyncable(Account account, String authority) {
-        String key = createKey(account, authority);
         synchronized (mSyncableMapLock) {
+            String key = createKey(account, authority);
             if (mIsSyncableMap.containsKey(key)) {
                 return mIsSyncableMap.get(key) ? 1 : 0;
-            } else {
-                return -1;
             }
+            return -1;
         }
     }
 
