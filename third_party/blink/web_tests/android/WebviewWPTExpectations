@@ -3932,7 +3932,6 @@ crbug.com/1050754 external/wpt/secure-contexts/basic-popup-and-iframe-tests.html
 crbug.com/1050754 external/wpt/secure-contexts/basic-popup-and-iframe-tests.https.html [ Failure ]
 crbug.com/1050754 external/wpt/secure-contexts/basic-shared-worker.html [ Failure ]
 crbug.com/1050754 external/wpt/secure-contexts/basic-shared-worker.https.html [ Failure ]
-crbug.com/1050754 external/wpt/secure-contexts/idlharness.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/secure-contexts/shared-worker-insecure-first.https.html [ Failure ]
 crbug.com/1050754 external/wpt/secure-contexts/shared-worker-secure-first.https.html [ Failure ]
 crbug.com/1050754 external/wpt/selection/Document-open.html [ Failure ]
