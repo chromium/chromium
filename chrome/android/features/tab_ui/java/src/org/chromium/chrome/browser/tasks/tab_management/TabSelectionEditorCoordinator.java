@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -208,8 +207,14 @@ class TabSelectionEditorCoordinator {
     /**
      * @return The {@link TabSelectionEditorLayout} for testing.
      */
-    @VisibleForTesting
-    public TabSelectionEditorLayout getTabSelectionEditorLayoutForTesting() {
+    TabSelectionEditorLayout getTabSelectionEditorLayoutForTesting() {
         return mTabSelectionEditorLayout;
+    }
+
+    /**
+     * @return The {@link TabListRecyclerView} for testing.
+     */
+    TabListRecyclerView getTabListRecyclerViewForTesting() {
+        return mTabListCoordinator.getContainerView();
     }
 }

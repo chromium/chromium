@@ -108,7 +108,6 @@ class TabGridViewBinder {
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             int selectedTabBackground =
                     model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
-            view.setSelected(model.get(TabProperties.IS_SELECTED));
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 if (model.get(TabProperties.IS_SELECTED)) {
                     view.fastFindViewById(R.id.selected_view_below_lollipop)
@@ -229,6 +228,8 @@ class TabGridViewBinder {
             int iconDrawableId = model.get(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID);
             boolean shouldTint = iconDrawableId != R.drawable.ic_logo_googleg_24dp;
             searchButton.setIcon(iconDrawableId, shouldTint);
+        } else if (TabProperties.IS_SELECTED == propertyKey) {
+            view.setSelected(model.get(TabProperties.IS_SELECTED));
         }
     }
 
@@ -264,11 +265,6 @@ class TabGridViewBinder {
                 model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
                 return ((SelectableTabGridView) view).onLongClick(view);
             });
-        } else if (TabProperties.TITLE == propertyKey) {
-            String title = model.get(TabProperties.TITLE);
-            view.fastFindViewById(R.id.action_button)
-                    .setContentDescription(view.getResources().getString(
-                            R.string.accessibility_tabstrip_btn_close_tab, title));
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             assert model.get(TabProperties.TAB_SELECTION_DELEGATE) != null;
 

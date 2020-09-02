@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
@@ -484,6 +488,27 @@ public class TabSelectionEditorTest {
 
         // A longer timeout is needed. Achieve that by using the CriteriaHelper.pollUiThread.
         CriteriaHelper.pollUiThread(() -> GarbageCollectionTestUtils.canBeGarbageCollected(mRef));
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectionTabAccessibilityString() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        String expectedAccessibilityString = "Select about:blank tab";
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        // Test deselected tab
+        View tabView = mTabSelectionEditorCoordinator.getTabListRecyclerViewForTesting()
+                               .findViewHolderForAdapterPosition(0)
+                               .itemView;
+        assertFalse(tabView.createAccessibilityNodeInfo().isChecked());
+
+        // Test selected tab
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        assertTrue(tabView.createAccessibilityNodeInfo().isChecked());
     }
 
     private List<Tab> getTabsInCurrentTabModel() {

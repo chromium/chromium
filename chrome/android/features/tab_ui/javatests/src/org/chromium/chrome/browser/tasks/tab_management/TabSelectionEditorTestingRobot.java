@@ -84,7 +84,7 @@ public class TabSelectionEditorTestingRobot {
             protected boolean matchesSafely(SelectableTabGridView selectableTabGridView) {
                 mSelectableTabGridView = selectableTabGridView;
 
-                return mSelectableTabGridView.isSelected() && actionButtonSelected()
+                return mSelectableTabGridView.isChecked() && actionButtonSelected()
                         && highlightIndicatorIsVisible();
             }
 
