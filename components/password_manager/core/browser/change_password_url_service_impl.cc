@@ -105,7 +105,7 @@ void ChangePasswordUrlServiceImpl::PrefetchURLs() {
       SimpleURLLoader::Create(std::move(resource_request), traffic_annotation);
   // Start Timer.
   fetch_timer_ = base::ElapsedTimer();
-  // Binding the callback to |this| is safe, because the navigationthrottle
+  // Binding the callback to |this| is safe, because the navigation throttle
   // defers if the request is not received yet. Thereby the throttle still exist
   // when the response arrives.
   url_loader_->DownloadToString(
@@ -120,7 +120,7 @@ GURL ChangePasswordUrlServiceImpl::GetChangePasswordUrl(const GURL& url) {
   DCHECK_NE(state_, FetchState::kNoRequestStarted)
       << "Call PrefetchURLs() before.";
   // Metrics for GetChangePasswordUrl are only logged when the request is still
-  // ongoing or if it succeeded. Network erros are logged in the resonse
+  // ongoing or if it succeeded. Network errors are logged in the response
   // callback.
   if (state_ == FetchState::kIsLoading) {
     base::UmaHistogramEnumeration(kGetChangePasswordUrlMetricName,

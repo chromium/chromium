@@ -2544,7 +2544,7 @@ const char kWellKnownChangePasswordDescription[] =
     "the .well-known/change-password path. The path is supposed to point to "
     "the password change form of the site. When the site doesn't support "
     ".well-known/change-password it is checked if a fallback url is available. "
-    "Otherwise the user is redirected to the orgin.";
+    "Otherwise the user is redirected to the origin.";
 
 const char kZeroCopyName[] = "Zero-copy rasterizer";
 const char kZeroCopyDescription[] =
