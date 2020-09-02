@@ -444,7 +444,7 @@ input::-webkit-textfield-decoration-container {
 }
 
 input::-webkit-clear-button {
-    -webkit-appearance: searchfield-cancel-button; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     display: inline-block;
     cursor: default;
     flex: none;
@@ -460,7 +460,7 @@ input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-clear-button {
 }
 
 input[type="search" i]::-webkit-search-cancel-button {
-    -webkit-appearance: searchfield-cancel-button; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     display: block;
     cursor: default;
     flex: none;
@@ -477,7 +477,7 @@ input[type="search" i]:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-se
 }
 
 input::-webkit-inner-spin-button {
-    -webkit-appearance: inner-spin-button; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     display: inline-block;
     cursor: default;
     flex: none;
@@ -606,7 +606,7 @@ input[type="button" i], input[type="submit" i], input[type="reset" i] {
 }
 
 input[type="file" i]::-webkit-file-upload-button {
-    -webkit-appearance: push-button; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     -webkit-user-modify: read-only !important;
     white-space: nowrap;
     margin: 0;
@@ -635,7 +635,7 @@ input[type="range" i] {
 }
 
 input[type="range" i]::-webkit-slider-container, input[type="range" i]::-webkit-media-slider-container {
-    -webkit-appearance: inherit; /* AutoAppearanceFor() should match to this. */
+    appearance: inherit;
     flex: 1;
     min-inline-size: 0;
     box-sizing: border-box;
@@ -654,7 +654,7 @@ input[type="range" i]::-webkit-slider-runnable-track {
 }
 
 input[type="range" i]::-webkit-slider-thumb, input[type="range" i]::-webkit-media-slider-thumb {
-    -webkit-appearance: sliderthumb-horizontal; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
     display: block;
