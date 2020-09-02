@@ -802,6 +802,7 @@ class TabListMediator {
             mTemplateUrlObserver = () -> {
                 mSearchChipIconDrawableId = getSearchChipIconDrawableId();
                 for (int i = 0; i < mModel.size(); i++) {
+                    if (mModel.get(i).model.get(CARD_TYPE) != TAB) continue;
                     mModel.get(i).model.set(
                             TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID, mSearchChipIconDrawableId);
                 }

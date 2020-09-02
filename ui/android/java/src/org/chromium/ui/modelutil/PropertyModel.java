@@ -276,7 +276,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     @RemovableInRelease
     private void validateKey(PropertyKey key) {
         if (!mData.containsKey(key)) {
-            throw new IllegalArgumentException("Invalid key passed in: " + key);
+            throw new IllegalArgumentException(
+                    "Invalid key passed in: " + key + ". Current data is: " + mData.toString());
         }
     }
 
