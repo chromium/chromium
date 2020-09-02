@@ -266,6 +266,7 @@ source_set("common_unittests_sources") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom/frame:frame_blink_headers",
     "//third_party/boringssl",
     "//url/mojom:url_mojom_gurl",
     "//v8",
