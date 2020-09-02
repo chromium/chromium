@@ -22660,8 +22660,7 @@
     {
       'name': 'SystemProxySettings',
       'owners': ['acostinas@google.com', 'pmarko@chromium.org'],
-      'supported_on': ['chrome_os:81-'],
-      'future': True,
+      'future_on': ['chrome_os'],
       'device_only': True,
       'id': 672,
       'type': 'dict',
@@ -23028,10 +23027,9 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     {
       'name': 'PinUnlockAutosubmitEnabled',
       'owners': ['rrsilva@google.com', 'cros-oac@google.com'],
-      'future': True,
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:85-'],
+      'future_on': ['chrome_os'],
       'features': {
         'can_be_recommended' : True,
         'dynamic_refresh': True,
@@ -23056,8 +23054,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['myy@chromium.org', 'essential-inputs-team@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future': True,
-      'supported_on' : ['chrome_os:85-'],
+      'future_on' : ['chrome_os'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
