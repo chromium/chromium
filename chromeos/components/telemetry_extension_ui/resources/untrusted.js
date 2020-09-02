@@ -124,6 +124,19 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests smartctl routine to be run.
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runSmartctlCheckRoutine() {
+      const response =
+          /** @type {!Object} */
+          (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE));
+      return response;
+    }
   };
 
   /**

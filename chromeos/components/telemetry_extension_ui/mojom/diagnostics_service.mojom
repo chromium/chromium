@@ -74,6 +74,16 @@ interface DiagnosticsService {
   RunBatteryHealthRoutine(uint32 maximum_cycle_count,
                           uint32 percent_battery_wear_allowed)
       => (RunRoutineResponse response);
+
+  // Requests that the SmartctlCheck routine is created and started on the
+  // platform. This routine checks available spare NVMe capacity against the
+  // threshold. This routine is only available if GetAvailableRoutines returned
+  // kSmartctlCheck.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunSmartctlCheckRoutine() => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.

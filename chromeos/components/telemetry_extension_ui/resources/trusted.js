@@ -317,6 +317,14 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runBatteryHealthRoutine(
         request.maximumCycleCount, request.percentBatteryWearAllowed);
   };
+
+  /**
+   * Runs smartctl check routine.
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunSmartctlCheckRoutine() {
+    return await getOrCreateDiagnosticsService().runSmartctlCheckRoutine();
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -608,6 +616,11 @@ untrustedMessagePipe.registerHandler(
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunBatteryHealthRoutine(message),
         message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        () => diagnosticsProxy.handleRunSmartctlCheckRoutine(), message));
 
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.PROBE_TELEMETRY_INFO,

@@ -362,6 +362,14 @@ TEST_F(
 
 TEST_F(
     'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunSmartctlCheckRoutine', async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunSmartctlCheckRoutine');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
     'UntrustedRequestTelemetryInfoUnknownCategory', async () => {
       await runTestInUntrusted('UntrustedRequestTelemetryInfoUnknownCategory');
       testDone();

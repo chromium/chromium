@@ -94,4 +94,15 @@ void DiagnosticsService::RunBatteryHealthRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunSmartctlCheckRoutine(
+    RunSmartctlCheckRoutineCallback callback) {
+  GetService()->RunSmartctlCheckRoutine(base::BindOnce(
+      [](health::mojom::DiagnosticsService::RunSmartctlCheckRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 }  // namespace chromeos

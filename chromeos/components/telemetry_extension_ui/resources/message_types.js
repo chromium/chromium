@@ -24,6 +24,8 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunBatteryCapacityRoutine',
   DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE:
       'DiagnosticsService.RunBatteryHealthRoutine',
+  DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE:
+      'DiagnosticsService.RunSmartctlCheckRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -75,6 +77,13 @@ dpsl_internal.DiagnosticsRunBatteryCapacityRoutineRequest;
  *  percentBatteryWearAllowed: !number}}
  */
 dpsl_internal.DiagnosticsRunBatteryHealthRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to request the privileged
+ * context to diagnostics to run smartctl check routine.
+ * @typedef { null }
+ */
+dpsl_internal.DiagnosticsRunSmartctlCheckRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine
