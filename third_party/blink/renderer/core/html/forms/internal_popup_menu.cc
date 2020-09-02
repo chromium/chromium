@@ -50,6 +50,15 @@ const char* TextTransformToString(ETextTransform transform) {
   return getValueName(PlatformEnumToCSSValueID(transform));
 }
 
+const String SerializeComputedStyleForProperty(const ComputedStyle& style,
+                                               CSSPropertyID id) {
+  const CSSProperty& property = CSSProperty::Get(id);
+  const CSSValue* value =
+      property.CSSValueFromComputedStyle(style, nullptr, false);
+  return String::Format("%s : %s;\n", property.GetPropertyName(),
+                        value->CssText().Utf8().c_str());
+}
+
 }  // anonymous namespace
 
 class PopupMenuCSSFontSelector : public CSSFontSelector,
@@ -225,6 +234,33 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
       owner_element.GetDocument().GetFrame(), 1.f);
   PagePopupClient::AddString(
       "<!DOCTYPE html><head><meta charset='UTF-8'><style>\n", data);
+
+  LayoutObject* owner_layout = owner_element.GetLayoutObject();
+  if (const ComputedStyle* style =
+          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbar)) {
+    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar", data, *style);
+  }
+  if (const ComputedStyle* style =
+          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbarThumb)) {
+    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-thumb", data,
+                                   *style);
+  }
+  if (const ComputedStyle* style =
+          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbarTrack)) {
+    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-track", data,
+                                   *style);
+  }
+  if (const ComputedStyle* style = owner_layout->GetCachedPseudoElementStyle(
+          kPseudoIdScrollbarTrackPiece)) {
+    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-track-piece",
+                                   data, *style);
+  }
+  if (const ComputedStyle* style =
+          owner_layout->GetCachedPseudoElementStyle(kPseudoIdScrollbarCorner)) {
+    AppendOwnerElementPseudoStyles("select::-webkit-scrollbar-corner", data,
+                                   *style);
+  }
+
   data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data->Append(ChooserResourceLoader::GetListPickerStyleSheet());
   if (!RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled())
@@ -401,6 +437,27 @@ void InternalPopupMenu::AddSeparator(ItemIterationContext& context,
   AddProperty("disabled", element.IsDisabledFormControl(), data);
   AddElementStyle(context, element);
   PagePopupClient::AddString("},\n", data);
+}
+
+void InternalPopupMenu::AppendOwnerElementPseudoStyles(
+    const String& target,
+    SharedBuffer* data,
+    const ComputedStyle& style) {
+  PagePopupClient::AddString(target + "{ \n", data);
+
+  const CSSPropertyID serialize_targets[] = {
+      CSSPropertyID::kDisplay,    CSSPropertyID::kBackgroundColor,
+      CSSPropertyID::kWidth,      CSSPropertyID::kBorderBottom,
+      CSSPropertyID::kBorderLeft, CSSPropertyID::kBorderRight,
+      CSSPropertyID::kBorderTop,  CSSPropertyID::kBorderRadius,
+      CSSPropertyID::kBoxShadow};
+
+  for (CSSPropertyID id : serialize_targets) {
+    PagePopupClient::AddString(SerializeComputedStyleForProperty(style, id),
+                               data);
+  }
+
+  PagePopupClient::AddString("}\n", data);
 }
 
 CSSFontSelector* InternalPopupMenu::CreateCSSFontSelector(

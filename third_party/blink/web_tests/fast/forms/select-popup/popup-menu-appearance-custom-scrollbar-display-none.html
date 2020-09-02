@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  window.enablePixelTesting = true;
+</script>
+<script src="../../resources/ahem.js"></script>
+<script src="../resources/picker-common.js"></script>
+<style>
+  select:focus {
+    outline-width: 0;
+  }
+  select {
+    width: 200px;
+    font: 10px Ahem;
+    -webkit-appearance: none;
+    background-color: white;
+  }
+  select::-webkit-scrollbar {
+    display: none;
+    width: 15px;
+  }
+</style>
+</head>
+<body>
+<select id='menu'>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option >
+</select>
+<script>
+   openPickerAppearanceOnly(document.getElementById('menu'), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

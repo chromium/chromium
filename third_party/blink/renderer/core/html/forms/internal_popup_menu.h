@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INTERNAL_POPUP_MENU_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 
@@ -42,6 +43,10 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   void AddOptGroup(ItemIterationContext&, HTMLOptGroupElement&);
   void AddSeparator(ItemIterationContext&, HTMLHRElement&);
   void AddElementStyle(ItemIterationContext&, HTMLElement&);
+
+  void AppendOwnerElementPseudoStyles(const String&,
+                                      SharedBuffer*,
+                                      const ComputedStyle&);
 
   // PopupMenu functions:
   void Show() override;
