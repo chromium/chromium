@@ -1152,7 +1152,11 @@ bool WebAXObjectProxy::IsBusy() {
 
 std::string WebAXObjectProxy::Restriction() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  switch (accessibility_object_.Restriction()) {
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  blink::WebAXRestriction web_ax_restriction =
+      static_cast<blink::WebAXRestriction>(node_data.GetRestriction());
+  switch (web_ax_restriction) {
     case blink::kWebAXRestrictionReadOnly:
       return "readOnly";
     case blink::kWebAXRestrictionDisabled:
@@ -1219,8 +1223,7 @@ bool WebAXObjectProxy::IsSelectable() {
   accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   // It's selectable if it has the attribute, whether it's true or false.
   return node_data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
-         accessibility_object_.Restriction() !=
-             blink::kWebAXRestrictionDisabled;
+         node_data.GetRestriction() != ax::mojom::Restriction::kDisabled;
 }
 
 bool WebAXObjectProxy::IsMultiLine() {
@@ -1294,8 +1297,9 @@ bool WebAXObjectProxy::IsValid() {
 
 bool WebAXObjectProxy::IsReadOnly() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  return accessibility_object_.Restriction() ==
-         blink::kWebAXRestrictionReadOnly;
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  return node_data.GetRestriction() == ax::mojom::Restriction::kReadOnly;
 }
 
 bool WebAXObjectProxy::IsIgnored() {
@@ -1819,7 +1823,9 @@ void WebAXObjectProxy::Press() {
 
 bool WebAXObjectProxy::SetValue(const std::string& value) {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  if (accessibility_object_.Restriction() != blink::kWebAXRestrictionNone ||
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  if (node_data.GetRestriction() != ax::mojom::Restriction::kNone ||
       accessibility_object_.StringValue().IsEmpty())
     return false;
 

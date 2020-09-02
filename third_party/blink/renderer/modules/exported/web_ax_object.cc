@@ -310,13 +310,6 @@ bool WebAXObject::IsControl() const {
   return private_->IsControl();
 }
 
-WebAXRestriction WebAXObject::Restriction() const {
-  if (IsDetached())
-    return kWebAXRestrictionNone;
-
-  return static_cast<WebAXRestriction>(private_->Restriction());
-}
-
 bool WebAXObject::IsFocused() const {
   if (IsDetached())
     return false;

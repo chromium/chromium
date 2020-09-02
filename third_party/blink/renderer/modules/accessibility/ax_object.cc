@@ -855,6 +855,25 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
                                   ax::mojom::blink::StringAttribute::kValue,
                                   StringValue().Utf8());
   }
+
+  switch (Restriction()) {
+    case AXRestriction::kRestrictionReadOnly:
+      node_data->SetRestriction(ax::mojom::blink::Restriction::kReadOnly);
+      break;
+    case AXRestriction::kRestrictionDisabled:
+      node_data->SetRestriction(ax::mojom::blink::Restriction::kDisabled);
+      break;
+    case AXRestriction::kRestrictionNone:
+      if (CanSetValueAttribute())
+        node_data->AddAction(ax::mojom::blink::Action::kSetValue);
+      break;
+  }
+
+  if (!Url().IsEmpty()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kUrl,
+                                  Url().GetString().Utf8());
+  }
 }
 
 void AXObject::TruncateAndAddStringAttribute(

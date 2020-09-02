@@ -648,7 +648,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   cached_bounding_boxes_[dst->id] = dst->relative_bounds;
 
   SerializeSparseAttributes(src, dst);
-  SerializeStateAttributes(src, dst);
   SerializeChooserPopupAttributes(src, dst);
 
   if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
@@ -772,26 +771,6 @@ void BlinkAXTreeSource::SerializeNameAndDescriptionAttributes(
                                     ax::mojom::StringAttribute::kPlaceholder,
                                     web_placeholder.Utf8());
   }
-}
-
-void BlinkAXTreeSource::SerializeStateAttributes(WebAXObject src,
-                                                 ui::AXNodeData* dst) const {
-  switch (src.Restriction()) {
-    case blink::kWebAXRestrictionReadOnly:
-      dst->SetRestriction(ax::mojom::Restriction::kReadOnly);
-      break;
-    case blink::kWebAXRestrictionDisabled:
-      dst->SetRestriction(ax::mojom::Restriction::kDisabled);
-      break;
-    case blink::kWebAXRestrictionNone:
-      if (src.CanSetValueAttribute())
-        dst->AddAction(ax::mojom::Action::kSetValue);
-      break;
-  }
-
-  if (!src.Url().IsEmpty())
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kUrl,
-                                  src.Url().GetString().Utf8());
 }
 
 void BlinkAXTreeSource::SerializeStyleAttributes(WebAXObject src,
