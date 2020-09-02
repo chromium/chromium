@@ -163768,6 +163768,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Settings.PinnedTabs" units="units" expires_after="M86">
+  <obsolete>
+    Removed September 2020; no longer necessary.
+  </obsolete>
   <owner>mpearson@chromium.org</owner>
   <summary>The number of pinned tabs opened when a profile is loaded.</summary>
 </histogram>

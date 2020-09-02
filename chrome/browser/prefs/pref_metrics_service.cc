@@ -97,8 +97,6 @@ void PrefMetricsService::RecordLaunchPrefs() {
   // Android does not support pinned tabs.
 #if !defined(OS_ANDROID)
   StartupTabs startup_tabs = PinnedTabCodec::ReadPinnedTabs(profile_);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Settings.PinnedTabs",
-                              startup_tabs.size(), 1, 50, 20);
   for (size_t i = 0; i < startup_tabs.size(); ++i) {
     GURL start_url(startup_tabs.at(i).url);
     if (start_url.is_valid()) {
