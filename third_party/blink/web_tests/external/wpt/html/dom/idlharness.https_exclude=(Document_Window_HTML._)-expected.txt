@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1424 tests; 1340 PASS, 84 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1423 tests; 1340 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -1346,7 +1346,6 @@ PASS SVGElement interface: attribute ondblclick
 PASS SVGElement interface: attribute ondrag
 PASS SVGElement interface: attribute ondragend
 PASS SVGElement interface: attribute ondragenter
-FAIL SVGElement interface: attribute ondragexit assert_true: The prototype object must have a property "ondragexit" expected true got false
 PASS SVGElement interface: attribute ondragleave
 PASS SVGElement interface: attribute ondragover
 PASS SVGElement interface: attribute ondragstart

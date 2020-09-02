@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 803 tests; 787 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 800 tests; 792 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -620,6 +620,8 @@ FAIL WorkerGlobalScope interface: attribute ononline assert_true: The prototype 
 PASS WorkerGlobalScope interface: attribute onrejectionhandled
 PASS WorkerGlobalScope interface: attribute onunhandledrejection
 PASS WorkerGlobalScope interface: attribute origin
+PASS WorkerGlobalScope interface: attribute isSecureContext
+PASS WorkerGlobalScope interface: attribute crossOriginIsolated
 PASS WorkerGlobalScope interface: operation btoa(DOMString)
 PASS WorkerGlobalScope interface: operation atob(DOMString)
 PASS WorkerGlobalScope interface: operation setTimeout(TimerHandler, optional long, any...)
@@ -681,6 +683,8 @@ FAIL WorkerGlobalScope interface: self must inherit property "ononline" with the
 PASS WorkerGlobalScope interface: self must inherit property "onrejectionhandled" with the proper type
 PASS WorkerGlobalScope interface: self must inherit property "onunhandledrejection" with the proper type
 PASS WorkerGlobalScope interface: self must inherit property "origin" with the proper type
+PASS WorkerGlobalScope interface: self must inherit property "isSecureContext" with the proper type
+PASS WorkerGlobalScope interface: self must inherit property "crossOriginIsolated" with the proper type
 PASS WorkerGlobalScope interface: self must inherit property "btoa(DOMString)" with the proper type
 PASS WorkerGlobalScope interface: calling btoa(DOMString) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "atob(DOMString)" with the proper type
@@ -712,14 +716,7 @@ PASS Worker interface: operation postMessage(any, optional PostMessageOptions)
 PASS Worker interface: attribute onmessage
 FAIL Worker interface: attribute onmessageerror assert_true: The prototype object must have a property "onmessageerror" expected true got false
 PASS Worker interface: attribute onerror
-FAIL SharedWorker interface: existence and properties of interface object assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
-FAIL SharedWorker interface object length assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
-FAIL SharedWorker interface object name assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
-FAIL SharedWorker interface: existence and properties of interface prototype object assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
-FAIL SharedWorker interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
-FAIL SharedWorker interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
-FAIL SharedWorker interface: attribute port assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
-FAIL SharedWorker interface: attribute onerror assert_own_property: self does not have own property "SharedWorker" expected property "SharedWorker" missing
+PASS SharedWorker interface: existence and properties of interface object
 PASS WorkerNavigator interface: existence and properties of interface object
 PASS WorkerNavigator interface object length
 PASS WorkerNavigator interface object name

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 330 tests; 315 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 325 tests; 315 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -75,11 +75,6 @@ PASS ondragenter: the default value must be null
 PASS ondragenter: the content attribute must be compiled into a function as the corresponding property
 PASS ondragenter: dynamic changes on the attribute
 PASS ondragenter: dispatching an Event at a <math> element must trigger element.ondragenter
-FAIL ondragexit: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "ondragexit" expected true got false
-FAIL ondragexit: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
-FAIL ondragexit: the content attribute must be compiled into a function as the corresponding property assert_equals: The ondragexit property must be a function expected "function" but got "undefined"
-FAIL ondragexit: dynamic changes on the attribute assert_equals: The ondragexit property must be null (no attribute) expected (object) null but got (undefined) undefined
-FAIL ondragexit: dispatching an Event at a <math> element must trigger element.ondragexit assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
 PASS ondragleave: must be on the appropriate locations for GlobalEventHandlers
 PASS ondragleave: the default value must be null
 PASS ondragleave: the content attribute must be compiled into a function as the corresponding property

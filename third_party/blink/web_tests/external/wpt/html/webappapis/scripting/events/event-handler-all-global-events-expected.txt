@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 330 tests; 318 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 325 tests; 317 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -75,11 +75,6 @@ PASS ondragenter: the default value must be null
 PASS ondragenter: the content attribute must be compiled into a function as the corresponding property
 PASS ondragenter: the content attribute must execute when an event is dispatched
 PASS ondragenter: dispatching an Event at a <meta> element must trigger element.ondragenter
-FAIL ondragexit: must be on the appropriate locations for GlobalEventHandlers assert_true: Window has an own property named "ondragexit" expected true got false
-FAIL ondragexit: the default value must be null assert_equals: The default value of the property is null for a Window instance expected (object) null but got (undefined) undefined
-FAIL ondragexit: the content attribute must be compiled into a function as the corresponding property assert_equals: The ondragexit property must be a function expected "function" but got "undefined"
-FAIL ondragexit: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
-PASS ondragexit: dispatching an Event at a <meta> element must trigger element.ondragexit
 PASS ondragleave: must be on the appropriate locations for GlobalEventHandlers
 PASS ondragleave: the default value must be null
 PASS ondragleave: the content attribute must be compiled into a function as the corresponding property

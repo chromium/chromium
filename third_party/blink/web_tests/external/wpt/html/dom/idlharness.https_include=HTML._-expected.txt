@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3734 tests; 3703 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3737 tests; 3708 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -247,7 +247,6 @@ PASS HTMLElement interface: attribute ondblclick
 PASS HTMLElement interface: attribute ondrag
 PASS HTMLElement interface: attribute ondragend
 PASS HTMLElement interface: attribute ondragenter
-FAIL HTMLElement interface: attribute ondragexit assert_true: The prototype object must have a property "ondragexit" expected true got false
 PASS HTMLElement interface: attribute ondragleave
 PASS HTMLElement interface: attribute ondragover
 PASS HTMLElement interface: attribute ondragstart
@@ -342,7 +341,6 @@ PASS HTMLElement interface: document.createElement("noscript") must inherit prop
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondrag" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondragend" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondragenter" with the proper type
-FAIL HTMLElement interface: document.createElement("noscript") must inherit property "ondragexit" with the proper type assert_inherits: property "ondragexit" not found in prototype chain
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondragleave" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondragover" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondragstart" with the proper type
@@ -945,6 +943,7 @@ PASS HTMLIFrameElement interface: attribute allowPaymentRequest
 PASS HTMLIFrameElement interface: attribute width
 PASS HTMLIFrameElement interface: attribute height
 PASS HTMLIFrameElement interface: attribute referrerPolicy
+PASS HTMLIFrameElement interface: attribute loading
 PASS HTMLIFrameElement interface: attribute contentDocument
 PASS HTMLIFrameElement interface: attribute contentWindow
 PASS HTMLIFrameElement interface: operation getSVGDocument()
@@ -1103,6 +1102,7 @@ FAIL HTMLMediaElement interface: document.createElement("video") must inherit pr
 PASS HTMLMediaElement interface: document.createElement("video") must inherit property "paused" with the proper type
 PASS HTMLMediaElement interface: document.createElement("video") must inherit property "defaultPlaybackRate" with the proper type
 PASS HTMLMediaElement interface: document.createElement("video") must inherit property "playbackRate" with the proper type
+PASS HTMLMediaElement interface: document.createElement("video") must inherit property "preservesPitch" with the proper type
 PASS HTMLMediaElement interface: document.createElement("video") must inherit property "played" with the proper type
 PASS HTMLMediaElement interface: document.createElement("video") must inherit property "seekable" with the proper type
 PASS HTMLMediaElement interface: document.createElement("video") must inherit property "ended" with the proper type
@@ -1163,6 +1163,7 @@ FAIL HTMLMediaElement interface: document.createElement("audio") must inherit pr
 PASS HTMLMediaElement interface: document.createElement("audio") must inherit property "paused" with the proper type
 PASS HTMLMediaElement interface: document.createElement("audio") must inherit property "defaultPlaybackRate" with the proper type
 PASS HTMLMediaElement interface: document.createElement("audio") must inherit property "playbackRate" with the proper type
+PASS HTMLMediaElement interface: document.createElement("audio") must inherit property "preservesPitch" with the proper type
 PASS HTMLMediaElement interface: document.createElement("audio") must inherit property "played" with the proper type
 PASS HTMLMediaElement interface: document.createElement("audio") must inherit property "seekable" with the proper type
 PASS HTMLMediaElement interface: document.createElement("audio") must inherit property "ended" with the proper type
@@ -1211,6 +1212,7 @@ FAIL HTMLMediaElement interface: new Audio() must inherit property "getStartDate
 PASS HTMLMediaElement interface: new Audio() must inherit property "paused" with the proper type
 PASS HTMLMediaElement interface: new Audio() must inherit property "defaultPlaybackRate" with the proper type
 PASS HTMLMediaElement interface: new Audio() must inherit property "playbackRate" with the proper type
+PASS HTMLMediaElement interface: new Audio() must inherit property "preservesPitch" with the proper type
 PASS HTMLMediaElement interface: new Audio() must inherit property "played" with the proper type
 PASS HTMLMediaElement interface: new Audio() must inherit property "seekable" with the proper type
 PASS HTMLMediaElement interface: new Audio() must inherit property "ended" with the proper type
@@ -1304,6 +1306,7 @@ FAIL HTMLMediaElement interface: operation getStartDate() assert_own_property: i
 PASS HTMLMediaElement interface: attribute paused
 PASS HTMLMediaElement interface: attribute defaultPlaybackRate
 PASS HTMLMediaElement interface: attribute playbackRate
+PASS HTMLMediaElement interface: attribute preservesPitch
 PASS HTMLMediaElement interface: attribute played
 PASS HTMLMediaElement interface: attribute seekable
 PASS HTMLMediaElement interface: attribute ended

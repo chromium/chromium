@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 963 tests; 946 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 963 tests; 952 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -204,6 +204,7 @@ PASS Window interface: attribute frameElement
 PASS Window interface: operation open(optional USVString, optional DOMString, optional DOMString)
 PASS Window interface: attribute navigator
 FAIL Window interface: attribute applicationCache assert_own_property: The global object must have a property "applicationCache" expected property "applicationCache" missing
+PASS Window interface: attribute originIsolated
 PASS Window interface: operation alert()
 PASS Window interface: operation alert(DOMString)
 PASS Window interface: operation confirm(optional DOMString)
@@ -229,7 +230,6 @@ PASS Window interface: attribute ondblclick
 PASS Window interface: attribute ondrag
 PASS Window interface: attribute ondragend
 PASS Window interface: attribute ondragenter
-FAIL Window interface: attribute ondragexit assert_own_property: The global object must have a property "ondragexit" expected property "ondragexit" missing
 PASS Window interface: attribute ondragleave
 PASS Window interface: attribute ondragover
 PASS Window interface: attribute ondragstart
@@ -298,6 +298,8 @@ PASS Window interface: attribute onstorage
 PASS Window interface: attribute onunhandledrejection
 PASS Window interface: attribute onunload
 PASS Window interface: attribute origin
+PASS Window interface: attribute isSecureContext
+PASS Window interface: attribute crossOriginIsolated
 PASS Window interface: operation btoa(DOMString)
 PASS Window interface: operation atob(DOMString)
 PASS Window interface: operation setTimeout(TimerHandler, optional long, any...)
@@ -348,6 +350,7 @@ PASS Window interface: window must inherit property "open(optional USVString, op
 PASS Window interface: calling open(optional USVString, optional DOMString, optional DOMString) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "navigator" with the proper type
 FAIL Window interface: window must inherit property "applicationCache" with the proper type assert_own_property: expected property "applicationCache" missing
+PASS Window interface: window must inherit property "originIsolated" with the proper type
 PASS Window interface: window must inherit property "alert()" with the proper type
 PASS Window interface: window must inherit property "alert(DOMString)" with the proper type
 PASS Window interface: calling alert(DOMString) on window with too few arguments must throw TypeError
@@ -378,7 +381,6 @@ PASS Window interface: window must inherit property "ondblclick" with the proper
 PASS Window interface: window must inherit property "ondrag" with the proper type
 PASS Window interface: window must inherit property "ondragend" with the proper type
 PASS Window interface: window must inherit property "ondragenter" with the proper type
-FAIL Window interface: window must inherit property "ondragexit" with the proper type assert_own_property: expected property "ondragexit" missing
 PASS Window interface: window must inherit property "ondragleave" with the proper type
 PASS Window interface: window must inherit property "ondragover" with the proper type
 PASS Window interface: window must inherit property "ondragstart" with the proper type
@@ -447,6 +449,8 @@ PASS Window interface: window must inherit property "onstorage" with the proper 
 PASS Window interface: window must inherit property "onunhandledrejection" with the proper type
 PASS Window interface: window must inherit property "onunload" with the proper type
 PASS Window interface: window must inherit property "origin" with the proper type
+PASS Window interface: window must inherit property "isSecureContext" with the proper type
+PASS Window interface: window must inherit property "crossOriginIsolated" with the proper type
 PASS Window interface: window must inherit property "btoa(DOMString)" with the proper type
 PASS Window interface: calling btoa(DOMString) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "atob(DOMString)" with the proper type
@@ -529,7 +533,6 @@ PASS Document interface: attribute ondblclick
 PASS Document interface: attribute ondrag
 PASS Document interface: attribute ondragend
 PASS Document interface: attribute ondragenter
-FAIL Document interface: attribute ondragexit assert_true: The prototype object must have a property "ondragexit" expected true got false
 PASS Document interface: attribute ondragleave
 PASS Document interface: attribute ondragover
 PASS Document interface: attribute ondragstart
@@ -655,7 +658,6 @@ PASS Document interface: iframe.contentDocument must inherit property "ondblclic
 PASS Document interface: iframe.contentDocument must inherit property "ondrag" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondragend" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondragenter" with the proper type
-FAIL Document interface: iframe.contentDocument must inherit property "ondragexit" with the proper type assert_inherits: property "ondragexit" not found in prototype chain
 PASS Document interface: iframe.contentDocument must inherit property "ondragleave" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondragover" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondragstart" with the proper type
@@ -781,7 +783,6 @@ PASS Document interface: new Document() must inherit property "ondblclick" with 
 PASS Document interface: new Document() must inherit property "ondrag" with the proper type
 PASS Document interface: new Document() must inherit property "ondragend" with the proper type
 PASS Document interface: new Document() must inherit property "ondragenter" with the proper type
-FAIL Document interface: new Document() must inherit property "ondragexit" with the proper type assert_inherits: property "ondragexit" not found in prototype chain
 PASS Document interface: new Document() must inherit property "ondragleave" with the proper type
 PASS Document interface: new Document() must inherit property "ondragover" with the proper type
 PASS Document interface: new Document() must inherit property "ondragstart" with the proper type
@@ -907,7 +908,6 @@ PASS Document interface: documentWithHandlers must inherit property "ondblclick"
 PASS Document interface: documentWithHandlers must inherit property "ondrag" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondragend" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondragenter" with the proper type
-FAIL Document interface: documentWithHandlers must inherit property "ondragexit" with the proper type assert_inherits: property "ondragexit" found on object expected in prototype chain
 PASS Document interface: documentWithHandlers must inherit property "ondragleave" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondragover" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondragstart" with the proper type

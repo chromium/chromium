@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 324 tests; 309 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 321 tests; 309 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS shadowed blur (document.body)
 PASS shadowed error (document.body)
 PASS shadowed focus (document.body)
@@ -36,7 +36,6 @@ PASS not shadowed dblclick (document.body)
 PASS not shadowed drag (document.body)
 PASS not shadowed dragend (document.body)
 PASS not shadowed dragenter (document.body)
-FAIL not shadowed dragexit (document.body) assert_equals: alternative body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed dragleave (document.body)
 PASS not shadowed dragover (document.body)
 PASS not shadowed dragstart (document.body)
@@ -144,7 +143,6 @@ PASS not shadowed dblclick (document.createElement("frameset"))
 PASS not shadowed drag (document.createElement("frameset"))
 PASS not shadowed dragend (document.createElement("frameset"))
 PASS not shadowed dragenter (document.createElement("frameset"))
-FAIL not shadowed dragexit (document.createElement("frameset")) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed dragleave (document.createElement("frameset"))
 PASS not shadowed dragover (document.createElement("frameset"))
 PASS not shadowed dragstart (document.createElement("frameset"))
@@ -252,7 +250,6 @@ PASS not shadowed dblclick (window)
 PASS not shadowed drag (window)
 PASS not shadowed dragend (window)
 PASS not shadowed dragenter (window)
-FAIL not shadowed dragexit (window) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed dragleave (window)
 PASS not shadowed dragover (window)
 PASS not shadowed dragstart (window)

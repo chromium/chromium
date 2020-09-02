@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 216 tests; 210 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 214 tests; 210 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Return null when getting the blur event handler of a windowless body
 PASS Ignore setting of blur window event handlers on windowless body
 PASS Return null when getting the error event handler of a windowless body
@@ -58,7 +58,6 @@ PASS dblclick is unaffected on a windowless body
 PASS drag is unaffected on a windowless body
 PASS dragend is unaffected on a windowless body
 PASS dragenter is unaffected on a windowless body
-FAIL dragexit is unaffected on a windowless body assert_equals: expected (object) null but got (undefined) undefined
 PASS dragleave is unaffected on a windowless body
 PASS dragover is unaffected on a windowless body
 PASS dragstart is unaffected on a windowless body
@@ -166,7 +165,6 @@ PASS dblclick is unaffected on a windowless frameset
 PASS drag is unaffected on a windowless frameset
 PASS dragend is unaffected on a windowless frameset
 PASS dragenter is unaffected on a windowless frameset
-FAIL dragexit is unaffected on a windowless frameset assert_equals: expected (object) null but got (undefined) undefined
 PASS dragleave is unaffected on a windowless frameset
 PASS dragover is unaffected on a windowless frameset
 PASS dragstart is unaffected on a windowless frameset
