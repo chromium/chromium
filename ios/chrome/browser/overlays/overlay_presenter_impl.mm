@@ -157,6 +157,13 @@ void OverlayPresenterImpl::SetActiveWebState(
     PresentOverlayForActiveRequest();
     return;
   }
+ 
+  // If presenting_ is true and there is no previously active request, this
+  // is likely because the presenting overlay is still in the process of being
+  // dismissed and multiple tabs have been opened in the process.
+  if (!previously_active_request) {
+    return;
+  }
 
   // If the active WebState changes while an overlay is being presented, the
   // presented UI needs to be dismissed before the next overlay for the new
