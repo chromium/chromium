@@ -438,6 +438,7 @@ source_set("eg2_tests") {
     "stop_loading_egtest.mm",
     "tab_order_egtest.mm",
     "visible_url_egtest.mm",
+    "web_share_egtest.mm",
     "window_open_by_dom_egtest.mm",
   ]
 
