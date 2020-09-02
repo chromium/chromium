@@ -38,6 +38,7 @@ struct DomainRule {
 4u.com, 4
 5.bg, 0
 6.bg, 0
+611.to, 4
 64-b.it, 4
 7.bg, 0
 8.bg, 0
@@ -191,7 +192,6 @@ aibetsu.hokkaido.jp, 0
 aichi.jp, 0
 aid.pl, 0
 aig, 0
-aigo, 0
 aikawa.kanagawa.jp, 0
 ainan.ehime.jp, 0
 aioi.hyogo.jp, 0
@@ -247,6 +247,7 @@ alessandria.it, 0
 alesund.no, 0
 alfaromeo, 0
 algard.no, 0
+algorithmia.com, 6
 alibaba, 0
 alipay, 0
 allfinanz, 0
@@ -349,17 +350,21 @@ api.stdlib.com, 4
 apigee.io, 4
 app, 0
 app.banzaicloud.io, 4
+app.br, 0
+app.gp, 4
 app.lmpm.com, 4
 app.os.fedoraproject.org, 4
 app.os.stg.fedoraproject.org, 4
 app.render.com, 4
 appchizi.com, 4
+appengine.flow.ch, 4
 apple, 0
 applicationcloud.io, 4
 applinzi.com, 4
 apps.fbsbx.com, 4
 apps.lair.io, 4
 appspot.com, 4
+aprendemas.cl, 0
 aq, 0
 aq.it, 0
 aquarelle, 0
@@ -476,6 +481,8 @@ at, 0
 at-band-camp.net, 4
 at.eu.org, 4
 at.it, 0
+at.md, 4
+at.vg, 4
 atami.shizuoka.jp, 0
 ath.cx, 4
 athleta, 0
@@ -497,6 +504,7 @@ aukra.no, 0
 aure.no, 0
 aurland.no, 0
 aurskog-holand.no, 0
+aus.basketball, 4
 auspost, 0
 austevoll.no, 0
 austin.museum, 0
@@ -536,7 +544,7 @@ azimuth.network, 4
 azumino.nagano.jp, 0
 azure, 0
 azure-mobile.net, 4
-azurecontainer.io, 4
+azurecontainer.io, 6
 azurewebsites.net, 4
 b-data.io, 4
 b.bg, 0
@@ -550,6 +558,7 @@ ba.leg.br, 4
 babia-gora.pl, 0
 baby, 0
 backplaneapp.io, 4
+backyards.banzaicloud.io, 6
 badaddja.no, 0
 badajoz.museum, 0
 baghdad.museum, 0
@@ -578,8 +587,12 @@ band, 0
 bandai.fukushima.jp, 0
 bando.ibaraki.jp, 0
 bank, 0
+banzai.cloud, 6
 bar, 0
 bar.pro, 0
+bar0.net, 4
+bar1.net, 4
+bar2.net, 4
 barcelona, 0
 barcelona.museum, 0
 barclaycard, 0
@@ -640,13 +653,16 @@ bbs.tr, 0
 bbt, 0
 bbva, 0
 bc.ca, 0
+bc.platform.sh, 4
 bcg, 0
 bci.dnstrace.pro, 4
 bcn, 0
 bd, 2
 bd.se, 0
 be, 0
+be.ax, 4
 be.eu.org, 4
+be.gy, 4
 bearalvahki.no, 0
 beardu.no, 0
 beats, 0
@@ -692,6 +708,7 @@ bi, 0
 bi.it, 0
 bialowieza.pl, 0
 bialystok.pl, 0
+bib.br, 0
 bibai.hokkaido.jp, 0
 bible, 0
 bible.museum, 0
@@ -716,7 +733,7 @@ biratori.hokkaido.jp, 0
 birdart.museum, 0
 birkenes.no, 0
 birthplace.museum, 0
-bitballoon.com, 4
+bitbridge.net, 4
 biz, 0
 biz.at, 4
 biz.az, 0
@@ -757,6 +774,9 @@ blockbuster, 0
 blog, 0
 blog.bo, 0
 blog.br, 0
+blog.gt, 4
+blog.kg, 4
+blog.vu, 4
 blogdns.com, 4
 blogdns.net, 4
 blogdns.org, 4
@@ -1042,6 +1062,7 @@ casino.hu, 0
 castle.museum, 0
 castres.museum, 0
 cat, 0
+cat.ax, 4
 catania.it, 0
 catanzaro.it, 0
 catering, 0
@@ -1070,6 +1091,7 @@ cc.fl.us, 0
 cc.ga.us, 0
 cc.gu.us, 0
 cc.hi.us, 0
+cc.hn, 4
 cc.ia.us, 0
 cc.id.us, 0
 cc.il.us, 0
@@ -1138,6 +1160,7 @@ cg, 0
 ch, 0
 ch.eu.org, 4
 ch.it, 0
+ch.tc, 4
 chambagri.fr, 0
 championship.aero, 0
 chanel, 0
@@ -1244,6 +1267,7 @@ claims, 0
 clan.rip, 4
 cleaning, 0
 cleverapps.io, 4
+clic2000.net, 4
 click, 0
 clinic, 0
 clinique, 0
@@ -1253,7 +1277,7 @@ clothing, 0
 cloud, 0
 cloud.fedoraproject.org, 4
 cloud.goog, 4
-cloud.metacentrum.cz, 4
+cloud.metacentrum.cz, 6
 cloud66.ws, 4
 cloud66.zone, 4
 cloudaccess.host, 4
@@ -1266,6 +1290,7 @@ cloudeity.net, 4
 cloudera.site, 4
 cloudfront.net, 4
 cloudfunctions.net, 4
+cloudjiffy.net, 4
 cloudns.asia, 4
 cloudns.biz, 4
 cloudns.cc, 4
@@ -1290,6 +1315,7 @@ cn.com, 4
 cn.eu.org, 4
 cn.it, 0
 cn.ua, 0
+cn.vu, 4
 cng.br, 0
 cnpy.gdn, 4
 cns.joyent.com, 6
@@ -1350,6 +1376,7 @@ co.pl, 4
 co.place, 4
 co.pn, 0
 co.pw, 0
+co.ro, 4
 co.rs, 0
 co.rw, 0
 co.st, 0
@@ -1428,6 +1455,7 @@ com.eg, 0
 com.es, 0
 com.et, 0
 com.fj, 0
+com.fm, 0
 com.fr, 0
 com.ge, 0
 com.gh, 0
@@ -1550,6 +1578,7 @@ conf.au, 0
 conf.lv, 0
 conf.se, 4
 conference.aero, 0
+conn.uk, 4
 construction, 0
 consulado.st, 0
 consultant.aero, 0
@@ -1576,12 +1605,14 @@ coop.rw, 0
 coop.tt, 0
 cooperativa.bo, 0
 copenhagen.museum, 0
+copro.uk, 4
 corporation.museum, 0
 corsica, 0
 corvette.museum, 0
 cosenza.it, 0
 costume.museum, 0
 couchpotatofries.org, 4
+couk.me, 4
 council.aero, 0
 country, 0
 countryestate.museum, 0
@@ -1589,6 +1620,7 @@ county.museum, 0
 coupon, 0
 coupons, 0
 courses, 0
+coz.br, 0
 cpa, 0
 cpa.pro, 0
 cq.cn, 0
@@ -1617,6 +1649,7 @@ cruises, 0
 cryptonomic.net, 6
 cs.it, 0
 csc, 0
+csx.cc, 4
 ct.it, 0
 ct.us, 0
 cu, 0
@@ -1628,13 +1661,16 @@ culture.museum, 0
 cuneo.it, 0
 cupcake.is, 4
 curitiba.br, 0
+curv.dev, 4
 cust.dev.thingdust.io, 4
 cust.disrec.thingdust.io, 4
 cust.prod.thingdust.io, 4
+cust.retrosnub.co.uk, 4
 cust.testing.thingdust.io, 4
 custom.metacentrum.cz, 4
 customer-oci.com, 6
 customer.enonic.io, 4
+customer.mythic-beasts.com, 4
 customer.speedpartner.de, 4
 cv, 0
 cv.ua, 0
@@ -1661,6 +1697,7 @@ dabur, 0
 dad, 0
 daegu.kr, 0
 daejeon.kr, 0
+daemon.panel.gg, 4
 dagestan.ru, 4
 dagestan.su, 4
 daigo.ibaraki.jp, 0
@@ -1705,6 +1742,9 @@ de, 0
 de.com, 4
 de.cool, 4
 de.eu.org, 4
+de.gt, 4
+de.ls, 4
+de.md, 4
 de.us, 0
 deal, 0
 dealer, 0
@@ -1726,6 +1766,7 @@ dellogliastra.it, 0
 delmenhorst.museum, 0
 deloitte, 0
 delta, 0
+demo.jelastic.com, 4
 democracia.bo, 0
 democrat, 0
 demon.nl, 4
@@ -1735,16 +1776,20 @@ dentist, 0
 dep.no, 0
 deporte.bo, 0
 depot.museum, 0
+des.br, 0
 desa.id, 0
 desi, 0
 design, 0
 design.aero, 0
 design.museum, 0
+det.br, 0
 detroit.museum, 0
 dev, 0
 dev-myqnapcloud.com, 4
 dev.adobeaemcloud.com, 6
+dev.br, 0
 dev.static.land, 4
+dev.vu, 4
 development.run, 4
 devices.resinstaging.io, 4
 df.gov.br, 0
@@ -1795,6 +1840,7 @@ dnshome.de, 4
 dnsiskinky.com, 4
 dnsking.ch, 4
 dnsup.net, 4
+dnsupdate.info, 4
 dnsupdater.de, 4
 do, 0
 docs, 0
@@ -1805,7 +1851,6 @@ doesntexist.org, 4
 dog, 0
 dolls.museum, 0
 domains, 0
-dominic.ua, 0
 donetsk.ua, 0
 donna.no, 0
 donostia.museum, 0
@@ -1814,6 +1859,7 @@ dontexist.net, 4
 dontexist.org, 4
 doomdns.com, 4
 doomdns.org, 4
+dopaas.com, 4
 doshi.yamanashi.jp, 0
 dot, 0
 dovre.no, 0
@@ -1881,6 +1927,7 @@ dyndns-web.com, 4
 dyndns-wiki.com, 4
 dyndns-work.com, 4
 dyndns.biz, 4
+dyndns.dappnode.io, 4
 dyndns.ddnss.de, 4
 dyndns.info, 4
 dyndns.org, 4
@@ -1923,6 +1970,7 @@ ed.cr, 0
 ed.jp, 0
 ed.pw, 0
 edeka, 0
+edgeapp.net, 4
 edgestack.me, 4
 edogawa.tokyo.jp, 0
 edu, 0
@@ -1957,6 +2005,8 @@ edu.eg, 0
 edu.es, 0
 edu.et, 0
 edu.eu.org, 4
+edu.fm, 0
+edu.gd, 0
 edu.ge, 0
 edu.gh, 0
 edu.gi, 0
@@ -2052,7 +2102,6 @@ edu.za, 0
 edu.zm, 0
 education, 0
 education.museum, 0
-education.tas.edu.au, 0
 educational.museum, 0
 educator.aero, 0
 edugit.org, 4
@@ -2101,6 +2150,7 @@ endofinternet.org, 4
 endoftheinternet.org, 4
 enebakk.no, 0
 energy, 0
+enf.br, 0
 eng.br, 0
 eng.pro, 0
 engerdal.no, 0
@@ -2113,6 +2163,7 @@ eniwa.hokkaido.jp, 0
 enna.it, 0
 enonic.io, 4
 ens.tn, 0
+ent.platform.sh, 4
 enterprisecloud.nu, 4
 enterprises, 0
 entertainment.aero, 0
@@ -2130,6 +2181,7 @@ erni, 0
 erotica.hu, 0
 erotika.hu, 0
 es, 0
+es.ax, 4
 es.eu.org, 4
 es.gov.br, 0
 es.kr, 0
@@ -2146,7 +2198,6 @@ est-mon-blogueur.com, 4
 est.pr, 0
 estate, 0
 estate.museum, 0
-esurance, 0
 et, 0
 etajima.hiroshima.jp, 0
 etc.br, 0
@@ -2164,10 +2215,12 @@ eu-central-1.elasticbeanstalk.com, 4
 eu-west-1.elasticbeanstalk.com, 4
 eu-west-2.elasticbeanstalk.com, 4
 eu-west-3.elasticbeanstalk.com, 4
+eu.ax, 4
 eu.com, 4
 eu.int, 0
 eu.meteorapp.com, 4
 eu.org, 4
+eu.platform.sh, 4
 eun.eg, 0
 eurovision, 0
 eus, 0
@@ -2215,8 +2268,9 @@ fashion, 0
 fast, 0
 fastly-terrarium.com, 4
 fastlylb.net, 4
-fastpanel.direct, 4
 fastvps-server.com, 4
+fastvps.host, 4
+fastvps.site, 4
 fauske.no, 0
 fbx-os.fr, 4
 fbxos.fr, 4
@@ -2244,6 +2298,7 @@ fhs.no, 0
 fhsk.se, 0
 fhv.se, 0
 fi, 0
+fi.cloudplatform.fi, 4
 fi.cr, 0
 fi.eu.org, 4
 fi.it, 0
@@ -2276,6 +2331,7 @@ finland.museum, 0
 finnoy.no, 0
 fire, 0
 firebaseapp.com, 4
+firenet.ch, 6
 firenze.it, 0
 firestone, 0
 firewall-gateway.com, 4
@@ -2321,15 +2377,17 @@ floro.no, 0
 flowers, 0
 flt.cloud.muni.cz, 4
 fly, 0
+fly.dev, 4
 flynnhosting.net, 4
-flynnhub.com, 4
 fm, 0
 fm.br, 0
 fm.it, 0
 fm.no, 0
 fnd.br, 0
+fnwk.site, 4
 fo, 0
 foggia.it, 0
+folionetwork.site, 4
 folkebibl.no, 0
 folldal.no, 0
 foo, 0
@@ -2356,6 +2414,7 @@ forlicesena.it, 0
 forsale, 0
 forsand.no, 0
 fortal.br, 0
+forte.id, 4
 fortmissoula.museum, 0
 fortworth.museum, 0
 forum, 0
@@ -2389,7 +2448,6 @@ freesite.host, 4
 freetls.fastly.net, 4
 frei.no, 0
 freiburg.museum, 0
-freight.aero, 0
 fresenius, 0
 fribourg.museum, 0
 friuli-v-giulia.it, 0
@@ -2540,6 +2598,7 @@ fylkesbibl.no, 0
 fyresdal.no, 0
 g.bg, 0
 g.se, 0
+g.vbrplsbx.io, 4
 g12.br, 0
 ga, 0
 ga.us, 0
@@ -2599,6 +2658,8 @@ genova.it, 0
 gent, 0
 gentapps.com, 4
 genting, 0
+gentlentapis.com, 4
+geo.br, 0
 geology.museum, 0
 geometre-expert.fr, 0
 george, 0
@@ -2608,6 +2669,7 @@ getmyip.com, 4
 gets-it.net, 4
 gf, 0
 gg, 0
+gg.ax, 4
 ggee, 0
 ggf.br, 0
 gh, 0
@@ -2629,6 +2691,7 @@ git-repos.de, 4
 github.io, 4
 githubusercontent.com, 4
 gitlab.io, 4
+gitpage.si, 4
 gives, 0
 giving, 0
 gjemnes.no, 0
@@ -2772,6 +2835,7 @@ gov.ee, 0
 gov.eg, 0
 gov.et, 0
 gov.fj, 0
+gov.gd, 0
 gov.ge, 0
 gov.gh, 0
 gov.gi, 0
@@ -2881,6 +2945,7 @@ grandrapids.museum, 0
 grane.no, 0
 granvin.no, 0
 graphics, 0
+graphox.us, 4
 gratangen.no, 0
 gratis, 0
 graz.museum, 0
@@ -3079,6 +3144,7 @@ hidaka.hokkaido.jp, 0
 hidaka.kochi.jp, 0
 hidaka.saitama.jp, 0
 hidaka.wakayama.jp, 0
+hidora.com, 4
 higashi.fukuoka.jp, 0
 higashi.fukushima.jp, 0
 higashi.okinawa.jp, 0
@@ -3223,9 +3289,11 @@ horse, 0
 horten.no, 0
 hospital, 0
 host, 0
+hostedpi.com, 4
 hosting, 0
 hosting-cluster.nl, 4
 hosting.myjino.ru, 6
+hostyhosting.io, 4
 hot, 0
 hotel.hu, 0
 hotel.lk, 0
@@ -3347,6 +3415,8 @@ imizu.toyama.jp, 0
 immo, 0
 immobilien, 0
 imperia.it, 0
+impertrix.com, 4
+impertrixcdn.com, 4
 in, 0
 in-addr.arpa, 0
 in-berlin.de, 4
@@ -3394,6 +3464,7 @@ indian.museum, 0
 indiana.museum, 0
 indianapolis.museum, 0
 indianmarket.museum, 0
+indie.porn, 4
 indigena.bo, 0
 industria.bo, 0
 industries, 0
@@ -3478,6 +3549,7 @@ inuyama.aichi.jp, 0
 investments, 0
 inzai.chiba.jp, 0
 io, 0
+io.kg, 4
 iobb.net, 4
 ip6.arpa, 0
 ipifony.net, 4
@@ -3645,6 +3717,8 @@ izumo.shimane.jp, 0
 izumozaki.niigata.jp, 0
 izunokuni.shizuoka.jp, 0
 j.bg, 0
+j.layershift.co.uk, 4
+j.scaleforce.com.cy, 4
 jab.br, 0
 jaguar, 0
 jambyl.su, 4
@@ -3654,6 +3728,7 @@ jan-mayen.no, 0
 java, 0
 jaworzno.pl, 0
 jcb, 0
+jcloud.ik-server.com, 4
 jcp, 0
 jdevcloud.com, 4
 jdf.br, 0
@@ -3661,6 +3736,15 @@ je, 0
 jeep, 0
 jefferson.museum, 0
 jeju.kr, 0
+jelastic.dogado.eu, 4
+jelastic.regruhosting.ru, 4
+jelastic.saveincloud.net, 4
+jelastic.team, 4
+jele.cloud, 4
+jele.club, 4
+jele.host, 4
+jele.io, 4
+jele.site, 4
 jelenia-gora.pl, 0
 jeonbuk.kr, 0
 jeonnam.kr, 0
@@ -3678,6 +3762,7 @@ jinsekikogen.hiroshima.jp, 0
 jio, 0
 jl.cn, 0
 jll, 0
+jls-sto1.elastx.net, 4
 jm, 2
 jmp, 0
 jnj, 0
@@ -3701,8 +3786,11 @@ journalism.museum, 0
 journalist.aero, 0
 joy, 0
 joyo.kyoto.jp, 0
+jozi.biz, 4
 jp, 0
 jp.eu.org, 4
+jp.kg, 4
+jp.md, 4
 jp.net, 4
 jpmorgan, 0
 jpn.com, 4
@@ -3762,7 +3850,6 @@ k12.ok.us, 0
 k12.or.us, 0
 k12.pa.us, 0
 k12.pr.us, 0
-k12.ri.us, 0
 k12.sc.us, 0
 k12.tn.us, 0
 k12.tr, 0
@@ -3882,6 +3969,7 @@ kashima.saga.jp, 0
 kashiwa.chiba.jp, 0
 kashiwara.osaka.jp, 0
 kashiwazaki.niigata.jp, 0
+kasserver.com, 4
 kasuga.fukuoka.jp, 0
 kasuga.hyogo.jp, 0
 kasugai.aichi.jp, 0
@@ -4372,6 +4460,7 @@ link, 0
 linkitools.space, 4
 linkyard-cloud.ch, 4
 linkyard.cloud, 4
+linodeobjects.com, 6
 linz.museum, 0
 lipsy, 0
 live, 0
@@ -4395,6 +4484,7 @@ locus, 0
 lodi.it, 0
 lodingen.no, 0
 loft, 0
+log.br, 0
 loginline.app, 4
 loginline.dev, 4
 loginline.io, 4
@@ -4477,6 +4567,7 @@ lviv.ua, 0
 ly, 0
 lyngdal.no, 0
 lyngen.no, 0
+lynx.mythic-beasts.com, 4
 m.bg, 0
 m.se, 0
 ma, 0
@@ -4583,9 +4674,12 @@ mb.ca, 0
 mb.it, 0
 mba, 0
 mc, 0
+mc.ax, 4
 mc.eu.org, 4
 mc.it, 0
+mcdir.ru, 4
 mckinsey, 0
+mcpe.me, 4
 md, 0
 md.ci, 0
 md.us, 0
@@ -4594,9 +4688,11 @@ me.eu.org, 4
 me.it, 0
 me.ke, 0
 me.so, 0
+me.tc, 4
 me.tz, 0
 me.uk, 0
 me.us, 0
+me.vu, 4
 med, 0
 med.br, 0
 med.ec, 0
@@ -4788,6 +4884,8 @@ minoh.osaka.jp, 0
 minokamo.gifu.jp, 0
 minowa.nagano.jp, 0
 mint, 0
+mintere.site, 4
+mircloud.host, 4
 misaki.okayama.jp, 0
 misaki.osaka.jp, 0
 misasa.tottori.jp, 0
@@ -5014,6 +5112,8 @@ mydobiss.com, 4
 mydrobo.com, 4
 myds.me, 4
 myeffect.net, 4
+myfast.host, 4
+myfast.space, 4
 myfirewall.org, 4
 myforum.community, 4
 myfritz.net, 4
@@ -5047,11 +5147,11 @@ n.se, 0
 n4t.co, 4
 na, 0
 na.it, 0
+na4u.ru, 4
 naamesjevuemie.no, 0
 nab, 0
 nabari.mie.jp, 0
 nachikatsuura.wakayama.jp, 0
-nadex, 0
 nagahama.shiga.jp, 0
 nagai.yamagata.jp, 0
 nagano.jp, 0
@@ -5200,6 +5300,7 @@ neat-url.com, 4
 nebraska.museum, 0
 nec, 0
 nedre-eiker.no, 0
+neko.am, 4
 nemuro.hokkaido.jp, 0
 nerdpol.ovh, 4
 nerima.tokyo.jp, 0
@@ -5247,6 +5348,7 @@ net.eg, 0
 net.et, 0
 net.eu.org, 4
 net.fj, 0
+net.fm, 0
 net.ge, 0
 net.gg, 0
 net.gl, 0
@@ -5347,7 +5449,7 @@ net.za, 0
 net.zm, 0
 netbank, 0
 netflix, 0
-netlify.com, 4
+netlify.app, 4
 network, 0
 neues.museum, 0
 neustar, 0
@@ -5444,6 +5546,7 @@ niyodogawa.kochi.jp, 0
 nj.us, 0
 nl, 0
 nl.ca, 0
+nl.ci, 4
 nl.eu.org, 4
 nl.no, 0
 nm.cn, 0
@@ -5462,7 +5565,7 @@ nobeoka.miyazaki.jp, 0
 noboribetsu.hokkaido.jp, 0
 noda.chiba.jp, 0
 noda.iwate.jp, 0
-nodebalancer.linode.com, 4
+nodebalancer.linode.com, 6
 nodum.co, 4
 nodum.io, 4
 nogata.fukuoka.jp, 0
@@ -5480,6 +5583,7 @@ nom.ag, 0
 nom.ai, 4
 nom.al, 4
 nom.br, 2
+nom.bz, 4
 nom.cl, 4
 nom.co, 0
 nom.es, 0
@@ -5493,6 +5597,7 @@ nom.im, 4
 nom.ke, 4
 nom.km, 0
 nom.li, 4
+nom.lv, 4
 nom.mg, 0
 nom.mk, 4
 nom.nc, 0
@@ -5583,6 +5688,8 @@ nuoro.it, 0
 nv.us, 0
 nx.cn, 0
 ny.us, 0
+nyaa.am, 4
+nyan.to, 4
 nyc, 0
 nyc.mn, 4
 nyc.museum, 0
@@ -5614,6 +5721,7 @@ nyny.museum, 0
 nysa.pl, 0
 nyuzen.toyama.jp, 0
 nz, 0
+nz.basketball, 4
 nz.eu.org, 4
 o.bg, 0
 o.se, 0
@@ -5631,6 +5739,7 @@ obu.aichi.jp, 0
 obuse.nagano.jp, 0
 oceanographic.museum, 0
 oceanographique.museum, 0
+ocelot.mythic-beasts.com, 4
 ochi.kochi.jp, 0
 oci.customer-oci.com, 6
 ocp.customer-oci.com, 6
@@ -5731,12 +5840,14 @@ omaha.museum, 0
 omasvuotna.no, 0
 ome.tokyo.jp, 0
 omega, 0
+omg.lol, 4
 omi.nagano.jp, 0
 omi.niigata.jp, 0
 omigawa.chiba.jp, 0
 omihachiman.shiga.jp, 0
 omitama.ibaraki.jp, 0
 omiya.saitama.jp, 0
+omniwe.site, 4
 omotego.fukushima.jp, 0
 omura.nagasaki.jp, 0
 omuta.fukuoka.jp, 0
@@ -5750,6 +5861,7 @@ on.ca, 0
 on.fashion, 4
 onagawa.miyagi.jp, 0
 one, 0
+onfabrica.com, 4
 ong, 0
 ong.br, 0
 onga.fukuoka.jp, 0
@@ -5770,6 +5882,7 @@ onrender.com, 4
 ontario.museum, 0
 onthewifi.com, 4
 onyourside, 0
+onza.mythic-beasts.com, 4
 ooguy.com, 4
 ookuwa.nagano.jp, 0
 ooo, 0
@@ -5777,6 +5890,7 @@ ooshika.nagano.jp, 0
 open, 0
 openair.museum, 0
 opencraft.hosting, 4
+opensocial.site, 4
 operaunite.com, 4
 opoczno.pl, 0
 opole.pl, 0
@@ -5841,6 +5955,7 @@ org.eg, 0
 org.es, 0
 org.et, 0
 org.fj, 0
+org.fm, 0
 org.ge, 0
 org.gg, 0
 org.gh, 0
@@ -6021,6 +6136,7 @@ owariasahi.aichi.jp, 0
 own.pm, 4
 ownip.net, 4
 ownprovider.com, 4
+owo.codes, 6
 ox.rs, 4
 oxford.museum, 0
 oy.lc, 4
@@ -6044,13 +6160,17 @@ pa.gov.pl, 0
 pa.it, 0
 pa.leg.br, 4
 pa.us, 0
+paas.datacenter.fi, 4
+paas.massivegrid.com, 4
 pacific.museum, 0
 paderborn.museum, 0
 padova.it, 0
 padua.it, 0
 page, 0
 pagefrontapp.com, 4
+pages.wiardweb.com, 4
 pagespeedmobilizer.com, 4
+pagexl.com, 4
 palace.museum, 0
 paleo.museum, 0
 palermo.it, 0
@@ -6058,6 +6178,7 @@ palmas.br, 0
 palmsprings.museum, 0
 panama.museum, 0
 panasonic, 0
+panel.gg, 4
 pantheonsite.io, 4
 parachuting.aero, 0
 paragliding.aero, 0
@@ -6087,6 +6208,7 @@ pc.pl, 0
 pccw, 0
 pcloud.host, 4
 pd.it, 0
+pdns.page, 4
 pe, 0
 pe.ca, 0
 pe.gov.br, 0
@@ -6164,13 +6286,20 @@ place, 0
 planetarium.museum, 0
 plantation.museum, 0
 plants.museum, 0
+platform0.app, 4
 platformsh.site, 6
+platter-app.com, 4
+platter-app.dev, 4
+platterp.us, 4
 play, 0
 playstation, 0
+playstation-cloud.com, 4
 plaza.museum, 0
 plc.co.im, 0
 plc.ly, 0
 plc.uk, 0
+plesk.page, 4
+pleskns.com, 4
 plo.ps, 0
 plumbing, 0
 plurinacional.bo, 0
@@ -6319,6 +6448,7 @@ pw, 0
 pwc, 0
 py, 0
 pyatigorsk.ru, 4
+pymnt.uk, 4
 pz.it, 0
 q-a.eu.org, 4
 q.bg, 0
@@ -6351,7 +6481,9 @@ rackmaze.com, 4
 rackmaze.net, 4
 rade.no, 0
 radio, 0
+radio.am, 4
 radio.br, 0
+radio.fm, 4
 radom.pl, 0
 radoy.no, 0
 ragusa.it, 0
@@ -6375,6 +6507,7 @@ ravendb.run, 4
 ravenna.it, 0
 rawa-maz.pl, 0
 rc.it, 0
+rdv.to, 4
 re, 0
 re.it, 0
 re.kr, 0
@@ -6422,6 +6555,7 @@ rennebu.no, 0
 rennesoy.no, 0
 rent, 0
 rentals, 0
+rep.br, 0
 rep.kp, 0
 repair, 0
 repbody.aero, 0
@@ -6451,7 +6585,6 @@ richardli, 0
 ricoh, 0
 rieti.it, 0
 rifu.miyagi.jp, 0
-rightathome, 0
 riik.ee, 0
 rikubetsu.hokkaido.jp, 0
 rikuzentakata.iwate.jp, 0
@@ -6766,6 +6899,7 @@ school.nz, 0
 school.za, 0
 schools.nsw.edu.au, 0
 schule, 0
+schulserver.de, 4
 schwarz, 0
 schweiz.museum, 0
 sci.eg, 0
@@ -6781,7 +6915,6 @@ sciences.museum, 0
 sciencesnaturelles.museum, 0
 scientist.aero, 0
 scjohnson, 0
-scor, 0
 scot, 0
 scotland.museum, 0
 scrapper-site.net, 4
@@ -6805,6 +6938,8 @@ secure, 0
 security, 0
 securitytactics.com, 4
 seek, 0
+seg.br, 0
+seidat.net, 4
 seihi.nagasaki.jp, 0
 seika.kyoto.jp, 0
 seiro.niigata.jp, 0
@@ -6990,6 +7125,7 @@ shop.ro, 4
 shop.th, 4
 shopitsite.com, 4
 shopping, 0
+shopware.store, 4
 shouji, 0
 show, 0
 show.aero, 0
@@ -6999,6 +7135,7 @@ showa.yamanashi.jp, 0
 showtime, 0
 shriram, 0
 shunan.yamaguchi.jp, 0
+shw.io, 4
 si, 0
 si.eu.org, 4
 si.it, 0
@@ -7019,7 +7156,6 @@ singles, 0
 siracusa.it, 0
 sirdal.no, 0
 site, 0
-site.builder.nu, 4
 siteleaf.net, 4
 sites.static.land, 4
 sj, 0
@@ -7061,6 +7197,7 @@ slupsk.pl, 0
 slz.br, 0
 sm, 0
 sm.ua, 0
+small-web.org, 4
 smart, 0
 smile, 0
 smola.no, 0
@@ -7139,6 +7276,7 @@ spdns.de, 4
 spdns.eu, 4
 spdns.org, 4
 spectrum.myjino.ru, 6
+sphinx.mythic-beasts.com, 4
 spjelkavik.no, 0
 sport, 0
 sport.hu, 0
@@ -7194,6 +7332,7 @@ steiermark.museum, 0
 steigen.no, 0
 steinkjer.no, 0
 stg.dev, 6
+sth.ac.at, 0
 stjohn.museum, 0
 stjordal.no, 0
 stjordalshalsen.no, 0
@@ -7269,6 +7408,7 @@ suzuki, 0
 sv, 0
 sv.it, 0
 svalbard.no, 0
+svc.firenet.ch, 6
 sveio.no, 0
 svelvik.no, 0
 svizzera.museum, 0
@@ -7288,7 +7428,6 @@ sy, 0
 sydney, 0
 sydney.museum, 0
 sykkylven.no, 0
-symantec, 0
 syncloud.it, 4
 syno-ds.de, 4
 synology-diskstation.de, 4
@@ -7424,6 +7563,8 @@ te.it, 0
 te.ua, 0
 teaches-yoga.com, 4
 team, 0
+teams.algorithmia.com, 5
+tec.br, 0
 tec.mi.us, 0
 tec.ve, 0
 tech, 0
@@ -7454,6 +7595,7 @@ terni.it, 0
 ternopil.ua, 0
 teshikaga.hokkaido.jp, 0
 test-iserv.de, 4
+test.algorithmia.com, 5
 test.ru, 4
 test.tj, 0
 teva, 0
@@ -7512,8 +7654,10 @@ tn.it, 0
 tn.us, 0
 to, 0
 to.gov.br, 0
+to.gt, 4
 to.it, 0
 to.leg.br, 4
+to.md, 4
 to.work, 4
 toba.mie.jp, 0
 tobe.ehime.jp, 0
@@ -7567,6 +7711,7 @@ tone.ibaraki.jp, 0
 tono.iwate.jp, 0
 tonosho.kagawa.jp, 0
 tonsberg.no, 0
+toolforge.org, 4
 tools, 0
 toon.ehime.jp, 0
 top, 0
@@ -7751,6 +7896,7 @@ tv.bo, 0
 tv.br, 0
 tv.im, 0
 tv.it, 0
+tv.kg, 4
 tv.na, 0
 tv.sd, 0
 tv.tr, 0
@@ -7806,8 +7952,10 @@ ujitawara.kyoto.jp, 0
 uk, 0
 uk.com, 4
 uk.eu.org, 4
+uk.kg, 4
 uk.net, 4
 uk0.bigv.io, 4
+ukco.me, 4
 uki.kumamoto.jp, 0
 ukiha.fukuoka.jp, 0
 uklugs.org, 4
@@ -7852,6 +8000,7 @@ ureshino.mie.jp, 0
 uri.arpa, 0
 url.tw, 4
 urn.arpa, 0
+urown.cloud, 4
 uruma.okinawa.jp, 0
 uryu.hokkaido.jp, 0
 us, 0
@@ -7865,11 +8014,14 @@ us-east-2.elasticbeanstalk.com, 4
 us-gov-west-1.elasticbeanstalk.com, 4
 us-west-1.elasticbeanstalk.com, 4
 us-west-2.elasticbeanstalk.com, 4
+us.ax, 4
 us.com, 4
 us.eu.org, 4
 us.gov.pl, 0
+us.kg, 4
 us.na, 0
 us.org, 4
+us.platform.sh, 4
 usa.museum, 0
 usa.oita.jp, 0
 usantiques.museum, 0
@@ -7903,6 +8055,7 @@ uvic.museum, 0
 uw.gov.pl, 0
 uwajima.ehime.jp, 0
 uwu.ai, 4
+uwu.nu, 4
 uy, 0
 uy.com, 4
 uz, 0
@@ -7970,6 +8123,8 @@ venice.it, 0
 vennesla.no, 0
 ventures, 0
 verbania.it, 0
+vercel.app, 4
+vercel.dev, 4
 vercelli.it, 0
 verdal.no, 0
 verisign, 0
@@ -8014,6 +8169,7 @@ vindafjord.no, 0
 vinnica.ua, 0
 vinnytsia.ua, 0
 vip, 0
+vip.jelastic.cloud, 4
 vipsinaapp.com, 4
 virgin, 0
 virginia.museum, 0
@@ -8025,7 +8181,6 @@ virtueeldomein.nl, 4
 virtuel.museum, 0
 visa, 0
 vision, 0
-vistaprint, 0
 viterbo.it, 0
 viva, 0
 vivo, 0
@@ -8057,14 +8212,17 @@ voto, 0
 voyage, 0
 vpndns.net, 4
 vpnplus.to, 4
+vps.mcdir.ru, 4
 vps.myjino.ru, 6
 vr.it, 0
 vs.it, 0
+vs.mythic-beasts.com, 4
 vt.it, 0
 vt.us, 0
 vu, 0
 vuelos, 0
 vv.it, 0
+vxl.sh, 4
 w.bg, 0
 w.se, 0
 wa.au, 0
@@ -8107,6 +8265,7 @@ watches, 0
 waw.pl, 0
 wazuka.kyoto.jp, 0
 we.bs, 4
+we.tc, 4
 weather, 0
 weatherchannel, 0
 web.app, 4
@@ -8115,6 +8274,7 @@ web.co, 0
 web.do, 0
 web.gu, 0
 web.id, 0
+web.in, 4
 web.lk, 0
 web.nf, 0
 web.ni, 0
@@ -8154,6 +8314,7 @@ whoswho, 0
 wi.us, 0
 wielun.pl, 0
 wien, 0
+wien.funkfeuer.at, 4
 wif.gov.pl, 0
 wiih.gov.pl, 0
 wiki, 0
@@ -8175,6 +8336,7 @@ withyoutube.com, 4
 wiw.gov.pl, 0
 wlocl.pl, 0
 wloclawek.pl, 0
+wmcloud.org, 4
 wme, 0
 wmflabs.org, 4
 wnext.app, 4
@@ -8193,6 +8355,7 @@ world, 0
 worse-than.tv, 4
 wow, 0
 wpdevcloud.com, 4
+wpenginepowered.com, 4
 writesthisblog.com, 4
 wroc.pl, 4
 wroclaw.pl, 0
@@ -8209,6 +8372,7 @@ www.ro, 0
 wy.us, 0
 wzmiuw.gov.pl, 0
 x.bg, 0
+x.mythic-beasts.com, 4
 x.se, 0
 x443.pw, 4
 xbox, 0
@@ -8341,7 +8505,6 @@ xn--efvn9s.jp, 0
 xn--efvy88h, 0
 xn--ehqz56n.jp, 0
 xn--elqq16h.jp, 0
-xn--estv75g, 0
 xn--eveni-0qa01ga.no, 0
 xn--f6qx53a.jp, 0
 xn--fct429k, 0
@@ -8423,7 +8586,6 @@ xn--klty5x.jp, 0
 xn--koluokta-7ya57h.no, 0
 xn--kprw13d, 0
 xn--kpry57d, 0
-xn--kpu716f, 0
 xn--kput3i, 0
 xn--krager-gya.no, 0
 xn--kranghke-b0a.no, 0
@@ -8535,7 +8697,6 @@ xn--osyro-wua.no, 0
 xn--otu796d, 0
 xn--p1acf, 0
 xn--p1ai, 0
-xn--pbt977c, 0
 xn--pgbs0dh, 0
 xn--porsgu-sta26f.no, 0
 xn--pssu33l.jp, 0
@@ -8672,7 +8833,9 @@ xn--zf0avx.hk, 0
 xn--zfr164b, 0
 xnbay.com, 4
 xs4all.space, 4
+xx.gl, 4
 xxx, 0
+xy.ax, 4
 xyz, 0
 xz.cn, 0
 y.bg, 0
@@ -8692,6 +8855,7 @@ yaizu.shizuoka.jp, 0
 yakage.okayama.jp, 0
 yakumo.hokkaido.jp, 0
 yakumo.shimane.jp, 0
+yali.mythic-beasts.com, 4
 yalta.ua, 0
 yamada.fukuoka.jp, 0
 yamada.iwate.jp, 0
