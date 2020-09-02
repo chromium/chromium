@@ -58,8 +58,8 @@ void UpdateGoogleSpeechSynthesisKeepAliveCount(content::BrowserContext* context,
     return;
 
   UpdateGoogleSpeechSynthesisKeepAliveCountHelper(
-      profile->HasOffTheRecordProfile() ? profile->GetOffTheRecordProfile()
-                                        : profile,
+      profile->HasPrimaryOTRProfile() ? profile->GetPrimaryOTRProfile()
+                                      : profile,
       increment);
 }
 
