@@ -82,16 +82,16 @@ export class BaseSettings extends View {
    * @private
    */
   openSubSettings(name) {
-    // Dismiss master-settings if sub-settings was dismissed by background
+    // Dismiss primary-settings if sub-settings was dismissed by background
     // click.
     nav.open(name).then((cond) => cond && cond['bkgnd'] && this.leave(cond));
   }
 }
 
 /**
- * Controller of master settings view.
+ * Controller of primary settings view.
  */
-export class MasterSettings extends BaseSettings {
+export class PrimarySettings extends BaseSettings {
   /**
    * @public
    */

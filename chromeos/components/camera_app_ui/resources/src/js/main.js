@@ -29,7 +29,7 @@ import {CameraIntent} from './views/camera_intent.js';
 import {Dialog} from './views/dialog.js';
 import {
   BaseSettings,
-  MasterSettings,
+  PrimarySettings,
   ResolutionSettings,
 } from './views/settings.js';
 import {View} from './views/view.js';
@@ -109,7 +109,7 @@ export class App {
     // Set up views navigation by their DOM z-order.
     nav.setup([
       this.cameraView_,
-      new MasterSettings(),
+      new PrimarySettings(),
       new BaseSettings(ViewName.GRID_SETTINGS),
       new BaseSettings(ViewName.TIMER_SETTINGS),
       resolutionSettings,
