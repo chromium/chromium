@@ -2471,11 +2471,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "extensions-toolbar-menu",
-    "owners": [ "//extensions/OWNERS", "pbos" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "file-handling-api",
     "owners": [ "mgiuca", "cmp" ],
     "expiry_milestone": 88

@@ -629,9 +629,6 @@ extern const char kExtensionContentVerificationEnforceStrict[];
 extern const char kExtensionsCheckupName[];
 extern const char kExtensionsCheckupDescription[];
 
-extern const char kExtensionsToolbarMenuName[];
-extern const char kExtensionsToolbarMenuDescription[];
-
 extern const char kExtensionsOnChromeUrlsName[];
 extern const char kExtensionsOnChromeUrlsDescription[];
 
