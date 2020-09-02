@@ -6900,3 +6900,9 @@ crbug.com/1010170 media/video-played-reset.html [ Pass Failure ]
 
 #Sheriff 2020-06-30
 crbug.com/1099657 [ Mac10.13 ] virtual/threaded-no-composited-antialiasing/animations/svg-attribute-interpolation/svg-d-interpolation.html [ Pass Failure ]
+
+# https://chromium-review.googlesource.com/c/chromium/src/+/2240308 reverted
+crbug.com/1123360 external/wpt/css/css-transforms/subpixel-transform-changes-004.html [ Failure ]
+crbug.com/1123360 external/wpt/css/css-transforms/subpixel-transform-changes-002.html [ Failure ]
+crbug.com/1123360 virtual/transform-interop/external/wpt/css/css-transforms/subpixel-transform-changes-004.html [ Failure ]
+crbug.com/1123360 virtual/transform-interop/external/wpt/css/css-transforms/subpixel-transform-changes-002.html [ Failure ]

@@ -4031,8 +4031,6 @@ class OcclusionTrackingPictureLayerImplTest
     EXPECT_EQ(expected_occluded_tile_count, occluded_tile_count)
         << "line: " << source_line;
   }
-
-  void TestOcclusionForScale(float scale, int expected_occluded_count);
 };
 
 TEST_F(OcclusionTrackingPictureLayerImplTest,
@@ -4242,9 +4240,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   }
 }
 
-void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
-    float scale,
-    int expected_occluded_count) {
+TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForDifferentScales) {
   host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
 
   gfx::Size tile_size(102, 102);
@@ -4267,23 +4263,29 @@ void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
   CopyProperties(pending_layer(), layer1);
   layer1->SetOffsetToTransformParent(occluding_layer_position);
 
-  pending_layer()->SetContentsScaleForTesting(scale);
   pending_layer()->tilings()->RemoveAllTilings();
   float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
   pending_layer()
       ->AddTiling(gfx::AxisTransform2d(low_res_factor, gfx::Vector2dF()))
       ->set_resolution(LOW_RESOLUTION);
   pending_layer()
-      ->AddTiling(gfx::AxisTransform2d(scale, gfx::Vector2dF()))
+      ->AddTiling(gfx::AxisTransform2d(0.3f, gfx::Vector2dF()))
       ->set_resolution(HIGH_RESOLUTION);
-
-  ASSERT_EQ(2u, pending_layer()->num_tilings());
+  pending_layer()
+      ->AddTiling(gfx::AxisTransform2d(0.7f, gfx::Vector2dF()))
+      ->set_resolution(HIGH_RESOLUTION);
+  pending_layer()
+      ->AddTiling(gfx::AxisTransform2d(1.0f, gfx::Vector2dF()))
+      ->set_resolution(HIGH_RESOLUTION);
+  pending_layer()
+      ->AddTiling(gfx::AxisTransform2d(2.0f, gfx::Vector2dF()))
+      ->set_resolution(HIGH_RESOLUTION);
 
   host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
   // UpdateDrawProperties with the occluding layer.
   UpdateDrawProperties(host_impl()->pending_tree());
 
-  ASSERT_EQ(2u, pending_layer()->num_tilings());
+  EXPECT_EQ(5u, pending_layer()->num_tilings());
 
   int occluded_tile_count = 0;
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -4302,30 +4304,24 @@ void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
       }
     }
 
-    if (i == 0) {
-      EXPECT_EQ(scale, tiling->contents_scale_key());
-      EXPECT_EQ(occluded_tile_count, expected_occluded_count);
-    } else {
-      ASSERT_EQ(1u, i);
-      EXPECT_EQ(occluded_tile_count, 2);
+    switch (i) {
+      case 0:
+        EXPECT_EQ(occluded_tile_count, 30);
+        break;
+      case 1:
+        EXPECT_EQ(occluded_tile_count, 5);
+        break;
+      case 2:
+        EXPECT_EQ(occluded_tile_count, 4);
+        break;
+      case 4:
+      case 3:
+        EXPECT_EQ(occluded_tile_count, 2);
+        break;
+      default:
+        NOTREACHED();
     }
   }
-}
-
-TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale0_3) {
-  TestOcclusionForScale(0.3f, 2);
-}
-
-TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale0_7) {
-  TestOcclusionForScale(0.7f, 4);
-}
-
-TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale1) {
-  TestOcclusionForScale(1.0f, 5);
-}
-
-TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale2) {
-  TestOcclusionForScale(2.0f, 30);
 }
 
 TEST_F(OcclusionTrackingPictureLayerImplTest, DifferentOcclusionOnTrees) {
@@ -5743,7 +5739,8 @@ TEST_F(LegacySWPictureLayerImplTest,
   }
 
   // Change to scale & translation of * 2.25 + (0.75, 0.25).
-  // Verifies that layer movement updates raster translation.
+  // Verifies there is a hysteresis that simple layer movement doesn't update
+  // raster translation.
   SetupDrawProperties(pending_layer(), 2.25f, 1.5f, 1.f, 2.25f, 2.25f, false);
   gfx::Transform translate2;
   translate2.Translate(0.75f, 0.25f);
@@ -5755,15 +5752,19 @@ TEST_F(LegacySWPictureLayerImplTest,
   ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling = pending_layer()->tilings()->tiling_at(0);
-    EXPECT_EQ(gfx::AxisTransform2d(2.25f, gfx::Vector2dF(0.75f, 0.25f)),
+    EXPECT_EQ(gfx::AxisTransform2d(2.25f, gfx::Vector2dF(0.25f, 0.5f)),
               tiling->raster_transform());
     EXPECT_EQ(4u, tiling->AllTilesForTesting().size());
     for (auto* tile : tiling->AllTilesForTesting())
       EXPECT_EQ(tile->raster_transform(), tiling->raster_transform());
   }
 
-  // Now change the device scale factor but keep the same total scale. Old tiles
-  // with the same scale would become non-ideal and deleted on pending layers.
+  // Now change the device scale factor but keep the same total scale.
+  // Our policy recomputes raster translation only if raster scale is
+  // recomputed. Even if the recomputed scale remains the same, we still
+  // updates to new translation value. Old tiles with the same scale but
+  // different translation would become non-ideal and deleted on pending
+  // layers (in fact, delete ahead due to slot conflict with the new tiling).
   SetupDrawProperties(pending_layer(), 2.25f, 1.0f, 1.f, 2.25f, 2.25f, false);
   pending_layer()->draw_properties().screen_space_transform.ConcatTransform(
       translate2);

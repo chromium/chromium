@@ -600,11 +600,14 @@ bool PictureLayerImpl::UpdateTiles() {
   const float old_ideal_contents_scale = ideal_contents_scale_;
   UpdateIdealScales();
 
-  const bool should_adjust_raster_scale =
-      ShouldAdjustRasterScale(old_ideal_contents_scale);
-  if (should_adjust_raster_scale)
+  const bool ideal_contents_scale_changed =
+      old_ideal_contents_scale != 0 &&
+      old_ideal_contents_scale != ideal_contents_scale_;
+  if (!raster_contents_scale_ ||
+      ShouldAdjustRasterScale(ideal_contents_scale_changed)) {
     RecalculateRasterScales();
-  UpdateTilingsForRasterScaleAndTranslation(should_adjust_raster_scale);
+    AddTilingsForRasterScale();
+  }
 
   if (layer_tree_impl()->IsActiveTree())
     AddLowResolutionTilingIfNeeded();
@@ -1190,30 +1193,24 @@ void PictureLayerImpl::RemoveAllTilings() {
   ResetRasterScale();
 }
 
-void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
-    bool adjusted_raster_scale) {
-  PictureLayerTiling* high_res =
-      tilings_->FindTilingWithScaleKey(raster_contents_scale_);
-
-  gfx::Vector2dF raster_translation =
-      CalculateRasterTranslation(raster_contents_scale_);
-  if (high_res) {
-    if (high_res->raster_transform().translation() != raster_translation) {
-      // We should recreate the high res tiling with the new raster translation.
-      tilings_->Remove(high_res);
-      high_res = nullptr;
-    } else if (!adjusted_raster_scale) {
-      // Nothing changed, no need to update tilings.
-      DCHECK_EQ(HIGH_RESOLUTION, high_res->resolution());
-      SanityCheckTilingState();
-      return;
-    }
-  }
-
+void PictureLayerImpl::AddTilingsForRasterScale() {
   // Reset all resolution enums on tilings, we'll be setting new values in this
   // function.
   tilings_->MarkAllTilingsNonIdeal();
 
+  PictureLayerTiling* high_res =
+      tilings_->FindTilingWithScaleKey(raster_contents_scale_);
+  // Note: This function is always invoked when raster scale is recomputed,
+  // but not necessarily changed. This means raster translation update is also
+  // always done when there are significant changes that triggered raster scale
+  // recomputation.
+  gfx::Vector2dF raster_translation =
+      CalculateRasterTranslation(raster_contents_scale_);
+  if (high_res &&
+      high_res->raster_transform().translation() != raster_translation) {
+    tilings_->Remove(high_res);
+    high_res = nullptr;
+  }
   if (!high_res) {
     // We always need a high res tiling, so create one if it doesn't exist.
     high_res = AddTiling(
@@ -1247,10 +1244,7 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
 }
 
 bool PictureLayerImpl::ShouldAdjustRasterScale(
-    float old_ideal_contents_scale) const {
-  if (!raster_contents_scale_)
-    return true;
-
+    bool ideal_contents_scale_changed) const {
   if (directly_composited_image_size_) {
     // If we have a directly composited image size, but previous raster scale
     // calculations did not set an initial raster scale, we must recalcluate.
@@ -1275,9 +1269,6 @@ bool PictureLayerImpl::ShouldAdjustRasterScale(
     // changed. We should recalculate in order to raster at the intrinsic image
     // size. Note that this is not a comparison of the used raster_source_scale_
     // and desired because of the adjustments in RecalculateRasterScales.
-    bool ideal_contents_scale_changed =
-        old_ideal_contents_scale != 0 &&
-        old_ideal_contents_scale != ideal_contents_scale_;
     bool default_raster_scale_changed =
         default_raster_scale != directly_composited_image_initial_raster_scale_;
     if (ideal_contents_scale_changed && !default_raster_scale_changed) {

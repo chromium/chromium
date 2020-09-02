@@ -167,17 +167,13 @@ class CC_EXPORT PictureLayerImpl
   // an animation, at which point the PaintWorklet must be re-painted.
   void InvalidatePaintWorklets(const PaintWorkletInput::PropertyKey& key);
 
-  void SetContentsScaleForTesting(float scale) {
-    ideal_contents_scale_ = raster_contents_scale_ = scale;
-  }
-
  protected:
   PictureLayerImpl(LayerTreeImpl* tree_impl, int id);
   PictureLayerTiling* AddTiling(const gfx::AxisTransform2d& contents_transform);
   void RemoveAllTilings();
-  void UpdateTilingsForRasterScaleAndTranslation(bool adjusted_raster_scale);
+  void AddTilingsForRasterScale();
   void AddLowResolutionTilingIfNeeded();
-  bool ShouldAdjustRasterScale(float old_ideal_contents_scale) const;
+  bool ShouldAdjustRasterScale(bool ideal_contents_scale_changed) const;
   void RecalculateRasterScales();
   gfx::Vector2dF CalculateRasterTranslation(float raster_scale);
   void CleanUpTilingsOnActiveLayer(
