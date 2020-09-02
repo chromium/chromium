@@ -48,18 +48,14 @@ std::vector<base::FilePath> ResolveFileUrls(
 std::vector<std::unique_ptr<Attachment>> CreateAttachmentsFromIntent(
     Profile* profile,
     apps::mojom::IntentPtr intent) {
+  DCHECK(intent->file_urls);
   std::vector<std::unique_ptr<Attachment>> attachments;
-
-  // TODO(knollr): Support other attachment types.
-  if (intent->file_urls) {
-    std::vector<base::FilePath> file_paths =
-        ResolveFileUrls(profile, *intent->file_urls);
-    for (auto& file_path : file_paths) {
-      attachments.push_back(
-          std::make_unique<FileAttachment>(std::move(file_path)));
-    }
+  std::vector<base::FilePath> file_paths =
+      ResolveFileUrls(profile, *intent->file_urls);
+  for (auto& file_path : file_paths) {
+    attachments.push_back(
+        std::make_unique<FileAttachment>(std::move(file_path)));
   }
-
   return attachments;
 }
 

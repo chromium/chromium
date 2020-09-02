@@ -123,7 +123,7 @@ Polymer({
         .startDiscovery(this.mojoEventTarget_.$.bindNewPipeAndPassRemote())
         .then(response => {
           if (!response.success) {
-            // TODO(knollr): Show error.
+            // TODO(crbug.com/1123934): Show error.
             return;
           }
         });
@@ -196,7 +196,7 @@ Polymer({
           const {result, transferUpdateListener, confirmationManager} =
               response;
           if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
-            // TODO(knollr): Show error.
+            // TODO(crbug.com/crbug.com/1123934): Show error.
             return;
           }
 
@@ -249,7 +249,7 @@ Polymer({
    * @private
    */
   attachmentTitle_() {
-    // TODO(knollr): Pass attachments to UI.
+    // TODO(crbug.com/1123942): Pass attachments to UI.
     return 'Unknown file';
   },
 });

@@ -153,7 +153,7 @@ Polymer({
    * @private
    */
   contactName_() {
-    // TODO(knollr): Get contact name from ShareTarget.
+    // TODO(crbug.com/1123943): Get contact name from ShareTarget.
     const contactName = null;
     if (!contactName) {
       return '';
@@ -165,7 +165,7 @@ Polymer({
   onAcceptTap_() {
     this.confirmationManager.accept().then(
         result => {
-            // TODO(knollr): Show error if !result.success
+            // TODO(crbug.com/1123934): Show error if !result.success
         });
   },
 
@@ -188,7 +188,7 @@ Polymer({
    * @private
    */
   attachmentTitle_() {
-    // TODO(knollr): Pass attachments to UI.
+    // TODO(crbug.com/1123942): Pass attachments to UI.
     return 'Unknown file';
   },
 });

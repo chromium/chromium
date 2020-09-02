@@ -30,7 +30,7 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
       break;
   }
 
-  // TODO(knollr): Show error if transfer_metadata.is_final_status().
+  // TODO(crbug.com/1123934): Show error if transfer_metadata.is_final_status().
 
   // Ignore all other transfer status updates.
   return base::nullopt;
