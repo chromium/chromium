@@ -15,7 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
@@ -43,7 +43,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 // Tests for Find in Page.
 // Disabled all tests due to https://crbug.com/1107877.
-@interface FindInPageTestCase : ChromeTestCase
+@interface FindInPageTestCase : WebHttpServerChromeTestCase
 
 // URL for a test page with |kFindInPageResponse|.
 @property(nonatomic, assign) GURL testURL;

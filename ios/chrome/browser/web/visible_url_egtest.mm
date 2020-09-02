@@ -13,7 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/html_response_provider.h"
@@ -89,7 +89,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Test case for back forward and delta navigations focused on making sure that
 // omnibox visible URL always represents the current page.
-@interface VisibleURLTestCase : ChromeTestCase {
+@interface VisibleURLTestCase : WebHttpServerChromeTestCase {
   PausableResponseProvider* _responseProvider;
   GURL _testURL1;
   GURL _testURL2;

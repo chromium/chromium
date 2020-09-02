@@ -33,10 +33,6 @@ class EmbeddedTestServer;
 // Turns mock authentication back on.
 + (void)enableMockAuthentication;
 
-// Stops the HTTP server. It will be re-started at the end of the test. This
-// should only be called when the HTTP server is running.
-+ (void)stopHTTPServer;
-
 // The EmbeddedTestServer instance that hosts HTTP requests for tests.
 @property(nonatomic, readonly) net::test_server::EmbeddedTestServer* testServer;
 
@@ -50,10 +46,6 @@ class EmbeddedTestServer;
 
 // Turns mock authentication back on.
 - (void)enableMockAuthentication;
-
-// Stops the HTTP server. It will be re-started at the end of the test. This
-// should only be called when the HTTP server is running.
-- (void)stopHTTPServer;
 
 // Returns YES if the test method name extracted from |selector| matches the
 // name of the currently running test method.

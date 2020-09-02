@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/web/progress_indicator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -137,7 +137,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
 }  // namespace
 
 // Tests webpage loading progress indicator.
-@interface ProgressIndicatorTestCase : ChromeTestCase
+@interface ProgressIndicatorTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation ProgressIndicatorTestCase

@@ -16,8 +16,8 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,7 +29,6 @@ namespace {
 // case.
 bool gExecutedSetUpForTestCase = false;
 
-bool gIsHTTPServerStopped = false;
 bool gIsMockAuthenticationDisabled = false;
 
 #if defined(CHROME_EARL_GREY_1)
@@ -155,12 +154,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 // Sets up mock authentication.
 + (void)enableMockAuthentication;
 
-// Stops the HTTP server. Should only be called when the server is running.
-+ (void)stopHTTPServer;
-
-// Starts the HTTP server. Should only be called when the server is stopped.
-+ (void)startHTTPServer;
-
 // Returns a NSArray of test names in this class that contain the prefix
 // "FLAKY_".
 + (NSArray*)flakyTestNames;
@@ -222,11 +215,9 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 }
 #endif  // CHROME_EARL_GREY_2
 
-// Tear down called once for the class, to shutdown mock authentication and
-// the HTTP server.
+// Tear down called once for the class, to shutdown mock authentication.
 + (void)tearDown {
   [[self class] disableMockAuthentication];
-  [[self class] stopHTTPServer];
   [super tearDown];
   gExecutedSetUpForTestCase = false;
 }
@@ -261,8 +252,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 }
 
 // Tear down called once per test, to close all tabs and menus, and clear the
-// tracked tests accounts. It also makes sure mock authentication and the HTTP
-// server are running.
+// tracked tests accounts. It also makes sure mock authentication is running.
 - (void)tearDown {
   [[AppLaunchManager sharedManager] removeObserver:self];
 
@@ -273,9 +263,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   // Clear any remaining test accounts and signed in users.
   [ChromeEarlGrey signOutAndClearIdentities];
 
-  // Re-start anything that was disabled this test, so it is running when the
-  // next test starts.
-  [[self class] startHTTPServer];
   [[self class] enableMockAuthentication];
 
   // Clean up any UI that may remain open so the next test starts in a clean
@@ -323,14 +310,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [[self class] enableMockAuthentication];
 }
 
-- (void)startHTTPServer {
-  [[self class] startHTTPServer];
-}
-
-- (void)stopHTTPServer {
-  [[self class] stopHTTPServer];
-}
-
 - (BOOL)isRunningTest:(SEL)selector {
   return [[self currentTestMethodName] isEqual:NSStringFromSelector(selector)];
 }
@@ -358,27 +337,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   SetUpMockAuthentication();
   [ChromeEarlGrey setUpFakeSyncServer];
-}
-
-+ (void)stopHTTPServer {
-  web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
-  if (!server.IsRunning()) {
-    return;
-  }
-  gIsHTTPServerStopped = YES;
-
-  server.Stop();
-}
-
-+ (void)startHTTPServer {
-  web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
-  if (server.IsRunning()) {
-    return;
-  }
-  gIsHTTPServerStopped = NO;
-
-  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
-  server.StartOrDie(base::FilePath(base::SysNSStringToUTF8(bundlePath)));
 }
 
 + (NSArray*)flakyTestNames {
@@ -423,12 +381,11 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
 // Called from +setUp or when the host app is relaunched.
 // Dismisses and revert browser settings to default.
-// It also starts the HTTP server and enables mock authentication.
+// It also enables mock authentication.
 + (void)setUpHelper {
   GREYAssertTrue([ChromeEarlGrey isCustomWebKitLoadedIfRequested],
                  @"Unable to load custom WebKit");
 
-  [[self class] startHTTPServer];
   [[self class] enableMockAuthentication];
 
   // Sometimes on start up there can be infobars (e.g. restore session), so
@@ -445,12 +402,9 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 // Resets the application state.
 // Called at the start of a test and when the app is relaunched.
 - (void)resetAppState {
-  [[self class] stopHTTPServer];
-  [[self class] startHTTPServer];
   [[self class] disableMockAuthentication];
   [[self class] enableMockAuthentication];
 
-  gIsHTTPServerStopped = NO;
   gIsMockAuthenticationDisabled = NO;
   _tearDownHandler = nil;
   _originalOrientation = GetCurrentDeviceOrientation();
@@ -478,9 +432,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
                              runResets:(BOOL)runResets {
   if (!runResets) {
     // Check stored flags and restore to app status before relaunch.
-    if (!gIsHTTPServerStopped) {
-      [[self class] startHTTPServer];
-    }
     if (!gIsMockAuthenticationDisabled) {
       [[self class] enableMockAuthentication];
     }

@@ -16,7 +16,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -34,7 +34,7 @@ using chrome_test_util::OmniboxText;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark entries integration tests for Chrome.
-@interface BookmarksEntriesTestCase : ChromeTestCase
+@interface BookmarksEntriesTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BookmarksEntriesTestCase

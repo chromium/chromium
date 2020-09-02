@@ -13,8 +13,8 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #include "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/data_response_provider.h"
@@ -72,7 +72,7 @@ class ReloadResponseProvider : public web::DataResponseProvider {
 }  // namespace
 
 // Tests web browsing scenarios.
-@interface BrowsingTestCase : ChromeTestCase
+@interface BrowsingTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BrowsingTestCase

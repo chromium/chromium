@@ -10,7 +10,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_auth_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -76,7 +76,7 @@ void WaitForHttpAuthDialog() {
 }  // namespace
 
 // Test case for HTTP Authentication flow.
-@interface HTTPAuthTestCase : ChromeTestCase
+@interface HTTPAuthTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation HTTPAuthTestCase

@@ -12,8 +12,8 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
@@ -81,7 +81,7 @@ class ScopedBlockPopupsException {
 }  // namespace
 
 // Block Popups tests for Chrome.
-@interface BlockPopupsTestCase : ChromeTestCase
+@interface BlockPopupsTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BlockPopupsTestCase

@@ -205,6 +205,8 @@ source_set("eg_test_support+eg2") {
     "earl_grey_scoped_block_swizzler_app_interface.h",
     "scoped_block_popups_pref.h",
     "scoped_block_popups_pref.mm",
+    "web_http_server_chrome_test_case.h",
+    "web_http_server_chrome_test_case.mm",
   ]
 
   public_deps = [

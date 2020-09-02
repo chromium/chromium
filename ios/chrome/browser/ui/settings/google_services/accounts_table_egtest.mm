@@ -15,7 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,7 +49,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 }
 
 // Integration tests using the Account Settings screen.
-@interface AccountCollectionsTestCase : ChromeTestCase
+@interface AccountCollectionsTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation AccountCollectionsTestCase

@@ -7,7 +7,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
@@ -27,7 +27,7 @@ char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
 }  // namespace
 
-@interface TabGridTestCase : ChromeTestCase {
+@interface TabGridTestCase : WebHttpServerChromeTestCase {
   GURL _URL1;
   GURL _URL2;
   GURL _URL3;
@@ -36,38 +36,20 @@ char kResponse3[] = "Test Page 3 content";
 
 @implementation TabGridTestCase
 
-#if defined(CHROME_EARL_GREY_2)
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
-  [self setUpHelper];
-}
-#elif defined(CHROME_EARL_GREY_1)
-// Set up called once for the class.
-+ (void)setUp {
-  [super setUp];
-  [self setUpHelper];
-}
-#else
-#error Not an EarlGrey Test
-#endif
-
-+ (void)setUpHelper {
-  std::map<GURL, std::string> responses;
-  const char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
-  responses[web::test::HttpServer::MakeUrl(kURL1)] =
-      base::StringPrintf(kPageFormat, kTitle1, kResponse1);
-  responses[web::test::HttpServer::MakeUrl(kURL2)] =
-      base::StringPrintf(kPageFormat, kTitle2, kResponse2);
-  // Page 3 does not have <title> tag, so URL will be its title.
-  responses[web::test::HttpServer::MakeUrl(kURL3)] = kResponse3;
-  web::test::SetUpSimpleHttpServer(responses);
-}
-
 - (void)setUp {
   [super setUp];
+
   _URL1 = web::test::HttpServer::MakeUrl(kURL1);
   _URL2 = web::test::HttpServer::MakeUrl(kURL2);
   _URL3 = web::test::HttpServer::MakeUrl(kURL3);
+
+  std::map<GURL, std::string> responses;
+  const char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
+  responses[_URL1] = base::StringPrintf(kPageFormat, kTitle1, kResponse1);
+  responses[_URL2] = base::StringPrintf(kPageFormat, kTitle2, kResponse2);
+  // Page 3 does not have <title> tag, so URL will be its title.
+  responses[_URL3] = kResponse3;
+  web::test::SetUpSimpleHttpServer(responses);
 }
 
 // Tests entering and leaving the tab grid.
