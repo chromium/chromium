@@ -1397,14 +1397,8 @@ public class TabListMediatorUnitTest {
     @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
     public void updateTabGroupTitle_GTS() {
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER);
-        doAnswer(invocation -> {
-            String title = invocation.getArgument(1);
-            String num = invocation.getArgument(2);
-            return String.format("Expand %s tab group with %s tabs.", title, num);
-        })
-                .when(mContext)
-                .getString(anyInt(), anyString(), anyString());
-        String targetString = "Expand  tab group with 2 tabs.";
+        setUpTabGroupCardDescriptionString();
+        String targetString = "Expand tab group with 2 tabs.";
         assertThat(mModel.get(POSITION1).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
 
         // Mock that tab1 and newTab are in the same group and group root id is TAB1_ID.
@@ -2209,17 +2203,12 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabDescriptionStringSetup() {
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER);
         // Setup the string template.
-        doAnswer(invocation -> {
-            String title = invocation.getArgument(1);
-            String num = invocation.getArgument(2);
-            return String.format("Expand %s tab group with %s tabs.", title, num);
-        })
-                .when(mContext)
-                .getString(anyInt(), anyString(), anyString());
-        String targetString = "Expand  tab group with 2 tabs.";
+        setUpTabGroupCardDescriptionString();
+        String targetString = "Expand tab group with 2 tabs.";
 
         // Setup a tab group with {tab2, tab3}.
         List<Tab> tabs = new ArrayList<>();
@@ -2242,6 +2231,30 @@ public class TabListMediatorUnitTest {
                 equalTo(false));
         assertThat(mModel.get(POSITION2).model.get(TabProperties.CONTENT_DESCRIPTION_STRING),
                 equalTo(targetString));
+
+        // Set group name.
+        targetString = String.format("Expand %s tab group with 2 tabs.", CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab2, CUSTOMIZED_DIALOG_TITLE1);
+        assertThat(mModel.get(POSITION2).model.get(TabProperties.CONTENT_DESCRIPTION_STRING),
+                equalTo(targetString));
+    }
+
+    private void setUpTabGroupCardDescriptionString() {
+        doAnswer(invocation -> {
+            String title = invocation.getArgument(1);
+            String num = invocation.getArgument(2);
+            return String.format("Expand %s tab group with %s tabs.", title, num);
+        })
+                .when(mContext)
+                .getString(anyInt(), anyString(), anyString());
+
+        doAnswer(invocation -> {
+            String num = invocation.getArgument(1);
+            return String.format("Expand tab group with %s tabs.", num);
+        })
+                .when(mContext)
+                .getString(anyInt(), anyString());
     }
 
     private void initAndAssertAllProperties() {
