@@ -136,7 +136,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
       telemetryProxy.convertErrorType(errorTypeEnum.kServiceUnavailable),
       'service-unavailable');
 
-  // Unit tests for convertCommandToEnum
+  // Unit tests for convertCpuArch.
   const cpuArchEnum = chromeos.health.mojom.CpuArchitectureEnum;
 
   assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kUnknown), 'unknown');
