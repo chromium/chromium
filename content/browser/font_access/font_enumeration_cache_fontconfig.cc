@@ -55,7 +55,7 @@ FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig() = default;
 FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() = default;
 
 // static
-FontEnumerationCacheFontconfig* FontEnumerationCacheFontconfig::GetInstance() {
+FontEnumerationCache* FontEnumerationCache::GetInstance() {
   static base::NoDestructor<FontEnumerationCacheFontconfig> instance;
   return instance.get();
 }

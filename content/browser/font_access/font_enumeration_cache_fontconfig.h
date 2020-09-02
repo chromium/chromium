@@ -35,6 +35,9 @@ class CONTENT_EXPORT FontEnumerationCacheFontconfig
 
  private:
   friend class base::NoDestructor<FontEnumerationCacheFontconfig>;
+  // This gives FontEnumerationCache::GetInstance access to the class
+  // constructor.
+  friend class FontEnumerationCache;
 
   void SchedulePrepareFontEnumerationCache();
   void PrepareFontEnumerationCache();

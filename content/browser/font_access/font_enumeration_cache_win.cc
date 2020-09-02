@@ -179,7 +179,7 @@ FontEnumerationCacheWin::FamilyDataResult::~FamilyDataResult() = default;
 FontEnumerationCacheWin::FamilyDataResult::FamilyDataResult() = default;
 
 // static
-FontEnumerationCacheWin* FontEnumerationCacheWin::GetInstance() {
+FontEnumerationCache* FontEnumerationCache::GetInstance() {
   static base::NoDestructor<FontEnumerationCacheWin> instance;
   return instance.get();
 }

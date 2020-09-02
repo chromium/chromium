@@ -10,10 +10,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_WIN)
-#include "content/browser/font_access/font_enumeration_cache_win.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "content/browser/font_access/font_enumeration_cache_fontconfig.h"
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define PLATFORM_HAS_NATIVE_ENUMERATION_IMPL 1
 #endif
 
 namespace content {
@@ -21,16 +19,12 @@ namespace content {
 FontEnumerationCache::FontEnumerationCache() = default;
 FontEnumerationCache::~FontEnumerationCache() = default;
 
-// static
+#if !defined(PLATFORM_HAS_NATIVE_ENUMERATION_IMPL)
+//  static
 FontEnumerationCache* FontEnumerationCache::GetInstance() {
-#if defined(OS_WIN)
-  return FontEnumerationCacheWin::GetInstance();
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-  return FontEnumerationCacheFontconfig::GetInstance();
-#endif
-
   return nullptr;
 }
+#endif
 
 void FontEnumerationCache::ResetStateForTesting() {
   callbacks_task_runner_ =
