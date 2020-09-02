@@ -127217,6 +127217,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid"
+    enum="PasswordCheckReferrerAndroid" expires_after="M88">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Referrer of a navigation to the Password Check UI Settings view. Recorded
+    when the user enters the view.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BulkCheck.Time" units="ms"
     expires_after="2021-02-01">
   <owner>vasilii@chromium.org</owner>
@@ -127241,6 +127251,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>User actions performed on the Password Check settings page.</summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.UserActionAndroid"
+    enum="PasswordCheckUIUserActionAndroid" expires_after="2021-02-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschigg@chromium.org</owner>
+  <summary>User actions performed on the Password Check settings view.</summary>
 </histogram>
 
 <histogram name="PasswordManager.ButtonTitlePerformance.HasFormTag"

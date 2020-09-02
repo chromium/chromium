@@ -54063,6 +54063,28 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Unsafe state bubble"/>
 </enum>
 
+<enum name="PasswordCheckReferrerAndroid">
+  <int value="0" label="Password Settings"/>
+  <int value="1" label="Safety Check"/>
+  <int value="2" label="Password Breach Dialog"/>
+</enum>
+
+<enum name="PasswordCheckUIUserActionAndroid">
+  <int value="0" label="Start check automatically"/>
+  <int value="1" label="Start check manually"/>
+  <int value="2" label="Cancel check"/>
+  <int value="3" label="Change password"/>
+  <int value="4" label="Change password automatically"/>
+  <int value="5" label="Change password manually"/>
+  <int value="6" label="View password click"/>
+  <int value="7" label="Viewed password"/>
+  <int value="8" label="Copied password"/>
+  <int value="9" label="Edit password click"/>
+  <int value="10" label="Edited password"/>
+  <int value="11" label="Delete password click"/>
+  <int value="12" label="Deleted password"/>
+</enum>
+
 <enum name="PasswordDecryptionResult">
   <int value="0" label="Failed"/>
   <int value="1" label="Succeeded"/>

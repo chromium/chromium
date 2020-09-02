@@ -151,6 +151,8 @@ public class PasswordCheckEditFragmentView extends PreferenceFragmentCompat {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_save_edited_password) {
+            PasswordCheckMetricsRecorder.recordUiUserAction(
+                    PasswordCheckUserAction.EDITED_PASSWORD);
             saveChanges();
             return true;
         }

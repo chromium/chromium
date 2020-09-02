@@ -51,8 +51,10 @@ android_library("public_java") {
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheck.java",
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckEditFragmentView.java",
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckFragmentView.java",
+    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckMetricsRecorder.java",
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckPreference.java",
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckReferrer.java",
+    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckUserAction.java",
   ]
   resources_package = "org.chromium.chrome.browser.password_check"
 }
@@ -79,6 +81,7 @@ junit_binary("password_check_junit_tests") {
     "internal:internal_java",
     "internal:public_ui_factory_java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check/android:password_check_java_enums",

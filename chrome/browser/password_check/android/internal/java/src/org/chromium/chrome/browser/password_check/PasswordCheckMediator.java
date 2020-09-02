@@ -67,13 +67,19 @@ class PasswordCheckMediator
         mDelegate = delegate;
         mLaunchCheckupInAccount = launchCheckupInAccount;
 
+        PasswordCheckMetricsRecorder.recordPasswordCheckReferrer(passwordCheckReferrer);
+
         // If a run is scheduled to happen soon, initialize the UI as running to prevent flickering.
         // Otherwise, initialize the UI with last known state (defaults to IDLE before first run).
         boolean shouldRunCheck = passwordCheckReferrer != PasswordCheckReferrer.SAFETY_CHECK;
         onPasswordCheckStatusChanged(shouldRunCheck ? PasswordCheckUIStatus.RUNNING
                                                     : getPasswordCheck().getCheckStatus());
         getPasswordCheck().addObserver(this, true);
-        if (shouldRunCheck) getPasswordCheck().startCheck();
+        if (shouldRunCheck) {
+            PasswordCheckMetricsRecorder.recordUiUserAction(
+                    PasswordCheckUserAction.START_CHECK_AUTOMATICALLY);
+            getPasswordCheck().startCheck();
+        }
     }
 
     void destroy() {
@@ -97,7 +103,7 @@ class PasswordCheckMediator
                     new PropertyModel.Builder(PasswordCheckProperties.HeaderProperties.ALL_KEYS)
                             .with(CHECK_STATUS, PasswordCheckUIStatus.RUNNING)
                             .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mLaunchCheckupInAccount)
-                            .with(RESTART_BUTTON_ACTION, this::runCheck)
+                            .with(RESTART_BUTTON_ACTION, this::startCheckManually)
                             .build()));
         }
         if (items.size() > 1) items.removeRange(1, items.size() - 1);
@@ -125,7 +131,7 @@ class PasswordCheckMediator
                              .with(CHECK_TIMESTAMP, null)
                              .with(COMPROMISED_CREDENTIALS_COUNT, null)
                              .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mLaunchCheckupInAccount)
-                             .with(RESTART_BUTTON_ACTION, this::runCheck)
+                             .with(RESTART_BUTTON_ACTION, this::startCheckManually)
                              .build();
         } else {
             header = items.get(0).model;
@@ -173,6 +179,8 @@ class PasswordCheckMediator
 
     @Override
     public void onEdit(CompromisedCredential credential) {
+        PasswordCheckMetricsRecorder.recordUiUserAction(
+                PasswordCheckUserAction.EDIT_PASSWORD_CLICK);
         if (!mReauthenticationHelper.canReauthenticate()) {
             mReauthenticationHelper.showScreenLockToast();
             return;
@@ -185,11 +193,15 @@ class PasswordCheckMediator
 
     @Override
     public void onRemove(CompromisedCredential credential) {
+        PasswordCheckMetricsRecorder.recordUiUserAction(
+                PasswordCheckUserAction.DELETE_PASSWORD_CLICK);
         mModel.set(DELETION_ORIGIN, credential.getDisplayOrigin());
         mModel.set(
                 DELETION_CONFIRMATION_HANDLER, new PasswordCheckDeletionDialogFragment.Handler() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        PasswordCheckMetricsRecorder.recordUiUserAction(
+                                PasswordCheckUserAction.DELETED_PASSWORD);
                         if (which != AlertDialog.BUTTON_POSITIVE) return;
                         mDelegate.removeCredential(credential);
                         mModel.set(DELETION_CONFIRMATION_HANDLER, null);
@@ -205,6 +217,8 @@ class PasswordCheckMediator
 
     @Override
     public void onView(CompromisedCredential credential) {
+        PasswordCheckMetricsRecorder.recordUiUserAction(
+                PasswordCheckUserAction.VIEW_PASSWORD_CLICK);
         if (!mReauthenticationHelper.canReauthenticate()) {
             mReauthenticationHelper.showScreenLockToast();
             return;
@@ -212,6 +226,8 @@ class PasswordCheckMediator
 
         mReauthenticationHelper.reauthenticate(ReauthReason.VIEW_PASSWORD, reauthSucceeded -> {
             if (reauthSucceeded) {
+                PasswordCheckMetricsRecorder.recordUiUserAction(
+                        PasswordCheckUserAction.VIEWED_PASSWORD);
                 mModel.set(VIEW_CREDENTIAL, credential);
                 mModel.set(VIEW_DIALOG_HANDLER, new PasswordCheckViewDialogFragment.Handler() {
                     @Override
@@ -231,12 +247,17 @@ class PasswordCheckMediator
 
     @Override
     public void onChangePasswordButtonClick(CompromisedCredential credential) {
+        PasswordCheckMetricsRecorder.recordUiUserAction(credential.hasScript()
+                        ? PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY
+                        : PasswordCheckUserAction.CHANGE_PASSWORD);
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
     }
 
     @Override
     public void onChangePasswordWithScriptButtonClick(CompromisedCredential credential) {
         assert credential.hasScript();
+        PasswordCheckMetricsRecorder.recordUiUserAction(
+                PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY);
         mChangePasswordDelegate.launchCctWithScript(credential);
     }
 
@@ -251,7 +272,18 @@ class PasswordCheckMediator
         }
     }
 
-    private void runCheck() {
+    public void stopCheck() {
+        PasswordCheck check = PasswordCheckFactory.getPasswordCheckInstance();
+        if (check == null) return;
+        if (isCheckRunning()) {
+            PasswordCheckMetricsRecorder.recordUiUserAction(PasswordCheckUserAction.CANCEL_CHECK);
+        }
+        check.stopCheck();
+    }
+
+    private void startCheckManually() {
+        PasswordCheckMetricsRecorder.recordUiUserAction(
+                PasswordCheckUserAction.START_CHECK_MANUALLY);
         getPasswordCheck().startCheck();
     }
 
@@ -261,6 +293,11 @@ class PasswordCheckMediator
         return passwordCheck;
     }
 
+    private boolean isCheckRunning() {
+        return mModel.get(ITEMS).get(0) != null
+                && mModel.get(ITEMS).get(0).model.get(CHECK_STATUS)
+                == PasswordCheckUIStatus.RUNNING;
+    }
     private ListItem createEntryForCredential(CompromisedCredential credential) {
         PropertyModel credentialModel =
                 new PropertyModel
