@@ -8,14 +8,40 @@ source_set("service") {
   sources = [
     "fuchsia_cdm_manager.cc",
     "fuchsia_cdm_manager.h",
+    "provisioning_fetcher_impl.cc",
+    "provisioning_fetcher_impl.h",
   ]
 
-  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm" ]
+  public_deps = [
+    "//media",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm",
+  ]
 
   deps = [
     "//fuchsia/base",
-    "//media",
     "//media/fuchsia/mojom",
     "//url",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+
+  deps = [
+    ":service",
+    "//base",
+    "//base/test:test_support",
+    "//fuchsia/base",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  sources = [
+    "fuchsia_cdm_manager_test.cc",
+    "mock_provision_fetcher.cc",
+    "mock_provision_fetcher.h",
+    "provisioning_fetcher_impl_test.cc",
   ]
 }
