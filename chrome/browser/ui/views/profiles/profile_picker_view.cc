@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -38,12 +39,14 @@ constexpr int kWindowWidth = 1024;
 constexpr int kWindowHeight = 758;
 constexpr float kMaxRatioOfWorkArea = 0.9;
 
-GURL CreateURLForPage(ProfilePicker::Page page) {
+GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
   GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
-  switch (page) {
-    case ProfilePicker::Page::kManageProfiles:
+  switch (entry_point) {
+    case ProfilePicker::EntryPoint::kOnStartup:
+    case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
+    case ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion:
       return base_url;
-    case ProfilePicker::Page::kAddNewProfile:
+    case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
       return base_url.Resolve("new-profile");
   }
 }
@@ -51,11 +54,12 @@ GURL CreateURLForPage(ProfilePicker::Page page) {
 }  // namespace
 
 // static
-void ProfilePicker::Show(Page page) {
+void ProfilePicker::Show(EntryPoint entry_point) {
   if (!g_profile_picker_view)
     g_profile_picker_view = new ProfilePickerView();
 
-  g_profile_picker_view->Display(page);
+  base::UmaHistogramEnumeration("ProfilePicker.Shown", entry_point);
+  g_profile_picker_view->Display(entry_point);
 }
 
 // static
@@ -81,13 +85,13 @@ ProfilePickerView::ProfilePickerView()
 
 ProfilePickerView::~ProfilePickerView() = default;
 
-void ProfilePickerView::Display(ProfilePicker::Page page) {
+void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
   if (initialized_ == kNotInitialized) {
     initialized_ = kInProgress;
     g_browser_process->profile_manager()->CreateProfileAsync(
         ProfileManager::GetSystemProfilePath(),
         base::BindRepeating(&ProfilePickerView::OnSystemProfileCreated,
-                            weak_ptr_factory_.GetWeakPtr(), page),
+                            weak_ptr_factory_.GetWeakPtr(), entry_point),
         /*name=*/base::string16(), /*icon_url=*/std::string());
     return;
   }
@@ -108,17 +112,18 @@ void ProfilePickerView::Clear() {
   DeleteDelegate();
 }
 
-void ProfilePickerView::OnSystemProfileCreated(ProfilePicker::Page init_page,
-                                               Profile* system_profile,
-                                               Profile::CreateStatus status) {
+void ProfilePickerView::OnSystemProfileCreated(
+    ProfilePicker::EntryPoint entry_point,
+    Profile* system_profile,
+    Profile::CreateStatus status) {
   DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
   if (status != Profile::CREATE_STATUS_INITIALIZED)
     return;
 
-  Init(init_page, system_profile);
+  Init(entry_point, system_profile);
 }
 
-void ProfilePickerView::Init(ProfilePicker::Page init_page,
+void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
                              Profile* system_profile) {
   web_view_ = new views::WebView(system_profile);
   web_view_->GetWebContents()->SetDelegate(this);
@@ -135,7 +140,7 @@ void ProfilePickerView::Init(ProfilePicker::Page init_page,
       views::HWNDForWidget(GetWidget()));
 #endif
 
-  web_view_->LoadInitialURL(CreateURLForPage(init_page));
+  web_view_->LoadInitialURL(CreateURLForEntryPoint(entry_point));
   GetWidget()->Show();
   web_view_->RequestFocus();
   initialized_ = InitState::kDone;

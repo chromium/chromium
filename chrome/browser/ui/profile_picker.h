@@ -7,15 +7,20 @@
 
 class ProfilePicker {
  public:
-  // Different pages to be displayed when the profile picker window opens.
-  enum class Page {
-    kManageProfiles,
-    kAddNewProfile,
+  // An entry point that triggers the profile picker window to open.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class EntryPoint {
+    kOnStartup = 0,
+    kProfileMenuManageProfiles = 1,
+    kProfileMenuAddNewProfile = 2,
+    kOpenNewWindowAfterProfileDeletion = 3,
+    kMaxValue = kOpenNewWindowAfterProfileDeletion,
   };
 
-  // Shows the Profile picker on the given `page` or re-activates an existing
-  // one. In the latter case, the `page` parameter is ignored.
-  static void Show(Page page = Page::kManageProfiles);
+  // Shows the Profile picker for the given `entry_point` or re-activates an
+  // existing one. In the latter case, the displayed page is not updated.
+  static void Show(EntryPoint entry_point);
 
   // Hides the profile picker.
   static void Hide();
