@@ -331,22 +331,6 @@ struct ASH_PUBLIC_EXPORT AuthDisabledData {
   bool disable_lock_screen_media = false;
 };
 
-// Possible reasons why the parent access code is required. This corresponds to
-// actions that children can't perform on a Chromebook, but their parents can on
-// their behalf.
-enum class ParentAccessRequestReason {
-  // Unlock a Chromebook that is locked due to a Time Limit policy.
-  kUnlockTimeLimits,
-  // Update values on the date time dialog.
-  kChangeTime,
-  // Update values on the timezone settings page.
-  kChangeTimezone,
-  // Add user flow.
-  kAddUser,
-  // Re-authentication flow.
-  kReauth,
-};
-
 // Parameters and callbacks for a security token PIN request that is to be shown
 // to the user.
 struct ASH_PUBLIC_EXPORT SecurityTokenPinRequest {

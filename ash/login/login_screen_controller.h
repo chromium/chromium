@@ -24,6 +24,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class SystemTrayNotifier;
+enum class SupervisedAction;
 
 // LoginScreenController implements LoginScreen and wraps the LoginScreenClient
 // interface. This lets a consumer of ash provide a LoginScreenClient, which we
@@ -122,7 +123,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   // this method.
   void ShowParentAccessWidget(const AccountId& child_account_id,
                               base::OnceCallback<void(bool success)> callback,
-                              ParentAccessRequestReason reason,
+                              SupervisedAction action,
                               bool extra_dimmer,
                               base::Time validation_time) override;
   void RequestSecurityTokenPin(SecurityTokenPinRequest request) override;

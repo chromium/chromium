@@ -12,6 +12,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/root_window_controller.h"
@@ -353,12 +354,12 @@ LoginScreenController::GetScopedGuestButtonBlocker() {
 void LoginScreenController::ShowParentAccessWidget(
     const AccountId& child_account_id,
     base::OnceCallback<void(bool success)> callback,
-    ParentAccessRequestReason reason,
+    SupervisedAction action,
     bool extra_dimmer,
     base::Time validation_time) {
   DCHECK(!PinRequestWidget::Get());
   Shell::Get()->parent_access_controller()->ShowWidget(
-      child_account_id, std::move(callback), reason, extra_dimmer,
+      child_account_id, std::move(callback), action, extra_dimmer,
       validation_time);
 }
 

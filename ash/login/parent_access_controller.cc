@@ -20,40 +20,40 @@ namespace {
 // Number of digits displayed in parent access code input.
 constexpr int kParentAccessCodePinLength = 6;
 
-base::string16 GetTitle(ParentAccessRequestReason reason) {
+base::string16 GetTitle(SupervisedAction action) {
   int title_id;
-  switch (reason) {
-    case ParentAccessRequestReason::kUnlockTimeLimits:
+  switch (action) {
+    case SupervisedAction::kUnlockTimeLimits:
       title_id = IDS_ASH_LOGIN_PARENT_ACCESS_TITLE;
       break;
-    case ParentAccessRequestReason::kChangeTime:
+    case SupervisedAction::kUpdateClock:
       title_id = IDS_ASH_LOGIN_PARENT_ACCESS_TITLE_CHANGE_TIME;
       break;
-    case ParentAccessRequestReason::kChangeTimezone:
+    case SupervisedAction::kUpdateTimezone:
       title_id = IDS_ASH_LOGIN_PARENT_ACCESS_TITLE_CHANGE_TIMEZONE;
       break;
-    case ParentAccessRequestReason::kAddUser:
-    case ParentAccessRequestReason::kReauth:
+    case SupervisedAction::kAddUser:
+    case SupervisedAction::kReauth:
       title_id = IDS_ASH_LOGIN_PARENT_ACCESS_GENERIC_TITLE;
       break;
   }
   return l10n_util::GetStringUTF16(title_id);
 }
 
-base::string16 GetDescription(ParentAccessRequestReason reason) {
+base::string16 GetDescription(SupervisedAction action) {
   int description_id;
-  switch (reason) {
-    case ParentAccessRequestReason::kUnlockTimeLimits:
+  switch (action) {
+    case SupervisedAction::kUnlockTimeLimits:
       description_id = IDS_ASH_LOGIN_PARENT_ACCESS_DESCRIPTION;
       break;
-    case ParentAccessRequestReason::kChangeTime:
-    case ParentAccessRequestReason::kChangeTimezone:
+    case SupervisedAction::kUpdateClock:
+    case SupervisedAction::kUpdateTimezone:
       description_id = IDS_ASH_LOGIN_PARENT_ACCESS_GENERIC_DESCRIPTION;
       break;
-    case ParentAccessRequestReason::kAddUser:
+    case SupervisedAction::kAddUser:
       description_id = IDS_ASH_LOGIN_PARENT_ACCESS_DESCRIPTION_ADD_USER;
       break;
-    case ParentAccessRequestReason::kReauth:
+    case SupervisedAction::kReauth:
       description_id = IDS_ASH_LOGIN_PARENT_ACCESS_DESCRIPTION_REAUTH;
       break;
   }
@@ -82,15 +82,15 @@ void RecordParentAccessAction(ParentAccessController::UMAAction action) {
 }
 
 void RecordParentAccessUsage(const AccountId& child_account_id,
-                             ParentAccessRequestReason reason) {
-  switch (reason) {
-    case ParentAccessRequestReason::kUnlockTimeLimits: {
+                             SupervisedAction action) {
+  switch (action) {
+    case SupervisedAction::kUnlockTimeLimits: {
       UMA_HISTOGRAM_ENUMERATION(
           ParentAccessController::kUMAParentAccessCodeUsage,
           ParentAccessController::UMAUsage::kTimeLimits);
       return;
     }
-    case ParentAccessRequestReason::kChangeTime: {
+    case SupervisedAction::kUpdateClock: {
       bool is_login = Shell::Get()->session_controller()->GetSessionState() ==
                       session_manager::SessionState::LOGIN_PRIMARY;
       UMA_HISTOGRAM_ENUMERATION(
@@ -99,24 +99,24 @@ void RecordParentAccessUsage(const AccountId& child_account_id,
                    : ParentAccessController::UMAUsage::kTimeChangeInSession);
       return;
     }
-    case ParentAccessRequestReason::kChangeTimezone: {
+    case SupervisedAction::kUpdateTimezone: {
       UMA_HISTOGRAM_ENUMERATION(
           ParentAccessController::kUMAParentAccessCodeUsage,
           ParentAccessController::UMAUsage::kTimezoneChange);
       return;
     }
-    case ParentAccessRequestReason::kAddUser:
+    case SupervisedAction::kAddUser:
       UMA_HISTOGRAM_ENUMERATION(
           ParentAccessController::kUMAParentAccessCodeUsage,
           ParentAccessController::UMAUsage::kAddUserLoginScreen);
       return;
-    case ParentAccessRequestReason::kReauth:
+    case SupervisedAction::kReauth:
       UMA_HISTOGRAM_ENUMERATION(
           ParentAccessController::kUMAParentAccessCodeUsage,
           ParentAccessController::UMAUsage::kReauhLoginScreen);
       return;
   }
-  NOTREACHED() << "Unknown ParentAccessRequestReason";
+  NOTREACHED() << "Unknown SupervisedAction";
 }
 
 PinRequestView::SubmissionResult ParentAccessController::OnPinSubmitted(
@@ -137,7 +137,7 @@ PinRequestView::SubmissionResult ParentAccessController::OnPinSubmitted(
   PinRequestWidget::Get()->UpdateState(
       PinRequestViewState::kError,
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_PARENT_ACCESS_TITLE_ERROR),
-      GetDescription(reason_));
+      GetDescription(action_));
   return PinRequestView::SubmissionResult::kPinError;
 }
 
@@ -162,14 +162,14 @@ void ParentAccessController::OnHelp(gfx::NativeWindow parent_window) {
 bool ParentAccessController::ShowWidget(
     const AccountId& child_account_id,
     PinRequest::OnPinRequestDone on_exit_callback,
-    ParentAccessRequestReason reason,
+    SupervisedAction action,
     bool extra_dimmer,
     base::Time validation_time) {
   if (PinRequestWidget::Get())
     return false;
 
   account_id_ = child_account_id;
-  reason_ = reason;
+  action_ = action;
   validation_time_ = validation_time;
   PinRequest request;
   request.on_pin_request_done = std::move(on_exit_callback);
@@ -177,11 +177,11 @@ bool ParentAccessController::ShowWidget(
   request.extra_dimmer = extra_dimmer;
   request.pin_length = kParentAccessCodePinLength;
   request.obscure_pin = false;
-  request.title = GetTitle(reason);
-  request.description = GetDescription(reason);
+  request.title = GetTitle(action);
+  request.description = GetDescription(action);
   request.accessible_title = GetAccessibleTitle();
   PinRequestWidget::Show(std::move(request), this);
-  RecordParentAccessUsage(account_id_, reason);
+  RecordParentAccessUsage(account_id_, action);
   return true;
 }
 

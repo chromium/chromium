@@ -10,16 +10,17 @@
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/pin_request_widget.h"
 #include "ash/login/ui/views_utils.h"
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 
-using ::testing::_;
-
 namespace ash {
 
 namespace {
+
+using ::testing::_;
 
 class ParentAccessControllerTest : public LoginTestBase {
  protected:
@@ -55,19 +56,18 @@ class ParentAccessControllerTest : public LoginTestBase {
     access_granted ? ++successful_validation_ : ++back_action_;
   }
 
-  void StartParentAccess(ParentAccessRequestReason reason =
-                             ParentAccessRequestReason::kUnlockTimeLimits) {
-    StartParentAccess(account_id_, reason);
+  void StartParentAccess(
+      SupervisedAction action = SupervisedAction::kUnlockTimeLimits) {
+    StartParentAccess(account_id_, action);
   }
 
-  void StartParentAccess(const AccountId& account_id,
-                         ParentAccessRequestReason reason) {
+  void StartParentAccess(const AccountId& account_id, SupervisedAction action) {
     validation_time_ = base::Time::Now();
     controller_->ShowWidget(
         account_id,
         base::BindOnce(&ParentAccessControllerTest::OnFinished,
                        base::Unretained(this)),
-        reason, false, validation_time_);
+        action, false, validation_time_);
     view_ =
         PinRequestWidget::TestApi(PinRequestWidget::Get()).pin_request_view();
   }
@@ -140,7 +140,7 @@ TEST_F(ParentAccessControllerTest, ParentAccessDialogFocus) {
 
 // Tests correct UMA reporting for parent access.
 TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
-  StartParentAccess(ParentAccessRequestReason::kUnlockTimeLimits);
+  StartParentAccess(SupervisedAction::kUnlockTimeLimits);
   histogram_tester_.ExpectBucketCount(
       ParentAccessController::kUMAParentAccessCodeUsage,
       ParentAccessController::UMAUsage::kTimeLimits, 1);
@@ -148,7 +148,7 @@ TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
   ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 1,
                           1);
 
-  StartParentAccess(ParentAccessRequestReason::kChangeTimezone);
+  StartParentAccess(SupervisedAction::kUpdateTimezone);
   histogram_tester_.ExpectBucketCount(
       ParentAccessController::kUMAParentAccessCodeUsage,
       ParentAccessController::UMAUsage::kTimezoneChange, 1);
@@ -159,7 +159,7 @@ TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
   // The below usage depends on the session state.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-  StartParentAccess(ParentAccessRequestReason::kChangeTime);
+  StartParentAccess(SupervisedAction::kUpdateClock);
   histogram_tester_.ExpectBucketCount(
       ParentAccessController::kUMAParentAccessCodeUsage,
       ParentAccessController::UMAUsage::kTimeChangeInSession, 1);
@@ -169,7 +169,7 @@ TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  StartParentAccess(ParentAccessRequestReason::kChangeTime);
+  StartParentAccess(SupervisedAction::kUpdateClock);
   histogram_tester_.ExpectBucketCount(
       ParentAccessController::kUMAParentAccessCodeUsage,
       ParentAccessController::UMAUsage::kTimeChangeLoginScreen, 1);
@@ -179,7 +179,7 @@ TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-  StartParentAccess(ParentAccessRequestReason::kChangeTime);
+  StartParentAccess(SupervisedAction::kUpdateClock);
   histogram_tester_.ExpectBucketCount(
       ParentAccessController::kUMAParentAccessCodeUsage,
       ParentAccessController::UMAUsage::kTimeChangeInSession, 2);
@@ -189,7 +189,7 @@ TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  StartParentAccess(ParentAccessRequestReason::kReauth);
+  StartParentAccess(SupervisedAction::kReauth);
   histogram_tester_.ExpectBucketCount(
       ParentAccessController::kUMAParentAccessCodeUsage,
       ParentAccessController::UMAUsage::kReauhLoginScreen, 1);
@@ -199,7 +199,7 @@ TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  StartParentAccess(EmptyAccountId(), ParentAccessRequestReason::kAddUser);
+  StartParentAccess(EmptyAccountId(), SupervisedAction::kAddUser);
   histogram_tester_.ExpectBucketCount(
       ParentAccessController::kUMAParentAccessCodeUsage,
       ParentAccessController::UMAUsage::kAddUserLoginScreen, 1);

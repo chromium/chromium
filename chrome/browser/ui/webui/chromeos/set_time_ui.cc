@@ -8,8 +8,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
-#include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/build_time.h"
@@ -125,8 +125,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
 
   void DoneClicked(const base::ListValue* args) {
     if (!parent_access::ParentAccessService::IsApprovalRequired(
-            parent_access::ParentAccessService::SupervisedAction::
-                kUpdateClock)) {
+            ash::SupervisedAction::kUpdateClock)) {
       OnParentAccessValidation(true);
       return;
     }
@@ -147,7 +146,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
         account_id,
         base::BindOnce(&SetTimeMessageHandler::OnParentAccessValidation,
                        weak_factory_.GetWeakPtr()),
-        ash::ParentAccessRequestReason::kChangeTime,
+        ash::SupervisedAction::kUpdateClock,
         !is_user_logged_in /* extra_dimmer */,
         base::Time::FromDoubleT(seconds));
   }

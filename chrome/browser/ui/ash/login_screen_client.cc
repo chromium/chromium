@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
-#include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
@@ -29,6 +29,8 @@
 #include "components/user_manager/user_names.h"
 
 namespace {
+using ash::SupervisedAction;
+
 LoginScreenClient* g_login_screen_client_instance = nullptr;
 }  // namespace
 
@@ -167,18 +169,18 @@ void LoginScreenClient::FocusOobeDialog() {
 }
 
 void LoginScreenClient::ShowGaiaSignin(const AccountId& prefilled_account) {
+  auto supervised_action = prefilled_account.empty()
+                               ? SupervisedAction::kAddUser
+                               : SupervisedAction::kReauth;
   if (chromeos::parent_access::ParentAccessService::Get().IsApprovalRequired(
-          chromeos::parent_access::ParentAccessService::SupervisedAction::
-              kOnlineLogin)) {
+          supervised_action)) {
     // Show the client native parent access widget and processed to GAIA signin
     // flow in |OnParentAccessValidation| when validation success.
     ash::LoginScreen::Get()->ShowParentAccessWidget(
         prefilled_account,
         base::BindOnce(&LoginScreenClient::OnParentAccessValidation,
                        weak_ptr_factory_.GetWeakPtr(), prefilled_account),
-        prefilled_account.empty() ? ash::ParentAccessRequestReason::kAddUser
-                                  : ash::ParentAccessRequestReason::kReauth,
-        false /* extra_dimmer */, base::Time::Now());
+        supervised_action, false /* extra_dimmer */, base::Time::Now());
   } else {
     ShowGaiaSigninInternal(prefilled_account);
   }

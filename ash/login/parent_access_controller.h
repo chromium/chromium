@@ -7,7 +7,7 @@
 
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/pin_request_widget.h"
-#include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 
 namespace ash {
 
@@ -64,7 +64,7 @@ class ASH_EXPORT ParentAccessController : PinRequestView::Delegate {
   // validates the code for any child signed in the device.
   // |on_exit_callback| is invoked when the back button is clicked or the
   // correct code is entered.
-  // |reason| contains information about why the parent
+  // |action| contains information about why the parent
   // access view is necessary, it is used to modify the view appearance by
   // changing the title and description strings and background color.
   // The parent access widget is a modal and already contains a dimmer, however
@@ -79,14 +79,13 @@ class ASH_EXPORT ParentAccessController : PinRequestView::Delegate {
   // dialog is already opened.
   bool ShowWidget(const AccountId& child_account_id,
                   PinRequest::OnPinRequestDone on_exit_callback,
-                  ParentAccessRequestReason reason,
+                  SupervisedAction action,
                   bool extra_dimmer,
                   base::Time validation_time);
 
  private:
   AccountId account_id_;
-  ParentAccessRequestReason reason_ =
-      ParentAccessRequestReason::kUnlockTimeLimits;
+  SupervisedAction action_ = SupervisedAction::kUnlockTimeLimits;
   base::Time validation_time_;
 
   base::WeakPtrFactory<ParentAccessController> weak_factory_{this};

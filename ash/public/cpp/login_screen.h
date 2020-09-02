@@ -20,7 +20,7 @@ class LoginScreenClient;
 class LoginScreenModel;
 class ScopedGuestButtonBlocker;
 
-enum class ParentAccessRequestReason;
+enum class SupervisedAction;
 
 // Allows clients (e.g. the browser process) to send messages to the ash
 // login/lock/user-add screens.
@@ -66,7 +66,7 @@ class ASH_PUBLIC_EXPORT LoginScreen {
   // validates the parent access code for that child only, when it is empty it
   // validates the code for any child signed in the device. |callback| is
   // invoked when the back button is clicked or the correct code was entered.
-  // |reason| contains information about why the parent access view is
+  // |action| contains information about why the parent access view is
   // necessary, it is used to modify the view appearance by changing the title
   // and description strings and background color. The parent access widget is a
   // modal and already contains a dimmer, however when another modal is the
@@ -79,7 +79,7 @@ class ASH_PUBLIC_EXPORT LoginScreen {
   virtual void ShowParentAccessWidget(
       const AccountId& child_account_id,
       base::OnceCallback<void(bool success)> callback,
-      ParentAccessRequestReason reason,
+      SupervisedAction action,
       bool extra_dimmer,
       base::Time validation_time) = 0;
 

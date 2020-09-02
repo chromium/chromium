@@ -30,8 +30,8 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
-#include "ash/public/cpp/login_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -763,7 +763,7 @@ void LockContentsView::ShowParentAccessDialog() {
       account_id,
       base::BindOnce(&LockContentsView::OnParentAccessValidationFinished,
                      weak_ptr_factory_.GetWeakPtr(), account_id),
-      ParentAccessRequestReason::kUnlockTimeLimits, false, base::Time::Now());
+      SupervisedAction::kUnlockTimeLimits, false, base::Time::Now());
   Shell::Get()->login_screen_controller()->ShowParentAccessButton(false);
 }
 

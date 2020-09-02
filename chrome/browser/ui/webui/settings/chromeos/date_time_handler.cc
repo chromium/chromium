@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/date_time_handler.h"
 
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
-#include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -145,8 +145,7 @@ void DateTimeHandler::HandleShowParentAccessForTimeZone(
   DCHECK(user_manager::UserManager::Get()->GetActiveUser()->IsChild());
 
   if (!parent_access::ParentAccessService::IsApprovalRequired(
-          parent_access::ParentAccessService::SupervisedAction::
-              kUpdateTimezone)) {
+          ash::SupervisedAction::kUpdateTimezone)) {
     OnParentAccessValidation(true);
     return;
   }
@@ -155,7 +154,7 @@ void DateTimeHandler::HandleShowParentAccessForTimeZone(
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
       base::BindOnce(&DateTimeHandler::OnParentAccessValidation,
                      weak_ptr_factory_.GetWeakPtr()),
-      ash::ParentAccessRequestReason::kChangeTimezone, false /* extra_dimmer */,
+      ash::SupervisedAction::kUpdateTimezone, false /* extra_dimmer */,
       base::Time::Now());
 }
 
