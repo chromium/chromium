@@ -5416,6 +5416,7 @@ TEST_P(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
   std::unique_ptr<aura::Window> window2(CreateWindowWithMinimumSize(
       bounds, gfx::Size(work_area_length / 3 + 20, 0)));
 
+  ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
   split_view_controller()->StartResize(
       GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint());

@@ -955,18 +955,19 @@ void SplitViewController::StartResize(const gfx::Point& location_in_screen) {
         split_view_divider_->divider_widget()->GetCompositor(),
         kTabletSplitViewResizeMultiHistogram,
         kTabletSplitViewResizeMultiMaxLatencyHistogram);
-  } else if (GetOverviewSession() && !GetOverviewSession()
-                                          ->GetGridWithRootWindow(root_window_)
-                                          ->empty()) {
-    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        split_view_divider_->divider_widget()->GetCompositor(),
-        kTabletSplitViewResizeWithOverviewHistogram,
-        kTabletSplitViewResizeWithOverviewMaxLatencyHistogram);
-  } else {
+    return;
+  }
+  DCHECK(GetOverviewSession());
+  if (GetOverviewSession()->GetGridWithRootWindow(root_window_)->empty()) {
     presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
         split_view_divider_->divider_widget()->GetCompositor(),
         kTabletSplitViewResizeSingleHistogram,
         kTabletSplitViewResizeSingleMaxLatencyHistogram);
+  } else {
+    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+        split_view_divider_->divider_widget()->GetCompositor(),
+        kTabletSplitViewResizeWithOverviewHistogram,
+        kTabletSplitViewResizeWithOverviewMaxLatencyHistogram);
   }
 }
 
@@ -1265,6 +1266,7 @@ void SplitViewController::OnResizeLoopStarted(aura::Window* window) {
     return;
   }
 
+  DCHECK_NE(State::kBothSnapped, state_);
   DCHECK(GetOverviewSession());
   if (GetOverviewSession()->GetGridWithRootWindow(root_window_)->empty()) {
     presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(

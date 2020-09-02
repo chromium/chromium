@@ -1677,6 +1677,7 @@ TEST_P(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
   gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           window1.get());
+  ToggleOverview();
   EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
   delegate1->set_minimum_size(
@@ -1825,6 +1826,7 @@ TEST_P(SplitViewControllerTest,
   // Snap the divider to one third position when there is only left window with
   // minimum size larger than one third of the display's width. The divider
   // should be snapped to the middle position after dragging.
+  ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
   delegate1->set_minimum_size(
       gfx::Size(workarea_bounds.width() * 0.4f, workarea_bounds.height()));
@@ -1909,6 +1911,7 @@ TEST_P(SplitViewControllerTest,
           window1.get());
 
   // Divider should be moved to the middle at the beginning.
+  ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
   ASSERT_TRUE(split_view_divider());
   EXPECT_GT(divider_position(), 0.33f * workarea_bounds.width());
@@ -2042,6 +2045,7 @@ TEST_P(SplitViewControllerTest,
   w1_state->SetDelegate(base::WrapUnique(window_state_delegate1));
 
   // Set up window.
+  ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
 
   // Start a drag but don't release the mouse button.
@@ -2326,6 +2330,7 @@ TEST_P(SplitViewControllerTest, DividerClosestRatioOnWorkArea) {
 
   const gfx::Rect bounds(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window(CreateWindow(bounds));
+  ToggleOverview();
   split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
 
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
@@ -2398,6 +2403,7 @@ TEST_P(SplitViewControllerTest,
   // Enter split view.
   const gfx::Rect bounds(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window(CreateWindow(bounds));
+  ToggleOverview();
   split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
   // Drag the divider so that the snapped window spans only one third of the way
   // across the work area.
@@ -2499,6 +2505,7 @@ TEST_P(SplitViewControllerTest, EndSplitViewWhileResizingBeyondMinimum) {
   gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           window.get());
+  ToggleOverview();
   split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
   delegate->set_minimum_size(
       gfx::Size(display_bounds.width() * 0.4f, display_bounds.height()));
@@ -2612,6 +2619,7 @@ TEST_P(SplitViewControllerTest, EndSplitViewDuringDividerSnapAnimation) {
   gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           window.get());
+  ToggleOverview();
   split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
   delegate->set_minimum_size(
       gfx::Size(display_bounds.width() * 0.4f, display_bounds.height()));
@@ -2675,6 +2683,7 @@ TEST_P(SplitViewControllerTest, ItemsRemovedFromOverviewOnSnap) {
 TEST_P(SplitViewControllerTest, EndSplitViewWhileDragging) {
   // Enter split view mode.
   std::unique_ptr<aura::Window> window = CreateTestWindow();
+  ToggleOverview();
   split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
 
   // Start resizing.
