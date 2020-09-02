@@ -24,6 +24,8 @@ class TelemetryExtensionUiBrowserTest : public SandboxedWebUiAppTestBase {
 
   void ConfigureDiagnosticsForInteractiveUpdate();
   void ConfigureDiagnosticsForNonInteractiveUpdate();
+
+  void ConfigureProbeServiceToReturnErrors();
 };
 
 #endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_TEST_TELEMETRY_EXTENSION_UI_BROWSERTEST_H_

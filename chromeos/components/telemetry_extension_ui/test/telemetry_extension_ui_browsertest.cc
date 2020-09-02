@@ -329,3 +329,94 @@ void TelemetryExtensionUiBrowserTest::
   chromeos::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetGetRoutineUpdateResponseForTesting(input);
 }
+
+void TelemetryExtensionUiBrowserTest::ConfigureProbeServiceToReturnErrors() {
+  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kFileReadError;
+    error->msg = "battery error";
+
+    telemetry_info->battery_result =
+        cros_healthd::BatteryResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kParseError;
+    error->msg = "block device error";
+
+    telemetry_info->block_device_result =
+        cros_healthd::NonRemovableBlockDeviceResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kSystemUtilityError;
+    error->msg = "vpd error";
+
+    telemetry_info->system_result =
+        cros_healthd::SystemResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kServiceUnavailable;
+    error->msg = "cpu error";
+
+    telemetry_info->cpu_result =
+        cros_healthd::CpuResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kFileReadError;
+    error->msg = "timezone error";
+
+    telemetry_info->timezone_result =
+        cros_healthd::TimezoneResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kParseError;
+    error->msg = "memory error";
+
+    telemetry_info->memory_result =
+        cros_healthd::MemoryResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kSystemUtilityError;
+    error->msg = "backlight error";
+
+    telemetry_info->backlight_result =
+        cros_healthd::BacklightResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kServiceUnavailable;
+    error->msg = "fan error";
+
+    telemetry_info->fan_result =
+        cros_healthd::FanResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kFileReadError;
+    error->msg = "partition error";
+
+    telemetry_info->stateful_partition_result =
+        cros_healthd::StatefulPartitionResult::NewError(std::move(error));
+  }
+  {
+    auto error = cros_healthd::ProbeError::New();
+    error->type = cros_healthd::ErrorType::kParseError;
+    error->msg = "bluetooth error";
+
+    telemetry_info->bluetooth_result =
+        cros_healthd::BluetoothResult::NewError(std::move(error));
+  }
+
+  DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
+
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+}

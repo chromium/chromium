@@ -306,3 +306,75 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfoWithInterceptor', async () => {
   ]);
   assertDeepEquals(response, {});
 });
+
+// Tests that TelemetryInfo with errors can be successfully requested from
+// from chrome-untrusted://.
+UNTRUSTED_TEST('UntrustedRequestTelemetryInfoWithErrors', async () => {
+  const response = await chromeos.telemetry.probeTelemetryInfo([
+    'battery', 'non-removable-block-devices', 'cached-vpd-data', 'cpu',
+    'timezone', 'memory', 'backlight', 'fan', 'stateful-partition', 'bluetooth'
+  ]);
+
+  assertDeepEquals(response, {
+    batteryResult: {
+      error: {
+        type: 'file-read-error',
+        msg: 'battery error',
+      }
+    },
+    blockDeviceResult: {
+      error: {
+        type: 'parse-error',
+        msg: 'block device error',
+      }
+    },
+    vpdResult: {
+      error: {
+        type: 'system-utility-error',
+        msg: 'vpd error',
+      }
+    },
+    cpuResult: {
+      error: {
+        type: 'service-unavailable',
+        msg: 'cpu error',
+      }
+    },
+    timezoneResult: {
+      error: {
+        type: 'file-read-error',
+        msg: 'timezone error',
+      }
+    },
+    memoryResult: {
+      error: {
+        type: 'parse-error',
+        msg: 'memory error',
+      }
+    },
+    backlightResult: {
+      error: {
+        type: 'system-utility-error',
+        msg: 'backlight error',
+      }
+    },
+    fanResult: {
+      error: {
+        type: 'service-unavailable',
+        msg: 'fan error',
+      }
+    },
+    statefulPartitionResult: {
+      error: {
+        type: 'file-read-error',
+        msg: 'partition error',
+      }
+    },
+    bluetoothResult: {
+      error: {
+        type: 'parse-error',
+        msg: 'bluetooth error',
+      }
+    }
+  });
+});
