@@ -335,7 +335,6 @@ public class PaymentRequestImpl
         mTopLevelOrigin = componentPaymentRequestImpl.getTopLevelOrigin();
         assert mTopLevelOrigin != null;
         mCertificateChain = componentPaymentRequestImpl.getCertificateChain();
-        assert mCertificateChain != null;
         mIsOffTheRecord = componentPaymentRequestImpl.isOffTheRecord();
         mDelegate = delegate;
         mWebContents = componentPaymentRequestImpl.getWebContents();
