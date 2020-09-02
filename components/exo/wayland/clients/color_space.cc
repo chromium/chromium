@@ -232,6 +232,12 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  if (!params.use_drm) {
+    LOG(ERROR) << "Missing --use-drm parameter which is required for gbm "
+                 "buffer allocation";
+    return 1;
+  }
+
   params.drm_format = DRM_FORMAT_ARGB8888;
   params.bo_usage =
       GBM_BO_USE_SCANOUT | GBM_BO_USE_LINEAR | GBM_BO_USE_TEXTURING;
