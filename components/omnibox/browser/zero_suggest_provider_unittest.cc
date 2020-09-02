@@ -334,6 +334,14 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
       other_input,
       /*remote_no_url_allowed=*/false);
 
+  // Unless we allow remote suggestions for signed-out users.
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list_->InitAndEnableFeature(
+      omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP);
+  ExpectPlatformSpecificDefaultZeroSuggestBehavior(
+      other_input,
+      /*remote_no_url_allowed=*/true);
+
   // Restore authentication state, but now set a non-Google default search
   // engine. Verify that we still disallow remote suggestions.
   EXPECT_CALL(*client_, IsAuthenticated())
