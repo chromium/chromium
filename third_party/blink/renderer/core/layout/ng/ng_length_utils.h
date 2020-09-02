@@ -377,6 +377,7 @@ CORE_EXPORT void ComputeReplacedSize(
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.
+// If computed column-count is auto, pass 0 as |computed_count|.
 CORE_EXPORT int ResolveUsedColumnCount(int computed_count,
                                        LayoutUnit computed_size,
                                        LayoutUnit used_gap,
