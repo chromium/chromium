@@ -44,9 +44,9 @@ constexpr char kNightLight[] = "NIGHT_LIGHT_SWITCH";
 constexpr char kSwitchAccess[] = "SWITCH_ACCESS";
 
 // Returns the settings that are always supported.
-// Does not contain |SWITCH_ACCESS| as that is conditionally supported.
 const std::vector<std::string> kAlwaysSupportedSettings = {
-    kWiFi, kBluetooth, kScreenBrightness, kDoNotDisturb, kNightLight,
+    kWiFi,         kBluetooth,  kScreenBrightness,
+    kDoNotDisturb, kNightLight, kSwitchAccess,
 };
 
 class ScopedDeviceActionsMock : public ScopedDeviceActions {
@@ -152,20 +152,6 @@ TEST_F(AssistantDeviceSettingsDelegateTest,
 }
 
 TEST_F(AssistantDeviceSettingsDelegateTest,
-       IsSettingSupportedShouldConditionallySupportSwitchAccess) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->RemoveSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccess);
-  CreateAssistantDeviceSettingsDelegate();
-  EXPECT_FALSE(delegate()->IsSettingSupported(kSwitchAccess));
-
-  command_line->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccess);
-  CreateAssistantDeviceSettingsDelegate();
-  EXPECT_TRUE(delegate()->IsSettingSupported(kSwitchAccess));
-}
-
-TEST_F(AssistantDeviceSettingsDelegateTest,
        GetDeviceSettingsShouldReturnFalseForUnknownSetting) {
   EXPECT_EQ(GetDeviceSettings("UNKNOWN_SETTING"),
             DeviceSetting("UNKNOWN_SETTING", false));
@@ -243,9 +229,6 @@ TEST_F(AssistantDeviceSettingsDelegateTest, ShouldTurnQuietModeOnAndOff) {
 }
 
 TEST_F(AssistantDeviceSettingsDelegateTest, ShouldTurnSwitchAccessOnAndOff) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccess);
   StrictMock<ScopedDeviceActionsMock> device_actions;
   CreateAssistantDeviceSettingsDelegate();
 
