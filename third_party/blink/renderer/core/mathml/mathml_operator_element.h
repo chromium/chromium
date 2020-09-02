@@ -36,10 +36,10 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
   void AddMathRSpaceIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
   void AddMathMinSizeIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
   void AddMathMaxSizeIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
+  const OperatorContent& GetOperatorContent();
 
  private:
   base::Optional<OperatorContent> operator_content_;
-  const OperatorContent& GetOperatorContent();
   // Operator properties calculated from dictionary and attributes.
   // It contains dirty flags to allow efficient dictionary updating.
   struct Properties {

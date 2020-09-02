@@ -1250,7 +1250,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-movablelimit
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-paint-lspace-rspace.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/operator-dictionary-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/operator-dictionary-002.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/underover-parameters-2.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/underover-parameters-3.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/underover-parameters-4.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
