@@ -187,6 +187,8 @@ class ReparsePoint {
                      NULL));
     created_ = dir_.IsValid() && SetReparsePoint(dir_.Get(), target);
   }
+  ReparsePoint(const ReparsePoint&) = delete;
+  ReparsePoint& operator=(const ReparsePoint&) = delete;
 
   ~ReparsePoint() {
     if (created_)
@@ -198,7 +200,6 @@ class ReparsePoint {
  private:
   win::ScopedHandle dir_;
   bool created_;
-  DISALLOW_COPY_AND_ASSIGN(ReparsePoint);
 };
 
 #endif

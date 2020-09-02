@@ -9,8 +9,11 @@
 #include <stdint.h>
 
 #include <cstdlib>
+#include <limits>
+#include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -2013,14 +2016,13 @@ TEST_F(TraceEventTestFixture, MAYBE_TraceWithDisabledByDefaultCategoryFilters) {
 class MyData : public ConvertableToTraceFormat {
  public:
   MyData() = default;
+  MyData(const MyData&) = delete;
+  MyData& operator=(const MyData&) = delete;
   ~MyData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
     out->append("{\"foo\":1}");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MyData);
 };
 
 TEST_F(TraceEventTestFixture, ConvertableTypes) {

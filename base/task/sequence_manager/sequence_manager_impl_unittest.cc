@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -224,7 +226,7 @@ class FixtureWithMockTaskRunner final : public Fixture {
 
 class FixtureWithMockMessagePump : public Fixture {
  public:
-  explicit FixtureWithMockMessagePump() : call_counting_clock_(&mock_clock_) {
+  FixtureWithMockMessagePump() : call_counting_clock_(&mock_clock_) {
     // A null clock triggers some assertions.
     mock_clock_.Advance(TimeDelta::FromMilliseconds(1));
 
@@ -414,6 +416,8 @@ void NopTask() {}
 class TestCountUsesTimeSource : public TickClock {
  public:
   TestCountUsesTimeSource() = default;
+  TestCountUsesTimeSource(const TestCountUsesTimeSource&) = delete;
+  TestCountUsesTimeSource& operator=(const TestCountUsesTimeSource&) = delete;
   ~TestCountUsesTimeSource() override = default;
 
   TimeTicks NowTicks() const override {
@@ -426,8 +430,6 @@ class TestCountUsesTimeSource : public TickClock {
 
  private:
   mutable int now_calls_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCountUsesTimeSource);
 };
 
 TEST_P(SequenceManagerTest, GetCorrectTaskRunnerForCurrentTask) {
@@ -4332,7 +4334,9 @@ namespace {
 
 class MockTimeDomain : public TimeDomain {
  public:
-  MockTimeDomain() {}
+  MockTimeDomain() = default;
+  MockTimeDomain(const MockTimeDomain&) = delete;
+  MockTimeDomain& operator=(const MockTimeDomain&) = delete;
   ~MockTimeDomain() override = default;
 
   LazyNow CreateLazyNow() const override { return LazyNow(now_); }
@@ -4350,8 +4354,6 @@ class MockTimeDomain : public TimeDomain {
 
  private:
   TimeTicks now_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTimeDomain);
 };
 
 }  // namespace
