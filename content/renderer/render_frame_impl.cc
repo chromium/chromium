@@ -6378,10 +6378,11 @@ void RenderFrameImpl::SendUpdateState() {
 bool RenderFrameImpl::ShouldDisplayErrorPageForFailedLoad(
     int error_code,
     const GURL& unreachable_url) {
-  // Don't display an error page if this is simply a cancelled load.  Aside
-  // from being dumb, Blink doesn't expect it and it will cause a crash.
+  // This is already checked in `NavigationRequest::OnRequestFailedInternal` and
+  // `NavigationRequest::OnFailureChecksCompleted` on the browser side, so the
+  // renderer should never see this.
   if (error_code == net::ERR_ABORTED)
-    return false;
+    CHECK(false);
 
   // Don't display "client blocked" error page if browser has asked us not to.
   if (net::IsRequestBlockedError(error_code) &&
