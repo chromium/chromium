@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageBannerProperties.java",
     "java/src/org/chromium/components/messages/MessageBannerView.java",
     "java/src/org/chromium/components/messages/MessageBannerViewBinder.java",
+    "java/src/org/chromium/components/messages/MessageStateHandler.java",
   ]
   deps = [
     ":java_resources",
