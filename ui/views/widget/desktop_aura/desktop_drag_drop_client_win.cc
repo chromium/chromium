@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/threading/hang_watcher.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drag_source_win.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -67,6 +68,10 @@ int DesktopDragDropClientWin::StartDragAndDrop(
       true);
 
   DWORD effect;
+
+  // Disable hang watching until the end of the function since the user can take
+  // unbounded time to complete the drag. (http://crbug.com/806174)
+  base::HangWatchScopeDisabled disabler;
 
   HRESULT result = ::DoDragDrop(
       ui::OSExchangeDataProviderWin::GetIDataObject(*data.get()),
