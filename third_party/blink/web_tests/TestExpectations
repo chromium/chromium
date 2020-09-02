@@ -2533,7 +2533,6 @@ crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ T
 crbug.com/1078474 external/wpt/css/css-pseudo/cascade-highlight-001.html [ Failure ]
 crbug.com/1078474 external/wpt/css/css-pseudo/cascade-highlight-002.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-004.html [ Failure ]
-crbug.com/1086855 external/wpt/css/css-pseudo/file-chooser-button-001.tentative.html [ Failure ]
 crbug.com/1113004 external/wpt/css/css-pseudo/active-selection-043.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-051.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-052.html [ Failure ]
@@ -2552,6 +2551,8 @@ crbug.com/1110512 external/wpt/css/css-pseudo/selection-contenteditable-011.html
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-pseudo/file-selector-button-001.tentative.html [ Failure ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-root-scroller.https.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Failure ]

@@ -306,8 +306,8 @@
      ]
     },
     "css-pseudo": {
-     "file-chooser-button-display-toggle-crash.tentative.html": [
-      "4e43609bee8cfd6cc9881be865abd37af2626a74",
+     "file-selector-button-display-toggle-crash.tentative.html": [
+      "bc9f24ae0194fc3b59a1f0da7e8c2e13cf9eb9c5",
       [
        null,
        {}
@@ -6401,8 +6401,8 @@
       {}
      ]
     ],
-    "idlharness-manual.html": [
-     "72bdf67dfa678b2b2c7a7f203df656c069e165fe",
+    "idlharness-manual.window.js": [
+     "9f2731bf1d02576ea5a597fe94b0e2277f3f8fbf",
      [
       null,
       {}
@@ -81415,13 +81415,13 @@
        {}
       ]
      ],
-     "file-chooser-button-001.tentative.html": [
-      "99c67dee5d96f600479492d862f304eea426c6b0",
+     "file-selector-button-001.tentative.html": [
+      "48b2852de820f61ce5344584ab1ff3aa2313adcf",
       [
        null,
        [
         [
-         "/css/css-pseudo/file-chooser-button-001-notref.html",
+         "/css/css-pseudo/file-selector-button-001-notref.html",
          "!="
         ]
        ],
@@ -179584,10 +179584,6 @@
        "b2c708ec3d43a2fafbc370ec5f7fec8bdc238527",
        []
       ],
-      "grid-intrinsic-track-sizes-001-expected.txt": [
-       "aaf69c7aa65bdae0568f5109e771db5714a13c19",
-       []
-      ],
       "references": {
        "auto-margins-ignored-during-track-sizing-001-ref.html": [
         "b06d89115178107b12493023f211f156f3e4b17d",
@@ -183485,7 +183481,7 @@
       "7cca053e681993aa71f14738c76d4f66d8e235ad",
       []
      ],
-     "file-chooser-button-001-notref.html": [
+     "file-selector-button-001-notref.html": [
       "e137ba05103d71203dc09083fa71fbbed1b21617",
       []
      ],
@@ -202304,6 +202300,10 @@
     ],
     "idlharness-expected.txt": [
      "7bef5642a0e992022ad4205154b1419f1df1ef85",
+     []
+    ],
+    "idlharness.window-expected.txt": [
+     "1b92b5cb4378710c4a9ba934acd561072ae527b6",
      []
     ],
     "support": {
@@ -293424,7 +293424,7 @@
       ]
      ],
      "scroll-behavior-main-frame-root.html": [
-      "8aef86977476fead47e93a0cc737d81238f933dd",
+      "7b4a8e38632a00fa94c4de36e626c49b5b0fbd8c",
       [
        null,
        {
@@ -293478,7 +293478,7 @@
       ]
      ],
      "scroll-behavior-subframe-window.html": [
-      "0a8ed39d1b97d493e9f8ffe0710e711afa491f43",
+      "ef587fea49cb1074b9d47f0b6d3db5ee87f2e702",
       [
        null,
        {
@@ -312135,11 +312135,22 @@
     ]
    },
    "entries-api": {
-    "idlharness.html": [
-     "091549eb2dcb57e1484b88c56b48021be545ced4",
+    "idlharness.window.js": [
+     "32527be514ad92a1c9d606a18cfae0061c764710",
      [
-      null,
-      {}
+      "entries-api/idlharness.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
      ]
     ]
    },
