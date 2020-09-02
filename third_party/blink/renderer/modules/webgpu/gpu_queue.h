@@ -11,7 +11,6 @@
 
 namespace blink {
 
-class CanvasColorParams;
 class DawnTextureFromImageBitmap;
 class ExceptionState;
 class GPUBuffer;
@@ -77,7 +76,6 @@ class GPUQueue : public DawnObject<WGPUQueue> {
 
  private:
   bool CopyContentFromCPU(StaticBitmapImage* image,
-                          const CanvasColorParams& color_params,
                           const WGPUOrigin3D& origin,
                           const WGPUExtent3D& copy_size,
                           const WGPUTextureCopyView& destination,

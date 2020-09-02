@@ -37,6 +37,11 @@ gfx::ColorSpace CanvasColorSpaceToGfxColorSpace(CanvasColorSpace color_space) {
 
 }  // namespace
 
+sk_sp<SkColorSpace> CanvasColorSpaceToSkColorSpace(
+    CanvasColorSpace color_space) {
+  return CanvasColorSpaceToGfxColorSpace(color_space).ToSkColorSpace();
+}
+
 CanvasColorParams::CanvasColorParams() = default;
 
 CanvasColorParams::CanvasColorParams(CanvasColorSpace color_space,
@@ -104,7 +109,7 @@ sk_sp<SkColorSpace> CanvasColorParams::GetSkColorSpace() const {
   static_assert(kN32_SkColorType == kRGBA_8888_SkColorType ||
                     kN32_SkColorType == kBGRA_8888_SkColorType,
                 "Unexpected kN32_SkColorType value.");
-  return CanvasColorSpaceToGfxColorSpace(color_space_).ToSkColorSpace();
+  return CanvasColorSpaceToSkColorSpace(color_space_);
 }
 
 gfx::BufferFormat CanvasColorParams::GetBufferFormat() const {

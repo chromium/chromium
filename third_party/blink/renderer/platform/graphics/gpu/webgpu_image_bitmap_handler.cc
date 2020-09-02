@@ -75,7 +75,6 @@ bool CopyBytesFromImageBitmapForWebGPU(
     scoped_refptr<StaticBitmapImage> image,
     base::span<uint8_t> dst,
     const IntRect& rect,
-    const CanvasColorParams& color_params,
     const WGPUTextureFormat destination_format) {
   DCHECK(image);
   DCHECK_GT(dst.size(), static_cast<size_t>(0));
@@ -91,6 +90,7 @@ bool CopyBytesFromImageBitmapForWebGPU(
   if (sk_color_type == kUnknown_SkColorType) {
     return false;
   }
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
 
   // Read pixel request dst info.
   // Keep premulalpha config and color space from imageBitmap and using dest
@@ -98,9 +98,9 @@ bool CopyBytesFromImageBitmapForWebGPU(
   SkImageInfo info = SkImageInfo::Make(
       rect.Width(), rect.Height(), sk_color_type,
       image->IsPremultiplied() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-      color_params.GetSkColorSpaceForSkSurfaces());
+      paint_image.GetSkImageInfo().refColorSpace());
 
-  bool read_pixels_successful = image->PaintImageForCurrentFrame().readPixels(
+  bool read_pixels_successful = paint_image.readPixels(
       info, dst.data(), wgpu_info.wgpu_bytes_per_row, rect.X(), rect.Y());
 
   if (!read_pixels_successful) {

@@ -20,7 +20,6 @@ struct WebGPUImageUploadSizeInfo {
   uint32_t wgpu_bytes_per_row;
 };
 
-class CanvasColorParams;
 class IntRect;
 class StaticBitmapImage;
 
@@ -32,7 +31,6 @@ bool PLATFORM_EXPORT
 CopyBytesFromImageBitmapForWebGPU(scoped_refptr<StaticBitmapImage> image,
                                   base::span<uint8_t> dst,
                                   const IntRect& rect,
-                                  const CanvasColorParams& color_params,
                                   const WGPUTextureFormat destination_format);
 
 uint64_t PLATFORM_EXPORT

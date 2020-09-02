@@ -184,19 +184,6 @@ base::span<const uint8_t> GetSrcPixelContent(SkColorType format) {
   }
 }
 
-CanvasPixelFormat SkColorTypeToCanvasPixelFormat(SkColorType format) {
-  switch (format) {
-    case SkColorType::kRGBA_8888_SkColorType:
-      return CanvasPixelFormat::kRGBA8;
-    case SkColorType::kBGRA_8888_SkColorType:
-      return CanvasPixelFormat::kBGRA8;
-    case SkColorType::kRGBA_F16_SkColorType:
-      return CanvasPixelFormat::kF16;
-    default:
-      NOTREACHED();
-      return CanvasPixelFormat::kRGBA8;
-  }
-}
 }  // anonymous namespace
 
 class WebGPUImageBitmapHandlerTest : public testing::Test {
@@ -206,17 +193,16 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
   void VerifyCopyBytesForCanvasColorParams(uint64_t width,
                                            uint64_t height,
                                            SkImageInfo info,
-                                           CanvasColorParams param,
                                            IntRect copy_rect,
                                            WGPUTextureFormat color_type) {
-    const uint64_t content_length = width * height * param.BytesPerPixel();
+    const uint64_t content_length = width * height * info.bytesPerPixel();
     std::vector<uint8_t> contents(content_length, 0);
     // Initialize contents.
     for (size_t i = 0; i < content_length; ++i) {
       contents[i] = i % std::numeric_limits<uint8_t>::max();
     }
 
-    VerifyCopyBytes(width, height, info, param, copy_rect, color_type,
+    VerifyCopyBytes(width, height, info, copy_rect, color_type,
                     base::span<uint8_t>(contents.data(), content_length),
                     base::span<uint8_t>(contents.data(), content_length));
   }
@@ -224,13 +210,12 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
   void VerifyCopyBytes(uint64_t width,
                        uint64_t height,
                        SkImageInfo info,
-                       CanvasColorParams param,
                        IntRect copy_rect,
                        WGPUTextureFormat color_type,
                        base::span<const uint8_t> contents,
                        base::span<const uint8_t> expected_value) {
     uint64_t bytes_per_pixel = DawnTextureFormatBytesPerPixel(color_type);
-    ASSERT_EQ(contents.size(), width * height * param.BytesPerPixel());
+    ASSERT_EQ(contents.size(), width * height * info.bytesPerPixel());
     sk_sp<SkData> image_pixels =
         SkData::MakeWithCopy(contents.data(), contents.size());
     scoped_refptr<StaticBitmapImage> image =
@@ -243,7 +228,7 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
     std::vector<uint8_t> results(result_length, 0);
     bool success = CopyBytesFromImageBitmapForWebGPU(
         image, base::span<uint8_t>(results.data(), result_length), copy_rect,
-        param, color_type);
+        color_type);
     ASSERT_EQ(success, true);
 
     // Compare content and results
@@ -293,16 +278,12 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyColorConvert) {
   for (SkColorType src_color_type : srcSkColorFormat) {
     for (WGPUTextureFormat dst_color_type : kDstWebGPUTextureFormat) {
       for (CanvasColorSpace color_space : kColorSpaces) {
-        CanvasColorParams color_param(
-            color_space, SkColorTypeToCanvasPixelFormat(src_color_type),
-            OpacityMode::kNonOpaque);
         SkImageInfo info =
             SkImageInfo::Make(kImageWidth, kImageHeight, src_color_type,
                               SkAlphaType::kUnpremul_SkAlphaType,
-                              color_param.GetSkColorSpaceForSkSurfaces());
-        VerifyCopyBytes(kImageWidth, kImageHeight, info, color_param,
-                        image_data_rect, dst_color_type,
-                        GetSrcPixelContent(src_color_type),
+                              CanvasColorSpaceToSkColorSpace(color_space));
+        VerifyCopyBytes(kImageWidth, kImageHeight, info, image_data_rect,
+                        dst_color_type, GetSrcPixelContent(src_color_type),
                         GetDstContent(dst_color_type));
       }
     }
@@ -313,8 +294,6 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyColorConvert) {
 TEST_F(WebGPUImageBitmapHandlerTest, VerifyGetWGPUResourceInfo) {
   uint64_t kImageWidth = 63;
   uint64_t kImageHeight = 1;
-  CanvasColorParams param(CanvasColorSpace::kSRGB, CanvasPixelFormat::kRGBA8,
-                          OpacityMode::kNonOpaque);
 
   // Prebaked expected values.
   uint32_t expected_bytes_per_row = 256;
@@ -336,11 +315,8 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyCopyBytesFromImageBitmapForWebGPU) {
       SkAlphaType::kUnpremul_SkAlphaType, SkColorSpace::MakeSRGB());
 
   IntRect image_data_rect(0, 0, kImageWidth, kImageHeight);
-  CanvasColorParams color_params(CanvasColorSpace::kSRGB,
-                                 CanvasPixelFormat::kRGBA8,
-                                 OpacityMode::kNonOpaque);
   VerifyCopyBytesForCanvasColorParams(kImageWidth, kImageHeight, info,
-                                      color_params, image_data_rect,
+                                      image_data_rect,
                                       WGPUTextureFormat_RGBA8Unorm);
 }
 
@@ -353,11 +329,8 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyCopyBytesFromSubImageBitmap) {
       SkAlphaType::kUnpremul_SkAlphaType, SkColorSpace::MakeSRGB());
 
   IntRect image_data_rect(2, 2, 60, 2);
-  CanvasColorParams color_params(CanvasColorSpace::kSRGB,
-                                 CanvasPixelFormat::kRGBA8,
-                                 OpacityMode::kNonOpaque);
   VerifyCopyBytesForCanvasColorParams(kImageWidth, kImageHeight, info,
-                                      color_params, image_data_rect,
+                                      image_data_rect,
                                       WGPUTextureFormat_RGBA8Unorm);
 }
 
@@ -370,11 +343,8 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyCopyBytesWithPremultiplyAlpha) {
       SkAlphaType::kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
 
   IntRect image_data_rect(0, 0, 2, 1);
-  CanvasColorParams color_params(
-      CanvasColorSpace::kSRGB, CanvasPixelFormat::kRGBA8, OpacityMode::kOpaque);
-
   VerifyCopyBytesForCanvasColorParams(kImageWidth, kImageHeight, info,
-                                      color_params, image_data_rect,
+                                      image_data_rect,
                                       WGPUTextureFormat_RGBA8Unorm);
 }
 

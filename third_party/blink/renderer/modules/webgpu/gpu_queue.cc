@@ -100,15 +100,16 @@ bool IsValidCopyIB2TDestinationFormat(WGPUTextureFormat dawn_texture_format) {
 }
 
 bool CanUploadThroughGPU(StaticBitmapImage* image,
-                         const CanvasColorParams& color_param,
                          GPUTexture* dest_texture) {
   // Cannot handle top left origin image
   if (image->CurrentFrameOrientation().Orientation() !=
       ImageOrientationEnum::kOriginBottomLeft) {
     return false;
   }
+
   // Cannot handle source and dest texture have uncompatible format
-  if (!AreCompatibleFormatForImageBitmapGPUCopy(color_param.GetSkColorType(),
+  SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
+  if (!AreCompatibleFormatForImageBitmapGPUCopy(image_info.colorType(),
                                                 dest_texture->Format())) {
     return false;
   }
@@ -371,14 +372,10 @@ void GPUQueue::copyImageBitmapToTexture(
     return;
   }
 
-  const CanvasColorParams& color_params =
-      source->imageBitmap()->GetCanvasColorParams();
-
   // TODO(shaobo.yan@intel.com): Implement GPU copy path
   // Try GPU path first.
   if (image->IsTextureBacked()) {  // Try GPU uploading path.
-    if (CanUploadThroughGPU(image.get(), color_params,
-                            destination->texture())) {
+    if (CanUploadThroughGPU(image.get(), destination->texture())) {
       if (CopyContentFromGPU(image.get(), origin_in_image_bitmap,
                              dawn_copy_size, dawn_destination)) {
         return;
@@ -388,16 +385,14 @@ void GPUQueue::copyImageBitmapToTexture(
     image = image->MakeUnaccelerated();
   }
   // CPU path is the fallback path and should always work.
-  if (!CopyContentFromCPU(image.get(), color_params, origin_in_image_bitmap,
-                          dawn_copy_size, dawn_destination,
-                          destination->texture()->Format())) {
+  if (!CopyContentFromCPU(image.get(), origin_in_image_bitmap, dawn_copy_size,
+                          dawn_destination, destination->texture()->Format())) {
     exception_state.ThrowTypeError("Failed to copy content from imageBitmap.");
     return;
   }
 }
 
 bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
-                                  const CanvasColorParams& color_params,
                                   const WGPUOrigin3D& origin,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUTextureCopyView& destination,
@@ -426,7 +421,7 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
 
   if (!CopyBytesFromImageBitmapForWebGPU(
           image, base::span<uint8_t>(static_cast<uint8_t*>(data), size),
-          image_data_rect, color_params, dest_texture_format)) {
+          image_data_rect, dest_texture_format)) {
     // Release the buffer.
     GetProcs().bufferRelease(buffer);
     return false;
