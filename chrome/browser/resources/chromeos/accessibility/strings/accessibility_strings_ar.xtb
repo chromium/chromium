@@ -131,7 +131,8 @@
 <translation id="1923956950274750765">أرجواني خفيف متوسط</translation>
 <translation id="1928932365747995741">ليس هناك حقل نص سابق قابل للتعديل.</translation>
 <translation id="1964135212174907577">الكائن التالي</translation>
-<translation id="1966649499058910679">تحديد كل كلمة أثناء نطقها</translation>
+<translation id="1966649499058910679">تمييز كل كلمة أثناء نطقها
+</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">‏عرض طلبات لغة برايل في قوائم ChromeVox</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{قوس متوسط أيسر واحد}zero{# left brackets}two{قوسان متوسطان أيسران (#)}few{# أقواس متوسطة يسرى}many{# قوسًا متوسطًا أيسرًا}other{# من الأقواس اليسرى}}</translation>

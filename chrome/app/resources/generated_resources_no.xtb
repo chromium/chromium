@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">For å be om tilgang, kontakt administratoren for denne enheten.</translation>
 <translation id="1149401351239820326">Utløpsmåned</translation>
 <translation id="1149725087019908252">Skanner <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Dette er den siste automatiske programvare- og sikkerhetsoppdateringen for denne <ph name="DEVICE_TYPE" />-enheten. For å få fremtidige oppdateringer, oppgrader til en nyere modell. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Solbriller</translation>
 <translation id="1151917987301063366">Tillat alltid <ph name="HOST" /> å bruke sensorene</translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Mekanisk feil. Sjekk skriveren</translation>
 <translation id="1363585519747660921">USB-skriveren må konfigureres</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Nettleseren administreres<ph name="END_LINK" /> av <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Kjør Linux-verktøy, redigeringsverktøy og IDE-er på <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Finn ut mer&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Velg en fil</translation>
 <translation id="1369149969991017342">Brytertilgang (kontrollér datamaskinen med bare én eller to brytere)</translation>
 <translation id="1372841398847029212">Synkroniser til kontoen din</translation>
@@ -757,6 +757,7 @@
 <translation id="1877377290348678128">Etikett (valgfritt)</translation>
 <translation id="1877520246462554164">Kunne ikke hente autentiseringstokenet. Logg av og på igjen for å prøve på nytt.</translation>
 <translation id="1877860345998737529">Tilordning av bryterhandlinger</translation>
+<translation id="1878155070920054810">Det ser ut til at Chromebooken din kommer til å gå tom for strøm før oppdateringen er ferdig. Sørg for at den lades ordentlig, for å unngå avbrudd.</translation>
 <translation id="1879000426787380528">Logg på som</translation>
 <translation id="1880905663253319515">Vil du slette sertifikatet «<ph name="CERTIFICATE_NAME" />»?</translation>
 <translation id="1881445033931614352">Tastaturoppsett</translation>
@@ -1071,6 +1072,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2270627217422354837">Utveksle data med en hvilken som helst enhet på domenene <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Martiniglass</translation>
 <translation id="2273119997271134996">Problem med videoporten på dokken</translation>
+<translation id="2274840746523584236">Lad Chromebooken</translation>
 <translation id="2276503375879033601">Legg til flere programmer</translation>
 <translation id="2277255602909579701">Alle informasjonskapsler og nettstedsdata</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 element er kopiert}other{# elementer er kopiert}}</translation>
@@ -1417,7 +1419,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2682498795777673382">Oppdatering fra forelderen din</translation>
 <translation id="2683638487103917598">Mappen er sortert</translation>
 <translation id="2684004000387153598">For å fortsette, klikk på OK. Klikk deretter på Legg til person for å opprette en ny profil for e-postadressen din.</translation>
-<translation id="2686222346846590368">Dette er den siste automatiske programvare- og sikkerhetsoppdateringen for denne <ph name="DEVICE_TYPE" />-enheten. For å få fremtidige oppdateringer, oppgrader til en nyere modell. &lt;a target="_blank" href="<ph name="URL" />"&gt;Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="2687407218262674387">Googles vilkår for bruk</translation>
 <translation id="2688196195245426394">Feil under registreringen av enheten hos tjeneren: <ph name="CLIENT_ERROR" />.</translation>
@@ -1683,6 +1684,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3004391367407090544">Kom tilbake senere</translation>
 <translation id="3006881078666935414">Ingen bruksdata</translation>
 <translation id="3007771295016901659">Dupliser fanen</translation>
+<translation id="3008232374986381779">Kjør Linux-verktøy, -redigeringsverktøy og -IDE-er på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
 <translation id="3009300415590184725">Er du sikker på at du vil avbryte konfigurasjonsprosessen for mobildatatjenesten?</translation>
 <translation id="3009779501245596802">Indekserte databaser</translation>
@@ -1926,6 +1928,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Disse dataene har sensitivt eller farlig innhold. Fjern dette innholdet, og prøv på nytt.}=1{Denne filen har sensitivt eller farlig innhold. Fjern dette innholdet, og prøv på nytt.}other{Disse filene har sensitivt eller farlig innhold. Fjern dette innholdet, og prøv på nytt.}}</translation>
 <translation id="3323521181261657960">Bonus! Du har fått mer skjermtid</translation>
 <translation id="3325910708063135066">Kameraet og mikrofonen er slått av i Mac-systemvalgene</translation>
+<translation id="3327050066667856415">Chromebook er designet for sikkerhet. Enheten din er automatisk beskyttet mot skadelig programvare – du trenger ingen tilleggsprogramvare.</translation>
 <translation id="3328489342742826322">Når du gjenoppretter fra en sikkerhetskopi, slettes eksisterende Linux-programmer og -data i mappen for Linux-filer.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Appinformasjon</translation>
@@ -2115,6 +2118,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3556433843310711081">Administratoren din kan oppheve blokkeringen for deg</translation>
 <translation id="3557101512409028104">Angi begrensninger for nettsteder og skjermtid med Family Link</translation>
 <translation id="3559262020195162408">Kunne ikke installere regelen på enheten.</translation>
+<translation id="3559533181353831840">Omtrent <ph name="TIME_LEFT" /> gjenstår</translation>
 <translation id="3560034655160545939">&amp;Stavekontroll</translation>
 <translation id="3562423906127931518">Denne prosessen kan ta noen minutter. Konfigurerer Linux-beholderen.</translation>
 <translation id="3563432852173030730">Kiosk-appen kunne ikke lastes ned.</translation>
@@ -2628,6 +2632,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="413121957363593859">Komponenter</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="413193092008917129">Rutiner for nettverksdiagnostikk</translation>
+<translation id="4132183752438206707">Finn apper i Google Play-butikken</translation>
 <translation id="4133076602192971179">Åpne appen for å endre passordet</translation>
 <translation id="4136203100490971508">Nattlys blir slått av automatisk ved soloppgang</translation>
 <translation id="41365691917097717">Hvis du fortsetter, blir ADB-feilsøking slått på for utvikling og testing av Android-apper. Merk at dette gjør det mulig å installere Android-apper som ikke er verifisert av Google, og enheten må tilbakestilles til fabrikkinnstillingene hvis du vil slå av ADB igjen.</translation>
@@ -2876,6 +2881,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4479877282574735775">Konfigurerer den virtuelle maskinen. Dette kan ta noen minutter.</translation>
 <translation id="4480590691557335796">Chrome kan finne skadelig programvare på datamaskinen din og fjerne den</translation>
 <translation id="4481530544597605423">Frakoblede enheter</translation>
+<translation id="4487489714832036847">Chromebook bruker apper i stedet for tradisjonell programvare. Skaff deg apper for produktivitet, underholdning med mer.</translation>
 <translation id="4488502501195719518">Vil du slette alle dataene?</translation>
 <translation id="4493468155686877504">Anbefalt (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ikke vis på denne siden</translation>
@@ -3719,6 +3725,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5548606607480005320">Sikkerhetssjekk</translation>
 <translation id="5551573675707792127">Tastatur og innskriving av tekst</translation>
 <translation id="5553089923092577885">Retningslinjetilordninger for sertifikat</translation>
+<translation id="5554403733534868102">Etter dette er det slutt på å vente på oppdateringer</translation>
 <translation id="5554489410841842733">Dette ikonet vises når utvidelsen kan brukes på gjeldende side.</translation>
 <translation id="5554720593229208774">Sertifiseringsinstans for e-post</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
@@ -4132,6 +4139,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6061882183774845124">Send link til enhetene dine</translation>
 <translation id="6064217302520318294">Skjermlås</translation>
 <translation id="6065289257230303064">Katalogattributter for sertifikatemne</translation>
+<translation id="6069464830445383022">Google-kontoen din er Chromebook-påloggingen din</translation>
 <translation id="6069671174561668781">Angi bakgrunnsbilde</translation>
 <translation id="6071181508177083058">bekreft passordet</translation>
 <translation id="6071576563962215370">Systemet kunne ikke opprette enhetens attributtlås under installasjonen.</translation>
@@ -4447,6 +4455,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 fane til}other{<ph name="PAGE_TITLE" /> og # faner til}}</translation>
 <translation id="6451689256222386810">Hvis du har glemt passordfrasen din eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Avslå</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> fullført</translation>
 <translation id="6452961788130242735">Nettverksproblem eller ugyldig område</translation>
 <translation id="6455264371803474013">På bestemte nettsteder</translation>
 <translation id="6455894534188563617">&amp;Ny mappe</translation>
@@ -4619,6 +4628,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
 <translation id="6681668084120808868">Ta et bilde</translation>
+<translation id="6684827949542560880">Laster ned den nyeste oppdateringen</translation>
 <translation id="668599234725812620">Åpne Google Play</translation>
 <translation id="6686490380836145850">Lukk fanene til høyre</translation>
 <translation id="6686817083349815241">Lagre passordet ditt</translation>
@@ -4728,6 +4738,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6812841287760418429">Behold endringene</translation>
 <translation id="6817174620439930047">Spør meg når nettsteder vil bruke systemeksklusive meldinger for å få tilgang til MIDI-enheter (anbefales)</translation>
 <translation id="6818198425579322765">Sidespråket du vil oversette</translation>
+<translation id="6818802132960437751">Innebygd virusbeskyttelse</translation>
 <translation id="682123305478866682">Cast skrivebordet</translation>
 <translation id="6823174134746916417">Berøringsklikk på styreflaten</translation>
 <translation id="6823506025919456619">Du må logge på Chrome for å se enhetene dine</translation>
@@ -5373,6 +5384,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7631205654593498032">Når du kobler sammen enhetene, godtar du at <ph name="DEVICE_TYPE" /> kan</translation>
 <translation id="7631887513477658702">Åpne &amp;alltid filer av denne typen</translation>
 <translation id="7632948528260659758">Kunne ikke oppdatere de følgende kioskappene:</translation>
+<translation id="7633724038415831385">Dette er den eneste gangen du må vente på en oppdatering. På Chromebook skjer programvareoppdateringer i bakgrunnen.</translation>
 <translation id="7634566076839829401">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="763632859238619983">Ikke tillat at nettsteder installerer betalingsbehandlere</translation>
 <translation id="7636919061354591437">Installer på denne enheten</translation>
@@ -6142,6 +6154,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8546930481464505581">Tilpass Touch Bar</translation>
 <translation id="8547013269961688403">Aktivér lupen for hele skjermen</translation>
 <translation id="85486688517848470">Hold Søk-tasten inne for å endre funksjonene for tastene på øverste rad</translation>
+<translation id="8549316893834449916">Du bruker Google-kontoen din til å logge på Chromebook – den samme kontoen som du bruker for Gmail, Disk, YouTube med mer.</translation>
 <translation id="8551388862522347954">Lisenser</translation>
 <translation id="8551588720239073785">Innstillinger for dato og klokkeslett</translation>
 <translation id="8553342806078037065">Administrer andre</translation>

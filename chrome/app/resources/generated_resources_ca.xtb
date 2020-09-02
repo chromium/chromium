@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Per demanar accés, contacta amb l'administrador d'aquest dispositiu.</translation>
 <translation id="1149401351239820326">Mes de caducitat</translation>
 <translation id="1149725087019908252">S'està analitzant <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Aquesta actualització de programari i seguretat és l'última que rebràs per a aquest <ph name="DEVICE_TYPE" />. Per obtenir actualitzacions en el futur, canvia el dispositiu per un model més nou. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Ulleres de sol</translation>
 <translation id="1151917987301063366">Permet sempre que <ph name="HOST" /> accedeixi als sensors</translation>
 <translation id="1153356358378277386">Dispositius vinculats</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Problema mecànic. Comprova la impressora.</translation>
 <translation id="1363585519747660921">La impressora USB s'ha de configurar</translation>
 <translation id="1365180424462182382">El <ph name="BEGIN_LINK" />navegador està gestionat<ph name="END_LINK" /> per <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Executa les eines, els editors i els IDE de Linux a <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Més informació&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Trieu un fitxer</translation>
 <translation id="1369149969991017342">Accés amb interruptors (controla l'ordinador amb només un o dos interruptors)</translation>
 <translation id="1372841398847029212">Sincronitza amb el meu compte</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">No s'ha pogut obtenir el testimoni d'autenticació. Tanca la sessió i torna-la a iniciar per tornar-ho a provar.</translation>
 <translation id="1877860345998737529">Assignació d'accions a interruptors</translation>
+<translation id="1878155070920054810">Sembla que la bateria del Chromebook s'esgotarà abans de completar-se l'actualització. Comprova que s'estigui carregant correctament per evitar interrupcions.</translation>
 <translation id="1879000426787380528">Inicia la sessió com a</translation>
 <translation id="1880905663253319515">Voleu suprimir el certificat "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Disposició del teclat</translation>
@@ -1074,6 +1075,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2270627217422354837">Intercanviar dades amb un altre dispositiu dels dominis <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Copa de Martini</translation>
 <translation id="2273119997271134996">Error del port de vídeo de la base</translation>
+<translation id="2274840746523584236">Carrega el Chromebook</translation>
 <translation id="2276503375879033601">Afegeix més aplicacions</translation>
 <translation id="2277255602909579701">Totes les galetes i les dades del lloc web</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 element copiat}other{# elements copiats}}</translation>
@@ -1419,7 +1421,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2682498795777673382">El pare o la mare han introduït un canvi</translation>
 <translation id="2683638487103917598">Carpeta ordenada</translation>
 <translation id="2684004000387153598">Per continuar, fes clic a D'acord i, a continuació, a Afegeix una persona per crear un perfil per a la teva adreça electrònica.</translation>
-<translation id="2686222346846590368">Aquesta actualització de programari i seguretat és l'última que rebràs per a aquest <ph name="DEVICE_TYPE" />. Per obtenir actualitzacions en el futur, canvia el dispositiu per un model més nou. &lt;a target="_blank" href="<ph name="URL" />"&gt;Més informació<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="2687407218262674387">Condicions del servei de Google</translation>
 <translation id="2688196195245426394">S'ha produït un error en registrar el dispositiu amb el servidor: <ph name="CLIENT_ERROR" />.</translation>
@@ -1685,6 +1686,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3004391367407090544">Torna més tard</translation>
 <translation id="3006881078666935414">No hi ha dades d'ús</translation>
 <translation id="3007771295016901659">Pestanya duplicada</translation>
+<translation id="3008232374986381779">Executa les eines, els editors i els IDE de Linux a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="3009300415590184725">Confirmeu que voleu cancel·lar el procés de configuració del servei de dades mòbils?</translation>
 <translation id="3009779501245596802">Bases de dades indexades</translation>
@@ -1928,6 +1930,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Aquestes dades inclouen contingut sensible o perillós. Suprimeix aquest contingut i torna-ho a provar.}=1{Aquest fitxer inclou contingut sensible o perillós. Suprimeix aquest contingut i torna-ho a provar.}other{Aquests fitxers inclouen contingut sensible o perillós. Suprimeix aquest contingut i torna-ho a provar.}}</translation>
 <translation id="3323521181261657960">Has obtingut més temps de connexió!</translation>
 <translation id="3325910708063135066">La càmera i el micròfon estan desactivats a les preferències del sistema de Mac</translation>
+<translation id="3327050066667856415">Els Chromebook estan dissenyats perquè siguin segurs. El teu dispositiu està protegit del programari maliciós automàticament i no necessita programari addicional.</translation>
 <translation id="3328489342742826322">La restauració des d'una còpia de seguretat suprimirà les aplicacions i les dades de Linux existents a la teva carpeta de fitxers de Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informació de l'aplicació</translation>
@@ -2117,6 +2120,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3556433843310711081">El teu gestor te'l pot desbloquejar</translation>
 <translation id="3557101512409028104">Estableix restriccions de llocs web i límits de temps de connexió amb Family Link</translation>
 <translation id="3559262020195162408">No s'ha pogut instal·lar la política al dispositiu.</translation>
+<translation id="3559533181353831840">Temps restant aproximat: <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">Corrector ortogràfic(&amp;S)</translation>
 <translation id="3562423906127931518">Aquest procés pot tardar uns quants minuts. S'està configurant el contenidor de Linux.</translation>
 <translation id="3563432852173030730">L'aplicació Quiosc no s'ha pogut baixar.</translation>
@@ -2631,6 +2635,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="413121957363593859">Components</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="413193092008917129">Rutines de diagnòstic de la xarxa</translation>
+<translation id="4132183752438206707">Troba aplicacions a Google Play Store</translation>
 <translation id="4133076602192971179">Obre l'aplicació per canviar la contrasenya</translation>
 <translation id="4136203100490971508">La funció Llum nocturna es desactivarà automàticament a l'alba</translation>
 <translation id="41365691917097717">Si continues, s'activarà la depuració d'ADB per crear i provar les aplicacions d'Android. Tingues en compte que aquesta acció permet instal·lar aplicacions d'Android que Google no ha verificat. Per desactivar ADB, hauràs de restablir les dades de fàbrica del dispositiu.</translation>
@@ -2879,6 +2884,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4479877282574735775">S'està configurant la màquina virtual. Aquest procés pot tardar uns quants minuts.</translation>
 <translation id="4480590691557335796">Chrome pot cercar programari nociu a l'ordinador i suprimir-lo</translation>
 <translation id="4481530544597605423">Dispositius desvinculats</translation>
+<translation id="4487489714832036847">Els Chromebook utilitzen aplicacions en lloc de programari tradicional. Obtén aplicacions de productivitat, entreteniment i més.</translation>
 <translation id="4488502501195719518">Vols esborrar totes les dades?</translation>
 <translation id="4493468155686877504">Valor recomanat (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">No la mostris en aquesta pàgina</translation>
@@ -3723,6 +3729,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5548606607480005320">Comprovació de seguretat</translation>
 <translation id="5551573675707792127">Teclat i introducció de text</translation>
 <translation id="5553089923092577885">Assignacions de normes de certificats</translation>
+<translation id="5554403733534868102">Després d'això, les actualitzacions ja no ocuparan el teu temps</translation>
 <translation id="5554489410841842733">Aquesta icona serà visible quan les extensions puguin actuar a la pàgina actual.</translation>
 <translation id="5554720593229208774">Correu electrònic de l'entitat emissora de certificats</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
@@ -4137,6 +4144,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6061882183774845124">Envia l'enllaç als teus dispositius</translation>
 <translation id="6064217302520318294">Bloqueig de pantalla</translation>
 <translation id="6065289257230303064">Atributs del directori del subjecte del certificat</translation>
+<translation id="6069464830445383022">El Compte de Google és el teu inici de sessió al Chromebook</translation>
 <translation id="6069671174561668781">Definició del fons de pantalla</translation>
 <translation id="6071181508177083058">confirmeu la contrasenya</translation>
 <translation id="6071576563962215370">El sistema no ha pogut establir el bloqueig dels atributs de temps d'instal·lació del dispositiu.</translation>
@@ -4452,6 +4460,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i 1 pestanya més}other{<ph name="PAGE_TITLE" /> i # pestanyes més}}</translation>
 <translation id="6451689256222386810">Si has oblidat la frase de contrasenya o vols canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Rebutja</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> completat</translation>
 <translation id="6452961788130242735">S'ha produït un problema de xarxa o el domini no és correcte</translation>
 <translation id="6455264371803474013">En llocs web específics</translation>
 <translation id="6455894534188563617">Carpeta &amp;nova</translation>
@@ -4624,6 +4633,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocitat</translation>
 <translation id="6681668084120808868">Fes una foto</translation>
+<translation id="6684827949542560880">S'està baixant l'actualització més recent</translation>
 <translation id="668599234725812620">Obre Google Play</translation>
 <translation id="6686490380836145850">Tanca les pestanyes de la dreta</translation>
 <translation id="6686817083349815241">Desa la contrasenya</translation>
@@ -4733,6 +4743,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6812841287760418429">Mantén els canvis</translation>
 <translation id="6817174620439930047">Pregunta'm quan un lloc web vulgui utilitzar els missatges exclusius del sistema per accedir a dispositius MIDI (opció recomanada)</translation>
 <translation id="6818198425579322765">Idioma de la pàgina que cal traduir</translation>
+<translation id="6818802132960437751">Protecció antivirus integrada</translation>
 <translation id="682123305478866682">Emet l'escriptori</translation>
 <translation id="6823174134746916417">Toca per fer clic amb el ratolí tàctil</translation>
 <translation id="6823506025919456619">Inicieu la sessió a Chrome per poder veure els vostres dispositius</translation>
@@ -5378,6 +5389,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7631205654593498032">En connectar els dispositius, acceptes que <ph name="DEVICE_TYPE" /> pugui fer el següent:</translation>
 <translation id="7631887513477658702">Obre &amp;sempre els fitxers d'aquest tipus</translation>
 <translation id="7632948528260659758">No s'han pogut actualitzar les aplicacions següents del quiosc:</translation>
+<translation id="7633724038415831385">Aquest és l'únic cop que hauràs d'esperar que es completi una actualització. Als Chromebook, les actualitzacions de programari es duen a terme en segon pla.</translation>
 <translation id="7634566076839829401">S'ha produït un error; torna-ho a provar.</translation>
 <translation id="763632859238619983">No permetis que cap lloc web instal·li gestors de pagament</translation>
 <translation id="7636919061354591437">Instal·la en aquest dispositiu</translation>
@@ -6147,6 +6159,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8546930481464505581">Personalitza la barra tàctil</translation>
 <translation id="8547013269961688403">Activa la lupa de pantalla completa</translation>
 <translation id="85486688517848470">Mantén premuda la tecla de cerca per canviar el comportament de les tecles de la fila superior</translation>
+<translation id="8549316893834449916">Utilitzaràs el teu Compte de Google per iniciar la sessió al Chromebook. És el mateix compte que fas servir per a Gmail, Drive i YouTube, entre d'altres.</translation>
 <translation id="8551388862522347954">Llicències</translation>
 <translation id="8551588720239073785">Configuració de data i hora</translation>
 <translation id="8553342806078037065">Gestiona altres usuaris</translation>

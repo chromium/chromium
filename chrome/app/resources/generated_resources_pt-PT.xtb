@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Para solicitar acesso, contacte o administrador deste dispositivo.</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1149725087019908252">A analisar <ph name="FILE_NAME" />…</translation>
+<translation id="1150490752229770117">Esta é a última atualização automática de software e segurança para este <ph name="DEVICE_TYPE" />. Para obter atualizações futuras, atualize para um modelo mais recente. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Óculos de sol</translation>
 <translation id="1151917987301063366">Permitir sempre que <ph name="HOST" /> aceda aos sensores</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Ocorreu um problema mecânico. Verifique a impressora.</translation>
 <translation id="1363585519747660921">É necessário configurar a impressora USB</translation>
 <translation id="1365180424462182382">O <ph name="BEGIN_LINK" />navegador é gerido<ph name="END_LINK" /> por <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Execute ferramentas, editores e IDEs de Linux no seu <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Saiba mais&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Selecione um ficheiro</translation>
 <translation id="1369149969991017342">Acesso por comutador (controlar o computador com apenas um ou dois comutadores)</translation>
 <translation id="1372841398847029212">Sincronizar com a sua conta</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">Falha ao obter o símbolo de autenticação. Termine e inicie sessão novamente para tentar de novo.</translation>
 <translation id="1877860345998737529">Atribuição de ações do acesso por comutador</translation>
+<translation id="1878155070920054810">O seu Chromebook vai ficar sem bateria antes da conclusão da atualização. Para evitar interrupções, certifique-se de que o mesmo está a carregar corretamente.</translation>
 <translation id="1879000426787380528">Iniciar sessão como</translation>
 <translation id="1880905663253319515">Eliminar o certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Esquema de teclado</translation>
@@ -1074,6 +1075,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2270627217422354837">Trocar dados com com qualquer dispositivo nos seguintes domínios: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Copo de Martini</translation>
 <translation id="2273119997271134996">Problema na porta de vídeo da estação de ancoragem</translation>
+<translation id="2274840746523584236">Carregue o seu Chromebook</translation>
 <translation id="2276503375879033601">Adicionar mais aplicações</translation>
 <translation id="2277255602909579701">Todos os cookies e dados do site</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 item copiado}other{# itens copiados}}</translation>
@@ -1419,7 +1421,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2682498795777673382">Atualização de um dos pais</translation>
 <translation id="2683638487103917598">Pasta ordenada</translation>
 <translation id="2684004000387153598">Para continuar, clique em OK e, de seguida, clique em Adicionar pessoa para criar um novo perfil para o seu endereço de email.</translation>
-<translation id="2686222346846590368">Esta é a última atualização automática de software e de segurança deste <ph name="DEVICE_TYPE" />. Para obter atualizações futuras, atualize para um modelo mais recente. &lt;a target="_blank" href="<ph name="URL" />"&gt;Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="2687407218262674387">Termos de Utilização do Google</translation>
 <translation id="2688196195245426394">Erro ao registar o dispositivo no servidor: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ Pretende pará-lo?</translation>
 <translation id="3004391367407090544">Volte novamente mais tarde</translation>
 <translation id="3006881078666935414">Sem dados de utilização</translation>
 <translation id="3007771295016901659">Duplicar o separador</translation>
+<translation id="3008232374986381779">Execute ferramentas, editores e IDEs do Linux no seu dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="3009300415590184725">Tem a certeza de que pretende cancelar o processo de configuração do serviço de dados móveis?</translation>
 <translation id="3009779501245596802">Bases de dados indexadas</translation>
@@ -1929,6 +1931,7 @@ Pretende pará-lo?</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Estes dados têm conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}=1{Este ficheiro tem conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}other{Estes ficheiros têm conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}}</translation>
 <translation id="3323521181261657960">Bónus! Tens mais tempo de utilização</translation>
 <translation id="3325910708063135066">A câmara e o microfone estão desativados nas Preferências do Sistema no Mac</translation>
+<translation id="3327050066667856415">Os Chromebooks foram concebidos a pensar na segurança. O seu dispositivo está automaticamente protegido contra software malicioso, sem que seja necessário software adicional.</translation>
 <translation id="3328489342742826322">Se restaurar a partir de uma cópia de segurança, irá eliminar as aplicações e os dados do Linux existentes na pasta Ficheiros Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informações da aplicação</translation>
@@ -2118,6 +2121,7 @@ Pretende pará-lo?</translation>
 <translation id="3556433843310711081">O seu gestor pode desbloqueá-lo</translation>
 <translation id="3557101512409028104">Defina restrições de Websites e limites de tempo de utilização com o Family Link</translation>
 <translation id="3559262020195162408">Falha ao instalar a política no dispositivo.</translation>
+<translation id="3559533181353831840">Resta(m) cerca de <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Verificação ortográfica</translation>
 <translation id="3562423906127931518">Este processo pode demorar alguns minutos. A configurar o contentor do Linux…</translation>
 <translation id="3563432852173030730">Não foi possível transferir a app de quiosque.</translation>
@@ -2633,6 +2637,7 @@ Pretende pará-lo?</translation>
 <translation id="413121957363593859">Componentes</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="413193092008917129">Rotinas de diagnóstico de rede</translation>
+<translation id="4132183752438206707">Encontre apps na Google Play Store</translation>
 <translation id="4133076602192971179">Abrir a app para alterar a sua palavra-passe</translation>
 <translation id="4136203100490971508">A Luz noturna irá desativar-se automaticamente ao nascer do sol.</translation>
 <translation id="41365691917097717">Se continuar, vai ativar a depuração do adb para criar e testar aplicações para Android. Tenha em atenção que esta ação permite a instalação de aplicações para Android que não foram validadas pela Google. Além disso, se pretender desativar o adb, terá de efetuar uma reposição de fábrica.</translation>
@@ -2881,6 +2886,7 @@ Pretende pará-lo?</translation>
 <translation id="4479877282574735775">A configurar a máquina virtual… Esta ação pode demorar alguns minutos.</translation>
 <translation id="4480590691557335796">O Chrome pode encontrar software prejudicial no seu computador e removê-lo.</translation>
 <translation id="4481530544597605423">Dispositivos dessincronizados</translation>
+<translation id="4487489714832036847">Os Chromebooks utilizam apps em vez de software tradicional. Obtenha apps para produtividade, entretenimento e muito mais.</translation>
 <translation id="4488502501195719518">Pretende limpar todos os dados?</translation>
 <translation id="4493468155686877504">Recomendado (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Não mostrar nesta página</translation>
@@ -3724,6 +3730,7 @@ Pretende pará-lo?</translation>
 <translation id="5548606607480005320">Verificação de segurança</translation>
 <translation id="5551573675707792127">Teclado e introdução de texto</translation>
 <translation id="5553089923092577885">Mapeamentos de políticas de certificados</translation>
+<translation id="5554403733534868102">Depois desta atualização, não terá de aguardar por outras</translation>
 <translation id="5554489410841842733">Este ícone estará visível se for possível utilizar a extensão na página actual.</translation>
 <translation id="5554720593229208774">Autoridade de certificação de e-mails</translation>
 <translation id="5556459405103347317">Recarregar</translation>
@@ -4138,6 +4145,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6061882183774845124">Enviar link para os dispositivos</translation>
 <translation id="6064217302520318294">Bloqueio de ecrã</translation>
 <translation id="6065289257230303064">Atributos de directório do requerente do certificado</translation>
+<translation id="6069464830445383022">A sua Conta Google é o início de sessão do Chromebook</translation>
 <translation id="6069671174561668781">Definir Imagem de Fundo</translation>
 <translation id="6071181508177083058">confirmar palavra-passe</translation>
 <translation id="6071576563962215370">O sistema não conseguiu estabelecer o bloqueio dos atributos de tempo de instalação do dispositivo.</translation>
@@ -4453,6 +4461,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e mais 1 separador}other{<ph name="PAGE_TITLE" /> e mais # separadores}}</translation>
 <translation id="6451689256222386810">Se se esqueceu da frase de acesso ou pretender alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Rejeitar</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> concluído</translation>
 <translation id="6452961788130242735">Ocorreu um problema de rede ou o domínio é incorreto.</translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
@@ -4625,6 +4634,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6680442031740878064">Disponível: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Classificar</translation>
 <translation id="6681668084120808868">Tirar foto</translation>
+<translation id="6684827949542560880">A transferir a atualização mais recente</translation>
 <translation id="668599234725812620">Abrir o Google Play</translation>
 <translation id="6686490380836145850">Fechar separadores à direita</translation>
 <translation id="6686817083349815241">Guardar a sua palavra-passe</translation>
@@ -4734,6 +4744,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6812841287760418429">Manter alterações</translation>
 <translation id="6817174620439930047">Perguntar sempre que um site pretender utilizar mensagens exclusivas do sistema para aceder a dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma da página a traduzir</translation>
+<translation id="6818802132960437751">Proteção antivírus incorporada</translation>
 <translation id="682123305478866682">Transmitir ambiente de trabalho</translation>
 <translation id="6823174134746916417">Tocar para clicar do touchpad</translation>
 <translation id="6823506025919456619">É necessário iniciar sessão no Chrome para ver os seus dispositivos</translation>
@@ -5379,6 +5390,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7631205654593498032">Ao associar os seus dispositivos, concorda que o <ph name="DEVICE_TYPE" /> pode:</translation>
 <translation id="7631887513477658702">&amp;Abrir Sempre Ficheiros Deste Tipo</translation>
 <translation id="7632948528260659758">A atualização das seguintes aplicações quiosque falhou:</translation>
+<translation id="7633724038415831385">Esta é a única altura em que terá de aguardar por uma atualização. Nos Chromebooks, as atualizações de software ocorrem em segundo plano.</translation>
 <translation id="7634566076839829401">Algo correu mal. Tente novamente mais tarde.</translation>
 <translation id="763632859238619983">Não permitir que os sites instalem controladores de pagamentos</translation>
 <translation id="7636919061354591437">Instalar neste dispositivo</translation>
@@ -6147,6 +6159,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8546930481464505581">Personalizar a barra tátil</translation>
 <translation id="8547013269961688403">Ativar lupa de ecrã inteiro</translation>
 <translation id="85486688517848470">Mantenha premida a tecla Pesquisar para alterar o comportamento das teclas da linha superior</translation>
+<translation id="8549316893834449916">Utilize a sua Conta Google para iniciar sessão no seu Chromebook, isto é, a mesma conta que utiliza para o Gmail, o Drive, o YouTube e muito mais.</translation>
 <translation id="8551388862522347954">Licenças</translation>
 <translation id="8551588720239073785">Definições de data e hora</translation>
 <translation id="8553342806078037065">Gerir outras pessoas</translation>

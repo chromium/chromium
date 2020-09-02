@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Aby uzyskać dostęp, skontaktuj się z administratorem tego urządzenia.</translation>
 <translation id="1149401351239820326">Miesiąc utraty ważności</translation>
 <translation id="1149725087019908252">Skanuję plik <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">To jest ostatnia automatyczna aktualizacja oprogramowania i zabezpieczeń, którą otrzymuje to urządzenie (<ph name="DEVICE_TYPE" />). Aby otrzymywać aktualizacje w przyszłości, przejdź na nowszy model. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Okulary przeciwsłoneczne</translation>
 <translation id="1151917987301063366">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do czujników</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Problem mechaniczny. Sprawdź drukarkę.</translation>
 <translation id="1363585519747660921">Drukarka USB wymaga konfiguracji</translation>
 <translation id="1365180424462182382">Twoją <ph name="BEGIN_LINK" />przeglądarką zarządza<ph name="END_LINK" /> domena <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Używaj na urządzeniu <ph name="DEVICE_TYPE" /> narzędzi, edytorów i IDE na Linuksa. &lt;a target="_blank" href="<ph name="URL" />"&gt;Więcej informacji&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
 <translation id="1369149969991017342">Switch Access (sterowanie komputerem za pomocą jednego lub dwóch przełączników)</translation>
 <translation id="1372841398847029212">Zsynchronizuj ze swoim kontem</translation>
@@ -756,6 +756,7 @@
 <translation id="1877377290348678128">Etykieta (opcjonalna)</translation>
 <translation id="1877520246462554164">Nie udało się uzyskać tokena uwierzytelnienia. Wyloguj się, a potem zaloguj się jeszcze raz, by ponowić próbę.</translation>
 <translation id="1877860345998737529">Przypisanie przełączników do działań</translation>
+<translation id="1878155070920054810">Chromebook może się rozładować przed ukończeniem aktualizacji. Aby uniknąć zakłóceń, podłącz go prawidłowo do ładowania.</translation>
 <translation id="1879000426787380528">Zaloguj się jako</translation>
 <translation id="1880905663253319515">Czy usunąć certyfikat „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="1881445033931614352">Układ klawiatury</translation>
@@ -1070,6 +1071,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2270627217422354837">Wymiana danych z dowolnym urządzeniem w domenach: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Kieliszek do martini</translation>
 <translation id="2273119997271134996">Problem z portem wideo stacji dokującej</translation>
+<translation id="2274840746523584236">Naładuj Chromebooka</translation>
 <translation id="2276503375879033601">Dodaj więcej aplikacji</translation>
 <translation id="2277255602909579701">Wszystkie pliki cookie i dane witryn</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{Skopiowano 1 element}few{Skopiowano # elementy}many{Skopiowano # elementów}other{Skopiowano # elementu}}</translation>
@@ -1416,7 +1418,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2682498795777673382">Rodzic wprowadził zmianę</translation>
 <translation id="2683638487103917598">Posortowano zawartość folderu</translation>
 <translation id="2684004000387153598">Aby kontynuować, kliknij OK, a potem kliknij Dodaj osobę, by utworzyć nowy profil dla swojego adresu e-mail.</translation>
-<translation id="2686222346846590368">To jest ostatnia automatyczna aktualizacja oprogramowania i zabezpieczeń, którą otrzymuje to urządzenie (<ph name="DEVICE_TYPE" />). Aby otrzymywać aktualizacje w przyszłości, przejdź na nowszy model. &lt;a target="_blank" href="<ph name="URL" />"&gt;Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="2687407218262674387">Warunki usług Google</translation>
 <translation id="2688196195245426394">Podczas rejestrowania urządzenia na serwerze wystąpił błąd: <ph name="CLIENT_ERROR" />.</translation>
@@ -1682,6 +1683,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3004391367407090544">Wroć tu później</translation>
 <translation id="3006881078666935414">Brak danych o użytkowaniu</translation>
 <translation id="3007771295016901659">Powiel kartę</translation>
+<translation id="3008232374986381779">Używaj na urządzeniu <ph name="DEVICE_TYPE" /> narzędzi, edytorów i IDE na Linuksa. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="3009300415590184725">Czy na pewno chcesz anulować konfigurowanie komórkowej usługi transmisji danych?</translation>
 <translation id="3009779501245596802">Zindeksowane bazy danych</translation>
@@ -1925,6 +1927,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Te dane zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}=1{Ten plik zawiera treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}few{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}many{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}other{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}}</translation>
 <translation id="3323521181261657960">Bonus! Możesz dłużej korzystać z urządzenia</translation>
 <translation id="3325910708063135066">Kamera i mikrofon są wyłączone w Preferencjach systemowych Maca</translation>
+<translation id="3327050066667856415">Chromebooki mają bezpieczeństwo w genach. Twoje urządzenie ma automatyczne zabezpieczenia przed złośliwym oprogramowaniem. Innych nie trzeba.</translation>
 <translation id="3328489342742826322">Przywrócenie danych z kopii zapasowej spowoduje usunięcie wszystkich dotychczasowych aplikacji na Linuksa oraz danych w folderach z plikami Linuksa.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informacje o aplikacji</translation>
@@ -2114,6 +2117,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3556433843310711081">Twój menedżer może ją dla Ciebie odblokować</translation>
 <translation id="3557101512409028104">Ustaw ograniczenia dostępu do stron i czasu korzystania z urządzenia w Family Link</translation>
 <translation id="3559262020195162408">Nie udało się zainstalować zasad na urządzeniu.</translation>
+<translation id="3559533181353831840">Jeszcze około <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Sprawdzanie pisowni</translation>
 <translation id="3562423906127931518">Może to potrwać kilka minut. Konfiguruję kontener Linuxa.</translation>
 <translation id="3563432852173030730">Nie można pobrać aplikacji kiosku.</translation>
@@ -2629,6 +2633,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="413121957363593859">Komponenty</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="413193092008917129">Testy diagnostyki sieci</translation>
+<translation id="4132183752438206707">Znajdź aplikacje w Sklepie Google Play</translation>
 <translation id="4133076602192971179">Otwórz aplikację, by zmienić hasło</translation>
 <translation id="4136203100490971508">Podświetlenie nocne wyłączy się automatycznie o wschodzie słońca</translation>
 <translation id="41365691917097717">Jeśli będziesz kontynuować, włączone zostanie debugowanie ADB do tworzenia i testowania aplikacji na Androida. Pamiętaj, że to działanie wiąże się z zezwoleniem na instalowanie aplikacji na Androida, które nie zostały zweryfikowane przez Google, a do wyłączenia tej funkcji konieczne jest przywrócenie ustawień fabrycznych.</translation>
@@ -2877,6 +2882,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4479877282574735775">Konfiguruję maszynę wirtualną. Może to potrwać kilka minut.</translation>
 <translation id="4480590691557335796">Chrome może znaleźć i usunąć szkodliwe oprogramowanie na Twoim komputerze</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
+<translation id="4487489714832036847">Zamiast tradycyjnego oprogramowania Chromebooki używają aplikacji. Pobierz je, by wydajnie pracować, cieszyć się rozrywką i korzystać z innych funkcji.</translation>
 <translation id="4488502501195719518">Wyczyścić wszystkie dane?</translation>
 <translation id="4493468155686877504">Zalecane (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Nie pokazuj na tej stronie</translation>
@@ -3720,6 +3726,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5548606607480005320">Potwierdzenie bezpieczeństwa</translation>
 <translation id="5551573675707792127">Klawiatura i wprowadzanie tekstu</translation>
 <translation id="5553089923092577885">Odwzorowania zasad certyfikatu</translation>
+<translation id="5554403733534868102">Koniec z oczekiwaniem na aktualizacje</translation>
 <translation id="5554489410841842733">Ta ikona jest widoczna wtedy, gdy rozszerzenie umożliwia wykonanie działania na bieżącej stronie.</translation>
 <translation id="5554720593229208774">Urząd certyfikacji poczty e-mail</translation>
 <translation id="5556459405103347317">Odśwież</translation>
@@ -4133,6 +4140,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6061882183774845124">Wyślij link na swoje urządzenia</translation>
 <translation id="6064217302520318294">Blokada ekranu</translation>
 <translation id="6065289257230303064">Atrybuty katalogu podmiotu certyfikatu</translation>
+<translation id="6069464830445383022">Loguj się na Chromebooku, używając konta Google</translation>
 <translation id="6069671174561668781">Ustaw tapetę</translation>
 <translation id="6071181508177083058">potwierdź hasło</translation>
 <translation id="6071576563962215370">System nie mógł ustanowić blokady atrybutów instalacyjnych urządzenia.</translation>
@@ -4448,6 +4456,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i 1 inna karta}few{<ph name="PAGE_TITLE" /> i # inne karty}many{<ph name="PAGE_TITLE" /> i # innych kart}other{<ph name="PAGE_TITLE" /> i # innej karty}}</translation>
 <translation id="6451689256222386810">Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
+<translation id="6452251728599530347">Ukończono <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Problem z siecią lub niewłaściwy obszar</translation>
 <translation id="6455264371803474013">Na określonych stronach</translation>
 <translation id="6455894534188563617">&amp;Nowy folder</translation>
@@ -4620,6 +4629,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6680442031740878064">Dostępne: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Szybkość</translation>
 <translation id="6681668084120808868">Zrób zdjęcie</translation>
+<translation id="6684827949542560880">Pobieram najnowszą aktualizację</translation>
 <translation id="668599234725812620">Otwórz Google Play</translation>
 <translation id="6686490380836145850">Zamknij karty po prawej</translation>
 <translation id="6686817083349815241">Zapisz hasło</translation>
@@ -4729,6 +4739,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6812841287760418429">Zachowaj zmiany</translation>
 <translation id="6817174620439930047">Pytaj, gdy strona chce użyć komunikatów systemowych, by uzyskać dostęp do urządzeń MIDI (zalecane)</translation>
 <translation id="6818198425579322765">Język strony do przetłumaczenia</translation>
+<translation id="6818802132960437751">Wbudowana ochrona antywirusowa</translation>
 <translation id="682123305478866682">Przesyłaj pulpit</translation>
 <translation id="6823174134746916417">Kliknięcie przez dotknięcie touchpada</translation>
 <translation id="6823506025919456619">Aby móc wyświetlać swoje urządzenia, musisz zalogować się w Chrome</translation>
@@ -5374,6 +5385,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7631205654593498032">Łącząc swoje urządzenia, zgadzasz się na to, by Twój <ph name="DEVICE_TYPE" /> mógł:</translation>
 <translation id="7631887513477658702">&amp;Zawsze otwieraj pliki tego typu</translation>
 <translation id="7632948528260659758">Nie udało się zaktualizować tych aplikacji kiosku:</translation>
+<translation id="7633724038415831385">To jedyny raz, kiedy musisz poczekać na aktualizację. Aktualizacje oprogramowania na Chromebookach są instalowane w tle.</translation>
 <translation id="7634566076839829401">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="763632859238619983">Nie zezwalaj żadnym stronom na instalowanie modułów do obsługi płatności</translation>
 <translation id="7636919061354591437">Zainstaluj na tym urządzeniu</translation>
@@ -6143,6 +6155,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8546930481464505581">Dostosuj pasek dotykowy</translation>
 <translation id="8547013269961688403">Włącz lupę pełnego ekranu</translation>
 <translation id="85486688517848470">Przytrzymaj klawisz wyszukiwania, by zmienić działanie klawiszy z górnego rzędu</translation>
+<translation id="8549316893834449916">Do logowania się na Chromebooku będziesz używać swojego konta Google – tego samego co w Gmailu, na Dysku, w YouTube i w innych usługach Google.</translation>
 <translation id="8551388862522347954">Licencje</translation>
 <translation id="8551588720239073785">Ustawienia daty i godziny</translation>
 <translation id="8553342806078037065">Zarządzaj innymi osobami</translation>

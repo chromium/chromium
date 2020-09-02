@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="2277224997687551299">Rediģēt grupas nosaukumu</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Noņemt <ph name="TABS_COUNT_ONE" /> atlasīto cilni no grupas.}zero{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}one{Noņemt <ph name="TABS_COUNT_MANY" /> atlasīto cilni no grupas.}other{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sakļaut <ph name="TABS_COUNT_ONE" /> cilni.}zero{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="2569352796411618312">Ieteikums: vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2613747923081026172">Izveidot grupu</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2977480621796371840">Noņemt no grupas</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sakļaut <ph name="TABS_COUNT_ONE" /> cilni.}zero{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="4133493477912226187">Šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="4212246570487010370">Turpiniet pārlūkošanu</translation>
 <translation id="4450893287417543264">Vairs nerādīt</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Pārskatīt</translation>
 <translation id="5073204694187207510">Slēpt pilnekrāna režģi</translation>
 <translation id="5082793167783849073">Ātri salīdziniet lapas, izveidojot grupu. Lai sāktu, pieskarieties un turiet saiti.</translation>
+<translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5533021382642990449">Rādīt vēlāk</translation>
+<translation id="5558362125926932819">Aizvērt ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5580090775658607195">Grupētas <ph name="TAB_COUNT" /> cilnes</translation>
 <translation id="58326064309361797">Velciet cilnes, lai tās sagrupētu</translation>
+<translation id="5846292395804797011">Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
 <translation id="6510648526783655549">Aizvērt ciļņu joslu</translation>
 <translation id="6562820390860419811">Pārvietot cilni pa kreisi</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6840760312327750441">Lai sagrupētu cilnes, pieskarieties cilnei un turiet to. Pēc tam velciet to uz citas cilnes.</translation>
+<translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
 <translation id="7151209024774799310">Noņemt cilnes no grupas</translation>
+<translation id="7204204600596740190">Vairākatlases režīms</translation>
+<translation id="753732157349120914">Ciļņu pārslēdzējs</translation>
 <translation id="7559245342362162951">Rādīt grupas cilnes pilnekrāna režģī</translation>
 <translation id="7792771145871471484">Pārskatīt ieteikumus.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupēt <ph name="TABS_COUNT_ONE" /> atlasīto cilni}zero{Grupēt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}one{Grupēt <ph name="TABS_COUNT_MANY" /> atlasīto cilni}other{Grupēt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="8304833501377495048">Vai nerādīt ciļņu joslu atkārtoti?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Aizvērt atlasīto cilni (skaits: <ph name="TABS_COUNT_ONE" />)}zero{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}one{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}other{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}}</translation>
+<translation id="8557923272772633250">Izvērst ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8749939518995770034">Ciļņu josla aizvērta</translation>
 <translation id="9150694013019234766">Pārslēdziet cilnes savā ciļņu grupā ekrāna apakšdaļā.</translation>
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>

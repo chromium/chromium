@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Hvis du vil anmode om adgang, skal du kontakte administratoren af denne enhed.</translation>
 <translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1149725087019908252">Scanner <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Dette er den sidste automatiske software- og sikkerhedsopdatering for denne <ph name="DEVICE_TYPE" />. Opgrader til en nyere model for at få fremtidige opdateringer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Solbriller</translation>
 <translation id="1151917987301063366">Tillad altid, at <ph name="HOST" /> kan få adgang til sensorer</translation>
 <translation id="1153356358378277386">Parrede enheder</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Der er et teknisk problem med printeren. Tjek printeren</translation>
 <translation id="1363585519747660921">USB-printeren skal konfigureres</translation>
 <translation id="1365180424462182382">Din <ph name="BEGIN_LINK" />browser administreres<ph name="END_LINK" /> af <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Kør værktøjer, redigeringsværktøjer og IDE-pakker fra Linux på din <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Få flere oplysninger&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
 <translation id="1369149969991017342">Kontaktadgang (styr computeren med blot én eller to kontakter)</translation>
 <translation id="1372841398847029212">Synkroniser med din konto</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Etiket (valgfrit)</translation>
 <translation id="1877520246462554164">Der kunne ikke hentes noget godkendelsestoken. Log ud, og log derefter ind igen for at prøve igen.</translation>
 <translation id="1877860345998737529">Tildeling af handlinger for kontakter</translation>
+<translation id="1878155070920054810">Det ser ud til, at din Chromebook løber tør for strøm, før opdateringen er fuldført. Sørg for, at du oplader korrekt, så opdateringen ikke afbrydes.</translation>
 <translation id="1879000426787380528">Log ind som</translation>
 <translation id="1880905663253319515">Slet certifikatet "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Tastaturlayout</translation>
@@ -1074,6 +1075,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2270627217422354837">Udveksle data med en enhed på domænerne: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Martiniglas</translation>
 <translation id="2273119997271134996">Problem med dockingstationens videoport</translation>
+<translation id="2274840746523584236">Oplad din Chromebook</translation>
 <translation id="2276503375879033601">Tilføj flere apps</translation>
 <translation id="2277255602909579701">Alle cookies og websitedata</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 element er kopieret}one{# element er kopieret}other{# elementer er kopieret}}</translation>
@@ -1420,7 +1422,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2682498795777673382">Opdatering fra din forælder</translation>
 <translation id="2683638487103917598">Mappen er sorteret</translation>
 <translation id="2684004000387153598">Hvis du vil fortsætte, skal du klikke på OK og derefter klikke på Tilføj person for at oprette en ny profil til din mailadresse.</translation>
-<translation id="2686222346846590368">Dette er den sidste automatiske software- og sikkerhedsopdatering til denne <ph name="DEVICE_TYPE" />. Opgrader til en nyere model for at få opdateringer fremover. &lt;a target="_blank" href="<ph name="URL" />"&gt;Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2687407218262674387">Googles servicevilkår</translation>
 <translation id="2688196195245426394">Fejl ved registrering af enheden med serveren: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3004391367407090544">Kom tilbage senere</translation>
 <translation id="3006881078666935414">Ingen brugsdata</translation>
 <translation id="3007771295016901659">Dupliker fane</translation>
+<translation id="3008232374986381779">Kør Linux-værktøjer, -redigeringsværktøjer og -IDE'er på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="3009300415590184725">Er du sikker på, at du vil annullere konfigurationen af en mobildatatjeneste?</translation>
 <translation id="3009779501245596802">Indekserede databaser</translation>
@@ -1929,6 +1931,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Disse data har følsomt eller farligt indhold. Fjern indholdet, og prøv igen.}=1{Denne fil har følsomt eller farligt indhold. Fjern indholdet, og prøv igen.}one{Denne fil har følsomt eller farligt indhold. Fjern indholdet, og prøv igen.}other{Disse filer har følsomt eller farligt indhold. Fjern indholdet, og prøv igen.}}</translation>
 <translation id="3323521181261657960">Ekstra tid! Du har fået mere skærmtid</translation>
 <translation id="3325910708063135066">Kameraet og mikrofonen er deaktiveret i Systemindstillinger for Mac</translation>
+<translation id="3327050066667856415">Chromebooks er udviklet med fokus på sikkerhed. Din enhed er automatisk beskyttet mod malware, uden at du skal hente ekstra software.</translation>
 <translation id="3328489342742826322">Når du gendanner fra en sikkerhedskopi, slettes dine eksisterende Linux-apps og -data fra din mappe med Linux-filer.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Oplysninger om appen</translation>
@@ -2118,6 +2121,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3556433843310711081">Din administrator kan fjerne blokeringen for dig</translation>
 <translation id="3557101512409028104">Angiv websitebegrænsninger og grænser for skærmtid ved hjælp af Family Link</translation>
 <translation id="3559262020195162408">Politikken kunne ikke installeres på enheden.</translation>
+<translation id="3559533181353831840">Ca. <ph name="TIME_LEFT" /> tilbage</translation>
 <translation id="3560034655160545939">&amp;Stavekontrol</translation>
 <translation id="3562423906127931518">Denne proces kan tage et par minutter. Linux-containeren konfigureres.</translation>
 <translation id="3563432852173030730">Terminalapplikationen kunne ikke downloades.</translation>
@@ -2633,6 +2637,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="413121957363593859">Komponenter</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
 <translation id="413193092008917129">Rutiner for netværksdiagnostik</translation>
+<translation id="4132183752438206707">Find apps i Google Play Butik</translation>
 <translation id="4133076602192971179">Åbn appen for at ændre din adgangskode</translation>
 <translation id="4136203100490971508">Nattelys slukkes automatisk ved solopgang</translation>
 <translation id="41365691917097717">Hvis du fortsætter, aktiveres ADB-fejlretning til oprettelse og test af Android-apps. Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet bekræftet af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
@@ -2881,6 +2886,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4479877282574735775">Konfigurerer den virtuelle maskine. Dette kan tage et par minutter.</translation>
 <translation id="4480590691557335796">Chrome kan finde og fjerne skadelig software på din computer</translation>
 <translation id="4481530544597605423">Ikke-parrede enheder</translation>
+<translation id="4487489714832036847">Chromebooks bruger apps i stedet for traditionel software. Få apps til produktivitet, underholdning og meget mere.</translation>
 <translation id="4488502501195719518">Vil du rydde alle data?</translation>
 <translation id="4493468155686877504">Anbefalet (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Vis ikke på denne side</translation>
@@ -3724,6 +3730,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
 <translation id="5551573675707792127">Tastatur og tekstindtastning</translation>
 <translation id="5553089923092577885">Beskrivelse af certifikatpolitik</translation>
+<translation id="5554403733534868102">Bagefter skal du aldrig vente på opdateringer igen</translation>
 <translation id="5554489410841842733">Dette ikon er synligt, når udvidelsen kan fungere på den aktuelle side.</translation>
 <translation id="5554720593229208774">Mail-certificeringsautoritet</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
@@ -4137,6 +4144,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6061882183774845124">Send linket til dine enheder</translation>
 <translation id="6064217302520318294">Skærmlås</translation>
 <translation id="6065289257230303064">Indeksattributter for certifikatets emne</translation>
+<translation id="6069464830445383022">Brug din Google-konto, når du logger ind på din Chromebook</translation>
 <translation id="6069671174561668781">Angiv baggrund</translation>
 <translation id="6071181508177083058">bekræft adgangskode</translation>
 <translation id="6071576563962215370">Systemet kunne ikke fastslå installationstidspunktet for enhedens attributlås.</translation>
@@ -4453,6 +4461,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 anden fane}one{<ph name="PAGE_TITLE" /> og # anden fane}other{<ph name="PAGE_TITLE" /> og # andre faner}}</translation>
 <translation id="6451689256222386810">Hvis du har glemt din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Afvis</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> fuldført</translation>
 <translation id="6452961788130242735">Netværksproblem eller ugyldigt domæne</translation>
 <translation id="6455264371803474013">På specifikke websites</translation>
 <translation id="6455894534188563617">&amp;Ny mappe</translation>
@@ -4625,6 +4634,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6680442031740878064">Tilgængelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Talehastighed</translation>
 <translation id="6681668084120808868">Tag billede</translation>
+<translation id="6684827949542560880">Downloader den nyeste opdatering</translation>
 <translation id="668599234725812620">Åbn Google Play</translation>
 <translation id="6686490380836145850">Luk fanerne til højre</translation>
 <translation id="6686817083349815241">Gem din adgangskode</translation>
@@ -4734,6 +4744,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6812841287760418429">Behold ændringer</translation>
 <translation id="6817174620439930047">Spørg mig, når et website vil anvende interne systemmeddelelser til at få adgang til MIDI-enheder (anbefales)</translation>
 <translation id="6818198425579322765">Sidens sprog, som skal oversættes</translation>
+<translation id="6818802132960437751">Indbygget virusbeskyttelse</translation>
 <translation id="682123305478866682">Cast skrivebordet</translation>
 <translation id="6823174134746916417">Tryk-hurtigt-for-at-klikke på touchplade</translation>
 <translation id="6823506025919456619">Du skal logge ind i Chrome for at se dine enheder</translation>
@@ -5379,6 +5390,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7631205654593498032">Når du opretter forbindelse mellem dine enheder, accepterer du, at din <ph name="DEVICE_TYPE" /> kan gøre følgende:</translation>
 <translation id="7631887513477658702">&amp;Åbn altid filer af denne type</translation>
 <translation id="7632948528260659758">Følgende kioskapps kan ikke opdateres:</translation>
+<translation id="7633724038415831385">Dette er den eneste gang, du skal vente på en opdatering. På Chromebooks foregår softwareopdateringer i baggrunden.</translation>
 <translation id="7634566076839829401">Der opstod en fejl. Prøv igen.</translation>
 <translation id="763632859238619983">Tillad ikke, at websites installerer betalingshandlere</translation>
 <translation id="7636919061354591437">Installer på denne enhed</translation>
@@ -6147,6 +6159,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8546930481464505581">Tilpas Touch Bar</translation>
 <translation id="8547013269961688403">Aktivér forstørrelse af fuld skærm</translation>
 <translation id="85486688517848470">Hold tasten Søg nede for at skifte funktion for den øverste række taster</translation>
+<translation id="8549316893834449916">Du skal bruge din Google-konto til at logge ind på din Chromebook – den samme konto, som du bruger i Gmail, i Drev, på YouTube m.m.</translation>
 <translation id="8551388862522347954">Licenser</translation>
 <translation id="8551588720239073785">Indstillinger for dato og tid</translation>
 <translation id="8553342806078037065">Administrer andre personer</translation>

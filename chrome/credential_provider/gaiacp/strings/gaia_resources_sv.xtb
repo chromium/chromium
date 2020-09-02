@@ -6,9 +6,9 @@
 <translation id="200772894174702141">Det gick inte att logga in på jobbkontot. Se till att enheten är ansluten till internet och försök igen.</translation>
 <translation id="2048923169632968961">Det uppstod ett problem medan lösenorden i jobbkontot synkroniserades med Windows-profilen. Kontakta administratören.</translation>
 <translation id="2515346402363002066">Sessionen har upphört. Logga in med jobbkontot.</translation>
+<translation id="2566603360883977759">Den här e-postadressen kan inte användas vid inloggning. Försök igen med det konto du använder för arbetet eller skolan. Om du ändå inte kan logga in kontaktar du administratören.</translation>
 <translation id="2844349213149998955">Det är inte tillåtet att logga in med ett personligt konto på den här enheten. Logga in med ett jobbkonto.</translation>
 <translation id="3217145568844727893">Om du fortsätter utan att ange lösenordet för Windows kan du förlora data på den här enheten permanent.</translation>
-<translation id="3285576391135346912">Du kan endast logga in med en e-postadress som slutar på följande sätt: <ph name="EMAIL_DOMAINS" />. Testa igen med ett jobbkonto.</translation>
 <translation id="3306357053520292004">En användare på den här datorn har redan lagts till med det här kontot. Logga in med ett annat konto.</translation>
 <translation id="3355053591933237049">Se till att din enhet är ansluten till internet och försök igen</translation>
 <translation id="3926852373333893095">Endast G Suite Enterprise-användare får logga in.</translation>

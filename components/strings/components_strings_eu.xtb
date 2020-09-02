@@ -216,7 +216,7 @@
 <translation id="1752021286346845558">8. postontzia</translation>
 <translation id="1753706481035618306">Orri-zenbakia</translation>
 <translation id="1763864636252898013">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Zure gailuaren sistema eragilea ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
-<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Abiarazi Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
+<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Exekutatu Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Aukeratu duzun zerbitzariak (<ph name="ORIGIN" />) goiburu bat ezarri du; haren arabera, jatorri-gidalerro bat aplikatuko zaie zerbitzari hartako eskaera guztiei. Alabaina, goiburua oker dago eratuta; ondorioz, arakatzaileak ezin du gauzatu <ph name="SITE" /> webgunean sartzeko egin duzun eskaera. Webgunearen segurtasuna eta beste propietate batzuk konfiguratzeko erabili ohi dituzte webguneen eragileek jatorri-gidalerroak.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1783075131180517613">Eguneratu sinkronizatzeko pasaesaldia.</translation>
@@ -368,7 +368,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Aukeratu entrega-metodoa</translation>
 <translation id="2465688316154986572">Grapatu</translation>
-<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Sare-diagnostikoak abiarazten<ph name="END_LINK" /></translation>
+<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Sare-diagnostikoak exekutatzen<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1etik N-rako ordena</translation>
 <translation id="2479410451996844060">Bilaketa URLak ez du balio.</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
@@ -788,7 +788,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     &lt;p&gt;Gogoratu bukatzean antibirusa berriro ere aktibatzea.&lt;/p&gt;
     &lt;h4&gt;5. urratsa: lortu laguntza gehiago&lt;/h4&gt;
     &lt;p&gt;Oraindik ere errorea ikusten baduzu, jarri harremanetan webgunearen jabearekin.&lt;/p&gt;</translation>
-<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Abiarazi sare-diagnostikoak<ph name="END_LINK" />.</translation>
+<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Exekutatu sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Joan <ph name="SITE" /> webgunera<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Balio du</translation>
 <translation id="4250431568374086873">Webgune honetarako konexioa ez da guztiz segurua</translation>
@@ -892,7 +892,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4702504834785592287">Aldea</translation>
 <translation id="4708268264240856090">Eten egin da konexioa</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
-<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-en sare-diagnostikoak abiarazten<ph name="END_LINK" /></translation>
+<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-en sare-diagnostikoak exekutatzen<ph name="END_LINK" /></translation>
 <translation id="4726672564094551039">Kargatu berriro gidalerroak</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4731638775147756694">Administratzaileak blokeatu du aplikazio hori</translation>

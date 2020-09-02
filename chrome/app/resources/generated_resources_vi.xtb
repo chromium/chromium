@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Để yêu cầu quyền truy cập, hãy liên hệ với quản trị viên của thiết bị này.</translation>
 <translation id="1149401351239820326">Tháng hết hạn</translation>
 <translation id="1149725087019908252">Đang quét <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Đây là bản tự động cập nhật bảo mật và phần mềm mới nhất cho <ph name="DEVICE_TYPE" /> này. Để nhận các bản cập nhật trong tương lai, hãy nâng cấp lên mẫu thiết bị mới hơn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Kính mát</translation>
 <translation id="1151917987301063366">Luôn cho phép <ph name="HOST" /> sử dụng các cảm biến của thiết bị</translation>
 <translation id="1153356358378277386">Thiết bị được ghép nối</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Vấn đề về máy móc. Hãy kiểm tra máy in</translation>
 <translation id="1363585519747660921">Máy in USB cần định cấu hình</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />quản lý trình duyệt<ph name="END_LINK" /> của bạn</translation>
-<translation id="1366177842110999534">Chạy các công cụ, trình chỉnh sửa và môi trường phát triển được tích hợp (IDE) của Linux trên <ph name="DEVICE_TYPE" /> của bạn. &lt;a target="_blank" href="<ph name="URL" />"&gt;Tìm hiểu thêm&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Chọn tệp</translation>
 <translation id="1369149969991017342">Tiếp cận bằng công tắc (điều khiển máy tính chỉ bằng một hoặc hai công tắc)</translation>
 <translation id="1372841398847029212">Đồng bộ hóa với tài khoản của bạn</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Nhãn (không bắt buộc)</translation>
 <translation id="1877520246462554164">Không nhận được mã thông báo xác thực. Vui lòng đăng xuất rồi đăng nhập lại để thử lại.</translation>
 <translation id="1877860345998737529">Gán công tắc cho hành động</translation>
+<translation id="1878155070920054810">Có vẻ như Chromebook sẽ hết pin trước khi quá trình cập nhật hoàn tất. Hãy đảm bảo Chromebook đang sạc đúng cách để tránh bị gián đoạn.</translation>
 <translation id="1879000426787380528">Đăng nhập bằng</translation>
 <translation id="1880905663253319515">Xóa chứng chỉ "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Bố cục bàn phím</translation>
@@ -1074,6 +1075,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2270627217422354837">Trao đổi dữ liệu với bất kỳ thiết bị nào trong miền: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Ly rượu Martini</translation>
 <translation id="2273119997271134996">Vấn đề với cổng video khi gắn đế sạc</translation>
+<translation id="2274840746523584236">Sạc pin cho Chromebook</translation>
 <translation id="2276503375879033601">Thêm ứng dụng khác</translation>
 <translation id="2277255602909579701">Tất cả cookie và dữ liệu trang web</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{Đã sao chép 1 mục}other{Đã sao chép # mục}}</translation>
@@ -1420,7 +1422,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2682498795777673382">Thông tin mới từ cha mẹ</translation>
 <translation id="2683638487103917598">Đẵ sắp xếp thư mục</translation>
 <translation id="2684004000387153598">Để tiếp tục, hãy nhấp vào OK, sau đó nhấp vào Thêm người để tạo hồ sơ mới cho địa chỉ email của bạn.</translation>
-<translation id="2686222346846590368">Đây là bản tự động cập nhật bảo mật và phần mềm mới nhất cho <ph name="DEVICE_TYPE" /> này. Để nhận các bản cập nhật trong tương lai, hãy nâng cấp lên mẫu thiết bị mới hơn. &lt;a target="_blank" href="<ph name="URL" />"&gt;Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Chặn tất cả cookie (không khuyến nghị)</translation>
 <translation id="2687407218262674387">Điều khoản dịch vụ của Google</translation>
 <translation id="2688196195245426394">Lỗi khi đăng ký thiết bị với máy chủ: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3004391367407090544">Vui lòng quay lại sau</translation>
 <translation id="3006881078666935414">Không có dữ liệu sử dụng</translation>
 <translation id="3007771295016901659">Sao chép thẻ</translation>
+<translation id="3008232374986381779">Chạy các công cụ, trình chỉnh sửa và môi trường phát triển được tích hợp (IDE) của Linux trên <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
 <translation id="3009300415590184725">Bạn có chắc chắn muốn hủy quá trình thiết lập dịch vụ dữ liệu di động không?</translation>
 <translation id="3009779501245596802">Cơ sở dữ liệu được lập chỉ mục</translation>
@@ -1929,6 +1931,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Dữ liệu này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy xóa nội dung này rồi thử lại.}=1{Tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy xóa nội dung này rồi thử lại.}other{Các tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy xóa nội dung này rồi thử lại.}}</translation>
 <translation id="3323521181261657960">Phần thưởng! Bạn có thêm thời gian sử dụng thiết bị</translation>
 <translation id="3325910708063135066">Máy ảnh và micrô đã bị tắt trong System Preferences (Tùy chọn hệ thống) trên máy Mac</translation>
+<translation id="3327050066667856415">Chromebook có thiết kế giúp tăng cường tính bảo mật. Thiết bị của bạn tự động được bảo vệ khỏi phần mềm độc hại mà không cần phải cài đặt phần mềm bổ sung.</translation>
 <translation id="3328489342742826322">Nếu bạn khôi phục từ một bản sao lưu, các dữ liệu và ứng dụng Linux hiện có trong thư mục tệp Linux của bạn sẽ bị xóa.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Thông tin ứng dụng</translation>
@@ -2118,6 +2121,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3556433843310711081">Người quản lý của bạn có thể bỏ chặn trang web cho bạn</translation>
 <translation id="3557101512409028104">Đặt các hạn chế về trang web và giới hạn thời gian sử dụng thiết bị bằng Family Link</translation>
 <translation id="3559262020195162408">Không cài đặt được chính sách trên thiết bị.</translation>
+<translation id="3559533181353831840">Còn khoảng <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Kiểm tra chính tả</translation>
 <translation id="3562423906127931518">Quá trình này có thể mất vài phút. Đang thiết lập vùng chứa Linux.</translation>
 <translation id="3563432852173030730">Không thể tải xuống ứng dụng Kiosk.</translation>
@@ -2633,6 +2637,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="413121957363593859">Thành phần</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="413193092008917129">Quy trình chẩn đoán mạng</translation>
+<translation id="4132183752438206707">Tìm ứng dụng trên Cửa hàng Google Play</translation>
 <translation id="4133076602192971179">Hãy mở ứng dụng này để đổi mật khẩu</translation>
 <translation id="4136203100490971508">Chế độ Ánh sáng đêm sẽ tự động tắt khi trời sáng</translation>
 <translation id="41365691917097717">Nếu bạn tiếp tục, tùy chọn gỡ lỗi ADB sẽ bật để tạo và thử nghiệm các ứng dụng Android. Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
@@ -2881,6 +2886,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4479877282574735775">Đang định cấu hình máy ảo. Quá trình này có thể mất vài phút.</translation>
 <translation id="4480590691557335796">Chrome có thể tìm và xóa phần mềm gây hại trên máy tính của bạn</translation>
 <translation id="4481530544597605423">Thiết bị được hủy ghép nối</translation>
+<translation id="4487489714832036847">Chromebook dùng ứng dụng thay vì phần mềm truyền thống. Hãy tải các ứng dụng để giải trí, tăng năng suất và phục vụ nhiều mục đích khác.</translation>
 <translation id="4488502501195719518">Xóa tất cả dữ liệu?</translation>
 <translation id="4493468155686877504">Đề xuất (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Không hiển thị trên trang này</translation>
@@ -3724,6 +3730,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5548606607480005320">Kiểm tra an toàn</translation>
 <translation id="5551573675707792127">Bàn phím và phương thức nhập văn bản</translation>
 <translation id="5553089923092577885">Ánh xạ Chính sách của Chứng chỉ</translation>
+<translation id="5554403733534868102">Sau lần này, bạn sẽ không phải đợi bản cập nhật nữa</translation>
 <translation id="5554489410841842733">Biểu tượng này sẽ hiển thị khi tiện ích có thể hoạt động trên trang hiện tại.</translation>
 <translation id="5554720593229208774">Tổ chức phát hành chứng chỉ email</translation>
 <translation id="5556459405103347317">Tải lại</translation>
@@ -4137,6 +4144,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6061882183774845124">Gửi đường liên kết tới thiết bị của bạn</translation>
 <translation id="6064217302520318294">Phương thức khóa màn hình</translation>
 <translation id="6065289257230303064">Các Thuộc tính Thư mục Đối tượng Chứng chỉ</translation>
+<translation id="6069464830445383022">Tài khoản Google của bạn chính là tài khoản để đăng nhập vào Chromebook</translation>
 <translation id="6069671174561668781">Đặt hình nền</translation>
 <translation id="6071181508177083058">xác nhận mật khẩu</translation>
 <translation id="6071576563962215370">Hệ thống không thiết lập được khóa thuộc tính thời gian cài đặt thiết bị.</translation>
@@ -4452,6 +4460,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> và 1 thẻ khác}other{<ph name="PAGE_TITLE" /> và # thẻ khác}}</translation>
 <translation id="6451689256222386810">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại đồng bộ hóa<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Từ chối</translation>
+<translation id="6452251728599530347">Đã hoàn tất <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Vấn đề về mạng hoặc vùng không hợp lệ</translation>
 <translation id="6455264371803474013">Trên các trang web cụ thể</translation>
 <translation id="6455894534188563617">&amp;Thư mục mới</translation>
@@ -4624,6 +4633,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6680442031740878064">Còn trống: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Tốc độ</translation>
 <translation id="6681668084120808868">Chụp ảnh</translation>
+<translation id="6684827949542560880">Đang tải bản cập nhật mới nhất xuống</translation>
 <translation id="668599234725812620">Mở Google Play</translation>
 <translation id="6686490380836145850">Đóng thẻ phía bên phải</translation>
 <translation id="6686817083349815241">Lưu mật khẩu của bạn</translation>
@@ -4733,6 +4743,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6812841287760418429">Lưu thay đổi</translation>
 <translation id="6817174620439930047">Hỏi tôi khi có trang web muốn sử dụng thông báo dành riêng cho hệ thống để truy cập thiết bị MIDI (được đề xuất)</translation>
 <translation id="6818198425579322765">Ngôn ngữ trang cần dịch</translation>
+<translation id="6818802132960437751">Tính năng chống vi-rút tích hợp sẵn</translation>
 <translation id="682123305478866682">Truyền màn hình</translation>
 <translation id="6823174134746916417">Gõ để nhấp trên bàn di chuột</translation>
 <translation id="6823506025919456619">Bạn cần đăng nhập vào Chrome để thấy thiết bị của mình</translation>
@@ -5378,6 +5389,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7631205654593498032">Khi kết nối các thiết bị, bạn đồng ý rằng <ph name="DEVICE_TYPE" /> có thể:</translation>
 <translation id="7631887513477658702">&amp;Luôn Mở Loại Tệp Này</translation>
 <translation id="7632948528260659758">Không cập nhật được các ứng dụng kiosk sau:</translation>
+<translation id="7633724038415831385">Đây là lần duy nhất bạn cần đợi bản cập nhật. Trên Chromebook, quá trình cập nhật phần mềm diễn ra trong nền.</translation>
 <translation id="7634566076839829401">Đã xảy ra sự cố. Vui lòng thử lại.</translation>
 <translation id="763632859238619983">Không cho phép bất kỳ trang web nào cài đặt trình xử lý thanh toán</translation>
 <translation id="7636919061354591437">Cài đặt trên thiết bị này</translation>
@@ -6147,6 +6159,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8546930481464505581">Tùy chỉnh Thanh cảm ứng</translation>
 <translation id="8547013269961688403">Bật tính năng phóng to toàn bộ màn hình</translation>
 <translation id="85486688517848470">Giữ phím Tìm kiếm để chuyển đổi chức năng của các phím hàng trên cùng</translation>
+<translation id="8549316893834449916">Bạn sẽ dùng Tài khoản Google để đăng nhập vào Chromebook. Đây cũng chính là tài khoản bạn dùng cho Gmail, Drive, YouTube và nhiều sản phẩm khác.</translation>
 <translation id="8551388862522347954">Giấy phép</translation>
 <translation id="8551588720239073785">Cài đặt ngày và giờ</translation>
 <translation id="8553342806078037065">Quản lý những người khác</translation>

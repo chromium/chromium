@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">액세스 권한을 요청하려면 기기 관리자에게 문의하세요.</translation>
 <translation id="1149401351239820326">유효기간 월</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> 검사 중</translation>
+<translation id="1150490752229770117">이 <ph name="DEVICE_TYPE" />의 마지막 자동 소프트웨어 및 보안 업데이트입니다. 향후 업데이트를 받으려면 새 모델로 업그레이드하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">선글라스</translation>
 <translation id="1151917987301063366"><ph name="HOST" />에서 센서에 액세스하도록 항상 허용</translation>
 <translation id="1153356358378277386">페어링된 기기</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">기술 문제입니다. 프린터를 확인하세요.</translation>
 <translation id="1363585519747660921">USB 프린터를 구성해야 함</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" />에서 <ph name="BEGIN_LINK" />관리하는 브라우저<ph name="END_LINK" />입니다.</translation>
-<translation id="1366177842110999534"><ph name="DEVICE_TYPE" />에서 Linux 도구, 편집기, IDE를 실행하세요. &lt;a target="_blank" href="<ph name="URL" />"&gt;자세히 알아보기&lt;/a&gt;</translation>
 <translation id="1367951781824006909">파일 선택</translation>
 <translation id="1369149969991017342">스위치 제어(스위치 1~2개로 컴퓨터 제어)</translation>
 <translation id="1372841398847029212">내 계정에 동기화</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">라벨(선택사항)</translation>
 <translation id="1877520246462554164">인증 토큰을 가져오지 못했습니다. 로그아웃한 다음 다시 로그인하여 다시 시도해 주세요.</translation>
 <translation id="1877860345998737529">스위치 작업 할당</translation>
+<translation id="1878155070920054810">업데이트가 완료되기 전에 Chromebook의 전원이 부족해질 것 같습니다. 업데이트 중단을 방지하려면 올바르게 충전되고 있는지 확인하세요.</translation>
 <translation id="1879000426787380528">다음 사용자로 로그인</translation>
 <translation id="1880905663253319515">인증서 '<ph name="CERTIFICATE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="1881445033931614352">키보드 레이아웃</translation>
@@ -1074,6 +1075,7 @@
 <translation id="2270627217422354837">도메인(<ph name="DOMAINS" />)에 있는 모든 기기와 데이터 교환</translation>
 <translation id="2272570998639520080">마티니 잔</translation>
 <translation id="2273119997271134996">도크 비디오 포트 문제</translation>
+<translation id="2274840746523584236">Chromebook 충전하기</translation>
 <translation id="2276503375879033601">앱 추가</translation>
 <translation id="2277255602909579701">모든 쿠키 및 사이트 데이터</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{항목 1개가 복사됨}other{항목 #개가 복사됨}}</translation>
@@ -1420,7 +1422,6 @@
 <translation id="2682498795777673382">보호자가 업데이트한 내용</translation>
 <translation id="2683638487103917598">폴더가 정렬됨</translation>
 <translation id="2684004000387153598">계속하려면 확인을 클릭한 다음 사용자 추가를 클릭하여 이메일 주소로 새로운 프로필을 만드세요.</translation>
-<translation id="2686222346846590368"><ph name="DEVICE_TYPE" />의 마지막 자동 소프트웨어 및 보안 업데이트입니다. 향후 업데이트를 받으려면 최신 모델로 업그레이드하세요. &lt;a target="_blank" href="<ph name="URL" />"&gt;자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">모든 쿠키 차단(권장되지 않음)</translation>
 <translation id="2687407218262674387">Google 서비스 약관</translation>
 <translation id="2688196195245426394">기기를 서버에 등록하는 중에 오류 발생: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@
 <translation id="3004391367407090544">잠시 후에 다시 시도해 주세요.</translation>
 <translation id="3006881078666935414">사용 데이터 없음</translation>
 <translation id="3007771295016901659">탭 복사</translation>
+<translation id="3008232374986381779"><ph name="DEVICE_TYPE" />에서 Linux 도구, 편집기, IDE를 실행합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="3009300415590184725">모바일 데이터 서비스 설정 과정을 취소하시겠습니까?</translation>
 <translation id="3009779501245596802">색인화된 데이터베이스</translation>
@@ -1929,6 +1931,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{민감하거나 위험한 콘텐츠가 있는 데이터입니다. 콘텐츠를 삭제한 후 다시 시도해 보세요.}=1{민감하거나 위험한 콘텐츠가 있는 파일입니다. 콘텐츠를 삭제한 후 다시 시도해 보세요.}other{민감하거나 위험한 콘텐츠가 있는 파일입니다. 콘텐츠를 삭제한 후 다시 시도해 보세요.}}</translation>
 <translation id="3323521181261657960">보너스 기기 사용 시간이 추가되었습니다</translation>
 <translation id="3325910708063135066">Mac 시스템 환경설정에서 카메라와 마이크가 사용 중지되었습니다</translation>
+<translation id="3327050066667856415">Chromebook은 안전하게 설계되었습니다. 기기는 멀웨어로부터 자동으로 보호되고 있으며 소프트웨어가 추가로 필요하지 않습니다.</translation>
 <translation id="3328489342742826322">백업에서 복원하면 Linux 파일 폴더에 있는 기존 Linux 애플리케이션과 데이터가 삭제됩니다.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">앱 정보</translation>
@@ -2118,6 +2121,7 @@
 <translation id="3556433843310711081">관리자가 차단 해제할 수 있습니다.</translation>
 <translation id="3557101512409028104">Family Link를 사용해 웹사이트 제한사항 및 기기 사용 시간 제한 설정</translation>
 <translation id="3559262020195162408">기기에 정책을 설치하지 못했습니다.</translation>
+<translation id="3559533181353831840">약 <ph name="TIME_LEFT" /> 남음</translation>
 <translation id="3560034655160545939">맞춤법 검사(&amp;S)</translation>
 <translation id="3562423906127931518">이 과정은 몇 분 정도 걸릴 수 있습니다. Linux 컨테이너를 설정합니다.</translation>
 <translation id="3563432852173030730">키오스크 애플리케이션을 다운로드할 수 없습니다.</translation>
@@ -2631,6 +2635,7 @@
 <translation id="413121957363593859">컴포넌트</translation>
 <translation id="4131410914670010031">흑백</translation>
 <translation id="413193092008917129">네트워크 진단 루틴</translation>
+<translation id="4132183752438206707">Google Play 스토어에서 앱 찾기</translation>
 <translation id="4133076602192971179">비밀번호 변경을 위해 앱 열기</translation>
 <translation id="4136203100490971508">일출 시 야간 조명이 자동으로 꺼짐</translation>
 <translation id="41365691917097717">계속하면 Android 앱 생성과 테스트에 ADB 디버깅을 사용 설정합니다. 이렇게 하면 Google에서 확인하지 않은 Android 앱을 설치할 수 있게 되며, 사용 중지하려면 초기화가 필요합니다.</translation>
@@ -2879,6 +2884,7 @@
 <translation id="4479877282574735775">가상 머신을 구성하고 있습니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="4480590691557335796">Chrome이 컴퓨터에서 유해한 소프트웨어를 찾아 삭제할 수 있습니다.</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
+<translation id="4487489714832036847">Chromebook에서는 기존 소프트웨어 대신 앱을 사용합니다. 생산성, 엔터테인먼트 등을 위한 앱을 활용해 보세요.</translation>
 <translation id="4488502501195719518">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="4493468155686877504">권장 크기(<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">이 페이지에 표시하지 않음</translation>
@@ -3722,6 +3728,7 @@
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5551573675707792127">키보드 및 텍스트 입력</translation>
 <translation id="5553089923092577885">인증서 정책 매핑</translation>
+<translation id="5554403733534868102">다음부터는 업데이트를 기다리지 않아도 됩니다</translation>
 <translation id="5554489410841842733">현재 페이지에서 확장 프로그램을 실행할 수 있게 되면 아이콘이 표시됩니다.</translation>
 <translation id="5554720593229208774">이메일 인증 기관</translation>
 <translation id="5556459405103347317">새로고침</translation>
@@ -4135,6 +4142,7 @@
 <translation id="6061882183774845124">기기로 링크 전송</translation>
 <translation id="6064217302520318294">화면 잠금</translation>
 <translation id="6065289257230303064">인증서 대상 디렉터리 속성</translation>
+<translation id="6069464830445383022">Google 계정으로 Chromebook 로그인하기</translation>
 <translation id="6069671174561668781">배경화면 설정</translation>
 <translation id="6071181508177083058">비밀번호 확인</translation>
 <translation id="6071576563962215370">시스템에서 기기 설치 시간 속성 잠금을 설정하지 못했습니다.</translation>
@@ -4450,6 +4458,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 외 탭 1개}other{<ph name="PAGE_TITLE" /> 외 탭 #개}}</translation>
 <translation id="6451689256222386810">암호를 잊어버렸거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />합니다.</translation>
 <translation id="6452181791372256707">거부</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> 완료</translation>
 <translation id="6452961788130242735">네트워크 문제 또는 잘못된 영역</translation>
 <translation id="6455264371803474013">특정 사이트에서</translation>
 <translation id="6455894534188563617">새 폴더(&amp;N)</translation>
@@ -4622,6 +4631,7 @@
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">속도</translation>
 <translation id="6681668084120808868">사진 찍기</translation>
+<translation id="6684827949542560880">최신 업데이트 다운로드 중</translation>
 <translation id="668599234725812620">Google Play 열기</translation>
 <translation id="6686490380836145850">우측 탭 닫기</translation>
 <translation id="6686817083349815241">비밀번호 저장</translation>
@@ -4731,6 +4741,7 @@
 <translation id="6812841287760418429">변경사항 유지</translation>
 <translation id="6817174620439930047">사이트에서 시스템 전용 메시지를 사용하여 MIDI 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="6818198425579322765">페이지 번역 출발어</translation>
+<translation id="6818802132960437751">내장 바이러스 보호 기능</translation>
 <translation id="682123305478866682">데스크톱 전송</translation>
 <translation id="6823174134746916417">터치패드 탭하여 클릭</translation>
 <translation id="6823506025919456619">기기를 보려면 Chrome에 로그인하세요.</translation>
@@ -5376,6 +5387,7 @@
 <translation id="7631205654593498032">기기를 연결하면 <ph name="DEVICE_TYPE" />에서 다음 작업을 처리하는 것에 동의하게 됩니다.</translation>
 <translation id="7631887513477658702">해당 유형의 파일 항상 열기(&amp;A)</translation>
 <translation id="7632948528260659758">다음 키오스크 앱을 업데이트하지 못했습니다.</translation>
+<translation id="7633724038415831385">이번에만 업데이트를 기다리시면 됩니다. Chromebook에서는 소프트웨어 업데이트가 백그라운드에서 이루어집니다.</translation>
 <translation id="7634566076839829401">문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="763632859238619983">모든 사이트에서 결제 핸들러 설치 허용 안함</translation>
 <translation id="7636919061354591437">이 기기에 설치</translation>
@@ -6145,6 +6157,7 @@
 <translation id="8546930481464505581">Touch Bar 맞춤설정</translation>
 <translation id="8547013269961688403">전체화면 돋보기 사용</translation>
 <translation id="85486688517848470">맨 위 키의 동작을 전환하려면 검색 키를 길게 누름</translation>
+<translation id="8549316893834449916">Gmail, 드라이브, YouTube 등에 사용하는 계정과 동일한 Google 계정으로 Chromebook에 로그인합니다.</translation>
 <translation id="8551388862522347954">라이선스</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>

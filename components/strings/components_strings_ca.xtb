@@ -216,7 +216,7 @@
 <translation id="1752021286346845558">Bústia de correu 8</translation>
 <translation id="1753706481035618306">Número de pàgina</translation>
 <translation id="1763864636252898013">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el sistema operatiu del vostre dispositiu considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
-<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proveu d'executar el Diagnòstic de xarxa de Windows<ph name="END_LINK" />.</translation>
+<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prova d'executar el diagnòstic de xarxes de Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">El servidor de destinació, <ph name="ORIGIN" />, ha establert una capçalera en què se sol·licita que s'apliqui una política d'origen a totes les sol·licituds que rebi. Tanmateix, com que la capçalera no està ben formada, el navegador no pot completar la sol·licitud que has fet per a <ph name="SITE" />. Els operadors de llocs web poden fer servir les polítiques d'origen per configurar la seguretat i altres propietats d'un lloc web.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1783075131180517613">Actualitzeu la frase de contrasenya de sincronització.</translation>
@@ -368,7 +368,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Tria el mètode d'entrega</translation>
 <translation id="2465688316154986572">Grapat</translation>
-<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar el Diagnòstic de xarxa<ph name="END_LINK" /></translation>
+<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar el diagnòstic de xarxes<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Ordre d'1 a N</translation>
 <translation id="2479410451996844060">URL de cerca no vàlid.</translation>
 <translation id="2482878487686419369">Notificacions</translation>
@@ -792,7 +792,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
     &lt;p&gt;Recordeu que heu de tornar a activar el programari antivirus quan hàgiu acabat.&lt;/p&gt;
     &lt;h4&gt;Pas 5: obteniu més ajuda&lt;/h4&gt;
     &lt;p&gt;Si encara veieu l'error, contacteu amb el propietari del lloc web.&lt;/p&gt;</translation>
-<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Proveu d'executar el Diagnòstic de xarxa<ph name="END_LINK" />.</translation>
+<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prova d'executar el diagnòstic de xarxes<ph name="END_LINK" />.</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Ves a <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Vàlid</translation>
 <translation id="4250431568374086873">La connexió amb aquest lloc web no és del tot segura</translation>
@@ -896,7 +896,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4702504834785592287">Costat</translation>
 <translation id="4708268264240856090">La connexió s'ha interromput</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
-<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executa el Diagnòstic de xarxa de Windows<ph name="END_LINK" />.</translation>
+<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar el diagnòstic de xarxes de Windows<ph name="END_LINK" />.</translation>
 <translation id="4726672564094551039">Torna a carregar les polítiques</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4731638775147756694">L'administrador ha bloquejat l'aplicació</translation>

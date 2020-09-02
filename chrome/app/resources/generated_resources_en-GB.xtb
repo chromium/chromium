@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">To ask for access, contact the administrator of this device.</translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1149725087019908252">Scanning <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">This is the last automatic software and security update for this <ph name="DEVICE_TYPE" />. To get future updates, upgrade to a newer model. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Sunglasses</translation>
 <translation id="1151917987301063366">Always allow <ph name="HOST" /> to access sensors</translation>
 <translation id="1153356358378277386">Paired devices</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Mechanical issue. Check printer</translation>
 <translation id="1363585519747660921">USB printer needs configuration</translation>
 <translation id="1365180424462182382">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Find out more&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Choose a file</translation>
 <translation id="1369149969991017342">Switch Access (control the computer with just one or two switches)</translation>
 <translation id="1372841398847029212">Sync to your account</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Label (optional)</translation>
 <translation id="1877520246462554164">Failed to get authentication token. Please sign out then sign in again to try again.</translation>
 <translation id="1877860345998737529">Switch action assignment</translation>
+<translation id="1878155070920054810">Looks like your Chromebook will run out of power before the update is complete. Make sure that it's charging correctly to avoid interruption.</translation>
 <translation id="1879000426787380528">Sign in as</translation>
 <translation id="1880905663253319515">Delete certificate "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Keyboard layout</translation>
@@ -1074,6 +1075,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2270627217422354837">Exchange data with any device in the domains: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Martini glass</translation>
 <translation id="2273119997271134996">Dock video-port issue</translation>
+<translation id="2274840746523584236">Charge your Chromebook</translation>
 <translation id="2276503375879033601">Add More Apps</translation>
 <translation id="2277255602909579701">All cookies and site data</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 item copied}other{# items copied}}</translation>
@@ -1420,7 +1422,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2682498795777673382">Update from a parent</translation>
 <translation id="2683638487103917598">Folder sorted</translation>
 <translation id="2684004000387153598">To continue, click OK, then click Add Person to create a new profile for your email address.</translation>
-<translation id="2686222346846590368">This is the last automatic software and security update for this <ph name="DEVICE_TYPE" />. To get future updates, upgrade to a newer model. &lt;a target="_blank" href="<ph name="URL" />"&gt;Learn more<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
 <translation id="2687407218262674387">Google Terms of Service</translation>
 <translation id="2688196195245426394">Error when registering the device with the server: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3004391367407090544">Please come back later</translation>
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="3007771295016901659">Duplicate tab</translation>
+<translation id="3008232374986381779">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
@@ -1929,6 +1931,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{This data has sensitive or dangerous content. Remove this content and try again.}=1{This file has sensitive or dangerous content. Remove this content and try again.}other{These files have sensitive or dangerous content. Remove this content and try again.}}</translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
 <translation id="3325910708063135066">Camera and microphone are turned off in Mac System Preferences</translation>
+<translation id="3327050066667856415">Chromebooks are designed for security. Your device is protected from malware automatically – no extra software required.</translation>
 <translation id="3328489342742826322">Restoring from a backup will delete existing Linux applications and data in your Linux files folder.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">App info</translation>
@@ -2118,6 +2121,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3556433843310711081">Your manager can unblock it for you</translation>
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
 <translation id="3559262020195162408">Failed to install policy on the device.</translation>
+<translation id="3559533181353831840">About <ph name="TIME_LEFT" /> left</translation>
 <translation id="3560034655160545939">&amp;Spell check</translation>
 <translation id="3562423906127931518">This process may take a few minutes. Setting up the Linux container.</translation>
 <translation id="3563432852173030730">Kiosk application could not be downloaded.</translation>
@@ -2633,6 +2637,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="413121957363593859">Components</translation>
 <translation id="4131410914670010031">Black and white</translation>
 <translation id="413193092008917129">Network diagnostic routines</translation>
+<translation id="4132183752438206707">Find apps on the Google Play Store</translation>
 <translation id="4133076602192971179">Open the app to change your password</translation>
 <translation id="4136203100490971508">Night Light will turn off automatically at sunrise</translation>
 <translation id="41365691917097717">Continuing will enable ADB debugging for creating and testing Android apps. Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>
@@ -2881,6 +2886,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4479877282574735775">Configuring the virtual machine. This may take a few minutes.</translation>
 <translation id="4480590691557335796">Chrome can find harmful software on your computer and remove it</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
+<translation id="4487489714832036847">Chromebooks use apps instead of traditional software. Get apps for productivity, entertainment and more.</translation>
 <translation id="4488502501195719518">Clear all data?</translation>
 <translation id="4493468155686877504">Recommended (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Don't show on this page</translation>
@@ -3724,6 +3730,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5551573675707792127">Keyboard and text input</translation>
 <translation id="5553089923092577885">Certificate Policy Mappings</translation>
+<translation id="5554403733534868102">After this, no waiting for updates</translation>
 <translation id="5554489410841842733">This icon will be visible when the extension can act on the current page.</translation>
 <translation id="5554720593229208774">Email Certification Authority</translation>
 <translation id="5556459405103347317">Reload</translation>
@@ -4137,6 +4144,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6061882183774845124">Send link to your devices</translation>
 <translation id="6064217302520318294">Screen lock</translation>
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
+<translation id="6069464830445383022">Your Google Account is your Chromebook sign-in</translation>
 <translation id="6069671174561668781">set wallpaper</translation>
 <translation id="6071181508177083058">confirm password</translation>
 <translation id="6071576563962215370">The system failed to establish the device installation-time attributes lock.</translation>
@@ -4452,6 +4460,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> and 1 other tab}other{<ph name="PAGE_TITLE" /> and # other tabs}}</translation>
 <translation id="6451689256222386810">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Reject</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> complete</translation>
 <translation id="6452961788130242735">Network problem or bad realm</translation>
 <translation id="6455264371803474013">On specific sites</translation>
 <translation id="6455894534188563617">&amp;New Folder</translation>
@@ -4624,6 +4633,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Rate</translation>
 <translation id="6681668084120808868">Take photo</translation>
+<translation id="6684827949542560880">Downloading the latest update</translation>
 <translation id="668599234725812620">Open Google Play</translation>
 <translation id="6686490380836145850">Close tabs to the right</translation>
 <translation id="6686817083349815241">Save your password</translation>
@@ -4733,6 +4743,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6812841287760418429">Keep changes</translation>
 <translation id="6817174620439930047">Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)</translation>
 <translation id="6818198425579322765">Page language to translate</translation>
+<translation id="6818802132960437751">Built-in virus protection</translation>
 <translation id="682123305478866682">Cast desktop</translation>
 <translation id="6823174134746916417">Touchpad tap-to-click</translation>
 <translation id="6823506025919456619">You need to sign in to Chrome to see your devices</translation>
@@ -5378,6 +5389,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7631205654593498032">When you connect your devices, you agree that your <ph name="DEVICE_TYPE" /> can:</translation>
 <translation id="7631887513477658702">&amp;Always Open Files of This Type</translation>
 <translation id="7632948528260659758">The following kiosk apps have been failed for updating:</translation>
+<translation id="7633724038415831385">This is the only time that you’ll wait for an update. On Chromebooks, software updates happen in the background.</translation>
 <translation id="7634566076839829401">Something went wrong. Please try again.</translation>
 <translation id="763632859238619983">Do not allow any site to install payment handlers</translation>
 <translation id="7636919061354591437">Install on this device</translation>
@@ -6147,6 +6159,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8546930481464505581">Customise Touch Bar</translation>
 <translation id="8547013269961688403">Enable full-screen magnifier</translation>
 <translation id="85486688517848470">Hold the Search key to switch the behaviour of the top-row keys</translation>
+<translation id="8549316893834449916">You’ll use your Google Account to sign in to your Chromebook – the same account that you use for Gmail, Drive, YouTube and more.</translation>
 <translation id="8551388862522347954">Licences</translation>
 <translation id="8551588720239073785">Date and time settings</translation>
 <translation id="8553342806078037065">Manage other people</translation>

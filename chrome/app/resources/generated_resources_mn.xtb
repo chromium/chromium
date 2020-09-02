@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Хандалт хүсэхийн тулд энэ төхөөрөмжийн администратортай холбоо барина уу.</translation>
 <translation id="1149401351239820326">Хугацаа дуусах сар</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" />-г скан хийж байна</translation>
+<translation id="1150490752229770117">Энэ бол энэ <ph name="DEVICE_TYPE" />-н программ хангамж болон аюулгүй байдлын сүүлийн автомат шинэчлэлт. Ирээдүйд шинэчлэлт хийхийн тулд, шинэ загварт дэвшүүлнэ үү. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Нарны шил</translation>
 <translation id="1151917987301063366"><ph name="HOST" />-д мэдрэгчид хандахыг тогтмол зөвшөөрөх</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Механик асуудал. Хэвлэгчийг шалгана уу</translation>
 <translation id="1363585519747660921">USB хэвлэгчид тохируулга хийх шаардлагатай</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" />-с таны <ph name="BEGIN_LINK" />хөтчийг удирдаж байна<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534"><ph name="DEVICE_TYPE" /> дээр Linux-н хэрэгслүүд, засварлагч болон IDE-г ажиллуулна уу. &lt;a target="_blank" href="<ph name="URL" />"&gt;Нэмэлт мэдээлэл авах&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Файлыг сонгоно уу</translation>
 <translation id="1369149969991017342">Сэлгүүр хэрэглэх боломж (нэг эсвэл хоёр сэлгүүрээр л компьютерыг удирдах)</translation>
 <translation id="1372841398847029212">Бүртгэлдээ синк хийх</translation>
@@ -756,6 +756,7 @@
 <translation id="1877377290348678128">Шошго (заавал биш)</translation>
 <translation id="1877520246462554164">Нотолгооны тэмдгийг авч чадсангүй. Дахин оролдохын тулд бүртгэлээсээ гараад буцаж нэвтэрнэ үү.</translation>
 <translation id="1877860345998737529">Үйлдлийн тохируулгыг шилжүүлэх</translation>
+<translation id="1878155070920054810">Шинэчилж дуусахаас өмнө таны Chromebook-н тэжээл тань дуусах бололтой. Ажиллагаа тасалдахаас зайлсхийхийн тулд зөв цэнэглэгдэж байгаа эсэхийг нь шалгана уу.</translation>
 <translation id="1879000426787380528">-р нэвтрэх</translation>
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" сертификатыг устгах уу?</translation>
 <translation id="1881445033931614352">Гарын загвар</translation>
@@ -1070,6 +1071,7 @@
 <translation id="2270627217422354837">Домэйнд <ph name="DOMAINS" /> холбогдсон ямар ч төхөөрөмжийг ашиглан мэдээлэл солилцоорой</translation>
 <translation id="2272570998639520080">Мартини шил</translation>
 <translation id="2273119997271134996">Холбогчийн видео портын асуудал</translation>
+<translation id="2274840746523584236">Chromebook-ээ цэнэглэнэ үү</translation>
 <translation id="2276503375879033601">Илүү их апп нэмэх</translation>
 <translation id="2277255602909579701">Бүх күүки, сайтын өгөгдөл</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 зүйл хуулсан}other{# зүйл хуулсан}}</translation>
@@ -1415,7 +1417,6 @@
 <translation id="2682498795777673382">Таны эцэг эхийн хийсэн шинэчлэлт</translation>
 <translation id="2683638487103917598">Эрэмбэлсэн фолдер</translation>
 <translation id="2684004000387153598">Үргэлжлүүлэхийн тулд OK сонголтыг дараад имэйл хаягаараа шинэ профайл үүсгэхийн тулд Хүн нэмэх гэсэн сонголтыг дарна уу.</translation>
-<translation id="2686222346846590368">Энэ бол энэ <ph name="DEVICE_TYPE" />-н программ хангамж болон аюулгүй байдлын сүүлийн автомат шинэчлэлт юм. Цаашид шинэчлэлт авахын тулд шинэ загвар луу сайжруулна уу. &lt;a target="_blank" href="<ph name="URL" />"&gt;Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Бүх күүкиг блоклох (зөвлөдөггүй)</translation>
 <translation id="2687407218262674387">Google-н үйлчилгээний нөхцөл</translation>
 <translation id="2688196195245426394">Төхөөрөмжийг серверт бүртгүүлэх үед алдаа гарлаа: <ph name="CLIENT_ERROR" /> .</translation>
@@ -1681,6 +1682,7 @@
 <translation id="3004391367407090544">Дараа дахин хандана уу</translation>
 <translation id="3006881078666935414">Хэрэглээний дата алга</translation>
 <translation id="3007771295016901659">Чихтэй хуудсыг хуулбарлах</translation>
+<translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> дээрээ Linux-н хэрэгсэл, засварлагч болон IDE-г ажиллуулах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Зөвшөөрлийг шинэчлэх</translation>
 <translation id="3009300415590184725">Та гар утасны өгөгдлийн үйлчилгээний тохиргоо хийх явцыг цуцлахыг хүсэж байгаа гэдэгтээ итгэлтэй байна уу?</translation>
 <translation id="3009779501245596802">Индексжүүлсэн мэдээллийн сан</translation>
@@ -1924,6 +1926,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Энэ өгөгдөл эмзэг эсвэл аюултай контенттой байна. Энэ контентыг хасаад, дахин оролдоно уу.}=1{Энэ файл эмзэг эсвэл аюултай контенттой байна. Энэ контентыг хасаад, дахин оролдоно уу.}other{Эдгээр файл эмзэг эсвэл аюултай контенттой байна. Энэ контентыг хасаад, дахин оролдоно уу.}}</translation>
 <translation id="3323521181261657960">Бонус! Таны дэлгэцийн цагийг сунгалаа</translation>
 <translation id="3325910708063135066">Камер болон микрофоныг Mac-н системийн сонголтод унтраасан байна</translation>
+<translation id="3327050066667856415">Chromebook-г аюулгүй байдалд зориулж бүтээсэн. Таны төхөөрөмж хортой кодоос автоматаар хамгаалагддаг бөгөөд нэмэлт программ хангамж шаардлагагүй.</translation>
 <translation id="3328489342742826322">Нөөцлөлтөөс сэргээх нь таны Linux-н файлын фолдерт байгаа Linux-н апп болон өгөгдлийг устгана.</translation>
 <translation id="3331321258768829690">( <ph name="UTCOFFSET" /> ) <ph name="LONGTZNAME" /> ( <ph name="EXEMPLARCITY" /> )</translation>
 <translation id="3331974543021145906">Аппликейшний мэдээлэл...</translation>
@@ -2113,6 +2116,7 @@
 <translation id="3556433843310711081">Таны менежер үүнийг блокоос гаргах боломжтой</translation>
 <translation id="3557101512409028104">Family Link-р вэб сайтын хязгаарлалт, дэлгэцийн цагийн хязгаар тогтоох</translation>
 <translation id="3559262020195162408">Удирдамжийг төхөөрөмж дээр суулгаж чадсангүй.</translation>
+<translation id="3559533181353831840">Ойролцоогоор <ph name="TIME_LEFT" /> үлдсэн</translation>
 <translation id="3560034655160545939">&amp;Зөв бичгийн алдаа шалгагч</translation>
 <translation id="3562423906127931518">Энэ боловсруулалтад хэдэн минут шаардлагатай. Linux-н контейнерыг тохируулж байна.</translation>
 <translation id="3563432852173030730">Киоск программыг татаж авч чадсангүй.</translation>
@@ -2627,6 +2631,7 @@
 <translation id="413121957363593859">Бүрдлүүд</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="413193092008917129">Сүлжээний оношилгооны хэвшлүүд</translation>
+<translation id="4132183752438206707">Google Play Дэлгүүрээс апп хайж олох</translation>
 <translation id="4133076602192971179">Нууц үгээ өөрчлөхийн тулд аппыг нээнэ үү</translation>
 <translation id="4136203100490971508">Нар мандахад шөнийн гэрэл автоматаар унтарна</translation>
 <translation id="41365691917097717">Үргэлжлүүлснээр Андройд апп үүсгэх болон туршихад зориулж ADB алдаа засахыг идэвхжүүлнэ. Энэ үйлдэл нь Google-н баталгаажуулаагүй Андройд аппыг суулгахыг зөвшөөрөх бөгөөд идэвхгүй болгоход үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай.</translation>
@@ -2875,6 +2880,7 @@
 <translation id="4479877282574735775">Виртуал машиныг тохируулж байна. Үүнд хэдэн хором шаардлагатай.</translation>
 <translation id="4480590691557335796">Chrome таны компьютероос хортой программ хангамжийг олж устгах боломжтой</translation>
 <translation id="4481530544597605423">Хослоогүй төхөөрөмж</translation>
+<translation id="4487489714832036847">Chromebook уламжлалт программ хангамжийн оронд аппыг ашигладаг. Бүтээмж, энтертэйнмент болон бусад зүйлд зориулсан аппуудыг татаж аваарай.</translation>
 <translation id="4488502501195719518">Бүх өгөгдлийг устгах уу?</translation>
 <translation id="4493468155686877504">Санал болгосон (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Энэ хуудсан дээр бүү үзүүл</translation>
@@ -3718,6 +3724,7 @@
 <translation id="5548606607480005320">Аюулгүй байдлын шалгалт</translation>
 <translation id="5551573675707792127">Гар болон текстийн оролт</translation>
 <translation id="5553089923092577885">Гэрчилгээний бодлогын зураглал</translation>
+<translation id="5554403733534868102">Үүнээс хойш шинэчлэлт хийхийн тулд хүлээх шаардлагагүй болно</translation>
 <translation id="5554489410841842733">Өргөтгөл нь одоо байгаа хуудсан дээр ажиллаж чадаж байгаа үед энэ дүрс харагдах болно.</translation>
 <translation id="5554720593229208774">Имэйл Certification Authority</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
@@ -4131,6 +4138,7 @@
 <translation id="6061882183774845124">Төхөөрөмжүүддээ холбоос илгээх</translation>
 <translation id="6064217302520318294">Дэлгэцийн түгжээ</translation>
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
+<translation id="6069464830445383022">Та Google Бүртгэлээрээ Chromebook-тээ нэвтэрнэ</translation>
 <translation id="6069671174561668781">Ханын зураг тохируулах</translation>
 <translation id="6071181508177083058">нууц үгийг баталгаажуулах</translation>
 <translation id="6071576563962215370">Систем төхөөрөмжийг суулгах хугацааны атрибутын түгжээг үүсгэж чадсангүй.</translation>
@@ -4446,6 +4454,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> болон бусад 1 таб}other{<ph name="PAGE_TITLE" /> болон бусад # таб}}</translation>
 <translation id="6451689256222386810">Хэрэв та нэвтрэх үгээ мартсан, эсвэл энэ тохиргоог өөрчлөх бол <ph name="BEGIN_LINK" />синкийг дахин тохируулна уу<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Татгалзах</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> болсон</translation>
 <translation id="6452961788130242735">Сүлжээний асуудал эсвэл муу домэйн</translation>
 <translation id="6455264371803474013">Зөвхөн сонгосон сайтуудад</translation>
 <translation id="6455894534188563617">&amp;Шинэ фолдер</translation>
@@ -4618,6 +4627,7 @@
 <translation id="6680442031740878064">Сул зай: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Үнэлэх</translation>
 <translation id="6681668084120808868">Гэрэл зураг авах</translation>
+<translation id="6684827949542560880">Хамгийн сүүлийн шинэчлэлтийг татаж байна</translation>
 <translation id="668599234725812620">Google Play-г нээх</translation>
 <translation id="6686490380836145850">Цонхнуудыг баруун тийш нь хаах</translation>
 <translation id="6686817083349815241">Нууц үгээ хадгална уу</translation>
@@ -4727,6 +4737,7 @@
 <translation id="6812841287760418429">Өөрчлөлтийг хадгал</translation>
 <translation id="6817174620439930047">Сайт MIDI төхөөрөмжид хандахын тулд системийн тусгай мессежийг ашиглахыг хүссэн тохиолдолд асуух (санал болгосон)</translation>
 <translation id="6818198425579322765">Хуудсыг орчуулах хэл</translation>
+<translation id="6818802132960437751">Суурилуулсан вирусний хамгаалалт</translation>
 <translation id="682123305478866682">Компьютерийг дамжуулах</translation>
 <translation id="6823174134746916417">Мэдрэгч самбарын tap-to-click</translation>
 <translation id="6823506025919456619">Та төхөөрөмжүүдээ харахын тулд Chrome руу нэвтрэх хэрэгтэй</translation>
@@ -5372,6 +5383,7 @@
 <translation id="7631205654593498032">Төхөөрөмжүүдээ холбосноор та <ph name="DEVICE_TYPE" />-даа дараах зөвшөөрлийг олгож байна:</translation>
 <translation id="7631887513477658702">Энэ төрлийн файлуудыг байнга нээдэг байх</translation>
 <translation id="7632948528260659758">Дараах киоск апликейшнүүдийг шинэчлэж чадсангүй:</translation>
+<translation id="7633724038415831385">Та шинэчлэлт хийхдээ зөвхөн энэ удаа л хүлээнэ. Chromebook дээр программ хангамжийн шинэчлэлт ард хийгдэж байдаг.</translation>
 <translation id="7634566076839829401">Алдаа гарлаа. Дахин ачаална уу.</translation>
 <translation id="763632859238619983">Аливаа сайтад төлбөр зохицуулагч суулгахыг бүү зөвшөөр</translation>
 <translation id="7636919061354591437">Энэ төхөөрөмж дээр суулгах</translation>
@@ -6137,6 +6149,7 @@
 <translation id="8546930481464505581">Хүрэх мөрийг өөрчлөх</translation>
 <translation id="8547013269961688403">Бүтэн дэлгэцийн томруулагчийг идэвхжүүлэх</translation>
 <translation id="85486688517848470">Дээд мөрний түлхүүрийн функцийг сэлгэхийн тулд Хайлтын түлхүүрийг дарна уу</translation>
+<translation id="8549316893834449916">Та Chromebook- дээ нэвтрэхдээ Gmail, Драйв, YouTube болон бусад зүйлд нэвтрэхдээ ашигладаг Google Бүртгэлээ ашиглана.</translation>
 <translation id="8551388862522347954">Лиценз</translation>
 <translation id="8551588720239073785">Огноо болон цагийн тохиргоо</translation>
 <translation id="8553342806078037065">Бусад хүмүүсийг удирдах</translation>

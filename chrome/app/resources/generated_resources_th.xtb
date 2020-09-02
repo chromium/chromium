@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">หากต้องการสิทธิ์เข้าถึง ให้ติดต่อผู้ดูแลระบบของอุปกรณ์นี้</translation>
 <translation id="1149401351239820326">เดือนที่หมดอายุ</translation>
 <translation id="1149725087019908252">กำลังสแกน <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">นี่เป็นการอัปเดตซอฟต์แวร์และความปลอดภัยอัตโนมัติครั้งสุดท้ายสำหรับ <ph name="DEVICE_TYPE" /> เครื่องนี้ โปรดอัปเกรดเป็นรุ่นที่ใหม่กว่าเพื่อรับการอัปเดตในอนาคต <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">แว่นกันแดด</translation>
 <translation id="1151917987301063366">อนุญาตให้ <ph name="HOST" /> เข้าถึงเซ็นเซอร์เสมอ</translation>
 <translation id="1153356358378277386">อุปกรณ์ที่จับคู่</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">ปัญหาด้านกลไก ตรวจสอบเครื่องพิมพ์</translation>
 <translation id="1363585519747660921">เครื่องพิมพ์ USB ต้องการการกำหนดค่า</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />เบราว์เซอร์ของคุณได้รับการจัดการ<ph name="END_LINK" />โดย <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">เรียกใช้เครื่องมือ ตัวแก้ไข และ IDE สำหรับ Linux ใน <ph name="DEVICE_TYPE" /> &lt;a target="_blank" href="<ph name="URL" />"&gt;ดูข้อมูลเพิ่มเติม&lt;/a&gt;</translation>
 <translation id="1367951781824006909">เลือกไฟล์</translation>
 <translation id="1369149969991017342">การเข้าถึงด้วยสวิตช์ (ควบคุมคอมพิวเตอร์ด้วยสวิตช์เพียง 1-2 ตัว)</translation>
 <translation id="1372841398847029212">ซิงค์กับบัญชีของคุณ</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">ป้ายกำกับ (ไม่บังคับ)</translation>
 <translation id="1877520246462554164">ไม่ได้รับโทเค็นการตรวจสอบสิทธิ์ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้งเพื่อลองอีกครั้ง</translation>
 <translation id="1877860345998737529">การกำหนดการดำเนินการด้วยสวิตช์</translation>
+<translation id="1878155070920054810">ดูเหมือนว่าพลังงานของ Chromebook จะหมดก่อนการอัปเดตเสร็จสิ้น ตรวจสอบว่าได้ชาร์จอุปกรณ์ดังกล่าวอย่างถูกต้อง เพื่อไม่ให้การอัปเดตหยุดชะงัก</translation>
 <translation id="1879000426787380528">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="1880905663253319515">ลบใบรับรอง "<ph name="CERTIFICATE_NAME" />" หรือไม่</translation>
 <translation id="1881445033931614352">รูปแบบแป้นพิมพ์</translation>
@@ -1074,6 +1075,7 @@
 <translation id="2270627217422354837">แลกเปลี่ยนข้อมูลกับอุปกรณ์ในโดเมน <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">แก้วมาร์ตินี่</translation>
 <translation id="2273119997271134996">พอร์ตวิดีโอบนแท่นชาร์จมีปัญหา</translation>
+<translation id="2274840746523584236">ชาร์จ Chromebook ของคุณ</translation>
 <translation id="2276503375879033601">เพิ่มแอปพลิเคชันอื่นๆ</translation>
 <translation id="2277255602909579701">คุกกี้และข้อมูลเว็บไซต์ทั้งหมด</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{คัดลอกแล้ว 1 รายการ}other{คัดลอกแล้ว # รายการ}}</translation>
@@ -1420,7 +1422,6 @@
 <translation id="2682498795777673382">อัปเดตจากผู้ปกครองของคุณ</translation>
 <translation id="2683638487103917598">จัดเรียงโฟลเดอร์แล้ว</translation>
 <translation id="2684004000387153598">หากต้องการดำเนินการต่อ ให้คลิก "ตกลง" จากนั้นคลิก "เพิ่มบุคคล" เพื่อสร้างโปรไฟล์ใหม่สำหรับที่อยู่อีเมล</translation>
-<translation id="2686222346846590368">นี่เป็นการอัปเดตซอฟต์แวร์และความปลอดภัยอัตโนมัติครั้งสุดท้ายสำหรับ <ph name="DEVICE_TYPE" /> เครื่องนี้ โปรดอัปเกรดเป็นรุ่นที่ใหม่กว่าเพื่อรับการอัปเดตในอนาคต &lt;a target="_blank" href="<ph name="URL" />"&gt;ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="2687407218262674387">ข้อกำหนดในการให้บริการ Google</translation>
 <translation id="2688196195245426394">เกิดข้อผิดพลาดขณะลงทะเบียนอุปกรณ์กับเซิร์ฟเวอร์: <ph name="CLIENT_ERROR" /></translation>
@@ -1686,6 +1687,7 @@
 <translation id="3004391367407090544">โปรดกลับมาอีกในภายหลัง</translation>
 <translation id="3006881078666935414">ไม่มีข้อมูลการใช้งาน</translation>
 <translation id="3007771295016901659">ทำซ้ำแท็บ</translation>
+<translation id="3008232374986381779">เรียกใช้เครื่องมือ ตัวแก้ไข และ IDE ของ Linux ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
 <translation id="3009300415590184725">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกขั้นตอนการตั้งค่าบริการข้อมูลโทรศัพท์มือถือ</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
@@ -1929,6 +1931,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{ข้อมูลนี้มีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย นำเนื้อหานี้ออกแล้วลองอีกครั้ง}=1{ไฟล์นี้มีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย นำเนื้อหานี้ออกแล้วลองอีกครั้ง}other{ไฟล์เหล่านี้มีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย นำเนื้อหานี้ออกแล้วลองอีกครั้ง}}</translation>
 <translation id="3323521181261657960">พิเศษสุด คุณได้เวลาอยู่หน้าจอเพิ่มขึ้น</translation>
 <translation id="3325910708063135066">กล้องและไมโครโฟนปิดอยู่ในค่ากำหนดของระบบ Mac</translation>
+<translation id="3327050066667856415">Chromebook ออกแบบมาเพื่อความปลอดภัย อุปกรณ์ของคุณได้รับการปกป้องจากมัลแวร์โดยอัตโนมัติ ไม่ต้องใช้ซอฟต์แวร์เพิ่มเติม</translation>
 <translation id="3328489342742826322">การคืนค่าข้อมูลสำรองจะลบแอปพลิเคชันและข้อมูลของ Linux ที่มีอยู่ในโฟลเดอร์ไฟล์ Linux</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ข้อมูลแอป</translation>
@@ -2051,7 +2054,7 @@
 <translation id="3471876058939596279">ใช้พอร์ต HDMI และ USB Type-C สำหรับวิดีโอพร้อมกันไม่ได้ โปรดใช้พอร์ตวิดีโออื่น</translation>
 <translation id="3473241910002674503">ไปยังหน้าแรก ย้อนกลับ และสลับแอปด้วยปุ่มในโหมดแท็บเล็ต</translation>
 <translation id="3473479545200714844">แว่นขยายหน้าจอ</translation>
-<translation id="347394413229268704">อ่านภายหลัง</translation>
+<translation id="347394413229268704">อ่านในภายหลัง</translation>
 <translation id="3475843873335999118">ขออภัย ระบบยังคงไม่รู้จักลายนิ้วมือของคุณ โปรดป้อนรหัสผ่าน</translation>
 <translation id="3476303763173086583">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของบุตรหลานให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุชื่อบุตรหลานของคุณ และจะช่วยปรับปรุงความเสถียรของแอปและระบบ และอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาซอฟต์แวร์ Android เจ้าของเป็นผู้บังคับใช้<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" />นี้ เจ้าของอาจเลือกที่จะส่งข้อมูลการวินิจฉัยและการใช้งานสำหรับอุปกรณ์นี้ไปยัง Google หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK2" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">อ๊ะ! ระบบไม่สามารถดึงข้อมูลนโยบายจากอุปกรณ์</translation>
@@ -2118,6 +2121,7 @@
 <translation id="3556433843310711081">ผู้จัดการสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
 <translation id="3557101512409028104">ตั้งค่าการจำกัดเว็บไซต์และจำกัดเวลาอยู่หน้าจอด้วย Family Link</translation>
 <translation id="3559262020195162408">ติดตั้งนโยบายในอุปกรณ์นี้ไม่สำเร็จ</translation>
+<translation id="3559533181353831840">ใช้เวลาอีก <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;ตรวจตัวสะกด</translation>
 <translation id="3562423906127931518">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังตั้งค่าคอนเทนเนอร์ Linux</translation>
 <translation id="3563432852173030730">ไม่สามารถดาวน์โหลดแอปพลิเคชันคีออสก์</translation>
@@ -2633,6 +2637,7 @@
 <translation id="413121957363593859">คอมโพเนนต์</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="413193092008917129">กิจวัตรการวินิจฉัยเครือข่าย</translation>
+<translation id="4132183752438206707">ค้นหาและดาวน์โหลดแอปบน Google Play Store</translation>
 <translation id="4133076602192971179">เปิดแอปเพื่อเปลี่ยนรหัสผ่าน</translation>
 <translation id="4136203100490971508">แสงตอนกลางคืนจะปิดโดยอัตโนมัติเมื่อพระอาทิตย์ขึ้น</translation>
 <translation id="41365691917097717">การดำเนินการต่อจะเป็นการเปิดใช้การแก้ไขข้อบกพร่อง ADB ของการสร้างและทดสอบแอป Android โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>
@@ -2881,6 +2886,7 @@
 <translation id="4479877282574735775">กำลังกำหนดค่าเครื่องเสมือน อาจใช้เวลาสักครู่</translation>
 <translation id="4480590691557335796">Chrome ค้นหาซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์และนำซอฟต์แวร์นั้นออกได้</translation>
 <translation id="4481530544597605423">อุปกรณ์ที่ไม่ได้จับคู่</translation>
+<translation id="4487489714832036847">Chromebook จะใช้งานแอปแทนซอฟต์แวร์ดั้งเดิม รับแอปเพื่อประสิทธิภาพการทำงาน ความบันเทิง และอื่นๆ</translation>
 <translation id="4488502501195719518">ล้างข้อมูลทั้งหมดไหม</translation>
 <translation id="4493468155686877504">แนะนำ (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">ไม่แสดงในหน้านี้อีก</translation>
@@ -3724,6 +3730,7 @@
 <translation id="5548606607480005320">การตรวจสอบความปลอดภัย</translation>
 <translation id="5551573675707792127">แป้นพิมพ์และการป้อนข้อความ</translation>
 <translation id="5553089923092577885">การจับคู่นโยบายใบรับรอง</translation>
+<translation id="5554403733534868102">หลังจากครั้งนี้ ก็ไม่ต้องรอการอัปเดตอีก</translation>
 <translation id="5554489410841842733">ไอคอนนี้จะมองเห็นได้เมื่อส่วนขยายสามารถทำงานบนหน้าปัจจุบันได้</translation>
 <translation id="5554720593229208774">ผู้ออกใบรับรองอีเมล</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
@@ -4137,6 +4144,7 @@
 <translation id="6061882183774845124">ส่งลิงก์ไปที่อุปกรณ์ของคุณ</translation>
 <translation id="6064217302520318294">ล็อกหน้าจอ</translation>
 <translation id="6065289257230303064">แอตทริบิวต์ไดเรกทอรีหัวเรื่องของใบรับรอง</translation>
+<translation id="6069464830445383022">ลงชื่อเข้าใช้ Chromebook ด้วยบัญชี Google ของคุณ</translation>
 <translation id="6069671174561668781">ตั้งค่าวอลเปเปอร์</translation>
 <translation id="6071181508177083058">ยืนยันรหัสผ่าน</translation>
 <translation id="6071576563962215370">ระบบสร้างการล็อกแอตทริบิวต์เวลาการติดตั้งของอุปกรณ์ไม่สำเร็จ</translation>
@@ -4452,6 +4460,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> และอีก 1 แท็บ}other{<ph name="PAGE_TITLE" /> และอีก # แท็บ}}</translation>
 <translation id="6451689256222386810">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="6452181791372256707">ปฏิเสธ</translation>
+<translation id="6452251728599530347">สมบูรณ์แล้ว <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">พบปัญหาเกี่ยวกับเครือข่ายหรือขอบเขตไม่ดี</translation>
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
 <translation id="6455894534188563617">และโฟลเดอร์ใหม่</translation>
@@ -4624,6 +4633,7 @@
 <translation id="6680442031740878064">พร้อมใช้งาน: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ความเร็ว</translation>
 <translation id="6681668084120808868">ถ่ายภาพ</translation>
+<translation id="6684827949542560880">กำลังดาวน์โหลดอัปเดตล่าสุด</translation>
 <translation id="668599234725812620">เปิด Google Play</translation>
 <translation id="6686490380836145850">ปิดแท็บทางด้านขวา</translation>
 <translation id="6686817083349815241">บันทึกรหัสผ่าน</translation>
@@ -4733,6 +4743,7 @@
 <translation id="6812841287760418429">เก็บการเปลี่ยนแปลงไว้</translation>
 <translation id="6817174620439930047">ถามเมื่อเว็บไซต์ต้องการใช้ข้อความเฉพาะของระบบในการเข้าถึงอุปกรณ์ MIDI (แนะนำ)</translation>
 <translation id="6818198425579322765">ภาษาปลายทางของหน้า</translation>
+<translation id="6818802132960437751">ระบบป้องกันไวรัสในตัว</translation>
 <translation id="682123305478866682">แคสต์เดสก์ท็อป</translation>
 <translation id="6823174134746916417">การแตะเพื่อคลิกทัชแพด</translation>
 <translation id="6823506025919456619">คุณต้องลงชื่อเข้าใช้ Chrome เพื่อดูอุปกรณ์ของคุณ</translation>
@@ -5378,6 +5389,7 @@
 <translation id="7631205654593498032">เมื่อเชื่อมต่ออุปกรณ์ คุณยินยอมให้ <ph name="DEVICE_TYPE" /> ดำเนินการดังนี้</translation>
 <translation id="7631887513477658702">&amp;เปิดไฟล์ประเภทนี้เสมอ</translation>
 <translation id="7632948528260659758">แอปคีออสก์ต่อไปนี้ไม่สามารถอัปเดตได้:</translation>
+<translation id="7633724038415831385">ต้องรอการอัปเดตเพียงแค่ครั้งนี้เท่านั้น เพราะตามปกติการอัปเดตซอฟต์แวร์บน Chromebooks จะเกิดขึ้นในเบื้องหลัง</translation>
 <translation id="7634566076839829401">เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง</translation>
 <translation id="763632859238619983">ไม่อนุญาตให้เว็บไซต์ใดก็ตามติดตั้งเครื่องจัดการการชำระเงิน</translation>
 <translation id="7636919061354591437">ติดตั้งในอุปกรณ์นี้</translation>
@@ -6147,6 +6159,7 @@
 <translation id="8546930481464505581">ปรับแต่ง Touch Bar</translation>
 <translation id="8547013269961688403">เปิดใช้แว่นขยายทั้งหน้าจอ</translation>
 <translation id="85486688517848470">กดแป้น "ค้นหา" ค้างไว้เพื่อเปลี่ยนการทำงานของแป้นแถวบนสุด</translation>
+<translation id="8549316893834449916">ลงชื่อเข้าใช้ Chromebook ของคุณด้วยบัญชี Google ซึ่งเป็นบัญชีเดียวกันกับ Gmail, ไดรฟ์, YouTube และอื่นๆ</translation>
 <translation id="8551388862522347954">ใบอนุญาต</translation>
 <translation id="8551588720239073785">การตั้งค่าวันที่และเวลา</translation>
 <translation id="8553342806078037065">จัดการบุคคลอื่นๆ</translation>

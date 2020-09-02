@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Para solicitar el acceso, comunícate con el administrador de este dispositivo.</translation>
 <translation id="1149401351239820326">Mes de vencimiento</translation>
 <translation id="1149725087019908252">Escaneando <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Esta es la última actualización automática de software y seguridad para el dispositivo <ph name="DEVICE_TYPE" />. Si quieres recibir futuras actualizaciones, obtén un modelo más nuevo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Gafas de sol</translation>
 <translation id="1151917987301063366">Siempre permitir que <ph name="HOST" /> acceda a los sensores</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Hubo un problema mecánico. Verifica la impresora.</translation>
 <translation id="1363585519747660921">La impresora USB debe configurarse</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> administra tu <ph name="BEGIN_LINK" />navegador<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">Ejecuta IDE, editores y herramientas de Linux en tu <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Más información&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Selecciona un archivo</translation>
 <translation id="1369149969991017342">Accesibilidad mejorada (controlar la computadora con solo uno o dos cambios)</translation>
 <translation id="1372841398847029212">Sincronizar con tu cuenta</translation>
@@ -757,6 +757,7 @@
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">No se pudo obtener el token de autenticación. Para volver a intentarlo, sal de la cuenta y vuelve a acceder.</translation>
 <translation id="1877860345998737529">Asignación de interruptores a acciones</translation>
+<translation id="1878155070920054810">Al parecer, tu Chromebook se quedará sin energía antes de que se complete la actualización. Para evitar interrupciones, asegúrate de que se cargue correctamente.</translation>
 <translation id="1879000426787380528">Acceder como</translation>
 <translation id="1880905663253319515">¿Eliminar certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Diseño del teclado</translation>
@@ -1071,6 +1072,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2270627217422354837">Intercambiar datos con cualquier dispositivo de los siguientes dominios: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Copa de martini</translation>
 <translation id="2273119997271134996">Problema en el puerto de video del conector</translation>
+<translation id="2274840746523584236">Carga la Chromebook</translation>
 <translation id="2276503375879033601">Agregar más aplicaciones</translation>
 <translation id="2277255602909579701">Todas las cookies y todos los datos de sitios</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 elemento copiado}other{# elementos copiados}}</translation>
@@ -1417,7 +1419,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2682498795777673382">Actualización por parte de uno de tus padres</translation>
 <translation id="2683638487103917598">Se ordenó la carpeta</translation>
 <translation id="2684004000387153598">Para continuar, haz clic en Aceptar y, luego, en Agregar un usuario para crear un nuevo perfil para tu dirección de correo electrónico.</translation>
-<translation id="2686222346846590368">Esta es la última actualización automática de software y seguridad para el dispositivo <ph name="DEVICE_TYPE" />. Para recibir futuras actualizaciones, obtén un modelo más nuevo. &lt;a target="_blank" href="<ph name="URL" />"&gt;Más información<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (opción no recomendada)</translation>
 <translation id="2687407218262674387">Condiciones del Servicio de Google</translation>
 <translation id="2688196195245426394">Se produjo un error al registrar el dispositivo en el servidor: <ph name="CLIENT_ERROR" />.</translation>
@@ -1683,6 +1684,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3004391367407090544">Regresa más tarde</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
+<translation id="3008232374986381779">Ejecuta las herramientas, los editores y los IDE de Linux en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3009300415590184725">¿Estás seguro de que deseas cancelar el proceso de configuración del servicio de datos para celulares?</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
@@ -1926,6 +1928,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Estos datos incluyen contenido sensible o peligroso. Quita el contenido correspondiente y vuelve a intentarlo.}=1{Este archivo incluye contenido sensible o peligroso. Quita el contenido correspondiente y vuelve a intentarlo.}other{Estos archivos incluyen contenido sensible o peligroso. Quita el contenido correspondiente y vuelve a intentarlo.}}</translation>
 <translation id="3323521181261657960">Bonus: Disfruta de más tiempo de uso</translation>
 <translation id="3325910708063135066">La cámara y el micrófono están desactivados en las Preferencias del Sistema de Mac</translation>
+<translation id="3327050066667856415">Las Chromebooks están diseñadas para ser seguras. Tu dispositivo cuenta con una protección automática contra software malicioso, por lo que no necesitas una protección adicional.</translation>
 <translation id="3328489342742826322">Si implementas una copia de seguridad, se borrarán los datos y apps de Linux existentes en tu carpeta de archivos de Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Info. de la aplicación</translation>
@@ -2115,6 +2118,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3556433843310711081">Tu administrador puede desbloquearlo por ti</translation>
 <translation id="3557101512409028104">Establece restricciones de sitios web y limita el tiempo de uso con Family Link</translation>
 <translation id="3559262020195162408">No se pudo instalar la política en el dispositivo.</translation>
+<translation id="3559533181353831840">Tiempo restante: <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Corrección ortográfica</translation>
 <translation id="3562423906127931518">Este proceso puede demorar unos minutos. Se está configurando el contenedor de Linux.</translation>
 <translation id="3563432852173030730">No se pudo descargar la aplicación del kiosco.</translation>
@@ -2630,6 +2634,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="413121957363593859">Componentes</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="413193092008917129">Rutinas de diagnóstico de red</translation>
+<translation id="4132183752438206707">Busca apps en Google Play Store</translation>
 <translation id="4133076602192971179">Abrir la app para cambiar la contraseña</translation>
 <translation id="4136203100490971508">La Luz nocturna se desactivará automáticamente al amanecer</translation>
 <translation id="41365691917097717">Si continúas, se habilitará la depuración de ADB para crear y probar apps para Android. Ten en cuenta que esta acción permite la instalación de apps para Android que Google no verificó. Si quieres inhabilitar ADB, deberás restablecer la configuración de fábrica.</translation>
@@ -2878,6 +2883,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4479877282574735775">Se está configurando la máquina virtual. Es posible que este proceso demore unos minutos.</translation>
 <translation id="4480590691557335796">Chrome puede buscar software dañino en tu computadora y quitarlo</translation>
 <translation id="4481530544597605423">Dispositivos no sincronizados</translation>
+<translation id="4487489714832036847">En lugar de software tradicional, las Chromebooks utilizan apps. Obtén apps de productividad, entretenimiento y mucho más.</translation>
 <translation id="4488502501195719518">¿Borrar todos los datos?</translation>
 <translation id="4493468155686877504">Recomendado (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">No mostrar en esta página</translation>
@@ -3721,6 +3727,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5551573675707792127">Entrada de texto y teclado</translation>
 <translation id="5553089923092577885">Asignaciones de directivas para certificados</translation>
+<translation id="5554403733534868102">A partir de ahora, ya no tendrás que esperar las actualizaciones</translation>
 <translation id="5554489410841842733">Este ícono será visible cuando la extensión pueda actuar en la página actual.</translation>
 <translation id="5554720593229208774">Entidad de certificación de correo electrónico</translation>
 <translation id="5556459405103347317">Cargar de nuevo</translation>
@@ -4134,6 +4141,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6061882183774845124">Enviar vínculo a tus dispositivos</translation>
 <translation id="6064217302520318294">Bloqueo de pantalla</translation>
 <translation id="6065289257230303064">Atributos de directorio del sujeto del certificado</translation>
+<translation id="6069464830445383022">Accede a la Chromebook con tu Cuenta de Google</translation>
 <translation id="6069671174561668781">Fondo de pantalla</translation>
 <translation id="6071181508177083058">confirmar contraseña</translation>
 <translation id="6071576563962215370">El sistema no pudo establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
@@ -4449,6 +4457,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> y 1 pestaña más}other{<ph name="PAGE_TITLE" /> y # pestañas más}}</translation>
 <translation id="6451689256222386810">Si olvidaste tu frase de contraseña o deseas cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Rechazar</translation>
+<translation id="6452251728599530347">Se completó en un <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Problema en la red o dominio incorrecto</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
@@ -4621,6 +4630,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidad</translation>
 <translation id="6681668084120808868">Tomar foto</translation>
+<translation id="6684827949542560880">Se está descargando la actualización más reciente</translation>
 <translation id="668599234725812620">Abrir Google Play</translation>
 <translation id="6686490380836145850">Cerrar pestañas a la derecha</translation>
 <translation id="6686817083349815241">Guardar la contraseña</translation>
@@ -4730,6 +4740,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6812841287760418429">Conservar cambios</translation>
 <translation id="6817174620439930047">Preguntarme cuando un sitio quiera usar los mensajes exclusivos del sistema para acceder a dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma de la página para traducir</translation>
+<translation id="6818802132960437751">Protección antivirus integrada</translation>
 <translation id="682123305478866682">Transmitir escritorio</translation>
 <translation id="6823174134746916417">Tocar para hacer clic del panel táctil</translation>
 <translation id="6823506025919456619">Debes acceder a Chrome para ver los dispositivos.</translation>
@@ -5375,6 +5386,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7631205654593498032">Cuando conectas tus dispositivos, aceptas que tu <ph name="DEVICE_TYPE" /> puede hacer lo siguiente:</translation>
 <translation id="7631887513477658702">&amp;Abrir siempre archivos de este tipo</translation>
 <translation id="7632948528260659758">No se pudieron actualizar las siguientes aplicaciones de kiosco:</translation>
+<translation id="7633724038415831385">Esta será la única vez que esperes una actualización de software, ya que en las Chromebooks estas se realizan en segundo plano.</translation>
 <translation id="7634566076839829401">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="763632859238619983">No permitir que ningún sitio instale controladores de pago</translation>
 <translation id="7636919061354591437">Instalar en este dispositivo</translation>
@@ -6144,6 +6156,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8546930481464505581">Personalizar la barra táctil</translation>
 <translation id="8547013269961688403">Habilitar lupa en pantalla completa</translation>
 <translation id="85486688517848470">Mantén presionada la tecla de búsqueda para cambiar el comportamiento de las teclas en la fila superior</translation>
+<translation id="8549316893834449916">Usarás tu Cuenta de Google para acceder a la Chromebook; es la misma que usas para Gmail, Drive, YouTube y otros servicios.</translation>
 <translation id="8551388862522347954">Licencias</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>

@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2277224997687551299">Qrup adına düzəliş edin</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qrupdan silin.}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qrupdan silin.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="2569352796411618312">Təklif: <ph name="NUMBER_OF_TABS" /> tabel bu yaxınlarda istifadə edilməyib. Bağlansınlar?</translation>
 <translation id="257674075312929031">Qrup</translation>
 <translation id="2613747923081026172">Qrup yaradın</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> tab qrupunu <ph name="NUMBER_OF_TABS" /> tab ilə genişləndirin.</translation>
 <translation id="2977480621796371840">Qrupdan çıxarın</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="4212246570487010370">Axtarmağa davam edin</translation>
 <translation id="4450893287417543264">Daha göstərməyin</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Nəzərdən keçirin</translation>
 <translation id="5073204694187207510">Tam ekran cədvəlini gizlədin</translation>
 <translation id="5082793167783849073">Qruplaşdırmaqla səhifələri asanlıqla müqayisə edin. Başlamaq üçün linkə toxunub saxlayın.</translation>
+<translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5533021382642990449">Sonra göstərin</translation>
+<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> tab olan tab qrupunu bağlayın</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab qruplaşdırıldı</translation>
 <translation id="58326064309361797">Tabları qruplaşdırmaq üçün sürüşdürün</translation>
+<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6510648526783655549">Tab zolağını bağlayın</translation>
 <translation id="6562820390860419811">Tabı sola daşıyın</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
 <translation id="6840760312327750441">Panelləri qruplaşdırmaq üçün panelə toxunub saxlayın. Daha sonra digər panelin üzərinə çəkin.</translation>
+<translation id="6856809498882026482">Çoxsaylı seçim rejimini gizlədin</translation>
 <translation id="7151209024774799310">Tabları qrupdan silin</translation>
+<translation id="7204204600596740190">Çoxsaylı seçim rejimi</translation>
+<translation id="753732157349120914">Tab Keçiricisi</translation>
 <translation id="7559245342362162951">Qrup tabını tam ekran cədvəlində göstərin</translation>
 <translation id="7792771145871471484">Təklifləri nəzərdən keçirin.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qruplaşdırın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qruplaşdırın}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>
 <translation id="8304833501377495048">Tab zolağı bir daha göstərilməsin?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> tabeli bağlayın}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> tabeli bağlayın}}</translation>
+<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> tab olan tab qrupunu genişləndirin.</translation>
 <translation id="8749939518995770034">Tab zolağı bağlıdır</translation>
 <translation id="9150694013019234766">Ekranın aşağısındakı tab qrupunda tablar arasında keçid edin</translation>
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>

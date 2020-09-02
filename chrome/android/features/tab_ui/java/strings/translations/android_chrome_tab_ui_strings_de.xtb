@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
 <translation id="1657719826150349398">Tab nach unten verschieben</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="2277224997687551299">Gruppenname bearbeiten</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab aus der Gruppe entfernen.}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs aus der Gruppe entfernen.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren.}}</translation>
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von Ihren Tabs wurden längere Zeit nicht verwendet. Möchten Sie sie schließen?</translation>
 <translation id="257674075312929031">Gruppe</translation>
 <translation id="2613747923081026172">Gruppe erstellen</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren.</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren.}other{Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="4212246570487010370">Weitersurfen</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Ansehen</translation>
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5082793167783849073">Sie können Seiten schnell miteinander vergleichen, indem Sie eine Gruppe erstellen. Berühren und halten Sie einen Link, um den Vorgang zu starten.</translation>
+<translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5533021382642990449">Später anzeigen</translation>
+<translation id="5558362125926932819">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> Tabs gruppiert</translation>
 <translation id="58326064309361797">Tabs zum Gruppieren ziehen</translation>
+<translation id="5846292395804797011">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6510648526783655549">Tableiste schließen</translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Anzeigen</translation>
 <translation id="6840760312327750441">Wenn Sie Tabs gruppieren möchten, berühren und halten Sie einen Tab. Ziehen Sie ihn dann auf einen anderen Tab.</translation>
+<translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="7151209024774799310">Tabs aus der Gruppe verschieben</translation>
+<translation id="7204204600596740190">Mehrfachauswahl</translation>
+<translation id="753732157349120914">Tab-Wechsler</translation>
 <translation id="7559245342362162951">Tabs der Gruppe in Vollbildraster anzeigen</translation>
 <translation id="7792771145871471484">Vorschläge ansehen.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab gruppieren}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs gruppieren}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
 <translation id="8304833501377495048">Tableiste nicht mehr anzeigen?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
+<translation id="8557923272772633250">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren.</translation>
 <translation id="8749939518995770034">Tableiste geschlossen</translation>
 <translation id="9150694013019234766">Am unteren Bildschirmrand können Sie zwischen den Tabs in Ihrer Tabgruppe wechseln</translation>
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>

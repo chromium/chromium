@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Pour demander l'accès, contactez l'administrateur de cet appareil.</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1149725087019908252">Analyse du fichier <ph name="FILE_NAME" />…</translation>
+<translation id="1150490752229770117">C'est la dernière mise à jour logicielle de sécurité automatique pour votre <ph name="DEVICE_TYPE" />. Afin de bénéficier des futures mises à jour, passez à un modèle plus récent. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Lunettes de soleil</translation>
 <translation id="1151917987301063366">Toujours autoriser <ph name="HOST" /> à accéder aux capteurs</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Problème mécanique. Vérifiez l'imprimante</translation>
 <translation id="1363585519747660921">L'imprimante USB n'est pas configurée</translation>
 <translation id="1365180424462182382">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Exécutez des outils, des éditeurs et des IDE Linux sur votre <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;En savoir plus&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
 <translation id="1369149969991017342">Switch Access (contrôler l'ordinateur avec un ou deux contacteurs seulement)</translation>
 <translation id="1372841398847029212">Synchroniser avec votre compte</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Libellé (facultatif)</translation>
 <translation id="1877520246462554164">Échec de l'obtention du jeton d'authentification. Veuillez vous déconnecter, puis vous reconnecter, ou bien réessayez.</translation>
 <translation id="1877860345998737529">Attribuer des actions à des commutateurs</translation>
+<translation id="1878155070920054810">La batterie de votre Chromebook risque d'être déchargée avant la fin de la mise à jour. Assurez-vous qu'elle se charge correctement afin d'éviter toute interruption.</translation>
 <translation id="1879000426787380528">Se connecter à l'aide du compte</translation>
 <translation id="1880905663253319515">Supprimer le certificat "<ph name="CERTIFICATE_NAME" />" ?</translation>
 <translation id="1881445033931614352">Disposition des touches du clavier</translation>
@@ -1074,6 +1075,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2270627217422354837">Échanger des données avec n'importe quel appareil dans les domaines suivants : "<ph name="DOMAINS" />"</translation>
 <translation id="2272570998639520080">Verre à martini</translation>
 <translation id="2273119997271134996">Problème rencontré au niveau du port vidéo de la station d'accueil</translation>
+<translation id="2274840746523584236">Chargez votre Chromebook</translation>
 <translation id="2276503375879033601">Ajouter d'autres applications</translation>
 <translation id="2277255602909579701">Ensemble des cookies et données de site</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 élément copié}one{# élément copié}other{# éléments copiés}}</translation>
@@ -1420,7 +1422,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2682498795777673382">Modification effectuée par un parent</translation>
 <translation id="2683638487103917598">Dossier trié</translation>
 <translation id="2684004000387153598">Pour continuer, cliquez sur "OK", puis sur "Ajouter une personne" afin de créer un profil pour votre adresse e-mail.</translation>
-<translation id="2686222346846590368">C'est la dernière mise à jour logicielle de sécurité automatique pour votre <ph name="DEVICE_TYPE" />. Pour bénéficier des futures mises à jour, passez à un modèle plus récent. &lt;a target="_blank" href="<ph name="URL" />"&gt;En savoir plus<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="2687407218262674387">Conditions d'utilisation de Google</translation>
 <translation id="2688196195245426394">Erreur survenue lors de l'enregistrement de l'appareil avec le serveur : <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3004391367407090544">Revenez plus tard</translation>
 <translation id="3006881078666935414">Aucune donnée sur l'utilisation</translation>
 <translation id="3007771295016901659">Dupliquer l'onglet</translation>
+<translation id="3008232374986381779">Exécutez les outils, les éditeurs et les IDE Linux sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="3009300415590184725">Voulez-vous vraiment annuler la configuration du service Internet mobile ?</translation>
 <translation id="3009779501245596802">Bases de données indexées</translation>
@@ -1929,6 +1931,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Le contenu de ces données est sensible ou dangereux. Supprimez-le et réessayez.}=1{Le contenu de ce fichier est sensible ou dangereux. Supprimez-le et réessayez.}one{Le contenu de ce fichier est sensible ou dangereux. Supprimez-le et réessayez.}other{Le contenu de ces fichiers est sensible ou dangereux. Supprimez-le et réessayez.}}</translation>
 <translation id="3323521181261657960">Super ! Tu as plus de temps d'utilisation</translation>
 <translation id="3325910708063135066">Caméra et micro désactivés dans les préférences système Mac</translation>
+<translation id="3327050066667856415">Les Chromebooks sont conçus pour une sécurité optimale. Votre appareil est automatiquement protégé contre les logiciels malveillants. Aucun logiciel supplémentaire n'est requis.</translation>
 <translation id="3328489342742826322">La restauration depuis une sauvegarde entraîne la suppression des applications et des données Linux existantes de votre dossier Fichiers Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Infos sur l'appli</translation>
@@ -2118,6 +2121,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3556433843310711081">Votre responsable peut vous le débloquer</translation>
 <translation id="3557101512409028104">Définissez des restrictions liées aux sites Web et des limites de temps d'utilisation avec Family Link</translation>
 <translation id="3559262020195162408">Échec de l'installation de la règle sur l'appareil.</translation>
+<translation id="3559533181353831840">Il reste environ <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Correcteur orthographique</translation>
 <translation id="3562423906127931518">Cette opération peut prendre quelques minutes. Configuration du conteneur Linux…</translation>
 <translation id="3563432852173030730">Impossible de télécharger l'application kiosque.</translation>
@@ -2633,6 +2637,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="413121957363593859">Composants</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="413193092008917129">Routines de diagnostics réseau</translation>
+<translation id="4132183752438206707">Découvrez les applications du Google Play Store</translation>
 <translation id="4133076602192971179">Ouvrez l'application pour modifier votre mot de passe</translation>
 <translation id="4136203100490971508">L'éclairage nocturne sera désactivé automatiquement au lever du soleil</translation>
 <translation id="41365691917097717">Si vous continuez, le débogage ADB pourra créer et tester des applications Android. Notez que vous autoriserez ainsi l'installation d'applications Android non validées par Google et que le débogage ADB ne pourra être désactivé qu'en rétablissant la configuration d'usine.</translation>
@@ -2881,6 +2886,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4479877282574735775">Configuration de la machine virtuelle… Cette opération peut prendre quelques minutes.</translation>
 <translation id="4480590691557335796">Chrome peut détecter et supprimer les logiciels malveillants sur votre ordinateur</translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
+<translation id="4487489714832036847">Les Chromebooks utilisent des applications au lieu des logiciels traditionnels. Téléchargez des applications pour augmenter votre productivité, vous divertir et plus encore.</translation>
 <translation id="4488502501195719518">Effacer toutes les données ?</translation>
 <translation id="4493468155686877504">Recommandée (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ne pas afficher sur cette page</translation>
@@ -3724,6 +3730,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5548606607480005320">Contrôle de sécurité</translation>
 <translation id="5551573675707792127">Clavier et saisie de texte</translation>
 <translation id="5553089923092577885">Mappages des stratégies de certificat</translation>
+<translation id="5554403733534868102">Plus besoin d'attendre de mises à jour par la suite</translation>
 <translation id="5554489410841842733">Cette icône s'affiche lorsque l'extension peut agir sur la page active.</translation>
 <translation id="5554720593229208774">Autorité de certification de messagerie</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -4138,6 +4145,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6061882183774845124">Envoyer le lien vers vos appareils</translation>
 <translation id="6064217302520318294">Verrouillage de l'écran</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
+<translation id="6069464830445383022">Connectez-vous à votre Chromebook à l'aide de votre compte Google</translation>
 <translation id="6069671174561668781">Sélectionner un fond d'écran</translation>
 <translation id="6071181508177083058">confirmer le mot de passe</translation>
 <translation id="6071576563962215370">Échec du verrouillage des attributs de temps d'installation de l'appareil.</translation>
@@ -4453,6 +4461,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> et 1 autre onglet}one{<ph name="PAGE_TITLE" /> et # autre onglet}other{<ph name="PAGE_TITLE" /> et # autres onglets}}</translation>
 <translation id="6451689256222386810">Si vous avez oublié votre phrase secrète, ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Refuser</translation>
+<translation id="6452251728599530347">Effectué à <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Problème de réseau ou domaine non valide</translation>
 <translation id="6455264371803474013">Sur des sites spécifiques</translation>
 <translation id="6455894534188563617">&amp;Nouveau dossier</translation>
@@ -4625,6 +4634,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6680442031740878064">Espace disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Cadence</translation>
 <translation id="6681668084120808868">Prendre une photo</translation>
+<translation id="6684827949542560880">Téléchargement de la toute dernière mise à jour</translation>
 <translation id="668599234725812620">Ouvrir Google Play</translation>
 <translation id="6686490380836145850">Fermer les onglets sur la droite</translation>
 <translation id="6686817083349815241">Enregistrer votre mot de passe</translation>
@@ -4734,6 +4744,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6812841287760418429">Conserver les modifications</translation>
 <translation id="6817174620439930047">Demander lorsqu'un site souhaite utiliser des messages spécifiques au système pour accéder aux appareils MIDI (recommandé)</translation>
 <translation id="6818198425579322765">Langue source</translation>
+<translation id="6818802132960437751">Protection antivirus intégrée</translation>
 <translation id="682123305478866682">Caster le Bureau</translation>
 <translation id="6823174134746916417">Fonctionnalité Taper pour cliquer du pavé tactile</translation>
 <translation id="6823506025919456619">Vous devez vous connecter à Chrome pour voir vos périphériques.</translation>
@@ -5379,6 +5390,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7631205654593498032">Lorsque vous connectez vos appareils, vous acceptez que votre <ph name="DEVICE_TYPE" /> puisse :</translation>
 <translation id="7631887513477658702">&amp;Toujours ouvrir les fichiers de ce type</translation>
 <translation id="7632948528260659758">Échec de la mise à jour des applications kiosque suivantes :</translation>
+<translation id="7633724038415831385">Vous n'aurez plus à attendre de mises à jour après cela. En effet, les mises à jour logicielles s'exécutent en arrière-plan sur les Chromebooks.</translation>
 <translation id="7634566076839829401">Une erreur s'est produite. Veuillez réessayer.</translation>
 <translation id="763632859238619983">Interdire à tous les sites d'installer des gestionnaires de paiement</translation>
 <translation id="7636919061354591437">Installer sur cet appareil</translation>
@@ -6148,6 +6160,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8546930481464505581">Personnaliser la Touch Bar</translation>
 <translation id="8547013269961688403">Activer la loupe plein écran</translation>
 <translation id="85486688517848470">Maintenir la touche de recherche enfoncée pour modifier la fonction des touches de la rangée supérieure</translation>
+<translation id="8549316893834449916">Vous vous connecterez à votre Chromebook à l'aide du compte Google que vous utilisez déjà pour vous connecter à Gmail, Drive, YouTube, etc.</translation>
 <translation id="8551388862522347954">Licences</translation>
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>
 <translation id="8553342806078037065">Gérer d'autres utilisateurs</translation>

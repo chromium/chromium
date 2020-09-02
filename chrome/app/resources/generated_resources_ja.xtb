@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">アクセスをリクエストするには、このデバイスの管理者にご連絡ください。</translation>
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> をスキャンしています</translation>
+<translation id="1150490752229770117">この <ph name="DEVICE_TYPE" /> でソフトウェアとセキュリティの自動アップデートが行われるのは今回が最後です。今後もアップデートを取得するには、新しいモデルにアップグレードしてください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">サングラス</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> によるセンサーへのアクセスを常に許可する</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">機械的な問題が発生しました。プリンタを確認してください</translation>
 <translation id="1363585519747660921">USB プリンタの設定が必要です</translation>
 <translation id="1365180424462182382">ご使用の<ph name="BEGIN_LINK" />ブラウザは <ph name="ENROLLMENT_DOMAIN" /> によって管理されています<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">ご使用の <ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。&lt;a target="_blank" href="<ph name="URL" />"&gt;詳細&lt;/a&gt;</translation>
 <translation id="1367951781824006909">ファイルを選択</translation>
 <translation id="1369149969991017342">スイッチ アクセス（スイッチ 1 つまたは 2 つでパソコンを制御）</translation>
 <translation id="1372841398847029212">アカウントに同期</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">ラベル（省略可）</translation>
 <translation id="1877520246462554164">認証トークンを取得できませんでした。いったんログアウトして再度ログインし、もう一度お試しください。</translation>
 <translation id="1877860345998737529">スイッチの操作割り当て</translation>
+<translation id="1878155070920054810">アップデートが完了する前に Chromebook の電源が切れる可能性があります。処理が中断しないよう、電源に正しく接続されているか確認してください。</translation>
 <translation id="1879000426787380528">次のアカウントでログイン</translation>
 <translation id="1880905663253319515">証明書「<ph name="CERTIFICATE_NAME" />」を削除しますか？</translation>
 <translation id="1881445033931614352">キーボードのレイアウト</translation>
@@ -1074,6 +1075,7 @@
 <translation id="2270627217422354837">ドメイン <ph name="DOMAINS" /> のデバイスとのデータ交換</translation>
 <translation id="2272570998639520080">マティーニ グラス</translation>
 <translation id="2273119997271134996">ドックのビデオポートに関する問題</translation>
+<translation id="2274840746523584236">Chromebook を充電してください</translation>
 <translation id="2276503375879033601">アプリを追加</translation>
 <translation id="2277255602909579701">すべての Cookie とサイトデータ</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 個のアイテムがコピーされました}other{# 個のアイテムがコピーされました}}</translation>
@@ -1420,7 +1422,6 @@
 <translation id="2682498795777673382">保護者の方による更新</translation>
 <translation id="2683638487103917598">フォルダが並べ替えられました</translation>
 <translation id="2684004000387153598">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、お使いのメールアドレス用の新しいプロフィールを作成してください。</translation>
-<translation id="2686222346846590368">この <ph name="DEVICE_TYPE" /> でソフトウェアとセキュリティの自動アップデートが行われるのは今回が最後です。今後もアップデートを取得するには、新しいモデルにアップグレードしてください。&lt;a target="_blank" href="<ph name="URL" />"&gt;詳細<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2687407218262674387">Google 利用規約</translation>
 <translation id="2688196195245426394">デバイスをサーバーに登録するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
@@ -1686,6 +1687,7 @@
 <translation id="3004391367407090544">後でもう一度お試しください</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
 <translation id="3007771295016901659">タブを複製</translation>
+<translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="3009300415590184725">モバイル データ サービスの設定処理をキャンセルしてもよろしいですか？</translation>
 <translation id="3009779501245596802">Indexed Database</translation>
@@ -1929,6 +1931,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{このデータにはデリケートなコンテンツまたは危険なコンテンツが含まれています。このコンテンツを削除してから、もう一度お試しください。}=1{このファイルにはデリケートなコンテンツまたは危険なコンテンツが含まれています。このコンテンツを削除してから、もう一度お試しください。}other{これらのファイルにはデリケートなコンテンツまたは危険なコンテンツが含まれています。このコンテンツを削除してから、もう一度お試しください。}}</translation>
 <translation id="3323521181261657960">ボーナスタイムが加算されました</translation>
 <translation id="3325910708063135066">Mac のシステム環境設定でカメラとマイクがオフになっています</translation>
+<translation id="3327050066667856415">Chromebook はセキュリティを重視して設計されています。デバイスはマルウェアから自動的に保護され、追加のソフトウェアは必要ありません。</translation>
 <translation id="3328489342742826322">バックアップから復元すると、Linux ファイル フォルダの既存の Linux アプリケーションとデータは削除されます。</translation>
 <translation id="3331321258768829690">（<ph name="UTCOFFSET" />）<ph name="LONGTZNAME" />（<ph name="EXEMPLARCITY" />）</translation>
 <translation id="3331974543021145906">アプリ情報</translation>
@@ -2118,6 +2121,7 @@
 <translation id="3556433843310711081">ブロックの解除は管理者が行うことができます</translation>
 <translation id="3557101512409028104">ファミリー リンクでウェブサイトの制限と利用時間の上限を設定します</translation>
 <translation id="3559262020195162408">ポリシーをデバイスにインストールできませんでした。</translation>
+<translation id="3559533181353831840">残り時間: 約 <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">スペルチェック(&amp;S)</translation>
 <translation id="3562423906127931518">この処理には数分かかることがあります。Linux コンテナを設定します。</translation>
 <translation id="3563432852173030730">キオスク アプリケーションをダウンロードできませんでした。</translation>
@@ -2633,6 +2637,7 @@
 <translation id="413121957363593859">コンポーネント</translation>
 <translation id="4131410914670010031">白黒</translation>
 <translation id="413193092008917129">ネットワーク診断ルーティン</translation>
+<translation id="4132183752438206707">Google Play ストアからアプリをインストール</translation>
 <translation id="4133076602192971179">アプリを開いてパスワードを変更</translation>
 <translation id="4136203100490971508">夜間モードは日の出時刻に自動的にオフになります</translation>
 <translation id="41365691917097717">続行すると、ADB デバッグによる Android アプリの作成とテストが可能になります。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
@@ -2881,6 +2886,7 @@
 <translation id="4479877282574735775">仮想マシンを設定しています。この処理には数分かかることがあります。</translation>
 <translation id="4480590691557335796">Chrome で、パソコン上の有害なソフトウェアを探して削除することができます</translation>
 <translation id="4481530544597605423">ペア設定されていないデバイス</translation>
+<translation id="4487489714832036847">Chromebook では従来のソフトウェアではなくアプリを使用します。仕事効率化やエンタメなど、豊富なアプリが揃っています。</translation>
 <translation id="4488502501195719518">データをすべて消去しますか？</translation>
 <translation id="4493468155686877504">推奨（<ph name="INSTALL_SIZE" />）</translation>
 <translation id="4495419450179050807">このページに表示しない</translation>
@@ -3724,6 +3730,7 @@
 <translation id="5548606607480005320">安全確認</translation>
 <translation id="5551573675707792127">キーボードとテキスト入力</translation>
 <translation id="5553089923092577885">証明書ポリシーのマッピング</translation>
+<translation id="5554403733534868102">今後アップデートを待つ必要はありません</translation>
 <translation id="5554489410841842733">このアイコンは、ページで拡張機能が使用できる場合に表示されます。</translation>
 <translation id="5554720593229208774">メール認証局</translation>
 <translation id="5556459405103347317">再読み込み</translation>
@@ -4137,6 +4144,7 @@
 <translation id="6061882183774845124">リンクをデバイスに送信</translation>
 <translation id="6064217302520318294">画面ロック</translation>
 <translation id="6065289257230303064">証明書のサブジェクトのディレクトリ属性</translation>
+<translation id="6069464830445383022">Google アカウントを使用して Chromebook にログイン</translation>
 <translation id="6069671174561668781">壁紙の設定</translation>
 <translation id="6071181508177083058">パスワードの確認入力</translation>
 <translation id="6071576563962215370">デバイスの installation-time 属性のロックを確立できませんでした。</translation>
@@ -4452,6 +4460,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6451689256222386810">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />します。</translation>
 <translation id="6452181791372256707">拒否</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" />% 完了</translation>
 <translation id="6452961788130242735">ネットワークに問題があるか、レルムが正しくありません</translation>
 <translation id="6455264371803474013">特定のサイト</translation>
 <translation id="6455894534188563617">新しいフォルダ(&amp;N)</translation>
@@ -4624,6 +4633,7 @@
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">速度</translation>
 <translation id="6681668084120808868">写真を撮る</translation>
+<translation id="6684827949542560880">最新のアップデートをダウンロードしています</translation>
 <translation id="668599234725812620">Google Play を開く</translation>
 <translation id="6686490380836145850">右側のタブを閉じる</translation>
 <translation id="6686817083349815241">パスワードを保存</translation>
@@ -4733,6 +4743,7 @@
 <translation id="6812841287760418429">変更を保持</translation>
 <translation id="6817174620439930047">サイトがシステム エクスクルーシブ メッセージを使用して MIDI デバイスにアクセスする際に確認する（推奨）</translation>
 <translation id="6818198425579322765">翻訳するページの言語</translation>
+<translation id="6818802132960437751">組み込みのウィルス対策</translation>
 <translation id="682123305478866682">デスクトップをキャスト</translation>
 <translation id="6823174134746916417">タッチパッドのタップによるクリック</translation>
 <translation id="6823506025919456619">デバイスを見るには Chrome にログインする必要があります</translation>
@@ -5378,6 +5389,7 @@
 <translation id="7631205654593498032">デバイスを接続する場合、<ph name="DEVICE_TYPE" /> による次の操作を許可することになります。</translation>
 <translation id="7631887513477658702">この種類のファイルは常に開く(&amp;A)</translation>
 <translation id="7632948528260659758">次のキオスクアプリを更新できませんでした:</translation>
+<translation id="7633724038415831385">アップデートを待つのは今回限りです。Chromebook では、ソフトウェアのアップデートがバックグラウンドで行われます。</translation>
 <translation id="7634566076839829401">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="763632859238619983">すべてのサイトに支払いハンドラのインストールを許可しない</translation>
 <translation id="7636919061354591437">このデバイスにインストール</translation>
@@ -6147,6 +6159,7 @@
 <translation id="8546930481464505581">Touch Bar をカスタマイズ</translation>
 <translation id="8547013269961688403">全画面拡大鏡を有効にする</translation>
 <translation id="85486688517848470">キーボードの最上段にあるキーの動作を切り替えるには、検索キーを押したままにします</translation>
+<translation id="8549316893834449916">Chromebook には Google アカウント（Gmail、ドライブ、YouTube などで使用しているのと同じアカウント）を使用してログインします。</translation>
 <translation id="8551388862522347954">ライセンス</translation>
 <translation id="8551588720239073785">日時の設定</translation>
 <translation id="8553342806078037065">他のユーザーを管理</translation>

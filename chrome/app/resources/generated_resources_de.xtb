@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Wenn Sie Zugriff benötigen, wenden Sie sich an den Administrator dieses Geräts.</translation>
 <translation id="1149401351239820326">Ablaufmonat</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> wird gescannt</translation>
+<translation id="1150490752229770117">Das ist das letzte automatische Software- und Sicherheitsupdate für dieses <ph name="DEVICE_TYPE" />. Wenn Sie weiter Updates erhalten möchten, ist ein neueres Modell erforderlich. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> immer den Zugriff auf Sensoren erlauben</translation>
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Mechanischer Fehler. Drucker prüfen.</translation>
 <translation id="1363585519747660921">USB-Drucker muss konfiguriert werden</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Ihr Browser wird von <ph name="ENROLLMENT_DOMAIN" /> verwaltet<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">Sie können auf Ihrem <ph name="DEVICE_TYPE" /> Linux-Tools, -Editoren und -IDEs nutzen. &lt;a target="_blank" href="<ph name="URL" />"&gt;Weitere Informationen&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Datei auswählen</translation>
 <translation id="1369149969991017342">Schalterzugriff (zum Steuern des Computers mit nur einem oder zwei Schaltern)</translation>
 <translation id="1372841398847029212">Mit meinem Konto synchronisieren</translation>
@@ -757,6 +757,7 @@
 <translation id="1877377290348678128">Label (optional)</translation>
 <translation id="1877520246462554164">Authentifizierungs-Token konnte nicht abgerufen werden. Bitte melden Sie sich ab und dann wieder an, um es noch einmal zu versuchen.</translation>
 <translation id="1877860345998737529">Schalter Aktionen zuweisen</translation>
+<translation id="1878155070920054810">Der Akku Ihres Chromebooks wird leer sein, bevor das Update abgeschlossen ist. Bitte schließen Sie es an die Steckdose an.</translation>
 <translation id="1879000426787380528">Anmelden als</translation>
 <translation id="1880905663253319515">Zertifikat "<ph name="CERTIFICATE_NAME" />" löschen?</translation>
 <translation id="1881445033931614352">Tastaturlayout</translation>
@@ -1071,6 +1072,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2270627217422354837">Daten mit einem beliebigen Gerät in diesen Domains austauschen: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Martiniglas</translation>
 <translation id="2273119997271134996">Problem mit Dock und Videoport</translation>
+<translation id="2274840746523584236">Chromebook laden</translation>
 <translation id="2276503375879033601">Weitere Apps hinzufügen</translation>
 <translation id="2277255602909579701">Alle Cookies und Websitedaten</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 Element kopiert}other{# Elemente kopiert}}</translation>
@@ -1416,7 +1418,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2682498795777673382">Deine Eltern haben etwas geändert</translation>
 <translation id="2683638487103917598">Ordner sortiert</translation>
 <translation id="2684004000387153598">Um fortzufahren, klicken Sie auf Ok. Klicken Sie dann auf "Person hinzufügen", um ein neues Profil für Ihre E-Mail-Adresse zu erstellen.</translation>
-<translation id="2686222346846590368">Das ist das letzte automatische Software- und Sicherheitsupdate für dieses <ph name="DEVICE_TYPE" />. Wenn Sie weiter Updates erhalten möchten, ist ein neueres Modell erforderlich. &lt;a target="_blank" href="<ph name="URL" />"&gt;Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
 <translation id="2687407218262674387">Nutzungsbedingungen von Google</translation>
 <translation id="2688196195245426394">Fehler bei der Registrierung des Geräts auf dem Server: <ph name="CLIENT_ERROR" />.</translation>
@@ -1682,6 +1683,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3004391367407090544">Bitte versuchen Sie es später erneut.</translation>
 <translation id="3006881078666935414">Keine Nutzungsdaten</translation>
 <translation id="3007771295016901659">Tab duplizieren</translation>
+<translation id="3008232374986381779">Führen Sie Linux-Tools, -Editoren und -IDEs auf Ihrem <ph name="DEVICE_TYPE" /> aus. <ph name="LINK_BEGIN" />Weitere Informationen.<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
 <translation id="3009300415590184725">Möchten Sie die Einrichtung des mobilen Datendiensts wirklich abbrechen?</translation>
 <translation id="3009779501245596802">Indexierte Datenbanken</translation>
@@ -1925,6 +1927,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Diese Daten enthalten vertrauliche oder schädliche Inhalte. Entfernen Sie diese Inhalte und versuchen Sie es noch einmal.}=1{Diese Datei enthält vertrauliche oder schädliche Inhalte. Entfernen Sie diese Inhalte und versuchen Sie es noch einmal.}other{Diese Dateien enthalten vertrauliche oder schädliche Inhalte. Entfernen Sie diese Inhalte und versuchen Sie es noch einmal.}}</translation>
 <translation id="3323521181261657960">Bonus! Gerätenutzungsdauer verlängert</translation>
 <translation id="3325910708063135066">Kamera und Mikrofon wurden in den Mac-Systemeinstellungen ausgeschaltet</translation>
+<translation id="3327050066667856415">Chromebooks sind auf Sicherheit ausgelegt. Ihr Gerät ist automatisch vor Malware geschützt – ganz ohne zusätzliche Software.</translation>
 <translation id="3328489342742826322">Bei der Wiederherstellung aus einer Sicherung werden bestehende Linux-Anwendungen und -Daten in Ihren Linux-Dateiordnern gelöscht.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">App-Info</translation>
@@ -2114,6 +2117,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3556433843310711081">Dein Administrator kann die Blockierung aufheben</translation>
 <translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Gerätenutzungsdauer begrenzen</translation>
 <translation id="3559262020195162408">Fehler beim Installieren der Richtlinie auf dem Gerät.</translation>
+<translation id="3559533181353831840">Noch <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Rechtschreibprüfung</translation>
 <translation id="3562423906127931518">Der Vorgang kann einige Minuten dauern. Linux-Container wird eingerichtet.</translation>
 <translation id="3563432852173030730">Die Kioskanwendung konnte nicht heruntergeladen werden.</translation>
@@ -2384,7 +2388,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3842552989725514455">Schriftart Serif</translation>
 <translation id="3843464315703645664">Intern auf der Zulassungsliste</translation>
 <translation id="3844888638014364087">Emoji eingefügt</translation>
-<translation id="3846116211488856547">Tools für die Entwicklung erhalten, z. B. von Websites und Android-Apps. Für die Installation von Linux werden <ph name="DOWNLOAD_SIZE" /> an Daten heruntergeladen.</translation>
+<translation id="3846116211488856547">Entwicklertools für Websites, Android-Apps und mehr – für die Installation von Linux werden <ph name="DOWNLOAD_SIZE" /> an Daten heruntergeladen.</translation>
 <translation id="3847319713229060696">Dabei helfen, das Web für alle sicherer zu machen</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3850914401008572843"><ph name="ORIGIN" /> kann diesen Ordner nicht öffnen, weil er Systemdateien enthält</translation>
@@ -2629,6 +2633,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="413121957363593859">Komponenten</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
 <translation id="413193092008917129">Netzwerk-Diagnoseabläufe</translation>
+<translation id="4132183752438206707">Entdecken Sie Apps im Google Play Store</translation>
 <translation id="4133076602192971179">Sie können Ihr Passwort in der App ändern</translation>
 <translation id="4136203100490971508">Das Nachtlicht wird automatisch bei Sonnenaufgang deaktiviert</translation>
 <translation id="41365691917097717">Wenn Sie fortfahren, erlauben Sie der ADB-Fehlerbehebung, Android-Apps zu erstellen und zu testen. Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
@@ -2877,6 +2882,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4479877282574735775">Die virtuelle Maschine wird konfiguriert. Dies kann einige Minuten dauern.</translation>
 <translation id="4480590691557335796">Chrome kann auf Ihrem Computer schädliche Software suchen und entfernen</translation>
 <translation id="4481530544597605423">Entkoppelte Geräte</translation>
+<translation id="4487489714832036847">Chromebooks verwenden Apps anstatt traditioneller Software. Es gibt Apps für Produktivität, Unterhaltung und vieles mehr.</translation>
 <translation id="4488502501195719518">Alle Daten löschen?</translation>
 <translation id="4493468155686877504">Empfohlen (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Nicht auf dieser Seite anzeigen</translation>
@@ -3582,7 +3588,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5390677308841849479">Dunkelrot und Orange</translation>
 <translation id="5390743329570580756">Senden für</translation>
 <translation id="5397794290049113714">Ich</translation>
-<translation id="5398497406011404839">Verborgene Lesezeichen</translation>
+<translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
 <translation id="5398572795982417028">Der Seitenbereich ist zu groß. Die maximale Seitenanzahl liegt bei <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5401938042319910061">Alle Abläufe ausführen</translation>
@@ -3720,6 +3726,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5548606607480005320">Sicherheitscheck</translation>
 <translation id="5551573675707792127">Tastatur und Texteingabe</translation>
 <translation id="5553089923092577885">Zuordnungen von Zertifikatrichtlinien</translation>
+<translation id="5554403733534868102">Sie müssen in Zukunft auf keine Updates mehr warten</translation>
 <translation id="5554489410841842733">Dieses Symbol wird eingeblendet, wenn die Erweiterung auf die aktuelle Seite angewendet werden kann.</translation>
 <translation id="5554720593229208774">E-Mail-Zertifizierungsstelle</translation>
 <translation id="5556459405103347317">Neu laden</translation>
@@ -4069,7 +4076,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5978277834170881274">&amp;Einfache Rechtschreibprüfung verwenden</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Sie haben 1 potenziell schädliche Erweiterung wieder aktiviert}other{Sie haben {NUM_EXTENSIONS} potenziell schädliche Erweiterungen wieder aktiviert}}</translation>
-<translation id="5979421442488174909">Überse&amp;tzen in <ph name="LANGUAGE" /></translation>
+<translation id="5979421442488174909">&amp;Auf <ph name="LANGUAGE" /> übersetzen</translation>
 <translation id="5979469435153841984">Klicken Sie auf den Stern in der Adressleiste, um Seiten als Lesezeichen zu speichern</translation>
 <translation id="5983642582671533177">Dieser Drucker wird ab Januar nicht mehr unterstützt. Wenden Sie sich an Ihren Administrator.</translation>
 <translation id="5984222099446776634">Kürzlich besucht</translation>
@@ -4133,6 +4140,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6061882183774845124">Link an meine Geräte senden</translation>
 <translation id="6064217302520318294">Displaysperre</translation>
 <translation id="6065289257230303064">Verzeichnisattribute des Zertifikatsinhabers</translation>
+<translation id="6069464830445383022">Verwenden Sie Ihr Google-Konto, um sich auf Ihrem Chromebook anzumelden</translation>
 <translation id="6069671174561668781">Hintergrund festlegen</translation>
 <translation id="6071181508177083058">Passwort bestätigen</translation>
 <translation id="6071576563962215370">Das System konnte die Attributsperre für die Geräteinstallationszeit nicht vornehmen.</translation>
@@ -4448,6 +4456,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> und 1 weiterer Tab}other{<ph name="PAGE_TITLE" /> und # weitere Tabs}}</translation>
 <translation id="6451689256222386810">Wenn Sie Ihre Passphrase vergessen haben oder diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Ablehnen</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> abgeschlossen</translation>
 <translation id="6452961788130242735">Netzwerkproblem oder falscher Bereich</translation>
 <translation id="6455264371803474013">Auf bestimmten Websites</translation>
 <translation id="6455894534188563617">&amp;Neuer Ordner</translation>
@@ -4620,6 +4629,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6680442031740878064">Verfügbar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Geschwindigkeit</translation>
 <translation id="6681668084120808868">Foto machen</translation>
+<translation id="6684827949542560880">Das neueste Update wird heruntergeladen</translation>
 <translation id="668599234725812620">Google Play öffnen</translation>
 <translation id="6686490380836145850">Tabs rechts schließen</translation>
 <translation id="6686817083349815241">Passwort speichern</translation>
@@ -4729,6 +4739,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6812841287760418429">Änderungen beibehalten</translation>
 <translation id="6817174620439930047">Nachfragen, wenn eine Website versucht, mit systemexklusiven Meldungen auf MIDI-Geräte zuzugreifen (empfohlen)</translation>
 <translation id="6818198425579322765">Sprache der Seite, die übersetzt wird</translation>
+<translation id="6818802132960437751">Integrierter Virenschutz</translation>
 <translation id="682123305478866682">Desktop streamen</translation>
 <translation id="6823174134746916417">Touchpad-Klick</translation>
 <translation id="6823506025919456619">Melden Sie sich in Chrome an, um Ihre Geräte zu sehen.</translation>
@@ -5374,6 +5385,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7631205654593498032">Durch das Verbinden Ihrer Geräte erlauben Sie "<ph name="DEVICE_TYPE" />" Folgendes:</translation>
 <translation id="7631887513477658702">Dateien dieses Typs &amp;immer öffnen</translation>
 <translation id="7632948528260659758">Die folgenden Kiosk-Apps konnten nicht aktualisiert werden:</translation>
+<translation id="7633724038415831385">Dies ist das einzige Mal, dass Sie auf ein Update warten müssen. Softwareupdates werden auf Chromebooks im Hintergrund durchgeführt.</translation>
 <translation id="7634566076839829401">Ein Problem ist aufgetreten. Bitte versuchen Sie es erneut.</translation>
 <translation id="763632859238619983">Installation von Zahlungs-Handlern auf keiner Website zulassen</translation>
 <translation id="7636919061354591437">Auf diesem Gerät installieren</translation>
@@ -6142,6 +6154,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8546930481464505581">Touch Bar anpassen</translation>
 <translation id="8547013269961688403">Vollbildlupe aktivieren</translation>
 <translation id="85486688517848470">Halten Sie die Suchtaste gedrückt, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
+<translation id="8549316893834449916">Sie können Ihr Google-Konto verwenden, um sich auf Ihrem Chromebook anzumelden – also mit demselben Konto, das Sie schon für Gmail, Drive, YouTube und andere Google-Dienste verwenden.</translation>
 <translation id="8551388862522347954">Lizenzen</translation>
 <translation id="8551588720239073785">Datums- und Uhrzeiteinstellungen</translation>
 <translation id="8553342806078037065">Andere Personen verwalten</translation>
@@ -6427,7 +6440,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8871974300055371298">Inhaltseinstellungen</translation>
 <translation id="8872155268274985541">Ungültige Manifestdatei für externes Kiosk-Update gefunden. Die Kiosk-App konnte nicht aktualisiert werden. Bitte entfernen Sie den USB-Stick.</translation>
 <translation id="8872777911145321141">Nachfragen, wenn eine Website meine Virtual-Reality-Geräte und ‑Daten verwenden möchte (empfohlen)</translation>
-<translation id="8874184842967597500">Nicht verbun.</translation>
+<translation id="8874184842967597500">Nicht verbunden</translation>
 <translation id="8875520811099717934">Linux-Upgrade</translation>
 <translation id="8876307312329369159">Diese Einstellung kann nicht in einer Demositzung geändert werden.</translation>
 <translation id="8877448029301136595">[übergeordnetes Verzeichnis]</translation>

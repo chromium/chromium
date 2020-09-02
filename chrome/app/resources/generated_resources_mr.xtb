@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">अ‍ॅक्सेसची विनंती करण्यासाठी या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="1149401351239820326">कालबाह्य होण्याचा महिना:</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्कॅन करत आहे</translation>
+<translation id="1150490752229770117">या <ph name="DEVICE_TYPE" /> साठी हे अंतिम ऑटोमेटिक सॉफ्टवेअर आणि सुरक्षा अपडेट आहे. वैशिष्ट्यांसंबंधित अपडेट मिळवण्यासाठी, सर्वात नवीन मॉडेलवर अपग्रेड करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">सनग्लासेस</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> ला नेहमी सेन्सर ॲक्सेस करू द्या</translation>
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">यांत्रिकी समस्या. प्रिंटर तपासा</translation>
 <translation id="1363585519747660921">USB प्रिंटर कॉन्फिगर करणे आवश्यक आहे</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" />ने तुमचा <ph name="BEGIN_LINK" />ब्राउझर व्यवस्थापित केला आहे<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">तुमच्या <ph name="DEVICE_TYPE" /> वर Linux टूल, संपादक आणि IDE रन करा. &lt;a target="_blank" href="<ph name="URL" />"&gt;अधिक जाणून घ्या&lt;/a&gt;</translation>
 <translation id="1367951781824006909">फाइल निवडा</translation>
 <translation id="1369149969991017342">स्विच ॲक्सेस (फक्त एक किंवा दोन स्विचसह कॉंप्युटर नियंत्रित करा)</translation>
 <translation id="1372841398847029212">तुमच्या खात्याशी सिंक करा</translation>
@@ -759,6 +759,7 @@
 <translation id="1877377290348678128">लेबल (पर्यायी)</translation>
 <translation id="1877520246462554164">ऑथेंटिकेशन टोकन मिळवण्यात अयशस्वी. कृपया साइन आउट करा आणि नंतर पुन्हा प्रयत्न करण्यासाठी साइन इन करा.</translation>
 <translation id="1877860345998737529">स्विच ॲक्शन असाइनमेंट</translation>
+<translation id="1878155070920054810">अपडेट पूर्ण होण्याआधीच तुमच्या Chromebook ची पॉवर संपेल असे दिसते. व्यत्यय टाळण्यासाठी, ते योग्य प्रकारे चार्ज होत आहे याची खात्री करा.</translation>
 <translation id="1879000426787380528">हे म्हणून साइन करा</translation>
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" सर्टिफिकेट हटवायचे?</translation>
 <translation id="1881445033931614352">कीबोर्ड लेआउट</translation>
@@ -1073,6 +1074,7 @@
 <translation id="2270627217422354837">डोमेनमध्ये कोणत्याही डिव्हाइससह डेटा अदलाबदल करा: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">मार्टिनी ग्लास</translation>
 <translation id="2273119997271134996">व्हिडिओ-पोर्ट समस्या डॉक करा</translation>
+<translation id="2274840746523584236">तुमचे Chromebook चार्ज करा</translation>
 <translation id="2276503375879033601">अधिक ॲप्लिकेशन जोडा</translation>
 <translation id="2277255602909579701">सर्व कुकीज आणि साइट डेटा</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 आयटम कॉपी केला}other{# आयटम कॉपी केले}}</translation>
@@ -1419,7 +1421,6 @@
 <translation id="2682498795777673382">तुमच्या पालकाकडून अपडेट करा</translation>
 <translation id="2683638487103917598">क्रमवारी लावलेला फोल्डर</translation>
 <translation id="2684004000387153598">पुढे सुरू ठेवण्यासाठी ठीक आहे वर क्लिक करा, नंतर तुम्हाला ईमेल ॲड्रेससाठी नवीन प्रोफाइल तयार करण्याकरता व्यक्तीला जोडावर क्लिक करा.</translation>
-<translation id="2686222346846590368">या <ph name="DEVICE_TYPE" /> साठी हे शेवटचे ऑटोमेटिक सॉफ्टवेअर आणि सुरक्षा अपडेट आहे. भविष्यामधील अपडेट मिळवण्यासाठी नवीन मॉडेलवर अपग्रेड करा. &lt;a target="_blank" href="<ph name="URL" />"&gt;अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
 <translation id="2687407218262674387">Google सेवा अटी</translation>
 <translation id="2688196195245426394">सर्व्हरवर डिव्हाइसची नोंदणी करताना एरर: <ph name="CLIENT_ERROR" />.</translation>
@@ -1685,6 +1686,7 @@
 <translation id="3004391367407090544">कृपया नंतर परत या</translation>
 <translation id="3006881078666935414">वापराचा कोणताही डेटा नाही</translation>
 <translation id="3007771295016901659">डुप्लिकेट टॅब</translation>
+<translation id="3008232374986381779">तुमच्या <ph name="DEVICE_TYPE" /> वर Linux टूल, संपादक, आणि IDE रन करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
 <translation id="3009300415590184725">मोबाइल डेटा सेट अप प्रक्रिया ‍रद्द करु इच्‍छित आहात याबद्दल तुम्हाला खात्री आहे?</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
@@ -1928,6 +1930,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{या डेटामध्ये संवेदनशील किंवा धोकादायक आशय आहे. हा आशय काढा आणि पुन्हा प्रयत्न करा.}=1{या फाइलमध्ये संवेदनशील किंवा धोकादायक आशय आहे. हा आशय काढा आणि पुन्हा प्रयत्न करा.}other{या फाइलमध्ये संवेदनशील किंवा धोकादायक आशय आहे. हा आशय काढा आणि पुन्हा प्रयत्न करा.}}</translation>
 <translation id="3323521181261657960">बोनस! तुम्हाला आणखी स्क्रीन वेळ मिळाला</translation>
 <translation id="3325910708063135066">Mac सिस्टम प्राधान्ये मधील कॅमेरा आणि मायक्रोफोन बंद आहे</translation>
+<translation id="3327050066667856415">Chromebook सुरक्षेसाठी डिझाइन केलेली आहेत. तुमच्या डिव्हाइसचे मालवेअरपासून आपोआप संरक्षण केले जाते - अतिरिक्त सॉफ्टवेअरची गरज नाही.</translation>
 <translation id="3328489342742826322">बॅकअपमधून रिस्टोअर केल्याने तुमची अस्तित्वात असलेली Linux ॲप्लिकेशन आणि तुमच्या Linux फाइल फोल्डरमध्ये असलेला डेटा हटवला जाईल.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ॲप माहिती</translation>
@@ -2117,6 +2120,7 @@
 <translation id="3556433843310711081">तुमचा व्यवस्थापक तुमच्यासाठी ती अनावरोधित करू शकतो</translation>
 <translation id="3557101512409028104">Family Link सह वेबसाइटवरील बंधने आणि स्क्रीन वेळ मर्यादा सेट करा</translation>
 <translation id="3559262020195162408">डिव्हाइसवर धोरण इंस्टॉल करता आले नाही.</translation>
+<translation id="3559533181353831840">सुमारे <ph name="TIME_LEFT" /> शिल्लक</translation>
 <translation id="3560034655160545939">&amp;स्पेल चेक</translation>
 <translation id="3562423906127931518">या प्रक्रियेला काही मिनिटे लागू शकतात. Linux कंटेनर सेट करत आहे.</translation>
 <translation id="3563432852173030730">कियोस्क ॲप्लिकेशन डाउनलोड केले जाऊ शकले नाही.</translation>
@@ -2630,6 +2634,7 @@
 <translation id="413121957363593859">घटक</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="413193092008917129">नेटवर्क निदान दिनक्रम</translation>
+<translation id="4132183752438206707">Google Play Store वर अ‍ॅप्स शोधा</translation>
 <translation id="4133076602192971179">तुमचा पासवर्ड बदलण्यासाठी अ‍ॅप उघडा</translation>
 <translation id="4136203100490971508">सूर्योदयाच्या वेळी रात्रीचा प्रकाश आपोआप बंद होईल</translation>
 <translation id="41365691917097717">सुरू ठेवल्याने Android अ‍ॅप्स तयार करण्यासाठी आणि त्यांची चाचणी घेण्यासाठी ADB डीबगिंग सुरू केले जाईल. लक्षात घ्या की, ही कृती Google ने पडताळणी न केलेली Android ॲप्स इंस्टॉल करू देते आणि बंद करण्यासाठी फॅक्टरी रीसेटची आवश्यकता आहे.</translation>
@@ -2878,6 +2883,7 @@
 <translation id="4479877282574735775">व्हर्च्युअल मशीन कॉन्फिगर करत आहे. यासाठी काही मिनिटे लागू शकतात.</translation>
 <translation id="4480590691557335796">Chrome तुमच्या काँप्युटरवरील नुकसानकारक सॉफ्टवेअर शोधू शकते आणि ते काढू शकते</translation>
 <translation id="4481530544597605423">जोडणी वेगळी केलेली डिव्हाइस</translation>
+<translation id="4487489714832036847">पारंपरिक सॉफ्टवेअरऐवजी Chromebook अ‍ॅप्स वापरतात. उत्पादनक्षमता, मनोरंजन आणि बर्‍याच गोष्टींसाठी अ‍ॅप्स मिळवा.</translation>
 <translation id="4488502501195719518">सर्व डेटा साफ करायचा?</translation>
 <translation id="4493468155686877504">शिफारस केलेले (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">या पेजवर दर्शवू नका</translation>
@@ -3721,6 +3727,7 @@
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
 <translation id="5551573675707792127">कीबोर्ड आणि मजकूर इनपुट</translation>
 <translation id="5553089923092577885">सर्टिफिकेट धोरण मॅपिंग</translation>
+<translation id="5554403733534868102">यापुढे, अपडेटची प्रतीक्षा करण्याची गरज नाही</translation>
 <translation id="5554489410841842733">जेव्हा एक्स्टेंशन वर्तमान पेजवर कार्य करेल तेव्हा हे प्रतीक दृश्यमान होईल.</translation>
 <translation id="5554720593229208774">ईमेल प्रमाणन अधिकृतता</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
@@ -4135,6 +4142,7 @@
 <translation id="6061882183774845124">तुमच्या डिव्हाइसवर लिंक पाठवा</translation>
 <translation id="6064217302520318294">स्क्रीन लॉक</translation>
 <translation id="6065289257230303064">प्रमाणपत्र विषय डिरेक्टरी विशेषता</translation>
+<translation id="6069464830445383022">तुमचे Google खाते हेच तुमचे Chromebook साइन इन आहे</translation>
 <translation id="6069671174561668781">वॉलपेपर सेट करा</translation>
 <translation id="6071181508177083058">पासवर्ड कन्फर्म करा</translation>
 <translation id="6071576563962215370">सिस्टमला डिव्हाइस इंस्टॉलेशन वेळ विशेषता लॉक स्थापित करता आले नाही.</translation>
@@ -4450,6 +4458,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> आणि दुसरा एक टॅब}other{<ph name="PAGE_TITLE" /> आणि दुसरे # टॅब}}</translation>
 <translation id="6451689256222386810">तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">नाकारा</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> पूर्ण</translation>
 <translation id="6452961788130242735">नेटवर्क समस्या किंवा वाईट क्षेत्र</translation>
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
@@ -4622,6 +4631,7 @@
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">रेट करा</translation>
 <translation id="6681668084120808868">फोटो घ्या</translation>
+<translation id="6684827949542560880">नवीनतम अपडेट डाउनलोड करत आहे</translation>
 <translation id="668599234725812620">Google Play उघडा</translation>
 <translation id="6686490380836145850">उजवीकडील टॅब बंद करा</translation>
 <translation id="6686817083349815241">तुमचा पासवर्ड सेव्ह करा</translation>
@@ -4731,6 +4741,7 @@
 <translation id="6812841287760418429">बदल ठेवा</translation>
 <translation id="6817174620439930047">MIDI डिव्हाइसमध्‍ये ॲक्सेस करण्यासाठी जेव्हा एखादी साइट सिस्टम अनन्य मेसेज वापरू इच्छिते तेव्हा विचारा (शिफारस केलेले)</translation>
 <translation id="6818198425579322765">भाषांतर करण्यासाठी पेजची भाषा</translation>
+<translation id="6818802132960437751">बिल्ट-इन व्हायरस संरक्षण</translation>
 <translation id="682123305478866682">डेस्कटॉप कास्ट करा</translation>
 <translation id="6823174134746916417">टचपॅड क्लिक करण्यासाठी टॅप करा</translation>
 <translation id="6823506025919456619">तुमची डिव्हाइसेस पाहण्यासाठी तुम्हाला Chrome वर साइन इन करणे आवश्यक आहे</translation>
@@ -5376,6 +5387,7 @@
 <translation id="7631205654593498032">तुम्ही तुमची डिव्हाइस कनेक्ट करता तेव्हा तुम्ही सहमती दर्शवता की तुमचे <ph name="DEVICE_TYPE" /> हे करू शकेल:</translation>
 <translation id="7631887513477658702">&amp;नेहमी या प्रकारच्या फाइल उघडा</translation>
 <translation id="7632948528260659758">खालील कियोस्‍क अ‍ॅप्स अद्यतनांसाठी अयशस्‍वी झाले आहेत:</translation>
+<translation id="7633724038415831385">तुम्ही फक्त या वेळी अपडेटची प्रतीक्षा कराल. Chromebook वर, सॉफ्टवेअर अपडेट बॅकग्राउंडमध्ये होतात.</translation>
 <translation id="7634566076839829401">काहीतरी चूक झाली, कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="763632859238619983">कोणत्याही साइटला पेमेंट हँडलर इंस्टॉल करण्याची अनुमती देऊ नका</translation>
 <translation id="7636919061354591437">या डिव्हाइसवर इंस्टॉल करा</translation>
@@ -6143,6 +6155,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8546930481464505581">स्पर्श बार कस्टमाइझ करा</translation>
 <translation id="8547013269961688403">पूर्णस्क्रीन भिंग सुरू करा</translation>
 <translation id="85486688517848470">शीर्ष-पंक्ती की चे वर्तन बदलण्यासाठी शोध की दाबून ठेवा</translation>
+<translation id="8549316893834449916">तुमच्या Chromebook मध्ये साइन इन करण्यासाठी तुम्ही तुमचे Google खाते वापराल – जे तुम्ही Gmail, Drive, YouTube आणि बर्‍याच गोष्टींसाठी वापरता.</translation>
 <translation id="8551388862522347954">परवाने</translation>
 <translation id="8551588720239073785">तारीख आणि वेळ सेटिंग्ज</translation>
 <translation id="8553342806078037065">इतर लोक व्यवस्थापित करा</translation>

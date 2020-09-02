@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">অ্যাক্সেস করার অনুমতি চাইতে এই ডিভাইস অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1149401351239820326">মেয়াদ শেষের মাস</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> স্ক্যান করা হচ্ছে</translation>
+<translation id="1150490752229770117">এই <ph name="DEVICE_TYPE" />-এর জন্য এটি হল সফ্টওয়্যার এবং নিরাপত্তা সংক্রান্ত শেষ অটোমেটিক আপডেট। ভবিষ্যতে আপডেট পেতে আরও কোনও একটি নতুন মডেলে আপগ্রেড করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">সানগ্লাস</translation>
 <translation id="1151917987301063366"><ph name="HOST" />কে সর্বদা সেন্সর অ্যাক্সেস করতে অনুমতি দিন</translation>
 <translation id="1153356358378277386">যুক্ত করা ডিভাইসগুলি</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">যান্ত্রিক সমস্যা হয়েছে। প্রিন্টারটি চেক করুন</translation>
 <translation id="1363585519747660921">ইউএসবি প্রিন্টার কনফিগার করা প্রয়োজন</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> আপনার <ph name="BEGIN_LINK" />ব্রাউজার ম্যানেজ করে<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">আপনার <ph name="DEVICE_TYPE" />-এ Linux টুল, এডিটর, এবং IDEs চালান। &lt;a target="_blank" href="<ph name="URL" />"&gt;আরও জানুন&lt;/a&gt;</translation>
 <translation id="1367951781824006909">একটি ফাইল বেছে নিন</translation>
 <translation id="1369149969991017342">অ্যাক্সেস পাল্টান (মাত্র এক অথবা দুইবার অ্যাক্সেস পাল্টে কম্পিউটার নিয়ন্ত্রণ করুন)</translation>
 <translation id="1372841398847029212">আপনার অ্যাকাউন্টে সিঙ্ক করুন</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">লেবেল (ঐচ্ছিক)</translation>
 <translation id="1877520246462554164">যাচাইকরণ টোকেন পাওয়া যায়নি। অনুগ্রহ করে সাইন-আউট-এর পরে সাইন-ইন করে আবার চেষ্টা করুন।</translation>
 <translation id="1877860345998737529">অ্যাকশনে সুইচ অ্যাসাইন করা</translation>
+<translation id="1878155070920054810">মনে হচ্ছে, আপডেট সম্পূর্ণ হওয়ার আগেই আপনার Chromebook-এর চার্জ শেষ হয়ে যাবে। সমস্যা এড়াতে, ঠিকমতো চার্জ হচ্ছে কিনা দেখে নিন।</translation>
 <translation id="1879000426787380528">কোন আইডি দিয়ে সাইন-ইন করবেন</translation>
 <translation id="1880905663253319515">সার্টিফিকেট মুছবেন "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">কীবোর্ডের লেআউট</translation>
@@ -1074,6 +1075,7 @@
 <translation id="2270627217422354837"><ph name="DOMAINS" /> ডোমেনসমূহের মধ্যে যে কোনো ডিভাইসের সাথে ডেটা বিনিময় করুন</translation>
 <translation id="2272570998639520080">মার্টিনি গ্লাস</translation>
 <translation id="2273119997271134996">ডকিং স্টেশনে ভিডিও-পোর্ট সংক্রান্ত সমস্যা</translation>
+<translation id="2274840746523584236">আপনার Chromebook চার্জ করুন</translation>
 <translation id="2276503375879033601">আরও অ্যাপ্লিকেশন জুডুন</translation>
 <translation id="2277255602909579701">সমস্ত কুকি এবং সাইট ডেটা</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{১টি আইটেম কপি করা হয়েছে}one{#টি আইটেম কপি করা হয়েছে}other{#টি আইটেম কপি করা হয়েছে}}</translation>
@@ -1419,7 +1421,6 @@
 <translation id="2682498795777673382">তোমার অভিভাবকের থেকে আপডেট</translation>
 <translation id="2683638487103917598">ফোল্ডার সাজানো হয়েছে</translation>
 <translation id="2684004000387153598">চালিয়ে যেতে 'ঠিক আছে' বোতামে ক্লিক করুন, তারপর আপনার ইমেল আইডির জন্য নতুন প্রোফাইল তৈরি করতে 'কাউকে যোগ করুন' বোতামে ক্লিক করুন।</translation>
-<translation id="2686222346846590368">এই <ph name="DEVICE_TYPE" />-এর জন্য এটি হল সফ্টওয়্যার এবং নিরাপত্তা সংক্রান্ত শেষ অটোমেটিক আপডেট। আগামী আপডেটগুলি পেতে, কোনও নতুন মডেলে আপগ্রেড করুন। &lt;a target="_blank" href="<ph name="URL" />"&gt;আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">সব কুকি ব্লক করুন (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2687407218262674387">Google পরিষেবার শর্তাবলী</translation>
 <translation id="2688196195245426394">ডিভাইসটি সার্ভারে নথিভুক্ত করার সময়ে ত্রুটি: <ph name="CLIENT_ERROR" />৷</translation>
@@ -1685,6 +1686,7 @@
 <translation id="3004391367407090544">অনুগ্রহ করে পরে আবার আসবেন</translation>
 <translation id="3006881078666935414">কোনও ব্যবহারের ডেটা নেই</translation>
 <translation id="3007771295016901659">ট্যাব ডুপ্লিকেট করুন</translation>
+<translation id="3008232374986381779">আপনার <ph name="DEVICE_TYPE" />-এ Linux টুল, এডিটর ও IDE চালান। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>
 <translation id="3009300415590184725">আপনি কি মোবাইল ডেটা পরিষেবা সেট-আপ প্রক্রিয়া বাতিল করার ব্যাপারে নিশ্চিত?</translation>
 <translation id="3009779501245596802">সূচিবদ্ধ ডেটাবেস</translation>
@@ -1928,6 +1930,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{এই ডেটায় সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে। এই কন্টেন্ট সরিয়ে আবার চেষ্টা করুন।}=1{এই ফাইলে সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে। এই কন্টেন্ট সরিয়ে আবার চেষ্টা করুন।}one{এই ফাইলগুলিতে সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে। এই কন্টেন্ট সরিয়ে আবার চেষ্টা করুন।}other{এই ফাইলগুলিতে সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে। এই কন্টেন্ট সরিয়ে আবার চেষ্টা করুন।}}</translation>
 <translation id="3323521181261657960">বোনাস! তোমাকে আরও স্ক্রিন টাইম দেওয়া হয়েছে</translation>
 <translation id="3325910708063135066">Mac-এর সিস্টেম অভিরুচিতে ক্যামেরা ও মাইক্রোফোন বন্ধ করা আছে</translation>
+<translation id="3327050066667856415">Chromebook তৈরি করা হয়েছে সুরক্ষাকে প্রাধান্য দিয়ে। তাই আপনার ডিভাইস ম্যালওয়্যার থেকে অটোমেটিক সুরক্ষিত – কোনও অতিরিক্ত সফ্টওয়্যারের প্রয়োজন নেই।</translation>
 <translation id="3328489342742826322">কোনও ব্যাক-আপ থেকে ফিরিয়ে আনলে আপনার Linux ফাইল ফোল্ডারে আগে থেকে থাকা Linux অ্যাপ্লিকেশন ও ডেটা মুছে দেওয়া হবে।</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">অ্যাপ্লিকেশানের তথ্য</translation>
@@ -2117,6 +2120,7 @@
 <translation id="3556433843310711081">আপনার পরিচালক আপনার হয়ে এটি অবরোধ মুক্ত করতে পারবে</translation>
 <translation id="3557101512409028104">Family Link-এর সাহায্যে ওয়েবসাইট অ্যাক্সেস করার ব্যাপারে সীমাবদ্ধতা ও স্ক্রিন টাইমের সীমা সেট করুন</translation>
 <translation id="3559262020195162408">ডিভাইসে নীতি ইনস্টল করা যায়নি।</translation>
+<translation id="3559533181353831840">প্রায় <ph name="TIME_LEFT" /> লাগবে</translation>
 <translation id="3560034655160545939">বানান পরীক্ষা</translation>
 <translation id="3562423906127931518">এর জন্য কয়েক মিনিট সময় লাগতে পারে। Linux কন্টেনার ইনস্টল করা হচ্ছে।</translation>
 <translation id="3563432852173030730">কিয়স্ক অ্যাপ্লিকেশানটি ডাউনলোড করা যাবে না।</translation>
@@ -2631,6 +2635,7 @@
 <translation id="413121957363593859">উপাদানগুলি</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="413193092008917129">নেটওয়ার্ক ডায়াগনস্টিকস রুটিন</translation>
+<translation id="4132183752438206707">Google Play Store-এ অ্যাপ খুঁজুন</translation>
 <translation id="4133076602192971179">পাসওয়ার্ড পরিবর্তন করতে অ্যাপটি খুলুন</translation>
 <translation id="4136203100490971508">সূর্যোদয়ের সময় নাইট লাইট নিজে থেকেই বন্ধ হয়ে যাবে</translation>
 <translation id="41365691917097717">চালিয়ে গেলে Android অ্যাপ তৈরি ও পরীক্ষা করার জন্য ADB ডিবাগিং চালু হয়ে যাবে। মনে রাখবেন, এই অ্যাকশন Google যাচাই করেনি এমন Android অ্যাপ ইনস্টলের অনুমতি দেয় এবং এটি বন্ধ করতে হলে ডিভাইসটিকে ফ্যাক্টরি রিসেট করতে হবে।</translation>
@@ -2879,6 +2884,7 @@
 <translation id="4479877282574735775">ভার্চুয়াল মেশিন কনফিগার করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4480590691557335796">Chrome আপনার কম্পিউটারে ক্ষতিকর সফ্টওয়্যার খুঁজে বের করে সেগুলি সরিয়ে দিতে পারে</translation>
 <translation id="4481530544597605423">বিযুক্ত করা ডিভাইসগুলি</translation>
+<translation id="4487489714832036847">গতানুগতিক সফ্টওয়্যারের পরিবর্তে Chromebook কিছু অ্যাপ ব্যবহার করে। প্রোডাক্টিভিটি, বিনোদন ও আরও অনেক কিছুর জন্য অ্যাপ ইনস্টল করুন।</translation>
 <translation id="4488502501195719518">সব ডেটা মুছবেন?</translation>
 <translation id="4493468155686877504">সাজেস্ট করা হয়েছে (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">এই পৃষ্ঠাতে দেখাবেন না</translation>
@@ -3722,6 +3728,7 @@
 <translation id="5548606607480005320">নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
 <translation id="5551573675707792127">কীবোর্ড এবং টেক্সট ইনপুট</translation>
 <translation id="5553089923092577885">সার্টিফিকেট নীতি ম্যাপিং</translation>
+<translation id="5554403733534868102">এরপরে, আপডেটের প্রসেস চলার সময় আর অপেক্ষা করতে হবে না</translation>
 <translation id="5554489410841842733">এক্সটেনশনটি বর্তমান পৃষ্ঠাতে কাজ করলে এই আইনকটিকে দেখা যাবে৷</translation>
 <translation id="5554720593229208774">ইমেল সার্টিফিকেশন কর্তৃপক্ষ</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
@@ -4136,6 +4143,7 @@
 <translation id="6061882183774845124">আপনার ডিভাইসে লিঙ্ক পাঠান</translation>
 <translation id="6064217302520318294">স্ক্রিন লক</translation>
 <translation id="6065289257230303064">সার্টিফিকেট বিষয় নির্দেশিকা গুণাবলী</translation>
+<translation id="6069464830445383022">আপনার Google অ্যাকাউন্টই হল আপনার Chromebook-এর সাইন-ইন</translation>
 <translation id="6069671174561668781">ওয়ালপেপার সেট করুন</translation>
 <translation id="6071181508177083058">পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="6071576563962215370">সিস্টেমটি ডিভাইস ইনস্টলেশন-টাইম অ্যাট্রিবিউট লক স্থাপন করতে পারেনি।</translation>
@@ -4452,6 +4460,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> এবং অন্য ১টি ট্যাব}one{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}other{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}}</translation>
 <translation id="6451689256222386810">আপনি যদি আপনার পাসফ্রেজ ভুলে যান বা এই সেটিং পরিবর্তন করতে চান, তাহলে <ph name="BEGIN_LINK" />সিঙ্ক রিসেট করুন<ph name="END_LINK" />।</translation>
 <translation id="6452181791372256707">প্রত্যাখ্যান</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> হয়েছে</translation>
 <translation id="6452961788130242735">নেটওয়ার্কের সমস্যা বা ভুল রিলম</translation>
 <translation id="6455264371803474013">নির্দিষ্ট সাইটগুলিতে</translation>
 <translation id="6455894534188563617">&amp;নতুন ফোল্ডার</translation>
@@ -4624,6 +4633,7 @@
 <translation id="6680442031740878064">খালি জায়গা: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">দ্রুততা</translation>
 <translation id="6681668084120808868">ফটো তুলুন</translation>
+<translation id="6684827949542560880">লেটেস্ট আপডেট ডাউনলোড করা হচ্ছে</translation>
 <translation id="668599234725812620">Google Play খুলুন</translation>
 <translation id="6686490380836145850">ডানদিকের ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="6686817083349815241">আপনার পাসওয়ার্ড সেভ করুন</translation>
@@ -4733,6 +4743,7 @@
 <translation id="6812841287760418429">পরিবর্তন রাখুন</translation>
 <translation id="6817174620439930047">যখন কোনো সাইট MIDI ডিভাইসগুলি অ্যাক্সেস করার জন্য সিস্টেমের বিশিষ্ট বার্তাগুলি ব্যবহার করতে চায় তখন জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="6818198425579322765">অনুবাদ করার জন্য পৃষ্ঠার ভাষা</translation>
+<translation id="6818802132960437751">অ্যান্টিভাইরাস অন্তর্ভুক্ত</translation>
 <translation id="682123305478866682">ডেস্কটপ কাস্ট করুন</translation>
 <translation id="6823174134746916417">টাচপ্যাডে ট্যাপ করে ক্লিক করা</translation>
 <translation id="6823506025919456619">আপনার ডিভাইসগুলি দেখতে আপনাকে Chrome-এ সাইন-ইন করতে হবে</translation>
@@ -5378,6 +5389,7 @@
 <translation id="7631205654593498032">আপনি ডিভাইস কানেক্ট করার মানে হল আপনি মেনে নিচ্ছেন <ph name="DEVICE_TYPE" /> এই কাজগুলি করতে পারবে:</translation>
 <translation id="7631887513477658702">&amp;সবসময় এই ধরনের ফাইল খুলুন</translation>
 <translation id="7632948528260659758">নিম্নলিখিত kiosk অ্যাপ্লিকেশানগুলি আপডেট হতে ব্যর্থ হয়েছে:</translation>
+<translation id="7633724038415831385">শুধু এবারই আপনাকে আপডেটের প্রসেস চলার সময় অপেক্ষা করতে হবে। Chromebook-এ ব্যাকগ্রাউন্ডেই সফ্টওয়্যার আপডেট হয়ে যায়।</translation>
 <translation id="7634566076839829401">কিছু গন্ডগোল হয়েছে৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="763632859238619983">কোনও সাইটকে পেমেন্ট হ্যান্ডলার ইনস্টল করার অনুমতি দেবেন না</translation>
 <translation id="7636919061354591437">এই ডিভাইসে ইনস্টল করুন</translation>
@@ -6145,6 +6157,7 @@
 <translation id="8546930481464505581">টাচ বার কাস্টমাইজ করুন</translation>
 <translation id="8547013269961688403">ফুলস্ক্রিন ম্যাগনিফায়ার চালু করুন</translation>
 <translation id="85486688517848470">সবথেকে উপরের-সারির বোতামগুলির আচরণ পরিবর্তন করতে সার্চ বোতাম ধরে থাকুন</translation>
+<translation id="8549316893834449916">আপনার Chromebook-এ সাইন-ইন করার জন্য আপনার Google অ্যাকাউন্ট ব্যবহার করুন - সেই একই অ্যাকাউন্ট যা আপনি Gmail, Drive, YouTube এবং Google-এর আরও পরিষেবায় ব্যবহার করেন।</translation>
 <translation id="8551388862522347954">লাইসেন্সগুলি</translation>
 <translation id="8551588720239073785">তারিখ ও সময়ের সেটিংস</translation>
 <translation id="8553342806078037065">অন্যান্য ব্যক্তিদের পরিচালনা করুন</translation>

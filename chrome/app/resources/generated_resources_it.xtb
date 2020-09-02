@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Per richiedere l'accesso, contatta l'amministratore del dispositivo.</translation>
 <translation id="1149401351239820326">Mese di scadenza</translation>
 <translation id="1149725087019908252">Scansione di <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Questo è l'ultimo aggiornamento software e di sicurezza automatico per il dispositivo <ph name="DEVICE_TYPE" />. Per ricevere gli aggiornamenti futuri, esegui l'upgrade a un modello più recente. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Occhiali da sole</translation>
 <translation id="1151917987301063366">Consenti sempre a <ph name="HOST" /> di accedere ai sensori</translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Problema meccanico. Controlla la stampante.</translation>
 <translation id="1363585519747660921">La stampante USB deve essere configurata</translation>
 <translation id="1365180424462182382">Il tuo <ph name="BEGIN_LINK" />browser è gestito<ph name="END_LINK" /> da <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Esegui strumenti, editor e IDE di Linux sul tuo dispositivo <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Ulteriori informazioni&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Scegli un file</translation>
 <translation id="1369149969991017342">Switch Access (consente l'utilizzo del computer semplicemente mediante uno o due sensori)</translation>
 <translation id="1372841398847029212">Sincronizza con il tuo account</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Etichetta (facoltativa)</translation>
 <translation id="1877520246462554164">Recupero del token di autenticazione non riuscito. Esci e accedi nuovamente per riprovare.</translation>
 <translation id="1877860345998737529">Assegnazione di azioni ai sensori</translation>
+<translation id="1878155070920054810">Sembra che il Chromebook stia per scaricarsi del tutto, prima di aver completato l'aggiornamento. Assicurati che si stia ricaricando correttamente per evitare interruzioni.</translation>
 <translation id="1879000426787380528">Accesso eseguito come</translation>
 <translation id="1880905663253319515">Eliminare il certificato "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Layout tastiera</translation>
@@ -1074,6 +1075,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2270627217422354837">Scambiare dati con qualsiasi dispositivo nei domini: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Bicchiere da cocktail</translation>
 <translation id="2273119997271134996">Problema con la porta video del dock</translation>
+<translation id="2274840746523584236">Ricarica il Chromebook</translation>
 <translation id="2276503375879033601">Aggiungi altre applicazioni</translation>
 <translation id="2277255602909579701">Tutti i cookie e i dati dei siti</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 elemento copiato}other{# elementi copiati}}</translation>
@@ -1419,7 +1421,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2682498795777673382">Aggiornato da un genitore</translation>
 <translation id="2683638487103917598">Cartella ordinata</translation>
 <translation id="2684004000387153598">Per continuare, fai clic su OK, quindi fai clic su Aggiungi persona per creare un nuovo profilo per il tuo indirizzo email.</translation>
-<translation id="2686222346846590368">Questo è l'ultimo aggiornamento software e di sicurezza automatico per il dispositivo <ph name="DEVICE_TYPE" />. Per ricevere gli aggiornamenti futuri, esegui l'upgrade a un modello più recente. &lt;a target="_blank" href="<ph name="URL" />"&gt;Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Blocca tutti i cookie (non consigliato)</translation>
 <translation id="2687407218262674387">Termini di servizio di Google</translation>
 <translation id="2688196195245426394">Errore durante la registrazione del dispositivo con il server. <ph name="CLIENT_ERROR" />.</translation>
@@ -1685,6 +1686,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3004391367407090544">Torna più tardi</translation>
 <translation id="3006881078666935414">Nessun dato sull'utilizzo</translation>
 <translation id="3007771295016901659">Duplica scheda</translation>
+<translation id="3008232374986381779">Esegui strumenti, editor e IDE di Linux sul dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="3009300415590184725">Annullare la procedura di configurazione del servizio dati mobile?</translation>
 <translation id="3009779501245596802">Indexed databases</translation>
@@ -1928,6 +1930,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Questi dati includono contenuti sensibili o pericolosi. Rimuovi questi contenuti e riprova.}=1{Questo file include contenuti sensibili o pericolosi. Rimuovi questi contenuti e riprova.}other{Questi file includono contenuti sensibili o pericolosi. Rimuovi questi contenuti e riprova.}}</translation>
 <translation id="3323521181261657960">Premio! Hai più tempo di utilizzo</translation>
 <translation id="3325910708063135066">La videocamera e il microfono sono disattivati nelle Preferenze di Sistema del Mac</translation>
+<translation id="3327050066667856415">I Chromebook sono pensati per la sicurezza. Il tuo dispositivo è protetto automaticamente da malware, senza l'installazione di altro software.</translation>
 <translation id="3328489342742826322">Il ripristino da un backup elimina le applicazioni Linux esistenti e i dati nelle tue cartelle di file Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informazioni sull'app</translation>
@@ -2117,6 +2120,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3556433843310711081">Il tuo gestore può sbloccarlo per te</translation>
 <translation id="3557101512409028104">Imposta limitazioni relative ai siti web e limiti per il tempo di utilizzo con Family Link</translation>
 <translation id="3559262020195162408">Impossibile installare le norme sul dispositivo.</translation>
+<translation id="3559533181353831840">Ancora <ph name="TIME_LEFT" /> circa</translation>
 <translation id="3560034655160545939">&amp;Controllo ortografico</translation>
 <translation id="3562423906127931518">Questa procedura potrebbe richiedere alcuni minuti. Configurazione del container Linux in corso.</translation>
 <translation id="3563432852173030730">Impossibile scaricare l'applicazione kiosk.</translation>
@@ -2632,6 +2636,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="413121957363593859">Componenti</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
 <translation id="413193092008917129">Routine di diagnostica rete</translation>
+<translation id="4132183752438206707">Cerca le app sul Google Play Store</translation>
 <translation id="4133076602192971179">Apri l'app per cambiare la password</translation>
 <translation id="4136203100490971508">La funzione Luminosità notturna verrà disattivata automaticamente all'alba</translation>
 <translation id="41365691917097717">Se continui, verrà attivato il debug ADB per creare e testare app Android. Tieni presente che questa azione consente l'installazione di app Android che non sono state verificate da Google. Per disattivare la funzionalità è necessario ripristinare le impostazioni di fabbrica.</translation>
@@ -2880,6 +2885,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4479877282574735775">Configurazione della macchina virtuale. Questa operazione potrebbe richiedere alcuni minuti.</translation>
 <translation id="4480590691557335796">Chrome può trovare software dannoso sul computer e rimuoverlo</translation>
 <translation id="4481530544597605423">Dispositivi disaccoppiati</translation>
+<translation id="4487489714832036847">Al posto del software tradizionale i Chromebook usano le app. Scarica app per la produttività, l'intrattenimento e altro.</translation>
 <translation id="4488502501195719518">Vuoi cancellare tutti i dati?</translation>
 <translation id="4493468155686877504">Consigliato (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Non visualizzare in questa pagina</translation>
@@ -3723,6 +3729,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5548606607480005320">Controllo di sicurezza</translation>
 <translation id="5551573675707792127">Tastiera e input di testo</translation>
 <translation id="5553089923092577885">Mapping dei criteri dei certificati</translation>
+<translation id="5554403733534868102">Dopo questo aggiornamento, niente più attese</translation>
 <translation id="5554489410841842733">Questa icona sarà visibile quando l'estensione potrà interagire nella pagina corrente.</translation>
 <translation id="5554720593229208774">Autorità di certificazione email</translation>
 <translation id="5556459405103347317">Ricarica</translation>
@@ -4136,6 +4143,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6061882183774845124">Invia link ai tuoi dispositivi</translation>
 <translation id="6064217302520318294">Blocco schermo</translation>
 <translation id="6065289257230303064">Attributi directory soggetto certificato</translation>
+<translation id="6069464830445383022">Accedi al Chromebook con il tuo Account Google</translation>
 <translation id="6069671174561668781">Imposta sfondo</translation>
 <translation id="6071181508177083058">conferma password</translation>
 <translation id="6071576563962215370">Il sistema non è riuscito a stabilire il blocco degli attributi installation-time del dispositivo.</translation>
@@ -4451,6 +4459,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 altra scheda}other{<ph name="PAGE_TITLE" /> e altre # schede}}</translation>
 <translation id="6451689256222386810">Se non ricordi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Rifiuto</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> completato</translation>
 <translation id="6452961788130242735">Problema di rete o area di autenticazione non valida</translation>
 <translation id="6455264371803474013">Su siti specifici</translation>
 <translation id="6455894534188563617">&amp;Nuova cartella</translation>
@@ -4623,6 +4632,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6680442031740878064">Disponibile: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocità</translation>
 <translation id="6681668084120808868">Scatta foto</translation>
+<translation id="6684827949542560880">Download dell'ultimo aggiornamento</translation>
 <translation id="668599234725812620">Apri Google Play</translation>
 <translation id="6686490380836145850">Chiudi schede a destra</translation>
 <translation id="6686817083349815241">Salva la password</translation>
@@ -4732,6 +4742,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6812841287760418429">Mantieni le modifiche</translation>
 <translation id="6817174620439930047">Chiedi conferma quando un sito vuole utilizzare messaggi esclusivi di sistema per accedere a dispositivi MIDI (consigliata)</translation>
 <translation id="6818198425579322765">Lingua della pagina da tradurre</translation>
+<translation id="6818802132960437751">Protezione antivirus integrata</translation>
 <translation id="682123305478866682">Trasmetti desktop</translation>
 <translation id="6823174134746916417">Tocco per fare clic sul touchpad</translation>
 <translation id="6823506025919456619">Devi accedere a Chrome per visualizzare i tuoi dispositivi</translation>
@@ -5377,6 +5388,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7631205654593498032">Quando connetti i tuoi dispositivi, accetti che il dispositivo <ph name="DEVICE_TYPE" /> possa:</translation>
 <translation id="7631887513477658702">&amp;Apri sempre file di questo tipo</translation>
 <translation id="7632948528260659758">Le seguenti app kiosk non sono state aggiornate:</translation>
+<translation id="7633724038415831385">Questo è il solo aggiornamento che ti richiede di aspettare. Tutti gli altri aggiornamenti software vengono effettuati in background sui Chromebook.</translation>
 <translation id="7634566076839829401">Si è verificato un errore. Riprova.</translation>
 <translation id="763632859238619983">Non consentire ai siti di installare gestori dei pagamenti</translation>
 <translation id="7636919061354591437">Installa su questo dispositivo</translation>
@@ -6145,6 +6157,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8546930481464505581">Personalizza la Touch Bar</translation>
 <translation id="8547013269961688403">Attiva lente d'ingrandimento a schermo intero</translation>
 <translation id="85486688517848470">Tieni premuto il tasto per la ricerca per modificare la funzione dei tasti della fila superiore</translation>
+<translation id="8549316893834449916">Utilizzerai il tuo Account Google per accedere al Chromebook: lo stesso che usi per accedere a Gmail, Drive, YouTube e altro ancora.</translation>
 <translation id="8551388862522347954">Licenze</translation>
 <translation id="8551588720239073785">Impostazioni di data e ora</translation>
 <translation id="8553342806078037065">Gestisci altre persone</translation>

@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">لطلب إذن الوصول إلى التطبيق، يُرجى التواصل مع مشرف هذا الجهاز.</translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1149725087019908252">جارٍ فحص ملف <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">هذا هو التحديث التلقائي الأخير للبرنامج والأمان على الجهاز<ph name="DEVICE_TYPE" />. للحصول على التحديثات المستقبلية، يُرجى الترقية إلى طراز أحدث. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">نظارات شمسية</translation>
 <translation id="1151917987301063366">السماح دائمًا لـ <ph name="HOST" /> بالوصول إلى أجهزة الاستشعار</translation>
 <translation id="1153356358378277386">الأجهزة المقترنة</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">هناك مشكلة ميكانيكية. يُرجى التحقُّق من الطابعة.</translation>
 <translation id="1363585519747660921">‏طابعة USB بحاجة إلى الضبط</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />تتم إدارة متصفّحك<ph name="END_LINK" /> من خلال <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">‏يمكنك تشغيل أدوات Linux وأدوات التحرير وبرامج IDE على <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;مزيد من المعلومات&lt;/a&gt;</translation>
 <translation id="1367951781824006909">اختيار ملف</translation>
 <translation id="1369149969991017342">الوصول عبر مفتاح التحويل (التحكم في جهاز الكمبيوتر بمفتاح واحد فقط أو مفتاحَين للتحويل)</translation>
 <translation id="1372841398847029212">المزامنة مع حسابك</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">التصنيف (اختياري)</translation>
 <translation id="1877520246462554164">تعذّر الحصول على الرمز المميز للمصادقة. يُرجى الخروج ثم تسجيل الدخول مرّة أخرى لإعادة المحاولة.</translation>
 <translation id="1877860345998737529">تحديد مفتاح التبديل إلى إجراء</translation>
+<translation id="1878155070920054810">‏يبدو أن الشحن سينفد من جهاز Chromebook قبل اكتمال التحديث. تأكَّد من شحن جهازك بشكل صحيح لتجنُّب المقاطعة.</translation>
 <translation id="1879000426787380528">تسجيل الدخول باسم</translation>
 <translation id="1880905663253319515">هل تريد حذف الشهادة "<ph name="CERTIFICATE_NAME" />"؟</translation>
 <translation id="1881445033931614352">تنسيق لوحة المفاتيح</translation>
@@ -1074,6 +1075,7 @@
 <translation id="2270627217422354837">تبادل البيانات مع أي جهاز في النطاقات: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">كوب عصير</translation>
 <translation id="2273119997271134996">مشكلة متعلقة بمنفذ الفيديو في محطة الإرساء</translation>
+<translation id="2274840746523584236">‏شحن جهاز Chromebook</translation>
 <translation id="2276503375879033601">إضافة المزيد من التطبيقات</translation>
 <translation id="2277255602909579701">جميع ملفات تعريف الارتباط وبيانات الموقع</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{تم نسخ عنصر واحد}zero{تم نسخ # عنصر}two{تم نسخ عنصرين (#)}few{تم نسخ # عناصر}many{تم نسخ # عنصرًا}other{تم نسخ # عنصر}}</translation>
@@ -1420,7 +1422,6 @@
 <translation id="2682498795777673382">تحديث من أحد والديك</translation>
 <translation id="2683638487103917598">تم تصنيف المجلد</translation>
 <translation id="2684004000387153598">للمتابعة، انقر على "موافقة" ثم انقر على "إضافة شخص" لإنشاء ملف شخصي جديد لعنوان بريدك الإلكتروني.</translation>
-<translation id="2686222346846590368">‏هذا هو آخر تحديث تلقائي للبرنامج والأمان لجهاز <ph name="DEVICE_TYPE" />. للحصول على التحديثات في المستقبل، يُمكنك الترقية إلى طراز أحدث. &lt;a target="_blank" herf="<ph name="URL" />"&gt;مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
 <translation id="2687407218262674387">‏بنود خدمة Google</translation>
 <translation id="2688196195245426394">حدث خطأ عند تسجيل الجهاز مع الخادم: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@
 <translation id="3004391367407090544">يُرجى معاودة الزيارة لاحقًا</translation>
 <translation id="3006881078666935414">لا تتوفر بيانات استخدام</translation>
 <translation id="3007771295016901659">تكرار علامة التبويب</translation>
+<translation id="3008232374986381779">‏يمكنك تشغيل أدوات Linux وأدوات التعديل وبرامج IDE على <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">إعادة ضبط الأذونات</translation>
 <translation id="3009300415590184725">هل تريد فعلًا إلغاء عملية إعداد خدمة بيانات الجوال؟</translation>
 <translation id="3009779501245596802">قواعد بيانات مفهرسة</translation>
@@ -1929,6 +1931,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{تشتمل هذه البيانات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}=1{يشتمل هذا الملف على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}two{يشتمل هذان الملفان على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}few{تشتمل هذه الملفات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}many{تشتمل هذه الملفات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}other{تشتمل هذه الملفات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}}</translation>
 <translation id="3323521181261657960">إليك مكافأة. ستحظى بالمزيد من وقت النظر إلى الشاشة.</translation>
 <translation id="3325910708063135066">‏تم إيقاف الكاميرا والميكروفون في إعدادات نظام Mac المفضلة</translation>
+<translation id="3327050066667856415">‏يتم تصميم أجهزة Chromebook للحفاظ على الأمان. جهازك محمي من البرامج الضارة بشكل تلقائي ولا يتطلب أي برامج إضافية.</translation>
 <translation id="3328489342742826322">‏ستؤدي الاستعادة من نسخة احتياطية إلى حذف تطبيقات Linux الحالية والبيانات في مجلد "ملفات Linux".</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">معلومات التطبيق</translation>
@@ -2118,6 +2121,7 @@
 <translation id="3556433843310711081">يمكن لمديرك إلغاء الحظر لك</translation>
 <translation id="3557101512409028104">‏ضبط الحدود القصوى المسموح بها للقيود على المواقع الإلكترونية ووقت النظر إلى الشاشة باستخدام Family Link</translation>
 <translation id="3559262020195162408">تعذَّر تثبيت السياسة على الجهاز.</translation>
+<translation id="3559533181353831840">يتبقى <ph name="TIME_LEFT" /> تقريبًا</translation>
 <translation id="3560034655160545939">&amp;التدقيق الإملائي</translation>
 <translation id="3562423906127931518">‏قد تستغرق هذه العملية بضع دقائق. جارٍ إعداد حاوية نظام التشغيل Linux.</translation>
 <translation id="3563432852173030730">‏تعذر تنزيل تطبيق Kiosk.</translation>
@@ -2630,6 +2634,7 @@
 <translation id="413121957363593859">المكونات</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="413193092008917129">سلسلة إجراءات بيانات تشخيص الشبكة</translation>
+<translation id="4132183752438206707">‏البحث عن تطبيقات على "متجر Google Play" وتنزيلها</translation>
 <translation id="4133076602192971179">فتح التطبيق لتغيير كلمة المرور</translation>
 <translation id="4136203100490971508">سيتم إيقاف الإضاءة الليلية تلقائيًا عند شروق الشمس.</translation>
 <translation id="41365691917097717">‏ستؤدي المواصلة إلى تفعيل خيار "تصحيح الأخطاء عبر ADB" لإنشاء تطبيقات متوافقة مع Android واختبارها. ويُرجى ملاحظة أن هذا الإجراء يتيح تثبيت تطبيقات متوافقة مع Android لم تتحقَّق منها Google، ويتطلب أيضًا إعادة ضبط على الإعدادات الأصلية لإيقافه.</translation>
@@ -2878,6 +2883,7 @@
 <translation id="4479877282574735775">جارٍ ضبط الآلة الافتراضية. قد يستغرق ذلك بضع دقائق.</translation>
 <translation id="4480590691557335796">‏يمكن لـ Chrome العثور على البرامج الضارة على جهاز الكمبيوتر وإزالتها.</translation>
 <translation id="4481530544597605423">الأجهزة التي تم إلغاء إقرانها</translation>
+<translation id="4487489714832036847">‏تستخدم أجهزة Chromebook تطبيقات بدلاً من برامج تقليدية. يمكنك الحصول على تطبيقات لزيادة الإنتاجية والترفيه والمزيد.</translation>
 <translation id="4488502501195719518">هل تريد محو جميع البيانات؟</translation>
 <translation id="4493468155686877504">موصى به (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">عدم الظهور في هذه الصفحة</translation>
@@ -3722,6 +3728,7 @@
 <translation id="5548606607480005320">التحقّق من الأمان</translation>
 <translation id="5551573675707792127">لوحة المفاتيح وإدخال النص</translation>
 <translation id="5553089923092577885">تعيينات سياسة الشهادة</translation>
+<translation id="5554403733534868102">لا داعٍ لانتظار التحديثات بعد الآن</translation>
 <translation id="5554489410841842733">سيظهر هذا الرمز عند عمل الإضافة في الصفحة الحالية.</translation>
 <translation id="5554720593229208774">المرجع المصدق للبريد الإلكتروني</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
@@ -4135,6 +4142,7 @@
 <translation id="6061882183774845124">إرسال الرابط إلى الأجهزة</translation>
 <translation id="6064217302520318294">قفل الشاشة</translation>
 <translation id="6065289257230303064">سمات دليل صاحب الشهادة</translation>
+<translation id="6069464830445383022">‏تسجيل الدخول إلى Chromebook من خلال حسابك على Google</translation>
 <translation id="6069671174561668781">تعيين خلفية</translation>
 <translation id="6071181508177083058">تأكيد كلمة المرور</translation>
 <translation id="6071576563962215370">تعذَّر على النظام إنشاء قفل سمات وقت تثبيت الجهاز.</translation>
@@ -4451,6 +4459,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> وعلامة تبويب واحدة إضافية}two{<ph name="PAGE_TITLE" /> وعلامَتا تبويب إضافيتان}few{<ph name="PAGE_TITLE" /> و# علامات تبويب إضافية}many{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}other{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}}</translation>
 <translation id="6451689256222386810">إذا نسيت عبارة المرور أو رغبت في تغيير هذا الإعداد، يمكنك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">رفض</translation>
+<translation id="6452251728599530347">اكتمل <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">مشكلة في الشبكة أو نطاق غير صالح</translation>
 <translation id="6455264371803474013">على مواقع إلكترونية محددة</translation>
 <translation id="6455894534188563617">&amp;مجلد جديد</translation>
@@ -4623,6 +4632,7 @@
 <translation id="6680442031740878064">المساحة المتاحة: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">تقييم</translation>
 <translation id="6681668084120808868">التقاط صورة</translation>
+<translation id="6684827949542560880">جارٍ تنزيل آخر تحديث</translation>
 <translation id="668599234725812620">‏فتح Google Play</translation>
 <translation id="6686490380836145850">إغلاق علامات  التبويب في الجهة  اليسرى.</translation>
 <translation id="6686817083349815241">حفظ كلمة المرور</translation>
@@ -4732,6 +4742,7 @@
 <translation id="6812841287760418429">الإبقاء على التغييرات</translation>
 <translation id="6817174620439930047">‏طلب الإذن عند محاولة أحد المواقع استخدام رسائل حصرية للنظام للوصول إلى أجهزة MIDI (موصى به)</translation>
 <translation id="6818198425579322765">لغة الصفحة المُراد ترجمتها</translation>
+<translation id="6818802132960437751">حماية مُدمَجة من الفيروسات</translation>
 <translation id="682123305478866682">إرسال سطح المكتب</translation>
 <translation id="6823174134746916417">الضغط للنقر على لوحة اللمس</translation>
 <translation id="6823506025919456619">‏يلزمك تسجيل الدخول إلى Chrome للاطلاع على  أجهزتك</translation>
@@ -5377,6 +5388,7 @@
 <translation id="7631205654593498032">عند ربط أجهزتك، أنت توافق على أن جهاز <ph name="DEVICE_TYPE" /> سيتمكّن من إجراء ما يلي:</translation>
 <translation id="7631887513477658702">فت&amp;ح هذا النوع من الملفات دومًا</translation>
 <translation id="7632948528260659758">‏فشل تحديث تطبيقات kiosk التالية:</translation>
+<translation id="7633724038415831385">‏هذه هي المرة الوحيدة التي ستنتظر فيها إجراء تحديث. في أجهزة Chromebook، تجري تحديثات البرامج في الخلفية.</translation>
 <translation id="7634566076839829401">حدث خطأ ما. يُرجى إعادة المحاولة.</translation>
 <translation id="763632859238619983">عدم السماح لأي موقع بتثبيت معالجات الدفع</translation>
 <translation id="7636919061354591437">تثبيت على هذا الجهاز</translation>
@@ -6146,6 +6158,7 @@
 <translation id="8546930481464505581">تخصيص شريط اللمس</translation>
 <translation id="8547013269961688403">تفعيل المكبّر بملء الشاشة</translation>
 <translation id="85486688517848470">اضغط على مفتاح البحث باستمرار لتبديل سلوك مفاتيح الصف العلوي</translation>
+<translation id="8549316893834449916">‏يجب أن تستخدم حسابك على Google لتسجيل الدخول إلى جهاز Chromebook، وهو الحساب نفسه الذي تستخدمه على Gmail وDrive وYouTube وغيرها من المنتجات.</translation>
 <translation id="8551388862522347954">التراخيص</translation>
 <translation id="8551588720239073785">إعدادات التاريخ والوقت</translation>
 <translation id="8553342806078037065">إدارة الأشخاص الآخرين</translation>
@@ -6454,7 +6467,7 @@
 <translation id="8898840733695078011">قوة الإشارة</translation>
 <translation id="8899851313684471736">&amp;فتح الرّابط في نافذة جديدة</translation>
 <translation id="8900413463156971200">تفعيل شبكة الجوّال</translation>
-<translation id="8902667442496790482">فتح إعدادات الاختيار والاستماع</translation>
+<translation id="8902667442496790482">فتح إعدادات سماع الاختيار</translation>
 <translation id="8903263458134414071">اختيار حساب لتسجيل الدخول</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909298138148012791">تم إلغاء تثبيت <ph name="APP_NAME" />.</translation>

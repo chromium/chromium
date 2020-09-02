@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">برای درخواست دسترسی، با سرپرست این دستگاه تماس بگیرید.</translation>
 <translation id="1149401351239820326">ماه انقضا</translation>
 <translation id="1149725087019908252">در حال اسکن کردن <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">این آخرین به‌روزرسانی خودکار نرم‌افزار و امنیتی برای این <ph name="DEVICE_TYPE" /> است. برای دریافت به‌روزرسانی‌های بعدی، به مدل جدیدتری ارتقا دهید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">عینک آفتابی</translation>
 <translation id="1151917987301063366">همیشه اجازه دسترسی به حسگرها به <ph name="HOST" /> داده شود</translation>
 <translation id="1153356358378277386">دستگاه‌های مرتبط‌شده</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">مشکل مکانیکی. چاپگر را بررسی کنید</translation>
 <translation id="1363585519747660921">‏چاپگر USB باید پیکربندی شود</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />مرورگرتان<ph name="END_LINK" /> توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود</translation>
-<translation id="1366177842110999534">‏اجرای ابزارها، ویرایشگرها و محیط‌های یکپارچه توسعه نرم‌افزار (IDE) ‏Linux در <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;بیشتر بدانید&lt;/a&gt;</translation>
 <translation id="1367951781824006909">انتخاب یک فایل</translation>
 <translation id="1369149969991017342">دسترسی کلیدی (رایانه را فقط با یک یا دو سوئیچ کنترل کنید)</translation>
 <translation id="1372841398847029212">همگام‌سازی با حسابتان</translation>
@@ -757,6 +757,7 @@
 <translation id="1877377290348678128">برچسب (اختیاری)</translation>
 <translation id="1877520246462554164">کد احراز هویت دریافت نشد. لطفاً از سیستم خارج شوید و برای امتحان مجدد دوباره به سیستم وارد شوید.</translation>
 <translation id="1877860345998737529">تغییر وضعیت اختصاص دادن کلیدها به کنش‌ها</translation>
+<translation id="1878155070920054810">‏به‌نظر می‌رسد شارژ Chromebook شما پیش از اتمام به‌روزرسانی تمام خواهد شد. برای جلوگیری از قطع شدن به‌روزرسانی، مطمئن شوید Chromebook به‌درستی شارژ می‌شود.</translation>
 <translation id="1879000426787380528">ورود به سیستم به‌عنوان</translation>
 <translation id="1880905663253319515">مجوز "<ph name="CERTIFICATE_NAME" />" حذف شود؟</translation>
 <translation id="1881445033931614352">طرح‌بندی صفحه‌کلید</translation>
@@ -1071,6 +1072,7 @@
 <translation id="2270627217422354837">تباد داده با هر دستگاهی در دامنه‌های: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">جام مارتینی</translation>
 <translation id="2273119997271134996">مشکل در اتصال درگاه ویدیو</translation>
+<translation id="2274840746523584236">‏Chromebook خود را شارژ کنید</translation>
 <translation id="2276503375879033601">افزودن برنامه‌های بیشتر</translation>
 <translation id="2277255602909579701">همه کوکی‌ها و داده‌های سایت</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{۱ مورد کپی شد}one{# مورد کپی شد}other{# مورد کپی شد}}</translation>
@@ -1417,7 +1419,6 @@
 <translation id="2682498795777673382">به‌روزرسانی ازطرف والدین شما</translation>
 <translation id="2683638487103917598">پوشه مرتب شد</translation>
 <translation id="2684004000387153598">برای ادامه، روی «تأیید» کلیک کنید و سپس برای ایجاد نمایه‌ای جدید برای نشانی رایانامه‌تان، روی «افزودن شخص» کلیک کنید.</translation>
-<translation id="2686222346846590368">‏این آخرین به‌روزرسانی خودکار امنیتی و نرم‌افزار برای این <ph name="DEVICE_TYPE" /> است. برای دریافت به‌روزرسانی‌های بعدی، به مدل جدیدتری ارتقا دهید. &lt;a target="_blank" href="<ph name="URL" />"&gt;بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">مسدود کردن همه کوکی‌ها (توصیه نمی‌شود)</translation>
 <translation id="2687407218262674387">‏شرایط خدمات Google</translation>
 <translation id="2688196195245426394">خطا هنگام ثبت دستگاه با سرور: <ph name="CLIENT_ERROR" />.</translation>
@@ -1683,6 +1684,7 @@
 <translation id="3004391367407090544">لطفاً بعداً دوباره برگردید</translation>
 <translation id="3006881078666935414">هیچ داده مصرفی وجود ندارد</translation>
 <translation id="3007771295016901659">کپی کردن برگه</translation>
+<translation id="3008232374986381779">‏ابزارها، ویرایشگرها و محیط‌های یکپارچه توسعه نرم‌افزار (IDEs) ‏Linux را در <ph name="DEVICE_TYPE" /> اجرا کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">بازنشانی مجوزها</translation>
 <translation id="3009300415590184725">آیا مطمئن هستید که می‌خواهید مرحله تنظیم سرویس داده تلفن همراه را لغو کنید؟</translation>
 <translation id="3009779501245596802">پایگاه‌های داده فهرست‌بندی شده</translation>
@@ -1926,6 +1928,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{این داده محتوای حساس یا خطرناک دارد. این محتوا را حذف کنید و دوباره امتحان کنید.}=1{این فایل محتوای حساس یا خطرناک دارد. این محتوا را حذف کنید و دوباره امتحان کنید.}one{این فایل‌ها محتوای حساس یا خطرناک دارند. این محتوا را حذف کنید و دوباره امتحان کنید.}other{این فایل‌ها محتوای حساس یا خطرناک دارند. این محتوا را حذف کنید و دوباره امتحان کنید.}}</translation>
 <translation id="3323521181261657960">پاداش! وقت تماشای صفحه بیشتر شد</translation>
 <translation id="3325910708063135066">‏در «تنظیمات برگزیده سیستم Mac»، دوربین و میکروفون خاموش‌اند</translation>
+<translation id="3327050066667856415">‏دستگاه‌های Chromebook برای امنیت طراحی شده‌اند. دستگاه شما دربرابر بدافزار به‌طور خودکار محافظت می‌شود – بدون نیاز به نرم‌افزار اضافی.</translation>
 <translation id="3328489342742826322">‏با بازیابی از داده‌های پشتیبان‌گیری‌شده، برنامه‌ها و داده‌های Linux موجود در پوشه فایل‌های Linux حذف خواهد شد.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">اطلاعات برنامه</translation>
@@ -2115,6 +2118,7 @@
 <translation id="3556433843310711081">مدیرتان می‌تواند این سایت را برای شما بگشاید</translation>
 <translation id="3557101512409028104">‏محدودیت‌های وب‌سایت و محدودیت‌های مدت تماشای صفحه با Family Link تنظیم شود</translation>
 <translation id="3559262020195162408">خط‌مشی روی دستگاه نصب نشد.</translation>
+<translation id="3559533181353831840">تقریباً <ph name="TIME_LEFT" /> باقی مانده است</translation>
 <translation id="3560034655160545939">&amp;غلط‌گیر املا</translation>
 <translation id="3562423906127931518">‏ممکن است این فرایند چند دقیقه طول بکشد. درحال راه‌اندازی محتوی Linux.</translation>
 <translation id="3563432852173030730">برنامه کیوسک بارگیری نشد.</translation>
@@ -2630,6 +2634,7 @@
 <translation id="413121957363593859">مؤلفه‌ها</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
 <translation id="413193092008917129">روال‌های عیب‌یابی شبکه</translation>
+<translation id="4132183752438206707">‏پیدا کردن برنامه‌ها در «فروشگاه Google Play»</translation>
 <translation id="4133076602192971179">برای تغییر دادن گذرواژه، برنامه را باز کنید</translation>
 <translation id="4136203100490971508">«نور شب» هنگام طلوع آفتاب به‌طور خودکار خاموش می‌شود</translation>
 <translation id="41365691917097717">‏با ادامه دادن، اشکال‌زدایی ADB (پل اشکال‌زدایی Android) برای ایجاد و آزمایش برنامه‌های Android فعال می‌شود. توجه داشته باشید که این کنش نصب برنامه‌های Android را که Google تأیید نکرده است مجاز می‌کند و برای غیرفعال شدن به بازنشانی کارخانه‌ای نیاز دارد.</translation>
@@ -2878,6 +2883,7 @@
 <translation id="4479877282574735775">درحال پیکربندی ماشین مجازی. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4480590691557335796">‏Chrome می‌تواند نرم‌افزار مضر را در رایانه‌تان پیدا کرده و آن را حذف کند</translation>
 <translation id="4481530544597605423">دستگاه‌های لغو ارتباط‌شده</translation>
+<translation id="4487489714832036847">‏دستگاه‌های Chromebook به‌جای نرم‌افزار قدیمی از برنامه‌ها استفاده می‌کنند. برنامه‌هایی ویژه بهره‌وری، سرگرمی، و غیره دریافت کنید.</translation>
 <translation id="4488502501195719518">همه داده‌ها پاک شود؟</translation>
 <translation id="4493468155686877504">(<ph name="INSTALL_SIZE" />) توصیه‌شده</translation>
 <translation id="4495419450179050807">در این صفحه نشان داده نشود</translation>
@@ -3721,6 +3727,7 @@
 <translation id="5548606607480005320">بررسی ایمنی</translation>
 <translation id="5551573675707792127">صفحه‌کلید و ورودی نوشتاری</translation>
 <translation id="5553089923092577885">نگاشتهای سیاست گواهی</translation>
+<translation id="5554403733534868102">پس از این، نیازی نیست برای به‌روزرسانی‌ها صبر کنید</translation>
 <translation id="5554489410841842733">این نماد وقتی قابل رؤیت است که برنامهٔ افزودنی بتواند برای صفحه فعلی کار کند.</translation>
 <translation id="5554720593229208774">ارائه دهنده مجوز ایمیل</translation>
 <translation id="5556459405103347317">تازه‌سازی</translation>
@@ -4134,6 +4141,7 @@
 <translation id="6061882183774845124">ارسال پیوند به دستگاه‌هایتان</translation>
 <translation id="6064217302520318294">قفل صفحه</translation>
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
+<translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>
 <translation id="6069671174561668781">تنظیم کاغذدیواری</translation>
 <translation id="6071181508177083058">تأیید گذرواژه</translation>
 <translation id="6071576563962215370">این سیستم نتوانست قفل ویژگی‌های زمان نصب دستگاه را ایجاد کند.</translation>
@@ -4449,6 +4457,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> و ۱ برگه دیگر}one{<ph name="PAGE_TITLE" /> و # برگه دیگر}other{<ph name="PAGE_TITLE" /> و # برگه دیگر}}</translation>
 <translation id="6451689256222386810">اگر عبارت عبورتان را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">عدم پذیرش</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> تکمیل شد</translation>
 <translation id="6452961788130242735">مشکل شبکه یا حوزه نادرست</translation>
 <translation id="6455264371803474013">در سایت‌هایی خاص</translation>
 <translation id="6455894534188563617">پوشه &amp;جدید</translation>
@@ -4621,6 +4630,7 @@
 <translation id="6680442031740878064">در دسترس: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">رتبه‌بندی</translation>
 <translation id="6681668084120808868">عکسبرداری</translation>
+<translation id="6684827949542560880">درحال بارگیری آخرین به‌روزرسانی</translation>
 <translation id="668599234725812620">‏باز کردن Google Play</translation>
 <translation id="6686490380836145850">بستن برگه‌ها به چپ</translation>
 <translation id="6686817083349815241">ذخیره گذرواژه‌تان</translation>
@@ -4730,6 +4740,7 @@
 <translation id="6812841287760418429">حفظ تغییرات</translation>
 <translation id="6817174620439930047">‏اگر سایتی می‌خواهد از پیام‌های انحصاری سیستم برای دسترسی به دستگاه‌های MIDI استفاده کند سؤال شود (توصیه می‌شود)</translation>
 <translation id="6818198425579322765">زبان صفحه موردنظر برای ترجمه</translation>
+<translation id="6818802132960437751">مجهز به محافظ دربرابر ویروس</translation>
 <translation id="682123305478866682">فرستادن میزکار</translation>
 <translation id="6823174134746916417">کلیک با یک ضربه روی صفحه لمسی</translation>
 <translation id="6823506025919456619">‏برای مشاهده دستگاه‌هایتان باید به سیستم Chrome وارد شوید</translation>
@@ -5375,6 +5386,7 @@
 <translation id="7631205654593498032">وقتی دستگاه‌هایتان را متصل می‌کنید، موافقت می‌کنید که <ph name="DEVICE_TYPE" /> بتواند:</translation>
 <translation id="7631887513477658702">&amp;همیشه این نوع فایل‌ها باز شوند</translation>
 <translation id="7632948528260659758">به‌روزرسانی برنامه‌های کیوسک زیر انجام نشد:</translation>
+<translation id="7633724038415831385">‏فقط همین یک‌بار باید برای به‌روزرسانی صبر کنید. در Chromebook، به‌روزرسانی‌های نرم‌افزار در پس‌زمینه انجام می‌شود.</translation>
 <translation id="7634566076839829401">مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="763632859238619983">هیچ سایتی برای نصب کنترل‌کننده‌های پرداخت مجاز نباشد</translation>
 <translation id="7636919061354591437">نصب در این دستگاه</translation>
@@ -6144,6 +6156,7 @@
 <translation id="8546930481464505581">سفارشی کردن «نوار لمسی»</translation>
 <translation id="8547013269961688403">فعال کردن ذره‌بین تمام‌صفحه</translation>
 <translation id="85486688517848470">برای جابه‌جایی بین رفتار کلیدهای ردیف بالا، کلید جستجو را نگه‌دارید</translation>
+<translation id="8549316893834449916">‏برای ورود به سیستم در Chromebook از «حساب Google» استفاده خواهید کرد – همان حسابی که برای Gmail،‏ Drive، ‏YouTube، و غیره از آن استفاده می‌کنید.</translation>
 <translation id="8551388862522347954">مجوزها</translation>
 <translation id="8551588720239073785">تنظیمات تاریخ و ساعت</translation>
 <translation id="8553342806078037065">مدیریت افراد دیگر</translation>

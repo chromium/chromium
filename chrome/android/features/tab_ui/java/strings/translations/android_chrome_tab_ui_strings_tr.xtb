@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Başka bir sekmeyi görmek için dokunun</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
+<translation id="2277224997687551299">Grup adını düzenle</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi gruptan kaldır.}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi gruptan kaldır.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
 <translation id="2569352796411618312">Öneri: <ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
 <translation id="257674075312929031">Grup</translation>
 <translation id="2613747923081026172">Grup oluştur</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> adlı <ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişletin.</translation>
 <translation id="2977480621796371840">Gruptan kaldır</translation>
 <translation id="3328308545011660196">Öneri: <ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">İncele</translation>
 <translation id="5073204694187207510">Tam ekran ızgarayı gizler</translation>
 <translation id="5082793167783849073">Grup oluşturarak sayfaları hızlıca karşılaştırın. Başlamak için bir bağlantıya dokunup basılı tutun.</translation>
+<translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5533021382642990449">Daha sonra göster</translation>
+<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu kapat</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> sekme gruplandı</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>
+<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6193448654517602979">Sekmeleri seçin</translation>
 <translation id="6510648526783655549">Sekme şeridini kapat</translation>
 <translation id="6562820390860419811">Sekmeyi sola taşı</translation>
 <translation id="6615455863669487791">Göster</translation>
 <translation id="6840760312327750441">Sekmeleri gruplamak için bir sekmeye dokunup basılı tutun. Ardından başka bir sekmenin üzerine sürükleyin.</translation>
+<translation id="6856809498882026482">Çoklu seçim modunu gizle</translation>
 <translation id="7151209024774799310">Sekmeleri gruptan kaldır</translation>
+<translation id="7204204600596740190">Çoklu seçim modu</translation>
+<translation id="753732157349120914">Sekme Değiştirici</translation>
 <translation id="7559245342362162951">Grubun sekmelerini tam ekran ızgarada gösterir</translation>
 <translation id="7792771145871471484">Önerileri inceleyin.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi gruplandır}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi gruplandır}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Sekmeyi yukarı taşı</translation>
 <translation id="8304833501377495048">Sekme şeridi tekrar gösterilmesin mi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi kapat}}</translation>
+<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişlet.</translation>
 <translation id="8749939518995770034">Sekme şeridi kapalı</translation>
 <translation id="9150694013019234766">Ekranın altına yakın bir yerde bulunan sekme grubunuzdaki sekmeler arasında geçiş yapın</translation>
 <translation id="9169594135889675189">Gruba yeni sekme ekler</translation>

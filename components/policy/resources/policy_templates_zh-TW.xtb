@@ -1745,7 +1745,7 @@
 <translation id="3577251398714997599">含侵入式廣告的網站的廣告設定</translation>
 <translation id="3577628175311752799">使用預設的參照政策 no-referrer-when-downgrade。</translation>
 <translation id="357917253161699596">允許使用者管理使用者憑證</translation>
-<translation id="3580414086211696382">控管能否透過 File System API 要求讀取權限</translation>
+<translation id="3580414086211696382">控管使用 File System API 讀取的權限</translation>
 <translation id="3583230441447348508">指定一組預先設定的網路檔案共用清單。
 
       這項政策的每個清單項目都是一個物件，由下列兩個元素組成：「share_url」和「mode」。「share_url」是檔案共用網址，「mode」則應設為「drop_down」或「pre_mount」。如果是「drop_down」模式，系統會將「share_url」新增至共用項目搜尋下拉式選單中。如果是「pre_mount」模式，則系統會掛接「share_url」。</translation>
@@ -3450,7 +3450,7 @@
 
       如果你停用這項政策或將其設為 False，列印指令就會啟動列印預覽畫面。</translation>
 <translation id="6022948604095165524">起始動作</translation>
-<translation id="6026722971789064331">控管能否透過 File System API 要求寫入權限</translation>
+<translation id="6026722971789064331">控管使用 File System API 寫入的權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>
 <translation id="6034341625190551415">控管公開工作階段和資訊站帳戶類型。</translation>

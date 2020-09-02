@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
 <translation id="1657719826150349398">Lap mozgatása lefelé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
+<translation id="2277224997687551299">Csoportnév szerkesztése</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap eltávolítása a csoportból.}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap eltávolítása a csoportból.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása.}}</translation>
 <translation id="2569352796411618312">Javaslat: <ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
 <translation id="257674075312929031">Csoport</translation>
 <translation id="2613747923081026172">Csoport létrehozása</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="2977480621796371840">Eltávolítás a csoportból</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása: <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="4133493477912226187">Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="4212246570487010370">Böngészés folytatása</translation>
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5082793167783849073">Csoport kialakításával gyorsan összehasonlíthat oldalakat. A kezdéshez tartsa lenyomva ujját a kívánt linken.</translation>
+<translation id="5490235265819901748">Lapcsoport kibontva</translation>
 <translation id="5533021382642990449">Máskor megjelenhet</translation>
+<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport bezárása</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> lap csoportosítva</translation>
 <translation id="58326064309361797">A lapokat húzással csoportosíthatja</translation>
+<translation id="5846292395804797011">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó csoport bezárása: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
 <translation id="6510648526783655549">Lapsor bezárása</translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
 <translation id="6840760312327750441">Lapok csoportosításához tartsa nyomva az egyik lapot, majd húzza rá a másikra.</translation>
+<translation id="6856809498882026482">Több lapot kiválasztó mód elrejtése</translation>
 <translation id="7151209024774799310">Lapok eltávolítása</translation>
+<translation id="7204204600596740190">Több lapot kiválasztó mód</translation>
+<translation id="753732157349120914">Lapváltó</translation>
 <translation id="7559245342362162951">A csoportban lévő lapok teljes képernyős rácsszerkezetben való megjelenítése</translation>
 <translation id="7792771145871471484">Javaslatok áttekintése.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportba helyezése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportba helyezése}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Lap mozgatása felfelé</translation>
 <translation id="8304833501377495048">Ne jelenjen meg újra ez a lapsor?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap bezárása}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap bezárása}}</translation>
+<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport kibontása.</translation>
 <translation id="8749939518995770034">Lapsor bezárva</translation>
 <translation id="9150694013019234766">Válthat a képernyő aljánál lévő lapcsoport lapjai között</translation>
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>

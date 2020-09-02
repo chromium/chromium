@@ -6,9 +6,9 @@
 <translation id="200772894174702141">No se ha podido iniciar sesión en tu cuenta de trabajo. Comprueba que tu dispositivo esté conectado a Internet y vuelve a intentarlo.</translation>
 <translation id="2048923169632968961">Se ha producido un error al intentar sincronizar la contraseña de tu cuenta de trabajo con tu perfil de Windows. Ponte en contacto con tu administrador.</translation>
 <translation id="2515346402363002066">Tu sesión ha caducado. Inicia sesión con tu cuenta de trabajo.</translation>
+<translation id="2566603360883977759">No está permitido iniciar sesión con este correo electrónico. Prueba de nuevo con tu cuenta de trabajo o centro educativo. Si sigues sin poder iniciar sesión, ponte en contacto con el administrador.</translation>
 <translation id="2844349213149998955">No se permite iniciar sesión con una cuenta personal en este dispositivo. Inicia sesión con una cuenta de trabajo.</translation>
 <translation id="3217145568844727893">Si continúas sin introducir tu contraseña actual de Windows, podrías perder datos de este dispositivo de forma irreversible.</translation>
-<translation id="3285576391135346912">Solo puedes iniciar sesión con una dirección de correo electrónico que termine en alguno de estos dominios: <ph name="EMAIL_DOMAINS" />. Vuelve a intentarlo usando una cuenta de trabajo.</translation>
 <translation id="3306357053520292004">Ya se ha registrado otro usuario en este ordenador con esta cuenta. Inicia sesión con otra cuenta.</translation>
 <translation id="3355053591933237049">Comprueba que tu dispositivo esté conectado a Internet y vuelve a intentarlo.</translation>
 <translation id="3926852373333893095">Solo pueden iniciar sesión los usuarios de GSuite Enterprise.</translation>

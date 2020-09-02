@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Да бисте затражили приступ, обратите се администратору овог уређаја.</translation>
 <translation id="1149401351239820326">Месец истека</translation>
 <translation id="1149725087019908252">Скенира се <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Ово је последње аутоматско ажурирање софтвера и безбедносно ажурирање за овај <ph name="DEVICE_TYPE" />. Надоградите на новији модел да бисте добијали будућа ажурирања. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Наочари за сунце</translation>
 <translation id="1151917987301063366">Увек дозволи да <ph name="HOST" /> приступа сензорима</translation>
 <translation id="1153356358378277386">Упарени уређаји</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Механички проблем. Проверите штампач</translation>
 <translation id="1363585519747660921">USB штампач треба да се конфигурише</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Прегледачем управља<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Покрените Linux алатке, уређиваче и IDE-ове на <ph name="DEVICE_TYPE" />-у. &lt;a target="_blank" href="<ph name="URL" />"&gt;Сазнајте више&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Изабери датотеку</translation>
 <translation id="1369149969991017342">Приступ помоћу прекидача (контролишите рачунар помоћу само једног или два прекидача)</translation>
 <translation id="1372841398847029212">Синхронизујте са налогом</translation>
@@ -757,6 +757,7 @@
 <translation id="1877377290348678128">Ознака (опционално)</translation>
 <translation id="1877520246462554164">Преузимање токена за потврду идентитета није успело. Одјавите се, па се поново пријавите да бисте пробали поново.</translation>
 <translation id="1877860345998737529">Додељивање радњи прекидачима</translation>
+<translation id="1878155070920054810">Изгледа да ће Chromebook-у понестати батерије пре него што се ажурирање заврши. Уверите се да се исправно пуни да не би дошло до прекида.</translation>
 <translation id="1879000426787380528">Пријавите се као</translation>
 <translation id="1880905663253319515">Желите да избришете сертификат „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">Распоред тастатуре</translation>
@@ -1071,6 +1072,7 @@
 <translation id="2270627217422354837">Размена података са било којим уређајем на доменима: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Чаша за мартини</translation>
 <translation id="2273119997271134996">Проблем са видео портом базне станице</translation>
+<translation id="2274840746523584236">Напуните Chromebook</translation>
 <translation id="2276503375879033601">Додај још апликација</translation>
 <translation id="2277255602909579701">Сви колачићи и подаци о сајтовима</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 ставка је копирана}one{# ставка је копирана}few{# ставке су копиране}other{# ставки је копирано}}</translation>
@@ -1417,7 +1419,6 @@
 <translation id="2682498795777673382">Новости од родитеља</translation>
 <translation id="2683638487103917598">Директоријум је сортиран</translation>
 <translation id="2684004000387153598">Да бисте наставили, кликните на Потврди, па на Додај особу да бисте отворили нови профил за имејл адресу.</translation>
-<translation id="2686222346846590368">Ово је последње аутоматско безбедносно ажурирање и ажурирање софтвера за <ph name="DEVICE_TYPE" />. Надоградите на новији модел да бисте добијали будућа ажурирања. &lt;a target="_blank" href="<ph name="URL" />"&gt;Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
 <translation id="2687407218262674387">Google услови коришћења услуге</translation>
 <translation id="2688196195245426394">Грешка при регистровању уређаја на сервер: <ph name="CLIENT_ERROR" />.</translation>
@@ -1683,6 +1684,7 @@
 <translation id="3004391367407090544">Вратите се касније</translation>
 <translation id="3006881078666935414">Нема података о коришћењу</translation>
 <translation id="3007771295016901659">Направи дупликат картице</translation>
+<translation id="3008232374986381779">Покрећите Linux алатке, уређиваче и IDE-ове на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Ресетуј дозволе</translation>
 <translation id="3009300415590184725">Да ли сте сигурни да желите да откажете процес подешавања услуге мобилног преноса података?</translation>
 <translation id="3009779501245596802">Индексиране базе података</translation>
@@ -1926,6 +1928,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Ови подаци садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}=1{Ова датотека садржи осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}one{Ове датотеке садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}few{Ове датотеке садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}other{Ове датотеке садрже осетљив или опасан садржај. Уклоните овај садржај и пробајте поново.}}</translation>
 <translation id="3323521181261657960">Бонус! Добијаш додатно време испред екрана</translation>
 <translation id="3325910708063135066">Камера и микрофон су искључени у подешавањима Mac система</translation>
+<translation id="3327050066667856415">Chromebook-ови су осмишљени за безбедност. Уређај је аутоматски заштићен од малвера – није потребан никакав додатан софтвер.</translation>
 <translation id="3328489342742826322">Враћањем из резервне копије избрисаће се постојеће Linux апликације и подаци у директоријуму са Linux датотекама.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Информације о апликацији</translation>
@@ -2115,6 +2118,7 @@
 <translation id="3556433843310711081">Менаџер може да га одблокира за вас</translation>
 <translation id="3557101512409028104">Подесите ограничења за веб-сајтове и време испред екрана помоћу Family Link-а</translation>
 <translation id="3559262020195162408">Инсталирање смерница на уређају није успело.</translation>
+<translation id="3559533181353831840">Још око <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Провера правописа</translation>
 <translation id="3562423906127931518">Ово може да потраје неколико минута. Подешава се Linux контејнер.</translation>
 <translation id="3563432852173030730">Није могуће преузети киоск апликацију.</translation>
@@ -2630,6 +2634,7 @@
 <translation id="413121957363593859">Компоненте</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
 <translation id="413193092008917129">Рутине дијагностике мреже</translation>
+<translation id="4132183752438206707">Пронађите апликације у Google Play продавници</translation>
 <translation id="4133076602192971179">Отворите апликацију да бисте променили лозинку</translation>
 <translation id="4136203100490971508">Ноћно светло се аутоматски искључује када сунце изађе</translation>
 <translation id="41365691917097717">Ако наставите, омогућићете ADB отклањање грешака за прављење и тестирање Android апликација. Имајте у виду да ова радња омогућава инсталирање Android апликација које Google није верификовао и захтева ресетовање на фабричка подешавања да би се онемогућила.</translation>
@@ -2878,6 +2883,7 @@
 <translation id="4479877282574735775">Виртуелна машина се конфигуруше. То може да потраје неколико минута.</translation>
 <translation id="4480590691557335796">Chrome може да пронађе штетан софтвер на рачунару и да га уклони</translation>
 <translation id="4481530544597605423">Уређаји чије је упаривање опозвано</translation>
+<translation id="4487489714832036847">Chromebook користи апликације уместо традиционалног софтвера. Набавите апликације за продуктивност, забаву и друго.</translation>
 <translation id="4488502501195719518">Желите да обришете све податке?</translation>
 <translation id="4493468155686877504">Препоручено (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Не приказуј на овој страници</translation>
@@ -3721,6 +3727,7 @@
 <translation id="5548606607480005320">Безбедносна провера</translation>
 <translation id="5551573675707792127">Тастатура и унос текста</translation>
 <translation id="5553089923092577885">Мапирања смерница сертификата</translation>
+<translation id="5554403733534868102">После овога нема више чекања на ажурирања</translation>
 <translation id="5554489410841842733">Ова икона ће бити видљива када додатак може да делује на тренутној страници.</translation>
 <translation id="5554720593229208774">Ауторитет за издавање сертификата е-поште</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
@@ -4135,6 +4142,7 @@
 <translation id="6061882183774845124">Пошаљите линк на своје уређаје</translation>
 <translation id="6064217302520318294">Закључавање екрана</translation>
 <translation id="6065289257230303064">Атрибути каталога субјеката сертификата</translation>
+<translation id="6069464830445383022">На Chromebook се пријављујете помоћу Google налога</translation>
 <translation id="6069671174561668781">Подешавање позадине</translation>
 <translation id="6071181508177083058">потврдите лозинку</translation>
 <translation id="6071576563962215370">Систем није успео да одреди закључавање атрибута за време инсталације уређаја.</translation>
@@ -4450,6 +4458,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> и још 1 картица}one{<ph name="PAGE_TITLE" /> и још # картица}few{<ph name="PAGE_TITLE" /> и још # картице}other{<ph name="PAGE_TITLE" /> и још # картица}}</translation>
 <translation id="6451689256222386810">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />ресетујте синхронизацију<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Одбиј</translation>
+<translation id="6452251728599530347">Довршено је <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Проблем са мрежом или погрешан домен</translation>
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
 <translation id="6455894534188563617">&amp;Нови директоријум</translation>
@@ -4622,6 +4631,7 @@
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Оцените</translation>
 <translation id="6681668084120808868">Снимите фотографију</translation>
+<translation id="6684827949542560880">Преузима се најновије ажурирање</translation>
 <translation id="668599234725812620">Отвори Google Play</translation>
 <translation id="6686490380836145850">Затвори картице са десне стране</translation>
 <translation id="6686817083349815241">Сачувајте лозинку</translation>
@@ -4731,6 +4741,7 @@
 <translation id="6812841287760418429">Задржи промене</translation>
 <translation id="6817174620439930047">Питај када сајт жели да користи ексклузивне поруке система за приступ MIDI уређајима (препоручено)</translation>
 <translation id="6818198425579322765">Језик странице са ког желите да преводите</translation>
+<translation id="6818802132960437751">Уграђена заштита од вируса</translation>
 <translation id="682123305478866682">Пребаците радну површину</translation>
 <translation id="6823174134746916417">Додирни за клик на тачпеду</translation>
 <translation id="6823506025919456619">Потребно је да се пријавите у Chrome да бисте видели уређаје</translation>
@@ -5376,6 +5387,7 @@
 <translation id="7631205654593498032">Када повежете уређаје, прихватате да <ph name="DEVICE_TYPE" /> може:</translation>
 <translation id="7631887513477658702">&amp;Увек отвори датотеке овог типа</translation>
 <translation id="7632948528260659758">Ажурирање следећих киоск апликација није успело:</translation>
+<translation id="7633724038415831385">Ово је једини тренутак када ћете чекати на ажурирање. На Chromebook-у се софтвер ажурира у позадини.</translation>
 <translation id="7634566076839829401">Нешто није у реду. Пробајте поново.</translation>
 <translation id="763632859238619983">Не дозволи ниједном сајту да инсталира обрађиваче плаћања</translation>
 <translation id="7636919061354591437">Инсталирај на овом уређају</translation>
@@ -6145,6 +6157,7 @@
 <translation id="8546930481464505581">Прилагоди додирну траку</translation>
 <translation id="8547013269961688403">Омогући лупу за цео екран</translation>
 <translation id="85486688517848470">Задржите тастер за претрагу да бисте променили понашање тастера у горњем реду</translation>
+<translation id="8549316893834449916">За пријављивање на Chromebook ћете користити Google налог – исти који користите и за Gmail, Диск, YouTube и друго.</translation>
 <translation id="8551388862522347954">Лиценце</translation>
 <translation id="8551588720239073785">Подешавања датума и времена</translation>
 <translation id="8553342806078037065">Управљање другим људима</translation>

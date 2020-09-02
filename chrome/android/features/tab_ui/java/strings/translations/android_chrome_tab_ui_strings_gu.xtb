@@ -6,6 +6,9 @@
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
 <translation id="1657719826150349398">ટૅબને નીચે ખસેડો</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
+<translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબ કાઢી નાખો.}one{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}other{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="257674075312929031">જૂથ</translation>
 <translation id="2613747923081026172">ગ્રૂપ બનાવો</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.</translation>
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="4212246570487010370">બ્રાઉઝ કરવાનું ચાલુ રાખો</translation>
 <translation id="4450893287417543264">ફરી બતાવશો નહીં</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">રિવ્યૂ કરો</translation>
 <translation id="5073204694187207510">પૂર્ણસ્ક્રીન ગ્રિડને છુપાવો</translation>
 <translation id="5082793167783849073">ગ્રૂપ બનાવીને ઝડપથી પેજની સરખામણી કરો. શરૂ કરવા માટે, લિંકને સ્પર્શ કરી રાખો.</translation>
+<translation id="5490235265819901748">ટૅબ ગ્રૂપ મોટું કરો</translation>
 <translation id="5533021382642990449">પછી બતાવો</translation>
+<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને બંધ કરો</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
 <translation id="58326064309361797">ટૅબનું ગ્રૂપ બનાવવા માટે તેને ખેંચો</translation>
+<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6510648526783655549">ટૅબ સ્ટ્રિપ બંધ કરો</translation>
 <translation id="6562820390860419811">ટૅબને ડાબે ખસેડો</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
 <translation id="6840760312327750441">ટૅબનું ગ્રૂપ બનાવવા માટે, ટૅબને સ્પર્શ કરી રાખો. પછી, ટૅબને બીજા ટૅબ પર ખેંચો.</translation>
+<translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
 <translation id="7151209024774799310">ગ્રૂપમાંથી ટૅબ કાઢી નાખો</translation>
+<translation id="7204204600596740190">એક કરતાં વધુ પસંદગી કરવાનો મોડ</translation>
+<translation id="753732157349120914">ટૅબ સ્વિચર</translation>
 <translation id="7559245342362162951">ગ્રુપના ટૅબને પૂર્ણસ્ક્રીન ગ્રિડમાં બતાવો</translation>
 <translation id="7792771145871471484">સૂચનોનો રિવ્યૂ કરો.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબનું ગ્રૂપ બનાવો}one{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબનું ગ્રૂપ બનાવો}other{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબનું ગ્રૂપ બનાવો}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8304833501377495048">ટૅબ સ્ટ્રિપ ફરીથી ન બતાવીએ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બંધ કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}}</translation>
+<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.</translation>
 <translation id="8749939518995770034">ટૅબ સ્ટ્રિપ બંધ કરી</translation>
 <translation id="9150694013019234766">સ્ક્રીનના નીચેના ભાગમાં, તમારા ટૅબ ગ્રૂપમાં એકથી વધુ ટૅબની વચ્ચે સ્વિચ કરો</translation>
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>

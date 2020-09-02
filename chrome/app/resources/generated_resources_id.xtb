@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Untuk meminta akses, hubungi administrator perangkat ini.</translation>
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1149725087019908252">Memindai <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Ini adalah update keamanan dan software otomatis yang terakhir untuk <ph name="DEVICE_TYPE" /> ini. Untuk mendapatkan update mendatang, upgrade ke model yang lebih baru. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Kacamata Hitam</translation>
 <translation id="1151917987301063366">Selalu izinkan <ph name="HOST" /> mengakses sensor</translation>
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Masalah mekanis. Periksa printer</translation>
 <translation id="1363585519747660921">Printer USB membutuhkan konfigurasi</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Browser Anda dikelola<ph name="END_LINK" /> oleh <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Menjalankan IDE, editor, dan fitur Linux di <ph name="DEVICE_TYPE" /> Anda. &lt;a target="_blank" href="<ph name="URL" />"&gt;Pelajari lebih lanjut&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Pilih file</translation>
 <translation id="1369149969991017342">Tombol Akses (mengontrol komputer hanya menggunakan satu atau dua tombol)</translation>
 <translation id="1372841398847029212">Sinkronkan ke akun Anda</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Label (opsional)</translation>
 <translation id="1877520246462554164">Gagal mendapatkan token autentikasi. Harap logout, lalu login kembali untuk mencoba lagi.</translation>
 <translation id="1877860345998737529">Penetapan tindakan tombol</translation>
+<translation id="1878155070920054810">Sepertinya daya baterai Chromebook akan habis sebelum update selesai. Pastikan daya Chromebook diisi dengan benar untuk mencegah terhentinya proses.</translation>
 <translation id="1879000426787380528">Login sebagai</translation>
 <translation id="1880905663253319515">Hapus sertifikat "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Tata letak keyboard</translation>
@@ -1074,6 +1075,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2270627217422354837">Menukar data dengan perangkat apa pun dalam domain: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Gelas martini</translation>
 <translation id="2273119997271134996">Masalah port video dok</translation>
+<translation id="2274840746523584236">Isi daya Chromebook Anda</translation>
 <translation id="2276503375879033601">Tambahkan aplikasi lainnya</translation>
 <translation id="2277255602909579701">Semua cookie dan data situs</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 item disalin}other{# item disalin}}</translation>
@@ -1420,7 +1422,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2682498795777673382">Pembaruan dari orang tua</translation>
 <translation id="2683638487103917598">Folder diurutkan</translation>
 <translation id="2684004000387153598">Untuk melanjutkan, klik Oke, lalu klik Tambahkan Pengguna guna membuat profil baru untuk alamat email Anda.</translation>
-<translation id="2686222346846590368">Ini adalah update otomatis keamanan dan software terakhir untuk <ph name="DEVICE_TYPE" /> ini. Untuk mendapatkan update mendatang, upgrade ke model yang lebih baru. &lt;a target="_blank" href="<ph name="URL" />"&gt;Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Blokir semua cookie (tidak direkomendasikan)</translation>
 <translation id="2687407218262674387">Persyaratan layanan Google</translation>
 <translation id="2688196195245426394">Terjadi kesalahan saat mendaftarkan perangkat dengan server: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3004391367407090544">Datang kembali nanti</translation>
 <translation id="3006881078666935414">Tidak ada data penggunaan</translation>
 <translation id="3007771295016901659">Duplikasi Tab</translation>
+<translation id="3008232374986381779">Menjalankan alat, editor, dan IDE Linux di <ph name="DEVICE_TYPE" /> Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset izin</translation>
 <translation id="3009300415590184725">Yakin ingin membatalkan proses penyiapan layanan data seluler?</translation>
 <translation id="3009779501245596802">Basis data yang diindeks</translation>
@@ -1929,6 +1931,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Data ini berisi konten sensitif atau berbahaya. Hapus konten ini dan coba lagi.}=1{File ini berisi konten sensitif atau berbahaya. Hapus konten ini dan coba lagi.}other{File ini berisi konten sensitif atau berbahaya. Hapus konten ini dan coba lagi.}}</translation>
 <translation id="3323521181261657960">Bonus! Kamu boleh memakainya lebih lama</translation>
 <translation id="3325910708063135066">Kamera dan mikrofon dinonaktifkan dalam Preferensi Sistem Mac</translation>
+<translation id="3327050066667856415">Chromebook didesain dengan mengutamakan keamanan. Perangkat Anda otomatis dilindungi dari malware, jadi tidak memerlukan software tambahan.</translation>
 <translation id="3328489342742826322">Memulihkan dari cadangan akan menghapus aplikasi Linux yang ada dan data dalam folder file Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Info aplikasi</translation>
@@ -2118,6 +2121,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3556433843310711081">Pengelola dapat membuka blokirnya untuk Anda</translation>
 <translation id="3557101512409028104">Setel pembatasan situs dan batas waktu pemakaian perangkat dengan Family Link</translation>
 <translation id="3559262020195162408">Gagal menginstal kebijakan di perangkat.</translation>
+<translation id="3559533181353831840">Sekitar <ph name="TIME_LEFT" /> lagi</translation>
 <translation id="3560034655160545939">&amp;Periksa ejaan</translation>
 <translation id="3562423906127931518">Proses ini dapat memerlukan waktu beberapa menit. Menyiapkan container Linux.</translation>
 <translation id="3563432852173030730">Aplikasi Kios tidak dapat didownload.</translation>
@@ -2633,6 +2637,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="413121957363593859">Komponen</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
 <translation id="413193092008917129">Rutinitas Diagnostik Jaringan</translation>
+<translation id="4132183752438206707">Temukan aplikasi di Google Play Store</translation>
 <translation id="4133076602192971179">Buka aplikasi untuk mengubah sandi</translation>
 <translation id="4136203100490971508">Fitur Cahaya Malam akan otomatis dinonaktifkan saat matahari terbit</translation>
 <translation id="41365691917097717">Dengan melanjutkan, proses debug ADB akan diaktifkan untuk membuat dan menguji aplikasi Android. Perhatikan bahwa tindakan ini dapat menginstal aplikasi Android yang belum diverifikasi oleh Google, dan perlu reset ke setelan pabrik untuk menonaktifkannya.</translation>
@@ -2881,6 +2886,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4479877282574735775">Mengonfigurasi mesin virtual. Proses ini mungkin memerlukan waktu beberapa menit.</translation>
 <translation id="4480590691557335796">Chrome dapat menemukan software berbahaya di komputer dan menghapusnya</translation>
 <translation id="4481530544597605423">Perangkat tidak tersambung</translation>
+<translation id="4487489714832036847">Chromebook menggunakan aplikasi, bukan software tradisional. Dapatkan aplikasi untuk produktivitas, hiburan, dan masih banyak lagi.</translation>
 <translation id="4488502501195719518">Hapus semua data?</translation>
 <translation id="4493468155686877504">Direkomendasikan (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Jangan tampilkan pada halaman ini</translation>
@@ -3724,6 +3730,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5548606607480005320">Pemeriksaan keselamatan</translation>
 <translation id="5551573675707792127">Input teks dan keyboard</translation>
 <translation id="5553089923092577885">Pemetaan Kebijakan Sertifikat</translation>
+<translation id="5554403733534868102">Setelah ini, Anda tidak perlu menunggu update lagi</translation>
 <translation id="5554489410841842733">Ikon ini akan kelihatan saat ekstensi dapat bertindak pada halaman saat ini.</translation>
 <translation id="5554720593229208774">Otoritas Sertifikasi Email</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
@@ -4137,6 +4144,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6061882183774845124">Kirim link ke perangkat Anda</translation>
 <translation id="6064217302520318294">Kunci layar</translation>
 <translation id="6065289257230303064">Atribut Direktori Subjek Sertifikat</translation>
+<translation id="6069464830445383022">Akun Google Anda adalah kunci akses Chromebook Anda</translation>
 <translation id="6069671174561668781">Setel Wallpaper</translation>
 <translation id="6071181508177083058">konfirmasikan sandi</translation>
 <translation id="6071576563962215370">Sistem gagal membuat kunci atribut waktu penginstalan perangkat.</translation>
@@ -4452,6 +4460,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> dan 1 tab lainnya}other{<ph name="PAGE_TITLE" /> dan # tab lainnya}}</translation>
 <translation id="6451689256222386810">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Tolak</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> selesai</translation>
 <translation id="6452961788130242735">Masalah jaringan atau area yang buruk</translation>
 <translation id="6455264371803474013">Di situs tertentu</translation>
 <translation id="6455894534188563617">&amp;Folder Baru</translation>
@@ -4624,6 +4633,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6680442031740878064">Tersedia: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Beri rating</translation>
 <translation id="6681668084120808868">Ambil foto</translation>
+<translation id="6684827949542560880">Mendownload update terbaru</translation>
 <translation id="668599234725812620">Buka Google Play</translation>
 <translation id="6686490380836145850">Tutup tab di sisi kanan</translation>
 <translation id="6686817083349815241">Simpan sandi Anda</translation>
@@ -4733,6 +4743,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6812841287760418429">Simpan perubahan</translation>
 <translation id="6817174620439930047">Tanyakan saat situs ingin menggunakan pesan eksklusif sistem untuk mengakses perangkat MIDI (disarankan)</translation>
 <translation id="6818198425579322765">Bahasa Asal Terjemahan Halaman</translation>
+<translation id="6818802132960437751">Fitur perlindungan bawaan terhadap virus</translation>
 <translation id="682123305478866682">Transmisikan desktop</translation>
 <translation id="6823174134746916417">Ketuk untuk mengklik touchpad</translation>
 <translation id="6823506025919456619">Anda harus masuk ke Chrome untuk melihat perangkat Anda</translation>
@@ -5378,6 +5389,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7631205654593498032">Dengan menghubungkan perangkat, Anda setuju bahwa <ph name="DEVICE_TYPE" /> Anda dapat:</translation>
 <translation id="7631887513477658702">Sel&amp;alu Buka File Jenis Ini</translation>
 <translation id="7632948528260659758">Aplikasi kios berikut gagal memperbarui:</translation>
+<translation id="7633724038415831385">Kali ini saja Anda perlu menunggu update. Di Chromebook, update software dilakukan di latar belakang.</translation>
 <translation id="7634566076839829401">Terjadi kesalahan. Coba lagi.</translation>
 <translation id="763632859238619983">Jangan izinkan situs menginstal penangan pembayaran</translation>
 <translation id="7636919061354591437">Instal di Perangkat ini</translation>
@@ -6147,6 +6159,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8546930481464505581">Sesuaikan Touch Bar</translation>
 <translation id="8547013269961688403">Aktifkan kaca pembesar layar penuh</translation>
 <translation id="85486688517848470">Tahan tombol Penelusuran untuk mengalihkan perilaku tombol baris atas</translation>
+<translation id="8549316893834449916">Anda akan menggunakan Akun Google Anda untuk login ke Chromebook. Akun tersebut sama dengan yang digunakan untuk Gmail, Drive, YouTube, dan lainnya.</translation>
 <translation id="8551388862522347954">Lisensi</translation>
 <translation id="8551588720239073785">Setelan tanggal dan waktu</translation>
 <translation id="8553342806078037065">Kelola orang lain</translation>

@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Untuk meminta akses, hubungi pentadbir peranti ini.</translation>
 <translation id="1149401351239820326">Bulan tamat tempoh</translation>
 <translation id="1149725087019908252">Mengimbas <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Ini ialah kemas kini perisian dan keselamatan yang terakhir untuk <ph name="DEVICE_TYPE" /> ini. Untuk mendapatkan kemas kini pada masa akan datang, tingkatkan kepada model yang lebih baharu. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Cermin mata hitam</translation>
 <translation id="1151917987301063366">Sentiasa benarkan <ph name="HOST" /> mengakses penderia</translation>
 <translation id="1153356358378277386">Peranti digandingkan</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Masalah mekanikal. Semak pencetak</translation>
 <translation id="1363585519747660921">Pencetak USB memerlukan konfigurasi</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Penyemak imbas anda diurus<ph name="END_LINK" /> oleh <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Jalankan alatan, editor dan IDE Linux pada <ph name="DEVICE_TYPE" /> anda. &lt;a target="_blank" href="<ph name="URL" />"&gt;Ketahui lebih lanjut&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Pilih fail</translation>
 <translation id="1369149969991017342">Akses Suis (kawal komputer dengan satu atau dua suis sahaja)</translation>
 <translation id="1372841398847029212">Segerakkan ke akaun anda</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Label (pilihan)</translation>
 <translation id="1877520246462554164">Gagal mendapatkan token pengesahan. Sila log keluar, kemudian log masuk semula untuk mencuba lagi.</translation>
 <translation id="1877860345998737529">Penugasan tindakan suis</translation>
+<translation id="1878155070920054810">Nampaknya Chromebook anda akan kehabisan kuasa sebelum kemaskinian selesai. Pastikan Chromebook dicas dengan betul untuk mengelakkan gangguan.</translation>
 <translation id="1879000426787380528">Log masuk sebagai</translation>
 <translation id="1880905663253319515">Padamkan sijil "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Reka letak papan kekunci</translation>
@@ -1074,6 +1075,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2270627217422354837">Bertukar data dengan mana-mana peranti dalam domain: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Gelas martini</translation>
 <translation id="2273119997271134996">Isu port video dok</translation>
+<translation id="2274840746523584236">Cas Chromebook anda</translation>
 <translation id="2276503375879033601">Tambah lagi apl</translation>
 <translation id="2277255602909579701">Semua kuki dan data tapak</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 item disalin}other{# item disalin}}</translation>
@@ -1420,7 +1422,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2682498795777673382">Kemas kini daripada ibu atau bapa anda</translation>
 <translation id="2683638487103917598">Folder diisih</translation>
 <translation id="2684004000387153598">Klik OK untuk meneruskan, kemudian klik Tambah Orang untuk membuat profil baharu untuk alamat e-mel anda.</translation>
-<translation id="2686222346846590368">Ini ialah kemas kini perisian dan keselamatan automatik yang terakhir untuk <ph name="DEVICE_TYPE" /> ini. Untuk mendapatkan kemas kini pada masa akan datang, tingkatkan kepada model yang lebih baharu. &lt;a target="_blank" href="<ph name="URL" />"&gt;Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2687407218262674387">Syarat perkhidmatan Google</translation>
 <translation id="2688196195245426394">Ralat semasa mendaftarkan peranti dengan pelayan: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3004391367407090544">Sila datang lagi kemudian</translation>
 <translation id="3006881078666935414">Tiada data penggunaan</translation>
 <translation id="3007771295016901659">Tab Pendua</translation>
+<translation id="3008232374986381779">Jalankan alatan, editor dan IDE Linux pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
 <translation id="3009300415590184725">Adakah anda pasti mahu membatalkan proses penyediaan perkhidmatan data mudah alih?</translation>
 <translation id="3009779501245596802">Pangkalan data berindeks</translation>
@@ -1929,6 +1931,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Data ini mengandungi kandungan sensitif atau berbahaya. Alih keluar kandungan ini dan cuba lagi.}=1{Fail ini mengandungi kandungan sensitif atau berbahaya. Alih keluar kandungan ini dan cuba lagi.}other{Fail ini mengandungi kandungan sensitif atau berbahaya. Alih keluar kandungan ini dan cuba lagi.}}</translation>
 <translation id="3323521181261657960">Bonus! Masa skrin anda lebih lama</translation>
 <translation id="3325910708063135066">Kamera dan mikrofon dimatikan dalam Pilihan Sistem Mac</translation>
+<translation id="3327050066667856415">Chromebook direka untuk keselamatan. Peranti anda dilindungi daripada perisian hasad secara automatik – tiada perisian tambahan diperlukan.</translation>
 <translation id="3328489342742826322">Tindakan memulihkan daripada sandaran akan memadamkan aplikasi dan data Linux yang sedia ada dalam folder fail Linux anda.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Maklumat apl</translation>
@@ -2118,6 +2121,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3556433843310711081">Pengurus anda boleh menyahsekatnya untuk anda</translation>
 <translation id="3557101512409028104">Tetapkan sekatan tapak web &amp; had masa skrin menggunakan Family Link</translation>
 <translation id="3559262020195162408">Gagal memasang dasar pada peranti.</translation>
+<translation id="3559533181353831840">Kira-kira <ph name="TIME_LEFT" /> lagi</translation>
 <translation id="3560034655160545939">&amp;Semak ejaan</translation>
 <translation id="3562423906127931518">Proses ini mungkin mengambil masa beberapa minit. Menyediakan bekas Linux.</translation>
 <translation id="3563432852173030730">Aplikasi kios tidak dapat dimuat turun.</translation>
@@ -2633,6 +2637,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="413121957363593859">Komponen</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
 <translation id="413193092008917129">Rutin Diagnostik Rangkaian</translation>
+<translation id="4132183752438206707">Cari apl di Gedung Google Play</translation>
 <translation id="4133076602192971179">Buka apl untuk menukar kata laluan anda</translation>
 <translation id="4136203100490971508">Cahaya Malam akan dimatikan secara automatik pada waktu matahari terbit</translation>
 <translation id="41365691917097717">Tindakan meneruskan persediaan akan mendayakan penyahpepijatan ADB yang membuat dan menguji apl Android. Harap maklum bahawa tindakan ini membolehkan pemasangan apl Android yang belum disahkan oleh Google dan memerlukan tetapan semula kilang untuk melumpuhkan ciri ini.</translation>
@@ -2881,6 +2886,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4479877282574735775">Mengkonfigurasikan mesin maya. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="4480590691557335796">Chrome boleh mencari perisian yang berbahaya pada komputer anda dan mengalih keluar perisian tersebut</translation>
 <translation id="4481530544597605423">Peranti dinyahganding</translation>
+<translation id="4487489714832036847">Chromebook menggunakan apl, bukannya perisian tradisional. Gunakan apl untuk produktiviti, hiburan dan banyak lagi.</translation>
 <translation id="4488502501195719518">Kosongkan semua data?</translation>
 <translation id="4493468155686877504">Disyorkan (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Jangan paparkan pada halaman ini</translation>
@@ -3724,6 +3730,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5548606607480005320">Semakan keselamatan</translation>
 <translation id="5551573675707792127">Papan kekunci dan masukan teks</translation>
 <translation id="5553089923092577885">Pemetaan Dasar Sijil</translation>
+<translation id="5554403733534868102">Selepas ini, tidak perlu menunggu kemaskinian</translation>
 <translation id="5554489410841842733">Ikon ini akan kelihatan apabila sambungan boleh bertindak pada halaman semasa.</translation>
 <translation id="5554720593229208774">Pihak Berkuasa Pensijilan E-mel</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
@@ -4137,6 +4144,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6061882183774845124">Hantar pautan ke peranti anda</translation>
 <translation id="6064217302520318294">Kunci skrin</translation>
 <translation id="6065289257230303064">Atribut Direktori Subjek Sijil</translation>
+<translation id="6069464830445383022">Akaun Google anda merupakan log masuk Chromebook anda</translation>
 <translation id="6069671174561668781">Tetapkan Kertas Dinding</translation>
 <translation id="6071181508177083058">sahkan kata laluan</translation>
 <translation id="6071576563962215370">Sistem gagal mewujudkan kunci atribut masa pemasangan peranti.</translation>
@@ -4452,6 +4460,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> dan 1 tab lain}other{<ph name="PAGE_TITLE" /> dan # tab lain}}</translation>
 <translation id="6451689256222386810">Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Tolak</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> selesai</translation>
 <translation id="6452961788130242735">Masalah rangkaian atau realma teruk</translation>
 <translation id="6455264371803474013">Di tapak web tertentu</translation>
 <translation id="6455894534188563617">&amp;Folder Baharu</translation>
@@ -4624,6 +4633,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6680442031740878064">Tersedia: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Kadar</translation>
 <translation id="6681668084120808868">Ambil foto</translation>
+<translation id="6684827949542560880">Memuat turun kemaskinian terkini</translation>
 <translation id="668599234725812620">Buka Google Play</translation>
 <translation id="6686490380836145850">Tutup tab di sebelah kanan</translation>
 <translation id="6686817083349815241">Simpan kata laluan anda</translation>
@@ -4733,6 +4743,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6812841287760418429">Simpan perubahan</translation>
 <translation id="6817174620439930047">Tanya apabila tapak mahu menggunakan mesej eksklusif sistem untuk mengakses peranti MIDI (disyorkan)</translation>
 <translation id="6818198425579322765">Bahasa Halaman yang Hendak Diterjemahkan</translation>
+<translation id="6818802132960437751">Perlindungan virus terbina dalam</translation>
 <translation id="682123305478866682">Hantar desktop</translation>
 <translation id="6823174134746916417">Ketik-untuk-klik pad sentuh</translation>
 <translation id="6823506025919456619">Anda perlu log masuk ke Chrome untuk melihat peranti anda</translation>
@@ -5378,6 +5389,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7631205654593498032">Apabila anda menyambungkan peranti anda, anda bersetuju bahawa <ph name="DEVICE_TYPE" /> anda boleh:</translation>
 <translation id="7631887513477658702">&amp;Sentiasa Buka Fail Jenis Ini</translation>
 <translation id="7632948528260659758">Apl kiosk berikut telah gagal untuk mengemas kini:</translation>
+<translation id="7633724038415831385">Anda perlu menunggu kemaskinian hanya pada masa ini. Di Chromebook, kemaskinian perisian berlaku di latar.</translation>
 <translation id="7634566076839829401">Sesuatu yang tidak kena telah berlaku. Sila cuba lagi.</translation>
 <translation id="763632859238619983">Jangan benarkan mana-mana tapak untuk memasang pengendali pembayaran</translation>
 <translation id="7636919061354591437">Pasang pada Peranti ini</translation>
@@ -6148,6 +6160,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8546930481464505581">Sesuaikan Touch Bar</translation>
 <translation id="8547013269961688403">Dayakan penggadang skrin penuh</translation>
 <translation id="85486688517848470">Tahan kekunci Cari untuk menukar gelagat kekunci di baris atas</translation>
+<translation id="8549316893834449916">Anda akan menggunakan Akaun Google anda untuk mendaftar masuk ke Chromebook anda – akaun sama yang anda gunakan untuk Gmail, Drive, YouTube dan banyak lagi.</translation>
 <translation id="8551388862522347954">Lesen</translation>
 <translation id="8551588720239073785">Tetapan tarikh dan masa</translation>
 <translation id="8553342806078037065">Urus orang lain</translation>

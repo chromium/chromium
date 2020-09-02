@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">כדי לבקש גישה, צריך לפנות למנהל של המכשיר הזה.</translation>
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1149725087019908252">מתבצעת סריקה של <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">זהו העדכון האוטומטי האחרון של התוכנה והאבטחה עבור מכשיר ה-<ph name="DEVICE_TYPE" /> הזה. כדי לקבל עדכונים עתידיים, יש לשדרג לדגם חדש יותר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">משקפי שמש</translation>
 <translation id="1151917987301063366">לאפשר תמיד ל-<ph name="HOST" /> לגשת אל חיישנים</translation>
 <translation id="1153356358378277386">מכשירים מותאמים</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">בעייה מכנית. יש לבדוק את המדפסת.</translation>
 <translation id="1363585519747660921">‏יש להגדיר מדפסת USB</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />הדפדפן שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">‏הפעלת כלים, עורכים וסביבות פיתוח משולבות (IDE) של Linux ב-<ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;מידע נוסף&lt;/a&gt;</translation>
 <translation id="1367951781824006909">בחר קובץ</translation>
 <translation id="1369149969991017342">גישה באמצעות מתג (שליטה במחשב בעזרת מתג אחד או שניים בלבד)</translation>
 <translation id="1372841398847029212">סנכרון עם החשבון שלך</translation>
@@ -757,6 +757,7 @@
 <translation id="1877377290348678128">תווית (אופציונלי)</translation>
 <translation id="1877520246462554164">לא ניתן לקבל אסימון אימות. עליך לצאת ולאחר מכן להיכנס מחדש ולנסות שוב.</translation>
 <translation id="1877860345998737529">הקצאת מתגים לפעולות</translation>
+<translation id="1878155070920054810">‏נראה שסוללת ה-Chromebook שלך תתרוקן לפני שהעדכון יושלם. כדי למנוע הפרעה, יש לוודא שהיא נטענת כראוי.</translation>
 <translation id="1879000426787380528">כניסה בתור</translation>
 <translation id="1880905663253319515">למחוק את האישור "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">פריסת המקלדת</translation>
@@ -1071,6 +1072,7 @@
 <translation id="2270627217422354837">החלפת נתונים עם כל מכשיר בדומיינים: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">כוס מרטיני</translation>
 <translation id="2273119997271134996">בעיה עם יציאות הווידאו באביזר העגינה</translation>
+<translation id="2274840746523584236">‏יש לטעון את Chromebook</translation>
 <translation id="2276503375879033601">הוסף יישומים נוספים</translation>
 <translation id="2277255602909579701">‏כל קובצי ה-Cookie ונתוני האתר</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{פריט אחד הועתק}two{# פריטים הועתקו}many{# פריטים הועתקו}other{# פריטים הועתקו}}</translation>
@@ -1417,7 +1419,6 @@
 <translation id="2682498795777673382">בוצע עדכון על-ידי הורה</translation>
 <translation id="2683638487103917598">התיקיה מוינה</translation>
 <translation id="2684004000387153598">כדי להמשיך יש ללחוץ על 'אישור' ולאחר מכן ללחוץ על 'הוספת משתמש' כדי ליצור פרופיל חדש בשביל כתובת האימייל שלך.</translation>
-<translation id="2686222346846590368">‏אחרי העדכון הנוכחי, מכשיר <ph name="DEVICE_TYPE" /> זה לא יקבל יותר עדכוני תוכנה ועדכוני אבטחה אוטומטיים. כדי לקבל עדכונים בעתיד, יש לשדרג לדגם חדש יותר. &lt;a target="_blank" href="<ph name="URL" />"&gt;מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2687407218262674387">‏תנאים והגבלות של Google</translation>
 <translation id="2688196195245426394">אירעה שגיאה בעת רישום המכשיר בשרת: <ph name="CLIENT_ERROR" />.</translation>
@@ -1684,6 +1685,7 @@
 <translation id="3004391367407090544">כדאי לחזור מאוחר יותר</translation>
 <translation id="3006881078666935414">אין נתוני שימוש</translation>
 <translation id="3007771295016901659">שכפל את הכרטיסייה</translation>
+<translation id="3008232374986381779">‏הפעלת כלים, עורכים וסביבות פיתוח משולבות (IDE) של Linux ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="3009300415590184725">האם אתה בטוח שברצונך לבטל את תהליך ההתקנה של שירות הנתונים לנייד?</translation>
 <translation id="3009779501245596802">מסדי נתונים שנוספו לאינדקס</translation>
@@ -1927,6 +1929,7 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{הנתונים האלה מכילים תוכן רגיש או מסוכן. צריך להסיר את התוכן הזה ולנסות שוב.}=1{הקובץ הזה מכיל תוכן רגיש או מסוכן. צריך להסיר את התוכן הזה ולנסות שוב.}two{הקבצים האלה מכילים תוכן רגיש או מסוכן. צריך להסיר את התוכן הזה ולנסות שוב.}many{הקבצים האלה מכילים תוכן רגיש או מסוכן. צריך להסיר את התוכן הזה ולנסות שוב.}other{הקבצים האלה מכילים תוכן רגיש או מסוכן. צריך להסיר את התוכן הזה ולנסות שוב.}}</translation>
 <translation id="3323521181261657960">בונוס! קיבלת עוד זמן מסך</translation>
 <translation id="3325910708063135066">‏המצלמה והמיקרופון מושבתים בהעדפות המערכת של Mac</translation>
+<translation id="3327050066667856415">‏אבטחת המכשיר מתוכננת ב-Chromebook באופן מובנה. המכשיר שלך מוגן מתוכנות זדוניות באופן אוטומטי, ולא נדרשות בו תוכנות נוספות.</translation>
 <translation id="3328489342742826322">‏שחזור מגיבוי יביא למחיקת האפליקציות והנתונים הקיימים של Linux בתיקיית קובצי Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">פרטי יישום</translation>
@@ -2116,6 +2119,7 @@
 <translation id="3556433843310711081">המנהל שלך יכול לבטל בשבילך את החסימה</translation>
 <translation id="3557101512409028104">‏הגדרה של הגבלות גישה לאתרים וזמן מסך בעזרת Family Link</translation>
 <translation id="3559262020195162408">התקנת המדיניות במכשיר נכשלה.</translation>
+<translation id="3559533181353831840">הזמן הנותר: בערך <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;בדיקת איות</translation>
 <translation id="3562423906127931518">‏התהליך הזה עשוי להימשך כמה דקות. מגדיר את מאגר Linux.</translation>
 <translation id="3563432852173030730">לא ניתן היה להוריד את יישום הקיוסק.</translation>
@@ -2631,6 +2635,7 @@
 <translation id="413121957363593859">רכיבים</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="413193092008917129">תרחישים של אבחון רשת</translation>
+<translation id="4132183752438206707">‏חיפוש אפליקציות בחנות Google Play</translation>
 <translation id="4133076602192971179">כדי לשנות את הסיסמה, יש לפתוח את האפליקציה</translation>
 <translation id="4136203100490971508">תאורת הלילה תכבה באופן אוטומטי בשעת הזריחה</translation>
 <translation id="41365691917097717">‏בחירה להמשיך תגרום להפעלת ניפוי באגים באמצעות ADB במהלך היצירה והבדיקה של אפליקציות ל-Android. חשוב לשים לב שהפעולה הזו מאפשרת את ההתקנה של אפליקציות ל-Android שלא אומתו על ידי Google. כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות המקוריות.</translation>
@@ -2879,6 +2884,7 @@
 <translation id="4479877282574735775">המערכת מגדירה את המכונה הוירטואלית. הפעולה עשויה להימשך כמה דקות.</translation>
 <translation id="4480590691557335796">‏Chrome יכול לאתר תוכנות מזיקות במחשב ולהסיר אותן</translation>
 <translation id="4481530544597605423">מכשירים לא מותאמים</translation>
+<translation id="4487489714832036847">‏במכשירי Chromebook משתמשים באפליקציות במקום בתוכנות רגילות. ניתן להוריד אפליקציות לפרודוקטיביות, לבידור ועוד.</translation>
 <translation id="4488502501195719518">לנקות את כל הנתונים?</translation>
 <translation id="4493468155686877504">מומלץ (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">אל תציג בדף זה</translation>
@@ -3722,6 +3728,7 @@
 <translation id="5548606607480005320">בדיקת אבטחה</translation>
 <translation id="5551573675707792127">מקלדת וקלט טקסט</translation>
 <translation id="5553089923092577885">מיפויי מדיניות אישור </translation>
+<translation id="5554403733534868102">אחרי עדכון זה, לא יהיה צורך להמתין לעדכונים יותר</translation>
 <translation id="5554489410841842733">סמל זה יוצג כאשר ההרחבה תוכל לפעול בדף הנוכחי.</translation>
 <translation id="5554720593229208774">רשות אישורי אימייל</translation>
 <translation id="5556459405103347317">ניסיון טעינה נוסף</translation>
@@ -4135,6 +4142,7 @@
 <translation id="6061882183774845124">שליחת הקישור אל המכשירים שלך</translation>
 <translation id="6064217302520318294">נעילת מסך</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
+<translation id="6069464830445383022">‏הכניסה ל-Chromebook תתבצע באמצעות חשבון Google</translation>
 <translation id="6069671174561668781">הגדר טפט</translation>
 <translation id="6071181508177083058">אשר סיסמה</translation>
 <translation id="6071576563962215370">המערכת לא הצליחה ליצור את נעילת המאפיינים של המכשיר בזמן ההתקנה.</translation>
@@ -4450,6 +4458,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> וכרטיסייה נוספת אחת}two{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}many{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}other{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}}</translation>
 <translation id="6451689256222386810">אם שכחת את ביטוי הסיסמה או אם ברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />אפס את הסנכרון<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">דחה</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> הושלמו</translation>
 <translation id="6452961788130242735">בעיית רשת או תחום לא תקין</translation>
 <translation id="6455264371803474013">באתרים ספציפיים</translation>
 <translation id="6455894534188563617">&amp;תיקייה חדשה</translation>
@@ -4622,6 +4631,7 @@
 <translation id="6680442031740878064">השטח הזמין: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">קצב</translation>
 <translation id="6681668084120808868">צלם תמונה</translation>
+<translation id="6684827949542560880">המערכת מורידה את העדכון האחרון</translation>
 <translation id="668599234725812620">‏פתח את Google Play</translation>
 <translation id="6686490380836145850">סגור את הכרטיסיות משמאל</translation>
 <translation id="6686817083349815241">שמור את הסיסמה שלך</translation>
@@ -4731,6 +4741,7 @@
 <translation id="6812841287760418429">השאר שינויים</translation>
 <translation id="6817174620439930047">‏שאל כשאתר רוצה להשתמש בהודעות בלעדיות של המערכת כדי לגשת להתקני MIDI (מומלץ)</translation>
 <translation id="6818198425579322765">שפת הדף שיש לתרגם</translation>
+<translation id="6818802132960437751">הגנה מובנית מפני וירוסים</translation>
 <translation id="682123305478866682">העברת שולחן העבודה</translation>
 <translation id="6823174134746916417">שימוש בנגיעה קלה בלוח המגע</translation>
 <translation id="6823506025919456619">‏עליך להיכנס ל-Chrome כדי לראות את המכשירים שלך</translation>
@@ -5376,6 +5387,7 @@
 <translation id="7631205654593498032">חיבור המכשירים מבטא את הסכמתך לכך שה-<ph name="DEVICE_TYPE" /> יוכל לבצע את הפעולות הבאות:</translation>
 <translation id="7631887513477658702">&amp;פתח תמיד קבצים מסוג זה</translation>
 <translation id="7632948528260659758">עדכון יישומי הקיוסק הבאים נכשל:</translation>
+<translation id="7633724038415831385">‏אחרי עדכון זה, כבר לא יהיה צורך להמתין לעדכונים. במכשירי Chromebook, עדכוני התוכנות מתבצעים ברקע.</translation>
 <translation id="7634566076839829401">משהו השתבש. נסה שוב.</translation>
 <translation id="763632859238619983">‏אין לאפשר לאף אתר להתקין מעבדי handler לתשלומים</translation>
 <translation id="7636919061354591437">התקנה במכשיר זה</translation>
@@ -6146,6 +6158,7 @@
 <translation id="8546930481464505581">התאם אישית את סרגל המגע</translation>
 <translation id="8547013269961688403">הפעלת מגדיל למסך מלא</translation>
 <translation id="85486688517848470">החזק את מקש החיפוש כדי לשנות את ההתנהגות של מקשי השורה העליונה</translation>
+<translation id="8549316893834449916">‏הכניסה אל Chromebook תתבצע באמצעות חשבון Google שלך – אותו חשבון שמשמש אותך ב-Gmail, ב-Drive, ב-YouTube ועוד.</translation>
 <translation id="8551388862522347954">רישיונות</translation>
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8553342806078037065">נהל אנשים אחרים</translation>

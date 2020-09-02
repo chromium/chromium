@@ -134,6 +134,7 @@
 <translation id="1147991416141538220">Če želite zahtevati dostop, se obrnite na skrbnika naprave.</translation>
 <translation id="1149401351239820326">Mesec poteka</translation>
 <translation id="1149725087019908252">Pregled datoteke <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">To je zadnja samodejna posodobitev programske opreme in varnostna posodobitev za to napravo <ph name="DEVICE_TYPE" />. Če želite v prihodnje prejemati posodobitve, nagradite na novejši model. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Sončna očala</translation>
 <translation id="1151917987301063366">Spletnemu mestu <ph name="HOST" /> vedno dovoli dostop do tipal</translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">Mehanska težava. Preverite tiskalnik.</translation>
 <translation id="1363585519747660921">Tiskalnik USB je treba konfigurirati</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Brskalnik upravlja<ph name="END_LINK" /> domena <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Izvajanje orodij, urejevalnikov in vdelanih orodij za razvoj programske opreme (IDE) za Linux v napravi <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Več o tem&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Izberite datoteko</translation>
 <translation id="1369149969991017342">Stikalni dostop (upravljanje računalnika z enim ali dvema stikaloma)</translation>
 <translation id="1372841398847029212">Sinhroniziraj z računom</translation>
@@ -760,6 +760,7 @@
 <translation id="1877377290348678128">Oznaka (neobvezno)</translation>
 <translation id="1877520246462554164">Ni bilo mogoče dobiti žetona za preverjanje pristnosti. Odjavite se, nato se ponovno prijavite in poskusite znova.</translation>
 <translation id="1877860345998737529">Dodelitev dejanj stikalom</translation>
+<translation id="1878155070920054810">Videti je, da bo bateriji v Chromebooku zmanjkalo energije pred dokončanjem posodobitve. Poskrbite za ustrezno napajanje, da ne bo prišlo do motenj.</translation>
 <translation id="1879000426787380528">Prijava kot</translation>
 <translation id="1880905663253319515">Ali želite izbrisati potrdilo »<ph name="CERTIFICATE_NAME" />«?</translation>
 <translation id="1881445033931614352">Postavitev tipkovnice</translation>
@@ -1074,6 +1075,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2270627217422354837">Izmenjava podatkov z vsemi napravami v domenah: <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">Kozarec za martini</translation>
 <translation id="2273119997271134996">Težava z vrati za sliko na priklopni postaji</translation>
+<translation id="2274840746523584236">Polnjenje baterije Chromebooka</translation>
 <translation id="2276503375879033601">Dodajte več aplikacij</translation>
 <translation id="2277255602909579701">Vsi piškotki in podatki spletnih mest</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{1 kopiran element}one{# kopiran element}two{# kopirana elementa}few{# kopirani elementi}other{# kopiranih elementov}}</translation>
@@ -1420,7 +1422,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2682498795777673382">Starš je izvedel posodobitev</translation>
 <translation id="2683638487103917598">Mapa je razvrščena</translation>
 <translation id="2684004000387153598">Če želite nadaljevati, kliknite »V redu«, nato »Dodajanje osebe«, če želite za e-poštni naslov ustvariti nov profil.</translation>
-<translation id="2686222346846590368">To je zadnja samodejna posodobitev programske opreme in varnostna posodobitev za to napravo <ph name="DEVICE_TYPE" />. Če želite v prihodnje prejemati posodobitve, nadgradite na novejši model. &lt;a target="_blank" href="<ph name="URL" />"&gt;Več o tem<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Blokiranje vseh piškotkov (ni priporočljivo)</translation>
 <translation id="2687407218262674387">Googlovi pogoji storitve</translation>
 <translation id="2688196195245426394">Napaka pri registraciji naprave v strežniku: <ph name="CLIENT_ERROR" />.</translation>
@@ -1686,6 +1687,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3004391367407090544">Poskusite pozneje</translation>
 <translation id="3006881078666935414">Ni podatkov o uporabi</translation>
 <translation id="3007771295016901659">Duplicate Tab</translation>
+<translation id="3008232374986381779">Izvajanje orodij, urejevalnikov in IDE-jev za Linux v napravi <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="3009300415590184725">Ali ste prepričani, da želite preklicati postopek nastavitve mobilne podatkovne storitve?</translation>
 <translation id="3009779501245596802">Indeksirane zbirke podatkov</translation>
@@ -1929,6 +1931,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{V teh podatkih je občutljiva ali nevarna vsebina. Odstranite jo in poskusite znova.}=1{V tej datoteki je občutljiva ali nevarna vsebina. Odstranite jo in poskusite znova.}one{V teh datotekah je občutljiva ali nevarna vsebina. Odstranite jo in poskusite znova.}two{V teh datotekah je občutljiva ali nevarna vsebina. Odstranite jo in poskusite znova.}few{V teh datotekah je občutljiva ali nevarna vsebina. Odstranite jo in poskusite znova.}other{V teh datotekah je občutljiva ali nevarna vsebina. Odstranite jo in poskusite znova.}}</translation>
 <translation id="3323521181261657960">Nagrada! Čas uporabe je podaljšan.</translation>
 <translation id="3325910708063135066">Fotoaparat in mikrofon sta izklopljena v nastavitvah sistema macOS</translation>
+<translation id="3327050066667856415">Chromebooki so zasnovani za varnost. Vaša naprava je samodejno zaščitena pred zlonamerno programsko opremo. Ne potrebujete posebne programske opreme.</translation>
 <translation id="3328489342742826322">Z obnovitvijo varnostno kopiranih podatkov bodo izbrisane obstoječe aplikacije za Linux in podatki v mapi z datotekami za Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Podatki o aplikaciji</translation>
@@ -2118,6 +2121,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3556433843310711081">Skrbnik ga lahko odblokira</translation>
 <translation id="3557101512409028104">Nastavitev omejitev za obisk spletnih mest in omejitev časa uporabe s Family Linkom</translation>
 <translation id="3559262020195162408">Namestitev pravilnika v napravi ni uspela.</translation>
+<translation id="3559533181353831840">Še približno <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Preverjanje črkovanja</translation>
 <translation id="3562423906127931518">To lahko traja nekaj minut. Nastavljanje vsebnika za Linux.</translation>
 <translation id="3563432852173030730">Aplikacije Kiosk ni bilo mogoče prenesti.</translation>
@@ -2633,6 +2637,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="413121957363593859">Komponente</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="413193092008917129">Rutine za diagnostiko omrežja</translation>
+<translation id="4132183752438206707">Poiščite aplikacije v Trgovini Google Play</translation>
 <translation id="4133076602192971179">Odprite aplikacijo, če želite spremeniti geslo</translation>
 <translation id="4136203100490971508">Nočna svetloba se bo samodejno izklopila ob sončnem vzhodu.</translation>
 <translation id="41365691917097717">Če nadaljujete, bo omogočeno odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB) za ustvarjanje in preizkušanje aplikacij za Android. Upoštevajte, da to dejanje omogoča namestitev aplikacij za Android, ki jih ni preveril Google, če želite orodje onemogočiti, pa je potrebna tovarniška ponastavitev.</translation>
@@ -2881,6 +2886,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4479877282574735775">Konfiguriranje navideznega računalnika. To lahko traja nekaj minut.</translation>
 <translation id="4480590691557335796">Chrome lahko poišče škodljivo programsko opremo v računalniku in jo odstrani</translation>
 <translation id="4481530544597605423">Naprave, za katere je bila preklicana seznanitev</translation>
+<translation id="4487489714832036847">Chromebooki namesto običajne programske opreme uporabljajo aplikacije. Prenesite aplikacije za storilnost, razvedrilo in drugo.</translation>
 <translation id="4488502501195719518">Želite izbrisati vse podatke?</translation>
 <translation id="4493468155686877504">Priporočeno (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ne pokaži na tej strani</translation>
@@ -3724,6 +3730,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5548606607480005320">Varnostno preverjanje</translation>
 <translation id="5551573675707792127">Tipkovnica in vnos besedila</translation>
 <translation id="5553089923092577885">Preslikave pravilnika potrdila</translation>
+<translation id="5554403733534868102">Po tem ne bo treba več čakati na posodobitve</translation>
 <translation id="5554489410841842733">Ta ikona bo vidna, ko lahko razširitev deluje na trenutni strani.</translation>
 <translation id="5554720593229208774">Overitelj potrdil za e-pošto</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
@@ -4139,6 +4146,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6061882183774845124">Pošiljanje povezave v naprave</translation>
 <translation id="6064217302520318294">Zaklepanje zaslona</translation>
 <translation id="6065289257230303064">Atributi imenika subjekta potrdila</translation>
+<translation id="6069464830445383022">Z računom Google se prijavite v Chromebook</translation>
 <translation id="6069671174561668781">Nastavi sliko za ozadje</translation>
 <translation id="6071181508177083058">potrditev gesla</translation>
 <translation id="6071576563962215370">Sistemu ni uspelo zakleniti atributov časa namestitve naprave.</translation>
@@ -4454,6 +4462,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> in še en zavihek}one{<ph name="PAGE_TITLE" /> in še # zavihek}two{<ph name="PAGE_TITLE" /> in še # zavihka}few{<ph name="PAGE_TITLE" /> in še # zavihki}other{<ph name="PAGE_TITLE" /> in še # zavihkov}}</translation>
 <translation id="6451689256222386810">Če ste pozabili geslo ali želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Zavrni</translation>
+<translation id="6452251728599530347">Dokončano: <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Težava z omrežjem ali neustrezno območje</translation>
 <translation id="6455264371803474013">Na določenih spletnih mestih</translation>
 <translation id="6455894534188563617">&amp;Nova mapa</translation>
@@ -4626,6 +4635,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6680442031740878064">Na voljo: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hitrost</translation>
 <translation id="6681668084120808868">Posnemi fotografijo</translation>
+<translation id="6684827949542560880">Prenašanje najnovejše posodobitve</translation>
 <translation id="668599234725812620">Odpiranje Googla Play</translation>
 <translation id="6686490380836145850">Zapri zavihke na desni</translation>
 <translation id="6686817083349815241">Shranite geslo</translation>
@@ -4735,6 +4745,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6812841287760418429">Ohrani spremembe</translation>
 <translation id="6817174620439930047">Vprašaj, ko želi spletno mesto uporabiti sporočila sysex za dostop do naprav MIDI (priporočeno)</translation>
 <translation id="6818198425579322765">Jezik strani za prevajanje</translation>
+<translation id="6818802132960437751">Vgrajena protivirusna zaščita</translation>
 <translation id="682123305478866682">Predvajanje namizja</translation>
 <translation id="6823174134746916417">Klikanje z dotikom sledilne ploščice</translation>
 <translation id="6823506025919456619">Če želite videti svoje naprave, se morate prijaviti v Chrome</translation>
@@ -5380,6 +5391,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7631205654593498032">Ko povežete napravi, se strinjate, da lahko naprava <ph name="DEVICE_TYPE" /> počne to:</translation>
 <translation id="7631887513477658702">&amp;Vedno odpri to vrsto datotek</translation>
 <translation id="7632948528260659758">Teh aplikacij kioska ni bilo mogoče posodobiti:</translation>
+<translation id="7633724038415831385">Samo tokrat boste čakali na posodobitev. V Chromebookih se posodobitve programske opreme izvajajo v ozadju.</translation>
 <translation id="7634566076839829401">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="763632859238619983">Nobenemu spletnemu mestu ne dovoli namestitve rutin za obravnavo plačil</translation>
 <translation id="7636919061354591437">Namesti v to napravo</translation>
@@ -6149,6 +6161,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8546930481464505581">Prilagajanje vrstice za dotik</translation>
 <translation id="8547013269961688403">Omogoči celozaslonsko lupo</translation>
 <translation id="85486688517848470">Če želite spremeniti delovanje tipk v zgornji vrstici, pridržite tipko za iskanje</translation>
+<translation id="8549316893834449916">V Chromebook se boste prijavili z računom Google – istim računom, ki ga uporabljate za Gmail, Drive, YouTube in drugo.</translation>
 <translation id="8551388862522347954">Licence</translation>
 <translation id="8551588720239073785">Nastavitve datuma in ure</translation>
 <translation id="8553342806078037065">Upravljanje drugih oseb</translation>
