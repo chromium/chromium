@@ -502,7 +502,7 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}AttributeSetterCallba
     const v8::FunctionCallbackInfo<v8::Value>& info
     {%- endif %}) {
   {% if attribute.is_lenient_setter %}
-  // Setter for {{attribute.name}} is no-op because [LenientSetter] is specified.
+  // Setter for {{attribute.name}} is no-op because [LegacyLenientSetter] is specified.
   {% else %}
   {% if attribute.runtime_call_stats.extended_attribute_defined %}
   {{ runtime_timer_scope(attribute.runtime_call_stats.setter_counter) | trim | indent(2) }}

@@ -1737,14 +1737,15 @@ def make_attribute_set_callback_def(cg_context, function_name):
     ext_attrs = cg_context.attribute.extended_attributes
     if cg_context.attribute.is_readonly and not any(
             ext_attr in ext_attrs
-            for ext_attr in ("LenientSetter", "PutForwards", "Replaceable")):
+            for ext_attr in ("LegacyLenientSetter", "PutForwards",
+                             "Replaceable")):
         return None
 
     func_def = _make_empty_callback_def(cg_context, function_name)
     body = func_def.body
 
-    if "LenientSetter" in ext_attrs:
-        body.append(TextNode("// [LenientSetter]"))
+    if "LegacyLenientSetter" in ext_attrs:
+        body.append(TextNode("// [LegacyLenientSetter]"))
         return func_def
 
     body.extend([

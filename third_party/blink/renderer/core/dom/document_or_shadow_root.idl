@@ -24,6 +24,6 @@
     readonly attribute Element? pointerLockElement;
     // Fullscreen API
     // https://fullscreen.spec.whatwg.org/
-    [LenientSetter] readonly attribute Element? fullscreenElement;
+    [LegacyLenientSetter] readonly attribute Element? fullscreenElement;
     [MeasureAs=AdoptedStyleSheets, RaisesException=Setter] attribute FrozenArray<CSSStyleSheet> adoptedStyleSheets;
 };

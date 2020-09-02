@@ -7,7 +7,7 @@
 
 // This interface tests unique behaviors of getters and setters of specific
 // types, e.g. returning Promise<T>, having [LegacyLenientThis] or
-// [LenientSetter].
+// [LegacyLenientSetter].
 
 interface TestAttributes {
     // [LegacyLenientThis] causes some V8 type checks to be bypassed; they are
@@ -26,10 +26,10 @@ interface TestAttributes {
     // is not declared twice.
     [RaisesException] readonly attribute Promise<short> raisesExceptionShortPromiseAttribute;
 
-    // [LenientSetter] indicates a no-op setter will be generated for the
+    // [LegacyLenientSetter] indicates a no-op setter will be generated for the
     // readonly attribute's accessor property. This avoids throwing an exception
     // in strict mode.
-    [LenientSetter] readonly attribute boolean lenientSetterBoolAttribute;
+    [LegacyLenientSetter] readonly attribute boolean lenientSetterBoolAttribute;
 
     // Regular attribute with no special rules.
     readonly attribute float floatAttribute;

@@ -192,7 +192,7 @@ void V8TestAttributes::LenientSetterBoolAttributeAttributeGetterCallback(const v
 
 void V8TestAttributes::LenientSetterBoolAttributeAttributeSetterCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  // Setter for lenientSetterBoolAttribute is no-op because [LenientSetter] is specified.
+  // Setter for lenientSetterBoolAttribute is no-op because [LegacyLenientSetter] is specified.
 }
 
 void V8TestAttributes::FloatAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {

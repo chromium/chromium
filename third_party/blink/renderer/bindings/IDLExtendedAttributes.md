@@ -302,13 +302,13 @@ Summary: HTML Elements have special constructor behavior. Interface object of gi
 
 Usage: Must take no arguments, and must not appear on anything other than an interface. It must appear once on an interface, and the interface cannot be annotated with `[Constructor]` or `[LegacyNoInterfaceObject]` extended attributes. It must not be used on a callback interface.
 
-### [LenientSetter] _(a)_
+### [LegacyLenientSetter] _(a)_
 
-Standard: [LenientSetter](https://heycam.github.io/webidl/#LenientSetter)
+Standard: [LegacyLenientSetter](https://heycam.github.io/webidl/#LenientSetter)
 
-Summary: `[LenientSetter]` indicates that a no-op setter will be generated for a readonly attribute’s accessor property. This results in erroneous assignments to the property in strict mode to be ignored rather than causing an exception to be thrown.
+Summary: `[LegacyLenientSetter]` indicates that a no-op setter will be generated for a readonly attribute’s accessor property. This results in erroneous assignments to the property in strict mode to be ignored rather than causing an exception to be thrown.
 
-`[LenientSetter]` must take no arguments, and must not appear on anything other than a readonly regular attribute.
+`[LegacyLenientSetter]` must take no arguments, and must not appear on anything other than a readonly regular attribute.
 
 ### [LegacyUnenumerableNamedProperties] _(i)_
 
