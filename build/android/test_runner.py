@@ -915,7 +915,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
         iteration_count += 1
         for r in iteration_results.GetAll():
           if result_sink_client:
-            result_sink_client.Post(r.GetName(), r.GetType())
+            result_sink_client.Post(r.GetName(), r.GetType(), r.GetLog())
 
           result_counts[r.GetName()][r.GetType()] += 1
         report_results.LogFull(
