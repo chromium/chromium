@@ -256,6 +256,10 @@ void FeatureList::InitializeFromSharedMemory(
   }
 }
 
+bool FeatureList::IsFeatureOverridden(const std::string& feature_name) const {
+  return overrides_.count(feature_name);
+}
+
 bool FeatureList::IsFeatureOverriddenFromCommandLine(
     const std::string& feature_name,
     OverrideState state) const {

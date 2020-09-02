@@ -157,6 +157,11 @@ class BASE_EXPORT FeatureList {
   // of the associated field trial.
   void InitializeFromSharedMemory(PersistentMemoryAllocator* allocator);
 
+  // Returns true if the state of |feature_name| has been overridden (regardless
+  // of whether the overridden value is the same as the default value) for any
+  // reason (e.g. command line or field trial).
+  bool IsFeatureOverridden(const std::string& feature_name) const;
+
   // Returns true if the state of |feature_name| has been overridden via
   // |InitializeFromCommandLine()|. This includes features explicitly
   // disabled/enabled with --disable-features and --enable-features, as well as
