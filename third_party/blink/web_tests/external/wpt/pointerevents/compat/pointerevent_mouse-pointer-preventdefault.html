@@ -153,8 +153,8 @@ async function runTestForDefaultEvent(preventDefaultEvent) {
           if(eventToPreventDefault === 'none'){
             assert_true(arePointerEventsBeforeCompatMouseEvents(receivedEvents), "There are no compatible mouse events for all pointer events:" + receivedEvents);
           }
-          assert_array_equals(expectedPointerEvents.get(preventDefaultEvent), receivedPointerEvents);
-          assert_array_equals(expectedMouseEvents.get(preventDefaultEvent), receivedMouseEvents);
+          assert_array_equals(receivedPointerEvents, expectedPointerEvents.get(preventDefaultEvent));
+          assert_array_equals(receivedMouseEvents, expectedMouseEvents.get(preventDefaultEvent));
         });
         resolve();
     }), `Verifies the effect of pointer event prevent-default on ${preventDefaultEvent}`);
@@ -174,7 +174,7 @@ function performActions(test, preventDefaultEvent){
   let x2 = Math.ceil(rect.left + 3);
   let y2 = Math.ceil(rect.top + 5);
 
-  let eventWatcher = new EventWatcher(test, targetDiv, ["mouseleave"], ()=>waitForAnimationFrames(900));
+  let eventWatcher = new EventWatcher(test, targetDiv, ["mouseleave"]);
   // wait for all expected events to happen.
   // Because each test ends with mouseleave and there are 2 mouseleave events,
   // we use EventWatcher to wait for the two mouseleave events to happen
@@ -191,7 +191,7 @@ function performActions(test, preventDefaultEvent){
                 .pointerDown()
                 .pointerMove(x2+5, y2+5)
                 .pointerMove(x1, y1)
-                .pointerMove(x2, y2)
+                .pointerMove(x2+1, y2+1)
                 .pointerUp()
                 // move outside target again
                 .pointerMove(x1, y1)
