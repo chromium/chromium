@@ -163,7 +163,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
 }
 
 void KioskLaunchController::OnProfileLoaded(Profile* profile) {
-  DVLOG(1) << "Profile loaded... Starting app launch.";
+  SYSLOG(INFO) << "Profile loaded... Starting app launch.";
   profile_ = profile;
 
   // This is needed to trigger input method extensions being loaded.
