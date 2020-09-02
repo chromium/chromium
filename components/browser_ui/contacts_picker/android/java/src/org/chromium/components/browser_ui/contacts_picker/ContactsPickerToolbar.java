@@ -13,7 +13,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.ui.vr.VrModeProvider;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.List;
@@ -78,10 +77,9 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
 
     @Override
     public void initialize(SelectionDelegate<ContactDetails> delegate, int titleResId,
-            int normalGroupResId, int selectedGroupResId, boolean updateStatusBarColor,
-            VrModeProvider vrModeProvider) {
-        super.initialize(delegate, titleResId, normalGroupResId, selectedGroupResId,
-                updateStatusBarColor, vrModeProvider);
+            int normalGroupResId, int selectedGroupResId, boolean updateStatusBarColor) {
+        super.initialize(
+                delegate, titleResId, normalGroupResId, selectedGroupResId, updateStatusBarColor);
 
         showBackArrow();
     }

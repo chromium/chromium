@@ -17,7 +17,6 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.vr.VrModeProvider;
 
 import java.util.List;
 
@@ -85,19 +84,17 @@ public class PhotoPickerDialog
      * @param multiSelectionAllowed Whether the photo picker should allow multiple items to be
      *                              selected.
      * @param mimeTypes A list of mime types to show in the dialog.
-     * @param vrModeProvider Used to query VR mode state.
      */
     public PhotoPickerDialog(WindowAndroid windowAndroid, ContentResolver contentResolver,
-            PhotoPickerListener listener, boolean multiSelectionAllowed, List<String> mimeTypes,
-            VrModeProvider vrModeProvider) {
+            PhotoPickerListener listener, boolean multiSelectionAllowed, List<String> mimeTypes) {
         super(windowAndroid.getContext().get(), R.style.Theme_Chromium_Fullscreen);
 
         mWindowAndroid = windowAndroid;
         mListenerWrapper = new PhotoPickerListenerWrapper(listener);
 
         // Initialize the main content view.
-        mCategoryView = new PickerCategoryView(
-                windowAndroid, contentResolver, multiSelectionAllowed, this, vrModeProvider);
+        mCategoryView =
+                new PickerCategoryView(windowAndroid, contentResolver, multiSelectionAllowed, this);
         mCategoryView.initialize(this, mListenerWrapper, mimeTypes);
         setView(mCategoryView);
     }

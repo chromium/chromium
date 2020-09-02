@@ -32,7 +32,6 @@ import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.vr.VrModeProvider;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
 import java.util.ArrayList;
@@ -138,14 +137,12 @@ public class PickerCategoryView extends OptimizedFrameLayout
      * @param formattedOrigin The origin receiving the contact details, formatted for display in the
      *         UI.
      * @param delegate A delegate listening for events from the toolbar.
-     * @param vrModeProvider Provides accessors for VR mode state.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(WindowAndroid windowAndroid, PickerAdapter adapter,
             boolean multiSelectionAllowed, boolean shouldIncludeNames, boolean shouldIncludeEmails,
             boolean shouldIncludeTel, boolean shouldIncludeAddresses, boolean shouldIncludeIcons,
-            String formattedOrigin, ContactsPickerToolbar.ContactsToolbarDelegate delegate,
-            VrModeProvider vrModeProvider) {
+            String formattedOrigin, ContactsPickerToolbar.ContactsToolbarDelegate delegate) {
         super(windowAndroid.getContext().get(), null);
 
         mWindowAndroid = windowAndroid;
@@ -180,7 +177,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
                                             : R.string.contacts_picker_select_contact;
         mToolbar = (ContactsPickerToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.contacts_picker_toolbar, mSelectionDelegate, titleId, 0, 0, null, false,
-                false, vrModeProvider);
+                false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
         mToolbar.setDelegate(delegate);

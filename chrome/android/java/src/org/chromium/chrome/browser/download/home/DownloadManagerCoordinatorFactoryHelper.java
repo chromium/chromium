@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.vr.VrModeProviderImpl;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -42,7 +41,7 @@ public class DownloadManagerCoordinatorFactoryHelper {
                 modalDialogManager, UserPrefs.get(profile),
                 TrackerFactory.getTrackerForProfile(profile), new FaviconProviderImpl(profile),
                 OfflineContentAggregatorFactory.get(), legacyProvider,
-                GlobalDiscardableReferencePool.getReferencePool(), new VrModeProviderImpl());
+                GlobalDiscardableReferencePool.getReferencePool());
     }
 
     private static void settingsLaunchHelper(Context context) {

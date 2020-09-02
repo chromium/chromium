@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.vr.VrModeProviderImpl;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -144,7 +143,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         mToolbar = (HistoryManagerToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.history_toolbar, mSelectionDelegate, R.string.menu_history,
                 R.id.normal_menu_group, R.id.selection_mode_menu_group, this, true,
-                isSeparateActivity, new VrModeProviderImpl());
+                isSeparateActivity);
         mToolbar.setManager(this);
         mToolbar.initializeSearchView(this, R.string.history_manager_search, R.id.search_menu_id);
         mToolbar.setInfoMenuItem(R.id.info_menu_id);

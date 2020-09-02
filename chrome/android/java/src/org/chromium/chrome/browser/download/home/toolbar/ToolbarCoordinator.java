@@ -20,7 +20,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListT
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.vr.VrModeProvider;
 
 import java.util.List;
 
@@ -92,8 +91,8 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
 
     public ToolbarCoordinator(Context context, ToolbarActionDelegate delegate,
             ToolbarListActionDelegate listActionDelegate,
-            SelectionDelegate<ListItem> selectionDelegate, boolean hasCloseButton, Tracker tracker,
-            VrModeProvider vrModeProvider) {
+            SelectionDelegate<ListItem> selectionDelegate, boolean hasCloseButton,
+            Tracker tracker) {
         mDelegate = delegate;
         mListActionDelegate = listActionDelegate;
 
@@ -103,7 +102,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
         mShadow = mView.findViewById(R.id.shadow);
 
         mToolbar.initialize(selectionDelegate, R.string.menu_downloads, R.id.normal_menu_group,
-                R.id.selection_mode_menu_group, hasCloseButton, vrModeProvider);
+                R.id.selection_mode_menu_group, hasCloseButton);
         mToolbar.setOnMenuItemClickListener(this ::onMenuItemClick);
 
         // TODO(crbug.com/881037): Pass the visible group to the toolbar during initialization.

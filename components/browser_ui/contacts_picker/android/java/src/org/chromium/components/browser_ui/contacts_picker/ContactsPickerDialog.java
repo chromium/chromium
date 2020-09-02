@@ -9,7 +9,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.vr.VrModeProvider;
 
 /**
  * UI for the contacts picker that shows on the Android platform as a result of
@@ -37,13 +36,12 @@ public class ContactsPickerDialog
     public ContactsPickerDialog(WindowAndroid windowAndroid, PickerAdapter adapter,
             ContactsPickerListener listener, boolean allowMultiple, boolean includeNames,
             boolean includeEmails, boolean includeTel, boolean includeAddresses,
-            boolean includeIcons, String formattedOrigin, VrModeProvider vrModeProvider) {
+            boolean includeIcons, String formattedOrigin) {
         super(windowAndroid.getContext().get(), R.style.Theme_Chromium_Fullscreen);
 
         // Initialize the main content view.
         mCategoryView = new PickerCategoryView(windowAndroid, adapter, allowMultiple, includeNames,
-                includeEmails, includeTel, includeAddresses, includeIcons, formattedOrigin, this,
-                vrModeProvider);
+                includeEmails, includeTel, includeAddresses, includeIcons, formattedOrigin, this);
         mCategoryView.initialize(this, listener);
         setView(mCategoryView);
     }

@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.vr.VrModeProviderImpl;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -58,7 +57,7 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
         initializeRecyclerView(adapter, recyclerView);
         mToolbar =
                 (TabSelectionEditorToolbar) initializeToolbar(R.layout.tab_selection_editor_toolbar,
-                        selectionDelegate, 0, 0, 0, null, false, true, new VrModeProviderImpl());
+                        selectionDelegate, 0, 0, 0, null, false, true);
         mParentView = parentView;
     }
 

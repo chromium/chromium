@@ -41,8 +41,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.vr.VrModeObserver;
-import org.chromium.ui.vr.VrModeProvider;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -182,17 +180,7 @@ public class ContactsPickerDialogTest extends DummyUiActivityTestCase
                                 },
                                 ContactsPickerDialogTest.this, multiselect, includeNames,
                                 includeEmails, includeTel, includeAddresses, includeIcons,
-                                "example.com",
-                                new VrModeProvider() {
-                                    @Override
-                                    public boolean isInVr() {
-                                        return false;
-                                    }
-                                    @Override
-                                    public void registerVrModeObserver(VrModeObserver observer) {}
-                                    @Override
-                                    public void unregisterVrModeObserver(VrModeObserver observer) {}
-                                });
+                                "example.com");
                         dialog.show();
                         return dialog;
                     }

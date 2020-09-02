@@ -39,7 +39,6 @@ import org.chromium.net.MimeTypeFilter;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.vr.VrModeProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -193,12 +192,10 @@ public class PickerCategoryView extends RelativeLayout
      * @param windowAndroid The window of the hosting {@link Activity}.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      * @param multiSelectionAllowed Whether to allow the user to select more than one image.
-     * @param vrModeProvider The VR mode provider for querying VR mode state.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(WindowAndroid windowAndroid, ContentResolver contentResolver,
-            boolean multiSelectionAllowed, PhotoPickerToolbar.PhotoPickerToolbarDelegate delegate,
-            VrModeProvider vrModeProvider) {
+            boolean multiSelectionAllowed, PhotoPickerToolbar.PhotoPickerToolbarDelegate delegate) {
         super(windowAndroid.getContext().get());
         mWindowAndroid = windowAndroid;
         Context context = mWindowAndroid.getContext().get();
@@ -222,7 +219,7 @@ public class PickerCategoryView extends RelativeLayout
                                             : R.string.photo_picker_select_image;
         PhotoPickerToolbar toolbar = (PhotoPickerToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.photo_picker_toolbar, mSelectionDelegate, titleId, 0, 0, null, false,
-                false, vrModeProvider);
+                false);
         toolbar.setNavigationOnClickListener(this);
         toolbar.setDelegate(delegate);
         Button doneButton = (Button) toolbar.findViewById(R.id.done);

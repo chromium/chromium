@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.share.clipboard.ClipboardImageFileProvider;
 import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity;
 import org.chromium.chrome.browser.signin.SigninHelper;
 import org.chromium.chrome.browser.sync.SyncController;
-import org.chromium.chrome.browser.vr.VrModeProviderImpl;
 import org.chromium.chrome.browser.webapps.WebApkVersionManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -224,7 +223,7 @@ public class ProcessInitializationHandler {
                         List<String> mimeTypes) {
                     mDialog = new PhotoPickerDialog(windowAndroid,
                             windowAndroid.getContext().get().getContentResolver(), listener,
-                            allowMultiple, mimeTypes, new VrModeProviderImpl());
+                            allowMultiple, mimeTypes);
                     mDialog.getWindow().getAttributes().windowAnimations =
                             R.style.PickerDialogAnimation;
                     mDialog.show();
@@ -255,8 +254,7 @@ public class ProcessInitializationHandler {
                 ChromeActivity activity = (ChromeActivity) context;
                 mDialog = new ContactsPickerDialog(activity.getWindowAndroid(),
                         new ChromePickerAdapter(), listener, allowMultiple, includeNames,
-                        includeEmails, includeTel, includeAddresses, includeIcons, formattedOrigin,
-                        new VrModeProviderImpl());
+                        includeEmails, includeTel, includeAddresses, includeIcons, formattedOrigin);
                 mDialog.getWindow().getAttributes().windowAnimations =
                         R.style.PickerDialogAnimation;
                 mDialog.show();
