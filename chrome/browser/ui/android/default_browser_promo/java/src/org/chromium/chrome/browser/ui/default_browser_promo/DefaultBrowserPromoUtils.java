@@ -147,6 +147,9 @@ public class DefaultBrowserPromoUtils {
                     ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, P_NO_DEFAULT_PROMO_STRATEGY);
             if (TextUtils.equals(promoOnP, "disabled")) {
                 return false;
+            } else if (TextUtils.equals(promoOnP, "system_settings")
+                    && !doesManageDefaultAppsSettingsActivityExist()) {
+                return false;
             }
         }
 
