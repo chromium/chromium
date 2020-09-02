@@ -79,12 +79,12 @@ void SendResponseOnCmdThread(
 
 void HandleRequestOnCmdThread(
     HttpHandler* handler,
-    const std::vector<net::IPAddress>& whitelisted_ips,
+    const std::vector<net::IPAddress>& allowed_ips,
     const net::HttpServerRequestInfo& request,
     const HttpResponseSenderFunc& send_response_func) {
-  if (!whitelisted_ips.empty()) {
+  if (!allowed_ips.empty()) {
     const net::IPAddress& peer_address = request.peer.address();
-    if (!base::Contains(whitelisted_ips, peer_address)) {
+    if (!base::Contains(allowed_ips, peer_address)) {
       LOG(WARNING) << "unauthorized access from " << request.peer.ToString();
       std::unique_ptr<net::HttpServerResponseInfo> response(
           new net::HttpServerResponseInfo(net::HTTP_UNAUTHORIZED));
@@ -130,7 +130,7 @@ void StartServerOnIOThread(
     uint16_t port,
     bool allow_remote,
     const std::string& url_base,
-    const std::vector<net::IPAddress>& whitelisted_ips,
+    const std::vector<net::IPAddress>& allowed_ips,
     const HttpRequestHandlerFunc& handle_request_func,
     base::WeakPtr<HttpHandler> handler,
     const scoped_refptr<base::SingleThreadTaskRunner>& cmd_task_runner) {
@@ -149,7 +149,7 @@ void StartServerOnIOThread(
 
 #if defined(OS_MAC)
   temp_server = std::make_unique<HttpServer>(
-      url_base, whitelisted_ips, handle_request_func, handler, cmd_task_runner);
+      url_base, allowed_ips, handle_request_func, handler, cmd_task_runner);
   int ipv4_status = temp_server->Start(port, allow_remote, true);
   if (ipv4_status == net::OK) {
     lazy_tls_server_ipv4.Pointer()->Set(temp_server.release());
@@ -166,7 +166,7 @@ void StartServerOnIOThread(
 #endif
 
   temp_server = std::make_unique<HttpServer>(
-      url_base, whitelisted_ips, handle_request_func, handler, cmd_task_runner);
+      url_base, allowed_ips, handle_request_func, handler, cmd_task_runner);
   int ipv6_status = temp_server->Start(port, allow_remote, false);
   if (ipv6_status == net::OK) {
     lazy_tls_server_ipv6.Pointer()->Set(temp_server.release());
@@ -216,9 +216,8 @@ void StartServerOnIOThread(
   if (need_ipv4 == NeedIPv4::NOT_NEEDED) {
     ipv4_status = ipv6_status;
   } else {
-    temp_server = std::make_unique<HttpServer>(url_base, whitelisted_ips,
-                                               handle_request_func, handler,
-                                               cmd_task_runner);
+    temp_server = std::make_unique<HttpServer>(
+        url_base, allowed_ips, handle_request_func, handler, cmd_task_runner);
     ipv4_status = temp_server->Start(port, allow_remote, true);
     if (ipv4_status == net::OK) {
       lazy_tls_server_ipv4.Pointer()->Set(temp_server.release());
@@ -243,7 +242,7 @@ void StartServerOnIOThread(
 
 void RunServer(uint16_t port,
                bool allow_remote,
-               const std::vector<net::IPAddress>& whitelisted_ips,
+               const std::vector<net::IPAddress>& allowed_ips,
                const std::string& url_base,
                int adb_port) {
   base::Thread io_thread(
@@ -256,12 +255,12 @@ void RunServer(uint16_t port,
   HttpHandler handler(cmd_run_loop.QuitClosure(), io_thread.task_runner(),
                       main_task_executor.task_runner(), url_base, adb_port);
   HttpRequestHandlerFunc handle_request_func =
-      base::BindRepeating(&HandleRequestOnCmdThread, &handler, whitelisted_ips);
+      base::BindRepeating(&HandleRequestOnCmdThread, &handler, allowed_ips);
 
   io_thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&StartServerOnIOThread, port, allow_remote, url_base,
-                     whitelisted_ips,
+                     allowed_ips,
                      base::BindRepeating(&HandleRequestOnIOThread,
                                          main_task_executor.task_runner(),
                                          handle_request_func),
@@ -295,7 +294,8 @@ int main(int argc, char *argv[]) {
   uint16_t port = 9515;
   int adb_port = 5037;
   bool allow_remote = false;
-  std::vector<net::IPAddress> whitelisted_ips;
+  std::vector<net::IPAddress> allowed_ips;
+  std::string allowlist;
   std::string url_base;
   if (cmd_line->HasSwitch("h") || cmd_line->HasSwitch("help")) {
     std::string options;
@@ -338,12 +338,12 @@ int main(int argc, char *argv[]) {
           kOptionAndDescriptions[i], kOptionAndDescriptions[i + 1]);
     }
 
-    // Add helper info for whitelisted-ips since the product name may be
+    // Add helper info for allowed-ips since the product name may be
     // different.
     options += base::StringPrintf(
-        "  --%-30scomma-separated whitelist of remote IP addresses which are "
+        "  --%-30scomma-separated allowlist of remote IP addresses which are "
         "allowed to connect to %s\n",
-        "whitelisted-ips", kChromeDriverProductShortName);
+        "allowed-ips", kChromeDriverProductShortName);
 
     printf("Usage: %s [OPTIONS]\n\nOptions\n%s", argv[0], options.c_str());
     return 0;
@@ -378,14 +378,19 @@ int main(int argc, char *argv[]) {
     url_base = "/" + url_base;
   if (url_base.back() != '/')
     url_base = url_base + "/";
-  if (cmd_line->HasSwitch("whitelisted-ips")) {
+  if (cmd_line->HasSwitch("allowed-ips") ||
+      cmd_line->HasSwitch("whitelisted-ips")) {
     allow_remote = true;
-    std::string whitelist = cmd_line->GetSwitchValueASCII("whitelisted-ips");
-    std::vector<std::string> whitelist_ip_strs = base::SplitString(
-        whitelist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (!whitelist_ip_strs.empty()) {
+    if (cmd_line->HasSwitch("allowed-ips"))
+      allowlist = cmd_line->GetSwitchValueASCII("allowed-ips");
+    else
+      allowlist = cmd_line->GetSwitchValueASCII("whitelisted-ips");
+
+    std::vector<std::string> allowlist_ip_strs = base::SplitString(
+        allowlist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (!allowlist_ip_strs.empty()) {
       // Convert IP address strings into net::IPAddress objects.
-      for (const auto& ip_str : whitelist_ip_strs) {
+      for (const auto& ip_str : allowlist_ip_strs) {
         base::StringPiece ip_str_piece(ip_str);
         if (ip_str_piece.size() >= 2 && ip_str_piece.front() == '[' &&
             ip_str_piece.back() == ']') {
@@ -397,16 +402,16 @@ int main(int argc, char *argv[]) {
           printf("Invalid IP address %s. Exiting...\n", ip_str.c_str());
           return 1;
         }
-        whitelisted_ips.push_back(ip);
+        allowed_ips.push_back(ip);
         if (ip.IsIPv4()) {
-          whitelisted_ips.push_back(net::ConvertIPv4ToIPv4MappedIPv6(ip));
+          allowed_ips.push_back(net::ConvertIPv4ToIPv4MappedIPv6(ip));
         } else if (ip.IsIPv4MappedIPv6()) {
-          whitelisted_ips.push_back(net::ConvertIPv4MappedIPv6ToIPv4(ip));
+          allowed_ips.push_back(net::ConvertIPv4MappedIPv6ToIPv4(ip));
         }
       }
-      whitelisted_ips.push_back(net::IPAddress::IPv4Localhost());
-      whitelisted_ips.push_back(net::IPAddress::IPv6Localhost());
-      whitelisted_ips.push_back(
+      allowed_ips.push_back(net::IPAddress::IPv4Localhost());
+      allowed_ips.push_back(net::IPAddress::IPv6Localhost());
+      allowed_ips.push_back(
           net::ConvertIPv4ToIPv4MappedIPv6(net::IPAddress::IPv4Localhost()));
     }
   }
@@ -416,11 +421,11 @@ int main(int argc, char *argv[]) {
            kChromeDriverVersion, port);
     if (!allow_remote) {
       printf("Only local connections are allowed.\n");
-    } else if (!whitelisted_ips.empty()) {
-      printf("Remote connections are allowed by a whitelist (%s).\n",
-             cmd_line->GetSwitchValueASCII("whitelisted-ips").c_str());
+    } else if (!allowed_ips.empty()) {
+      printf("Remote connections are allowed by an allowlist (%s).\n",
+             allowlist.c_str());
     } else {
-      printf("All remote connections are allowed. Use a whitelist instead!\n");
+      printf("All remote connections are allowed. Use an allowlist instead!\n");
     }
     printf("%s\n", GetPortProtectionMessage());
     fflush(stdout);
@@ -440,7 +445,7 @@ int main(int argc, char *argv[]) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       kChromeDriverProductShortName);
 
-  RunServer(port, allow_remote, whitelisted_ips, url_base, adb_port);
+  RunServer(port, allow_remote, allowed_ips, url_base, adb_port);
 
   // clean up
   base::ThreadPoolInstance::Get()->Shutdown();

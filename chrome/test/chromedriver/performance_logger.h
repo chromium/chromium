@@ -50,7 +50,7 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
                  const std::string& method,
                  const base::DictionaryValue& params) override;
 
-  // Before whitelisted commands, if tracing enabled, calls CollectTraceEvents.
+  // Before allowed commands, if tracing enabled, calls CollectTraceEvents.
   Status BeforeCommand(const std::string& command_name) override;
 
  private:
