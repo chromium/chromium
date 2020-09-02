@@ -231,7 +231,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableViewItemDidEndEditing:
     (TableViewTextEditItem*)tableViewTextEditItem {
-  // No op.
+  if ([tableViewTextEditItem isKindOfClass:[AutofillEditItem class]]) {
+    AutofillEditItem* item = (AutofillEditItem*)tableViewTextEditItem;
+    // Reconfigure to trigger appropiate icon change.
+    [self reconfigureCellsForItems:@[ item ]];
+  }
 }
 
 #pragma mark - UITableViewDataSource
