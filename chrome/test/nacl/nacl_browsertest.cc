@@ -88,7 +88,13 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPBInstance, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppb_instance.html"));
 })
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, PPAPIPPPInstance, {
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_PPAPIPPPInstance DISABLED_PPAPIPPPInstance
+#else
+#define MAYBE_PPAPIPPPInstance PPAPIPPPInstance
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPPInstance, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppp_instance.html"));
 })
 
@@ -468,11 +474,14 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
       "pnacl_dyncode_syscall_disabled.html"));
 }
 
+// TODO(1059468): Flaky on Win7 (32).
+#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
                        MAYBE_PNACL(PnaclExceptionHandlingDisabled)) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL(
       "pnacl_hw_eh_disabled.html"));
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl, PnaclMimeType) {
   RunLoadTest(FILE_PATH_LITERAL("pnacl_mime_type.html"));
