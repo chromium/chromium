@@ -34,45 +34,47 @@ proto_library("private_membership_proto") {
   link_deps = [ "//third_party/shell-encryption:serialization_proto" ]
 }
 
-source_set("private_membership") {
-  public_configs = [ ":private_membership_config" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  public = [
-    "src/internal/aes_ctr_256_with_fixed_iv.h",
-    "src/internal/constants.h",
-    "src/internal/crypto_utils.h",
-    "src/internal/encrypted_bucket_id.h",
-    "src/internal/hashed_bucket_id.h",
-    "src/internal/id_utils.h",
-    "src/internal/oprf_utils.h",
-    "src/internal/rlwe_id_utils.h",
-    "src/internal/rlwe_params.h",
-    "src/internal/utils.h",
-    "src/membership_response_map.h",
-    "src/private_membership_rlwe_client.h",
-  ]
-  sources = [
-    "src/internal/aes_ctr_256_with_fixed_iv.cc",
-    "src/internal/crypto_utils.cc",
-    "src/internal/encrypted_bucket_id.cc",
-    "src/internal/hashed_bucket_id.cc",
-    "src/internal/id_utils.cc",
-    "src/internal/oprf_utils.cc",
-    "src/internal/rlwe_id_utils.cc",
-    "src/internal/rlwe_params.cc",
-    "src/internal/utils.cc",
-    "src/membership_response_map.cc",
-    "src/private_membership_rlwe_client.cc",
-  ]
-  public_deps = [
-    ":private_membership_proto",
-    "//base",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
-    "//third_party/shell-encryption:shell_encryption",
-  ]
+if (is_chromeos) {
+  source_set("private_membership") {
+    public_configs = [ ":private_membership_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [
+      "src/internal/aes_ctr_256_with_fixed_iv.h",
+      "src/internal/constants.h",
+      "src/internal/crypto_utils.h",
+      "src/internal/encrypted_bucket_id.h",
+      "src/internal/hashed_bucket_id.h",
+      "src/internal/id_utils.h",
+      "src/internal/oprf_utils.h",
+      "src/internal/rlwe_id_utils.h",
+      "src/internal/rlwe_params.h",
+      "src/internal/utils.h",
+      "src/membership_response_map.h",
+      "src/private_membership_rlwe_client.h",
+    ]
+    sources = [
+      "src/internal/aes_ctr_256_with_fixed_iv.cc",
+      "src/internal/crypto_utils.cc",
+      "src/internal/encrypted_bucket_id.cc",
+      "src/internal/hashed_bucket_id.cc",
+      "src/internal/id_utils.cc",
+      "src/internal/oprf_utils.cc",
+      "src/internal/rlwe_id_utils.cc",
+      "src/internal/rlwe_params.cc",
+      "src/internal/utils.cc",
+      "src/membership_response_map.cc",
+      "src/private_membership_rlwe_client.cc",
+    ]
+    public_deps = [
+      ":private_membership_proto",
+      "//base",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/boringssl",
+      "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+      "//third_party/shell-encryption:shell_encryption",
+    ]
+  }
 }
 
 if (is_chromeos) {

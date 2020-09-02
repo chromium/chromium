@@ -46,52 +46,54 @@ proto_library("coefficient_polynomial_proto") {
 }
 
 # SHELL lib.
-source_set("shell_encryption") {
-  public_configs = [ ":shell_encryption_config1" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  public = [
-    "glog/logging.h",
-    "src/bits_util.h",
-    "src/constants.h",
-    "src/context.h",
-    "src/error_params.h",
-    "src/galois_key.h",
-    "src/int256.h",
-    "src/integral_types.h",
-    "src/montgomery.h",
-    "src/ntt_parameters.h",
-    "src/polynomial.h",
-    "src/prng/chacha_prng.h",
-    "src/prng/chacha_prng_util.h",
-    "src/prng/integral_prng_types.h",
-    "src/prng/prng.h",
-    "src/prng/single_thread_chacha_prng.h",
-    "src/relinearization_key.h",
-    "src/sample_error.h",
-    "src/status_macros.h",
-    "src/statusor.h",
-    "src/symmetric_encryption.h",
-    "src/symmetric_encryption_with_prng.h",
-    "src/transcription.h",
-  ]
-  sources = [
-    "src/int256.cc",
-    "src/montgomery.cc",
-    "src/ntt_parameters.cc",
-    "src/prng/chacha_prng.cc",
-    "src/prng/chacha_prng_util.cc",
-    "src/prng/single_thread_chacha_prng.cc",
-    "src/relinearization_key.cc",
-    "src/statusor.cc",
-  ]
-  public_deps = [
-    ":serialization_proto",
-    "//base:base",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
-    "//third_party/protobuf:protobuf_lite",
-  ]
+if (is_chromeos) {
+  source_set("shell_encryption") {
+    public_configs = [ ":shell_encryption_config1" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [
+      "glog/logging.h",
+      "src/bits_util.h",
+      "src/constants.h",
+      "src/context.h",
+      "src/error_params.h",
+      "src/galois_key.h",
+      "src/int256.h",
+      "src/integral_types.h",
+      "src/montgomery.h",
+      "src/ntt_parameters.h",
+      "src/polynomial.h",
+      "src/prng/chacha_prng.h",
+      "src/prng/chacha_prng_util.h",
+      "src/prng/integral_prng_types.h",
+      "src/prng/prng.h",
+      "src/prng/single_thread_chacha_prng.h",
+      "src/relinearization_key.h",
+      "src/sample_error.h",
+      "src/status_macros.h",
+      "src/statusor.h",
+      "src/symmetric_encryption.h",
+      "src/symmetric_encryption_with_prng.h",
+      "src/transcription.h",
+    ]
+    sources = [
+      "src/int256.cc",
+      "src/montgomery.cc",
+      "src/ntt_parameters.cc",
+      "src/prng/chacha_prng.cc",
+      "src/prng/chacha_prng_util.cc",
+      "src/prng/single_thread_chacha_prng.cc",
+      "src/relinearization_key.cc",
+      "src/statusor.cc",
+    ]
+    public_deps = [
+      ":serialization_proto",
+      "//base:base",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/boringssl:boringssl",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
 }
 
 if (is_chromeos) {
