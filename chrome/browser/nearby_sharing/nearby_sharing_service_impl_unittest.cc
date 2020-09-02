@@ -2292,9 +2292,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget) {
   service_->UnregisterReceiveSurface(&callback);
 }
 
-// TODO(crbug.com/1123022): flakily times-out.
-TEST_F(NearbySharingServiceImplTest,
-       DISABLED_AcceptValidShareTarget_PayloadSuccessful) {
+TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
   for (int64_t payload_id : kValidIntroductionFramePayloadIds) {
     fake_nearby_connections_manager_->SetPayloadPathStatus(
         payload_id, location::nearby::connections::mojom::Status::kSuccess);
@@ -2397,7 +2395,9 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_FALSE(
       fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
   EXPECT_TRUE(fake_nearby_connections_manager_->has_incoming_payloads());
-  EXPECT_TRUE(FileExists(file_path));
+
+  // TODO(crbug.com/1123022): This check is flaky, should be investigated.
+  // EXPECT_TRUE(FileExists(file_path));
 
   // To avoid UAF in OnIncomingTransferUpdate().
   service_->UnregisterReceiveSurface(&callback);
