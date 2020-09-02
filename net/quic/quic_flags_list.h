@@ -262,9 +262,6 @@ QUIC_FLAG(bool,
 // If true, enables support for TLS resumption in QUIC.
 QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_enable_tls_resumption_v4, true)
 
-// When true, QUIC's BBRv2 ignores inflight_lo in PROBE_BW.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_bbr2_ignore_inflight_lo, true)
-
 // If true, support for IETF QUIC 0-rtt is enabled.
 QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_enable_zero_rtt_for_tls_v2, true)
 
@@ -396,9 +393,6 @@ QUIC_FLAG(bool,
 // serialize the connection close packets which will be added to time wait list.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_add_silent_idle_timeout, true)
 
-// If true, do not send PING if ShouldKeepConnectionAlive is false.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_on_ping_timeout, true)
-
 // When true, QUIC+TLS versions will send the key_update_not_yet_supported
 // transport parameter.
 QUIC_FLAG(bool,
@@ -432,3 +426,14 @@ QUIC_FLAG(bool,
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_add_missing_connected_checks,
           true)
+
+// If true, QuicStream::kDefaultUrgency is 3, otherwise 1.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_http3_new_default_urgency_value,
+          false)
+
+// If true, close connection on packet serialization failures
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_close_connection_on_serialization_failure,
+    true)

@@ -26,6 +26,7 @@ P2PQuicStreamImpl::P2PQuicStreamImpl(quic::PendingStream* pending,
                                      uint32_t delegate_read_buffer_size,
                                      uint32_t write_buffer_size)
     : quic::QuicStream(pending,
+                       session,
                        quic::BIDIRECTIONAL,
                        /*is_static=*/false),
       delegate_read_buffer_size_(delegate_read_buffer_size),
