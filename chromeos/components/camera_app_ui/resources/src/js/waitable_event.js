@@ -4,6 +4,7 @@
 
 /**
  * A waitable event for synchronization between asynchronous jobs.
+ * @template T
  */
 export class WaitableEvent {
   /**
@@ -17,13 +18,13 @@ export class WaitableEvent {
     this.isSignaled_ = false;
 
     /**
-     * @type {function(): void}
+     * @type {function(T): void}
      * @private
      */
     this.resolve_;
 
     /**
-     * @type {!Promise}
+     * @type {!Promise<T>}
      * @private
      */
     this.promise_ = new Promise((resolve) => {
@@ -40,19 +41,20 @@ export class WaitableEvent {
 
   /**
    * Signals the event.
+   * @param {T=} value
    */
-  signal() {
+  signal(value) {
     if (this.isSignaled_) {
       return;
     }
     this.isSignaled_ = true;
-    this.resolve_();
+    this.resolve_(value);
   }
 
   /**
-   * @return {!Promise} Resolved when the event is signaled.
+   * @return {!Promise<T>} Resolved when the event is signaled.
    */
-  async wait() {
-    await this.promise_;
+  wait() {
+    return this.promise_;
   }
 }

@@ -4,6 +4,7 @@
 
 import * as dom from '../dom.js';
 import {ViewName} from '../type.js';  // eslint-disable-line no-unused-vars
+import {WaitableEvent} from '../waitable_event.js';
 
 /* eslint-disable no-unused-vars */
 
@@ -54,7 +55,8 @@ export class View {
     this.rootElement_ = dom.get(`#${name}`, HTMLElement);
 
     /**
-     * @type {?Promise}
+     * Signal it to ends the session.
+     * @type {?WaitableEvent<*>}
      * @private
      */
     this.session_ = null;
@@ -131,17 +133,11 @@ export class View {
   enter(options) {
     // The session is started by entering the view and ended by leaving the
     // view.
-    if (!this.session_) {
-      let end;
-      this.session_ = new Promise((resolve) => {
-        end = resolve;
-      });
-      this.session_.end = (result) => {
-        end(result);
-      };
+    if (this.session_ === null) {
+      this.session_ = new WaitableEvent();
     }
     this.entering(options);
-    return this.session_;
+    return this.session_.wait();
   }
 
   /**
@@ -160,8 +156,8 @@ export class View {
    * @return {boolean} Whether able to leaving the view or not.
    */
   leave(condition) {
-    if (this.session_ && this.leaving(condition)) {
-      this.session_.end(condition);
+    if (this.session_ !== null && this.leaving(condition)) {
+      this.session_.signal(condition);
       this.session_ = null;
       return true;
     }
