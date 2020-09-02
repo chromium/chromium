@@ -29,6 +29,7 @@ class COMPONENT_EXPORT(BLOOM) BloomController {
   // Starts an interaction. This will ask the user for a screenshot, analyze the
   // content and display the result.
   virtual void StartInteraction() = 0;
+  virtual bool HasInteraction() const = 0;
   virtual void StopInteraction(BloomInteractionResolution resolution) = 0;
 
   virtual void AddObserver(BloomInteractionObserver* observer) = 0;

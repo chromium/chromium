@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak_tray.h"
+#include "ash/system/bloom/bloom_tray.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/media/media_tray.h"
@@ -34,6 +35,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
 #include "media/base/media_switches.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -106,6 +108,11 @@ void StatusAreaWidget::Initialize() {
 
   virtual_keyboard_tray_ = std::make_unique<VirtualKeyboardTray>(shelf_);
   AddTrayButton(virtual_keyboard_tray_.get());
+
+  if (chromeos::assistant::features::IsBloomEnabled()) {
+    bloom_tray_ = std::make_unique<BloomTray>(shelf_);
+    AddTrayButton(bloom_tray_.get());
+  }
 
   if (features::IsCaptureModeEnabled()) {
     stop_recording_button_tray_ =

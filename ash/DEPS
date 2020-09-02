@@ -58,6 +58,7 @@ include_rules = [
   "-chromeos",
   "+chromeos/audio",
   "+chromeos/components/multidevice/logging/logging.h",
+  "+chromeos/components/bloom/public/cpp",
   "+chromeos/components/proximity_auth/public/mojom",
   "+chromeos/components/quick_answers",
   "+chromeos/components/security_token_pin",

@@ -38,6 +38,10 @@ void BloomControllerImpl::StartInteraction() {
     observer.OnInteractionStarted();
 }
 
+bool BloomControllerImpl::HasInteraction() const {
+  return current_interaction_ != nullptr;
+}
+
 void BloomControllerImpl::ShowUI() {
   for (auto& observer : interaction_observers_)
     observer.OnShowUI();

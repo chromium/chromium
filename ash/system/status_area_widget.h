@@ -19,21 +19,22 @@ class Window;
 }
 
 namespace ash {
+class BloomTray;
+class DictationButtonTray;
 class HoldingSpaceTray;
 class ImeMenuTray;
 class LogoutButtonTray;
-class StatusAreaOverflowButtonTray;
+class MediaTray;
 class OverviewButtonTray;
-class DictationButtonTray;
 class PaletteTray;
 class SelectToSpeakTray;
 class Shelf;
+class StatusAreaOverflowButtonTray;
 class StatusAreaWidgetDelegate;
 class StopRecordingButtonTray;
-class UnifiedSystemTray;
 class TrayBackgroundView;
+class UnifiedSystemTray;
 class VirtualKeyboardTray;
-class MediaTray;
 
 // Widget showing the system tray, notification tray, and other tray views in
 // the bottom-right of the screen. Exists separately from ShelfView/ShelfWidget
@@ -155,6 +156,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
     return virtual_keyboard_tray_.get();
   }
 
+  BloomTray* bloom_tray_for_testing() { return bloom_tray_.get(); }
+
   CollapseState collapse_state() const { return collapse_state_; }
   void set_collapse_state_for_test(CollapseState state) {
     collapse_state_ = state;
@@ -219,6 +222,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   std::unique_ptr<PaletteTray> palette_tray_;
   std::unique_ptr<StopRecordingButtonTray> stop_recording_button_tray_;
   std::unique_ptr<VirtualKeyboardTray> virtual_keyboard_tray_;
+  std::unique_ptr<BloomTray> bloom_tray_;
   std::unique_ptr<ImeMenuTray> ime_menu_tray_;
   std::unique_ptr<SelectToSpeakTray> select_to_speak_tray_;
   std::unique_ptr<HoldingSpaceTray> holding_space_tray_;

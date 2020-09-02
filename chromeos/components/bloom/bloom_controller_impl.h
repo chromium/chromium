@@ -34,6 +34,7 @@ class BloomControllerImpl : public BloomController {
 
   // BloomController implementation:
   void StartInteraction() override;
+  bool HasInteraction() const override;
   void StopInteraction(BloomInteractionResolution resolution) override;
 
   void AddObserver(BloomInteractionObserver* observer) override;
