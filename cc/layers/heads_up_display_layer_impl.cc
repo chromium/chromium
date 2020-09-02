@@ -712,13 +712,13 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
   flags.setStyle(PaintFlags::kStroke_Style);
   flags.setStrokeWidth(1);
 
-  flags.setColor(SkColorSetA(SK_ColorGREEN, 128));
+  flags.setColor(DebugColors::FPSDisplaySuccessfulFrame());
   canvas->drawPath(good_path, flags);
 
-  flags.setColor(SkColorSetA(SK_ColorRED, 128));
+  flags.setColor(DebugColors::FPSDisplayDroppedFrame());
   canvas->drawPath(dropped_path, flags);
 
-  flags.setColor(SkColorSetA(SK_ColorYELLOW, 255));
+  flags.setColor(DebugColors::FPSDisplayMissedFrame());
   canvas->drawPath(partial_path, flags);
 
   return area;

@@ -124,6 +124,9 @@ class CC_DEBUG_EXPORT DebugColors {
 
   static SkColor PlatformLayerTreeTextColor();
   static SkColor FPSDisplayTextAndGraphColor();
+  static SkColor FPSDisplayDroppedFrame();
+  static SkColor FPSDisplayMissedFrame();
+  static SkColor FPSDisplaySuccessfulFrame();
   static SkColor MemoryDisplayTextColor();
   static SkColor PaintTimeDisplayTextAndGraphColor();
 

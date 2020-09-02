@@ -297,7 +297,7 @@ SkColor DebugColors::PictureBorderColor() {
 // ======= HUD widget colors =======
 
 SkColor DebugColors::HUDBackgroundColor() {
-  return SkColorSetARGB(208, 17, 17, 17);
+  return SkColorSetARGB(217, 0, 0, 0);
 }
 SkColor DebugColors::HUDSeparatorLineColor() {
   return SkColorSetARGB(64, 0, 255, 0);
@@ -313,6 +313,21 @@ SkColor DebugColors::PlatformLayerTreeTextColor() { return SK_ColorRED; }
 SkColor DebugColors::FPSDisplayTextAndGraphColor() {
   return SK_ColorGREEN;
 }
+
+// Color used to represent dropped compositor frames.
+SkColor DebugColors::FPSDisplayDroppedFrame() {
+  return SkColorSetRGB(202, 91, 29);
+}
+// Color used to represent a "partial" frame, i.e. a frame that missed
+// its commit deadline.
+SkColor DebugColors::FPSDisplayMissedFrame() {
+  return SkColorSetRGB(255, 245, 0);
+}
+// Color used to represent a frame that successfully rendered.
+SkColor DebugColors::FPSDisplaySuccessfulFrame() {
+  return SkColorSetARGB(191, 174, 221, 255);
+}
+
 SkColor DebugColors::MemoryDisplayTextColor() {
   return SK_ColorCYAN;
 }
