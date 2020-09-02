@@ -74,7 +74,6 @@ std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
   }
 
   // Child user is adding/reauthenticating a secondary account.
-  CHECK(features::IsEduCoexistenceEnabled());
   return kCrosAddAccountEduFlow;
 }
 
@@ -318,9 +317,7 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
 
   // Child user added a secondary account.
   if (profile->IsChild() &&
-      !gaia::AreEmailsSame(primary_account_email, email) &&
-      base::FeatureList::IsEnabled(features::kEduCoexistenceConsentLog)) {
-    CHECK(features::IsEduCoexistenceEnabled());
+      !gaia::AreEmailsSame(primary_account_email, email)) {
     const std::string* rapt =
         edu_login_params.FindStringKey("reAuthProofToken");
     CHECK(rapt);

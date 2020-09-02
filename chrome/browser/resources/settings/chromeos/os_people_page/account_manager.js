@@ -85,8 +85,7 @@ Polymer({
    * @private
    */
   getAccountManagerDescription_() {
-    if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_ &&
-        loadTimeData.getBoolean('isEduCoexistenceEnabled')) {
+    if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_) {
       return loadTimeData.getString('accountManagerChildDescription');
     }
     return loadTimeData.getString('accountManagerDescription');
@@ -97,8 +96,7 @@ Polymer({
    * @private
    */
   getAddAccountLabel_() {
-    if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_ &&
-        loadTimeData.getBoolean('isEduCoexistenceEnabled')) {
+    if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_) {
       return loadTimeData.getString('addSchoolAccountLabel');
     }
     return loadTimeData.getString('addAccountLabel');

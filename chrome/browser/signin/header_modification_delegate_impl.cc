@@ -23,7 +23,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 
 #if defined(OS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #endif
 
@@ -60,10 +59,6 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 
 #if defined(OS_CHROMEOS)
   bool is_secondary_account_addition_allowed = true;
-  if (profile_->IsChild() &&
-      !base::FeatureList::IsEnabled(chromeos::features::kEduCoexistence)) {
-    is_secondary_account_addition_allowed = false;
-  }
   if (!prefs->GetBoolean(
           chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     is_secondary_account_addition_allowed = false;

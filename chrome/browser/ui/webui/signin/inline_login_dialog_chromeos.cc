@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -83,9 +82,8 @@ GURL GetInlineLoginUrl(const std::string& email,
     return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
   }
   // User type is Child.
-  if (!features::IsEduCoexistenceEnabled() ||
-      (!arc::IsSecondaryAccountForChildEnabled() &&
-       source == InlineLoginDialogChromeOS::Source::kArc)) {
+  if (!arc::IsSecondaryAccountForChildEnabled() &&
+      source == InlineLoginDialogChromeOS::Source::kArc) {
     return GURL(chrome::kChromeUIAccountManagerErrorURL);
   }
   return GetUrlWithEmailParam(chrome::kChromeUIEDUCoexistenceLoginURL, email);
@@ -195,8 +193,7 @@ std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
   if (source_ == Source::kArc &&
       ProfileManager::GetActiveUserProfile()->IsChild() &&
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed) &&
-      features::IsEduCoexistenceEnabled()) {
+          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     error = AccountManagerErrorType::kChildUserArcDisabled;
   }
 

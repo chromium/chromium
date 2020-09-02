@@ -86,10 +86,6 @@ extern const base::Feature kEmojiSuggestAddition;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kEduCoexistence;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kEduCoexistenceConsentLog;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kExoPointerLock;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kFilesNG;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kFilesSWA;
@@ -243,7 +239,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsAssistantEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsBetterUpdateEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsChildSpecificSigninEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsDeepLinkingEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsEduCoexistenceEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsImeSandboxEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();

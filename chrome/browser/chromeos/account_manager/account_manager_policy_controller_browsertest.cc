@@ -16,7 +16,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -31,17 +30,9 @@ constexpr char kFakeSecondaryUsername[] = "test-secondary@example.com";
 constexpr char kFakeSecondaryGaiaId[] = "fake-secondary-gaia-id";
 }  // namespace
 
-class AccountManagerPolicyControllerTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
  public:
-  AccountManagerPolicyControllerTest() {
-    if (EduCoexistenceEnabled()) {
-      scoped_feature_list.InitAndEnableFeature(features::kEduCoexistence);
-    } else {
-      scoped_feature_list.InitAndDisableFeature(features::kEduCoexistence);
-    }
-  }
+  AccountManagerPolicyControllerTest() = default;
   ~AccountManagerPolicyControllerTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -119,8 +110,6 @@ class AccountManagerPolicyControllerTest
         ->identity_manager();
   }
 
-  bool EduCoexistenceEnabled() const { return GetParam(); }
-
  private:
   base::ScopedTempDir temp_dir_;
   // Non-owning pointer.
@@ -130,11 +119,10 @@ class AccountManagerPolicyControllerTest
       identity_test_environment_adaptor_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   AccountId primary_account_id_;
-  base::test::ScopedFeatureList scoped_feature_list;
   DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyControllerTest);
 };
 
-IN_PROC_BROWSER_TEST_P(AccountManagerPolicyControllerTest,
+IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
                        ExistingSecondaryAccountsAreNotRemovedIfPolicyIsNotSet) {
   std::vector<AccountManager::Account> accounts = GetAccountManagerAccounts();
   // We should have at least 1 Secondary Account.
@@ -154,7 +142,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerPolicyControllerTest,
   EXPECT_EQ(initial_num_accounts, accounts.size());
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     AccountManagerPolicyControllerTest,
     ExistingSecondaryAccountsAreRemovedAfterPolicyApplication) {
   std::vector<AccountManager::Account> accounts = GetAccountManagerAccounts();
@@ -182,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(
             accounts[0].key.id);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     AccountManagerPolicyControllerTest,
     SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled) {
   std::vector<AccountManager::Account> accounts = GetAccountManagerAccounts();
@@ -195,14 +183,8 @@ IN_PROC_BROWSER_TEST_P(
   chromeos::ChildAccountTypeChangedUserData::GetForProfile(profile())->SetValue(
       true);
 
-  accounts = GetAccountManagerAccounts();
-  if (!EduCoexistenceEnabled()) {
-    // Secondary Accounts must not be removed.
-    EXPECT_EQ(initial_num_accounts, accounts.size());
-    return;
-  }
-
   // Secondary Accounts must be removed.
+  accounts = GetAccountManagerAccounts();
   ASSERT_EQ(accounts.size(), 1UL);
 
   EXPECT_EQ(ProfileHelper::Get()
@@ -218,9 +200,5 @@ IN_PROC_BROWSER_TEST_P(
                 .GetGaiaId(),
             accounts[0].key.id);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AccountManagerPolicyControllerTest,
-                         ::testing::Bool());
 
 }  // namespace chromeos

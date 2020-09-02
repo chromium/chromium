@@ -786,8 +786,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "secondaryGoogleAccountSigninAllowed",
       pref_service_->GetBoolean(
           chromeos::prefs::kSecondaryGoogleAccountSigninAllowed));
-  html_source->AddBoolean("isEduCoexistenceEnabled",
-                          ::chromeos::features::IsEduCoexistenceEnabled());
 
   html_source->AddBoolean(
       "driveSuggestAvailable",

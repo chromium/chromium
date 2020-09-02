@@ -12,7 +12,6 @@
 #include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/account_manager/account_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -106,9 +105,6 @@ void AccountManagerPolicyController::
 void AccountManagerPolicyController::OnChildAccountTypeChanged(
     bool type_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!chromeos::features::IsEduCoexistenceEnabled())
-    return;
 
   if (!type_changed) {
     return;
