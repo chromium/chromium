@@ -31,7 +31,6 @@ constexpr int kEntryHighlightOpacity = 45;
 constexpr gfx::Insets kExpandButtonStripInsets{6, 15};
 constexpr gfx::Size kExpandButtonStripSize{400, 30};
 constexpr gfx::Insets kExpandButtonBorderInsets{4, 8};
-constexpr int kExpandButtonBorderCornerRadius = 16;
 
 class DeviceEntryView : public views::Button {
  public:
@@ -161,6 +160,55 @@ void DeviceEntryView::OnColorsChanged(const SkColor& foreground_color,
   SetHighlighted(is_highlighted_);
 }
 
+namespace {
+
+class ExpandDeviceSelectorButton : public IconLabelBubbleView {
+ public:
+  explicit ExpandDeviceSelectorButton(IconLabelBubbleView::Delegate* delegate);
+  ~ExpandDeviceSelectorButton() override = default;
+
+  void OnColorsChanged();
+
+ private:
+  bool ShouldShowSeparator() const override { return false; }
+  IconLabelBubbleView::Delegate* delegate_;
+};
+
+}  // anonymous namespace
+
+ExpandDeviceSelectorButton::ExpandDeviceSelectorButton(
+    IconLabelBubbleView::Delegate* delegate)
+    : IconLabelBubbleView(
+          views::style::GetFont(views::style::TextContext::CONTEXT_BUTTON,
+                                views::style::TextStyle::STYLE_PRIMARY),
+          delegate),
+      delegate_(delegate) {
+  SetLabel(l10n_util::GetStringUTF16(
+      IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_BUTTON_LABEL));
+  SetInkDropMode(InkDropMode::ON);
+  set_has_ink_drop_action_on_click(true);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+
+  SetBorder(views::CreateRoundedRectBorder(
+      1, kExpandButtonStripSize.height() / 2, gfx::Insets(),
+      delegate_->GetIconLabelBubbleSurroundingForegroundColor()));
+
+  label()->SetBorder(views::CreateEmptyBorder(kExpandButtonBorderInsets));
+  label()->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
+  auto size = GetPreferredSize();
+  size.set_height(kExpandButtonStripSize.height());
+  size.set_width(size.width() + kExpandButtonBorderInsets.width());
+  SetPreferredSize(size);
+}
+
+void ExpandDeviceSelectorButton::OnColorsChanged() {
+  UpdateLabelColors();
+  SetBorder(views::CreateRoundedRectBorder(
+      1, kExpandButtonStripSize.height() / 2, gfx::Insets(),
+      delegate_->GetIconLabelBubbleSurroundingForegroundColor()));
+}
+
 MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
     MediaNotificationDeviceSelectorViewDelegate* delegate,
     const std::string& current_device_id,
@@ -184,19 +232,9 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   expand_button_strip_->SetPreferredSize(kExpandButtonStripSize);
 
-  auto expand_button = std::make_unique<views::LabelButton>(
-      this, l10n_util::GetStringUTF16(
-                IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_BUTTON_LABEL));
-  expand_button->SetTextColor(views::MdTextButton::ButtonState::STATE_NORMAL,
-                              foreground_color_);
-  expand_button->SetBackground(views::CreateSolidBackground(background_color_));
-  auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::Arrow::NONE, views::BubbleBorder::Shadow::NO_SHADOW,
-      background_color_);
-  border->set_insets(kExpandButtonBorderInsets);
-  border->SetCornerRadius(kExpandButtonBorderCornerRadius);
-  expand_button->SetBorder(std::move(border));
-  expand_button_ = expand_button_strip_->AddChildView(std::move(expand_button));
+  expand_button_ = expand_button_strip_->AddChildView(
+      std::make_unique<ExpandDeviceSelectorButton>(this));
+  expand_button_->set_listener(this);
 
   audio_device_entries_container_ =
       AddChildView(std::make_unique<views::View>());
@@ -291,15 +329,15 @@ void MediaNotificationDeviceSelectorView::OnColorsChanged(
   foreground_color_ = foreground_color;
   background_color_ = background_color;
 
-  expand_button_->SetTextColor(views::MdTextButton::ButtonState::STATE_NORMAL,
-                               foreground_color_);
-  expand_button_->SetBackground(
-      views::CreateSolidBackground(background_color_));
   SetBackground(views::CreateSolidBackground(background_color_));
+
   for (auto* view : audio_device_entries_container_->children()) {
     static_cast<DeviceEntryView*>(view)->OnColorsChanged(foreground_color_,
                                                          background_color_);
   }
+
+  expand_button_->OnColorsChanged();
+
   SchedulePaint();
 }
 
@@ -321,6 +359,21 @@ void MediaNotificationDeviceSelectorView::ButtonPressed(
     delegate_->OnAudioSinkChosen(
         static_cast<DeviceEntryView*>(sender)->GetDeviceId());
   }
+}
+
+SkColor MediaNotificationDeviceSelectorView::
+    GetIconLabelBubbleSurroundingForegroundColor() const {
+  return foreground_color_;
+}
+
+SkColor MediaNotificationDeviceSelectorView::GetIconLabelBubbleBackgroundColor()
+    const {
+  return background_color_;
+}
+
+views::Button*
+MediaNotificationDeviceSelectorView::get_expand_button_for_testing() {
+  return expand_button_;
 }
 
 // static

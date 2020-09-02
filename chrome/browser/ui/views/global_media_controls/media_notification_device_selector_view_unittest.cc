@@ -173,7 +173,7 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
 
   ASSERT_TRUE(view_->expand_button_);
   EXPECT_FALSE(view_->audio_device_entries_container_->GetVisible());
-  SimulateButtonClick(view_->expand_button_);
+  SimulateButtonClick(view_->get_expand_button_for_testing());
   EXPECT_TRUE(view_->audio_device_entries_container_->GetVisible());
 }
 

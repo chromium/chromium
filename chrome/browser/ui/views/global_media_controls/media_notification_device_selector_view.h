@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "media/audio/audio_device_description.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -14,12 +15,15 @@
 
 namespace {
 class DeviceEntryView;
+class ExpandDeviceSelectorButton;
 }  // anonymous namespace
 
 class MediaNotificationDeviceSelectorViewDelegate;
 
-class MediaNotificationDeviceSelectorView : public views::View,
-                                            public views::ButtonListener {
+class MediaNotificationDeviceSelectorView
+    : public views::View,
+      public views::ButtonListener,
+      public IconLabelBubbleView::Delegate {
  public:
   MediaNotificationDeviceSelectorView(
       MediaNotificationDeviceSelectorViewDelegate* delegate,
@@ -42,6 +46,11 @@ class MediaNotificationDeviceSelectorView : public views::View,
   // views::ButtonListener
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  // IconLabelBubbleView::Delegate
+  SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
+  SkColor GetIconLabelBubbleBackgroundColor() const override;
+
+  views::Button* get_expand_button_for_testing();
   static std::string get_entry_label_for_testing(views::View* entry_view);
   static bool get_entry_is_highlighted_for_testing(views::View* entry_view);
 
@@ -75,7 +84,7 @@ class MediaNotificationDeviceSelectorView : public views::View,
 
   // Child views
   views::View* expand_button_strip_;
-  views::LabelButton* expand_button_;
+  ExpandDeviceSelectorButton* expand_button_;
   views::View* audio_device_entries_container_;
 
   std::unique_ptr<MediaNotificationDeviceProvider::
