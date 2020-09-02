@@ -6,7 +6,6 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "cc/test/pixel_comparator.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
 #include "chromeos/crosapi/cpp/bitmap.h"
 #include "chromeos/crosapi/cpp/bitmap_util.h"
@@ -16,28 +15,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "url/gurl.h"
 
 using base::ASCIIToUTF16;
+using gfx::test::AreBitmapsEqual;
+using gfx::test::AreImagesEqual;
 
 namespace {
-
-// Returns an image filled with red.
-gfx::Image CreateRedImage(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(SK_ColorRED);
-  return gfx::Image::CreateFrom1xBitmap(bitmap);
-}
-
-bool BitmapEquals(const SkBitmap& a, const SkBitmap& b) {
-  if (a.width() != b.width() || a.height() != b.height())
-    return false;
-  cc::ExactPixelComparator comparator(/*discard_alpha=*/false);
-  return comparator.Compare(a, b);
-}
 
 // Tracks user actions that would be passed into chrome's cross-platform
 // notification subsystem.
@@ -143,9 +132,14 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   rich_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
 
-  gfx::Image badge = CreateRedImage(1, 2);
+  // Create badge and icon with both low DPI and high DPI versions.
+  gfx::Image badge = gfx::test::CreateImage(1, 2);
+  badge.AsImageSkia().AddRepresentation(
+      gfx::ImageSkiaRep(gfx::test::CreateBitmap(2, 4), /*scale=*/2.0f));
   rich_data.small_image = badge;
-  gfx::Image icon = CreateRedImage(3, 4);
+  gfx::Image icon = gfx::test::CreateImage(3, 4);
+  icon.AsImageSkia().AddRepresentation(
+      gfx::ImageSkiaRep(gfx::test::CreateBitmap(6, 8), /*scale=*/2.0f));
 
   message_center::ButtonInfo button1;
   button1.title = ASCIIToUTF16("button1");
@@ -181,12 +175,26 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   EXPECT_EQ(crosapi::mojom::FullscreenVisibility::kOverUser,
             last_notification->fullscreen_visibility);
 
-  ASSERT_TRUE(last_notification->badge.has_value());
-  EXPECT_TRUE(BitmapEquals(badge.AsBitmap(), crosapi::SkBitmapFromBitmap(
-                                                 *last_notification->badge)));
-  ASSERT_TRUE(last_notification->icon.has_value());
-  EXPECT_TRUE(BitmapEquals(
-      icon.AsBitmap(), crosapi::SkBitmapFromBitmap(*last_notification->icon)));
+  // TODO(https://crbug.com/1123969): Don't test the deprecated field after
+  // ash M87 beta.
+  ASSERT_TRUE(last_notification->deprecated_badge.has_value());
+  EXPECT_TRUE(AreBitmapsEqual(
+      badge.AsBitmap(),
+      crosapi::SkBitmapFromBitmap(*last_notification->deprecated_badge)));
+  ASSERT_TRUE(last_notification->deprecated_icon.has_value());
+  EXPECT_TRUE(AreBitmapsEqual(
+      icon.AsBitmap(),
+      crosapi::SkBitmapFromBitmap(*last_notification->deprecated_icon)));
+
+  ASSERT_FALSE(last_notification->badge.isNull());
+  EXPECT_TRUE(last_notification->badge.HasRepresentation(1.0f));
+  EXPECT_TRUE(last_notification->badge.HasRepresentation(2.0f));
+  EXPECT_TRUE(AreImagesEqual(badge, gfx::Image(last_notification->badge)));
+
+  ASSERT_FALSE(last_notification->icon.isNull());
+  EXPECT_TRUE(last_notification->icon.HasRepresentation(1.0f));
+  EXPECT_TRUE(last_notification->icon.HasRepresentation(2.0f));
+  EXPECT_TRUE(AreImagesEqual(icon, gfx::Image(last_notification->icon)));
 
   ASSERT_EQ(2u, last_notification->buttons.size());
   EXPECT_EQ(ASCIIToUTF16("button1"), last_notification->buttons[0]->title);
@@ -195,7 +203,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
 
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
   // Create a message_center notification.
-  gfx::Image image = CreateRedImage(5, 6);
+  gfx::Image image = gfx::test::CreateImage(5, 6);
   message_center::RichNotificationData rich_data;
   rich_data.image = image;
   message_center::Notification ui_notification(
@@ -212,9 +220,14 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
   crosapi::mojom::Notification* last_notification =
       test_message_center_.last_notification_.get();
   ASSERT_TRUE(last_notification);
-  ASSERT_TRUE(last_notification->image.has_value());
-  EXPECT_TRUE(BitmapEquals(image.AsBitmap(), crosapi::SkBitmapFromBitmap(
-                                                 *last_notification->image)));
+  // TODO(https://crbug.com/1123969): Don't test the deprecated field after
+  // ash M87 beta.
+  ASSERT_TRUE(last_notification->deprecated_image.has_value());
+  EXPECT_TRUE(AreBitmapsEqual(
+      image.AsBitmap(),
+      crosapi::SkBitmapFromBitmap(*last_notification->deprecated_image)));
+  ASSERT_FALSE(last_notification->image.isNull());
+  EXPECT_TRUE(AreImagesEqual(image, gfx::Image(last_notification->image)));
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {

@@ -7,6 +7,7 @@ module crosapi.mojom;
 import "chromeos/crosapi/mojom/bitmap.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // Type of notification to show. See the chrome.notifications extension API:
@@ -76,8 +77,8 @@ struct Notification {
   // notification. Otherwise empty.
   url.mojom.Url? origin_url;
 
-  // Icon for the notification.
-  Bitmap? icon;
+  // DEPRECATED, replaced with |icon| below.
+  Bitmap? deprecated_icon;
 
   // Priority from -2 to 2. Zero is the default. Other values are clamped.
   int32 priority;
@@ -89,11 +90,11 @@ struct Notification {
   // See web platform API "timestamp" and chrome.notifications "eventTime".
   mojo_base.mojom.Time timestamp;
 
-  // For type kImage, the large image.
-  Bitmap? image;
+  // DEPRECATED, replaced with |image| below.
+  Bitmap? deprecated_image;
 
-  // Badge to show the source of the notification (e.g. a 16x16 browser icon).
-  Bitmap? badge;
+  // DEPRECATED, replaced with |badge| below.
+  Bitmap? deprecated_badge;
 
   // Item list for type kList. Not displayed for other types.
   array<NotificationItem> items;
@@ -128,4 +129,16 @@ struct Notification {
 
   // Whether to show on top of fullscreen windows. See enum definition.
   FullscreenVisibility fullscreen_visibility;
+
+  // Icon for the notification.
+  [MinVersion=1]
+  gfx.mojom.ImageSkia? icon;
+
+  // For type kImage, the large image.
+  [MinVersion=1]
+  gfx.mojom.ImageSkia? image;
+
+  // Badge to show the source of the notification (e.g. a 16x16 browser icon).
+  [MinVersion=1]
+  gfx.mojom.ImageSkia? badge;
 };

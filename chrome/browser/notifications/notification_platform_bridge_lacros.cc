@@ -60,19 +60,28 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->display_source = notification.display_source();
   mojo_note->origin_url = notification.origin_url();
   if (!notification.icon().IsEmpty()) {
+    // TODO(https://crbug.com/1123969): Don't send the deprecated field after
+    // ash M87 beta.
     SkBitmap icon = notification.icon().AsBitmap();
-    mojo_note->icon = crosapi::BitmapFromSkBitmap(icon);
+    mojo_note->deprecated_icon = crosapi::BitmapFromSkBitmap(icon);
+    mojo_note->icon = notification.icon().AsImageSkia();
   }
   mojo_note->priority = base::ClampToRange(notification.priority(), -2, 2);
   mojo_note->require_interaction = notification.never_timeout();
   mojo_note->timestamp = notification.timestamp();
   if (!notification.image().IsEmpty()) {
+    // TODO(https://crbug.com/1123969): Don't send the deprecated field after
+    // ash M87 beta.
     SkBitmap image = notification.image().AsBitmap();
-    mojo_note->image = crosapi::BitmapFromSkBitmap(image);
+    mojo_note->deprecated_image = crosapi::BitmapFromSkBitmap(image);
+    mojo_note->image = notification.image().AsImageSkia();
   }
   if (!notification.small_image().IsEmpty()) {
+    // TODO(https://crbug.com/1123969): Don't send the deprecated field after
+    // ash M87 beta.
     SkBitmap badge = notification.small_image().AsBitmap();
-    mojo_note->badge = crosapi::BitmapFromSkBitmap(badge);
+    mojo_note->deprecated_badge = crosapi::BitmapFromSkBitmap(badge);
+    mojo_note->badge = notification.small_image().AsImageSkia();
   }
   for (const auto& item : notification.items()) {
     auto mojo_item = crosapi::mojom::NotificationItem::New();
