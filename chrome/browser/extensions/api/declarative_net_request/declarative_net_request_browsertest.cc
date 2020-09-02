@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     std::vector<std::string> excluded_domains;
   } rules_data[] = {{"child_frame.html?frame=1",
                      1,
-                     {"x.com", "xn--36c-tfa.com" /* punycode for 36°c.com */},
+                     {"x.com", "xn--tst-bma.com" /* punycode for tést.com */},
                      {"a.x.com"}},
                     {"child_frame.html?frame=2", 2, {}, {"a.y.com"}}};
 
@@ -953,9 +953,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     bool expect_frame_2_loaded;
   } test_cases[] = {
       {"x.com", false /* Rule 1 */, false /* Rule 2 */},
-      {base::WideToUTF8(L"36\x00b0"
-                        L"c.com" /* 36°c.com */),
-       false /*Rule 1*/, false /*Rule 2*/},
+      {base::WideToUTF8(L"tést.com"), false /*Rule 1*/, false /*Rule 2*/},
       {"b.x.com", false /* Rule 1 */, false /* Rule 2 */},
       {"a.x.com", true, false /* Rule 2 */},
       {"b.a.x.com", true, false /* Rule 2 */},
