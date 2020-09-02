@@ -706,8 +706,16 @@ void ShelfLayoutManager::ProcessGestureEventOfInAppHotseat(
 
   base::AutoReset<bool> hide_hotseat(&should_hide_hotseat_, true);
 
-  // Record gesture metrics only for ET_GESTURE_BEGIN to avoid over counting.
-  if (event->type() == ui::ET_GESTURE_BEGIN) {
+  // In overview mode, only the gesture tap event is able to make the hotseat
+  // exit the extended mode.
+  const bool in_overview =
+      Shell::Get()->overview_controller() &&
+      Shell::Get()->overview_controller()->InOverviewSession();
+  ui::EventType interesting_type =
+      in_overview ? ui::ET_GESTURE_TAP : ui::ET_GESTURE_BEGIN;
+
+  // Record gesture metrics only for `interesting_type` to avoid over counting.
+  if (event->type() == interesting_type) {
     UMA_HISTOGRAM_ENUMERATION(
         kHotseatGestureHistogramName,
         InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf);
