@@ -136,7 +136,6 @@ ProfileAttributesEntry* NearbyProcessManager::GetActiveProfile() const {
 
 bool NearbyProcessManager::IsActiveProfile(Profile* profile) const {
   // If the active profile is not loaded yet, try looking in prefs.
-  // TODO(knollr): Add a test for this.
   if (!active_profile_)
     return IsStoredNearbyProfile(profile);
 

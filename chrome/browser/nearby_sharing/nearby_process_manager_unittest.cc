@@ -12,10 +12,14 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_connections.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_decoder.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/services/sharing/public/mojom/nearby_connections.mojom.h"
 #include "chrome/services/sharing/public/mojom/nearby_connections_types.mojom.h"
 #include "chrome/services/sharing/public/mojom/nearby_decoder.mojom.h"
@@ -24,6 +28,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -99,14 +105,33 @@ class NearbyProcessManagerTest : public testing::Test {
   NearbyProcessManagerTest() = default;
   ~NearbyProcessManagerTest() override = default;
 
-  void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
+  void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    NearbyProcessManager::GetInstance().ClearActiveProfile();
+  }
 
-  void TearDown() override { DeleteAllProfiles(); }
+  void TearDown() override {
+    NearbyProcessManager::GetInstance().ClearActiveProfile();
+    DeleteAllProfiles();
+  }
 
   Profile* CreateProfile(const std::string& name) {
     Profile* profile = testing_profile_manager_.CreateTestingProfile(name);
     profiles_.insert(profile);
     return profile;
+  }
+
+  base::FilePath CreateProfileOnDisk(const std::string& name) {
+    base::FilePath file_path =
+        testing_profile_manager_.profiles_dir().AppendASCII(name);
+    ProfileAttributesStorage* storage =
+        testing_profile_manager_.profile_attributes_storage();
+    storage->AddProfile(file_path, base::ASCIIToUTF16(name),
+                        /*gaia_id=*/std::string(),
+                        /*user_name=*/base::string16(),
+                        /*is_consented_primary_account=*/false,
+                        /*icon_index=*/0, "TEST_ID", EmptyAccountId());
+    return file_path;
   }
 
   void DeleteProfile(Profile* profile) {
@@ -176,6 +201,23 @@ TEST_F(NearbyProcessManagerTest, IsActiveProfile) {
   manager.ClearActiveProfile();
   EXPECT_FALSE(manager.IsActiveProfile(profile_1));
   EXPECT_FALSE(manager.IsActiveProfile(profile_2));
+}
+
+TEST_F(NearbyProcessManagerTest, IsActiveProfile_Unloaded) {
+  auto& manager = NearbyProcessManager::GetInstance();
+  Profile* profile_1 = CreateProfile("name 1");
+  base::FilePath file_path_profile_2 = CreateProfileOnDisk("name 2");
+  EXPECT_FALSE(manager.IsAnyProfileActive());
+
+  g_browser_process->local_state()->SetFilePath(
+      prefs::kNearbySharingActiveProfilePrefName, file_path_profile_2);
+
+  EXPECT_TRUE(manager.IsAnyProfileActive());
+  EXPECT_FALSE(manager.IsActiveProfile(profile_1));
+
+  ProfileAttributesEntry* active_profile = manager.GetActiveProfile();
+  ASSERT_TRUE(active_profile);
+  EXPECT_EQ(file_path_profile_2, active_profile->GetPath());
 }
 
 TEST_F(NearbyProcessManagerTest, IsAnyProfileActive) {
