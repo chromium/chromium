@@ -830,13 +830,14 @@ bool SkiaOutputSurfaceImplOnGpu::CopyOutput(
     dest_surface->wait(begin_semaphores.size(), begin_semaphores.data());
     SkCanvas* dest_canvas = dest_surface->getCanvas();
     if (request->is_scaled()) {
-      dest_canvas->scale(request->scale_from().x() / request->scale_to().x(),
-                         request->scale_from().y() / request->scale_to().y());
+      dest_canvas->scale(static_cast<SkScalar>(request->scale_to().x()) /
+                             request->scale_from().x(),
+                         static_cast<SkScalar>(request->scale_to().y()) /
+                             request->scale_from().y());
     }
 
     SkPaint paint;
     paint.setFilterQuality(filter_quality);
-    sk_sp<SkImage> image = surface->makeImageSnapshot(src_rect);
     dest_canvas->clipRect(
         SkRect::MakeXYWH(0, 0, src_rect.width(), src_rect.height()));
     surface->draw(dest_canvas, -src_rect.x(), -src_rect.y(), &paint);
