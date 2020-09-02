@@ -133,22 +133,4 @@ BackgroundKeyboardHandler = class {
 
     return false;
   }
-
-  /**
-   * @param {number} keyCode
-   * @param {chrome.accessibilityPrivate.SyntheticKeyboardModifiers=}
-   *     modifiers
-   * @return {boolean}
-   */
-  static sendKeyPress(keyCode, modifiers) {
-    const key = {
-      type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
-      keyCode,
-      modifiers
-    };
-    chrome.accessibilityPrivate.sendSyntheticKeyEvent(key);
-    key['type'] = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP;
-    chrome.accessibilityPrivate.sendSyntheticKeyEvent(key);
-    return true;
-  }
 };

@@ -121,12 +121,8 @@ PointerHandler = class extends BaseAutomationHandler {
       return;
     }
 
-    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
-      type: chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE,
-      x: this.mouseX_,
-      y: this.mouseY_,
-      touchAccessibility: true
-    });
+    EventGenerator.sendMouseMove(
+        this.mouseX_, this.mouseY_, true /* touchAccessibility */);
   }
 
   /**

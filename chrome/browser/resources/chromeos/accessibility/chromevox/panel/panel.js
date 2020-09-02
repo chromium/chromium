@@ -14,9 +14,11 @@ goog.require('BrailleCommandData');
 goog.require('ChromeVoxKbHandler');
 goog.require('ChromeVoxState');
 goog.require('CommandStore');
+goog.require('EventGenerator');
 goog.require('EventSourceType');
 goog.require('GestureCommandData');
 goog.require('ISearchUI');
+goog.require('KeyCode');
 goog.require('LocaleOutputHelper');
 goog.require('Msgs');
 goog.require('PanelCommand');
@@ -377,8 +379,8 @@ Panel = class {
       chromevoxMenu.addMenuItem(
           Msgs.getMsg('open_keyboard_shortcuts_menu'), 'Ctrl+Alt+/', '', '',
           function() {
-            BackgroundKeyboardHandler.sendKeyPress(
-                191, {'ctrl': true, 'alt': true});
+            EventGenerator.sendKeyPress(
+                KeyCode.OEM_2 /* forward slash */, {'ctrl': true, 'alt': true});
           });
 
       // Create a mapping between categories from CommandStore, and our

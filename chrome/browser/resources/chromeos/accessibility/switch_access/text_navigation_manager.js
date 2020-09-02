@@ -77,7 +77,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.HOME, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.HOME, {ctrl: true});
   }
 
   /**
@@ -89,7 +89,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.END, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.END, {ctrl: true});
   }
 
   /**
@@ -102,7 +102,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.LEFT_ARROW);
+    EventGenerator.sendKeyPress(KeyCode.LEFT);
   }
 
   /**
@@ -116,7 +116,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.LEFT_ARROW, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.LEFT, {ctrl: true});
   }
 
   /**
@@ -129,7 +129,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.DOWN_ARROW);
+    EventGenerator.sendKeyPress(KeyCode.DOWN);
   }
 
   /**
@@ -142,7 +142,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.RIGHT_ARROW);
+    EventGenerator.sendKeyPress(KeyCode.RIGHT);
   }
 
   /**
@@ -156,7 +156,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.RIGHT_ARROW, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true});
   }
 
   /**
@@ -169,7 +169,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.UP_ARROW);
+    EventGenerator.sendKeyPress(KeyCode.UP);
   }
 
   /**
@@ -185,7 +185,7 @@ class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.DOWN_ARROW);
+    EventGenerator.sendKeyPress(KeyCode.DOWN);
   }
 
   /** @return {boolean} */

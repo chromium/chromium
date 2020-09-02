@@ -9,6 +9,7 @@
 goog.provide('GestureCommandHandler');
 
 goog.require('CommandHandler');
+goog.require('EventGenerator');
 goog.require('EventSourceState');
 goog.require('GestureCommandData');
 goog.require('PointerHandler');
@@ -67,7 +68,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
          range.start.node.root.docUrl.indexOf(
              chrome.extension.getURL('chromevox/panel/panel.html')) == 0)) {
       const key = commandData.menuKeyOverride;
-      BackgroundKeyboardHandler.sendKeyPress(key.keyCode, key.modifiers);
+      EventGenerator.sendKeyPress(key.keyCode, key.modifiers);
       return;
     }
   }

@@ -28,6 +28,8 @@ chromevox_modules = [
   "../common/automation_predicate.js",
   "../common/automation_util.js",
   "../common/constants.js",
+  "../common/event_generator.js",
+  "../common/key_code.js",
   "../common/tree_walker.js",
   "background/annotation/node_identifier.js",
   "background/annotation/user_annotation_handler.js",

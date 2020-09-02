@@ -8,9 +8,10 @@
 
 goog.provide('BrailleCommandHandler');
 
+goog.require('EventGenerator');
 goog.require('EventSourceState');
-goog.require('BackgroundKeyboardHandler');
 goog.require('DesktopAutomationHandler');
+goog.require('KeyCode');
 
 goog.scope(function() {
 const RoleType = chrome.automation.RoleType;
@@ -170,26 +171,26 @@ BrailleCommandHandler.onEditCommand_ = function(command) {
   const isMultiline = AutomationPredicate.multiline(current.start.node);
   switch (command) {
     case 'forceClickOnCurrentItem':
-      BackgroundKeyboardHandler.sendKeyPress(13);
+      EventGenerator.sendKeyPress(KeyCode.RETURN);
       break;
     case 'previousCharacter':
-      BackgroundKeyboardHandler.sendKeyPress(37);
+      EventGenerator.sendKeyPress(KeyCode.LEFT);
       break;
     case 'nextCharacter':
-      BackgroundKeyboardHandler.sendKeyPress(39);
+      EventGenerator.sendKeyPress(KeyCode.RIGHT);
       break;
     case 'previousWord':
-      BackgroundKeyboardHandler.sendKeyPress(37, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.LEFT, {ctrl: true});
       break;
     case 'nextWord':
-      BackgroundKeyboardHandler.sendKeyPress(39, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true});
       break;
     case 'previousObject':
     case 'previousLine':
       if (!isMultiline || textEditHandler.isSelectionOnFirstLine()) {
         return true;
       }
-      BackgroundKeyboardHandler.sendKeyPress(38);
+      EventGenerator.sendKeyPress(KeyCode.UP);
       break;
     case 'nextObject':
     case 'nextLine':
@@ -202,13 +203,13 @@ BrailleCommandHandler.onEditCommand_ = function(command) {
         return false;
       }
 
-      BackgroundKeyboardHandler.sendKeyPress(40);
+      EventGenerator.sendKeyPress(KeyCode.DOWN);
       break;
     case 'previousGroup':
-      BackgroundKeyboardHandler.sendKeyPress(38, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.UP, {ctrl: true});
       break;
     case 'nextGroup':
-      BackgroundKeyboardHandler.sendKeyPress(40, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.DOWN, {ctrl: true});
       break;
     default:
       return true;

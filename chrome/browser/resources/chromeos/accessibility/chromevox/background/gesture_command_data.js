@@ -5,14 +5,16 @@
 goog.provide('GestureCommandData');
 goog.provide('GestureGranularity');
 
+goog.require('KeyCode');
+
 /**
  * Map from gesture names (ax::mojom::Gesture defined in
  *     ui/accessibility/ax_enums.mojom.)  to commands.
  * @type {!Object<string,
  *     {
  *     msgId: string,
- *     command: (string|undefined),
- *     menuKeyOverride: ({keyCode: number, modifiers: ({ctrl:
+ *     command: string,
+ *     menuKeyOverride: ({keyCode: KeyCode, modifiers: ({ctrl:
  * boolean}|undefined)}|undefined)
  *    }>}
  * @const
@@ -22,22 +24,22 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
   'swipeUp1': {
     msgId: 'swipeup1_gesture',
     command: 'previousAtGranularity',
-    menuKeyOverride: {keyCode: 38 /* up */}
+    menuKeyOverride: {keyCode: KeyCode.UP}
   },
   'swipeDown1': {
     msgId: 'swipedown1_gesture',
     command: 'nextAtGranularity',
-    menuKeyOverride: {keyCode: 40 /* Down */}
+    menuKeyOverride: {keyCode: KeyCode.DOWN}
   },
   'swipeLeft1': {
     msgId: 'swipeleft1_gesture',
     command: 'previousObject',
-    menuKeyOverride: {keyCode: 37 /* left */}
+    menuKeyOverride: {keyCode: KeyCode.LEFT}
   },
   'swipeRight1': {
     msgId: 'swiperight1_gesture',
     command: 'nextObject',
-    menuKeyOverride: {keyCode: 39 /* right */}
+    menuKeyOverride: {keyCode: KeyCode.RIGHT}
   },
   'swipeUp2': {msgId: 'swipeup2_gesture', command: 'jumpToTop'},
   'swipeDown2': {msgId: 'swipedown2_gesture', command: 'readFromHere'},

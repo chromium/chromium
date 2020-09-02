@@ -15,6 +15,7 @@ goog.provide('BrailleDisplayState');
 goog.provide('BrailleKeyCommand');
 goog.provide('BrailleKeyEvent');
 
+goog.require('KeyCode');
 
 /**
  * The set of commands sent from a braille display.
@@ -68,7 +69,7 @@ BrailleKeyEvent = {};
  * NOTE: Only the key codes produced by the brailleDisplayPrivate API are
  * supported.
  * @param {string} code DOM level 4 key code.
- * @return {number|undefined} The numeric key code, or {@code undefined}
+ * @return {KeyCode|undefined} The numeric key code, or {@code undefined}
  *     if unknown.
  */
 BrailleKeyEvent.keyCodeToLegacyCode = function(code) {
@@ -175,41 +176,44 @@ BrailleKeyEvent.brailleDotsToModifiers = {
 
 /**
  * Map from DOM level 4 key codes to legacy numeric key codes.
- * @private {Object<number>}
+ * @private {Object<KeyCode>}
  */
 BrailleKeyEvent.legacyKeyCodeMap_ = {
-  'Backspace': 8,
-  'Tab': 9,
-  'Enter': 13,
-  'Escape': 27,
-  'Home': 36,
-  'ArrowLeft': 37,
-  'ArrowUp': 38,
-  'ArrowRight': 39,
-  'ArrowDown': 40,
-  'PageUp': 33,
-  'PageDown': 34,
-  'End': 35,
-  'Insert': 45,
-  'Delete': 46,
-  'AudioVolumeDown': 174,
-  'AudioVolumeUp': 175
+  'Backspace': KeyCode.BACK,
+  'Tab': KeyCode.TAB,
+  'Enter': KeyCode.RETURN,
+  'Escape': KeyCode.ESCAPE,
+  'Home': KeyCode.HOME,
+  'ArrowLeft': KeyCode.LEFT,
+  'ArrowUp': KeyCode.UP,
+  'ArrowRight': KeyCode.RIGHT,
+  'ArrowDown': KeyCode.DOWN,
+  'PageUp': KeyCode.PRIOR,
+  'PageDown': KeyCode.NEXT,
+  'End': KeyCode.END,
+  'Insert': KeyCode.INSERT,
+  'Delete': KeyCode.DELETE,
+  'AudioVolumeDown': KeyCode.VOLUME_DOWN,
+  'AudioVolumeUp': KeyCode.VOLUME_UP
 };
 
 (function() {
 // Add 0-9.
 for (let i = '0'.charCodeAt(0); i < '9'.charCodeAt(0); ++i) {
-  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] = i;
+  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] =
+      /** @type {KeyCode} */ (i);
 }
 
 // Add A-Z.
 for (let i = 'A'.charCodeAt(0); i < 'Z'.charCodeAt(0); ++i) {
-  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] = i;
+  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] =
+      /** @type {KeyCode} */ (i);
 }
 
 // Add the F1 to F12 keys.
 for (let i = 0; i < 12; ++i) {
-  BrailleKeyEvent.legacyKeyCodeMap_['F' + (i + 1)] = 112 + i;
+  BrailleKeyEvent.legacyKeyCodeMap_['F' + (i + 1)] =
+      /** @type {KeyCode} */ (112 + i);
 }
 })();
 

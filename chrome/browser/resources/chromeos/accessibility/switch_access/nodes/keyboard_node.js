@@ -48,7 +48,7 @@ class KeyboardNode extends NodeWrapper {
     // doDefault() does nothing on Virtual Keyboard buttons, so we must
     // simulate a mouse click.
     const center = RectUtil.center(keyLocation);
-    EventHelper.simulateMouseClick(
+    EventGenerator.sendMouseClick(
         center.x, center.y, SAConstants.VK_KEY_PRESS_DURATION_MS);
 
     return SAConstants.ActionResponse.CLOSE_MENU;

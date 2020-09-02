@@ -86,13 +86,13 @@ class EditableTextNode extends NodeWrapper {
         return SAConstants.ActionResponse.OPEN_TEXT_NAVIGATION_MENU;
 
       case SwitchAccessMenuAction.CUT:
-        EventHelper.simulateKeyPress(EventHelper.KeyCode.X, {ctrl: true});
+        EventGenerator.sendKeyPress(KeyCode.X, {ctrl: true});
         return SAConstants.ActionResponse.REMAIN_OPEN;
       case SwitchAccessMenuAction.COPY:
-        EventHelper.simulateKeyPress(EventHelper.KeyCode.C, {ctrl: true});
+        EventGenerator.sendKeyPress(KeyCode.C, {ctrl: true});
         return SAConstants.ActionResponse.REMAIN_OPEN;
       case SwitchAccessMenuAction.PASTE:
-        EventHelper.simulateKeyPress(EventHelper.KeyCode.V, {ctrl: true});
+        EventGenerator.sendKeyPress(KeyCode.V, {ctrl: true});
         return SAConstants.ActionResponse.REMAIN_OPEN;
 
       case SwitchAccessMenuAction.START_TEXT_SELECTION:

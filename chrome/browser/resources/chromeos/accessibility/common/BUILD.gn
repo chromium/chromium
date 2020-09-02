@@ -29,7 +29,9 @@ run_jsbundler("accessibility_common_copied_files") {
     "automation_util.js",
     "closure_shim.js",
     "constants.js",
+    "event_generator.js",
     "event_handler.js",
+    "key_code.js",
     "rect_util.js",
     "repeated_event_handler.js",
     "repeated_tree_change_handler.js",
@@ -82,8 +84,16 @@ js_library("automation_util") {
   ]
 }
 
+js_library("event_generator") {
+  deps = [ ":key_code" ]
+  externs_list = [ "$externs_path/accessibility_private.js" ]
+}
+
 js_library("event_handler") {
   externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("key_code") {
 }
 
 js_library("rect_util") {
@@ -128,6 +138,7 @@ js2gtest("accessibility_tests") {
   sources = [
     "array_util_test.js",
     "automation_util_test.js",
+    "event_generator_test.js",
     "repeated_event_handler_test.js",
     "repeated_tree_change_handler_test.js",
     "tree_walker_test.js",

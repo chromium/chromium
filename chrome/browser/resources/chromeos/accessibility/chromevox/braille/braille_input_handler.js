@@ -13,6 +13,7 @@ goog.provide('BrailleInputHandler');
 goog.require('StringUtil');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
+goog.require('EventGenerator');
 goog.require('ExpandingBrailleTranslator');
 
 BrailleInputHandler = class {
@@ -408,19 +409,11 @@ BrailleInputHandler = class {
         if (!goog.isDef(numericCode)) {
           throw Error('Unknown key code in event: ' + JSON.stringify(event));
         }
-        const keyEvent = {
-          type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
-          keyCode: numericCode,
-          modifiers: {
-            shift: !!event.shiftKey,
-            ctrl: !!event.ctrlKey,
-            alt: !!event.altKey
-          }
-        };
-        chrome.accessibilityPrivate.sendSyntheticKeyEvent(keyEvent);
-        keyEvent.type =
-            chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP;
-        chrome.accessibilityPrivate.sendSyntheticKeyEvent(keyEvent);
+        EventGenerator.sendKeyPress(numericCode, {
+          shift: !!event.shiftKey,
+          ctrl: !!event.ctrlKey,
+          alt: !!event.altKey
+        });
       });
     }
 };

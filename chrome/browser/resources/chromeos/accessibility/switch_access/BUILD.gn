@@ -29,7 +29,6 @@ run_jsbundler("switch_access_copied_files") {
     "background.js",
     "cache.js",
     "commands.js",
-    "event_helper.js",
     "focus_ring_manager.js",
     "history.js",
     "icons/back.svg",
@@ -138,7 +137,6 @@ js_type_check("closure_compile") {
     ":commands",
     ":desktop_node",
     ":editable_text_node",
-    ":event_helper",
     ":focus_ring_manager",
     ":group_node",
     ":history",
@@ -160,6 +158,8 @@ js_type_check("closure_compile") {
     "../common:automation_predicate",
     "../common:closure_shim",
     "../common:constants",
+    "../common:event_generator",
+    "../common:key_code",
     "../common:rect_util",
     "../common:repeated_event_handler",
     "../common:repeated_tree_change_handler",
@@ -196,9 +196,10 @@ js_library("cache") {
 js_library("combo_box_node") {
   sources = [ "nodes/combo_box_node.js" ]
   deps = [
-    ":event_helper",
     ":node_wrapper",
     ":switch_access_constants",
+    "../common:event_generator",
+    "../common:key_code",
   ]
   externs_list = []
 }
@@ -229,10 +230,6 @@ js_library("editable_text_node") {
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
   ]
-}
-
-js_library("event_helper") {
-  externs_list = [ "$externs_path/accessibility_private.js" ]
 }
 
 js_library("focus_ring_manager") {
@@ -273,13 +270,13 @@ js_library("history") {
 js_library("keyboard_node") {
   sources = [ "nodes/keyboard_node.js" ]
   deps = [
-    ":event_helper",
     ":group_node",
     ":node_wrapper",
     ":switch_access_constants",
     ":switch_access_node",
     ":switch_access_predicate",
     "../common:constants",
+    "../common:event_generator",
     "../common:rect_util",
     "../common:tree_walker",
   ]
@@ -309,10 +306,11 @@ js_library("metrics") {
 js_library("modal_dialog_node") {
   sources = [ "nodes/modal_dialog_node.js" ]
   deps = [
-    ":event_helper",
     ":node_wrapper",
     ":switch_access_constants",
     ":switch_access_node",
+    "../common:event_generator",
+    "../common:key_code",
   ]
   externs_list = [ "$externs_path/automation.js" ]
 }
@@ -367,9 +365,10 @@ js_library("preferences") {
 js_library("slider_node") {
   sources = [ "nodes/slider_node.js" ]
   deps = [
-    ":event_helper",
     ":node_wrapper",
     ":switch_access_constants",
+    "../common:event_generator",
+    "../common:key_code",
   ]
   externs_list = [ "$externs_path/automation.js" ]
 }
@@ -427,7 +426,10 @@ js_library("tab_node") {
 }
 
 js_library("text_navigation_manager") {
-  deps = [ ":event_helper" ]
+  deps = [
+    "../common:event_generator",
+    "../common:key_code",
+  ]
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",

@@ -59,10 +59,10 @@ class ComboBoxNode extends NodeWrapper {
     // arrows.
     switch (action) {
       case SwitchAccessMenuAction.DECREMENT:
-        EventHelper.simulateKeyPress(EventHelper.KeyCode.UP_ARROW);
+        EventGenerator.sendKeyPress(KeyCode.UP);
         return SAConstants.ActionResponse.REMAIN_OPEN;
       case SwitchAccessMenuAction.INCREMENT:
-        EventHelper.simulateKeyPress(EventHelper.KeyCode.DOWN_ARROW);
+        EventGenerator.sendKeyPress(KeyCode.DOWN);
         return SAConstants.ActionResponse.REMAIN_OPEN;
     }
     return super.performAction(action);

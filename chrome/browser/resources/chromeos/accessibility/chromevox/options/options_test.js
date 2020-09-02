@@ -46,7 +46,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
 
   press(keyCode, modifiers) {
     return function() {
-      BackgroundKeyboardHandler.sendKeyPress(keyCode, modifiers);
+      EventGenerator.sendKeyPress(keyCode, modifiers);
     };
   }
 };

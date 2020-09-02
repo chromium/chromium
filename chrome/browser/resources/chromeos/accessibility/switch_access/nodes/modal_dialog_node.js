@@ -7,7 +7,7 @@ class ModalDialogRootNode extends RootNodeWrapper {
   /** @override */
   onExit() {
     // To close a modal dialog, we need to send an escape key event.
-    EventHelper.simulateKeyPress(EventHelper.KeyCode.ESC);
+    EventGenerator.sendKeyPress(KeyCode.ESCAPE);
   }
 
   /**
