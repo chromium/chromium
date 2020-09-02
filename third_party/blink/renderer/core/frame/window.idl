@@ -73,12 +73,9 @@
     [Custom, NotEnumerable, CrossOrigin] getter object (DOMString name);
 
     // the user agent
-    // includes an older version of originIsolated (originIsolationRestricted) to avoid breakage during origin trial
-    // TODO(https://crbug.com/1103866): remove the originIsolationRestricted alias before shipping
     [Affects=Nothing, LogActivity=GetterOnly] readonly attribute Navigator navigator;
     [LogActivity=GetterOnly, SecureContext, RuntimeEnabled=AppCache] readonly attribute ApplicationCache applicationCache;
     [RuntimeEnabled=OriginIsolationHeader] readonly attribute boolean originIsolated;
-    [RuntimeEnabled=OriginIsolationHeader, ImplementedAs=originIsolated] readonly attribute boolean originIsolationRestricted;
 
     // user prompts
     [Measure, CallWith=ScriptState] void alert();

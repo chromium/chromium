@@ -11949,7 +11949,6 @@ interface webkitURL
     getter opener
     getter origin
     getter originIsolated
-    getter originIsolationRestricted
     getter originPolicyIds
     getter outerHeight
     getter outerWidth
