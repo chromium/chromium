@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ui {
 
@@ -81,6 +82,12 @@ ImageModel ImageModel::FromImage(const gfx::Image& image) {
 // static
 ImageModel ImageModel::FromImageSkia(const gfx::ImageSkia& image_skia) {
   return ImageModel(image_skia);
+}
+
+// static
+ImageModel ImageModel::FromResourceId(int resource_id) {
+  return ImageModel::FromImage(
+      ResourceBundle::GetSharedInstance().GetImageNamed(resource_id));
 }
 
 bool ImageModel::IsEmpty() const {

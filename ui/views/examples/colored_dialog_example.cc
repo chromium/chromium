@@ -64,8 +64,9 @@ class TextVectorImageButton : public views::MdTextButton {
     views::MdTextButton::OnThemeChanged();
 
     // Use the text color for the associated vector image.
-    SetImage(views::Button::ButtonState::STATE_NORMAL,
-             gfx::CreateVectorIcon(icon_, label()->GetEnabledColor()));
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(icon_, label()->GetEnabledColor()));
   }
 
  private:

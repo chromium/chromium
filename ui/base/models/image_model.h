@@ -88,6 +88,7 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
                                    int icon_size = 0);
   static ImageModel FromImage(const gfx::Image& image);
   static ImageModel FromImageSkia(const gfx::ImageSkia& image_skia);
+  static ImageModel FromResourceId(int resource_id);
 
   bool IsEmpty() const;
   bool IsVectorIcon() const;

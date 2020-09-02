@@ -89,11 +89,11 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
               ? kLongText
               : label_button->GetText().length() > 50 ? kLabelButton : ""));
     } else if (event.IsAltDown()) {
-      label_button->SetImage(
+      label_button->SetImageModel(
           Button::STATE_NORMAL,
           label_button->GetImage(Button::STATE_NORMAL).isNull()
-              ? *icon_
-              : gfx::ImageSkia());
+              ? ui::ImageModel::FromImageSkia(*icon_)
+              : ui::ImageModel());
     } else {
       static int alignment = 0;
       label_button->SetHorizontalAlignment(

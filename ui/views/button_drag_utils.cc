@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/gfx/canvas.h"
@@ -65,12 +66,11 @@ void SetDragImage(const GURL& url,
   }
   button.SetMaxSize(gfx::Size(kLinkDragImageMaxWidth, 0));
   if (icon.isNull()) {
-    button.SetImage(views::Button::STATE_NORMAL,
-                    *ui::ResourceBundle::GetSharedInstance()
-                         .GetImageNamed(IDR_DEFAULT_FAVICON)
-                         .ToImageSkia());
+    button.SetImageModel(views::Button::STATE_NORMAL,
+                         ui::ImageModel::FromResourceId(IDR_DEFAULT_FAVICON));
   } else {
-    button.SetImage(views::Button::STATE_NORMAL, icon);
+    button.SetImageModel(views::Button::STATE_NORMAL,
+                         ui::ImageModel::FromImageSkia(icon));
   }
 
   gfx::Size size(button.GetPreferredSize());
