@@ -310,6 +310,7 @@ if (enable_pdf) {
       "pdfium/pdfium_test_base.h",
       "ppapi_migration/geometry_conversions_unittest.cc",
       "range_set_unittest.cc",
+      "test/run_all_unittests.cc",
     ]
 
     configs += [
@@ -328,7 +329,6 @@ if (enable_pdf) {
       ":pdf_test_utils",
       ":ppapi_migration",
       "//base",
-      "//base/test:run_all_unittests",
       "//base/test:test_support",
       "//gin",
       "//ppapi/c",
@@ -337,6 +337,7 @@ if (enable_pdf) {
       "//skia",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/blink/public:blink",
       "//third_party/pdfium",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
