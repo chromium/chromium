@@ -403,7 +403,7 @@ void AccessibilityTreeFormatterBase::RecursiveFormatAccessibilityTree(
     return;
 
   std::string indent = std::string(depth * kIndentSymbolCount, kIndentSymbol);
-  std::string line = indent + base::UTF16ToUTF8(ProcessTreeForOutput(dict));
+  std::string line = indent + ProcessTreeForOutput(dict);
   if (line.find(kSkipString) != std::string::npos)
     return;
 
@@ -525,14 +525,14 @@ std::string AccessibilityTreeFormatterBase::FormatRectangle(
 
 bool AccessibilityTreeFormatterBase::WriteAttribute(bool include_by_default,
                                                     const std::string& attr,
-                                                    base::string16* line) {
+                                                    std::string* line) {
   if (attr.empty())
     return false;
   if (!MatchesPropertyFilters(attr, include_by_default))
     return false;
   if (!line->empty())
-    *line += base::ASCIIToUTF16(" ");
-  *line += base::UTF8ToUTF16(attr);
+    *line += " ";
+  *line += attr;
   return true;
 }
 

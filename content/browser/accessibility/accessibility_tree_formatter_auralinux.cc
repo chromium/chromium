@@ -38,7 +38,7 @@ class AccessibilityTreeFormatterAuraLinux
   const std::string GetDenyNodeString() override;
   const std::string GetRunUntilEventString() override;
 
-  base::string16 ProcessTreeForOutput(
+  std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) override;
 
@@ -614,14 +614,14 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "xml-roles",
 };
 
-base::string16 AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
+std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
     const base::DictionaryValue& node,
     base::DictionaryValue* filtered_dict_result) {
-  base::string16 error_value;
+  std::string error_value;
   if (node.GetString("error", &error_value))
     return error_value;
 
-  base::string16 line;
+  std::string line;
   std::string role_value;
   node.GetString("role", &role_value);
   if (!role_value.empty()) {

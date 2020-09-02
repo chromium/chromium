@@ -112,7 +112,7 @@ class AccessibilityTreeFormatterAndroid
   void AddProperties(const BrowserAccessibility& node,
                      base::DictionaryValue* dict) const;
 
-  base::string16 ProcessTreeForOutput(
+  std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) override;
 };
@@ -268,14 +268,14 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("action_scroll_right", android_node->CanScrollRight());
 }
 
-base::string16 AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
+std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
     const base::DictionaryValue& dict,
     base::DictionaryValue* filtered_dict_result) {
-  base::string16 error_value;
+  std::string error_value;
   if (dict.GetString("error", &error_value))
     return error_value;
 
-  base::string16 line;
+  std::string line;
   if (show_ids()) {
     int id_value;
     dict.GetInteger("id", &id_value);

@@ -168,7 +168,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   // - Returns a filtered text view as one large string.
   // - Provides a filtered version of the dictionary in an out param,
   //   (only if the out param is provided).
-  virtual base::string16 ProcessTreeForOutput(
+  virtual std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) = 0;
 
@@ -193,7 +193,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   // Returns false if the attribute was filtered out.
   bool WriteAttribute(bool include_by_default,
                       const std::string& attr,
-                      base::string16* line);
+                      std::string* line);
   void AddPropertyFilter(std::vector<PropertyFilter>* property_filters,
                          std::string filter,
                          PropertyFilter::Type type = PropertyFilter::ALLOW);

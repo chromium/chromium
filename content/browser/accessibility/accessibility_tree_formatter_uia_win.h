@@ -101,16 +101,16 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   const std::string GetDenyString() override;
   const std::string GetDenyNodeString() override;
   const std::string GetRunUntilEventString() override;
-  base::string16 ProcessTreeForOutput(
+  std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_result = nullptr) override;
   void ProcessPropertyForOutput(const std::string& property_name,
                                 const base::DictionaryValue& dict,
-                                base::string16& line,
+                                std::string& line,
                                 base::DictionaryValue* filtered_result);
   void ProcessValueForOutput(const std::string& name,
                              const base::Value* value,
-                             base::string16& line,
+                             std::string& line,
                              base::DictionaryValue* filtered_result);
   Microsoft::WRL::ComPtr<IUIAutomation> uia_;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> element_cache_request_;

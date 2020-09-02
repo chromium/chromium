@@ -96,7 +96,7 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
                                  base::DictionaryValue* dict);
   void AddIA2ValueProperties(const Microsoft::WRL::ComPtr<IAccessible>,
                              base::DictionaryValue* dict);
-  base::string16 ProcessTreeForOutput(
+  std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) override;
 };
@@ -913,10 +913,10 @@ void AccessibilityTreeFormatterWin::AddIA2ValueProperties(
   }
 }
 
-base::string16 AccessibilityTreeFormatterWin::ProcessTreeForOutput(
+std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
     const base::DictionaryValue& dict,
     base::DictionaryValue* filtered_dict_result) {
-  base::string16 line;
+  std::string line;
 
   // Always show role, and show it first.
   std::string role_value;

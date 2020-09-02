@@ -102,7 +102,7 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
 
   std::string NodeToLineIndex(id, const LineIndexesMap&) const;
 
-  base::string16 ProcessTreeForOutput(
+  std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) override;
 
@@ -390,14 +390,14 @@ std::string AccessibilityTreeFormatterMac::NodeToLineIndex(
   return kConstValuePrefix + line_indexes_map.IndexBy(cocoa_node);
 }
 
-base::string16 AccessibilityTreeFormatterMac::ProcessTreeForOutput(
+std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
     const base::DictionaryValue& dict,
     base::DictionaryValue* filtered_dict_result) {
-  base::string16 error_value;
+  std::string error_value;
   if (dict.GetString("error", &error_value))
     return error_value;
 
-  base::string16 line;
+  std::string line;
 
   // AXRole and AXSubrole have own formatting and should be listed upfront.
   std::string role_attr = SysNSStringToUTF8(NSAccessibilityRoleAttribute);

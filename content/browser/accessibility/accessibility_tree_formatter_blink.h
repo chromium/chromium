@@ -54,7 +54,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   void AddProperties(const BrowserAccessibility& node,
                      base::DictionaryValue* dict) const;
 
-  base::string16 ProcessTreeForOutput(
+  std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) override;
 };

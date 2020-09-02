@@ -36,8 +36,8 @@
 
 namespace {
 
-base::string16 UiaIdentifierToCondensedString16(int32_t id) {
-  base::string16 identifier = content::UiaIdentifierToString(id);
+std::string UiaIdentifierToCondensedString(int32_t id) {
+  std::string identifier = content::UiaIdentifierToStringUTF8(id);
   if (id >= UIA_RuntimeIdPropertyId && id <= UIA_HeadingLevelPropertyId) {
     // remove leading 'UIA_' and trailing 'PropertyId'
     return identifier.substr(4, identifier.size() - 14);
@@ -47,10 +47,6 @@ base::string16 UiaIdentifierToCondensedString16(int32_t id) {
     return identifier.substr(4, identifier.size() - 17);
   }
   return identifier;
-}
-
-std::string UiaIdentifierToCondensedString(int32_t id) {
-  return base::UTF16ToUTF8(UiaIdentifierToCondensedString16(id));
 }
 
 }  // namespace
@@ -880,7 +876,7 @@ void AccessibilityTreeFormatterUia::WriteI4Property(
   switch (propertyId) {
     case UIA_ControlTypePropertyId:
       dict->SetString(UiaIdentifierToCondensedString(propertyId),
-                      UiaIdentifierToCondensedString16(lval));
+                      UiaIdentifierToCondensedString(lval));
       break;
     case UIA_OrientationPropertyId:
       dict->SetString(UiaIdentifierToCondensedString(propertyId),
@@ -1024,11 +1020,11 @@ void AccessibilityTreeFormatterUia::BuildCacheRequests() {
   }
 }
 
-base::string16 AccessibilityTreeFormatterUia::ProcessTreeForOutput(
+std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
     const base::DictionaryValue& dict,
     base::DictionaryValue* filtered_result) {
   std::unique_ptr<base::DictionaryValue> tree;
-  base::string16 line;
+  std::string line;
 
   // Always show control type, and show it first.
   std::string control_type_value;
@@ -1088,7 +1084,7 @@ base::string16 AccessibilityTreeFormatterUia::ProcessTreeForOutput(
 void AccessibilityTreeFormatterUia::ProcessPropertyForOutput(
     const std::string& property_name,
     const base::DictionaryValue& dict,
-    base::string16& line,
+    std::string& line,
     base::DictionaryValue* filtered_result) {
   //
   const base::Value* value;
@@ -1099,7 +1095,7 @@ void AccessibilityTreeFormatterUia::ProcessPropertyForOutput(
 void AccessibilityTreeFormatterUia::ProcessValueForOutput(
     const std::string& name,
     const base::Value* value,
-    base::string16& line,
+    std::string& line,
     base::DictionaryValue* filtered_result) {
   switch (value->type()) {
     case base::Value::Type::STRING: {
