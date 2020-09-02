@@ -95,6 +95,9 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
   HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
       BOOL* available) override {
     DCHECK(is_bound_);
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
     return is_user_verifying_platform_authenticator_available_(available);
   }
 
