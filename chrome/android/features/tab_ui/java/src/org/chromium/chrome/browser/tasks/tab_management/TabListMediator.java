@@ -567,7 +567,8 @@ class TabListMediator {
             }
         };
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+        if (mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
+                        instanceof TabGroupModelFilter) {
             mTabGroupObserver = new EmptyTabGroupModelFilterObserver() {
                 @Override
                 public void didMoveWithinGroup(
@@ -695,6 +696,13 @@ class TabListMediator {
                 public void didCreateGroup(
                         List<Tab> tabs, List<Integer> tabOriginalIndex, boolean isSameGroup) {}
             };
+
+            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                     false))
+                    .addTabGroupObserver(mTabGroupObserver);
+            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                     true))
+                    .addTabGroupObserver(mTabGroupObserver);
         }
 
         // TODO(meiliang): follow up with unit tests to test the close signal is sent correctly with
@@ -757,17 +765,6 @@ class TabListMediator {
     public void initWithNative(Profile profile) {
         mTabListFaviconProvider.initWithNative(profile);
         mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
-
-        if (mTabGroupObserver != null) {
-            assert mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
-                            instanceof TabGroupModelFilter;
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     false))
-                    .addTabGroupObserver(mTabGroupObserver);
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     true))
-                    .addTabGroupObserver(mTabGroupObserver);
-        }
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
             mTabGroupTitleEditor = new TabGroupTitleEditor(mTabModelSelector) {
