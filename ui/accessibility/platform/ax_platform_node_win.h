@@ -295,6 +295,10 @@ enum {
 #define WIN_ACCESSIBILITY_API_HISTOGRAM(enum_value) \
   UMA_HISTOGRAM_ENUMERATION("Accessibility.WinAPIs", enum_value, UMA_API_MAX)
 
+#define WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(enum_value) \
+  SCOPED_UMA_HISTOGRAM_SHORT_TIMER(                      \
+      "Accessibility.Performance.WinAPIs." #enum_value)
+
 //
 // Macros to use at the top of any AXPlatformNodeWin (or derived class) method
 // that implements a UIA COM interface. The error code UIA_E_ELEMENTNOTAVAILABLE

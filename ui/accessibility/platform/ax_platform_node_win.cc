@@ -3795,6 +3795,7 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
     NavigateDirection direction,
     IRawElementProviderFragment** element_provider) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_NAVIGATE);
+  WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_NAVIGATE);
   UIA_VALIDATE_CALL_1_ARG(element_provider);
 
   *element_provider = nullptr;
@@ -3939,6 +3940,8 @@ IFACEMETHODIMP AXPlatformNodeWin::GetRuntimeId(SAFEARRAY** runtime_id) {
 IFACEMETHODIMP AXPlatformNodeWin::get_BoundingRectangle(
     UiaRect* screen_physical_pixel_bounds) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_BOUNDINGRECTANGLE);
+  WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_GET_BOUNDINGRECTANGLE);
+
   UIA_VALIDATE_CALL_1_ARG(screen_physical_pixel_bounds);
 
   gfx::Rect bounds =
@@ -3999,6 +4002,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_FragmentRoot(
 IFACEMETHODIMP AXPlatformNodeWin::GetPatternProvider(PATTERNID pattern_id,
                                                      IUnknown** result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_PATTERN_PROVIDER);
+  WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_GET_PATTERN_PROVIDER);
   return GetPatternProviderImpl(pattern_id, result);
 }
 
@@ -4019,6 +4023,7 @@ HRESULT AXPlatformNodeWin::GetPatternProviderImpl(PATTERNID pattern_id,
 IFACEMETHODIMP AXPlatformNodeWin::GetPropertyValue(PROPERTYID property_id,
                                                    VARIANT* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_PROPERTY_VALUE);
+  WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_GET_PROPERTY_VALUE);
 
   constexpr LONG kFirstKnownUiaPropertyId = UIA_RuntimeIdPropertyId;
   constexpr LONG kLastKnownUiaPropertyId = UIA_IsDialogPropertyId;

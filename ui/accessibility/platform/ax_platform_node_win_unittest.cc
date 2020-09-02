@@ -4014,6 +4014,8 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValue_Histogram) {
     root_node->GetPropertyValue(UIA_NamePropertyId, property_value.Receive());
     histogram_tester.ExpectUniqueSample(
         "Accessibility.WinAPIs.GetPropertyValue", UIA_NamePropertyId, 1);
+    histogram_tester.ExpectTotalCount(
+        "Accessibility.Performance.WinAPIs.UMA_API_GET_PROPERTY_VALUE", 1);
   }
 
   // Collapse unknown property IDs to zero
@@ -4023,6 +4025,8 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValue_Histogram) {
     root_node->GetPropertyValue(42, property_value.Receive());
     histogram_tester.ExpectUniqueSample(
         "Accessibility.WinAPIs.GetPropertyValue", 0, 1);
+    histogram_tester.ExpectTotalCount(
+        "Accessibility.Performance.WinAPIs.UMA_API_GET_PROPERTY_VALUE", 1);
   }
 }
 

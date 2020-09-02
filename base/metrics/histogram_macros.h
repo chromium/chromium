@@ -283,15 +283,28 @@
 //     SCOPED_UMA_HISTOGRAM_TIMER("Component.FunctionTime");
 //     ...
 //   }
-#define SCOPED_UMA_HISTOGRAM_TIMER(name)                                       \
-  INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER(name, false, __COUNTER__)
+enum class ScopedHistogramTiming {
+  kMicrosecondTimes,
+  kMediumTimes,
+  kLongTimes
+};
+#define SCOPED_UMA_HISTOGRAM_TIMER(name)        \
+  INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER( \
+      name, ScopedHistogramTiming::kMediumTimes, __COUNTER__)
 
 // Similar scoped histogram timer, but this uses UMA_HISTOGRAM_LONG_TIMES_100,
 // which measures up to an hour, and uses 100 buckets. This is more expensive
 // to store, so only use if this often takes >10 seconds.
-#define SCOPED_UMA_HISTOGRAM_LONG_TIMER(name)                                  \
-  INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER(name, true, __COUNTER__)
+#define SCOPED_UMA_HISTOGRAM_LONG_TIMER(name)   \
+  INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER( \
+      name, ScopedHistogramTiming::kLongTimes, __COUNTER__)
 
+// Similar scoped histogram timer, but this uses
+// UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES, measuring from 1 microseconds to 1
+// second, with 50 buckets.
+#define SCOPED_UMA_HISTOGRAM_SHORT_TIMER(name)  \
+  INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER( \
+      name, ScopedHistogramTiming::kMicrosecondTimes, __COUNTER__)
 
 //------------------------------------------------------------------------------
 // Memory histograms.
