@@ -89,7 +89,12 @@ Polymer({
     },
   },
 
-  /** @private {nearbyShare.mojom.ShareTargetListenerCallbackRouter} */
+  listeners: {
+    'view-enter-start': 'onViewEnterStart_',
+    'view-exit-finish': 'onViewExitFinish_',
+  },
+
+  /** @private {?nearbyShare.mojom.ShareTargetListenerCallbackRouter} */
   mojoEventTarget_: null,
 
   /** @private {Array<number>} */
@@ -107,26 +112,7 @@ Polymer({
   /** @override */
   attached() {
     this.shareTargetMap_ = new Map();
-
-    this.mojoEventTarget_ =
-        new nearbyShare.mojom.ShareTargetListenerCallbackRouter();
-
-    this.listenerIds_ = [
-      this.mojoEventTarget_.onShareTargetDiscovered.addListener(
-          this.onShareTargetDiscovered_.bind(this)),
-      this.mojoEventTarget_.onShareTargetLost.addListener(
-          this.onShareTargetLost_.bind(this)),
-    ];
-
-    // TODO(knollr): Only do this when the discovery page is actually shown.
-    getDiscoveryManager()
-        .startDiscovery(this.mojoEventTarget_.$.bindNewPipeAndPassRemote())
-        .then(response => {
-          if (!response.success) {
-            // TODO(crbug.com/1123934): Show error.
-            return;
-          }
-        });
+    this.clearShareTargets_();
 
     // This is a required work around to get the iron-list to display on first
     // view. Currently iron-list won't generate item elements on attach if the
@@ -147,10 +133,67 @@ Polymer({
 
   /** @override */
   detached() {
+    this.stopDiscovery_();
+    this.resizeObserver_.disconnect();
+  },
+
+  /** @private */
+  onViewEnterStart_() {
+    this.startDiscovery_();
+  },
+
+  /** @private */
+  onViewExitFinish_() {
+    this.stopDiscovery_();
+  },
+
+  /** @private */
+  startDiscovery_() {
+    if (this.mojoEventTarget_) {
+      return;
+    }
+
+    this.clearShareTargets_();
+
+    this.mojoEventTarget_ =
+        new nearbyShare.mojom.ShareTargetListenerCallbackRouter();
+
+    this.listenerIds_ = [
+      this.mojoEventTarget_.onShareTargetDiscovered.addListener(
+          this.onShareTargetDiscovered_.bind(this)),
+      this.mojoEventTarget_.onShareTargetLost.addListener(
+          this.onShareTargetLost_.bind(this)),
+    ];
+
+    getDiscoveryManager()
+        .startDiscovery(this.mojoEventTarget_.$.bindNewPipeAndPassRemote())
+        .then(response => {
+          if (!response.success) {
+            // TODO(crbug.com/1123934): Show error.
+            return;
+          }
+        });
+  },
+
+  /** @private */
+  stopDiscovery_() {
+    if (!this.mojoEventTarget_) {
+      return;
+    }
+
+    this.clearShareTargets_();
     this.listenerIds_.forEach(
         id => assert(this.mojoEventTarget_.removeListener(id)));
     this.mojoEventTarget_.$.close();
-    this.resizeObserver_.disconnect();
+    this.mojoEventTarget_ = null;
+  },
+
+  /** @private */
+  clearShareTargets_() {
+    this.shareTargetMap_.clear();
+    this.lastSelectedShareTarget_ = null;
+    this.selectedShareTarget = null;
+    this.shareTargets_ = [];
   },
 
   /**

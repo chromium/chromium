@@ -55,7 +55,7 @@ suite('ShareAppTest', function() {
       assertEquals(null, shareAppElement.$$('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
-      await waitAfterNextRender();
+      await waitAfterNextRender(shareAppElement);
       assertTrue(isPageActive('discovery'));
     });
   });
@@ -72,7 +72,7 @@ suite('ShareAppTest', function() {
       assertEquals(null, shareAppElement.$$('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
-      await waitAfterNextRender();
+      await waitAfterNextRender(shareAppElement);
       assertTrue(isPageActive('onboarding'));
     });
 
@@ -81,7 +81,7 @@ suite('ShareAppTest', function() {
       assertEquals(null, shareAppElement.$$('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
-      await waitAfterNextRender();
+      await waitAfterNextRender(shareAppElement);
       assertTrue(isPageActive('onboarding'));
 
       shareAppElement.fire('change-page', {page: 'discovery'});
