@@ -172,6 +172,13 @@ def main():
                             default='.',
                             help='Directory to save chartjson to.')
 
+  # Accepted to conform to the isolated script interface, but ignored.
+  argparser.add_argument('--isolated-script-test-filter',
+                         help=argparse.SUPPRESS)
+  argparser.add_argument('--isolated-script-test-perf-output',
+                         type=os.path.realpath,
+                         help=argparse.SUPPRESS)
+
   output_group.add_argument(
       '--isolated-script-test-output',
       type=os.path.realpath,
