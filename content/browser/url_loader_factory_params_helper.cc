@@ -46,7 +46,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     bool allow_universal_access_from_file_urls,
     bool is_for_isolated_world,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
-    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy) {
+    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+    base::StringPiece debug_tag) {
   DCHECK(process);
 
   // "chrome-guest://..." is never used as a main or isolated world origin.
@@ -90,6 +91,12 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
       params.get());
 
   params->cookie_observer = std::move(cookie_observer);
+
+  if (params->debug_tag.empty())
+    params->debug_tag = std::string(debug_tag);
+  else
+    params->debug_tag = std::string(debug_tag) + ": " + params->debug_tag;
+
   return params;
 }
 
@@ -104,7 +111,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     RenderProcessHost* process,
-    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy) {
+    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+    base::StringPiece debug_tag) {
   return CreateParams(
       process,
       frame_origin,  // origin
@@ -116,7 +124,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
           ->GetOrCreateWebPreferences()
           .allow_universal_access_from_file_urls,
       false,  // is_for_isolated_world
-      frame->CreateCookieAccessObserver(), trust_token_redemption_policy);
+      frame->CreateCookieAccessObserver(), trust_token_redemption_policy,
+      debug_tag);
 }
 
 // static
@@ -127,19 +136,20 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
     const url::Origin& main_world_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
     network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy) {
-  return CreateParams(
-      frame->GetProcess(),
-      isolated_world_origin,  // origin
-      main_world_origin,      // request_initiator_origin_lock
-      false,                  // is_trusted
-      frame->GetTopFrameToken(), frame->GetIsolationInfoForSubresources(),
-      std::move(client_security_state),
-      mojo::NullRemote(),  // coep_reporter
-      WebContents::FromRenderFrameHost(frame)
-          ->GetOrCreateWebPreferences()
-          .allow_universal_access_from_file_urls,
-      true,  // is_for_isolated_world
-      frame->CreateCookieAccessObserver(), trust_token_redemption_policy);
+  return CreateParams(frame->GetProcess(),
+                      isolated_world_origin,  // origin
+                      main_world_origin,      // request_initiator_origin_lock
+                      false,                  // is_trusted
+                      frame->GetTopFrameToken(),
+                      frame->GetIsolationInfoForSubresources(),
+                      std::move(client_security_state),
+                      mojo::NullRemote(),  // coep_reporter
+                      WebContents::FromRenderFrameHost(frame)
+                          ->GetOrCreateWebPreferences()
+                          .allow_universal_access_from_file_urls,
+                      true,  // is_for_isolated_world
+                      frame->CreateCookieAccessObserver(),
+                      trust_token_redemption_policy, "CreateForIsolatedWorld");
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
@@ -163,7 +173,8 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
                           .allow_universal_access_from_file_urls,
                       false,  // is_for_isolated_world
                       frame->CreateCookieAccessObserver(),
-                      network::mojom::TrustTokenRedemptionPolicy::kForbid);
+                      network::mojom::TrustTokenRedemptionPolicy::kForbid,
+                      "CreateForPrefetch");
 }
 
 // static
@@ -173,7 +184,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
     const url::Origin& request_initiator,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter) {
+        coep_reporter,
+    base::StringPiece debug_tag) {
   return CreateParams(
       process,
       request_initiator,  // origin
@@ -191,7 +203,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       // false in non-Document contexts, no worker should ever
       // execute a trust token redemption or signing operation,
       // as these operations require the Feature Policy feature.
-      network::mojom::TrustTokenRedemptionPolicy::kForbid);
+      network::mojom::TrustTokenRedemptionPolicy::kForbid, debug_tag);
 }
 
 // static
@@ -223,7 +235,8 @@ URLLoaderFactoryParamsHelper::CreateForRendererProcess(
       mojo::NullRemote(),  // coep_reporter
       false,               // allow_universal_access_from_file_urls
       false,               // is_for_isolated_world
-      mojo::NullRemote(), network::mojom::TrustTokenRedemptionPolicy::kForbid);
+      mojo::NullRemote(), network::mojom::TrustTokenRedemptionPolicy::kForbid,
+      "CreateForRendererProcess");
 }
 
 }  // namespace content

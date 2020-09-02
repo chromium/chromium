@@ -715,6 +715,10 @@ struct URLLoaderFactoryParams {
   // trusted source, it would be good to set this depending on the headers'
   // values, too.
   TrustTokenRedemptionPolicy trust_token_redemption_policy = kPotentiallyPermit;
+
+  // TODO(lukasza): https://crbug.com/1056949: Remove this diagnostic aid once
+  // the bug is understood.
+  string debug_tag = "<uninitialized>";
 };
 
 // The |credentials| output parameter is given to URLRequest::SetAuth()

@@ -1222,7 +1222,8 @@ EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
           net::IsolationInfo::Create(
               net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
               net::SiteForCookies::FromOrigin(origin)),
-          std::move(coep_reporter));
+          std::move(coep_reporter),
+          "EmbeddedWorkerInstance::CreateFactoryBundlesOnUI");
   bool bypass_redirect_checks = false;
 
   DCHECK(factory_type ==

@@ -280,7 +280,9 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
           net::IsolationInfo::Create(
               net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
               net::SiteForCookies::FromOrigin(origin)),
-          /*coep_reporter=*/mojo::NullRemote());
+          /*coep_reporter=*/mojo::NullRemote(),
+          /*debug_tag=*/
+          "SharedWorkerHost::CreateNetworkFactoryForSubresources");
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       worker_process_host_->GetBrowserContext(),
       /*frame=*/nullptr, worker_process_host_->GetID(),

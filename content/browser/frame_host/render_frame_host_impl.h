@@ -29,6 +29,7 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -2127,7 +2128,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy);
+      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+      base::StringPiece debug_tag);
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|
   // and sets a connection error handler to trigger

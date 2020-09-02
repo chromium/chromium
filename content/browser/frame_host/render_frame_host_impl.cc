@@ -1535,7 +1535,8 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
           last_committed_origin_,
           mojo::Clone(last_committed_client_security_state_),
           std::move(coep_reporter_remote),
-          DetermineAfterCommitWhetherToForbidTrustTokenRedemption(this)),
+          DetermineAfterCommitWhetherToForbidTrustTokenRedemption(this),
+          "RFHI::CreateNetworkServiceDefaultFactory"),
       std::move(default_factory_receiver));
 }
 
@@ -6167,7 +6168,8 @@ void RenderFrameHostImpl::CommitNavigation(
                   std::move(coep_reporter_remote),
                   DetermineWhetherToForbidTrustTokenRedemption(
                       GetParent(), *commit_params,
-                      main_world_origin_for_url_loader_factory)),
+                      main_world_origin_for_url_loader_factory),
+                  "RFHI::CommitNavigation"),
               pending_default_factory.InitWithNewPipeAndPassReceiver());
       subresource_loader_factories->set_bypass_redirect_checks(
           bypass_redirect_checks);
@@ -6458,7 +6460,8 @@ void RenderFrameHostImpl::FailedNavigation(
           error_page_origin,
           mojo::Clone(navigation_request->client_security_state()),
           /*coep_reporter=*/mojo::NullRemote(),
-          network::mojom::TrustTokenRedemptionPolicy::kForbid),
+          network::mojom::TrustTokenRedemptionPolicy::kForbid,
+          "RFHI::FailedNavigation"),
       default_factory_remote.InitWithNewPipeAndPassReceiver());
   subresource_loader_factories =
       std::make_unique<blink::PendingURLLoaderFactoryBundle>(
@@ -7067,10 +7070,12 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
-    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy) {
+    network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+    base::StringPiece debug_tag) {
   return URLLoaderFactoryParamsHelper::CreateForFrame(
       this, main_world_origin, std::move(client_security_state),
-      std::move(coep_reporter), GetProcess(), trust_token_redemption_policy);
+      std::move(coep_reporter), GetProcess(), trust_token_redemption_policy,
+      debug_tag);
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
@@ -7091,6 +7096,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
     network::mojom::URLLoaderFactoryParamsPtr monitoring_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
     monitoring_factory_params->process_id = GetProcess()->GetID();
+    monitoring_factory_params->debug_tag = "RFHI - monitoring_factory_params";
 
     // This factory should never be used to issue actual requests (i.e. it
     // should only be used to monitor for Network Service crashes).  Below is an
