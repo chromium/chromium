@@ -17,6 +17,7 @@
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../router.html">
@@ -56,7 +57,8 @@
         <cr-button id="changeSystemLanguage"
             on-click="onChangeSystemLanguageClick_"
             aria-label="[[getChangeSystemLanguageButtonDescription_(
-              languages.prospectiveUILanguage)]]">
+              languages.prospectiveUILanguage)]]"
+            deep-link-focus-id$="[[Setting.kChangeSystemLanguage]]">
           $i18n{changeSystemLanguageLabel}
         </cr-button>
       </div>
@@ -86,7 +88,8 @@
           <div class="list-item">
             <cr-button id="addLanguages"
                 disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
-                on-click="onAddLanguagesClick_">
+                on-click="onAddLanguagesClick_"
+                deep-link-focus-id$="[[Setting.kAddLanguage]]">
               <iron-icon id="addLanguagesIcon" icon="cr:add"></iron-icon>
               $i18n{addLanguages}
             </cr-button>
@@ -98,7 +101,8 @@
           pref="{{prefs.translate.enabled}}"
           label="$i18n{offerTranslationLabel}"
           sub-label="$i18n{offerTranslationSublabel}"
-          on-settings-boolean-control-change="onTranslateToggleChange_">
+          on-settings-boolean-control-change="onTranslateToggleChange_"
+          deep-link-focus-id$="[[Setting.kOfferTranslation]]">
       </settings-toggle-button>
 
       <cr-lazy-render id="menu">

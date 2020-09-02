@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getFakeLanguagePrefs} from '../fake_language_settings_private.m.js'
@@ -13,6 +13,8 @@
 // #import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.m.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {fakeDataBind} from '../../test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 cr.define('os_languages_page_tests', function() {
@@ -22,6 +24,7 @@ cr.define('os_languages_page_tests', function() {
     LanguageMenu: 'language menu',
     InputMethods: 'input methods',
     RecordMetrics: 'records metrics',
+    DetailsPage: 'details page',
   };
 
   suite('languages page', function() {
@@ -96,6 +99,7 @@ cr.define('os_languages_page_tests', function() {
 
     teardown(function() {
       PolymerTest.clearBody();
+      settings.Router.getInstance().resetRouteForTesting();
     });
 
     suite(TestNames.LanguageMenu, function() {
@@ -345,6 +349,28 @@ cr.define('os_languages_page_tests', function() {
         assertEquals(
             router.getQueryParameters().get('id'),
             '_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng');
+      });
+    });
+
+    suite(TestNames.DetailsPage, function() {
+      test('Deep link to show input options in shelf', async () => {
+        loadTimeData.overrideValues({
+          isDeepLinkingEnabled: true,
+        });
+
+        const params = new URLSearchParams;
+        params.append('settingId', '1201');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.OS_LANGUAGES_DETAILS, params);
+
+        Polymer.dom.flush();
+
+        const deepLinkElement =
+            languagesPage.$$('#showImeMenu').$$('cr-toggle');
+        await test_util.waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            'Show input options toggle should be focused for settingId=1201.');
       });
     });
 

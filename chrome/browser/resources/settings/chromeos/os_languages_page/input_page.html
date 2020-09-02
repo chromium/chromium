@@ -10,6 +10,7 @@
 <link rel="import" href="input_method_util.html">
 <link rel="import" href="languages_metrics_proxy.html">
 <link rel="import" href="remove_input_method_dialog.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
@@ -62,7 +63,8 @@
           class="first" id="showImeMenu"
           pref="{{prefs.settings.language.ime_menu_activated}}"
           label="$i18n{showImeMenu}"
-          on-settings-boolean-control-change="onShowImeMenuChange_">
+          on-settings-boolean-control-change="onShowImeMenuChange_"
+          deep-link-focus-id$="[[Setting.kShowInputOptionsInShelf]]">
       </settings-toggle-button>
 
       <div class="hr bottom-margin">
@@ -110,7 +112,8 @@
             </div>
           </template>
           <div class="list-item">
-            <cr-button id="addInputMethod" on-click="onAddInputMethodClick_">
+            <cr-button id="addInputMethod" on-click="onAddInputMethodClick_"
+                deep-link-focus-id$="[[Setting.kAddInputMethod]]">
               <iron-icon icon="cr:add"></iron-icon>
               $i18n{addInputMethodLabel}
             </cr-button>
@@ -122,7 +125,8 @@
           sub-label="[[getSpellCheckSubLabel_(spellCheckLanguages_)]]"
           pref="{{prefs.browser.enable_spellchecking}}"
           disabled="[[!spellCheckLanguages_.length]]"
-          on-settings-boolean-control-change="onSpellcheckToggleChange_">
+          on-settings-boolean-control-change="onSpellcheckToggleChange_"
+          deep-link-focus-id$="[[Setting.kSpellCheck]]">
       </settings-toggle-button>
     </div>
 

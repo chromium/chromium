@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getFakeLanguagePrefs} from '../fake_language_settings_private.m.js'
 // #import {FakeSettingsPrivate} from '../fake_settings_private.m.js';
@@ -12,6 +12,8 @@
 // #import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.m.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {fakeDataBind} from '../../test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('input page', () => {
@@ -62,6 +64,10 @@ suite('input page', () => {
       test_util.fakeDataBind(settingsLanguages, inputPage, 'language-helper');
       document.body.appendChild(inputPage);
     });
+  });
+
+  teardown(function() {
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   suite('input method list', () => {
@@ -130,6 +136,28 @@ suite('input page', () => {
       assertTrue(
           items[0].querySelector('.display-name').textContent.trim() !==
           inputMethodName);
+    });
+  });
+
+  suite('input page', () => {
+    test('Deep link to spell check', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1207');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.OS_LANGUAGES_INPUT, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement =
+          inputPage.$$('#enableSpellcheckingToggle').$$('cr-toggle');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Spell check toggle should be focused for settingId=1207.');
     });
   });
 

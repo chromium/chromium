@@ -11,8 +11,10 @@ Polymer({
   is: 'os-settings-smart-inputs-page',
 
   behaviors: [
+    DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
+    settings.RouteObserverBehavior,
   ],
 
   properties: {
@@ -36,7 +38,32 @@ Polymer({
       value() {
         return loadTimeData.getBoolean('allowEmojiSuggestion');
       },
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kShowPersonalInformationSuggestions,
+        chromeos.settings.mojom.Setting.kShowEmojiSuggestions,
+      ]),
+    },
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.OS_LANGUAGES_SMART_INPUTS) {
+      return;
     }
+
+    this.attemptDeepLink();
   },
 
   /**

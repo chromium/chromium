@@ -1560,6 +1560,10 @@ TEST_F('OSSettingsLanguagesPageTest', 'RecordMetrics', function() {
   mocha.grep(assert(os_languages_page_tests.TestNames.RecordMetrics)).run();
 });
 
+TEST_F('OSSettingsLanguagesPageTest', 'DetailsPage', function() {
+  mocha.grep(assert(os_languages_page_tests.TestNames.DetailsPage)).run();
+});
+
 // eslint-disable-next-line no-var
 var OSSettingsLanguagesPageV2Test = class extends OSSettingsBrowserTest {
   /** @override */
@@ -1604,6 +1608,7 @@ var OSSettingsSmartInputsPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'smart_inputs_page_test.js',
     ]);
   }

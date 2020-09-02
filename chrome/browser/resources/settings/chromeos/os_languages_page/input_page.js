@@ -10,8 +10,10 @@ Polymer({
   is: 'os-settings-input-page',
 
   behaviors: [
+    DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
+    settings.RouteObserverBehavior,
   ],
 
   properties: {
@@ -59,6 +61,19 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kShowInputOptionsInShelf,
+        chromeos.settings.mojom.Setting.kAddInputMethod,
+        chromeos.settings.mojom.Setting.kSpellCheck,
+      ]),
+    },
   },
 
   /** @private {?settings.LanguagesMetricsProxy} */
@@ -68,6 +83,19 @@ Polymer({
   created() {
     this.languagesMetricsProxy_ =
         settings.LanguagesMetricsProxyImpl.getInstance();
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.OS_LANGUAGES_INPUT) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

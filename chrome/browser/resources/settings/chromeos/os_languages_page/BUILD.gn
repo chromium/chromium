@@ -58,6 +58,7 @@ js_library("input_page") {
     ":add_input_methods_dialog",
     ":input_method_util",
     ":languages_metrics_proxy",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "//ui/webui/resources/js:i18n_behavior",
@@ -100,6 +101,7 @@ js_library("os_languages_page") {
   deps = [
     ":input_method_util",
     ":languages_metrics_proxy",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
     "../..:lifetime_browser_proxy",
@@ -120,6 +122,7 @@ js_library("os_languages_page") {
 js_library("os_languages_page_v2") {
   deps = [
     ":languages_metrics_proxy",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
     "../..:router",
@@ -150,6 +153,9 @@ js_library("remove_input_method_dialog") {
 
 js_library("smart_inputs_page") {
   deps = [
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "../..:router",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:load_time_data",
   ]
@@ -213,6 +219,7 @@ js_library("input_page.m") {
     ":add_input_methods_dialog.m",
     ":input_method_util.m",
     ":languages_metrics_proxy.m",
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:i18n_setup",
     "../..:router.m",
@@ -254,6 +261,7 @@ js_library("os_languages_page.m") {
   deps = [
     ":input_method_util.m",
     ":languages_metrics_proxy.m",
+    "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:i18n_setup",
@@ -276,6 +284,7 @@ js_library("os_languages_page_v2.m") {
   deps = [
     ":input_method_util.m",
     ":languages_metrics_proxy.m",
+    "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:i18n_setup",
@@ -319,6 +328,9 @@ js_library("remove_input_method_dialog.m") {
 js_library("smart_inputs_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/smart_inputs_page.m.js" ]
   deps = [
+    "..:deep_linking_behavior.m",
+    "..:os_route.m",
+    "../..:router.m",
     "../../prefs:prefs_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

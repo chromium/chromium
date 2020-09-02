@@ -22,6 +22,7 @@
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../lifetime_browser_proxy.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../router.html">
@@ -189,7 +190,8 @@
         <div class="list-item">
           <a is="action-link" class="list-button" id="addLanguages"
               disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
-              on-click="onAddLanguagesTap_">
+              on-click="onAddLanguagesTap_"
+              deep-link-focus-id$="[[Setting.kAddLanguage]]">
             $i18n{addLanguages}
           </a>
         </div>
@@ -240,7 +242,8 @@
           class="hr" id="showImeMenu"
           pref="{{prefs.settings.language.ime_menu_activated}}"
           label="$i18n{showImeMenu}"
-          on-settings-boolean-control-change="onShowImeMenuChange_">
+          on-settings-boolean-control-change="onShowImeMenuChange_"
+          deep-link-focus-id$="[[Setting.kShowInputOptionsInShelf]]">
       </settings-toggle-button>
 
       <cr-lazy-render id="menu">

@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, LifetimeBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,6 +15,8 @@
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {fakeDataBind} from '../../test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('languages page', () => {
@@ -89,6 +91,10 @@ suite('languages page', () => {
 
     languageHelper = languagesPage.languageHelper;
     await languageHelper.whenReady();
+  });
+
+  teardown(function() {
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   suite('language menu', () => {
@@ -216,6 +222,25 @@ suite('languages page', () => {
         moveDown: false,
       });
       actionMenu.close();
+    });
+
+    test('Deep link to add language', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1200');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.OS_LANGUAGES_LANGUAGES, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = languagesPage.$$('#addLanguages');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Add language button should be focused for settingId=1200.');
     });
   });
 

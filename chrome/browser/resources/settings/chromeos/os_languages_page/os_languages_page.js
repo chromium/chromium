@@ -17,8 +17,10 @@ cr.define('settings', function() {
     is: 'os-settings-languages-page',
 
     behaviors: [
+      DeepLinkingBehavior,
       I18nBehavior,
       PrefsBehavior,
+      settings.RouteObserverBehavior,
     ],
 
     properties: {
@@ -66,6 +68,18 @@ cr.define('settings', function() {
           return loadTimeData.getBoolean('isGuest');
         },
       },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kAddLanguage,
+          chromeos.settings.mojom.Setting.kShowInputOptionsInShelf,
+        ]),
+      },
     },
 
     /** @private {?settings.LanguagesMetricsProxy} */
@@ -75,6 +89,19 @@ cr.define('settings', function() {
     created() {
       this.languagesMetricsProxy_ =
           settings.LanguagesMetricsProxyImpl.getInstance();
+    },
+
+    /**
+     * @param {!settings.Route} route
+     * @param {!settings.Route} oldRoute
+     */
+    currentRouteChanged(route, oldRoute) {
+      // Does not apply to this page.
+      if (route !== settings.routes.OS_LANGUAGES_DETAILS) {
+        return;
+      }
+
+      this.attemptDeepLink();
     },
 
     /** @private {boolean} */
