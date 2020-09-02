@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,24 +21,17 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
+// TODO(devlin): This class violates style - it shouldn't inherit from multiple
+// non-pure-virtual classes. It seems like the WebAppFrameToolbarTestMixin could
+// be a member.
 class WebAppFrameToolbarInteractiveUITest
     : public extensions::ExtensionBrowserTest,
-      public WebAppFrameToolbarTestMixin,
-      public ::testing::WithParamInterface<bool> {
- public:
-  WebAppFrameToolbarInteractiveUITest() {
-    scoped_feature_list_.InitWithFeatureState(features::kExtensionsToolbarMenu,
-                                              GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+      public WebAppFrameToolbarTestMixin {};
 
 // Verifies that for minimal-ui web apps, the toolbar keyboard focus cycles
 // among the toolbar buttons: the reload button, the extensions menu button, and
 // the app menu button, in that order.
-IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocus) {
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarInteractiveUITest, CycleFocus) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("simple_with_icon/")));
 
   const GURL app_url("https://test.org");
@@ -52,13 +42,11 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocus) {
   ui_test_utils::BrowserActivationWaiter waiter(app_browser());
   waiter.WaitForActivation();
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    // Wait for the extensions menu button to appear.
-    ExtensionsToolbarContainer* extensions_container =
-        web_app_frame_toolbar()->GetExtensionsToolbarContainer();
-    views::test::ReduceAnimationDuration(extensions_container);
-    views::test::WaitForAnimatingLayoutManager(extensions_container);
-  }
+  // Wait for the extensions menu button to appear.
+  ExtensionsToolbarContainer* extensions_container =
+      web_app_frame_toolbar()->GetExtensionsToolbarContainer();
+  views::test::ReduceAnimationDuration(extensions_container);
+  views::test::WaitForAnimatingLayoutManager(extensions_container);
 
   // Send focus to the toolbar as if the user pressed Alt+Shift+T.
   app_browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
@@ -70,11 +58,9 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocus) {
 
   // Press Tab to cycle through controls until we end up back where we started.
   // This approach is similar to ToolbarViewTest::RunToolbarCycleFocusTest().
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    focus_manager->AdvanceFocus(false);
-    EXPECT_EQ(focus_manager->GetFocusedView()->GetID(),
-              VIEW_ID_EXTENSIONS_MENU_BUTTON);
-  }
+  focus_manager->AdvanceFocus(false);
+  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(),
+            VIEW_ID_EXTENSIONS_MENU_BUTTON);
   focus_manager->AdvanceFocus(false);
   EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_APP_MENU);
   focus_manager->AdvanceFocus(false);
@@ -83,11 +69,9 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocus) {
   // Now press Shift-Tab to cycle backwards.
   focus_manager->AdvanceFocus(true);
   EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_APP_MENU);
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    focus_manager->AdvanceFocus(true);
-    EXPECT_EQ(focus_manager->GetFocusedView()->GetID(),
-              VIEW_ID_EXTENSIONS_MENU_BUTTON);
-  }
+  focus_manager->AdvanceFocus(true);
+  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(),
+            VIEW_ID_EXTENSIONS_MENU_BUTTON);
   focus_manager->AdvanceFocus(true);
   EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_RELOAD_BUTTON);
 
@@ -97,7 +81,3 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocus) {
   app_browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
   EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_BACK_BUTTON);
 }
-
-INSTANTIATE_TEST_SUITE_P(ExtensionsToolbarMenu,
-                         WebAppFrameToolbarInteractiveUITest,
-                         ::testing::Bool());

@@ -148,32 +148,26 @@ class BrowserActionApiCanvasTest : public BrowserActionApiTest {
   }
 };
 
-enum TestFlags {
-  kNone = 0,
-  kUseServiceWorker = 1,
-  kUseExtensionsMenuUi = 1 << 1,
+enum class TestVariation {
+  kUseEventPage,
+  kUseServiceWorker,
 };
 
-class BrowserActionApiLazyTest : public BrowserActionApiTest,
-                                 public testing::WithParamInterface<int> {
+class BrowserActionApiLazyTest
+    : public BrowserActionApiTest,
+      public testing::WithParamInterface<TestVariation> {
  public:
   BrowserActionApiLazyTest() {
     // Service Workers are currently only available on certain channels, so set
     // the channel for those tests.
-    if ((GetParam() & kUseServiceWorker) != 0)
+    if (GetParam() == TestVariation::kUseServiceWorker)
       current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-
-    if ((GetParam() & kUseExtensionsMenuUi) != 0) {
-      feature_list_.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kExtensionsToolbarMenu);
-    }
   }
 
   const extensions::Extension* LoadExtensionWithParamFlags(
       const base::FilePath& path) {
     int flags = kFlagEnableFileAccess;
-    if ((GetParam() & kUseServiceWorker) != 0)
+    if (GetParam() == TestVariation::kUseServiceWorker)
       flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
     return LoadExtensionWithFlags(path, flags);
   }
@@ -247,32 +241,23 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Basic) {
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Update) {
-  ASSERT_NO_FATAL_FAILURE(RunUpdateTest("browser_action/update", false))
-      << GetParam();
+  ASSERT_NO_FATAL_FAILURE(RunUpdateTest("browser_action/update", false));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, UpdateSvg) {
   // TODO(crbug.com/1064671): Service Workers currently don't support loading
   // SVG images.
-  const bool expect_failure = GetParam() & kUseServiceWorker;
+  const bool expect_failure = GetParam() == TestVariation::kUseServiceWorker;
   ASSERT_NO_FATAL_FAILURE(
-      RunUpdateTest("browser_action/update_svg", expect_failure))
-      << GetParam();
+      RunUpdateTest("browser_action/update_svg", expect_failure));
 }
 
-INSTANTIATE_TEST_SUITE_P(EventPageAndLegacyToolbar,
+INSTANTIATE_TEST_SUITE_P(EventPage,
                          BrowserActionApiLazyTest,
-                         ::testing::Values(kNone));
-INSTANTIATE_TEST_SUITE_P(EventPageAndExtensionsMenu,
+                         ::testing::Values(TestVariation::kUseEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          BrowserActionApiLazyTest,
-                         ::testing::Values(kUseExtensionsMenuUi));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndLegacyToolbar,
-                         BrowserActionApiLazyTest,
-                         ::testing::Values(kUseServiceWorker));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndExtensionsMenu,
-                         BrowserActionApiLazyTest,
-                         ::testing::Values(kUseServiceWorker |
-                                           kUseExtensionsMenuUi));
+                         ::testing::Values(TestVariation::kUseServiceWorker));
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_TRUE(RunExtensionTest("browser_action/no_icon")) << message_;
