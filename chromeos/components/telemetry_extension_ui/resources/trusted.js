@@ -355,15 +355,16 @@ class TelemetryProxy {
      * @type { !Map<!chromeos.health.mojom.CpuArchitectureEnum, !string > }
      * @const
      */
-    this.enumToCpuArch_ = new Map([
+    this.cpuArchToString_ = new Map([
       [cpuArchEnum.kUnknown, 'unknown'],
       [cpuArchEnum.kX86_64, 'x86-64'],
       [cpuArchEnum.kAArch64, 'AArch64'],
       [cpuArchEnum.kArmv7l, 'Armv7l'],
     ]);
 
-    if (this.enumToCpuArch_.size != cpuArchEnum.MAX_VALUE + 1) {
-      throw RangeError('enumToCpuArch_ does not contain all items from enum!');
+    if (this.cpuArchToString_.size != cpuArchEnum.MAX_VALUE + 1) {
+      throw RangeError(
+          'cpuArchToString_ does not contain all items from enum!');
     }
   }
 
@@ -385,10 +386,10 @@ class TelemetryProxy {
    * @return { !string }
    */
   convertCpuArch(cpuArch) {
-    if (!this.enumToCpuArch_.has(cpuArch)) {
+    if (!this.cpuArchToString_.has(cpuArch)) {
       throw TypeError(`CPU architecture '${cpuArch}' is unknown.`);
     }
-    return this.enumToCpuArch_.get(cpuArch);
+    return this.cpuArchToString_.get(cpuArch);
   }
 
   /**
