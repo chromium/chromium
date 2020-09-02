@@ -10,7 +10,7 @@
 namespace {
 
 template <typename T>
-static T LocalGetAs(const std::vector<int8_t>& data,
+static T LocalGetAs(base::span<const int8_t> data,
                     uint32_t offset,
                     size_t size) {
   const int8_t* p = data.data() + offset;
@@ -358,7 +358,7 @@ bool ProgramInfoManager::Program::GetUniformsiv(
   return false;
 }
 
-void ProgramInfoManager::Program::UpdateES2(const std::vector<int8_t>& result) {
+void ProgramInfoManager::Program::UpdateES2(base::span<const int8_t> result) {
   if (cached_es2_) {
     return;
   }
@@ -414,7 +414,7 @@ void ProgramInfoManager::Program::UpdateES2(const std::vector<int8_t>& result) {
 }
 
 void ProgramInfoManager::Program::UpdateES3UniformBlocks(
-    const std::vector<int8_t>& result) {
+    base::span<const int8_t> result) {
   if (cached_es3_uniform_blocks_) {
     return;
   }
@@ -485,7 +485,7 @@ void ProgramInfoManager::Program::UpdateES3UniformBlocks(
 }
 
 void ProgramInfoManager::Program::UpdateES3Uniformsiv(
-    const std::vector<int8_t>& result) {
+    base::span<const int8_t> result) {
   if (cached_es3_uniformsiv_) {
     return;
   }
@@ -527,7 +527,7 @@ void ProgramInfoManager::Program::UpdateES3Uniformsiv(
 }
 
 void ProgramInfoManager::Program::UpdateES3TransformFeedbackVaryings(
-    const std::vector<int8_t>& result) {
+    base::span<const int8_t> result) {
   if (cached_es3_transform_feedback_varyings_) {
     return;
   }
@@ -1059,6 +1059,37 @@ GLint ProgramInfoManager::GetProgramResourceLocation(
   return gl->GetProgramResourceLocationHelper(program, program_interface, name);
 }
 
+void ProgramInfoManager::UpdateProgramInfo(GLuint program,
+                                           base::span<const int8_t> data,
+                                           ProgramInfoType type) {
+  base::AutoLock auto_lock(lock_);
+  ProgramInfoMap::iterator it = program_infos_.find(program);
+  // It's possible that the program has been deleted already. Imagine the code
+  // snippet below:
+  //   ...
+  //   gl.linkProgram(program);
+  //   gl.deleteProgram(program);
+  //   ...
+  if (it == program_infos_.end())
+    return;
+  Program* info = &it->second;
+  switch (type) {
+    case kES2:
+      info->UpdateES2(data);
+      break;
+    case kES3UniformBlocks:
+      info->UpdateES3UniformBlocks(data);
+      break;
+    case kES3TransformFeedbackVaryings:
+      info->UpdateES3TransformFeedbackVaryings(data);
+      break;
+    case kES3Uniformsiv:
+      info->UpdateES3Uniformsiv(data);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace gles2
 }  // namespace gpu
-

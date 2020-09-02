@@ -143,6 +143,19 @@ bool IsReadbackUsage(GLenum usage) {
          usage == GL_STATIC_READ;
 }
 
+void UpdateProgramInfo(base::span<const uint8_t>& data,
+                       ProgramInfoManager* manager,
+                       ProgramInfoManager::ProgramInfoType type) {
+  DCHECK(data.size() > sizeof(cmds::GLES2ReturnProgramInfo));
+  const cmds::GLES2ReturnProgramInfo* return_program_info =
+      reinterpret_cast<const cmds::GLES2ReturnProgramInfo*>(data.data());
+  uint32_t program = return_program_info->program_client_id;
+  base::span<const int8_t> info(
+      reinterpret_cast<const int8_t*>(return_program_info->deserialized_buffer),
+      data.size() - sizeof(cmds::GLES2ReturnProgramInfo));
+  manager->UpdateProgramInfo(program, info, type);
+}
+
 }  // anonymous namespace
 
 GLES2Implementation::GLStaticState::GLStaticState() = default;
@@ -448,7 +461,31 @@ void GLES2Implementation::OnSwapBufferPresented(
 
 void GLES2Implementation::OnGpuControlReturnData(
     base::span<const uint8_t> data) {
-  NOTIMPLEMENTED();
+  DCHECK(data.size() > sizeof(cmds::GLES2ReturnDataHeader));
+  const cmds::GLES2ReturnDataHeader& gles2ReturnDataHeader =
+      *reinterpret_cast<const cmds::GLES2ReturnDataHeader*>(data.data());
+
+  switch (gles2ReturnDataHeader.return_data_type) {
+    case GLES2ReturnDataType::kES2ProgramInfo: {
+      UpdateProgramInfo(data, share_group_->program_info_manager(),
+                        ProgramInfoManager::kES2);
+    } break;
+    case GLES2ReturnDataType::kES3UniformBlocks: {
+      UpdateProgramInfo(data, share_group_->program_info_manager(),
+                        ProgramInfoManager::kES3UniformBlocks);
+    } break;
+    case GLES2ReturnDataType::kES3TransformFeedbackVaryings: {
+      UpdateProgramInfo(data, share_group_->program_info_manager(),
+                        ProgramInfoManager::kES3TransformFeedbackVaryings);
+    } break;
+    case GLES2ReturnDataType::kES3Uniforms: {
+      UpdateProgramInfo(data, share_group_->program_info_manager(),
+                        ProgramInfoManager::kES3Uniformsiv);
+    } break;
+
+    default:
+      NOTREACHED();
+  }
 }
 
 void GLES2Implementation::FreeSharedMemory(void* mem) {
