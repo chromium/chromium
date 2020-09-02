@@ -137,6 +137,17 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertEqual(port.host.environ['HOME'], '/home/user')
         self.assertFalse(port.host.filesystem.exists(temp_home_dir))
 
+    def test_xvfb_flags(self):
+        port = self.make_port()
+        port.default_child_processes = lambda: 60
+        self.assertEqual(port.xvfb_flags(),
+                         ['-screen', '0', '1280x800x24', '-ac', '-dpi', '96'])
+        port.default_child_processes = lambda: 61
+        self.assertEqual(port.xvfb_flags(), [
+            '-screen', '0', '1280x800x24', '-ac', '-dpi', '96', '-maxclients',
+            '512'
+        ])
+
     def test_setup_test_run_starts_xvfb(self):
         def run_command_fake(args):
             if args[0:2] == ['xdpyinfo', '-display']:
@@ -149,10 +160,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertIsNone(port.setup_test_run())
         self.assertEqual(port.host.executive.calls, [
             ['xdpyinfo', '-display', ':99'],
-            [
-                'Xvfb', ':99', '-screen', '0', '1280x800x24', '-ac', '-dpi',
-                '96', '-maxclients', '512'
-            ],
+            ['Xvfb', ':99'] + port.xvfb_flags(),
             ['xdpyinfo'],
         ])
         env = port.setup_environ_for_server()
@@ -171,10 +179,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertIsNone(port.setup_test_run())
         self.assertEqual(port.host.executive.calls, [
             ['xdpyinfo', '-display', ':99'],
-            [
-                'Xvfb', ':99', '-screen', '0', '1280x800x24', '-ac', '-dpi',
-                '96', '-maxclients', '512'
-            ],
+            ['Xvfb', ':99'] + port.xvfb_flags(),
             ['xdpyinfo'],
         ])
         self.assertEqual(
@@ -201,10 +206,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
                 ['xdpyinfo', '-display', ':100'],
                 ['xdpyinfo', '-display', ':101'],
                 ['xdpyinfo', '-display', ':102'],
-                [
-                    'Xvfb', ':102', '-screen', '0', '1280x800x24', '-ac',
-                    '-dpi', '96', '-maxclients', '512'
-                ],
+                ['Xvfb', ':102'] + port.xvfb_flags(),
                 ['xdpyinfo'],
             ])
         env = port.setup_environ_for_server()
@@ -229,10 +231,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertIsNone(port.setup_test_run())
         self.assertEqual(port.host.executive.calls, [
             ['xdpyinfo', '-display', ':99'],
-            [
-                'Xvfb', ':99', '-screen', '0', '1280x800x24', '-ac', '-dpi',
-                '96', '-maxclients', '512'
-            ],
+            ['Xvfb', ':99'] + port.xvfb_flags(),
             ['xdpyinfo'],
             ['xdpyinfo'],
             ['xdpyinfo'],
@@ -255,10 +254,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertEqual(port.setup_test_run(), SYS_DEPS_EXIT_STATUS)
         self.assertEqual(port.host.executive.calls, [
             ['xdpyinfo', '-display', ':99'],
-            [
-                'Xvfb', ':99', '-screen', '0', '1280x800x24', '-ac', '-dpi',
-                '96', '-maxclients', '512'
-            ],
+            ['Xvfb', ':99'] + port.xvfb_flags(),
         ] + [['xdpyinfo']] * 51)
         env = port.setup_environ_for_server()
         self.assertEqual(env['DISPLAY'], ':99')
@@ -288,10 +284,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertEqual(port.setup_test_run(), SYS_DEPS_EXIT_STATUS)
         self.assertEqual(port.host.executive.calls,
                          [['xdpyinfo', '-display', ':99'],
-                          [
-                              'Xvfb', ':99', '-screen', '0', '1280x800x24',
-                              '-ac', '-dpi', '96', '-maxclients', '512'
-                          ]])
+                          ['Xvfb', ':99'] + port.xvfb_flags()])
         self.assertLog([
             'DEBUG: Starting Xvfb with display ":99".\n',
             'CRITICAL: Failed to start Xvfb on display ":99" (xvfb retcode: 3).\n'

@@ -189,10 +189,7 @@ class LinuxPort(base.Port):
         self._xvfb_stdout = tempfile.NamedTemporaryFile(delete=False)
         self._xvfb_stderr = tempfile.NamedTemporaryFile(delete=False)
         self._xvfb_process = self.host.executive.popen(
-            [
-                'Xvfb', display, '-screen', '0', '1280x800x24', '-ac', '-dpi',
-                '96', '-maxclients', '512'
-            ],
+            ['Xvfb', display] + self.xvfb_flags(),
             stdout=self._xvfb_stdout,
             stderr=self._xvfb_stderr,
             env=env)
@@ -229,6 +226,16 @@ class LinuxPort(base.Port):
             'Failed to start Xvfb on display "%s" (xvfb retcode: %r).',
             display, retcode)
         return False
+
+    def xvfb_flags(self):
+        flags = ['-screen', '0', '1280x800x24', '-ac', '-dpi', '96']
+        # Raise the Xvfb connection limit if the default limit (256 connections)
+        # is in danger of being exceeded by 4 connections per test.
+        # This is conditional since the linux-trusty-rel build bot uses a very
+        # old version of Xvfb which does not recognise the flag.
+        if self.default_child_processes() > 60:
+            flags += ['-maxclients', '512']
+        return flags
 
     def _find_display(self):
         """Tries to find a free X display, looping if necessary."""
