@@ -786,6 +786,8 @@ if (enable_java_templates) {
     _build_config = "$target_gen_dir/${target_name}.build_config"
 
     write_build_config("$target_name$build_config_target_suffix") {
+      forward_variables_from(invoker, [ "resource_overlay" ])
+
       build_config = _build_config
       resources_zip = invoker.generated_resources_zip
       type = "android_resources"
@@ -857,6 +859,7 @@ if (enable_java_templates) {
       forward_variables_from(invoker,
                              [
                                "deps",
+                               "resource_overlay",
                                "testonly",
                              ])
       generating_target_name = ":$_generating_target_name"
@@ -886,6 +889,12 @@ if (enable_java_templates) {
   #   custom_package: java package for generated .java files.
   #   shared_resources: If true make a resource package that can be loaded by a
   #     different application at runtime to access the package's resources.
+  #   resource_overlay: Whether the resources in 'sources' should override
+  #     resources with the same name. Does not affect the behaviour of any
+  #     android_resources() deps of this target. If a target with
+  #     resource_overlay=true depends on another target with
+  #     resource_overlay=true the target with the dependency overrides the
+  #     other.
   #   r_text_file: (optional) path to pre-generated R.txt to be used when
   #     generating R.java instead of resource-based aapt-generated one.
   #   create_srcjar: If false, does not create an R.java file. Needed only for
@@ -973,6 +982,7 @@ if (enable_java_templates) {
                                "android_manifest",
                                "android_manifest_dep",
                                "custom_package",
+                               "resource_overlay",
                              ])
 
       # No package means resources override their deps.
@@ -2470,6 +2480,7 @@ if (enable_java_templates) {
                              [
                                "aapt_locale_allowlist",
                                "app_as_shared_lib",
+                               "enforce_resource_overlays",
                                "expected_android_manifest",
                                "expected_android_manifest_base",
                                "manifest_package",
@@ -3453,6 +3464,7 @@ if (enable_java_templates) {
                                "enable_jetify",
                                "enable_multidex",
                                "enable_native_mocks",
+                               "enforce_resource_overlays",
                                "expected_android_manifest",
                                "expected_android_manifest_base",
                                "expected_libs_and_assets",
@@ -3591,6 +3603,7 @@ if (enable_java_templates) {
                                "data_deps",
                                "deps",
                                "enable_multidex",
+                               "enforce_resource_overlays",
                                "expected_android_manifest",
                                "expected_android_manifest_base",
                                "generate_buildconfig_java",
@@ -4155,6 +4168,10 @@ if (enable_java_templates) {
     _strip_resources =
         defined(invoker.strip_resources) && invoker.strip_resources
 
+    # Allow 'resource_overlay' parameter even if there are no resources in order
+    # to keep the logic for generated 'android_aar_prebuilt' rules simple.
+    not_needed(invoker, [ "resource_overlay" ])
+
     _ignore_info_updates =
         defined(invoker.ignore_info_updates) && invoker.ignore_info_updates
 
@@ -4269,6 +4286,7 @@ if (enable_java_templates) {
                                  "custom_package",
                                  "create_srcjar",
                                  "deps",
+                                 "resource_overlay",
                                  "testonly",
                                  "strip_drawables",
                                ])

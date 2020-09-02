@@ -357,6 +357,11 @@ template("write_build_config") {
         rebase_path(invoker.resources_zip, root_build_dir),
       ]
     }
+
+    if (defined(invoker.resource_overlay) && invoker.resource_overlay) {
+      args += [ "--resource-overlay" ]
+    }
+
     if (defined(invoker.custom_package)) {
       args += [
         "--package-name",
@@ -2596,6 +2601,13 @@ if (enable_java_templates) {
     if (defined(invoker.shared_resources_allowlist_locales)) {
       _args += [ "--shared-resources-allowlist-locales=" +
                  "${invoker.shared_resources_allowlist_locales}" ]
+    }
+
+    if (defined(invoker.enforce_resource_overlays) &&
+        invoker.enforce_resource_overlays) {
+      _args += [ "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:deps_info:dependency_zip_overlays)" ]
+    } else {
+      _args += [ "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:deps_info:dependency_zips)" ]
     }
 
     if (defined(invoker.proguard_file)) {

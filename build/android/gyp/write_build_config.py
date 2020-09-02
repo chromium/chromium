@@ -173,6 +173,13 @@ Java package name that the R class for this target belongs to.
 Optional. Path to the top-level Android manifest file associated with these
 resources (if not provided, an empty manifest will be used to generate R.txt).
 
+* `deps_info['resource_overlay']`:
+Optional. Whether the resources in resources_zip should override resources with
+the same name. Does not affect the behaviour of any android_resources()
+dependencies of this target.  If a target with resource_overlay=true depends
+on another target with resource_overlay=true the target with the dependency
+overrides the other.
+
 * `deps_info['r_text_path']`:
 Provide the path to the `R.txt` file that describes the resources wrapped by
 this target. Normally this file is generated from the content of the resource
@@ -902,6 +909,11 @@ def main(argv):
   parser.add_option(
       '--res-sources-path',
       help='Path to file containing a list of paths to resources.')
+  parser.add_option(
+      '--resource-overlay',
+      action='store_true',
+      help='Whether resources passed in via --resources-zip should override '
+      'resources with the same name')
 
   # android_assets options
   parser.add_option('--asset-sources', help='List of asset sources.')
@@ -1349,6 +1361,8 @@ def main(argv):
 
   if options.type == 'android_resources':
     deps_info['resources_zip'] = options.resources_zip
+    if options.resource_overlay:
+      deps_info['resource_overlay'] = True
     if options.srcjar:
       deps_info['srcjar'] = options.srcjar
     if options.android_manifest:
@@ -1387,9 +1401,16 @@ def main(argv):
   if options.type in ('android_resources', 'android_apk', 'junit_binary',
                       'dist_aar', 'android_app_bundle_module', 'java_library'):
 
-    dependency_zips = [
-        c['resources_zip'] for c in all_resources_deps if c['resources_zip']
-    ]
+    dependency_zips = []
+    dependency_zip_overlays = []
+    for c in all_resources_deps:
+      if not c['resources_zip']:
+        continue
+
+      dependency_zips.append(c['resources_zip'])
+      if c.get('resource_overlay'):
+        dependency_zip_overlays.append(c['resources_zip'])
+
     extra_package_names = []
 
     if options.type != 'android_resources':
@@ -1411,6 +1432,10 @@ def main(argv):
           c for c in dependency_zips
           if c not in base_module_build_config['deps_info']['dependency_zips']
       ]
+      dependency_zip_overlays = [
+          c for c in dependency_zip_overlays if c not in
+          base_module_build_config['deps_info']['dependency_zip_overlays']
+      ]
       extra_package_names = [
           c for c in extra_package_names if c not in
           base_module_build_config['deps_info']['extra_package_names']
@@ -1429,6 +1454,7 @@ def main(argv):
       config['deps_info']['res_size_info'] = options.res_size_info
 
     config['deps_info']['dependency_zips'] = dependency_zips
+    config['deps_info']['dependency_zip_overlays'] = dependency_zip_overlays
     config['deps_info']['extra_package_names'] = extra_package_names
 
   if options.type == 'group':

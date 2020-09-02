@@ -160,6 +160,12 @@ def _ParseArgs(args):
       default='[]',
       help='GN list of globs that say which files to include even '
       'when --resource-exclusion-regex is set.')
+
+  input_opts.add_argument(
+      '--dependencies-res-zip-overlays',
+      help='GN list with subset of --dependencies-res-zips to use overlay '
+      'semantics for.')
+
   input_opts.add_argument(
       '--values-filter-rules',
       help='GN list of source_glob:regex for filtering resources after they '
@@ -242,6 +248,8 @@ def _ParseArgs(args):
       options.shared_resources_allowlist_locales)
   options.resource_exclusion_exceptions = build_utils.ParseGnList(
       options.resource_exclusion_exceptions)
+  options.dependencies_res_zip_overlays = build_utils.ParseGnList(
+      options.dependencies_res_zip_overlays)
   options.values_filter_rules = build_utils.ParseGnList(
       options.values_filter_rules)
   options.extra_main_r_text_files = build_utils.ParseGnList(
@@ -612,7 +620,8 @@ def _CreateValuesKeepPredicate(exclusion_rules, dep_subdir):
   return lambda x: not any(r.search(x) for r in regexes)
 
 
-def _CompileDeps(aapt2_path, dep_subdirs, temp_dir, exclusion_rules):
+def _CompileDeps(aapt2_path, dep_subdirs, dep_subdir_overlay_set, temp_dir,
+                 exclusion_rules):
   partials_dir = os.path.join(temp_dir, 'partials')
   build_utils.MakeDirectory(partials_dir)
 
@@ -622,11 +631,19 @@ def _CompileDeps(aapt2_path, dep_subdirs, temp_dir, exclusion_rules):
 
   # Filtering is slow, so ensure jobs with keep_predicate are started first.
   job_params.sort(key=lambda x: not x[2])
-  return list(
+  partials = list(
       parallel.BulkForkAndCall(_CompileSingleDep,
                                job_params,
                                aapt2_path=aapt2_path,
                                partials_dir=partials_dir))
+
+  partials_cmd = list()
+  for i, partial in enumerate(partials):
+    dep_subdir = job_params[i][1]
+    if dep_subdir in dep_subdir_overlay_set:
+      partials_cmd += ['-R']
+    partials_cmd += [partial]
+  return partials_cmd
 
 
 def _CreateResourceInfoFile(path_info, info_path, dependencies_res_zips):
@@ -722,8 +739,15 @@ def _PackageApk(options, build):
     The manifest package name for the APK.
   """
   logging.debug('Extracting resource .zips')
-  dep_subdirs = resource_utils.ExtractDeps(options.dependencies_res_zips,
-                                           build.deps_dir)
+  dep_subdirs = []
+  dep_subdir_overlay_set = set()
+  for dependency_res_zip in options.dependencies_res_zips:
+    extracted_dep_subdirs = resource_utils.ExtractDeps([dependency_res_zip],
+                                                       build.deps_dir)
+    dep_subdirs += extracted_dep_subdirs
+    if dependency_res_zip in options.dependencies_res_zip_overlays:
+      dep_subdir_overlay_set.update(extracted_dep_subdirs)
+
   logging.debug('Applying locale transformations')
   path_info = resource_utils.ResourceInfoFile()
   if options.support_zh_hk:
@@ -750,7 +774,8 @@ def _PackageApk(options, build):
 
   logging.debug('Running aapt2 compile')
   exclusion_rules = [x.split(':', 1) for x in options.values_filter_rules]
-  partials = _CompileDeps(options.aapt2_path, dep_subdirs, build.temp_dir,
+  partials = _CompileDeps(options.aapt2_path, dep_subdirs,
+                          dep_subdir_overlay_set, build.temp_dir,
                           exclusion_rules)
 
   link_command = [
@@ -815,8 +840,7 @@ def _PackageApk(options, build):
                          desired_manifest_package_name)
     link_command += ['--stable-ids', build.stable_ids_path]
 
-  for partial in partials:
-    link_command += ['-R', partial]
+  link_command += partials
 
   # We always create a binary arsc file first, then convert to proto, so flags
   # such as --shared-lib can be supported.
@@ -1113,6 +1137,7 @@ def main(args):
       return
 
   depfile_deps = (options.dependencies_res_zips +
+                  options.dependencies_res_zip_overlays +
                   options.extra_main_r_text_files + options.include_resources)
 
   possible_input_paths = depfile_deps + options.resources_config_paths + [

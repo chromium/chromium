@@ -217,6 +217,9 @@ if (enable_vr) {
   # resource target may clobber some resources. Once that is fixed we should add
   # the VR resurces to chrome_app_java_resources.
   android_resources("chrome_vr_java_resources") {
+    # Overrides 'gvr_vr_mode_component' in //third_party/gvr-android-sdk:gvr_common_java
+    # in tests.
+    resource_overlay = true
     sources = [
       "//chrome/android/java/res_vr/values-v17/styles.xml",
       "//chrome/android/java/res_vr/values-vrheadset-v26/styles.xml",
@@ -947,6 +950,7 @@ android_library("chrome_test_java") {
     "//base:base_java_test_support",
     "//base:jni_java",
     "//base/test:test_support_java",
+    "//build/config/android/test/resource_overlay:javatests",
     "//chrome/android:app_hooks_java",
     "//chrome/android:chrome_java",
     "//chrome/android/features/start_surface/internal:java",
@@ -1370,6 +1374,7 @@ if (enable_vr || enable_arcore) {
 
 # Overrides icon / name defined in chrome_app_java_resources.
 android_resources("chrome_public_apk_resources") {
+  resource_overlay = true
   sources = [
     "java/res_chromium/drawable-hdpi/fre_product_logo.png",
     "java/res_chromium/drawable-hdpi/product_logo_name.png",
@@ -1433,6 +1438,7 @@ jinja_template_resources("chrome_public_apk_template_resources") {
 }
 
 jinja_template_resources("chrome_test_apk_template_resources") {
+  resource_overlay = true
   resources = [
     "java/res_template/xml/file_paths.xml",
     "java/res_template/xml/launchershortcuts.xml",
@@ -1940,6 +1946,9 @@ template("chrome_public_apk_or_module_tmpl") {
                              "lint_suppressions_file",
                            ])
     deps = _chrome_public_shared_deps
+
+    enforce_resource_overlays = true
+
     if (_is_bundle_module) {
       deps += [ ":chrome_bundle_module_pak_assets" ]
     } else {
@@ -2230,6 +2239,7 @@ template("chrome_test_apk_tmpl") {
                              "android_manifest_dep",
                              "data_deps",
                              "enable_lint",
+                             "enforce_resource_overlays",
                              "shared_libraries",
                            ])
 
@@ -2352,6 +2362,7 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/android/webapk/shell_apk/javatests/dex_optimizer:dex_optimizer_apk",
     "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
   ]
+  enforce_resource_overlays = true
 }
 
 if (enable_vr) {

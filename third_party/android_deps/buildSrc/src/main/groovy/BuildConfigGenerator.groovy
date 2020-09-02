@@ -234,7 +234,7 @@ class BuildConfigGenerator extends DefaultTask {
             }
             if (dependency.testOnly) sb.append("  testonly = true\n")
             if (!depsStr.empty) sb.append("  deps = [${depsStr}]\n")
-            addSpecialTreatment(sb, dependency.id)
+            addSpecialTreatment(sb, dependency.id, dependency.extension)
 
             sb.append("}\n\n")
         }
@@ -259,7 +259,7 @@ class BuildConfigGenerator extends DefaultTask {
         return Pattern.matches(".*google.*(play_services|firebase|datatransport).*", dependencyId)
     }
 
-    private static void addSpecialTreatment(StringBuilder sb, String dependencyId) {
+    private static void addSpecialTreatment(StringBuilder sb, String dependencyId, String dependencyExtension) {
         if (isPlayServicesTarget(dependencyId)) {
             if (Pattern.matches(".*cast_framework.*", dependencyId)) {
                 sb.append('  # Removing all resources from cast framework as they are unused bloat.\n')
@@ -274,6 +274,12 @@ class BuildConfigGenerator extends DefaultTask {
             // Skip platform checks since it depends on
             // accessibility_test_framework_java which requires_android.
             sb.append('  bypass_platform_checks = true\n')
+        }
+        if (dependencyExtension == "aar" &&
+            (dependencyId.startsWith('androidx') ||
+             dependencyId.startsWith('com_android_support'))) {
+          // androidx and com_android_support libraries have duplicate resources such as 'primary_text_default_material_dark'.
+          sb.append('  resource_overlay = true\n')
         }
         switch(dependencyId) {
             case 'androidx_annotation_annotation':

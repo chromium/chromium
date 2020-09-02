@@ -22,5 +22,8 @@ android_java_prebuilt("exposed_instrumentation_api_publish_java") {
 android_aar_prebuilt("rules_java") {
   testonly = true
   aar_path = "lib/rules.aar"
+
+  # Strip 'app_name' resource.
+  strip_resources = true
   deps = [ "//third_party/android_support_test_runner:runner_java" ]
 }
