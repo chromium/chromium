@@ -42,6 +42,7 @@ cast_source_set("governor") {
     "//chromecast/base",
     "//chromecast/media/base",
     "//chromecast/media/base:slew_volume",
+    "//chromecast/media/cma/backend/mixer:post_processor_registry",
     "//chromecast/public/media",
   ]
   public_configs = [ "//chromecast/public:public_config" ]
@@ -73,6 +74,7 @@ cast_source_set("saturated_gain") {
     "//chromecast/base",
     "//chromecast/media/base",
     "//chromecast/media/base:slew_volume",
+    "//chromecast/media/cma/backend/mixer:post_processor_registry",
     "//chromecast/public/media",
   ]
   public_configs = [ "//chromecast/public:public_config" ]

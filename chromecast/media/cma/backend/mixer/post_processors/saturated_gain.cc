@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chromecast/base/serializers.h"
 #include "chromecast/media/base/slew_volume.h"
+#include "chromecast/media/cma/backend/mixer/post_processor_registry.h"
 
 namespace chromecast {
 namespace media {
@@ -67,6 +68,8 @@ void SaturatedGain::ProcessFrames(float* data, int frames, Metadata* metadata) {
 bool SaturatedGain::UpdateParameters(const std::string& message) {
   return false;
 }
+
+REGISTER_POSTPROCESSOR(SaturatedGain, "libcast_saturated_gain_2.0.so");
 
 }  // namespace media
 }  // namespace chromecast

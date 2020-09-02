@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "chromecast/media/audio/audio_log.h"
 #include "chromecast/media/cma/backend/mixer/post_processor_paths.h"
+#include "chromecast/media/cma/backend/mixer/post_processor_registry.h"
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 #include "chromecast/public/media/audio_post_processor_shlib.h"
@@ -63,6 +64,13 @@ std::unique_ptr<AudioPostProcessor2> PostProcessorFactory::CreatePostProcessor(
     const std::string& library_name,
     const std::string& config,
     int channels) {
+  std::unique_ptr<AudioPostProcessor2> builtin =
+      PostProcessorRegistry::Get()->Create(library_name, config, channels);
+  if (builtin) {
+    LOG(INFO) << "Loaded builtin " << library_name;
+    return builtin;
+  }
+
   base::FilePath path = FindLibrary(library_name);
   libraries_.push_back(std::make_unique<base::ScopedNativeLibrary>(path));
   CHECK(libraries_.back()->is_valid())

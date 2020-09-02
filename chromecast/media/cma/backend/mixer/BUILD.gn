@@ -18,6 +18,17 @@ cast_source_set("post_processor_paths") {
   deps = [ "//base" ]
 }
 
+cast_source_set("post_processor_registry") {
+  sources = [
+    "post_processor_registry.cc",
+    "post_processor_registry.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/public/media",
+  ]
+}
+
 cast_source_set("loopback") {
   sources = [
     "loopback_handler.cc",
@@ -67,6 +78,7 @@ cast_source_set("mixer") {
   deps = [
     ":loopback",
     ":post_processor_paths",
+    ":post_processor_registry",
     "//base",
     "//chromecast/base",
     "//chromecast/base:chromecast_switches",

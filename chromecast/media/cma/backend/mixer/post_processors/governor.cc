@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chromecast/base/serializers.h"
 #include "chromecast/media/base/slew_volume.h"
+#include "chromecast/media/cma/backend/mixer/post_processor_registry.h"
 
 namespace chromecast {
 namespace media {
@@ -88,6 +89,8 @@ bool Governor::UpdateParameters(const std::string& message) {
 void Governor::SetSlewTimeMsForTest(int slew_time_ms) {
   slew_volume_.SetMaxSlewTimeMs(slew_time_ms);
 }
+
+REGISTER_POSTPROCESSOR(Governor, "libcast_governor_2.0.so");
 
 }  // namespace media
 }  // namespace chromecast
