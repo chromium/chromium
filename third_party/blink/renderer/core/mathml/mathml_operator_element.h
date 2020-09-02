@@ -13,9 +13,24 @@ class ComputedStyle;
 class CSSToLengthConversionData;
 class Document;
 
+enum class MathMLOperatorDictionaryCategory : uint8_t;
+
 class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
  public:
   explicit MathMLOperatorElement(Document&);
+
+  struct OperatorContent {
+    String characters;
+    bool is_vertical = true;
+  };
+  enum OperatorPropertyFlag {
+    kStretchy = 0x1,
+    kSymmetric = 0x2,
+    kLargeOp = 0x4,
+    kMovableLimits = 0x8,
+  };
+  // Query whether given flag is set in the operator dictionary.
+  bool HasBooleanProperty(OperatorPropertyFlag);
 
   void AddMathLSpaceIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
   void AddMathRSpaceIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
@@ -23,8 +38,24 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
   void AddMathMaxSizeIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
 
  private:
-  // FIXME: add operator dictionary.
-  // FIXME: add OperatorContent struct.
+  base::Optional<OperatorContent> operator_content_;
+  const OperatorContent& GetOperatorContent();
+  // Operator properties calculated from dictionary and attributes.
+  // It contains dirty flags to allow efficient dictionary updating.
+  struct Properties {
+    MathMLOperatorDictionaryCategory dictionary_category;
+    unsigned flags : 4;
+    unsigned dirty_flags : 4;
+  };
+  Properties properties_;
+  void ComputeDictionaryCategory();
+  void ComputeOperatorProperty(OperatorPropertyFlag);
+  void SetOperatorFormDirty();
+  void ParseAttribute(const AttributeModificationParams&) final;
+  base::Optional<bool> BooleanAttribute(const QualifiedName& name) const;
+  void SetOperatorPropertyDirtyFlagIfNeeded(const AttributeModificationParams&,
+                                            const OperatorPropertyFlag&,
+                                            bool& needs_layout);
 };
 
 }  // namespace blink
