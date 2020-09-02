@@ -69572,6 +69572,8 @@ would be helpful to identify which type is being sent.
   <int value="7" label="Invalid Request"/>
   <int value="8" label="Old Version"/>
   <int value="9" label="Unexpected Version"/>
+  <int value="10" label="Capture Expired"/>
+  <int value="11" label="No Capture"/>
 </enum>
 
 <enum name="TabbedPaintPreviewExitCause">

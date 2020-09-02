@@ -252,8 +252,9 @@ TEST_F(FileManagerTest, HandleProto) {
   EXPECT_TRUE(manager->SerializePaintPreviewProto(key, original_proto, false));
   EXPECT_TRUE(base::PathExists(path.AppendASCII("proto.pb")));
   auto out_proto = manager->DeserializePaintPreviewProto(key);
-  EXPECT_NE(out_proto, nullptr);
-  EXPECT_THAT(*out_proto, EqualsProto(original_proto));
+  EXPECT_EQ(out_proto.first, FileManager::ProtoReadStatus::kOk);
+  EXPECT_NE(out_proto.second, nullptr);
+  EXPECT_THAT(*(out_proto.second), EqualsProto(original_proto));
 }
 
 TEST_F(FileManagerTest, HandleProtoCompressed) {
@@ -280,8 +281,9 @@ TEST_F(FileManagerTest, HandleProtoCompressed) {
 
   EXPECT_TRUE(base::PathExists(path.AddExtensionASCII(".zip")));
   auto out_proto = manager->DeserializePaintPreviewProto(key);
-  EXPECT_NE(out_proto, nullptr);
-  EXPECT_THAT(*out_proto, EqualsProto(original_proto));
+  EXPECT_EQ(out_proto.first, FileManager::ProtoReadStatus::kOk);
+  EXPECT_NE(out_proto.second, nullptr);
+  EXPECT_THAT(*(out_proto.second), EqualsProto(original_proto));
 
   EXPECT_TRUE(manager->CaptureExists(key));
 }
@@ -297,14 +299,19 @@ TEST_F(FileManagerTest, OldestFilesForCleanup) {
   auto key_0 = manager->CreateKey(0U);
   base::FilePath path_0 =
       manager->CreateOrGetDirectory(key_0, true).value_or(base::FilePath());
-  base::WriteFile(path_0.AppendASCII("0.txt"), data.data(), data.size());
+  auto path_0_file = path_0.AppendASCII("0.txt");
+  base::WriteFile(path_0_file, data.data(), data.size());
+  base::Time modified_time = base::Time::NowFromSystemTime();
+  base::TouchFile(path_0_file, modified_time, modified_time);
   {
-    auto to_delete = manager->GetOldestArtifactsForCleanup(0U);
+    auto to_delete = manager->GetOldestArtifactsForCleanup(
+        0U, base::TimeDelta::FromMinutes(20));
     ASSERT_EQ(to_delete.size(), 1U);
     EXPECT_EQ(to_delete[0], key_0);
   }
   {
-    auto to_delete = manager->GetOldestArtifactsForCleanup(50U);
+    auto to_delete = manager->GetOldestArtifactsForCleanup(
+        50U, base::TimeDelta::FromMinutes(20));
     EXPECT_EQ(to_delete.size(), 0U);
   }
 
@@ -313,14 +320,15 @@ TEST_F(FileManagerTest, OldestFilesForCleanup) {
       manager->CreateOrGetDirectory(key_1, true).value_or(base::FilePath());
   base::WriteFile(path_1.AppendASCII("1.txt"), data.data(), data.size());
   manager->CompressDirectory(key_1);
-  base::Time modified_time = base::Time::Now();
+  modified_time = base::Time::NowFromSystemTime();
   auto path_1_zip = path_1.AddExtensionASCII(".zip");
   base::TouchFile(path_0, modified_time - base::TimeDelta::FromSeconds(10),
                   modified_time - base::TimeDelta::FromSeconds(10));
   base::TouchFile(path_1_zip, modified_time, modified_time);
 
   {
-    auto to_delete = manager->GetOldestArtifactsForCleanup(0U);
+    auto to_delete = manager->GetOldestArtifactsForCleanup(
+        0U, base::TimeDelta::FromMinutes(20));
     ASSERT_EQ(to_delete.size(), 2U);
     // Elements should be ordered in oldest to newest.
     EXPECT_EQ(to_delete[0], key_0);
@@ -328,12 +336,14 @@ TEST_F(FileManagerTest, OldestFilesForCleanup) {
   }
   {
     // Zip is ~116 bytes.
-    auto to_delete = manager->GetOldestArtifactsForCleanup(120U);
+    auto to_delete = manager->GetOldestArtifactsForCleanup(
+        120U, base::TimeDelta::FromMinutes(20));
     ASSERT_EQ(to_delete.size(), 1U);
     EXPECT_EQ(to_delete[0], key_0);
   }
   {
-    auto to_delete = manager->GetOldestArtifactsForCleanup(150U);
+    auto to_delete = manager->GetOldestArtifactsForCleanup(
+        150U, base::TimeDelta::FromMinutes(20));
     EXPECT_EQ(to_delete.size(), 0U);
   }
 }

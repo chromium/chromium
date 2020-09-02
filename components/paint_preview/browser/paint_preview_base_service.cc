@@ -50,12 +50,51 @@ PaintPreviewBaseService::~PaintPreviewBaseService() = default;
 
 void PaintPreviewBaseService::GetCapturedPaintPreviewProto(
     const DirectoryKey& key,
+    base::Optional<base::TimeDelta> expiry_horizon,
     OnReadProtoCallback on_read_proto_callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&FileManager::DeserializePaintPreviewProto, file_manager_,
-                     key),
-      std::move(on_read_proto_callback));
+      base::BindOnce(
+          [](scoped_refptr<FileManager> file_manager, const DirectoryKey& key,
+             base::Optional<base::TimeDelta> expiry_horizon)
+              -> std::pair<PaintPreviewBaseService::ProtoReadStatus,
+                           std::unique_ptr<PaintPreviewProto>> {
+            if (expiry_horizon.has_value()) {
+              auto file_info = file_manager->GetInfo(key);
+              if (!file_info.has_value())
+                return std::make_pair(ProtoReadStatus::kNoProto, nullptr);
+
+              if (file_info->last_modified + expiry_horizon.value() <
+                  base::Time::NowFromSystemTime()) {
+                return std::make_pair(ProtoReadStatus::kExpired, nullptr);
+              }
+            }
+            auto result = file_manager->DeserializePaintPreviewProto(key);
+            PaintPreviewBaseService::ProtoReadStatus status =
+                ProtoReadStatus::kNoProto;
+            switch (result.first) {
+              case FileManager::ProtoReadStatus::kOk:
+                status = ProtoReadStatus::kOk;
+                break;
+              case FileManager::ProtoReadStatus::kNoProto:
+                status = ProtoReadStatus::kNoProto;
+                break;
+              case FileManager::ProtoReadStatus::kDeserializationError:
+                status = ProtoReadStatus::kDeserializationError;
+                break;
+              default:
+                NOTREACHED();
+            }
+            return std::make_pair(status, std::move(result.second));
+          },
+          file_manager_, key, expiry_horizon),
+      base::BindOnce(
+          [](OnReadProtoCallback callback,
+             std::pair<PaintPreviewBaseService::ProtoReadStatus,
+                       std::unique_ptr<PaintPreviewProto>> result) {
+            std::move(callback).Run(result.first, std::move(result.second));
+          },
+          std::move(on_read_proto_callback)));
 }
 
 void PaintPreviewBaseService::CapturePaintPreview(
@@ -80,14 +119,14 @@ void PaintPreviewBaseService::CapturePaintPreview(
     OnCapturedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (policy_ && !policy_->SupportedForContents(web_contents)) {
-    std::move(callback).Run(kContentUnsupported, {});
+    std::move(callback).Run(CaptureStatus::kContentUnsupported, {});
     return;
   }
 
   PaintPreviewClient::CreateForWebContents(web_contents);  // Is a singleton.
   auto* client = PaintPreviewClient::FromWebContents(web_contents);
   if (!client) {
-    std::move(callback).Run(kClientCreationFailed, {});
+    std::move(callback).Run(CaptureStatus::kClientCreationFailed, {});
     return;
   }
 
@@ -131,12 +170,12 @@ void PaintPreviewBaseService::OnCaptured(
       !result->capture_success) {
     DVLOG(1) << "ERROR: Paint Preview failed to capture for document "
              << guid.ToString() << " with error " << status;
-    std::move(callback).Run(kCaptureFailed, {});
+    std::move(callback).Run(CaptureStatus::kCaptureFailed, {});
     return;
   }
   base::UmaHistogramTimes("Browser.PaintPreview.Capture.TotalCaptureDuration",
                           base::TimeTicks::Now() - start_time);
-  std::move(callback).Run(kOk, std::move(result));
+  std::move(callback).Run(CaptureStatus::kOk, std::move(result));
 }
 
 }  // namespace paint_preview

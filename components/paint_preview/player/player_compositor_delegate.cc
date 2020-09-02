@@ -112,8 +112,9 @@ PlayerCompositorDelegate::PlayerCompositorDelegate(
                                        base::OnTaskRunnerDeleter(nullptr)) {
   if (skip_service_launch) {
     paint_preview_service_->GetCapturedPaintPreviewProto(
-        key, base::BindOnce(&PlayerCompositorDelegate::OnProtoAvailable,
-                            weak_factory_.GetWeakPtr(), expected_url));
+        key, base::nullopt,
+        base::BindOnce(&PlayerCompositorDelegate::OnProtoAvailable,
+                       weak_factory_.GetWeakPtr(), expected_url));
     return;
   }
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
@@ -179,15 +180,29 @@ void PlayerCompositorDelegate::OnCompositorClientCreated(
                                   "PlayerCompositorDelegate CreateCompositor",
                                   TRACE_ID_LOCAL(this));
   paint_preview_service_->GetCapturedPaintPreviewProto(
-      key, base::BindOnce(&PlayerCompositorDelegate::OnProtoAvailable,
-                          weak_factory_.GetWeakPtr(), expected_url));
+      key, base::nullopt,
+      base::BindOnce(&PlayerCompositorDelegate::OnProtoAvailable,
+                     weak_factory_.GetWeakPtr(), expected_url));
 }
 
 void PlayerCompositorDelegate::OnProtoAvailable(
     const GURL& expected_url,
+    PaintPreviewBaseService::ProtoReadStatus proto_status,
     std::unique_ptr<PaintPreviewProto> proto) {
-  if (!proto || !proto->IsInitialized()) {
-    // TODO(crbug.com/1021590): Handle initialization errors.
+  // TODO(crbug.com/1021590): Handle initialization errors.
+  if (proto_status == PaintPreviewBaseService::ProtoReadStatus::kExpired) {
+    OnCompositorReady(CompositorStatus::CAPTURE_EXPIRED, nullptr);
+    return;
+  }
+
+  if (proto_status == PaintPreviewBaseService::ProtoReadStatus::kNoProto) {
+    OnCompositorReady(CompositorStatus::NO_CAPTURE, nullptr);
+    return;
+  }
+
+  if (proto_status ==
+          PaintPreviewBaseService::ProtoReadStatus::kDeserializationError ||
+      !proto || !proto->IsInitialized()) {
     OnCompositorReady(CompositorStatus::PROTOBUF_DESERIALIZATION_ERROR,
                       nullptr);
     return;

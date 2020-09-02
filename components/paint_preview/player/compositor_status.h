@@ -23,6 +23,8 @@ enum class CompositorStatus : int {
   INVALID_REQUEST,
   OLD_VERSION,
   UNEXPECTED_VERSION,
+  CAPTURE_EXPIRED,
+  NO_CAPTURE,
   COUNT,
 };
 

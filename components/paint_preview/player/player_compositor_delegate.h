@@ -76,6 +76,7 @@ class PlayerCompositorDelegate {
   void OnCompositorClientDisconnected();
 
   void OnProtoAvailable(const GURL& expected_url,
+                        PaintPreviewBaseService::ProtoReadStatus proto_status,
                         std::unique_ptr<PaintPreviewProto> proto);
   void SendCompositeRequest(
       mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request);

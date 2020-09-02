@@ -41,18 +41,26 @@ namespace paint_preview {
 // - SimpleKeyedServiceFactory
 class PaintPreviewBaseService : public KeyedService {
  public:
-  enum CaptureStatus {
+  enum class CaptureStatus : int {
     kOk = 0,
     kContentUnsupported,
     kClientCreationFailed,
     kCaptureFailed,
   };
 
+  enum class ProtoReadStatus : int {
+    kOk = 0,
+    kNoProto,
+    kDeserializationError,
+    kExpired,
+  };
+
   using OnCapturedCallback =
       base::OnceCallback<void(CaptureStatus, std::unique_ptr<CaptureResult>)>;
 
   using OnReadProtoCallback =
-      base::OnceCallback<void(std::unique_ptr<PaintPreviewProto>)>;
+      base::OnceCallback<void(ProtoReadStatus,
+                              std::unique_ptr<PaintPreviewProto>)>;
 
   // Creates a service instance for a feature. Artifacts produced will live in
   // |profile_dir|/paint_preview/|ascii_feature_name|. Implementers of the
@@ -79,10 +87,15 @@ class PaintPreviewBaseService : public KeyedService {
 
   // Acquires the PaintPreviewProto that is associated with |key| and sends it
   // to |on_read_proto_callback|. The default implementation attempts to invoke
-  // GetFileManager()->DeserializePaintPreviewProto(). Derived classes may
-  // override this function; for example, the proto is cached in memory.
+  // GetFileManager()->DeserializePaintPreviewProto(). If |expiry_horizon| is
+  // provided a proto that was last modified earlier than |now - expiry_horizon|
+  // will return the kExpired status.
+  //
+  // Derived classes may override this function; for example, the proto is
+  // cached in memory.
   virtual void GetCapturedPaintPreviewProto(
       const DirectoryKey& key,
+      base::Optional<base::TimeDelta> expiry_horizon,
       OnReadProtoCallback on_read_proto_callback);
 
   // Captures need to run on the Browser UI thread! Captures may involve child
