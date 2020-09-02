@@ -269,7 +269,7 @@ def AggregateTBMv3Traces(test_result):
     proto_files = [artifacts[name]['filePath'] for name in traces]
     concatenated_path = _BuildOutputPath(
         proto_files, compute_metrics.CONCATENATED_PROTO_NAME)
-    with open(concatenated_path, 'w') as concatenated_trace:
+    with open(concatenated_path, 'wb') as concatenated_trace:
       for trace_file in proto_files:
         if trace_file.endswith('.pb.gz'):
           with gzip.open(trace_file, 'rb') as f:
