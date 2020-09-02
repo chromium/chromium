@@ -206,6 +206,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
  private:
   // The interceptor needs access to frame_host_receiver_for_testing().
   friend class RouteMessageEventInterceptor;
+  friend class OpenURLInterceptor;
 
   // IPC::Listener
   void OnAssociatedInterfaceRequest(
@@ -218,6 +219,12 @@ class CONTENT_EXPORT RenderFrameProxyHost
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>&
   frame_host_receiver_for_testing() {
     return remote_frame_host_receiver_;
+  }
+
+  // Needed for tests to be able to swap the implementation and intercept calls.
+  mojo::AssociatedReceiver<mojom::RenderFrameProxyHost>&
+  frame_proxy_host_receiver_for_testing() {
+    return frame_proxy_host_associated_receiver_;
   }
 
   // This RenderFrameProxyHost's routing id.
