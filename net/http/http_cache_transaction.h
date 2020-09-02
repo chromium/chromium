@@ -381,6 +381,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // the validation of the rest of the entry.  Returns a network error code.
   int ValidateEntryHeadersAndContinue();
 
+  // Returns whether the current externally conditionalized request's validation
+  // headers match the current cache entry's headers.
+  bool ExternallyConditionalizedValidationHeadersMatchEntry() const;
+
   // Called to start requests which were given an "if-modified-since" or
   // "if-none-match" validation header by the caller (NOT when the request was
   // conditionalized internally in response to LOAD_VALIDATE_CACHE).
