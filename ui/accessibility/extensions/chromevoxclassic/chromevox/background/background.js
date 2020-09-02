@@ -359,7 +359,7 @@ cvox.ChromeVoxBackground.prototype.addBridgeListener = function() {
       chrome.tabs.create(explorerPage);
       break;
     case 'HelpDocs':
-      var helpPage = {url: 'http://chromevox.com/tutorial/index.html'};
+      var helpPage = {url: 'https://chromevox.com/tutorial/index.html'};
       chrome.tabs.create(helpPage);
       break;
     case 'Options':
