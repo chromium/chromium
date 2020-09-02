@@ -180,10 +180,41 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
   const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
   AddCreditCard(card);
 
-  CallCanMakePayment();
+  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "buy();"));
+  WaitForObservedEvent();
   ExpectBodyContains("false");
+}
 
-  CallHasEnrolledInstrument();
+// Pages without a valid SSL certificate always get NotSupported error from
+// .show().
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest, Show_InvalidSSL) {
+  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  test_controller()->SetValidSsl(false);
+
+  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
+  AddCreditCard(card);
+
+  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "show();"));
+  WaitForObservedEvent();
+  ExpectBodyContains("NotSupportedError: Invalid SSL certificate");
+}
+
+// Pages without a valid SSL certificate always get "false" from
+// .hasEnrolledInstrument().
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
+                       HasEnrolledInstrument_InvalidSSL) {
+  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  test_controller()->SetValidSsl(false);
+
+  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
+  AddCreditCard(card);
+
+  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
+                                     "hasEnrolledInstrument();"));
+  WaitForObservedEvent();
   ExpectBodyContains("false");
 }
 
