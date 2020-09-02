@@ -1464,7 +1464,7 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
         const std::string& type_hint = response_->mime_type;
         std::string new_type;
         is_more_mime_sniffing_needed_ = !net::SniffMimeType(
-            data.data(), data.size(), url_request_->url(), type_hint,
+            data, url_request_->url(), type_hint,
             net::ForceSniffFileUrlsForHtml::kDisabled, &new_type);
         // SniffMimeType() returns false if there is not enough data to
         // determine the mime type. However, even if it returns false, it

@@ -19,6 +19,7 @@
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -668,8 +669,8 @@ class FileURLLoader : public network::mojom::URLLoader {
         !net::GetMimeTypeFromFile(full_path, &head->mime_type)) {
       std::string new_type;
       net::SniffMimeType(
-          initial_read_buffer.data(), read_result.bytes_read, request.url,
-          head->mime_type,
+          base::StringPiece(initial_read_buffer.data(), read_result.bytes_read),
+          request.url, head->mime_type,
           GetContentClient()->browser()->ForceSniffingFileUrlsForHtml()
               ? net::ForceSniffFileUrlsForHtml::kEnabled
               : net::ForceSniffFileUrlsForHtml::kDisabled,

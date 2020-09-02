@@ -59,17 +59,6 @@ NET_EXPORT bool SniffMimeType(
     ForceSniffFileUrlsForHtml force_sniff_file_url_for_html,
     std::string* result);
 
-// Older deprecated version of the above function.
-//
-// TODO(https://crbug.com/1123179): Update callers and remove this method.
-NET_EXPORT bool SniffMimeType(
-    const char* content,
-    size_t content_size,
-    const GURL& url,
-    const std::string& type_hint,
-    ForceSniffFileUrlsForHtml force_sniff_file_url_for_html,
-    std::string* result);
-
 // Attempt to identify a MIME type from the first few bytes of content only.
 // Uses a bigger set of media file searches than |SniffMimeType()|.
 // If finds a match, fills in |result| and returns true,
@@ -82,13 +71,6 @@ NET_EXPORT bool SniffMimeType(
 // |result| is address at which to place the sniffed mime type.
 // Returns true if a MIME type match was found.
 NET_EXPORT bool SniffMimeTypeFromLocalData(base::StringPiece content,
-                                           std::string* result);
-
-// Older deprecated version of the above function.
-//
-// TODO(https://crbug.com/1123179): Update callers and remove this method.
-NET_EXPORT bool SniffMimeTypeFromLocalData(const char* content,
-                                           size_t content_size,
                                            std::string* result);
 
 // Returns true if |content| contains bytes that are control codes that do

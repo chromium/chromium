@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -1029,10 +1030,11 @@ Response InterceptionJob::ProcessResponseOverride(
   if (head->mime_type.empty() && body_size) {
     size_t bytes_to_sniff =
         std::min(body_size, static_cast<size_t>(net::kMaxBytesToSniff));
-    net::SniffMimeType(body->front_as<const char>() + response_body_offset,
-                       bytes_to_sniff, create_loader_params_->request.url, "",
-                       net::ForceSniffFileUrlsForHtml::kDisabled,
-                       &head->mime_type);
+    net::SniffMimeType(
+        base::StringPiece(body->front_as<const char>() + response_body_offset,
+                          bytes_to_sniff),
+        create_loader_params_->request.url, "",
+        net::ForceSniffFileUrlsForHtml::kDisabled, &head->mime_type);
     head->did_mime_sniff = true;
   }
   // TODO(caseq): we're cheating here a bit, raw_headers() have \0's

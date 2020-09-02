@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
@@ -251,11 +252,12 @@ class ContentDirectoryURLLoader : public network::mojom::URLLoader {
     // If a MIME type wasn't specified, then fall back on inferring the type
     // from the file's contents.
     if (!mime_type) {
-      if (!net::SniffMimeType(reinterpret_cast<char*>(mmap_.data()),
-                              std::min(mmap_.length(), kMaxBytesToSniff),
-                              request.url, {} /* type_hint */,
-                              net::ForceSniffFileUrlsForHtml::kDisabled,
-                              &mime_type.emplace())) {
+      if (!net::SniffMimeType(
+              base::StringPiece(reinterpret_cast<char*>(mmap_.data()),
+                                std::min(mmap_.length(), kMaxBytesToSniff)),
+              request.url, {} /* type_hint */,
+              net::ForceSniffFileUrlsForHtml::kDisabled,
+              &mime_type.emplace())) {
         if (!mime_type) {
           // Only set the fallback type if SniffMimeType completely gave up on
           // generating a suggestion.

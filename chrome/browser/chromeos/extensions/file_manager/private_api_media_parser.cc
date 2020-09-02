@@ -66,8 +66,7 @@ void FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string mime_type;
-  if (!net::SniffMimeTypeFromLocalData(sniff_bytes->data(), sniff_bytes->size(),
-                                       &mime_type)) {
+  if (!net::SniffMimeTypeFromLocalData(*sniff_bytes, &mime_type)) {
     Respond(Error("Could not deduce the content mime type."));
     return;
   }

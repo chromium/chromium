@@ -667,8 +667,8 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string mime_type;
-  bool mime_type_sniffed = net::SniffMimeTypeFromLocalData(
-      blob_header->c_str(), blob_header->size(), &mime_type);
+  bool mime_type_sniffed =
+      net::SniffMimeTypeFromLocalData(*blob_header, &mime_type);
 
   if (!mime_type_sniffed) {
     Respond(Error("Could not determine MIME type."));

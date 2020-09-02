@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
@@ -542,7 +543,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
         // Only sniff for mime-type in the first block of the file.
         std::string type_hint;
         GetMimeType(url_, &type_hint);
-        SniffMimeType(file_data_->data(), result, url_.ToGURL(), type_hint,
+        SniffMimeType(base::StringPiece(file_data_->data(), result),
+                      url_.ToGURL(), type_hint,
                       net::ForceSniffFileUrlsForHtml::kDisabled,
                       &head_->mime_type);
         head_->did_mime_sniff = true;

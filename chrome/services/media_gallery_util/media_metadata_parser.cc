@@ -74,8 +74,7 @@ chrome::mojom::MediaMetadataPtr ParseAudioVideoMetadata(
          it != extractor.attached_images_bytes().end(); ++it) {
       attached_images->push_back(metadata::AttachedImage());
       attached_images->back().data = *it;
-      net::SniffMimeTypeFromLocalData(it->c_str(), it->length(),
-                                      &attached_images->back().type);
+      net::SniffMimeTypeFromLocalData(*it, &attached_images->back().type);
     }
   }
 #endif

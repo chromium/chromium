@@ -12,6 +12,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
@@ -39,7 +40,8 @@ base::File::Error IsMediaHeader(const char* buf, size_t length) {
     return base::File::FILE_ERROR_SECURITY;
 
   std::string mime_type;
-  if (!net::SniffMimeTypeFromLocalData(buf, length, &mime_type))
+  if (!net::SniffMimeTypeFromLocalData(base::StringPiece(buf, length),
+                                       &mime_type))
     return base::File::FILE_ERROR_SECURITY;
 
   if (base::StartsWith(mime_type, "image/", base::CompareCase::SENSITIVE) ||

@@ -320,8 +320,8 @@ TEST(ExtensionTest, MimeTypeSniffing) {
 
     std::string result;
     EXPECT_TRUE(net::SniffMimeType(
-        data.c_str(), data.size(), GURL("http://www.example.com/foo.crx"),
-        std::string(), net::ForceSniffFileUrlsForHtml::kDisabled, &result));
+        data, GURL("http://www.example.com/foo.crx"), std::string(),
+        net::ForceSniffFileUrlsForHtml::kDisabled, &result));
 
     return result;
   };
