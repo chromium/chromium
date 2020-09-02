@@ -73,10 +73,10 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderBrowserTest, NoProviderInIncognitoMode) {
   GURL url = https_server_.GetURL(test_host(), "/title1.html");
   ui_test_utils::NavigateToURL(CreateIncognitoBrowser(), url);
 
-  ASSERT_TRUE(browser()->profile()->HasOffTheRecordProfile());
+  ASSERT_TRUE(browser()->profile()->HasPrimaryOTRProfile());
 
   Profile* off_the_record_profile =
-      browser()->profile()->GetOffTheRecordProfile();
+      browser()->profile()->GetPrimaryOTRProfile();
   ASSERT_TRUE(off_the_record_profile);
 
   FlocIdProvider* incognito_floc_id_provider =

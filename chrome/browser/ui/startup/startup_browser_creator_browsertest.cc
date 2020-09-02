@@ -1961,7 +1961,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithGuest) {
   // Skips the picker and creates a new browser window for the guest profile (by
   // definition, it opens the OTR profile).
   Browser* new_browser =
-      chrome::FindBrowserWithProfile(guest_profile->GetOffTheRecordProfile());
+      chrome::FindBrowserWithProfile(guest_profile->GetPrimaryOTRProfile());
   EXPECT_TRUE(new_browser);
 }
 
@@ -1974,7 +1974,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest,
 
   // Skips the picker and creates a new browser window.
   Browser* new_browser = chrome::FindBrowserWithProfile(
-      browser()->profile()->GetOffTheRecordProfile());
+      browser()->profile()->GetPrimaryOTRProfile());
   EXPECT_TRUE(new_browser);
 }
 

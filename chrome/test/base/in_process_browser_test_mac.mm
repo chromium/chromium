@@ -31,7 +31,7 @@ Browser* InProcessBrowserTest::OpenURLOffTheRecord(Profile* profile,
   @autoreleasepool {
     chrome::OpenURLOffTheRecord(profile, url);
     Browser* browser =
-        chrome::FindTabbedBrowser(profile->GetOffTheRecordProfile(), false);
+        chrome::FindTabbedBrowser(profile->GetPrimaryOTRProfile(), false);
     content::TestNavigationObserver observer(
         browser->tab_strip_model()->GetActiveWebContents());
     observer.Wait();
@@ -61,7 +61,7 @@ Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
 
     // Create a new browser with using the incognito profile.
     Browser* incognito = new Browser(
-        Browser::CreateParams(profile->GetOffTheRecordProfile(), true));
+        Browser::CreateParams(profile->GetPrimaryOTRProfile(), true));
     AddBlankTabAndShow(incognito);
     return incognito;
   }
