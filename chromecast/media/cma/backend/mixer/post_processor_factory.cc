@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/stringprintf.h"
+#include "chromecast/media/audio/audio_log.h"
 #include "chromecast/media/cma/backend/mixer/post_processor_paths.h"
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
@@ -24,6 +25,7 @@ namespace {
 
 const char kV1SoCreateFunction[] = "AudioPostProcessorShlib_Create";
 const char kV2SoCreateFunction[] = "AudioPostProcessor2Shlib_Create";
+const char kInitLoggingFunction[] = "AudioPostProcessor2Shlib_InitLogging";
 
 base::FilePath FindLibrary(const std::string& library_name) {
   base::FilePath relative_path(library_name);
@@ -52,6 +54,8 @@ using CreatePostProcessor2Function =
 using CreatePostProcessorFunction = AudioPostProcessor* (*)(const std::string&,
                                                             int);
 
+using InitLoggingFunction = void (*)(logging::AudioLogMessage::BufferManager*);
+
 PostProcessorFactory::PostProcessorFactory() = default;
 PostProcessorFactory::~PostProcessorFactory() = default;
 
@@ -63,6 +67,12 @@ std::unique_ptr<AudioPostProcessor2> PostProcessorFactory::CreatePostProcessor(
   libraries_.push_back(std::make_unique<base::ScopedNativeLibrary>(path));
   CHECK(libraries_.back()->is_valid())
       << "Could not open post processing library " << path;
+
+  auto init_logging = reinterpret_cast<InitLoggingFunction>(
+      libraries_.back()->GetFunctionPointer(kInitLoggingFunction));
+  if (init_logging) {
+    init_logging(logging::AudioLogMessage::GetBufferManager());
+  }
 
   auto v2_create = reinterpret_cast<CreatePostProcessor2Function>(
       libraries_.back()->GetFunctionPointer(kV2SoCreateFunction));

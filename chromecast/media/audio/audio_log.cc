@@ -38,10 +38,17 @@ class AudioLogMessage::StreamBuf : public std::streambuf {
   }
 
   void Log() {
+    if (!file_) {
+      // Cancelled.
+      return;
+    }
+
     ::logging::LogMessage message(file_, line_, severity_);
     int size = pptr() - pbase();
     message.stream().write(buffer_, size);
   }
+
+  void Cancel() { file_ = nullptr; }
 
  private:
   const char* file_ = nullptr;
@@ -50,11 +57,11 @@ class AudioLogMessage::StreamBuf : public std::streambuf {
   char buffer_[kBufferSize];
 };
 
-namespace {
-
-class BufferManager {
+class AudioLogMessage::BufferManager {
  public:
   static BufferManager* Get();
+
+  void SetOwner(BufferManager* owner) { owner_ = owner; }
 
   void Setup() {
     base::AutoLock lock(lock_);
@@ -76,6 +83,10 @@ class BufferManager {
   AudioLogMessage::StreamBuf* GetBuffer(const char* file,
                                         int line,
                                         LogSeverity severity) {
+    if (owner_) {
+      return owner_->GetBuffer(file, line, severity);
+    }
+
     AudioLogMessage::StreamBuf* buffer;
     {
       base::AutoLock lock(lock_);
@@ -94,6 +105,10 @@ class BufferManager {
   void Dispose(AudioLogMessage::StreamBuf* buffer) {
     if (!buffer) {
       return;
+    }
+
+    if (owner_) {
+      return owner_->Dispose(buffer);
     }
 
     {
@@ -135,6 +150,7 @@ class BufferManager {
   }
 
   AudioLogMessage::StreamBuf buffers_[kMaxBuffers];
+  BufferManager* owner_ = nullptr;
 
   base::Lock lock_;
   bool ready_ GUARDED_BY(lock_) = false;
@@ -151,12 +167,15 @@ class BufferManager {
 };
 
 // static
-BufferManager* BufferManager::Get() {
+AudioLogMessage::BufferManager* AudioLogMessage::BufferManager::Get() {
   static base::NoDestructor<BufferManager> g_buffer_manager;
   return g_buffer_manager.get();
 }
 
-}  // namespace
+// static
+AudioLogMessage::BufferManager* AudioLogMessage::GetBufferManager() {
+  return BufferManager::Get();
+}
 
 AudioLogMessage::AudioLogMessage(const char* file,
                                  int line,
@@ -168,8 +187,16 @@ AudioLogMessage::~AudioLogMessage() {
   BufferManager::Get()->Dispose(buffer_);
 }
 
+void AudioLogMessage::Cancel() {
+  buffer_->Cancel();
+}
+
 void InitializeAudioLog() {
-  BufferManager::Get()->Setup();
+  AudioLogMessage::BufferManager::Get()->Setup();
+}
+
+void InitializeShlibAudioLog(AudioLogMessage::BufferManager* manager) {
+  AudioLogMessage::BufferManager::Get()->SetOwner(manager);
 }
 
 }  // namespace logging

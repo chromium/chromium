@@ -190,6 +190,7 @@ StreamMixer::StreamMixer(
           ExternalAudioPipelineShlib::IsSupported()),
       weak_factory_(this) {
   LOG(INFO) << __func__;
+  logging::InitializeAudioLog();
 
   volume_info_[AudioContentType::kOther].volume = 1.0f;
   volume_info_[AudioContentType::kOther].limit = 1.0f;
@@ -220,9 +221,6 @@ StreamMixer::StreamMixer(
   } else if (!io_task_runner_) {
     io_task_runner_ = mixer_task_runner_;
   }
-
-  io_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(&logging::InitializeAudioLog));
 
   if (fixed_output_sample_rate_ != MixerOutputStream::kInvalidSampleRate) {
     LOG(INFO) << "Setting fixed sample rate to " << fixed_output_sample_rate_;

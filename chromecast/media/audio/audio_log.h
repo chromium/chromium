@@ -22,7 +22,8 @@ namespace logging {
 
 class AudioLogMessage {
  public:
-  class StreamBuf;
+  class BufferManager;
+  static BufferManager* GetBufferManager();
 
   AudioLogMessage(const char* file, int line, LogSeverity severity);
   ~AudioLogMessage();
@@ -32,7 +33,12 @@ class AudioLogMessage {
 
   std::ostream& stream() { return stream_; }
 
+  // Cancels any log output for this message.
+  void Cancel();
+
  private:
+  class StreamBuf;
+
   StreamBuf* buffer_;
   std::ostream stream_;
 };
@@ -41,6 +47,11 @@ class AudioLogMessage {
 // will be done on this thread. Note that any use of AudioLogMessage prior to
 // InitializeAudioLog() will not produce any output.
 void InitializeAudioLog();
+
+// Initializes audio log with an existing buffer manager. May be called from any
+// thread (the thread that originally called InitializeAudioLog() to create the
+// buffer manager will be used for log output). Useful for logging in shlibs.
+void InitializeShlibAudioLog(AudioLogMessage::BufferManager* manager);
 
 }  // namespace logging
 
