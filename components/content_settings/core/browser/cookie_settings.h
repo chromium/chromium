@@ -140,6 +140,9 @@ class CookieSettings : public CookieSettingsBase,
 
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
+  // Returns true when the improved cookie control UI should be shown.
+  // TODO(dullweber): Fix grammar.
+  bool IsCookieControlsEnabled();
 
  private:
   ~CookieSettings() override;
@@ -169,10 +172,6 @@ class CookieSettings : public CookieSettingsBase,
                                const std::string& resource_identifier) override;
 
   void OnCookiePreferencesChanged();
-
-  // Evaluate if third-party cookies are blocked. Should only be called
-  // when the preference changes to update the internal state.
-  bool ShouldBlockThirdPartyCookiesInternal();
 
   base::ThreadChecker thread_checker_;
   base::ObserverList<Observer> observers_;
