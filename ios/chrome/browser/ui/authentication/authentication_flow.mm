@@ -142,11 +142,11 @@ NSError* IdentityMissingError() {
   [self continueSignin];
 }
 
-- (void)cancelAndDismiss {
+- (void)cancelAndDismissAnimated:(BOOL)animated {
   if (_state == DONE)
     return;
 
-  [_performer cancelAndDismiss];
+  [_performer cancelAndDismissAnimated:animated];
   if (_state != DONE) {
     // The performer might not have been able to continue the flow if it was
     // waiting for a callback (e.g. waiting for AccountReconcilor). In this

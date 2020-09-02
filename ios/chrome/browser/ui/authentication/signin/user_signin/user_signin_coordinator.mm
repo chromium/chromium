@@ -459,7 +459,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(!self.addAccountSigninCoordinator);
   DCHECK(!self.advancedSettingsSigninCoordinator);
-  [self.mediator cancelAndDismissAuthenticationFlow];
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock runCompletionCallback = ^{
     [weakSelf
@@ -473,15 +472,18 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   };
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss: {
+      [self.mediator cancelAndDismissAuthenticationFlowAnimated:NO];
       runCompletionCallback();
       break;
     }
     case SigninCoordinatorInterruptActionDismissWithAnimation: {
+      [self.mediator cancelAndDismissAuthenticationFlowAnimated:YES];
       [self.viewController dismissViewControllerAnimated:YES
                                               completion:runCompletionCallback];
       break;
     }
     case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
+      [self.mediator cancelAndDismissAuthenticationFlowAnimated:NO];
       [self.viewController dismissViewControllerAnimated:NO
                                               completion:runCompletionCallback];
       break;

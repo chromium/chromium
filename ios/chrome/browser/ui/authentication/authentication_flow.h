@@ -62,10 +62,10 @@ class Browser;
 - (void)startSignInWithCompletion:(signin_ui::CompletionCallback)completion;
 
 // Cancels the current sign-in operation (if any) and dismiss any UI presented
-// by this authentication flow. Calls the completion callback with the sign-in
-// flag set to NO.
-// Does nothing if the sign in flow is already done.
-- (void)cancelAndDismiss;
+// by this authentication flow with animation if |animated|. Calls the
+// completion callback with the sign-in flag set to NO. Does nothing if the sign
+// in flow is already done.
+- (void)cancelAndDismissAnimated:(BOOL)animated;
 
 // The dispatcher used to clear browsing data.
 @property(nonatomic, weak) id<BrowsingDataCommands> dispatcher;

@@ -27,8 +27,9 @@ class ChromeBrowserState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Cancels any outstanding work and dismisses an alert view (if shown).
-- (void)cancelAndDismiss;
+// Cancels any outstanding work and dismisses an alert view (if shown) using
+// animation if |animated| is true.
+- (void)cancelAndDismissAnimated:(BOOL)animated;
 
 // Starts sync for |browserState|.
 - (void)commitSyncForBrowserState:(ChromeBrowserState*)browserState;

@@ -236,12 +236,12 @@ TEST_F(AuthenticationFlowTest, TestCancel) {
                           browserState:browser_state_.get()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ cancelAndDismiss];
+    [authentication_flow_ cancelAndDismissAnimated:NO];
   }] promptMergeCaseForIdentity:identity1_
                         browser:browser_.get()
                  viewController:view_controller_];
 
-  [[performer_ expect] cancelAndDismiss];
+  [[performer_ expect] cancelAndDismissAnimated:NO];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 

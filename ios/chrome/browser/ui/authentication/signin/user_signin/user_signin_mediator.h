@@ -78,8 +78,9 @@ class UnifiedConsentService;
 // Reverts the sign-in operation.
 - (void)cancelSignin;
 
-// Cancels and dismisses the authentication flow if sign-in is in progress.
-- (void)cancelAndDismissAuthenticationFlow;
+// Cancels and dismisses with animation if |animated| the authentication flow
+// when sign-in is in progress.
+- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated;
 
 @end
 
