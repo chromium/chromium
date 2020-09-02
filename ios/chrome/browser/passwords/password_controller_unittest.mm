@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -272,6 +273,17 @@ ACTION(InvokeEmptyConsumerWithForms) {
 
 @end
 
+@interface SharedPasswordController (Testing)
+
+// Provides access for testing.
+@property(nonatomic, assign) BOOL isPasswordGenerated;
+
+- (void)injectGeneratedPasswordForFormId:(FormRendererId)formIdentifier
+                       generatedPassword:(NSString*)generatedPassword
+                       completionHandler:(void (^)())completionHandler;
+
+@end
+
 class PasswordControllerTest : public ChromeWebTest {
  public:
   PasswordControllerTest()
@@ -404,6 +416,28 @@ class PasswordControllerTest : public ChromeWebTest {
       LoadHtml(html);
     else
       LoadHtml(html, gurl);
+  }
+
+  void InjectGeneratedPassword(FormRendererId form_id,
+                               FieldRendererId field_id,
+                               NSString* password) {
+    autofill::PasswordFormGenerationData generation_data(form_id, field_id,
+                                                         FieldRendererId());
+    [passwordController_.sharedPasswordController
+        formEligibleForGenerationFound:generation_data];
+    __block BOOL block_was_called = NO;
+    [passwordController_.sharedPasswordController
+        injectGeneratedPasswordForFormId:FormRendererId(0)
+                       generatedPassword:password
+                       completionHandler:^() {
+                         block_was_called = YES;
+                       }];
+    // Wait until the expected handler is called.
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+      return block_was_called;
+    }));
+    ASSERT_TRUE(
+        passwordController_.sharedPasswordController.isPasswordGenerated);
   }
 
   // SuggestionController for testing.
@@ -2180,4 +2214,138 @@ TEST_F(PasswordControllerTest, PasswordMetricsAutomatic) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingAssistance",
                                       FillingAssistance::kAutomatic, 1);
+}
+
+// Tests that focusing the password field containing the generated password
+// is not breaking the password generation flow.
+// Verifies the fix for crbug.com/1077271.
+TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
+  LoadHtml(@"<html><body>"
+            "<form name='login_form' id='signup_form'>"
+            "  <input type='text' name='username' id='un'>"
+            "  <input type='password' name='password' id='pw'>"
+            "  <button id='submit_button' value='Submit'>"
+            "</form>"
+            "</body></html>");
+  WaitForFormManagersCreation();
+
+  InjectGeneratedPassword(FormRendererId(0), FieldRendererId(2),
+                          @"generated_password");
+
+  // Focus the password field after password generation.
+  std::string mainFrameID = web::GetMainWebFrameId(web_state());
+  __block bool block_was_called = NO;
+  FormSuggestionProviderQuery* focus_query =
+      [[FormSuggestionProviderQuery alloc]
+          initWithFormName:@"signup_form"
+              uniqueFormID:FormRendererId(0)
+           fieldIdentifier:@"pw"
+             uniqueFieldID:FieldRendererId(2)
+                 fieldType:@"password"
+                      type:@"focus"
+                typedValue:@""
+                   frameID:SysUTF8ToNSString(mainFrameID)];
+  [passwordController_.sharedPasswordController
+      checkIfSuggestionsAvailableForForm:focus_query
+                             isMainFrame:YES
+                          hasUserGesture:YES
+                                webState:web_state()
+                       completionHandler:^(BOOL success) {
+                         block_was_called = YES;
+                       }];
+  // Wait until the expected handler is called.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+    return block_was_called;
+  }));
+  // Check that the password is still generated.
+  ASSERT_TRUE(passwordController_.sharedPasswordController.isPasswordGenerated);
+}
+
+// Tests that adding input into the password field containing the generated
+// password is not breaking the password generation flow.
+TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
+  LoadHtml(@"<html><body>"
+            "<form name='login_form' id='signup_form'>"
+            "  <input type='text' name='username' id='un'>"
+            "  <input type='password' name='password' id='pw'>"
+            "  <button id='submit_button' value='Submit'>"
+            "</form>"
+            "</body></html>");
+  WaitForFormManagersCreation();
+
+  InjectGeneratedPassword(FormRendererId(0), FieldRendererId(2),
+                          @"generated_password");
+
+  // Extend the password after password generation.
+  __block bool block_was_called = NO;
+  std::string mainFrameID = web::GetMainWebFrameId(web_state());
+  FormSuggestionProviderQuery* extend_query =
+      [[FormSuggestionProviderQuery alloc]
+          initWithFormName:@"signup_form"
+              uniqueFormID:FormRendererId(0)
+           fieldIdentifier:@"pw"
+             uniqueFieldID:FieldRendererId(2)
+                 fieldType:@"password"
+                      type:@"input"
+                typedValue:@"generated_password_long"
+                   frameID:SysUTF8ToNSString(mainFrameID)];
+  [passwordController_.sharedPasswordController
+      checkIfSuggestionsAvailableForForm:extend_query
+                             isMainFrame:YES
+                          hasUserGesture:YES
+                                webState:web_state()
+                       completionHandler:^(BOOL success) {
+                         block_was_called = YES;
+                       }];
+  // Wait until the expected handler is called.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+    return block_was_called;
+  }));
+  // Check that the password is still considered generated.
+  ASSERT_TRUE(passwordController_.sharedPasswordController.isPasswordGenerated);
+}
+
+// Tests that clearing the value of the password field containing
+// the generated password stops the generation flow.
+TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
+  LoadHtml(@"<html><body>"
+            "<form name='login_form' id='signup_form'>"
+            "  <input type='text' name='username' id='un'>"
+            "  <input type='password' name='password' id='pw'>"
+            "  <button id='submit_button' value='Submit'>"
+            "</form>"
+            "</body></html>");
+  WaitForFormManagersCreation();
+
+  InjectGeneratedPassword(FormRendererId(0), FieldRendererId(2),
+                          @"generated_password");
+
+  // Clear the password.
+  __block bool block_was_called = NO;
+  std::string mainFrameID = web::GetMainWebFrameId(web_state());
+  FormSuggestionProviderQuery* clear_query =
+      [[FormSuggestionProviderQuery alloc]
+          initWithFormName:@"signup_form"
+              uniqueFormID:FormRendererId(0)
+           fieldIdentifier:@"pw"
+             uniqueFieldID:FieldRendererId(2)
+                 fieldType:@"password"
+                      type:@"input"
+                typedValue:@""
+                   frameID:SysUTF8ToNSString(mainFrameID)];
+  [passwordController_.sharedPasswordController
+      checkIfSuggestionsAvailableForForm:clear_query
+                             isMainFrame:YES
+                          hasUserGesture:YES
+                                webState:web_state()
+                       completionHandler:^(BOOL success) {
+                         block_was_called = YES;
+                       }];
+  // Wait until the expected handler is called.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+    return block_was_called;
+  }));
+  // Check that the password is not considered generated anymore.
+  ASSERT_FALSE(
+      passwordController_.sharedPasswordController.isPasswordGenerated);
 }

@@ -288,9 +288,8 @@ using base::UmaHistogramEnumeration;
 - (void)keyboardWillChangeToState:(KeyboardState)keyboardState {
   if (keyboardState.isVisible) {
     [self verifyFirstResponderAndUpdateCustomKeyboardView];
+    [self updateSuggestionsIfNeeded];
   }
-
-  [self updateSuggestionsIfNeeded];
   [self.consumer keyboardWillChangeToState:keyboardState];
   if (!keyboardState.isVisible) {
     [self.delegate mediatorDidDetectKeyboardHide:self];
