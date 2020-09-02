@@ -334,6 +334,9 @@ void SyncTest::BeforeSetupClient(int index,
 bool SyncTest::CreateProfile(int index) {
   base::FilePath profile_path;
 
+// For Android, we don't create profile because Clank doesn't support
+// multiple profiles.
+#if !defined(OS_ANDROID)
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (UsingExternalServers() && (num_clients_ > 1 || use_new_user_data_dir_)) {
     scoped_temp_dirs_.push_back(std::make_unique<base::ScopedTempDir>());
@@ -363,6 +366,7 @@ bool SyncTest::CreateProfile(int index) {
     profile_path = user_data_dir.AppendASCII(
         base::StringPrintf("SyncIntegrationTestClient%d", index));
   }
+#endif
 
   BeforeSetupClient(index, profile_path);
 
@@ -371,6 +375,12 @@ bool SyncTest::CreateProfile(int index) {
     // GAIA server. This requires creating profiles with no test hooks.
     InitializeProfile(index, MakeProfileForUISignin(profile_path));
   } else {
+// Use default profile for Android.
+#if defined(OS_ANDROID)
+    DCHECK(index == 0);
+    Profile* profile = ProfileManager::GetLastUsedProfile();
+    InitializeProfile(index, profile);
+#else
     // Without need of real GAIA authentication, we create new test profiles.
     // For test profiles, a custom delegate needs to be used to do the
     // initialization work before the profile is registered.
@@ -378,6 +388,8 @@ bool SyncTest::CreateProfile(int index) {
         std::make_unique<SyncProfileDelegate>(base::Bind(
             &SyncTest::InitializeProfile, base::Unretained(this), index));
     Profile* profile = MakeTestProfile(profile_path, index);
+#endif
+
     SetupMockGaiaResponsesForProfile(profile);
   }
 
@@ -564,6 +576,12 @@ bool SyncTest::SetupClients() {
   // Verifier account is not useful when running against external servers.
   if (UsingExternalServers())
     DisableVerifier();
+
+// Verifier needs to create a test profile. But Clank doesn't support multiple
+// profiles.
+#if defined(OS_ANDROID)
+  DisableVerifier();
+#endif
 
   // Create the verifier profile.
   if (use_verifier_) {
@@ -817,6 +835,13 @@ void SyncTest::ClearProfiles() {
 }
 
 bool SyncTest::SetupSync() {
+#if defined(OS_ANDROID)
+  // For Android, currently the framework only supports one client.
+  // The client uses the default profile.
+  DCHECK(num_clients_ == 1) << "For Android, currently it only supports "
+                            << "one client.";
+#endif
+
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   SetupSyncInternal(/*setup_mode=*/WAIT_FOR_SYNC_SETUP_TO_COMPLETE);
