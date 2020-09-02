@@ -56,8 +56,10 @@ _TEST_CODE_EXCLUDED_PATHS = (
     r'.+_(fuzz|fuzzer)(_[a-z]+)?%s' % _IMPLEMENTATION_EXTENSIONS,
     r'.+profile_sync_service_harness%s' % _IMPLEMENTATION_EXTENSIONS,
     r'.*[\\/](test|tool(s)?)[\\/].*',
-    # content_shell is used for running layout tests.
+    # content_shell is used for running content_browsertests.
     r'content[\\/]shell[\\/].*',
+    # Web test harness.
+    r'content[\\/]web_test[\\/].*',
     # Non-production example code.
     r'mojo[\\/]examples[\\/].*',
     # Launcher for running iOS tests on the simulator.
@@ -105,8 +107,8 @@ _BANNED_JAVA_IMPORTS = (
       'android.support.test.rule.UiThreadTestRule;',
       (
        'Do not use UiThreadTestRule, just use '
-       '@org.chromium.base.test.UiThreadTest on test methods that should run on '
-       'the UI thread. See https://crbug.com/1111893.',
+       '@org.chromium.base.test.UiThreadTest on test methods that should run '
+       'on the UI thread. See https://crbug.com/1111893.',
       ),
       (),
     ),

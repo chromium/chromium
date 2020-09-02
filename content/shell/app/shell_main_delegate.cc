@@ -42,9 +42,9 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "content/shell/browser/web_test/web_test_browser_main_runner.h"  // nogncheck
-#include "content/shell/browser/web_test/web_test_content_browser_client.h"  // nogncheck
-#include "content/shell/renderer/web_test/web_test_content_renderer_client.h"  // nogncheck
+#include "content/web_test/browser/web_test_browser_main_runner.h"  // nogncheck
+#include "content/web_test/browser/web_test_content_browser_client.h"  // nogncheck
+#include "content/web_test/renderer/web_test_content_renderer_client.h"  // nogncheck
 #endif
 
 #if defined(OS_ANDROID)

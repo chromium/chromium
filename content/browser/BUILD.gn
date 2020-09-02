@@ -2837,7 +2837,7 @@ if (is_android) {
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
   visibility = [
-    "//content/shell:web_test_browser",
+    "//content/web_test:web_test_browser",
     "//content/test/*",
     "//content/public/test/android/*",
   ]

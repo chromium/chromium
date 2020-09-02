@@ -1083,7 +1083,7 @@ if (!is_ios) {
         "//tools/android/forwarder2",
       ]
     } else {
-      data_deps += [ "//content/shell:web_test_common_mojom_js_data_deps" ]
+      data_deps += [ "//content/web_test:web_test_common_mojom_js_data_deps" ]
     }
 
     if (!is_win && !is_android) {

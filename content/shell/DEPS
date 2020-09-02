@@ -44,9 +44,9 @@ include_rules = [
 
   # Separating content shell and web test code. Only narrow parts of content
   # shell may access and inject web test code at runtime.
-  "-content/shell/browser/web_test",
-  "-content/shell/common/web_test",
-  "-content/shell/renderer/web_test",
+  "-content/web_test/browser",
+  "-content/web_test/common",
+  "-content/web_test/renderer",
 ]
 
 specific_include_rules = {

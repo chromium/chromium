@@ -34,7 +34,7 @@ async function performChromiumSetup() {
     '/gen/device/bluetooth/public/mojom/uuid.mojom.js',
     '/gen/url/mojom/origin.mojom.js',
     '/gen/device/bluetooth/public/mojom/test/fake_bluetooth.mojom.js',
-    '/gen/content/shell/common/web_test/fake_bluetooth_chooser.mojom.js',
+    '/gen/content/web_test/common/fake_bluetooth_chooser.mojom.js',
   ];
   // Determine path prefixes.
   let resPrefix = '/resources';

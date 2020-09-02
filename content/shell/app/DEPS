@@ -5,7 +5,7 @@ specific_include_rules = {
   "shell_main_delegate\.cc": [
     # Separating Content Shell and web test code. ShellMainDelegate injects web test
     # code into Content Shell at runtime.
-    "+content/shell/browser/web_test",
-    "+content/shell/renderer/web_test",
+    "+content/web_test/browser",
+    "+content/web_test/renderer",
   ],
 }

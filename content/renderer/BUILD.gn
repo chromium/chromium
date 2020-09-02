@@ -638,8 +638,8 @@ target(link_target_type, "renderer") {
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
   visibility = [
-    "//content/shell:web_test_renderer",
     "//content/test/*",
+    "//content/web_test:web_test_renderer",
   ]
 
   if (!is_component_build) {
