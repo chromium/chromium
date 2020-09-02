@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/web_app/mock_web_kiosk_app_launcher.h"
 #include "chrome/browser/chromeos/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/chromeos/login/test/kiosk_test_helpers.h"
-#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/login/fake_app_launch_splash_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -22,7 +21,9 @@ using testing::_;
 
 namespace chromeos {
 
-class KioskLaunchControllerTest : public InProcessBrowserTest {
+class KioskLaunchControllerTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<KioskAppType> {
  public:
   using AppState = KioskLaunchController::AppState;
   using NetworkUIState = KioskLaunchController::NetworkUIState;
@@ -42,12 +43,26 @@ class KioskLaunchControllerTest : public InProcessBrowserTest {
         KioskLaunchController::DisableWaitTimerAndLoginOperationsForTesting();
     controller_ = KioskLaunchController::CreateForTesting(
         view_.get(), std::move(app_launcher));
+
+    switch (GetParam()) {
+      case KioskAppType::ARC_APP:
+        kiosk_app_id_ = KioskAppId::ForArcApp(EmptyAccountId());
+        break;
+      case KioskAppType::CHROME_APP:
+        kiosk_app_id_ = KioskAppId::ForChromeApp(std::string());
+        KioskAppManager::Get()->AddAppForTest(std::string(), EmptyAccountId(),
+                                              GURL(), std::string());
+        break;
+      case KioskAppType::WEB_APP:
+        kiosk_app_id_ = KioskAppId::ForWebApp(EmptyAccountId());
+        break;
+    }
   }
 
   KioskLaunchController* controller() { return controller_.get(); }
 
-  WebKioskAppLauncher::Delegate* launch_controls() {
-    return static_cast<WebKioskAppLauncher::Delegate*>(controller_.get());
+  KioskAppLauncher::Delegate* launch_controls() {
+    return static_cast<KioskAppLauncher::Delegate*>(controller_.get());
   }
 
   KioskProfileLoader::Delegate* profile_controls() {
@@ -65,23 +80,6 @@ class KioskLaunchControllerTest : public InProcessBrowserTest {
     EXPECT_EQ(network_state, controller_->network_ui_state_);
   }
 
-  void ExpectKeyboardConfig() {
-    const keyboard::KeyboardConfig config =
-        ash::KeyboardController::Get()->GetKeyboardConfig();
-
-    // |auto_capitalize| is not controlled by the policy
-    // 'VirtualKeyboardFeatures', and its default value remains true.
-    EXPECT_TRUE(config.auto_capitalize);
-
-    // The other features are controlled by the policy
-    // 'VirtualKeyboardFeatures', and their default values should be false.
-    EXPECT_FALSE(config.auto_complete);
-    EXPECT_FALSE(config.auto_correct);
-    EXPECT_FALSE(config.handwriting);
-    EXPECT_FALSE(config.spell_check);
-    EXPECT_FALSE(config.voice_input);
-  }
-
   void FireSplashScreenTimer() { controller_->OnTimerFire(); }
 
   void SetOnline(bool online) {
@@ -94,7 +92,7 @@ class KioskLaunchControllerTest : public InProcessBrowserTest {
 
   FakeAppLaunchSplashScreenHandler* view() { return view_.get(); }
 
-  KioskAppId kiosk_app_id() { return KioskAppId::ForWebApp(EmptyAccountId()); }
+  KioskAppId kiosk_app_id() { return kiosk_app_id_; }
 
  private:
   ScopedCanConfigureNetwork can_configure_network_for_testing_{true, false};
@@ -103,9 +101,10 @@ class KioskLaunchControllerTest : public InProcessBrowserTest {
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
   MockWebKioskAppLauncher* app_launcher_;  // owned by |controller_|.
   std::unique_ptr<KioskLaunchController> controller_;
+  KioskAppId kiosk_app_id_;
 };
 
-IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest, RegularFlow) {
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest, RegularFlow) {
   controller()->Start(kiosk_app_id(), false);
   ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
 
@@ -128,11 +127,9 @@ IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest, RegularFlow) {
   launch_controls()->OnAppLaunched();
   ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
-
-  ExpectKeyboardConfig();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest, AlreadyInstalled) {
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest, AlreadyInstalled) {
   controller()->Start(kiosk_app_id(), false);
   ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
 
@@ -148,11 +145,9 @@ IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest, AlreadyInstalled) {
   launch_controls()->OnAppLaunched();
   ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
-
-  ExpectKeyboardConfig();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest,
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
                        ConfigureNetworkBeforeProfile) {
   controller()->Start(kiosk_app_id(), false);
   ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
@@ -180,11 +175,9 @@ IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest,
   launch_controls()->OnAppLaunched();
   ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
-
-  ExpectKeyboardConfig();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest,
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
                        ConfigureNetworkDuringInstallation) {
   SetOnline(false);
   controller()->Start(kiosk_app_id(), false);
@@ -222,11 +215,9 @@ IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest,
   launch_controls()->OnAppLaunched();
   ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
-
-  ExpectKeyboardConfig();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest,
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
                        ConnectionLostDuringInstallation) {
   controller()->Start(kiosk_app_id(), false);
   ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
@@ -261,8 +252,11 @@ IN_PROC_BROWSER_TEST_F(KioskLaunchControllerTest,
   launch_controls()->OnAppLaunched();
   ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
-
-  ExpectKeyboardConfig();
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         KioskLaunchControllerTest,
+                         testing::Values(KioskAppType::ARC_APP,
+                                         KioskAppType::CHROME_APP,
+                                         KioskAppType::WEB_APP));
 }  // namespace chromeos
