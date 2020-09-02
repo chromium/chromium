@@ -138,6 +138,8 @@ void SyncConsentScreenHandler::Show() {
   base::DictionaryValue data;
   data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
   data.SetString("deviceType", ui::GetChromeOSDeviceName());
+  data.SetBoolean("splitSettingsSyncEnabled",
+                  chromeos::features::IsSplitSettingsSyncEnabled());
   ShowScreenWithData(kScreenId, &data);
 }
 
@@ -158,13 +160,6 @@ void SyncConsentScreenHandler::RegisterMessages() {
               &SyncConsentScreenHandler::HandleAcceptAndContinue);
   AddCallback("login.SyncConsentScreen.declineAndContinue",
               &SyncConsentScreenHandler::HandleDeclineAndContinue);
-}
-
-void SyncConsentScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* parameters) {
-  parameters->SetBoolean("splitSettingsSyncEnabled",
-                         chromeos::features::IsSplitSettingsSyncEnabled());
-  BaseScreenHandler::GetAdditionalParameters(parameters);
 }
 
 void SyncConsentScreenHandler::HandleContinueAndReview(

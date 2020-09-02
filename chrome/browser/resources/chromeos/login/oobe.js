@@ -28,7 +28,6 @@
 // <include src="screen_arc_terms_of_service.js">
 // <include src="screen_error_message.js">
 // <include src="screen_fatal_error.js">
-// <include src="screen_sync_consent.js">
 // <include src="screen_app_downloading.js">
 // <include src="screen_discover.js">
 // <include src="screen_multidevice_setup.js">
@@ -54,7 +53,6 @@ cr.define('cr.ui.Oobe', function() {
       login.AutolaunchScreen.register();
       login.AccountPickerScreen.register();
       login.ErrorMessageScreen.register();
-      login.SyncConsentScreen.register();
       login.ArcTermsOfServiceScreen.register();
       login.AppDownloadingScreen.register();
       login.AppLaunchSplashScreen.register();

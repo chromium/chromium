@@ -57,6 +57,17 @@ using testing::UnorderedElementsAreArray;
 namespace chromeos {
 namespace {
 
+constexpr char kSyncConsent[] = "sync-consent";
+
+const test::UIPath kOverviewDialog = {kSyncConsent,
+                                      "syncConsentOverviewDialog"};
+const test::UIPath kSplitSettingsDialog = {kSyncConsent,
+                                           "splitSettingsSyncConsentDialog"};
+const test::UIPath kSettingsSaveAndContinueButton = {
+    kSyncConsent, "settingsSaveAndContinueButton"};
+const test::UIPath kAcceptButton = {kSyncConsent, "acceptButton"};
+const test::UIPath kDeclineButton = {kSyncConsent, "declineButton"};
+
 syncer::SyncUserSettings* GetSyncUserSettings() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   return ProfileSyncServiceFactory::GetForProfile(profile)->GetUserSettings();
@@ -291,11 +302,9 @@ IN_PROC_BROWSER_TEST_F(SyncConsentRecorderTest, SyncConsentRecorder) {
   ConsentRecordedWaiter consent_recorded_waiter;
   screen->SetDelegateForTesting(&consent_recorded_waiter);
 
-  test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent-impl"})->Wait();
-  test::OobeJS().ExpectVisiblePath(
-      {"sync-consent-impl", "syncConsentOverviewDialog"});
-  test::OobeJS().TapOnPath(
-      {"sync-consent-impl", "settingsSaveAndContinueButton"});
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().ExpectVisiblePath(kOverviewDialog);
+  test::OobeJS().TapOnPath(kSettingsSaveAndContinueButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);  // cleanup
 
@@ -342,9 +351,8 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams, SyncConsentTestWithLocale) {
   ConsentRecordedWaiter consent_recorded_waiter;
   screen->SetDelegateForTesting(&consent_recorded_waiter);
 
-  test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent-impl"})->Wait();
-  test::OobeJS().TapOnPath(
-      {"sync-consent-impl", "settingsSaveAndContinueButton"});
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().TapOnPath(kSettingsSaveAndContinueButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);
 
@@ -427,14 +435,13 @@ IN_PROC_BROWSER_TEST_F(SyncConsentSplitSettingsSyncTest, MAYBE_DefaultFlow) {
   screen->SetProfileSyncDisabledByPolicyForTesting(false);
   screen->SetProfileSyncEngineInitializedForTesting(true);
   screen->OnStateChanged(nullptr);
-  test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent-impl"})->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
 
   // Dialog is visible.
-  test::OobeJS().ExpectVisiblePath(
-      {"sync-consent-impl", "splitSettingsSyncConsentDialog"});
+  test::OobeJS().ExpectVisiblePath(kSplitSettingsDialog);
 
   // Click the accept button and wait for the JS to C++ callback.
-  test::OobeJS().ClickOnPath({"sync-consent-impl", "acceptButton"});
+  test::OobeJS().ClickOnPath(kAcceptButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);
 
@@ -507,10 +514,10 @@ IN_PROC_BROWSER_TEST_F(SyncConsentSplitSettingsSyncTest, MAYBE_DisableSync) {
   screen->SetProfileSyncDisabledByPolicyForTesting(false);
   screen->SetProfileSyncEngineInitializedForTesting(true);
   screen->OnStateChanged(nullptr);
-  test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent-impl"})->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
 
   // Click the decline button and wait for the JS to C++ callback.
-  test::OobeJS().ClickOnPath({"sync-consent-impl", "declineButton"});
+  test::OobeJS().ClickOnPath(kDeclineButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);
 
@@ -547,8 +554,8 @@ IN_PROC_BROWSER_TEST_F(SyncConsentSplitSettingsSyncTest, LanguageSwitch) {
   ConsentRecordedWaiter consent_recorded_waiter;
   screen->SetDelegateForTesting(&consent_recorded_waiter);
 
-  test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent-impl"})->Wait();
-  test::OobeJS().TapOnPath({"sync-consent-impl", "acceptButton"});
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().TapOnPath(kAcceptButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);
 
@@ -567,8 +574,8 @@ IN_PROC_BROWSER_TEST_F(SyncConsentSplitSettingsSyncTest, LanguageVariant) {
   ConsentRecordedWaiter consent_recorded_waiter;
   screen->SetDelegateForTesting(&consent_recorded_waiter);
 
-  test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent-impl"})->Wait();
-  test::OobeJS().TapOnPath({"sync-consent-impl", "acceptButton"});
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().TapOnPath(kAcceptButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);
 

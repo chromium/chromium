@@ -773,21 +773,7 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'sync-consent',
       kind: ScreenKind.NORMAL,
-      states: [
-        {
-          id: 'no-split',
-          trigger: (screen) => {
-            $('sync-consent-impl')
-                .showScreen_('splitSettingsSyncConsentDialog');
-          },
-        },
-        {
-          id: 'split',
-          trigger: (screen) => {
-            $('sync-consent-impl').showScreen_('syncConsentOverviewDialog');
-          },
-        },
-      ],
+      defaultState: 'step-no-split',
     },
     {
       id: 'fingerprint-setup',

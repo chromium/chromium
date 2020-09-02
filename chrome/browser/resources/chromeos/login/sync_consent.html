@@ -16,7 +16,8 @@
     <!-- Traditional dialog. This can be deleted when SplitSettingsSync is the
          default. -->
     <oobe-dialog id="syncConsentOverviewDialog" role="dialog" has-buttons
-      aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]" hidden>
+        aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
+        for-step="no-split">
       <hd-iron-icon slot="oobe-icon" icon1x="sync-consent-32:googleg" icon2x="sync-consent-64:googleg">
       </hd-iron-icon>
       <h1 slot="title" consent-description>
@@ -71,7 +72,8 @@
 
     <!-- Dialog used with the SplitSettingsSync feature. -->
     <oobe-dialog id="splitSettingsSyncConsentDialog" role="dialog" has-buttons
-        aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]" hidden>
+        aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
+        for-step="split">
       <hd-iron-icon slot="oobe-icon" icon1x="sync-consent-32:googleg" icon2x="sync-consent-64:googleg">
       </hd-iron-icon>
       <h1 slot="title" consent-description>
@@ -144,6 +146,12 @@
         </oobe-text-button>
       </div>
     </oobe-dialog>
-
+    <oobe-dialog id="sync-loading" role="dialog" no-header no-footer-padding
+        for-step="loading">
+      <div slot="footer" class="flex layout vertical center center-justified">
+        <throbber-notice text-key="gaiaLoading">
+        </throbber-notice>
+      </div>
+    </oobe-dialog>
   </template>
 </dom-module>

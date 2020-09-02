@@ -63,7 +63,6 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void Initialize() override;
   void RegisterMessages() override;
-  void GetAdditionalParameters(base::DictionaryValue* parameters) override;
 
   // WebUI message handlers
   void HandleContinueAndReview(const ::login::StringList& consent_description,
