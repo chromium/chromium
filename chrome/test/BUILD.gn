@@ -3732,6 +3732,10 @@ test("unit_tests") {
     }
   }
 
+  if (is_win || is_chromeos) {
+    sources += [ "../browser/webshare/share_service_unittest.cc" ]
+  }
+
   if (enable_library_cdms) {
     sources += [ "../common/media/cdm_manifest_unittest.cc" ]
   }

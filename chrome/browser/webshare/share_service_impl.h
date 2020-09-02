@@ -17,6 +17,9 @@ namespace content {
 class RenderFrameHost;
 }
 
+constexpr size_t kMaxSharedFileCount = 10;
+constexpr uint64_t kMaxSharedFileBytes = 50 * 1024 * 1024;
+
 class ShareServiceImpl : public blink::mojom::ShareService,
                          public content::WebContentsObserver {
  public:
