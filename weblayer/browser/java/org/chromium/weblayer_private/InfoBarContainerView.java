@@ -52,7 +52,7 @@ public class InfoBarContainerView extends SwipableOverlayView {
     /** Parent view that contains the InfoBarContainerLayout. */
     private ViewGroup mParentView;
 
-    private final TabImpl mTab;
+    private TabImpl mTab;
 
     /** Animation used to snap the container to the nearest state if scroll direction changes. */
     private Animator mScrollDirectionChangeAnimation;
@@ -102,6 +102,7 @@ public class InfoBarContainerView extends SwipableOverlayView {
 
     void destroy() {
         removeFromParentView();
+        mTab = null;
     }
 
     // SwipableOverlayView implementation.
@@ -135,8 +136,9 @@ public class InfoBarContainerView extends SwipableOverlayView {
     // View implementation.
     @Override
     public void setTranslationY(float translationY) {
-        int contentHeightDelta =
-                mTab.getBrowser().getViewController().getBottomContentHeightDelta();
+        int contentHeightDelta = mTab != null
+                ? mTab.getBrowser().getViewController().getBottomContentHeightDelta()
+                : 0;
 
         // Push the infobar container up by any delta caused by the bottom toolbar while ensuring
         // that it does not ascend beyond the top of the bottom toolbar nor descend beyond its own
@@ -183,6 +185,8 @@ public class InfoBarContainerView extends SwipableOverlayView {
      * Adds this class to the parent view {@link #mParentView}.
      */
     void addToParentView() {
+        // If mTab is null, destroy() was called. This should not be added after destroyed.
+        assert mTab != null;
         super.addToParentView(mParentView,
                 mTab.getBrowser().getViewController().getDesiredInfoBarContainerViewIndex());
     }
