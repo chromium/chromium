@@ -172041,6 +172041,29 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Stability.Internals.FileMetricsProvider.BrowserMetrics.UnsentFilesCount"
+    units="counts" expires_after="M87">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of the unsent files at the time the stability recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="Stability.Internals.FileMetricsProvider.BrowserMetrics.UnsentSamplesCount"
+    units="samples" expires_after="M87">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The total number of samples that will be lost if ASSOCIATE_INTERNAL_PROFILE
+    isn't enabled since the previous stability recorded. This is different than
+    the previous browser run because one file was just uploaded before the
+    stability is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Stability.Internals.InitialStabilityLogDeferredCount"
     units="counts" expires_after="M77">
   <owner>siggi@chromium.org</owner>
