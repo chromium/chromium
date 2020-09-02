@@ -268,6 +268,13 @@ a rotation of 180 degrees in mp4 meta data.
 Actual video frames are the same as four-colors.mp4, except it specifies
 a rotation of 270 degrees in mp4 meta data.
 
+#### four-colors-vp8-incompatible-stride.webm
+A 962x540 vp8 video with 4 color blocks (Y,R,G,B) in every frame with a GL
+incompatible stride. Converted from four-colors.mp4 using ffmpeg:
+```
+ffmpeg -i four-colors.mp4 -vf "pad=w=962,format=yuv420p" -c:v libvpx four-colors-vp8-incompatible-stride.webm
+```
+
 #### four-colors-vp9.webm
 A 960x540 vp9 video with 4 color blocks (Y,R,G,B) in every frame. This is
 converted from four-colors.mp4 by ffmpeg.
