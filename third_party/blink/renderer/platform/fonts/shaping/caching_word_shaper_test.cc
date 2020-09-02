@@ -231,6 +231,21 @@ TEST_F(CachingWordShaperTest, SegmentEmojiZWJCommon) {
   ASSERT_FALSE(iterator.Next(&word_result));
 }
 
+TEST_F(CachingWordShaperTest, SegmentEmojiZWJ) {
+  // ZWJ should include the next character in the "word", so  that they are
+  // shaped together.
+  String str(u"\U0001F3F4\u200D\u2620\uFE0F");
+  TextRun text_run(str);
+
+  scoped_refptr<const ShapeResult> word_result;
+  CachingWordShapeIterator iterator(cache.get(), text_run, &font);
+
+  ASSERT_TRUE(iterator.Next(&word_result));
+  EXPECT_EQ(str.length(), word_result->NumCharacters());
+
+  ASSERT_FALSE(iterator.Next(&word_result));
+}
+
 TEST_F(CachingWordShaperTest, SegmentEmojiPilotJudgeSequence) {
   // A family followed by a couple with heart emoji sequence,
   // the latter including a variation selector.
