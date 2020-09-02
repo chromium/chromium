@@ -55,7 +55,7 @@
 
   Profile* profile;
   if ([mode isEqualToString:AppleScript::kIncognitoWindowMode]) {
-    profile = lastProfile->GetOffTheRecordProfile();
+    profile = lastProfile->GetPrimaryOTRProfile();
   }
   else if ([mode isEqualToString:AppleScript::kNormalWindowMode] || !mode) {
     profile = lastProfile;
