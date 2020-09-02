@@ -829,7 +829,7 @@
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
-      'linux-lacros-rel': 'lacros_on_linux_release_bot',
+      'linux-lacros-rel': 'lacros_on_linux_release_trybot',
     },
 
     'tryserver.chromium.codesearch': {
@@ -891,7 +891,7 @@
       'linux-clang-tidy-rel': 'release_trybot',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
-      'linux-lacros-fyi-rel': 'lacros_on_linux_release_bot',
+      'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot',
       'linux-ozone-rel': 'ozone_linux_release_trybot',
       'linux-perfetto-rel': 'perfetto_release_trybot',
@@ -1562,10 +1562,6 @@
       'chromeos_kevin', 'include_unwind_tables', 'official',
     ],
 
-    'lacros_on_linux_release_bot': [
-      'lacros_on_linux', 'release_bot',
-    ],
-
     'chromeos_msan_release_bot': [
       'chromeos', 'msan', 'release_bot',
     ],
@@ -2025,6 +2021,14 @@
 
     'ios_simulator_release_static_asan_bot_xctest': [
         'ios_simulator', 'release_bot', 'asan', 'xctest',
+    ],
+
+    'lacros_on_linux_release_bot': [
+      'lacros_on_linux', 'release_bot',
+    ],
+
+    'lacros_on_linux_release_trybot': [
+      'lacros_on_linux', 'release_trybot',
     ],
 
     'libfuzzer_asan_debug_bot': [
