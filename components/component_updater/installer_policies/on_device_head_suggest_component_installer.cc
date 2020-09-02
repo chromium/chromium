@@ -29,24 +29,29 @@ const uint8_t kOnDeviceHeadSuggestPublicKeySHA256[32] = {
 
 // Get the normalized locale from a given raw locale, i.e capitalizes all
 // letters and removes all hyphens and underscores in the locale string, e.g.
-// "en-US" -> "ENUS".
+// "en-US" -> "ENUS". If param "ForceModelLocaleConstraint" is set, append it
+// to the normalized locale as suffix.
 std::string GetNormalizedLocale(const std::string& raw_locale) {
-  std::string locale;
+  std::string locale, locale_constraint;
   // Both incognito and non-incognito will use a same model so it's okay to
   // fetch the param from either feature.
   if (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForIncognito())
-    locale = OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(true);
+    locale_constraint =
+        OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(true);
   else if (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForNonIncognito())
-    locale = OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(false);
+    locale_constraint =
+        OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(false);
 
-  if (locale.empty())
-    locale = raw_locale;
-
+  locale = raw_locale;
   for (const auto c : "-_")
     locale.erase(std::remove(locale.begin(), locale.end(), c), locale.end());
 
   std::transform(locale.begin(), locale.end(), locale.begin(),
                  [](char c) -> char { return base::ToUpperASCII(c); });
+
+  if (!locale_constraint.empty())
+    locale += locale_constraint;
+
   VLOG(1) << "On Device Head Component will fetch model for locale: " << locale;
 
   return locale;
