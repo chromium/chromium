@@ -16,8 +16,6 @@
 
 namespace blink {
 
-class ExecutionContext;
-
 // BytesConsumer represents the "consumer" side of a data pipe. A user
 // can read data from it.
 //
@@ -164,14 +162,6 @@ class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
   // Each implementation should return a string that represents the
   // implementation for debug purpose.
   virtual String DebugName() const = 0;
-
-  // Creates two BytesConsumer both of which represent the data sequence that
-  // would be read from |src| and store them to |*dest1| and |*dest2|.
-  // |src| must not have a client when called.
-  static void Tee(ExecutionContext*,
-                  BytesConsumer* src,
-                  BytesConsumer** dest1,
-                  BytesConsumer** dest2);
 
   // Returns a BytesConsumer whose state is Closed.
   static BytesConsumer* CreateClosed();

@@ -16,6 +16,7 @@ namespace blink {
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class EncodedFormData;
+class ExecutionContext;
 
 class FormDataBytesConsumer final : public BytesConsumer {
  public:
