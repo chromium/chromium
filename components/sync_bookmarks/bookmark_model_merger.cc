@@ -208,6 +208,25 @@ void ReparentAllChildren(const std::string& from_parent_id,
   // No need to update iterators since splice doesn't invalidate them.
 }
 
+// Returns true the |next_update| is selected to keep and the |previous_update|
+// should be removed. False is returned otherwise. |next_update| and
+// |previous_update| must have the same GUID.
+bool CompareDuplicateUpdates(const UpdateResponseData& next_update,
+                             const UpdateResponseData& previous_update) {
+  DCHECK_EQ(next_update.entity.specifics.bookmark().guid(),
+            previous_update.entity.specifics.bookmark().guid());
+  DCHECK_NE(next_update.entity.id, previous_update.entity.id);
+
+  if (next_update.entity.is_folder != previous_update.entity.is_folder) {
+    // There are two entities, one of them is a folder and another one is a
+    // URL. Prefer to save the folder as it may contain many bookmarks.
+    return next_update.entity.is_folder;
+  }
+  // Choose the latest element to keep if both updates have the same type.
+  return next_update.entity.creation_time >
+         previous_update.entity.creation_time;
+}
+
 void DeduplicateValidUpdatesByGUID(UpdatesPerParentId* updates_per_parent_id) {
   DCHECK(updates_per_parent_id);
 
@@ -243,16 +262,13 @@ void DeduplicateValidUpdatesByGUID(UpdatesPerParentId* updates_per_parent_id) {
           MatchBookmarksGUIDDuplicates(update, duplicate_update);
       base::UmaHistogramEnumeration("Sync.BookmarksGUIDDuplicates",
                                     match_result);
-      if (match_result == BookmarksGUIDDuplicates::kDifferentTypes ||
-          !base::FeatureList::IsEnabled(
+      if (!base::FeatureList::IsEnabled(
               switches::kSyncDeduplicateAllBookmarksWithSameGUID)) {
-        // There shouldn't be cases with different types for duplicate
-        // entities.
         continue;
       }
 
-      // Choose the latest element to keep.
-      if (update.entity.creation_time > duplicate_update.entity.creation_time) {
+      if (CompareDuplicateUpdates(/*next_update=*/update,
+                                  /*previous_update=*/duplicate_update)) {
         updates_to_remove.push_back(it_and_success.first->second);
         // Update |guid_to_update| to find a duplicate folder and merge them.
         guid_to_update[guid_in_specifics] = updates_iter;
@@ -269,6 +285,10 @@ void DeduplicateValidUpdatesByGUID(UpdatesPerParentId* updates_per_parent_id) {
           updates_iter->entity.specifics.bookmark().guid();
       DCHECK_EQ(1U, guid_to_update.count(guid));
       DCHECK(guid_to_update[guid] != updates_iter);
+
+      // Never remove a folder if its duplicate is a URL.
+      DCHECK(guid_to_update[guid]->entity.is_folder);
+
       // Merge doesn't affect iterators.
       ReparentAllChildren(
           /*from_parent_id=*/updates_iter->entity.id,
