@@ -196,7 +196,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void RegisterRendererPreferenceWatcher(
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher);
 
-  // IPC::Listener implementation (via RenderWidget inheritance).
+  // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& msg) override;
 
   // blink::WebViewClient implementation --------------------------------------
