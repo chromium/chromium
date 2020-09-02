@@ -487,7 +487,6 @@
     {
       name: "CSSLogical",
       status: "experimental",
-      settable_from_internals: true,
     },
     {
       name: "CSSLogicalOverflow",

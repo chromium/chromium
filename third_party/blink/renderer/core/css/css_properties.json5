@@ -4864,7 +4864,6 @@
     {
       name: "inset-inline-start",
       property_methods: ["ParseSingleValue"],
-      runtime_flag: "CSSLogical",
       direction_aware_options: {
         resolver: "inline-start",
         physical_group: "inset",
@@ -4874,7 +4873,6 @@
     {
       name: "inset-inline-end",
       property_methods: ["ParseSingleValue"],
-      runtime_flag: "CSSLogical",
       direction_aware_options: {
         resolver: "inline-end",
         physical_group: "inset",
@@ -4884,7 +4882,6 @@
     {
       name: "inset-block-start",
       property_methods: ["ParseSingleValue"],
-      runtime_flag: "CSSLogical",
       direction_aware_options: {
         resolver: "block-start",
         physical_group: "inset",
@@ -4894,7 +4891,6 @@
     {
       name: "inset-block-end",
       property_methods: ["ParseSingleValue"],
-      runtime_flag: "CSSLogical",
       direction_aware_options: {
         resolver: "block-end",
         physical_group: "inset",
@@ -5190,13 +5186,11 @@
         "border-block-end-color", "border-block-end-style", "border-block-end-width"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-block-color",
       longhands: ["border-block-start-color", "border-block-end-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-block-end",
@@ -5226,13 +5220,11 @@
       name: "border-block-style",
       longhands: ["border-block-start-style", "border-block-end-style"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-block-width",
       longhands: ["border-block-start-width", "border-block-end-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-bottom",
@@ -5264,13 +5256,11 @@
         "border-inline-end-color", "border-inline-end-style", "border-inline-end-width"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-inline-color",
       longhands: ["border-inline-start-color", "border-inline-end-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-inline-end",
@@ -5300,13 +5290,11 @@
       name: "border-inline-style",
       longhands: ["border-inline-start-style", "border-inline-end-style"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-inline-width",
       longhands: ["border-inline-start-width", "border-inline-end-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "border-left",
@@ -5461,19 +5449,16 @@
       name: "inset",
       longhands: ["top", "right", "bottom", "left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "inset-block",
       longhands: ["inset-block-start", "inset-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "inset-inline",
       longhands: ["inset-inline-start", "inset-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "list-style",
@@ -5490,13 +5475,11 @@
       name: "margin-block",
       longhands: ["margin-block-start", "margin-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "margin-inline",
       longhands: ["margin-inline-start", "margin-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "marker",
@@ -5539,13 +5522,11 @@
       name: "padding-block",
       longhands: ["padding-block-start", "padding-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "padding-inline",
       longhands: ["padding-inline-start", "padding-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSLogical",
     },
     {
       name: "page-break-after",

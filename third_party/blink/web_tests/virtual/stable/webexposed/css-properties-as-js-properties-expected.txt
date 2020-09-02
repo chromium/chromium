@@ -35,6 +35,8 @@ backgroundSize
 baselineShift
 blockSize
 border
+borderBlock
+borderBlockColor
 borderBlockEnd
 borderBlockEndColor
 borderBlockEndStyle
@@ -43,6 +45,8 @@ borderBlockStart
 borderBlockStartColor
 borderBlockStartStyle
 borderBlockStartWidth
+borderBlockStyle
+borderBlockWidth
 borderBottom
 borderBottomColor
 borderBottomLeftRadius
@@ -57,6 +61,8 @@ borderImageRepeat
 borderImageSlice
 borderImageSource
 borderImageWidth
+borderInline
+borderInlineColor
 borderInlineEnd
 borderInlineEndColor
 borderInlineEndStyle
@@ -65,6 +71,8 @@ borderInlineStart
 borderInlineStartColor
 borderInlineStartStyle
 borderInlineStartWidth
+borderInlineStyle
+borderInlineWidth
 borderLeft
 borderLeftColor
 borderLeftStyle
@@ -186,6 +194,13 @@ imageRendering
 inherits
 initialValue
 inlineSize
+inset
+insetBlock
+insetBlockEnd
+insetBlockStart
+insetInline
+insetInlineEnd
+insetInlineStart
 isolation
 item
 justifyContent
@@ -202,9 +217,11 @@ listStyleImage
 listStylePosition
 listStyleType
 margin
+marginBlock
 marginBlockEnd
 marginBlockStart
 marginBottom
+marginInline
 marginInlineEnd
 marginInlineStart
 marginLeft
@@ -253,9 +270,11 @@ overscrollBehaviorInline
 overscrollBehaviorX
 overscrollBehaviorY
 padding
+paddingBlock
 paddingBlockEnd
 paddingBlockStart
 paddingBottom
+paddingInline
 paddingInlineEnd
 paddingInlineStart
 paddingLeft
