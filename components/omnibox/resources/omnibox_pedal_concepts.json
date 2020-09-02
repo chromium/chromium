@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 1,
-  "time_generated": "2020-08-19T21:36:03.019733176+00:00",
+  "time_generated": "2020-09-02T17:33:39.945365643+00:00",
   "primary_language_code": "en",
   "locales": [
     {
@@ -549,7 +549,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "актуализиране",
@@ -602,7 +602,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "идентификацията",
@@ -631,7 +631,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "актуализиране",
@@ -671,7 +671,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "информацията кредитната карта",
@@ -713,7 +713,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "стартиране",
@@ -742,7 +742,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "поверително сърфиране",
@@ -781,7 +781,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "промяна езика",
@@ -797,7 +797,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "тази страница",
@@ -822,7 +822,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "актуализиране",
@@ -1755,7 +1755,7 @@
               ]
             },
             {
-              "required": false,
+              "required": true,
               "single": true,
               "synonyms": [
                 "inkognitotilstand",
@@ -1948,6 +1948,7 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "karteninformationen",
                 "kreditkartendaten",
                 "kredit karte",
                 "kreditkarte",
@@ -2023,13 +2024,7 @@
                 "diese seite",
                 "webseite",
                 "website",
-                "seite"
-              ]
-            },
-            {
-              "required": true,
-              "single": true,
-              "synonyms": [
+                "seite",
                 "diese"
               ]
             }
@@ -2497,6 +2492,8 @@
               "single": true,
               "synonyms": [
                 "this page",
+                "web page",
+                "webpage",
                 "page",
                 "this"
               ]
@@ -2521,6 +2518,7 @@
               "synonyms": [
                 "upgrade",
                 "install",
+                "updates",
                 "update"
               ]
             }
@@ -2934,7 +2932,8 @@
                 "pestaña privada",
                 "ventana privada",
                 "modo privado",
-                "incógnito"
+                "incógnito",
+                "incognito"
               ]
             }
           ]
@@ -3167,7 +3166,8 @@
                 "pestaña privada",
                 "ventana privada",
                 "modo privado",
-                "incógnito"
+                "incógnito",
+                "incognito"
               ]
             }
           ]
@@ -5828,18 +5828,31 @@
         "required": false,
         "single": false,
         "synonyms": [
-          "in/nel/nell'/nello/nei/negli/nella/nelle",
-          "mio/mia/mie/miei",
           "all'interno",
-          "il/lo/la",
           "dentro",
-          "un/una",
+          "nell'",
+          "nello",
+          "negli",
+          "nella",
+          "nelle",
           "come",
           "fare",
+          "miei",
           "per",
+          "mio",
           "un'",
+          "una",
+          "nel",
+          "nei",
+          "mia",
+          "mie",
+          "il",
+          "un",
+          "in",
           "su",
           "io",
+          "lo",
+          "la",
           "a"
         ]
       },
