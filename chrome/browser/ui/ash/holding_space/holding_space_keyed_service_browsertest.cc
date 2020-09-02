@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
@@ -103,7 +104,7 @@ const HoldingSpaceItem* AddHoldingSpaceItem(Profile* profile) {
 
   holding_space_model->AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, CreateTextFile(profile), GURL(),
-      gfx::ImageSkia()));
+      std::make_unique<HoldingSpaceImage>(/*placeholder=*/gfx::ImageSkia())));
 
   run_loop.Run();
   return result;

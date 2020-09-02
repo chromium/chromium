@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIPS_CONTAINER_H_
 
 #include "ash/ash_export.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -29,10 +28,10 @@ class HoldingSpaceItemChipsContainer : public views::View {
       const HoldingSpaceItemChipsContainer& other) = delete;
   ~HoldingSpaceItemChipsContainer() override;
 
-  void AddItemChip(HoldingSpaceItem* item);
-
   // views::View:
   const char* GetClassName() const override;
+
+  void AddItemChip(const HoldingSpaceItem* item);
 
  private:
   views::GridLayout* layout_ = nullptr;

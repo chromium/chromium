@@ -12,30 +12,29 @@
 namespace ash {
 
 HoldingSpaceItemChipsContainer::HoldingSpaceItemChipsContainer() {
-  using views::GridLayout;
   layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
   column_set_ = layout_->AddColumnSet(0);
 
   column_set_->AddColumn(
-      GridLayout::Alignment::FILL, GridLayout::Alignment::FILL, 0,
-      GridLayout::ColumnSize::kFixed, kHoldingSpaceColumnWidth, 0);
+      views::GridLayout::Alignment::FILL, views::GridLayout::Alignment::FILL, 0,
+      views::GridLayout::ColumnSize::kFixed, kHoldingSpaceColumnWidth, 0);
   column_set_->AddPaddingColumn(0, kHoldingSpaceColumnPadding);
   column_set_->AddColumn(
-      GridLayout::Alignment::FILL, GridLayout::Alignment::FILL, 0,
-      GridLayout::ColumnSize::kFixed, kHoldingSpaceColumnWidth, 0);
+      views::GridLayout::Alignment::FILL, views::GridLayout::Alignment::FILL, 0,
+      views::GridLayout::ColumnSize::kFixed, kHoldingSpaceColumnWidth, 0);
 }
 
 HoldingSpaceItemChipsContainer::~HoldingSpaceItemChipsContainer() = default;
 
-void HoldingSpaceItemChipsContainer::AddItemChip(HoldingSpaceItem* item) {
+const char* HoldingSpaceItemChipsContainer::GetClassName() const {
+  return "HoldingSpaceItemChipsContainer";
+}
+
+void HoldingSpaceItemChipsContainer::AddItemChip(const HoldingSpaceItem* item) {
   if ((children().size() % 2) == 0) {
     layout_->StartRowWithPadding(0, 0, 0, kHoldingSpaceRowPadding);
   }
   layout_->AddView(std::make_unique<HoldingSpaceItemChipView>(item));
-}
-
-const char* HoldingSpaceItemChipsContainer::GetClassName() const {
-  return "HoldingSpaceItemChipsContainer";
 }
 
 }  // namespace ash

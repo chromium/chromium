@@ -566,7 +566,7 @@ void ChromeScreenshotGrabber::OnReadScreenshotFileForPreviewCompleted(
   if (success && ash::features::IsTemporaryHoldingSpaceEnabled()) {
     ash::HoldingSpaceKeyedServiceFactory::GetInstance()
         ->GetService(GetProfile())
-        ->AddScreenshot(screenshot_path, image.AsImageSkia());
+        ->AddScreenshot(screenshot_path);
   }
 }
 

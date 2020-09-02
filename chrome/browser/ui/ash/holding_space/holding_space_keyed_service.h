@@ -30,10 +30,6 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 namespace storage {
 class FileSystemURL;
 }  // namespace storage
@@ -73,8 +69,7 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Adds a screenshot item backed by the provided absolute file path.
   // The path is expected to be under a mount point path recognized by the file
   // manager app (otherwise, the item will be dropped silently).
-  void AddScreenshot(const base::FilePath& screenshot_path,
-                     const gfx::ImageSkia& image);
+  void AddScreenshot(const base::FilePath& screenshot_path);
 
   // Adds a download item backed by the provided absolute file path.
   void AddDownload(const base::FilePath& download_path);

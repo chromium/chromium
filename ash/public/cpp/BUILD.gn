@@ -137,6 +137,8 @@ component("cpp") {
     "holding_space/holding_space_controller.cc",
     "holding_space/holding_space_controller.h",
     "holding_space/holding_space_controller_observer.h",
+    "holding_space/holding_space_image.cc",
+    "holding_space/holding_space_image.h",
     "holding_space/holding_space_item.cc",
     "holding_space/holding_space_item.h",
     "holding_space/holding_space_model.cc",

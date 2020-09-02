@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -21,6 +22,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace ash {
 namespace {
 
 // Returns the path of the downloads mount point for the given `profile`.
@@ -52,8 +54,7 @@ base::FilePath CreateTextFile(Profile* profile) {
 class HoldingSpaceClientImplTest : public InProcessBrowserTest {
  public:
   HoldingSpaceClientImplTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kTemporaryHoldingSpace);
+    scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
   }
 
   HoldingSpaceClientImplTest(const HoldingSpaceClientImplTest& other) = delete;
@@ -71,23 +72,23 @@ class HoldingSpaceClientImplTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that `ash::HoldingSpaceClient::OpenItem()` works as intended when
+// Verifies that `HoldingSpaceClient::OpenItem()` works as intended when
 // attempting to open holding space items backed by both non-existing and
 // existing files.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
-  ASSERT_TRUE(ash::HoldingSpaceController::Get());
+  ASSERT_TRUE(HoldingSpaceController::Get());
 
-  auto* holding_space_client = ash::HoldingSpaceController::Get()->client();
+  auto* holding_space_client = HoldingSpaceController::Get()->client();
   ASSERT_TRUE(holding_space_client);
 
   // Create a holding space item backed by a non-existing file.
-  auto holding_space_item = ash::HoldingSpaceItem::CreateFileBackedItem(
-      ash::HoldingSpaceItem::Type::kDownload, base::FilePath("foo"), GURL(),
-      gfx::ImageSkia());
+  auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kDownload, base::FilePath("foo"), GURL(),
+      std::make_unique<HoldingSpaceImage>(/*placeholder=*/gfx::ImageSkia()));
 
   {
-    // We expect `ash::HoldingSpaceClient::OpenItem()` to fail when the backing
-    // file for `holding_space_item` does not exist.
+    // We expect `HoldingSpaceClient::OpenItem()` to fail when the backing file
+    // for `holding_space_item` does not exist.
     base::RunLoop run_loop;
     holding_space_client->OpenItem(
         *holding_space_item,
@@ -99,13 +100,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
   }
 
   // Create a holding space item backed by a newly created txt file.
-  holding_space_item = ash::HoldingSpaceItem::CreateFileBackedItem(
-      ash::HoldingSpaceItem::Type::kDownload,
-      CreateTextFile(browser()->profile()), GURL(), gfx::ImageSkia());
+  holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kDownload, CreateTextFile(browser()->profile()),
+      GURL(),
+      std::make_unique<HoldingSpaceImage>(/*placeholder=*/gfx::ImageSkia()));
 
   {
-    // We expect `ash::HoldingSpaceClient::OpenItem()` to succeed when the
-    // backing file for `holding_space_item` exists.
+    // We expect `HoldingSpaceClient::OpenItem()` to succeed when the backing
+    // file for `holding_space_item` exists.
     base::RunLoop run_loop;
     holding_space_client->OpenItem(
         *holding_space_item,
@@ -116,3 +118,5 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
     run_loop.Run();
   }
 }
+
+}  // namespace ash

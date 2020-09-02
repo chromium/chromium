@@ -17,13 +17,11 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 namespace ash {
 
+class HoldingSpaceImage;
 class HoldingSpaceItem;
+
 using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
 using HoldingSpaceItemPtrList = std::vector<HoldingSpaceItemPtr>;
 
@@ -49,7 +47,8 @@ void PartitionItemsByExistence(Profile* profile,
 GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);
 
 // Resolves the image associated with the specified `file_path`.
-gfx::ImageSkia ResolveImage(const base::FilePath& file_path);
+std::unique_ptr<HoldingSpaceImage> ResolveImage(
+    const base::FilePath& file_path);
 
 }  // namespace holding_space_util
 }  // namespace ash

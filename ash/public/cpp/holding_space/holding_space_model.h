@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/observer_list.h"
 
 namespace ash {

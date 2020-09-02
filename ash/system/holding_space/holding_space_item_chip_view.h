@@ -6,14 +6,10 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIP_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/user/rounded_image_view.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/views/animation/ink_drop_host_view.h"
-#include "ui/views/context_menu_controller.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/button.h"
 
 namespace views {
-class Button;
 class Label;
 class ToggleImageButton;
 }  // namespace views
@@ -22,15 +18,18 @@ namespace ash {
 
 class HoldingSpaceItem;
 
+namespace tray {
+class RoundedImageView;
+}  // namespace tray
+
 // A button with an image derived from a file's thumbnail and file's name as the
 // label.
 class ASH_EXPORT HoldingSpaceItemChipView : public views::InkDropHostView,
                                             public views::ButtonListener {
  public:
-  explicit HoldingSpaceItemChipView(HoldingSpaceItem* item);
-  HoldingSpaceItemChipView(const HoldingSpaceItemChipView& other) = delete;
-  HoldingSpaceItemChipView& operator=(const HoldingSpaceItemChipView& other) =
-      delete;
+  explicit HoldingSpaceItemChipView(const HoldingSpaceItem* item);
+  HoldingSpaceItemChipView(const HoldingSpaceItemChipView&) = delete;
+  HoldingSpaceItemChipView& operator=(const HoldingSpaceItemChipView&) = delete;
   ~HoldingSpaceItemChipView() override;
 
   // views::InkDropHostView:
@@ -43,12 +42,10 @@ class ASH_EXPORT HoldingSpaceItemChipView : public views::InkDropHostView,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
-  // Updates the image and label.
+  void AddPinButton();
   void Update();
 
-  void AddPinButton();
-
-  HoldingSpaceItem* const item_;
+  const HoldingSpaceItem* const item_;
   tray::RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;
   views::ToggleImageButton* pin_ = nullptr;

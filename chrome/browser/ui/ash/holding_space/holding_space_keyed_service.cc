@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
@@ -84,8 +85,7 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
 }
 
 void HoldingSpaceKeyedService::AddScreenshot(
-    const base::FilePath& screenshot_file,
-    const gfx::ImageSkia& image) {
+    const base::FilePath& screenshot_file) {
   GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, screenshot_file);
   if (file_system_url.is_empty())
@@ -93,7 +93,7 @@ void HoldingSpaceKeyedService::AddScreenshot(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenshot, screenshot_file, file_system_url,
-      image));
+      holding_space_util::ResolveImage(screenshot_file)));
 }
 
 void HoldingSpaceKeyedService::AddDownload(

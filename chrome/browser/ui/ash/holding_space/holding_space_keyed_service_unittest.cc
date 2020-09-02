@@ -10,6 +10,7 @@
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/files/file_path.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -50,15 +52,6 @@
 namespace ash {
 
 namespace {
-
-const gfx::ImageSkia CreateSolidColorImage(int width,
-                                           int height,
-                                           SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-}
 
 std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   std::vector<HoldingSpaceItem::Type> types;
@@ -333,8 +326,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
       CreateFile(downloads_mount, item_1_virtual_path, "red");
   ASSERT_FALSE(item_1_full_path.empty());
 
-  holding_space_service->AddScreenshot(
-      item_1_full_path, CreateSolidColorImage(64, 64, SK_ColorRED));
+  holding_space_service->AddScreenshot(item_1_full_path);
 
   const base::FilePath item_2_virtual_path =
       base::FilePath("Alt/Screenshot 2.png");
@@ -344,8 +336,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   const base::FilePath item_2_full_path =
       CreateFile(downloads_mount, item_2_virtual_path, "blue");
   ASSERT_FALSE(item_2_full_path.empty());
-  holding_space_service->AddScreenshot(
-      item_2_full_path, CreateSolidColorImage(64, 64, SK_ColorBLUE));
+  holding_space_service->AddScreenshot(item_2_full_path);
 
   EXPECT_EQ(initial_model, HoldingSpaceController::Get()->model());
   EXPECT_EQ(HoldingSpaceController::Get()->model(),
@@ -357,8 +348,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   const HoldingSpaceItem* item_1 = model->items()[0].get();
   EXPECT_EQ(item_1_full_path, item_1->file_path());
   EXPECT_TRUE(
-      gfx::BitmapsAreEqual(*CreateSolidColorImage(64, 64, SK_ColorRED).bitmap(),
-                           *item_1->image().bitmap()));
+      gfx::BitmapsAreEqual(*holding_space_util::ResolveImage(item_1_full_path)
+                                ->image_skia()
+                                .bitmap(),
+                           *item_1->image().image_skia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(
@@ -368,9 +361,11 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
 
   const HoldingSpaceItem* item_2 = model->items()[1].get();
   EXPECT_EQ(item_2_full_path, item_2->file_path());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *CreateSolidColorImage(64, 64, SK_ColorBLUE).bitmap(),
-      *item_2->image().bitmap()));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(*holding_space_util::ResolveImage(item_2_full_path)
+                                ->image_skia()
+                                .bitmap(),
+                           *item_2->image().image_skia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(
@@ -425,7 +420,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     const GURL file_system_url = GetFileSystemUrl(GetProfile(), file_path);
 
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
-        type, file_path, file_system_url, gfx::test::CreateImageSkia(10, 10));
+        type, file_path, file_system_url,
+        holding_space_util::ResolveImage(file_path));
 
     // We do not persist `kDownload` type items.
     if (type != HoldingSpaceItem::Type::kDownload)
@@ -483,7 +479,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
 
           auto fresh_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
-                  type, file, file_system_url, GetIconForPath(file));
+                  type, file, file_system_url,
+                  holding_space_util::ResolveImage(file));
 
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());
@@ -502,7 +499,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
               HoldingSpaceItem::CreateFileBackedItem(
                   type,
                   base::FilePath(base::UnguessableToken::Create().ToString()),
-                  GURL(), gfx::ImageSkia());
+                  GURL(),
+                  std::make_unique<HoldingSpaceImage>(gfx::ImageSkia()));
 
           // NOTE: While the `stale_holding_space_item` is persisted here, we do
           // *not* expect it to be restored or to be persisted after model

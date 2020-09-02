@@ -10,8 +10,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/strings/string16.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -19,6 +19,8 @@ class DictionaryValue;
 }  // namespace base
 
 namespace ash {
+
+class HoldingSpaceImage;
 
 // Contains data needed to display a single item in the temporary holding space
 // UI.
@@ -50,14 +52,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       Type type,
       const base::FilePath& file_path,
       const GURL& file_system_url,
-      const gfx::ImageSkia& image);
+      std::unique_ptr<HoldingSpaceImage> image);
 
   // Returns a file system URL for a given file path.
   using FileSystemUrlResolver = base::OnceCallback<GURL(const base::FilePath&)>;
 
   // Returns an image for a given file path.
-  using ImageResolver =
-      base::OnceCallback<gfx::ImageSkia(const base::FilePath&)>;
+  using ImageResolver = base::OnceCallback<std::unique_ptr<HoldingSpaceImage>(
+      const base::FilePath&)>;
 
   // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
   static std::unique_ptr<HoldingSpaceItem> Deserialize(
@@ -77,7 +79,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const base::string16& text() const { return text_; }
 
-  const gfx::ImageSkia& image() const { return image_; }
+  const HoldingSpaceImage& image() const { return *image_; }
 
   const base::FilePath& file_path() const { return file_path_; }
 
@@ -90,7 +92,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
                    const base::FilePath& file_path,
                    const GURL& file_system_url,
                    const base::string16& text,
-                   const gfx::ImageSkia& image);
+                   std::unique_ptr<HoldingSpaceImage> image);
 
   const Type type_;
 
@@ -107,7 +109,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   base::string16 text_;
 
   // The image representation of the item.
-  gfx::ImageSkia image_;
+  std::unique_ptr<HoldingSpaceImage> image_;
 };
 
 }  // namespace ash

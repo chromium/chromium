@@ -7,6 +7,7 @@
 #include <map>
 
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
@@ -123,8 +124,10 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
 }
 
 // TODO(dmblack): Use thumbnail service to asynchronously replace placeholders.
-gfx::ImageSkia ResolveImage(const base::FilePath& file_path) {
-  return GetIconForPath(file_path);
+std::unique_ptr<HoldingSpaceImage> ResolveImage(
+    const base::FilePath& file_path) {
+  return std::make_unique<HoldingSpaceImage>(
+      /*placeholder=*/GetIconForPath(file_path));
 }
 
 }  // namespace holding_space_util

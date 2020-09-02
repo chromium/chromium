@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
-#include "base/files/file_path.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/util/values/values_util.h"
@@ -45,7 +45,7 @@ HoldingSpaceItem::~HoldingSpaceItem() = default;
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_path_ == rhs.file_path_ &&
          file_system_url_ == rhs.file_system_url_ && text_ == rhs.text_ &&
-         image_.BackedBySameObjectAs(rhs.image_);
+         *image_ == *rhs.image_;
 }
 
 // static
@@ -60,11 +60,11 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const base::FilePath& file_path,
     const GURL& file_system_url,
-    const gfx::ImageSkia& image) {
+    std::unique_ptr<HoldingSpaceImage> image) {
   // Note: std::make_unique does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, GetFileBackedItemId(type, file_path), file_path, file_system_url,
-      file_path.BaseName().LossyDisplayName(), image));
+      file_path.BaseName().LossyDisplayName(), std::move(image)));
 }
 
 // static
@@ -123,12 +123,12 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const base::FilePath& file_path,
                                    const GURL& file_system_url,
                                    const base::string16& text,
-                                   const gfx::ImageSkia& image)
+                                   std::unique_ptr<HoldingSpaceImage> image)
     : type_(type),
       id_(id),
       file_path_(file_path),
       file_system_url_(file_system_url),
       text_(text),
-      image_(image) {}
+      image_(std::move(image)) {}
 
 }  // namespace ash

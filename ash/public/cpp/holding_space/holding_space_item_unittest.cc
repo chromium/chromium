@@ -7,8 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/test/bind_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -30,10 +32,11 @@ using HoldingSpaceItemTest = testing::TestWithParam<HoldingSpaceItem::Type>;
 TEST_P(HoldingSpaceItemTest, Serialization) {
   const base::FilePath file_path("file_path");
   const GURL file_system_url("file_system_url");
-  const gfx::ImageSkia image(gfx::test::CreateImageSkia(10, 10));
+  const gfx::ImageSkia placeholder(gfx::test::CreateImageSkia(10, 10));
 
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), file_path, file_system_url, image);
+      /*type=*/GetParam(), file_path, file_system_url,
+      std::make_unique<HoldingSpaceImage>(placeholder));
 
   const base::DictionaryValue serialized_holding_space_item =
       holding_space_item->Serialize();
@@ -44,8 +47,9 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
       base::BindLambdaForTesting(
           [&](const base::FilePath& file_path) { return file_system_url; }),
       /*image_resolver=*/
-      base::BindLambdaForTesting(
-          [&](const base::FilePath& file_path) { return image; }));
+      base::BindLambdaForTesting([&](const base::FilePath& file_path) {
+        return std::make_unique<HoldingSpaceImage>(placeholder);
+      }));
 
   EXPECT_EQ(*deserialized_holding_space_item, *holding_space_item);
 }
@@ -54,7 +58,8 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
 TEST_P(HoldingSpaceItemTest, DeserializeId) {
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"), GURL("file_system_url"),
-      gfx::test::CreateImageSkia(10, 10));
+      std::make_unique<HoldingSpaceImage>(
+          /*placeholder=*/gfx::test::CreateImageSkia(10, 10)));
 
   const base::DictionaryValue serialized_holding_space_item =
       holding_space_item->Serialize();

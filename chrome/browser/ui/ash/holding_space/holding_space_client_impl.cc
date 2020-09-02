@@ -8,12 +8,14 @@
 #include "base/bind.h"
 #include "chrome/browser/chromeos/file_manager/open_util.h"
 
+namespace ash {
+
 HoldingSpaceClientImpl::HoldingSpaceClientImpl(Profile* profile)
     : profile_(profile) {}
 
 HoldingSpaceClientImpl::~HoldingSpaceClientImpl() = default;
 
-void HoldingSpaceClientImpl::OpenItem(const ash::HoldingSpaceItem& item,
+void HoldingSpaceClientImpl::OpenItem(const HoldingSpaceItem& item,
                                       OpenItemCallback callback) {
   if (item.file_path().empty()) {
     std::move(callback).Run(/*success=*/false);
@@ -29,3 +31,5 @@ void HoldingSpaceClientImpl::OpenItem(const ash::HoldingSpaceItem& item,
           },
           std::move(callback)));
 }
+
+}  // namespace ash
