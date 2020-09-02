@@ -43,10 +43,8 @@ class MODULES_EXPORT WakeLockManager final
 
   // An actual platform WakeLock. If bound, it means there is an active wake
   // lock for a given type.
-  // TODO(crbug.com/1123879): Resolve the flaky test and make this
-  // kWithoutContextObserver.
   HeapMojoRemote<device::mojom::blink::WakeLock,
-                 HeapMojoWrapperMode::kForceWithoutContextObserver>
+                 HeapMojoWrapperMode::kWithoutContextObserver>
       wake_lock_;
   WakeLockType wake_lock_type_;
 

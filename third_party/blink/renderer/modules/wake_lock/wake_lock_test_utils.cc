@@ -100,6 +100,12 @@ void MockWakeLock::WaitForRequest() {
 
 void MockWakeLock::WaitForCancelation() {
   DCHECK(!cancel_wake_lock_callback_);
+  if (!receiver_.is_bound()) {
+    // If OnConnectionError() has been called, bail out early to avoid waiting
+    // forever.
+    DCHECK(!is_acquired_);
+    return;
+  }
   base::RunLoop run_loop;
   cancel_wake_lock_callback_ = run_loop.QuitClosure();
   RunWithStack(&run_loop);
