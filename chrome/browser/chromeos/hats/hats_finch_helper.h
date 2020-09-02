@@ -19,6 +19,8 @@ namespace chromeos {
 // information related to the hats finch experiment.
 class HatsFinchHelper {
  public:
+  static std::string GetTriggerID();
+
   explicit HatsFinchHelper(Profile* profile);
   ~HatsFinchHelper();
 
@@ -39,6 +41,7 @@ class HatsFinchHelper {
   static const char kSurveyStartDateMsParam[];
   static const char kResetSurveyCycleParam[];
   static const char kResetAllParam[];
+  static const char kTriggerIdParam[];
 
   // Loads all the param values from the finch seed and initializes the member
   // variables.
@@ -69,6 +72,12 @@ class HatsFinchHelper {
   // set of parameters. This is provided as a param via the finch seed under the
   // key "survey_start_date_ms".
   base::Time first_survey_start_date_;
+
+  // The survey's trigger id. This is used by the Hats server to identify its
+  // client, Chrome OS in this case. Different Chrome OS surveys can have
+  // different trigger ids. This is provided as a param via the finch seed under
+  // the key "trigger_id".
+  std::string trigger_id_;
 
   // Indicates that the survey cycle needs to be reset if set to true.
   bool reset_survey_cycle_ = false;

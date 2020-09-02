@@ -85,4 +85,8 @@ bool WebDialogDelegate::CheckMediaAccessPermission(
   return false;
 }
 
+WebDialogDelegate::FrameKind WebDialogDelegate::GetWebDialogFrameKind() const {
+  return WebDialogDelegate::FrameKind::kNonClient;
+}
+
 }  // namespace ui

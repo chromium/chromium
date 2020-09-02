@@ -16,19 +16,18 @@ namespace chromeos {
 
 // Happiness tracking survey dialog. Sometimes appears after login to ask the
 // user how satisfied they are with their Chromebook.
-// This class lives on the UI thread and is self deleting.
+// This class lives on the UI thread.
 class HatsDialog : public ui::WebDialogDelegate {
  public:
   // Creates an instance of HatsDialog and posts a task to load all the relevant
   // device info before displaying the dialog.
-  static void CreateAndShow(bool is_google_account);
+  static std::unique_ptr<HatsDialog> CreateAndShow();
+  ~HatsDialog() override;
 
  private:
-  static void Show(bool is_google_account, const std::string& site_context);
+  void Show(const std::string& site_context);
 
-  // Use CreateAndShow() above.
-  explicit HatsDialog(const std::string& html_data, Profile* otr_profile);
-  ~HatsDialog() override;
+  explicit HatsDialog(const std::string& trigger_id, Profile* user_profile);
 
   // ui::WebDialogDelegate implementation.
   ui::ModalType GetDialogModalType() const override;
@@ -39,16 +38,18 @@ class HatsDialog : public ui::WebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   bool CanResizeDialog() const override;
   std::string GetDialogArgs() const override;
-  // NOTE: This function deletes this object at the end.
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
+  bool ShouldShowCloseButton() const override;
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
+  ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
 
-  const std::string html_data_;
-  Profile* otr_profile_;
+  const std::string trigger_id_;
+  std::string url_;
+  Profile* user_profile_;
 
   DISALLOW_COPY_AND_ASSIGN(HatsDialog);
 };

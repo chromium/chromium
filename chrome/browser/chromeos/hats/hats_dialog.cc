@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/chromeos/hats/hats_finch_helper.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -33,47 +34,23 @@ namespace chromeos {
 namespace {
 
 // Default width/height ratio of screen size.
-const int kDefaultWidth = 400;
-const int kDefaultHeight = 420;
-// Site ID for HaTS survey.
-constexpr char kRegularSiteID[] = "cs5lsagwwbho7l5cbbdniso22e";
-constexpr char kGooglerSiteID[] = "z56p2hjy7pegxh3gmmur4qlwha";
+const int kDefaultWidth = 340;
+const int kDefaultHeight = 260;
 
-constexpr char kScriptSrcReplacementToken[] = "$SCRIPT_SRC";
-constexpr char kDoneButtonLabelReplacementToken[] = "$DONE_BUTTON_LABEL";
-// Base URL to fetch the google consumer survey script.
-constexpr char kBaseFormatUrl[] =
-    "https://www.google.com/insights/consumersurveys/"
-    "async_survey?site=%s&force_https=1&sc=%s";
+constexpr char kCrOSHaTSURL[] =
+    "https://storage.googleapis.com/chromeos-hats-web-stable/index.html";
+
 // Keyword used to join the separate device info elements into a single string
 // to be used as site context.
-const char kDeviceInfoStopKeyword[] = "STOP";
+const char kDeviceInfoStopKeyword[] = "&";
 const char kDefaultProfileLocale[] = "en-US";
+
 enum class DeviceInfoKey : unsigned int {
   BROWSER = 0,
   PLATFORM,
   FIRMWARE,
   LOCALE,
 };
-
-// Returns the local HaTS HTML file as a string with the correct Hats script
-// URL.
-std::string LoadLocalHtmlAsString(const std::string& site_id,
-                                  const std::string& site_context) {
-  std::string html_data =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_HATS_HTML);
-
-  size_t pos = html_data.find(kScriptSrcReplacementToken);
-  html_data.replace(pos, strlen(kScriptSrcReplacementToken),
-                    base::StringPrintf(kBaseFormatUrl, site_id.c_str(),
-                                       site_context.c_str()));
-
-  pos = html_data.find(kDoneButtonLabelReplacementToken);
-  html_data.replace(pos, strlen(kDoneButtonLabelReplacementToken),
-                    l10n_util::GetStringUTF8(IDS_HATS_DONE_BUTTON_LABEL));
-  return html_data;
-}
 
 // Maps the given DeviceInfoKey |key| enum to the corresponding string value
 // that can be used as a key when creating a URL parameter.
@@ -96,40 +73,28 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
 // Must be run on a blocking thread pool.
 // Gathers the browser version info, firmware info and platform info and returns
 // them in a single encoded string, the format of which is defined below.
-// Currently the format is "<key><value>STOP<key><value>STOP<key><value>" where
-// 'STOP' is used as a token to identify the end of a key value pair. This is
-// done since GCS only allows the use of alphanumeric characters to be passed as
-// a site context.
+// Currently the format is "<key>=<value>&<key>=<value>&<key>=<value>".
 std::string GetFormattedSiteContext(const std::string& user_locale,
                                     base::StringPiece join_keyword) {
   std::vector<std::string> pairs;
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::BROWSER) +
+  pairs.push_back(KeyEnumToString(DeviceInfoKey::BROWSER) + "=" +
                   version_info::GetVersionNumber());
 
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::PLATFORM) +
+  pairs.push_back(KeyEnumToString(DeviceInfoKey::PLATFORM) + "=" +
                   version_loader::GetVersion(version_loader::VERSION_FULL));
 
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::FIRMWARE) +
+  pairs.push_back(KeyEnumToString(DeviceInfoKey::FIRMWARE) + "=" +
                   version_loader::GetFirmware());
 
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::LOCALE) + user_locale);
+  pairs.push_back(KeyEnumToString(DeviceInfoKey::LOCALE) + "=" + user_locale);
 
   return base::JoinString(pairs, join_keyword);
-}
-
-// Determine which HaTS survey to show the user.
-const std::string GetSiteID(bool is_google_account) {
-  if (is_google_account) {
-    return kGooglerSiteID;
-  } else {
-    return kRegularSiteID;
-  }
 }
 
 }  // namespace
 
 // static
-void HatsDialog::CreateAndShow(bool is_google_account) {
+std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -139,44 +104,39 @@ void HatsDialog::CreateAndShow(bool is_google_account) {
   if (!user_locale.length())
     user_locale = kDefaultProfileLocale;
 
+  std::unique_ptr<HatsDialog> hats_dialog(
+      new HatsDialog(HatsFinchHelper::GetTriggerID(), profile));
+
+  // Raw pointer is used here since the dialog is owned by the hats
+  // notification controller which lives until the end of the user session. The
+  // dialog will always be closed before that time instant.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetFormattedSiteContext, user_locale,
                      kDeviceInfoStopKeyword),
-      base::BindOnce(&HatsDialog::Show, is_google_account));
+      base::BindOnce(&HatsDialog::Show, base::Unretained(hats_dialog.get())));
+
+  return hats_dialog;
 }
 
-// static
-void HatsDialog::Show(bool is_google_account, const std::string& site_context) {
+void HatsDialog::Show(const std::string& site_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Load and set the html data that needs to be displayed in the dialog.
-  std::string site_id = GetSiteID(is_google_account);
-  std::string html_data = LoadLocalHtmlAsString(site_id, site_context);
+  // Link the trigger ID to fetch the correct survey.
+  url_ = std::string(kCrOSHaTSURL) + "?" + site_context +
+         "&trigger=" + trigger_id_;
 
-  Profile* active_profile = ProfileManager::GetActiveUserProfile();
-  Profile* profile_to_show = active_profile->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUnique("ChromeOS::HatsDialog"));
-
-  // Self deleting.
-  // Users of non-primary OTR profiles should destroy it when it's not needed
-  // any more.
-  auto* hats_dialog = new HatsDialog(html_data,
-                                     /* otr_profile= */ profile_to_show);
-  chrome::ShowWebDialog(nullptr, profile_to_show, hats_dialog);
+  chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(), this);
 }
 
-HatsDialog::HatsDialog(const std::string& html_data, Profile* otr_profile)
-    : html_data_(html_data), otr_profile_(otr_profile) {
+HatsDialog::HatsDialog(const std::string& trigger_id, Profile* user_profile)
+    : trigger_id_(trigger_id), user_profile_(user_profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(otr_profile_->IsOffTheRecord());
-  DCHECK(!otr_profile_->IsPrimaryOTRProfile());
 }
 
 HatsDialog::~HatsDialog() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(otr_profile_);
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
+  DCHECK(user_profile_);
 }
 
 ui::ModalType HatsDialog::GetDialogModalType() const {
@@ -188,7 +148,7 @@ base::string16 HatsDialog::GetDialogTitle() const {
 }
 
 GURL HatsDialog::GetDialogContentURL() const {
-  return GURL("data:text/html;charset=utf-8," + html_data_);
+  return GURL(url_);
 }
 
 void HatsDialog::GetWebUIMessageHandlers(
@@ -206,9 +166,7 @@ std::string HatsDialog::GetDialogArgs() const {
   return std::string();
 }
 
-void HatsDialog::OnDialogClosed(const std::string& json_retval) {
-  delete this;
-}
+void HatsDialog::OnDialogClosed(const std::string& json_retval) {}
 
 void HatsDialog::OnCloseContents(WebContents* source, bool* out_close_dialog) {
   *out_close_dialog = true;
@@ -218,10 +176,18 @@ bool HatsDialog::ShouldShowDialogTitle() const {
   return false;
 }
 
+bool HatsDialog::ShouldShowCloseButton() const {
+  return false;
+}
+
 bool HatsDialog::HandleContextMenu(content::RenderFrameHost* render_frame_host,
                                    const content::ContextMenuParams& params) {
-  // Disable context menu.
+  // Disable context menu
   return true;
+}
+
+ui::WebDialogDelegate::FrameKind HatsDialog::GetWebDialogFrameKind() const {
+  return ui::WebDialogDelegate::FrameKind::kDialog;
 }
 
 }  // namespace chromeos

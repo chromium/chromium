@@ -63,6 +63,7 @@ class HatsWebDialog : public ui::WebDialogDelegate,
   void OnWebContentsFinishedLoad() override;
   void OnMainFrameResourceLoadComplete(
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
+  ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
 
   // views::DialogDelegateView implementation.
   views::View* GetContentsView() override;

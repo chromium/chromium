@@ -36,6 +36,11 @@ class Accelerator;
 // Implement this class to receive notifications.
 class WEB_DIALOGS_EXPORT WebDialogDelegate {
  public:
+  enum class FrameKind {
+    kDialog,     // Does not include a title bar or frame caption buttons.
+    kNonClient,  // Includes a non client frame view with title & buttons.
+  };
+
   // Returns the modal type for this dialog. Only called once, during
   // WebDialogView creation.
   virtual ModalType GetDialogModalType() const = 0;
@@ -183,6 +188,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
       content::RenderFrameHost* render_frame_host,
       const GURL& security_origin,
       blink::mojom::MediaStreamType type);
+
+  // Whether to use dialog frame view for non client frame view.
+  virtual FrameKind GetWebDialogFrameKind() const;
 
   virtual ~WebDialogDelegate() = default;
 

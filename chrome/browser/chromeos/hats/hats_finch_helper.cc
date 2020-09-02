@@ -25,6 +25,14 @@ const char HatsFinchHelper::kSurveyStartDateMsParam[] = "survey_start_date_ms";
 const char HatsFinchHelper::kResetSurveyCycleParam[] = "reset_survey_cycle";
 // static
 const char HatsFinchHelper::kResetAllParam[] = "reset_all";
+// static
+const char HatsFinchHelper::kTriggerIdParam[] = "trigger_id";
+
+std::string HatsFinchHelper::GetTriggerID() {
+  DCHECK(base::FeatureList::IsEnabled(features::kHappinessTrackingSystem));
+  return base::GetFieldTrialParamValueByFeature(
+      features::kHappinessTrackingSystem, kTriggerIdParam);
+}
 
 HatsFinchHelper::HatsFinchHelper(Profile* profile) : profile_(profile) {
   LoadFinchParamValues();
@@ -78,6 +86,8 @@ void HatsFinchHelper::LoadFinchParamValues() {
   }
   first_survey_start_date_ =
       base::Time().FromJsTime(first_survey_start_date_ms);
+
+  trigger_id_ = GetTriggerID();
 
   reset_survey_cycle_ = base::GetFieldTrialParamByFeatureAsBool(
       feature, kResetSurveyCycleParam, false);
@@ -137,6 +147,11 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   bool is_selected = false;
   if (rand_double < probability_of_pick_)
     is_selected = true;
+
+  // Check if the trigger id is a valid string. Trigger IDs are a hash strings
+  // of around 26 characters.
+  is_selected = is_selected && (trigger_id_.length() > 15);
+
   pref_service->SetBoolean(prefs::kHatsDeviceIsSelected, is_selected);
   device_is_selected_for_cycle_ = is_selected;
 }

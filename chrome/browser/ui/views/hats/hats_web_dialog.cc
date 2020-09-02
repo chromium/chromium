@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
@@ -196,6 +197,10 @@ void HatsWebDialog::OnMainFrameResourceLoadComplete(
   }
 }
 
+ui::WebDialogDelegate::FrameKind HatsWebDialog::GetWebDialogFrameKind() const {
+  return ui::WebDialogDelegate::FrameKind::kDialog;
+}
+
 views::View* HatsWebDialog::GetContentsView() {
   return webview_;
 }
@@ -231,8 +236,7 @@ void HatsWebDialog::CreateWebDialog(Browser* browser) {
   // Create a web dialog aligned to the bottom center of the location bar.
   SetButtons(ui::DIALOG_BUTTON_NONE);
   webview_ = new views::WebDialogView(
-      otr_profile_, this, std::make_unique<ChromeWebContentsHandler>(),
-      /* use_dialog_frame= */ true);
+      otr_profile_, this, std::make_unique<ChromeWebContentsHandler>());
   webview_->SetPreferredSize(
       gfx::Size(kDefaultHatsDialogWidth, kDefaultHatsDialogHeight));
   preloading_widget_ = constrained_window::CreateBrowserModalDialogViews(

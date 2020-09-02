@@ -20,6 +20,7 @@ class Profile;
 class NetworkState;
 
 namespace chromeos {
+class HatsDialog;
 
 // Happiness tracking survey (HaTS) notification controller is responsible for
 // managing the HaTS notification that is displayed to the user.
@@ -67,6 +68,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 
   Profile* const profile_;
   std::unique_ptr<message_center::Notification> notification_;
+  std::unique_ptr<HatsDialog> hats_dialog_;
   base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HatsNotificationController);

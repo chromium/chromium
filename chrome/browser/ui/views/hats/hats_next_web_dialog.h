@@ -51,6 +51,7 @@ class HatsNextWebDialog : public ui::WebDialogDelegate,
   bool ShouldShowDialogTitle() const override;
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
+  ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
 
   // BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
