@@ -428,22 +428,6 @@ class CrostiniManager : public KeyedService,
   void GetContainerSshKeys(const ContainerId& container_id,
                            GetContainerSshKeysCallback callback);
 
-  // Called when a USB device should be attached into the VM. Should only ever
-  // be called on user action. The guest_port is only valid on success.
-  using AttachUsbDeviceCallback =
-      base::OnceCallback<void(bool success, uint8_t guest_port)>;
-  void AttachUsbDevice(const std::string& vm_name,
-                       device::mojom::UsbDeviceInfoPtr device,
-                       base::ScopedFD fd,
-                       AttachUsbDeviceCallback callback);
-
-  // Called when a USB device should be detached from the VM.
-  // May be called on user action or on USB removal.
-  void DetachUsbDevice(const std::string& vm_name,
-                       device::mojom::UsbDeviceInfoPtr device,
-                       uint8_t guest_port,
-                       BoolCallback callback);
-
   // Add a relative path to watch within the container homedir. Register as a
   // CrostiniFileChangeObserver to be notified when changes occur. Used by
   // FilesApp.
@@ -827,21 +811,6 @@ class CrostiniManager : public KeyedService,
   void OnGetContainerSshKeys(
       GetContainerSshKeysCallback callback,
       base::Optional<vm_tools::concierge::ContainerSshKeysResponse> response);
-
-  // Callback for CrostiniManager::OnAttachUsbDeviceOpen
-  void OnAttachUsbDevice(
-      const std::string& vm_name,
-      device::mojom::UsbDeviceInfoPtr device,
-      AttachUsbDeviceCallback callback,
-      base::Optional<vm_tools::concierge::AttachUsbDeviceResponse> response);
-
-  // Callback for CrostiniManager::DetachUsbDevice
-  void OnDetachUsbDevice(
-      const std::string& vm_name,
-      uint8_t guest_port,
-      device::mojom::UsbDeviceInfoPtr device,
-      BoolCallback callback,
-      base::Optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
 
   // Callback for AnsibleManagementService::ConfigureDefaultContainer
   void OnDefaultContainerConfigured(bool success);

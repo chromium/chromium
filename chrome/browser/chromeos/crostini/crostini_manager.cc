@@ -527,17 +527,8 @@ class CrostiniManager::CrostiniRestarter
       FinishRestart(result);
       return;
     }
-    // If default termina/penguin, then do device sharing, sshfs mount and
-    // reshare folders, else we are finished.
-    auto vm_info = crostini_manager_->GetVmInfo(container_id_.vm_name);
-    if (vm_info && !vm_info->usb_devices_shared &&
-        container_id_.vm_name == kCrostiniDefaultVmName &&
-        chromeos::CrosUsbDetector::Get()) {
-      // Connect shared devices to the vm.
-      chromeos::CrosUsbDetector::Get()->ConnectSharedDevicesOnVmStartup(
-          container_id_.vm_name);
-      vm_info->usb_devices_shared = true;
-    }
+    // If default termina/penguin, then sshfs mount and reshare folders, else we
+    // are finished.
     // If arc sideloading is enabled, configure the container for that.
     crostini_manager_->ConfigureForArcSideload();
     auto info = crostini_manager_->GetContainerInfo(container_id_);
@@ -1944,82 +1935,6 @@ void CrostiniManager::RemoveContainerShutdownObserver(
 
 void CrostiniManager::OnDBusShuttingDownForTesting() {
   RemoveDBusObservers();
-}
-
-void CrostiniManager::AttachUsbDevice(const std::string& vm_name,
-                                      device::mojom::UsbDeviceInfoPtr device,
-                                      base::ScopedFD fd,
-                                      AttachUsbDeviceCallback callback) {
-  vm_tools::concierge::AttachUsbDeviceRequest request;
-  request.set_vm_name(vm_name);
-  request.set_owner_id(CryptohomeIdForProfile(profile_));
-  request.set_bus_number(device->bus_number);
-  request.set_port_number(device->port_number);
-  request.set_vendor_id(device->vendor_id);
-  request.set_product_id(device->product_id);
-
-  GetConciergeClient()->AttachUsbDevice(
-      std::move(fd), std::move(request),
-      base::BindOnce(&CrostiniManager::OnAttachUsbDevice,
-                     weak_ptr_factory_.GetWeakPtr(), vm_name, std::move(device),
-                     std::move(callback)));
-}
-
-void CrostiniManager::OnAttachUsbDevice(
-    const std::string& vm_name,
-    device::mojom::UsbDeviceInfoPtr device,
-    AttachUsbDeviceCallback callback,
-    base::Optional<vm_tools::concierge::AttachUsbDeviceResponse> response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to attach USB device, empty dbus response";
-    std::move(callback).Run(/*success=*/false, chromeos::kInvalidUsbPortNumber);
-    return;
-  }
-
-  if (!response->success()) {
-    LOG(ERROR) << "Failed to attach USB device, " << response->reason();
-    std::move(callback).Run(/*success=*/false, chromeos::kInvalidUsbPortNumber);
-    return;
-  }
-
-  std::move(callback).Run(/*success=*/true, response->guest_port());
-}
-
-void CrostiniManager::DetachUsbDevice(const std::string& vm_name,
-                                      device::mojom::UsbDeviceInfoPtr device,
-                                      uint8_t guest_port,
-                                      BoolCallback callback) {
-  vm_tools::concierge::DetachUsbDeviceRequest request;
-  request.set_vm_name(vm_name);
-  request.set_owner_id(CryptohomeIdForProfile(profile_));
-  request.set_guest_port(guest_port);
-
-  GetConciergeClient()->DetachUsbDevice(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnDetachUsbDevice,
-                     weak_ptr_factory_.GetWeakPtr(), vm_name, guest_port,
-                     std::move(device), std::move(callback)));
-}
-
-void CrostiniManager::OnDetachUsbDevice(
-    const std::string& vm_name,
-    uint8_t guest_port,
-    device::mojom::UsbDeviceInfoPtr device,
-    BoolCallback callback,
-    base::Optional<vm_tools::concierge::DetachUsbDeviceResponse> response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to detach USB device, empty dbus response";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  if (!response->success()) {
-    LOG(ERROR) << "Failed to detach USB device, " << response->reason();
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  std::move(callback).Run(/*success=*/true);
 }
 
 void CrostiniManager::AddFileWatch(const ContainerId& container_id,

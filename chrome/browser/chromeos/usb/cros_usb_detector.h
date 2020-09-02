@@ -15,6 +15,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/vm_plugin_dispatcher_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -81,7 +83,9 @@ class CrosUsbDeviceObserver : public base::CheckedObserver {
 
 // Detects USB Devices for Chrome OS and manages UI for controlling their use
 // with CrOS, Web or GuestOSs.
-class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient {
+class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
+                        public chromeos::ConciergeClient::VmObserver,
+                        public chromeos::VmPluginDispatcherClient::Observer {
  public:
   // Used to namespace USB notifications to avoid clashes with WebUsbDetector.
   static std::string MakeNotificationId(const std::string& guid);
@@ -133,6 +137,17 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient {
   std::vector<CrosUsbDeviceInfo> GetDevicesSharableWithCrostini() const;
 
  private:
+  // chromeos::ConciergeClient::VmObserver:
+  void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
+  void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
+
+  // chromeos::VmPluginDispatcherClient::Observer:
+  void OnVmToolsStateChanged(
+      const vm_tools::plugin_dispatcher::VmToolsStateChangedSignal& signal)
+      override;
+  void OnVmStateChanged(
+      const vm_tools::plugin_dispatcher::VmStateChangedSignal& signal) override;
+
   // Called after USB device access has been checked.
   void OnDeviceChecked(device::mojom::UsbDeviceInfoPtr device,
                        bool hide_notification,
@@ -159,13 +174,13 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient {
       const std::string& vm_name,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
-      bool success,
-      uint8_t guest_port);
+      base::Optional<vm_tools::concierge::AttachUsbDeviceResponse> response);
+
   void OnUsbDeviceDetachFinished(
       const std::string& vm_name,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
-      bool success);
+      base::Optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
 
   // Returns true when a device should show a notification when attached.
   bool ShouldShowNotification(const device::mojom::UsbDeviceInfo& device_info,

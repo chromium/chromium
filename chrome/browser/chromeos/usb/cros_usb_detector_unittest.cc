@@ -28,6 +28,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_cicerone_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/fake_vm_plugin_dispatcher_client.h"
 #include "components/arc/arc_util.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
@@ -121,7 +122,9 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
         chromeos::DBusThreadManager::Get()->GetCiceroneClient());
     fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
         chromeos::DBusThreadManager::Get()->GetConciergeClient());
-    cros_usb_detector_ = std::make_unique<chromeos::CrosUsbDetector>();
+    fake_vm_plugin_dispatcher_client_ =
+        static_cast<chromeos::FakeVmPluginDispatcherClient*>(
+            chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
   }
 
   ~CrosUsbDetectorTest() override { chromeos::DBusThreadManager::Shutdown(); }
@@ -131,6 +134,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   }
 
   void SetUp() override {
+    cros_usb_detector_ = std::make_unique<chromeos::CrosUsbDetector>();
     BrowserWithTestWindowTest::SetUp();
     crostini_test_helper_.reset(new crostini::CrostiniTestHelper(profile()));
 
@@ -153,6 +157,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     crostini_test_helper_.reset();
     BrowserWithTestWindowTest::TearDown();
+    cros_usb_detector_.reset();
   }
 
   void ConnectToDeviceManager() {
@@ -213,6 +218,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   // Owned by chromeos::DBusThreadManager
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
+  chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
   TestCrosUsbDeviceObserver usb_device_observer_;
   std::unique_ptr<chromeos::CrosUsbDetector> cros_usb_detector_;
@@ -754,12 +760,24 @@ TEST_F(CrosUsbDetectorTest, SharedDevicesGetAttachedOnStartup) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSharedWithCrostini(GetSingleDeviceInfo()));
 
+  // Concierge::VmStarted signal should trigger connections.
   cros_usb_detector_->AddUsbDeviceObserver(&usb_device_observer_);
-  cros_usb_detector_->ConnectSharedDevicesOnVmStartup(
-      crostini::kCrostiniDefaultVmName);
+  vm_tools::concierge::VmStartedSignal vm_started_signal;
+  vm_started_signal.set_name(crostini::kCrostiniDefaultVmName);
+  fake_concierge_client_->NotifyVmStarted(vm_started_signal);
   base::RunLoop().RunUntilIdle();
-  // On VM startup, we have to re-attach devices.
   EXPECT_EQ(1, usb_device_observer_.notify_count());
+  EXPECT_TRUE(IsSharedWithCrostini(GetSingleDeviceInfo()));
+
+  // VmPluginDispatcherClient::OnVmStateChanged RUNNING should also trigger.
+  vm_tools::plugin_dispatcher::VmStateChangedSignal vm_state_changed_signal;
+  vm_state_changed_signal.set_vm_name(crostini::kCrostiniDefaultVmName);
+  vm_state_changed_signal.set_vm_state(
+      vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
+  fake_vm_plugin_dispatcher_client_->NotifyVmStateChanged(
+      vm_state_changed_signal);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, usb_device_observer_.notify_count());
   EXPECT_TRUE(IsSharedWithCrostini(GetSingleDeviceInfo()));
 }
 
