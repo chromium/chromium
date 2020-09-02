@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
@@ -14,6 +15,7 @@
 
 namespace gpu {
 struct GpuPreferences;
+class GpuDriverBugWorkarounds;
 }  // namespace gpu
 
 namespace media {
@@ -32,11 +34,13 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver,
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
-      const gpu::GpuPreferences& gpu_preferences);
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   MojoVideoEncodeAcceleratorProvider(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
-      const gpu::GpuPreferences& gpu_preferences);
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
   ~MojoVideoEncodeAcceleratorProvider() override;
 
   // mojom::VideoEncodeAcceleratorProvider impl.
@@ -48,6 +52,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
  private:
   const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
   const gpu::GpuPreferences& gpu_preferences_;
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorProvider);
 };

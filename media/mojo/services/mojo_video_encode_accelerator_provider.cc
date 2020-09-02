@@ -19,33 +19,38 @@ namespace media {
 void MojoVideoEncodeAcceleratorProvider::Create(
     mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver,
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
-    const gpu::GpuPreferences& gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MojoVideoEncodeAcceleratorProvider>(
-          std::move(create_vea_callback), gpu_preferences),
+          std::move(create_vea_callback), gpu_preferences, gpu_workarounds),
       std::move(receiver));
 }
 
 MojoVideoEncodeAcceleratorProvider::MojoVideoEncodeAcceleratorProvider(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
-    const gpu::GpuPreferences& gpu_preferences)
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : create_vea_callback_(std::move(create_vea_callback)),
-      gpu_preferences_(gpu_preferences) {}
+      gpu_preferences_(gpu_preferences),
+      gpu_workarounds_(gpu_workarounds) {}
 
 MojoVideoEncodeAcceleratorProvider::~MojoVideoEncodeAcceleratorProvider() =
     default;
 
 void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
     mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver) {
-  MojoVideoEncodeAcceleratorService::Create(
-      std::move(receiver), create_vea_callback_, gpu_preferences_);
+  MojoVideoEncodeAcceleratorService::Create(std::move(receiver),
+                                            create_vea_callback_,
+                                            gpu_preferences_, gpu_workarounds_);
 }
 
 void MojoVideoEncodeAcceleratorProvider::
     GetVideoEncodeAcceleratorSupportedProfiles(
         GetVideoEncodeAcceleratorSupportedProfilesCallback callback) {
   std::move(callback).Run(
-      GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(gpu_preferences_));
+      GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(gpu_preferences_,
+                                                             gpu_workarounds_));
 }
 
 }  // namespace media

@@ -7,6 +7,8 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/macros.h"
@@ -22,7 +24,6 @@
 #endif
 #if defined(OS_WIN)
 #include "base/feature_list.h"
-#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #endif
@@ -173,6 +174,22 @@ GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
   }
 #endif
   return profiles;
+}
+
+// static
+MEDIA_GPU_EXPORT VideoEncodeAccelerator::SupportedProfiles
+GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+  VideoEncodeAccelerator::SupportedProfiles vea_profiles =
+      GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(gpu_preferences);
+
+  if (gpu_workarounds.disable_accelerated_vp8_encode) {
+    base::EraseIf(vea_profiles, [](const auto& vea_profile) {
+      return vea_profile.profile == VP8PROFILE_ANY;
+    });
+  }
+  return vea_profiles;
 }
 
 }  // namespace media

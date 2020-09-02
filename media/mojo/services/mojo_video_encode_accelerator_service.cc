@@ -20,18 +20,21 @@ namespace media {
 void MojoVideoEncodeAcceleratorService::Create(
     mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
-    const gpu::GpuPreferences& gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MojoVideoEncodeAcceleratorService>(
-          std::move(create_vea_callback), gpu_preferences),
+          std::move(create_vea_callback), gpu_preferences, gpu_workarounds),
       std::move(receiver));
 }
 
 MojoVideoEncodeAcceleratorService::MojoVideoEncodeAcceleratorService(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
-    const gpu::GpuPreferences& gpu_preferences)
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : create_vea_callback_(std::move(create_vea_callback)),
       gpu_preferences_(gpu_preferences),
+      gpu_workarounds_(gpu_workarounds),
       output_buffer_size_(0) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -50,7 +53,15 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.input_format == PIXEL_FORMAT_I420 ||
          config.input_format == PIXEL_FORMAT_NV12)
-      << "Only I420 or NV12 format supported";
+      << "Only I420 or NV12 format supported, got "
+      << VideoPixelFormatToString(config.input_format);
+
+  if (gpu_workarounds_.disable_accelerated_vp8_encode &&
+      config.output_profile == VP8PROFILE_ANY) {
+    LOG(ERROR) << __func__ << " VP8 encoding disabled by GPU policy";
+    std::move(success_callback).Run(false);
+    return;
+  }
 
   if (encoder_) {
     DLOG(ERROR) << __func__ << " VEA is already initialized";

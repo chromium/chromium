@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
@@ -86,7 +87,7 @@ class MojoVideoEncodeAcceleratorServiceTest : public ::testing::Test {
     mojo_vea_service_ = std::make_unique<MojoVideoEncodeAcceleratorService>(
         base::BindRepeating(&CreateAndInitializeFakeVEA,
                             will_fake_vea_initialization_succeed),
-        gpu::GpuPreferences());
+        gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds());
   }
 
   void BindAndInitialize() {
