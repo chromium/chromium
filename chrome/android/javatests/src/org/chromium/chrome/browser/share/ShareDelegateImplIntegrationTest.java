@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -118,7 +119,8 @@ public class ShareDelegateImplIntegrationTest {
             ShareSheetDelegate delegate = new ShareSheetDelegate() {
                 @Override
                 void share(ShareParams params, ChromeShareExtras chromeShareParams,
-                        BottomSheetController controller, Supplier<Tab> tabProvider,
+                        BottomSheetController controller,
+                        ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
                         Callback<Tab> printCallback, long shareStartTime,
                         boolean sharingHubEnabled) {
                     paramsRef.set(params);
@@ -129,6 +131,7 @@ public class ShareDelegateImplIntegrationTest {
             new ShareDelegateImpl(mActivityTestRule.getActivity()
                                           .getRootUiCoordinatorForTesting()
                                           .getBottomSheetController(),
+                    mActivityTestRule.getActivity().getLifecycleDispatcher(),
                     mActivityTestRule.getActivity().getActivityTabProvider(), delegate, false)
                     .share(mActivityTestRule.getActivity().getActivityTab(), false);
         });

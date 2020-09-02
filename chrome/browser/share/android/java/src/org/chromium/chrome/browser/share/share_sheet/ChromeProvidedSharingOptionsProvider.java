@@ -97,9 +97,10 @@ class ChromeProvidedSharingOptionsProvider {
     /**
      * Encapsulates a {@link PropertyModel} and the {@link ContentType}s it should be shown for.
      */
-    private class FirstPartyOption {
+    private static class FirstPartyOption {
         final Collection<Integer> mContentTypes;
         final PropertyModel mPropertyModel;
+        final boolean mDisableForMultiWindow;
 
         /**
          * Should only be used when the default property model constructed in the builder does not
@@ -107,10 +108,13 @@ class ChromeProvidedSharingOptionsProvider {
          *
          * @param model Property model for the first party option.
          * @param contentTypes Content types to trigger for.
+         * @param disableForMultiWindow If the feature should be disabled if in multi-window mode.
          */
-        FirstPartyOption(PropertyModel model, Collection<Integer> contentTypes) {
+        FirstPartyOption(PropertyModel model, Collection<Integer> contentTypes,
+                boolean disableForMultiWindow) {
             mPropertyModel = model;
             mContentTypes = contentTypes;
+            mDisableForMultiWindow = disableForMultiWindow;
         }
     }
 
@@ -119,6 +123,7 @@ class ChromeProvidedSharingOptionsProvider {
         private int mIconLabel;
         private String mFeatureNameForMetrics;
         private Callback<View> mOnClickCallback;
+        private boolean mDisableForMultiWindow;
         private final Integer[] mContentTypesInBuilder;
 
         FirstPartyOptionBuilder(Integer... contentTypes) {
@@ -141,6 +146,11 @@ class ChromeProvidedSharingOptionsProvider {
             return this;
         }
 
+        FirstPartyOptionBuilder setDisableForMultiWindow(boolean disableForMultiWindow) {
+            mDisableForMultiWindow = disableForMultiWindow;
+            return this;
+        }
+
         FirstPartyOption build() {
             PropertyModel model = ShareSheetPropertyModelBuilder.createPropertyModel(
                     AppCompatResources.getDrawable(mActivity, mIcon),
@@ -150,7 +160,8 @@ class ChromeProvidedSharingOptionsProvider {
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
                         mOnClickCallback.onResult(view);
                     });
-            return new FirstPartyOption(model, Arrays.asList(mContentTypesInBuilder));
+            return new FirstPartyOption(
+                    model, Arrays.asList(mContentTypesInBuilder), mDisableForMultiWindow);
         }
     }
 
@@ -159,12 +170,14 @@ class ChromeProvidedSharingOptionsProvider {
      * contentTypes} being shared.
      *
      * @param contentTypes a {@link Set} of {@link ContentType}.
+     * @param isMultiWindow if in multi-window mode.
      * @return a list of {@link PropertyModel}s.
      */
-    List<PropertyModel> getPropertyModels(Set<Integer> contentTypes) {
+    List<PropertyModel> getPropertyModels(Set<Integer> contentTypes, boolean isMultiWindow) {
         List<PropertyModel> propertyModels = new ArrayList<>();
         for (FirstPartyOption firstPartyOption : mOrderedFirstPartyOptions) {
-            if (!Collections.disjoint(contentTypes, firstPartyOption.mContentTypes)) {
+            if (!Collections.disjoint(contentTypes, firstPartyOption.mContentTypes)
+                    && !(isMultiWindow && firstPartyOption.mDisableForMultiWindow)) {
                 propertyModels.add(firstPartyOption.mPropertyModel);
             }
         }
@@ -231,7 +244,8 @@ class ChromeProvidedSharingOptionsProvider {
                 });
         return new FirstPartyOption(propertyModel,
                 Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
-                        ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE));
+                        ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE),
+                /*disableForMultiWindow=*/true);
     }
 
     private FirstPartyOption createCopyLinkFirstPartyOption() {

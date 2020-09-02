@@ -113,7 +113,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/false);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES);
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 4, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,
@@ -133,7 +133,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/false);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES);
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 2, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,
@@ -151,7 +151,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/true);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES);
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 3, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,
@@ -163,8 +163,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15,
-            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
     @Features.DisableFeatures(
             {ChromeFeatureList.CHROME_SHARE_SCREENSHOT, ChromeFeatureList.CHROME_SHARE_QRCODE,
                     ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
@@ -173,11 +172,29 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/false);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.TEXT));
+                        ImmutableSet.of(ContentType.TEXT), /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 1, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,
                 ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_text)));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
+    public void createPropertyModels_multiWindow_doesNotIncludeScreenshot() {
+        setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/false);
+
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/true);
+
+        Assert.assertEquals("Incorrect number of property models.", 3, propertyModels.size());
+        assertModelsAreInTheRightOrder(propertyModels,
+                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_url),
+                        mActivity.getResources().getString(
+                                R.string.send_tab_to_self_share_activity_title),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
     }
 
     @Test
@@ -190,7 +207,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/true);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE));
+                        ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE),
+                        /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 3, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,
@@ -210,7 +228,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/true);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE));
+                        ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE),
+                        /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 4, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,
@@ -229,7 +248,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/false);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.TEXT));
+                        ImmutableSet.of(ContentType.TEXT), /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 0, propertyModels.size());
     }
@@ -243,7 +262,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(/*printingEnabled=*/false);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT));
+                        ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT), /*isMultiWindow=*/false);
 
         Assert.assertEquals("Incorrect number of property models.", 2, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,

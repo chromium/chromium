@@ -71,20 +71,26 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             messageView.setText(message);
         }
 
-        RecyclerView topRow = this.getContentView().findViewById(R.id.share_sheet_chrome_apps);
-        if (topRowModels != null && topRowModels.size() > 0) {
-            View divider = this.getContentView().findViewById(R.id.share_sheet_divider);
-            divider.setVisibility(View.VISIBLE);
-            topRow.setVisibility(View.VISIBLE);
-            populateView(topRowModels, topRow);
-            topRow.addOnScrollListener(new ScrollEventReporter("SharingHubAndroid.TopRowScrolled"));
-        }
+        createChromeFeatureRecyclerViews(topRowModels);
 
         RecyclerView bottomRow = this.getContentView().findViewById(R.id.share_sheet_other_apps);
         populateView(
                 bottomRowModels, this.getContentView().findViewById(R.id.share_sheet_other_apps));
         bottomRow.addOnScrollListener(
                 new ScrollEventReporter("SharingHubAndroid.BottomRowScrolled"));
+    }
+
+    void createChromeFeatureRecyclerViews(List<PropertyModel> chromeFeatureModels) {
+        RecyclerView chromeFeatureRow =
+                this.getContentView().findViewById(R.id.share_sheet_chrome_apps);
+        if (chromeFeatureModels != null && chromeFeatureModels.size() > 0) {
+            View divider = this.getContentView().findViewById(R.id.share_sheet_divider);
+            divider.setVisibility(View.VISIBLE);
+            chromeFeatureRow.setVisibility(View.VISIBLE);
+            populateView(chromeFeatureModels, chromeFeatureRow);
+            chromeFeatureRow.addOnScrollListener(
+                    new ScrollEventReporter("SharingHubAndroid.TopRowScrolled"));
+        }
     }
 
     private void populateView(List<PropertyModel> models, RecyclerView view) {
