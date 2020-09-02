@@ -621,6 +621,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1124336")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule, 2, 0, "about:blank");
