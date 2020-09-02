@@ -10,6 +10,7 @@
 namespace ash {
 
 struct AmbientSettings;
+enum class AmbientUiMode;
 
 namespace ambient {
 
@@ -27,6 +28,9 @@ enum class ASH_PUBLIC_EXPORT AmbientModePhotoSource {
 
 ASH_PUBLIC_EXPORT AmbientModePhotoSource
 AmbientSettingsToPhotoSource(const AmbientSettings& settings);
+
+ASH_PUBLIC_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
+                                                   bool tablet_mode);
 
 }  // namespace ambient
 }  // namespace ash

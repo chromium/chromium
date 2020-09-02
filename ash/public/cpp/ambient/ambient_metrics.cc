@@ -4,7 +4,9 @@
 
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash {
 namespace ambient {
@@ -30,6 +32,16 @@ AmbientModePhotoSource AmbientSettingsToPhotoSource(
     return AmbientModePhotoSource::kGooglePhotosBoth;
 
   return AmbientModePhotoSource::kGooglePhotosPersonalAlbum;
+}
+
+void RecordAmbientModeActivation(AmbientUiMode ui_mode, bool tablet_mode) {
+  std::string histogram_name = "Ash.AmbientMode.Activation.";
+  if (tablet_mode)
+    histogram_name += "TabletMode";
+  else
+    histogram_name += "ClamshellMode";
+
+  base::UmaHistogramEnumeration(histogram_name, ui_mode);
 }
 
 }  // namespace ambient

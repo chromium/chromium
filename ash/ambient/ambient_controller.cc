@@ -197,6 +197,12 @@ void AmbientController::OnAmbientUiVisibilityChanged(
     AmbientUiVisibility visibility) {
   switch (visibility) {
     case AmbientUiVisibility::kShown:
+
+      // Record metrics on ambient mode usage.
+      ambient::RecordAmbientModeActivation(
+          /*ui_mode=*/ambient_ui_model_.ui_mode(),
+          /*tablet_mode=*/Shell::Get()->IsInTabletMode());
+
       // Resets the monitor and cancels the timer upon shown.
       inactivity_monitor_.reset();
 
