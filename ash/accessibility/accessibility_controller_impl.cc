@@ -725,46 +725,6 @@ void AccessibilityControllerImpl::Shutdown() {
     observer.OnAccessibilityControllerShutdown();
 }
 
-void AccessibilityControllerImpl::SetHighContrastAcceleratorDialogAccepted() {
-  if (!active_user_prefs_)
-    return;
-  active_user_prefs_->SetBoolean(
-      prefs::kHighContrastAcceleratorDialogHasBeenAccepted, true);
-  active_user_prefs_->CommitPendingWrite();
-}
-
-bool AccessibilityControllerImpl::HasHighContrastAcceleratorDialogBeenAccepted()
-    const {
-  return active_user_prefs_ &&
-         active_user_prefs_->GetBoolean(
-             prefs::kHighContrastAcceleratorDialogHasBeenAccepted);
-}
-
-void AccessibilityControllerImpl::
-    SetScreenMagnifierAcceleratorDialogAccepted() {
-  if (!active_user_prefs_)
-    return;
-  active_user_prefs_->SetBoolean(
-      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted, true);
-  active_user_prefs_->CommitPendingWrite();
-}
-
-bool AccessibilityControllerImpl::
-    HasScreenMagnifierAcceleratorDialogBeenAccepted() const {
-  return active_user_prefs_ &&
-         active_user_prefs_->GetBoolean(
-             prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted);
-}
-
-void AccessibilityControllerImpl::
-    SetDockedMagnifierAcceleratorDialogAccepted() {
-  if (!active_user_prefs_)
-    return;
-  active_user_prefs_->SetBoolean(
-      prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, true);
-  active_user_prefs_->CommitPendingWrite();
-}
-
 bool AccessibilityControllerImpl::
     HasDisplayRotationAcceleratorDialogBeenAccepted() const {
   return active_user_prefs_ &&
@@ -779,28 +739,6 @@ void AccessibilityControllerImpl::
   active_user_prefs_->SetBoolean(
       prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2, true);
   active_user_prefs_->CommitPendingWrite();
-}
-
-bool AccessibilityControllerImpl::
-    HasDockedMagnifierAcceleratorDialogBeenAccepted() const {
-  return active_user_prefs_ &&
-         active_user_prefs_->GetBoolean(
-             prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted);
-}
-
-void AccessibilityControllerImpl::SetDictationAcceleratorDialogAccepted() {
-  if (!active_user_prefs_)
-    return;
-  active_user_prefs_->SetBoolean(
-      prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
-  active_user_prefs_->CommitPendingWrite();
-}
-
-bool AccessibilityControllerImpl::HasDictationAcceleratorDialogBeenAccepted()
-    const {
-  return active_user_prefs_ &&
-         active_user_prefs_->GetBoolean(
-             prefs::kDictationAcceleratorDialogHasBeenAccepted);
 }
 
 void AccessibilityControllerImpl::AddObserver(AccessibilityObserver* observer) {

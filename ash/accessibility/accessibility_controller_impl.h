@@ -186,17 +186,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   Feature& virtual_keyboard() const;
   Feature& cursor_color() const;
 
-  // The following functions read and write to their associated preference.
-  // These values are then used to determine whether the accelerator
-  // confirmation dialog for the respective preference has been accepted before.
-  void SetHighContrastAcceleratorDialogAccepted();
-  bool HasHighContrastAcceleratorDialogBeenAccepted() const;
-  void SetScreenMagnifierAcceleratorDialogAccepted();
-  bool HasScreenMagnifierAcceleratorDialogBeenAccepted() const;
-  void SetDockedMagnifierAcceleratorDialogAccepted();
-  bool HasDockedMagnifierAcceleratorDialogBeenAccepted() const;
-  void SetDictationAcceleratorDialogAccepted();
-  bool HasDictationAcceleratorDialogBeenAccepted() const;
   void SetDisplayRotationAcceleratorDialogBeenAccepted();
   bool HasDisplayRotationAcceleratorDialogBeenAccepted() const;
 

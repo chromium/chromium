@@ -2025,15 +2025,13 @@ TEST_F(AcceleratorControllerTest, TestDialogCancel) {
   AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Pressing cancel on the dialog should have no effect.
-  EXPECT_FALSE(
-      accessibility_controller->HasHighContrastAcceleratorDialogBeenAccepted());
+  EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_FALSE(IsConfirmationDialogOpen());
   EXPECT_TRUE(ProcessInController(accelerator));
   EXPECT_TRUE(IsConfirmationDialogOpen());
   CancelConfirmationDialog();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      accessibility_controller->HasHighContrastAcceleratorDialogBeenAccepted());
+  EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 }
 
@@ -2044,23 +2042,20 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
   EXPECT_FALSE(IsConfirmationDialogOpen());
   AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
-  EXPECT_FALSE(
-      accessibility_controller->HasHighContrastAcceleratorDialogBeenAccepted());
+  EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_TRUE(ProcessInController(accelerator));
   EXPECT_TRUE(IsConfirmationDialogOpen());
   AcceptConfirmationDialog();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ContainsHighContrastNotification());
-  EXPECT_TRUE(
-      accessibility_controller->HasHighContrastAcceleratorDialogBeenAccepted());
+  EXPECT_TRUE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
   // High Contrast Mode Enabled dialog and notification should be hidden as the
   // feature is disabled.
   EXPECT_TRUE(ProcessInController(accelerator));
   EXPECT_FALSE(ContainsHighContrastNotification());
-  EXPECT_TRUE(
-      accessibility_controller->HasHighContrastAcceleratorDialogBeenAccepted());
+  EXPECT_TRUE(accessibility_controller->high_contrast().WasDialogAccepted());
 
   // Notification should be shown again when toggled, but dialog will not be
   // shown.
@@ -2255,8 +2250,8 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
   // of accelerator.
   const ui::Accelerator fullscreen_magnifier_accelerator(
       ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
-  EXPECT_FALSE(accessibility_controller
-                   ->HasScreenMagnifierAcceleratorDialogBeenAccepted());
+  EXPECT_FALSE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
   EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
   EXPECT_TRUE(IsConfirmationDialogOpen());
   AcceptConfirmationDialog();
@@ -2269,16 +2264,16 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
   EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
-  EXPECT_TRUE(accessibility_controller
-                  ->HasScreenMagnifierAcceleratorDialogBeenAccepted());
+  EXPECT_TRUE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
   EXPECT_FALSE(IsConfirmationDialogOpen());
   EXPECT_FALSE(ContainsFullscreenMagnifierNotification());
 
   // Dialog will not be shown the second time the accelerator is used.
   EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
   EXPECT_FALSE(IsConfirmationDialogOpen());
-  EXPECT_TRUE(accessibility_controller
-                  ->HasScreenMagnifierAcceleratorDialogBeenAccepted());
+  EXPECT_TRUE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
   EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_TRUE(ContainsFullscreenMagnifierNotification());
@@ -2309,8 +2304,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_TRUE(ProcessInController(docked_magnifier_accelerator));
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
-  EXPECT_TRUE(accessibility_controller
-                  ->HasDockedMagnifierAcceleratorDialogBeenAccepted());
+  EXPECT_TRUE(accessibility_controller->docked_magnifier().WasDialogAccepted());
   EXPECT_FALSE(IsConfirmationDialogOpen());
   EXPECT_FALSE(ContainsDockedMagnifierNotification());
 

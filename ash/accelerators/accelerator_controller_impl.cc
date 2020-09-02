@@ -1313,8 +1313,7 @@ void HandleToggleDockedMagnifier() {
 
   const bool current_enabled = docked_magnifier_controller->GetEnabled();
   const bool dialog_ever_accepted =
-      accessibility_controller
-          ->HasDockedMagnifierAcceleratorDialogBeenAccepted();
+      accessibility_controller->docked_magnifier().WasDialogAccepted();
 
   if (!current_enabled && !dialog_ever_accepted) {
     shell->accelerator_controller()->MaybeShowConfirmationDialog(
@@ -1322,7 +1321,8 @@ void HandleToggleDockedMagnifier() {
         base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
-              ->SetDockedMagnifierAcceleratorDialogAccepted();
+              ->docked_magnifier()
+              .SetDialogAccepted();
           SetDockedMagnifierEnabled(true);
         }),
         base::DoNothing());
@@ -1394,7 +1394,7 @@ void HandleToggleHighContrast() {
   AccessibilityControllerImpl* controller = shell->accessibility_controller();
   const bool current_enabled = controller->high_contrast_enabled();
   const bool dialog_ever_accepted =
-      controller->HasHighContrastAcceleratorDialogBeenAccepted();
+      controller->high_contrast().WasDialogAccepted();
 
   if (!current_enabled && !dialog_ever_accepted) {
     shell->accelerator_controller()->MaybeShowConfirmationDialog(
@@ -1402,7 +1402,8 @@ void HandleToggleHighContrast() {
         base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
-              ->SetHighContrastAcceleratorDialogAccepted();
+              ->high_contrast()
+              .SetDialogAccepted();
           SetHighContrastEnabled(true);
         }),
         base::DoNothing());
@@ -1438,8 +1439,7 @@ void HandleToggleFullscreenMagnifier() {
 
   const bool current_enabled = magnification_controller->IsEnabled();
   const bool dialog_ever_accepted =
-      accessibility_controller
-          ->HasScreenMagnifierAcceleratorDialogBeenAccepted();
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted();
 
   if (!current_enabled && !dialog_ever_accepted) {
     shell->accelerator_controller()->MaybeShowConfirmationDialog(
@@ -1447,7 +1447,8 @@ void HandleToggleFullscreenMagnifier() {
         base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
-              ->SetScreenMagnifierAcceleratorDialogAccepted();
+              ->fullscreen_magnifier()
+              .SetDialogAccepted();
           SetFullscreenMagnifierEnabled(true);
         }),
         base::DoNothing());
