@@ -48,7 +48,7 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
                              const gfx::Size& tooltip_size);
 
   // Sets |widget_| to a new instance of TooltipWidget.
-  void CreateTooltipWidget();
+  void CreateTooltipWidget(const gfx::Rect& bounds);
 
   // Destroys |widget_|.
   void DestroyWidget();
