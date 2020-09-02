@@ -10,4 +10,5 @@
 ] interface Sanitizer {
   [RaisesException] constructor();
   DOMString sanitizeToString(DOMString input);
+  [CallWith=ScriptState, RaisesException] DocumentFragment sanitize(DOMString input);
 };

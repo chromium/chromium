@@ -8,10 +8,34 @@
 
 <body>
 <script>
+    function getString(fragment) {
+      d = document.createElement("div");
+      d.appendChild(fragment);
+      return d.innerHTML;
+    }
+    s = new Sanitizer();
+
     test(t => {
-        s = new Sanitizer();
-        assert_equals("test", s.sanitizeToString("test"));
+        assert_equals(s.sanitizeToString("test"), "test");
     }, "SanitizerAPI exists!");
+
+    test(t => {
+        fragment = s.sanitize("test");
+        assert_equals("[object DocumentFragment]", fragment.toString());
+        assert_equals(getString(fragment), "<head></head><body>test</body>");
+    }, "SanitizerAPI sanitizeToFragment works!");
+
+    test(t => {
+        fragment = s.sanitize("<b>bla</b>");
+        assert_equals(fragment.toString(), "[object DocumentFragment]");
+        assert_equals(getString(fragment), "<head></head><body><b>bla</b></body>");
+    }, "SanitizerAPI sanitizeToFragment with HTML codes works!");
+
+    test(t => {
+        fragment = s.sanitize("<a<embla");
+        assert_equals(fragment.toString(), "[object DocumentFragment]");
+        assert_equals(getString(fragment), "<head></head><body></body>");
+    }, "SanitizerAPI sanitizeToFragment with broken HTML codes works!");
 </script>
 </body>
 </html>

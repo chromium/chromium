@@ -7930,6 +7930,7 @@ interface SVGViewElement : SVGElement
 interface Sanitizer
     attribute @@toStringTag
     method constructor
+    method sanitize
     method sanitizeToString
 interface Scheduler
     attribute @@toStringTag
