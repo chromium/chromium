@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** This class represents a window. */
-class WindowRootNode extends RootNodeWrapper {
+class WindowRootNode extends BasicRootNode {
   /** @override */
   onFocus() {
     super.onFocus();
@@ -23,9 +23,9 @@ class WindowRootNode extends RootNodeWrapper {
    */
   static buildTree(windowNode) {
     const root = new WindowRootNode(windowNode);
-    const childConstructor = (node) => NodeWrapper.create(node, root);
+    const childConstructor = (node) => BasicNode.create(node, root);
 
-    RootNodeWrapper.findAndSetChildren(root, childConstructor);
+    BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;
   }
 }

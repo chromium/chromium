@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** This class handles interactions with sliders. */
-class SliderNode extends NodeWrapper {
+class SliderNode extends BasicNode {
   /**
    * @param {!AutomationNode} baseNode
    * @param {?SARootNode} parent

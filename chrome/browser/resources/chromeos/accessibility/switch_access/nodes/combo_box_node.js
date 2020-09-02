@@ -6,7 +6,7 @@
  * This class handles interactions with combo boxes.
  * TODO(anastasi): Add a test for this class.
  */
-class ComboBoxNode extends NodeWrapper {
+class ComboBoxNode extends BasicNode {
   /**
    * @param {!AutomationNode} baseNode
    * @param {?SARootNode} parent

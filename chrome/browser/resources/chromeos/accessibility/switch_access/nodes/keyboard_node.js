@@ -6,7 +6,7 @@
  * This class handles the behavior of keyboard nodes directly associated with a
  * single AutomationNode.
  */
-class KeyboardNode extends NodeWrapper {
+class KeyboardNode extends BasicNode {
   /**
    * @param {!AutomationNode} node
    * @param {!SARootNode} parent
@@ -59,7 +59,7 @@ class KeyboardNode extends NodeWrapper {
  * This class handles the top-level Keyboard node, as well as the construction
  * of the Keyboard tree.
  */
-class KeyboardRootNode extends RootNodeWrapper {
+class KeyboardRootNode extends BasicRootNode {
   /**
    * @param {!AutomationNode} groupNode
    * @private

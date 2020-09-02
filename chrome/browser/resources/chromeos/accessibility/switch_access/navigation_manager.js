@@ -140,7 +140,7 @@ class NavigationManager {
     if (!menuNode) {
       return;
     }
-    const menu = RootNodeWrapper.buildTree(menuNode);
+    const menu = BasicRootNode.buildTree(menuNode);
     NavigationManager.instance.jumpTo_(menu, false /* shouldExitMenu */);
   }
 
@@ -191,7 +191,7 @@ class NavigationManager {
     }
     const navigator = NavigationManager.instance;
     const baseNode = node.automationNode;
-    if (!(node instanceof NodeWrapper) || !baseNode) {
+    if (!(node instanceof BasicNode) || !baseNode) {
       navigator.setNode_(node);
       return;
     }

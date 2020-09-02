@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** This class represents the group rooted at a modal dialog. */
-class ModalDialogRootNode extends RootNodeWrapper {
+class ModalDialogRootNode extends BasicRootNode {
   /** @override */
   onExit() {
     // To close a modal dialog, we need to send an escape key event.
@@ -17,9 +17,9 @@ class ModalDialogRootNode extends RootNodeWrapper {
    */
   static buildTree(dialogNode) {
     const root = new ModalDialogRootNode(dialogNode);
-    const childConstructor = (node) => NodeWrapper.create(node, root);
+    const childConstructor = (node) => BasicNode.create(node, root);
 
-    RootNodeWrapper.findAndSetChildren(root, childConstructor);
+    BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;
   }
 }

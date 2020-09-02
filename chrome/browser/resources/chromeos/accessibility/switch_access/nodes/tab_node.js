@@ -6,7 +6,7 @@
  * This class handles the behavior of tab nodes at the top level (i.e. as
  * groups).
  */
-class TabNode extends NodeWrapper {
+class TabNode extends BasicNode {
   /**
    * @param {!AutomationNode} node The node in the automation
    *    tree
@@ -53,12 +53,12 @@ class TabNode extends NodeWrapper {
 
   /** @override */
   static create(tabNode, parent) {
-    const tabAsRoot = new RootNodeWrapper(tabNode);
+    const tabAsRoot = new BasicRootNode(tabNode);
 
     let closeButton;
     for (const child of tabNode.children) {
       if (child.role === chrome.automation.RoleType.BUTTON) {
-        closeButton = new NodeWrapper(child, tabAsRoot);
+        closeButton = new BasicNode(child, tabAsRoot);
         break;
       }
     }
@@ -77,7 +77,7 @@ class TabNode extends NodeWrapper {
 }
 
 /** This class handles the behavior of tabs as actionable elements */
-class ActionableTabNode extends NodeWrapper {
+class ActionableTabNode extends BasicNode {
   /**
    * @param {!AutomationNode} node
    * @param {?SARootNode} parent

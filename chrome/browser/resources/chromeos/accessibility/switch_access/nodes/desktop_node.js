@@ -5,7 +5,7 @@
 /**
  * This class handles interactions with the desktop automation node.
  */
-class DesktopNode extends RootNodeWrapper {
+class DesktopNode extends BasicRootNode {
   /**
    * @param {!AutomationNode} autoNode The automation node representing the
    *     desktop.
@@ -40,7 +40,7 @@ class DesktopNode extends RootNodeWrapper {
     }
 
     // Update this DesktopNode's children.
-    const childConstructor = (node) => NodeWrapper.create(node, this);
+    const childConstructor = (node) => BasicNode.create(node, this);
     DesktopNode.findAndSetChildren(this, childConstructor);
 
     // Set the new instance of that child to be the focused node.
@@ -64,7 +64,7 @@ class DesktopNode extends RootNodeWrapper {
    */
   static build(desktop) {
     const root = new DesktopNode(desktop);
-    const childConstructor = (autoNode) => NodeWrapper.create(autoNode, root);
+    const childConstructor = (autoNode) => BasicNode.create(autoNode, root);
 
     DesktopNode.findAndSetChildren(root, childConstructor);
     return root;
@@ -72,7 +72,7 @@ class DesktopNode extends RootNodeWrapper {
 
   /** @override */
   static findAndSetChildren(root, childConstructor) {
-    const interestingChildren = RootNodeWrapper.getInterestingChildren(root);
+    const interestingChildren = BasicRootNode.getInterestingChildren(root);
 
     if (interestingChildren.length < 1) {
       // If the desktop node does not behave as expected, we have no basis for

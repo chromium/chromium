@@ -121,7 +121,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'JumpTo', function() {
         this.navigator.group_.isEquivalentTo(group1),
         'Group is initialized in an unexpected manner');
 
-    this.navigator.jumpTo_(RootNodeWrapper.buildTree(group2));
+    this.navigator.jumpTo_(BasicRootNode.buildTree(group2));
     assertFalse(
         this.navigator.group_.isEquivalentTo(group1), 'Jump did nothing');
     assertTrue(

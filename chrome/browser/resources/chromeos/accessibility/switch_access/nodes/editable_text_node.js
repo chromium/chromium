@@ -5,7 +5,7 @@
 /**
  * This class handles interactions with editable text fields.
  */
-class EditableTextNode extends NodeWrapper {
+class EditableTextNode extends BasicNode {
   /**
    * @param {!AutomationNode} baseNode
    * @param {?SARootNode} parent

@@ -5,9 +5,9 @@
 GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 
 /** Test fixture for the node wrapper type. */
-SwitchAccessNodeWrapperTest = class extends SwitchAccessE2ETest {};
+SwitchAccessBasicNodeTest = class extends SwitchAccessE2ETest {};
 
-TEST_F('SwitchAccessNodeWrapperTest', 'AsRootNode', function() {
+TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', function() {
   const website = `<div aria-label="outer">
                      <div aria-label="inner">
                        <input type="range">
@@ -22,7 +22,7 @@ TEST_F('SwitchAccessNodeWrapperTest', 'AsRootNode', function() {
     const outer = inner.parent;
     assertNotEquals(undefined, outer, 'Could not find outer group');
 
-    const outerRootNode = RootNodeWrapper.buildTree(outer, null);
+    const outerRootNode = BasicRootNode.buildTree(outer, null);
     const innerNode = outerRootNode.firstChild;
     assertTrue(innerNode.isGroup(), 'Inner group node is not a group');
 
@@ -41,7 +41,7 @@ TEST_F('SwitchAccessNodeWrapperTest', 'AsRootNode', function() {
   });
 });
 
-TEST_F('SwitchAccessNodeWrapperTest', 'Equals', function() {
+TEST_F('SwitchAccessBasicNodeTest', 'Equals', function() {
   this.runWithLoadedTree('', (desktop) => {
     const desktopNode = DesktopNode.build(desktop);
 
@@ -79,17 +79,17 @@ TEST_F('SwitchAccessNodeWrapperTest', 'Equals', function() {
 
     const wrappedNode = desktopNode.firstChild;
     assertTrue(
-        wrappedNode instanceof NodeWrapper,
-        'Child node is not of type NodeWrapper');
+        wrappedNode instanceof BasicNode,
+        'Child node is not of type BasicNode');
     assertGT(desktopNode.children.length, 1, 'Desktop root has only 1 child');
 
-    assertFalse(wrappedNode.equals(), 'Child NodeWrapper equals nothing');
+    assertFalse(wrappedNode.equals(), 'Child BasicNode equals nothing');
     assertFalse(
         wrappedNode.equals(new BackButtonNode()),
-        'Child NodeWrapper equals a BackButtonNode');
+        'Child BasicNode equals a BackButtonNode');
     assertFalse(
         new BackButtonNode().equals(wrappedNode),
-        'Equals is not symmetric? NodeWrapper equals a BackButtonNode');
+        'Equals is not symmetric? BasicNode equals a BackButtonNode');
     assertFalse(
         wrappedNode.equals(desktopNode.lastChild),
         'Children with different base nodes are equal');
@@ -98,7 +98,7 @@ TEST_F('SwitchAccessNodeWrapperTest', 'Equals', function() {
         'Equals is not symmetric? Nodes with different base nodes are equal');
 
     const equivalentWrappedNode =
-        NodeWrapper.create(wrappedNode.baseNode_, desktopNode);
+        BasicNode.create(wrappedNode.baseNode_, desktopNode);
     assertTrue(
         wrappedNode.equals(wrappedNode),
         'Equals is not reflexive? (child node)');
@@ -111,12 +111,12 @@ TEST_F('SwitchAccessNodeWrapperTest', 'Equals', function() {
   });
 });
 
-TEST_F('SwitchAccessNodeWrapperTest', 'Actions', function() {
+TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
   const website = `<input type="text">
                    <button></button>
                    <input type="range" min=1 max=5 value=3>`;
   this.runWithLoadedTree(website, (desktop) => {
-    const textField = NodeWrapper.create(
+    const textField = BasicNode.create(
         desktop.find({role: chrome.automation.RoleType.TEXT_FIELD}),
         new SARootNode());
 
@@ -133,7 +133,7 @@ TEST_F('SwitchAccessNodeWrapperTest', 'Actions', function() {
         textField.hasAction(SwitchAccessMenuAction.SELECT),
         'Text field has action SELECT');
 
-    const button = NodeWrapper.create(
+    const button = BasicNode.create(
         desktop.find({role: chrome.automation.RoleType.BUTTON}),
         new SARootNode());
 
@@ -150,7 +150,7 @@ TEST_F('SwitchAccessNodeWrapperTest', 'Actions', function() {
         button.hasAction(SwitchAccessMenuAction.DICTATION),
         'Button has action DICTATION');
 
-    const slider = NodeWrapper.create(
+    const slider = BasicNode.create(
         desktop.find({role: chrome.automation.RoleType.SLIDER}),
         new SARootNode());
 
