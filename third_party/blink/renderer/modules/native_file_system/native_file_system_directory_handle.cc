@@ -27,10 +27,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-namespace {
-// The name to use for the root directory of a sandboxed file system.
-constexpr const char kSandboxRootDirectoryName[] = "";
-}  // namespace
 
 using mojom::blink::NativeFileSystemErrorPtr;
 
@@ -206,57 +202,6 @@ ScriptPromise NativeFileSystemDirectoryHandle::resolve(
             resolver->Resolve(*path);
           },
           WrapPersistent(resolver)));
-
-  return result;
-}
-
-// static
-ScriptPromise NativeFileSystemDirectoryHandle::getSystemDirectory(
-    ScriptState* script_state,
-    const GetSystemDirectoryOptions* options,
-    ExceptionState& exception_state) {
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  if (!context->GetSecurityOrigin()->CanAccessNativeFileSystem()) {
-    if (context->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin)) {
-      exception_state.ThrowSecurityError(
-          "System directory access is denied because the context is "
-          "sandboxed and lacks the 'allow-same-origin' flag.");
-      return ScriptPromise();
-    } else {
-      exception_state.ThrowSecurityError("System directory access is denied.");
-      return ScriptPromise();
-    }
-  }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
-
-  // TODO(mek): Cache mojo::Remote<mojom::blink::NativeFileSystemManager>
-  // associated with an ExecutionContext, so we don't have to request a new one
-  // for each operation, and can avoid code duplication between here and other
-  // uses.
-  mojo::Remote<mojom::blink::NativeFileSystemManager> manager;
-  context->GetBrowserInterfaceBroker().GetInterface(
-      manager.BindNewPipeAndPassReceiver());
-
-  auto* raw_manager = manager.get();
-  raw_manager->GetSandboxedFileSystem(WTF::Bind(
-      [](ScriptPromiseResolver* resolver,
-         mojo::Remote<mojom::blink::NativeFileSystemManager>,
-         NativeFileSystemErrorPtr result,
-         mojo::PendingRemote<mojom::blink::NativeFileSystemDirectoryHandle>
-             handle) {
-        ExecutionContext* context = resolver->GetExecutionContext();
-        if (!context)
-          return;
-        if (result->status != mojom::blink::NativeFileSystemStatus::kOk) {
-          native_file_system_error::Reject(resolver, *result);
-          return;
-        }
-        resolver->Resolve(MakeGarbageCollected<NativeFileSystemDirectoryHandle>(
-            context, kSandboxRootDirectoryName, std::move(handle)));
-      },
-      WrapPersistent(resolver), std::move(manager)));
 
   return result;
 }

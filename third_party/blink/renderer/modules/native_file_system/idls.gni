@@ -11,8 +11,6 @@ modules_idl_files = [
 ]
 
 modules_dictionary_idl_files = [
-  "choose_file_system_entries_options.idl",
-  "choose_file_system_entries_options_accepts.idl",
   "directory_picker_options.idl",
   "file_picker_accept_type.idl",
   "file_picker_options.idl",
@@ -21,7 +19,6 @@ modules_dictionary_idl_files = [
   "file_system_get_file_options.idl",
   "file_system_handle_permission_descriptor.idl",
   "file_system_remove_options.idl",
-  "get_system_directory_options.idl",
   "open_file_picker_options.idl",
   "save_file_picker_options.idl",
   "write_params.idl",

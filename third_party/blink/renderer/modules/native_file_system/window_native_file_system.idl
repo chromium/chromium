@@ -9,10 +9,6 @@
     RuntimeEnabled=NativeFileSystem,
     ImplementedAs=GlobalNativeFileSystem
 ] partial interface Window {
-    [CallWith=ScriptState, Measure, RaisesException, RuntimeEnabled=LegacyNativeFileSystem]
-    Promise<(FileSystemHandle or sequence<FileSystemHandle>)>
-        chooseFileSystemEntries(optional ChooseFileSystemEntriesOptions options = {});
-
     [CallWith=ScriptState, RaisesException, Measure]
     Promise<sequence<FileSystemFileHandle>> showOpenFilePicker(
         optional OpenFilePickerOptions options = {});

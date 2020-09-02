@@ -1056,11 +1056,6 @@
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
-      // Used for API surface that will be removed when the Native File System
-      // API is no longer guarded by an origin trial.
-      name: "LegacyNativeFileSystem",
-    },
-    {
       name: "LegacyWindowsDWriteFontFallback",
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
     },

@@ -14,7 +14,6 @@ namespace blink {
 class FileSystemGetDirectoryOptions;
 class FileSystemGetFileOptions;
 class FileSystemRemoveOptions;
-class GetSystemDirectoryOptions;
 class NativeFileSystemDirectoryIterator;
 
 class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
@@ -45,10 +44,6 @@ class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
                             const FileSystemRemoveOptions*);
 
   ScriptPromise resolve(ScriptState*, NativeFileSystemHandle* possible_child);
-
-  static ScriptPromise getSystemDirectory(ScriptState*,
-                                          const GetSystemDirectoryOptions*,
-                                          ExceptionState&);
 
   mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> Transfer()
       override;

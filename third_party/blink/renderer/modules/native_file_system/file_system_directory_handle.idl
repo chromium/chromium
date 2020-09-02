@@ -18,20 +18,10 @@
     NativeFileSystemDirectoryIterator keys();
     NativeFileSystemDirectoryIterator values();
 
-    [CallWith=ScriptState, RuntimeEnabled=LegacyNativeFileSystem, ImplementedAs=getFileHandle]
-    Promise<FileSystemFileHandle> getFile(USVString name, optional FileSystemGetFileOptions options = {});
-    [CallWith=ScriptState, RuntimeEnabled=LegacyNativeFileSystem, ImplementedAs=getDirectoryHandle]
-    Promise<FileSystemDirectoryHandle> getDirectory(USVString name, optional FileSystemGetDirectoryOptions options = {});
-
     [CallWith=ScriptState] Promise<FileSystemFileHandle> getFileHandle(USVString name, optional FileSystemGetFileOptions options = {});
     [CallWith=ScriptState] Promise<FileSystemDirectoryHandle> getDirectoryHandle(USVString name, optional FileSystemGetDirectoryOptions options = {});
-
-    [CallWith=ScriptState, RuntimeEnabled=LegacyNativeFileSystem] object getEntries();
 
     [CallWith=ScriptState] Promise<void> removeEntry(USVString name, optional FileSystemRemoveOptions options = {});
 
     [CallWith=ScriptState, Measure] Promise<sequence<USVString>?> resolve(FileSystemHandle possibleChild);
-
-    [CallWith=ScriptState, Measure, RaisesException, RuntimeEnabled=LegacyNativeFileSystem]
-    static Promise<FileSystemDirectoryHandle> getSystemDirectory(GetSystemDirectoryOptions options);
 };

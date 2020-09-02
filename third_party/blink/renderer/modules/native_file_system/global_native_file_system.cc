@@ -12,8 +12,6 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/native_file_system/native_file_system_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_choose_file_system_entries_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_choose_file_system_entries_options_accepts.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_picker_accept_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_open_file_picker_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_save_file_picker_options.h"
@@ -35,35 +33,6 @@
 namespace blink {
 
 namespace {
-
-mojom::blink::ChooseFileSystemEntryType ConvertChooserType(const String& input,
-                                                           bool multiple) {
-  if (input == "open-file" || input == "openFile") {
-    return multiple
-               ? mojom::blink::ChooseFileSystemEntryType::kOpenMultipleFiles
-               : mojom::blink::ChooseFileSystemEntryType::kOpenFile;
-  }
-  if (input == "save-file" || input == "saveFile")
-    return mojom::blink::ChooseFileSystemEntryType::kSaveFile;
-  if (input == "open-directory" || input == "openDirectory")
-    return mojom::blink::ChooseFileSystemEntryType::kOpenDirectory;
-  NOTREACHED();
-  return mojom::blink::ChooseFileSystemEntryType::kOpenFile;
-}
-
-Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> ConvertAccepts(
-    const HeapVector<Member<ChooseFileSystemEntriesOptionsAccepts>>& accepts) {
-  Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> result;
-  result.ReserveInitialCapacity(accepts.size());
-  for (const auto& a : accepts) {
-    result.emplace_back(
-        blink::mojom::blink::ChooseFileSystemEntryAcceptsOption::New(
-            a->hasDescription() ? a->description() : g_empty_string,
-            a->hasMimeTypes() ? a->mimeTypes() : Vector<String>(),
-            a->hasExtensions() ? a->extensions() : Vector<String>()));
-  }
-  return result;
-}
 
 constexpr bool IsHTTPWhitespace(UChar chr) {
   return chr == ' ' || chr == '\n' || chr == '\t' || chr == '\r';
@@ -232,29 +201,6 @@ ScriptPromise ShowFilePickerImpl(
 }
 
 }  // namespace
-
-// static
-ScriptPromise GlobalNativeFileSystem::chooseFileSystemEntries(
-    ScriptState* script_state,
-    LocalDOMWindow& window,
-    const ChooseFileSystemEntriesOptions* options,
-    ExceptionState& exception_state) {
-  UseCounter::Count(window, WebFeature::kFileSystemPickerMethod);
-
-  VerifyIsAllowedToShowFilePicker(window, exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-
-  Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
-  if (options->hasAccepts())
-    accepts = ConvertAccepts(options->accepts());
-
-  return ShowFilePickerImpl(
-      script_state, window,
-      ConvertChooserType(options->type(), options->multiple()),
-      std::move(accepts), !options->excludeAcceptAllOption(),
-      options->multiple());
-}
 
 // static
 ScriptPromise GlobalNativeFileSystem::showOpenFilePicker(

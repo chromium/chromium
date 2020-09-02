@@ -19,8 +19,6 @@ enum FileSystemHandleKind {
     // Brand checking APIs because javascript makes it otherwise really hard to
     // figure out what type an object is when you don't know in which global
     // (i.e. iframe) the object was created.
-    [RuntimeEnabled=LegacyNativeFileSystem] readonly attribute boolean isFile;
-    [RuntimeEnabled=LegacyNativeFileSystem] readonly attribute boolean isDirectory;
     readonly attribute FileSystemHandleKind kind;
 
     readonly attribute USVString name;

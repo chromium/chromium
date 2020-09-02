@@ -10,7 +10,6 @@
 
 namespace blink {
 
-class ChooseFileSystemEntriesOptions;
 class OpenFilePickerOptions;
 class SaveFilePickerOptions;
 class DirectoryPickerOptions;
@@ -23,12 +22,6 @@ class GlobalNativeFileSystem {
   STATIC_ONLY(GlobalNativeFileSystem);
 
  public:
-  static ScriptPromise chooseFileSystemEntries(
-      ScriptState*,
-      LocalDOMWindow&,
-      const ChooseFileSystemEntriesOptions*,
-      ExceptionState&);
-
   static ScriptPromise showOpenFilePicker(ScriptState*,
                                           LocalDOMWindow&,
                                           const OpenFilePickerOptions*,
