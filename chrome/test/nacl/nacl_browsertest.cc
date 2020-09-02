@@ -92,6 +92,12 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, PPAPIPPPInstance, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppp_instance.html"));
 })
 
+// TODO(1059468): Flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_ProgressEvents DISABLED_ProgressEvents
+#else
+#define MAYBE_ProgressEvents ProgressEvents
+#endif
 NACL_BROWSER_TEST_F(NaClBrowserTest, ProgressEvents, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_progress_events.html"));
 })
