@@ -59,7 +59,7 @@
       Two page view
     </message>
     <message name="IDS_PDF_ANNOTATIONS_SHOW_TOGGLE" desc="Button text for toggling showing annotations on the PDF document">
-      Show annotations
+      Annotations
     </message>
     <message name="IDS_PDF_TOOLTIP_ZOOM_IN" desc="Button tooltip for the button which zooms in a PDF, so that the document appears larger">
       Zoom in
