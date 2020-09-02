@@ -433,14 +433,12 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
   web_app->SetDescription(base::UTF16ToUTF8(web_app_info.description));
   web_app->SetScope(web_app_info.scope);
-  if (web_app_info.theme_color) {
-    DCHECK_EQ(SkColorGetA(*web_app_info.theme_color), SK_AlphaOPAQUE);
-    web_app->SetThemeColor(web_app_info.theme_color);
-  }
-  if (web_app_info.background_color) {
-    DCHECK_EQ(SkColorGetA(*web_app_info.background_color), SK_AlphaOPAQUE);
-    web_app->SetBackgroundColor(*web_app_info.background_color);
-  }
+  DCHECK(!web_app_info.theme_color.has_value() ||
+         SkColorGetA(*web_app_info.theme_color) == SK_AlphaOPAQUE);
+  web_app->SetThemeColor(web_app_info.theme_color);
+  DCHECK(!web_app_info.background_color.has_value() ||
+         SkColorGetA(*web_app_info.background_color) == SK_AlphaOPAQUE);
+  web_app->SetBackgroundColor(web_app_info.background_color);
 
   WebApp::SyncFallbackData sync_fallback_data;
   sync_fallback_data.name = base::UTF16ToUTF8(web_app_info.title);
@@ -467,8 +465,8 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
       web_app_info.run_on_os_login) {
-    // TODO(crbug.com/1091964): Obtain actual mode, currently set to the default
-    // (windowed).
+    // TODO(crbug.com/1091964): Obtain actual mode, currently set to the
+    // default (windowed).
     web_app->SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
   }
 
