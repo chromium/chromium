@@ -11,8 +11,8 @@ namespace web_app {
 WebAppRegistrationWaiter::WebAppRegistrationWaiter(PendingAppManager* manager)
     : manager_(manager) {
   manager_->SetRegistrationCallbackForTesting(base::BindLambdaForTesting(
-      [this](const GURL& launch_url, RegistrationResultCode code) {
-        CHECK_EQ(launch_url_, launch_url);
+      [this](const GURL& install_url, RegistrationResultCode code) {
+        CHECK_EQ(install_url_, install_url);
         CHECK_EQ(code_, code);
         run_loop_.Quit();
       }));
@@ -23,9 +23,9 @@ WebAppRegistrationWaiter::~WebAppRegistrationWaiter() {
 }
 
 void WebAppRegistrationWaiter::AwaitNextRegistration(
-    const GURL& launch_url,
+    const GURL& install_url,
     RegistrationResultCode code) {
-  launch_url_ = launch_url;
+  install_url_ = install_url;
   code_ = code;
   run_loop_.Run();
 }

@@ -16,13 +16,13 @@ class WebAppRegistrationWaiter {
   explicit WebAppRegistrationWaiter(PendingAppManager* manager);
   ~WebAppRegistrationWaiter();
 
-  void AwaitNextRegistration(const GURL& launch_url,
+  void AwaitNextRegistration(const GURL& install_url,
                              RegistrationResultCode code);
 
  private:
   PendingAppManager* const manager_;
   base::RunLoop run_loop_;
-  GURL launch_url_;
+  GURL install_url_;
   RegistrationResultCode code_;
 };
 

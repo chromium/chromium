@@ -105,18 +105,18 @@ PendingAppManagerImpl::CreateInstallationTask(
 }
 
 std::unique_ptr<PendingAppRegistrationTaskBase>
-PendingAppManagerImpl::StartRegistration(GURL launch_url) {
+PendingAppManagerImpl::StartRegistration(GURL install_url) {
   return std::make_unique<PendingAppRegistrationTask>(
-      launch_url, url_loader_.get(), web_contents_.get(),
+      install_url, url_loader_.get(), web_contents_.get(),
       base::BindOnce(&PendingAppManagerImpl::OnRegistrationFinished,
-                     weak_ptr_factory_.GetWeakPtr(), launch_url));
+                     weak_ptr_factory_.GetWeakPtr(), install_url));
 }
 
 void PendingAppManagerImpl::OnRegistrationFinished(
-    const GURL& launch_url,
+    const GURL& install_url,
     RegistrationResultCode result) {
-  DCHECK_EQ(current_registration_->launch_url(), launch_url);
-  PendingAppManager::OnRegistrationFinished(launch_url, result);
+  DCHECK_EQ(current_registration_->install_url(), install_url);
+  PendingAppManager::OnRegistrationFinished(install_url, result);
 
   current_registration_.reset();
   PostMaybeStartNext();
@@ -213,7 +213,7 @@ void PendingAppManagerImpl::StartInstallationTask(
   DCHECK(!current_install_);
   if (current_registration_) {
     // Preempt current registration.
-    pending_registrations_.push_front(current_registration_->launch_url());
+    pending_registrations_.push_front(current_registration_->install_url());
     current_registration_.reset();
   }
   current_install_ = std::move(task);
@@ -278,18 +278,19 @@ void PendingAppManagerImpl::CurrentInstallationFinished(
   if (app_id && code == InstallResultCode::kSuccessNewInstall &&
       base::FeatureList::IsEnabled(
           features::kDesktopPWAsCacheDuringDefaultInstall)) {
-    const GURL& launch_url = registrar()->GetAppLaunchURL(*app_id);
+    const GURL& install_url =
+        current_install_->task->install_options().install_url;
     bool is_local_resource =
-        launch_url.scheme() == content::kChromeUIScheme ||
-        launch_url.scheme() == content::kChromeUIUntrustedScheme;
+        install_url.scheme() == content::kChromeUIScheme ||
+        install_url.scheme() == content::kChromeUIUntrustedScheme;
     // TODO(crbug.com/809304): Call CreateWebContentsIfNecessary() instead of
     // checking web_contents_ once major migration of default hosted apps to web
     // apps has completed.
     // Temporarily using offline manifest migrations (in which |web_contents_|
     // is nullptr) in order to avoid overwhelming migrated-to web apps with hits
     // for service worker registrations.
-    if (!launch_url.is_empty() && !is_local_resource && web_contents_)
-      pending_registrations_.push_back(launch_url);
+    if (!install_url.is_empty() && !is_local_resource && web_contents_)
+      pending_registrations_.push_back(install_url);
   }
 
   // Post a task to avoid InstallableManager crashing and do so before

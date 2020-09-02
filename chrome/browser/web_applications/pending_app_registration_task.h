@@ -31,20 +31,20 @@ class PendingAppRegistrationTaskBase
  public:
   ~PendingAppRegistrationTaskBase() override;
 
-  const GURL& launch_url() const { return launch_url_; }
+  const GURL& install_url() const { return install_url_; }
 
  protected:
-  explicit PendingAppRegistrationTaskBase(const GURL& launch_url);
+  explicit PendingAppRegistrationTaskBase(const GURL& install_url);
 
  private:
-  const GURL launch_url_;
+  const GURL install_url_;
 };
 
 class PendingAppRegistrationTask : public PendingAppRegistrationTaskBase {
  public:
   using RegistrationCallback = base::OnceCallback<void(RegistrationResultCode)>;
 
-  PendingAppRegistrationTask(const GURL& launch_url,
+  PendingAppRegistrationTask(const GURL& install_url,
                              WebAppUrlLoader* url_loader,
                              content::WebContents* web_contents,
                              RegistrationCallback callback);

@@ -300,51 +300,53 @@ IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, RegistrationSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL launch_url(
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
-  GURL url(embedded_test_server()->GetURL(
-      "/banners/manifest_no_service_worker.html"));
 
-  ExternalInstallOptions install_options = CreateInstallOptions(url);
+  // Delay service worker registration to second load to simulate it not loading
+  // during the initial install pass.
+  GURL install_url(embedded_test_server()->GetURL(
+      "/web_apps/service_worker_on_second_load.html"));
+
+  ExternalInstallOptions install_options = CreateInstallOptions(install_url);
   install_options.bypass_service_worker_check = true;
   InstallApp(std::move(install_options));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
   WebAppRegistrationWaiter(&pending_app_manager())
-      .AwaitNextRegistration(launch_url, RegistrationResultCode::kSuccess);
+      .AwaitNextRegistration(install_url, RegistrationResultCode::kSuccess);
   CheckServiceWorkerStatus(
-      url, content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+      install_url,
+      content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
 IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, AlreadyRegistered) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL launch_url(
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   {
-    GURL url(embedded_test_server()->GetURL(
-        "/banners/"
-        "manifest_no_service_worker.html?manifest=manifest_short_name_only."
-        "json"));
-    ExternalInstallOptions install_options = CreateInstallOptions(url);
+    // Delay service worker registration to second load to simulate it not
+    // loading during the initial install pass.
+    GURL install_url(embedded_test_server()->GetURL(
+        "/web_apps/service_worker_on_second_load.html"));
+    ExternalInstallOptions install_options = CreateInstallOptions(install_url);
     install_options.force_reinstall = true;
     install_options.bypass_service_worker_check = true;
     InstallApp(std::move(install_options));
     EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
     WebAppRegistrationWaiter(&pending_app_manager())
-        .AwaitNextRegistration(launch_url, RegistrationResultCode::kSuccess);
+        .AwaitNextRegistration(install_url, RegistrationResultCode::kSuccess);
   }
+
   CheckServiceWorkerStatus(
-      launch_url,
+      embedded_test_server()->GetURL("/web_apps/basic.html"),
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+
   {
-    GURL url(embedded_test_server()->GetURL(
-        "/banners/manifest_no_service_worker.html"));
-    ExternalInstallOptions install_options = CreateInstallOptions(url);
+    GURL install_url(
+        embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));
+    ExternalInstallOptions install_options = CreateInstallOptions(install_url);
     install_options.force_reinstall = true;
     install_options.bypass_service_worker_check = true;
     InstallApp(std::move(install_options));
     EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
     WebAppRegistrationWaiter(&pending_app_manager())
-        .AwaitNextRegistration(launch_url,
+        .AwaitNextRegistration(install_url,
                                RegistrationResultCode::kAlreadyRegistered);
   }
 }
@@ -398,7 +400,8 @@ IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, CannotFetchManifest) {
 IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, RegistrationTimeout) {
   ASSERT_TRUE(embedded_test_server()->Start());
   PendingAppRegistrationTask::SetTimeoutForTesting(0);
-  GURL url(embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));
+  GURL url(embedded_test_server()->GetURL(
+      "/banners/manifest_no_service_worker.html"));
   CheckServiceWorkerStatus(url,
                            content::ServiceWorkerCapability::NO_SERVICE_WORKER);
 
