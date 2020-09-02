@@ -2972,7 +2972,7 @@
   {
     "name": "maintain-shelf-state-overview",
     "owners": [ "yulunwu" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 88
   },
   {
     "name": "managed-bookmarks-ios",

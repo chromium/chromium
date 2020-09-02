@@ -185,6 +185,8 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Opacity of the ink drop ripple for shelf items when the ripple is visible.
   float GetInkDropVisibleOpacity() const;
 
+  bool in_overview_mode() const { return overview_mode_; }
+
   // Gets the current color for the shelf control buttons.
   SkColor GetShelfControlButtonColor() const;
 

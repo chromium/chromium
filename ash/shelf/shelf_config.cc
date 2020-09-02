@@ -194,6 +194,7 @@ void ShelfConfig::OnOverviewModeWillStart() {
 
 void ShelfConfig::OnOverviewModeEnding(OverviewSession* overview_session) {
   overview_mode_ = false;
+  use_in_app_shelf_in_overview_ = false;
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
