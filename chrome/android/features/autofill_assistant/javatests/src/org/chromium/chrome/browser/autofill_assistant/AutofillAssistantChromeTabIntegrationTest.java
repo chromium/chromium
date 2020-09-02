@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -40,8 +39,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -57,10 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -346,6 +342,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1123958")
     public void switchTabBetweenDifferentPeekModes() {
         ArrayList<ActionProto> listA = new ArrayList<>();
         listA.add((ActionProto) ActionProto.newBuilder()
@@ -370,7 +367,8 @@ public class AutofillAssistantChromeTabIntegrationTest {
                                                                               .proto.ChipType
                                                                               .HIGHLIGHTED_ACTION)))
                                              .setAllowInterrupt(false)
-                                             .setDisableForceExpandSheet(true))
+                                             .setDisableForceExpandSheet(true)
+                                  /*.setBrowseMode(true)*/)
                           .build());
 
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
@@ -399,7 +397,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         int initialTabId =
                 TabModelUtils.getCurrentTabId(mTestRule.getActivity().getCurrentTabModel());
 
-        setupScripts(scriptA, scriptB);
+        AutofillAssistantTestService autofillAssistantTestService = setupScripts(scriptA, scriptB);
         startAutofillAssistantOnTab(TEST_PAGE_A);
         waitUntilViewMatchesCondition(
                 allOf(withText("Sticky"), isDescendantOfA(withId(R.id.header))),
@@ -412,13 +410,11 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
         startAutofillAssistantOnTab(TEST_PAGE_B);
         waitUntilViewMatchesCondition(withText("Prompt B"), isCompletelyDisplayed());
-        waitForBottomSheetAnimationToEnd();
 
         Espresso.pressBack();
         waitUntilViewMatchesCondition(
                 withId(R.id.status_message), allOf(withText("Prompt B"), not(isDisplayed())));
         onView(withId(R.id.autofill_assistant)).check(matches(isDisplayed()));
-        waitForBottomSheetAnimationToEnd();
 
         int secondTabId =
                 TabModelUtils.getCurrentTabId(mTestRule.getActivity().getCurrentTabModel());
@@ -430,18 +426,18 @@ public class AutofillAssistantChromeTabIntegrationTest {
         waitUntilViewMatchesCondition(
                 allOf(withText("Sticky"), isDescendantOfA(withId(R.id.header))),
                 isCompletelyDisplayed());
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            ChromeTabUtils.switchTabInCurrentTabModel(mTestRule.getActivity(),
-                    TabModelUtils.getTabIndexById(
-                            mTestRule.getActivity().getCurrentTabModel(), secondTabId));
-            waitUntilViewMatchesCondition(withId(R.id.autofill_assistant), isDisplayed());
-            waitUntilViewMatchesCondition(
-                    allOf(withId(R.id.status_message), withText("Prompt B")), not(isDisplayed()));
-        });
+
+        ChromeTabUtils.switchTabInCurrentTabModel(mTestRule.getActivity(),
+                TabModelUtils.getTabIndexById(
+                        mTestRule.getActivity().getCurrentTabModel(), secondTabId));
+        waitUntilViewMatchesCondition(withId(R.id.autofill_assistant), isDisplayed());
+        onView(allOf(withId(R.id.status_message), withText("Prompt B")))
+                .check(matches(not(isDisplayed())));
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1115681")
     public void startingNewAutofillAssistantCloseTabResumesRunOnPreviousTab() {
         ArrayList<ActionProto> listA = new ArrayList<>();
         listA.add((ActionProto) ActionProto.newBuilder()
@@ -476,7 +472,6 @@ public class AutofillAssistantChromeTabIntegrationTest {
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Prompt A"), isCompletelyDisplayed());
-        waitForBottomSheetAnimationToEnd();
 
         ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
                 mTestRule.getActivity(), getURL(TEST_PAGE_B), false);
@@ -484,16 +479,11 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
         startAutofillAssistantOnTab(TEST_PAGE_B);
         waitUntilViewMatchesCondition(withText("Prompt B"), isCompletelyDisplayed());
-        waitForBottomSheetAnimationToEnd();
 
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mTestRule.getActivity());
         waitUntilViewAssertionTrue(withText("Prompt B"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
         waitUntilViewMatchesCondition(withText("Prompt A"), isCompletelyDisplayed());
-    }
-
-    private void waitForBottomSheetAnimationToEnd() {
-        waitUntil(() -> getBottomSheetController().getSheetState() != SheetState.SCROLLING);
     }
 
     @Test
@@ -561,9 +551,5 @@ public class AutofillAssistantChromeTabIntegrationTest {
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mTestRule.getActivity());
         waitUntilViewMatchesCondition(withText("Shutdown"), isCompletelyDisplayed());
-    }
-
-    private BottomSheetController getBottomSheetController() {
-        return mTestRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
     }
 }
