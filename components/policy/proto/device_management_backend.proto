@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package enterprise_management;
 
+import "private_membership_rlwe.proto";
+
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).
 
@@ -2153,6 +2155,38 @@ message SessionStatusReportResponse {
   optional string error_message = 2;
 }
 
+// Request from client to query device state using Private Set Membership (PSM).
+// Please see go/cros-enterprise-psm and go/cros-client-psm for more details.
+message PrivateSetMembershipRequest {
+  // A request proto from the RLWE PSM protocol.
+  optional PrivateSetMembershipRlweRequest rlwe_request = 1;
+}
+
+message PrivateSetMembershipResponse {
+  // A response proto from the RLWE PSM protocol.
+  optional PrivateSetMembershipRlweResponse rlwe_response = 1;
+}
+
+message PrivateSetMembershipRlweRequest {
+  // First request sent by the client for checking membership.
+  optional private_membership.rlwe.PrivateMembershipRlweOprfRequest
+      oprf_request = 1;
+
+  // Second request sent by the client for checking membership.
+  optional private_membership.rlwe.PrivateMembershipRlweQueryRequest
+      query_request = 2;
+}
+
+message PrivateSetMembershipRlweResponse {
+  // First response sent by the server for checking membership.
+  optional private_membership.rlwe.PrivateMembershipRlweOprfResponse
+      oprf_response = 1;
+
+  // Second response sent by the server for checking membership.
+  optional private_membership.rlwe.PrivateMembershipRlweQueryResponse
+      query_response = 2;
+}
+
 // Request from device to server to determine whether the device should
 // go through enterprise enrollment. Unlike the other requests, this request is
 // not authenticated.
@@ -3437,6 +3471,7 @@ message ClientCertificateProvisioningResponse {
 //     * device_pairing
 //     * device_state_retrieval
 //     * enterprise_check
+//     * enterprise_psm_check
 //     * chrome_desktop_report
 //     * chrome_os_user_report
 //     * ping
@@ -3479,8 +3514,9 @@ message ClientCertificateProvisioningResponse {
 //     Authorization: GoogleDMToken token=<dm token from register>
 //
 //   * The Authorization header isn't used for enterprise_check,
-//     device_initial_enrollment_state or certificate_based_register requests,
-//     nor for register requests using OAuth. In the latter case, the OAuth
+//     enterprise_psm_check, device_initial_enrollment_state or
+//     certificate_based_register requests, nor for register
+//     requests using OAuth. In the latter case, the OAuth
 //     token is passed in the "oauth" parameter.
 //
 // DeviceManagementRequest should only contain one request which matches the
@@ -3628,11 +3664,9 @@ message DeviceManagementRequest {
   // Request to check user account for smart enrollment.
   optional CheckUserAccountRequest check_user_account_request = 36;
 
-  // This message is temporarily commented out due to build errors, to be
-  // resolved in crrev.com/c/2245131.
   // Request from device to check the state stored in PSM. Currently, it is used
-  // for ZT/LP device initial enrollment state check.
-  // optional PrivateSetMembershipRequest private_set_membership_request = 37;
+  // for ZTE/LP device initial enrollment state check.
+  optional PrivateSetMembershipRequest private_set_membership_request = 37;
 
   // Next id: 38.
 }
@@ -3767,10 +3801,8 @@ message DeviceManagementResponse {
   // Response to a checking user account type for smart enrollment.
   optional CheckUserAccountResponse check_user_account_response = 34;
 
-  // This message is temporarily commented out due to build errors, to be
-  // resolved in crrev.com/c/2245131.
   // Response to a client private set membership request.
-  // optional PrivateSetMembershipResponse private_set_membership_response = 35;
+  optional PrivateSetMembershipResponse private_set_membership_response = 35;
 
   // Next id: 36.
 }

@@ -244,6 +244,13 @@ LocalPolicyTestServer::GetPythonPath() const {
                      .AppendASCII("policy")
                      .AppendASCII("proto"));
 
+  ret->push_back(pyproto_dir.AppendASCII("third_party")
+                     .AppendASCII("shell-encryption")
+                     .AppendASCII("src"));
+  ret->push_back(pyproto_dir.AppendASCII("third_party")
+                     .AppendASCII("private_membership")
+                     .AppendASCII("src"));
+
   return ret;
 }
 
