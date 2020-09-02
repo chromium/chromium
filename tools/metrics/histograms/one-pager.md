@@ -67,7 +67,7 @@ If we define the following:
     <variant name=".ExtensionApp" summary="the ExtensionApp">
       <owner>you@chromium.org</owner>
     </variant>
-    <variant name=".HistoryContents" summary=" the HistoryContents"/>
+    <variant name=".HistoryContents" summary="the HistoryContents"/>
   </token>
 </histogram>
 ```
@@ -117,6 +117,27 @@ MyHist1.V1
 MyHist1.V2
 MyHist2.V1
 MyHist2.V2
+```
+
+If you omit the summary attribute in the `<variant>`'s tag, We'll set it to be
+the same as its name. Example:
+
+```
+<histogram name="MyHist1.{MyVariants}">
+  <summary>MyHist1 with {MyVariants}.</summary>
+  <token key="MyVariants">
+      <variant name="Red"/>
+      <variant name="Green"/>
+    </token>
+  </token>
+</histogram>
+```
+
+The complete list of histograms and their summary will be:
+
+```
+MyHist1.Red: MyHist1 with Red
+MyHist1.Green: MyHist1 with Green
 ```
 
 The variant name is allowed to be an empty string, to make it easy to define
