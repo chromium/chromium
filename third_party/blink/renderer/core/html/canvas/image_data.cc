@@ -39,6 +39,8 @@
 
 namespace blink {
 
+// Please note that all the number "4" in the file means number of channels
+// required to describe a pixel, namely, red, green, blue and alpha.
 namespace {
 
 bool RaiseDOMExceptionAndReturnFalse(ExceptionState* exception_state,
