@@ -89,6 +89,7 @@ void ParseMargin(String margin_parameter,
   CSSTokenizer tokenizer(margin_parameter);
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange token_range(tokens);
+  token_range.ConsumeWhitespace();
   while (token_range.Peek().GetType() != kEOFToken &&
          !exception_state.HadException()) {
     if (margin.size() == 4) {
@@ -135,6 +136,9 @@ void ParseThresholds(const DoubleOrDoubleSequence& threshold_parameter,
     for (auto threshold_value : threshold_parameter.GetAsDoubleSequence())
       thresholds.push_back(base::MakeClampedNum<float>(threshold_value));
   }
+
+  if (thresholds.IsEmpty())
+    thresholds.push_back(0.f);
 
   for (auto threshold_value : thresholds) {
     if (std::isnan(threshold_value) || threshold_value < 0.0 ||
