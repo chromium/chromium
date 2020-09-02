@@ -11,6 +11,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace net {
 class HttpResponseHeaders;
 }
@@ -79,13 +83,16 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool IsValidRequiredCSPAttr(
     const std::vector<mojom::ContentSecurityPolicyPtr>& policy,
     const mojom::ContentSecurityPolicy* context,
+    const url::Origin& url,
     std::string& error_message);
 
-// Checks whether |policy_a| subsumes the policy list |policies_b| according to
-// the algorithm https://w3c.github.io/webappsec-cspee/#subsume-policy-list.
+// Checks whether |policy_a| subsumes the policy list
+// |policies_b| with origin |origin_b| according to the algorithm
+// https://w3c.github.io/webappsec-cspee/#subsume-policy-list.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
-              const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b);
+              const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b,
+              const url::Origin& origin_b);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 mojom::CSPDirectiveName ToCSPDirectiveName(const std::string& name);

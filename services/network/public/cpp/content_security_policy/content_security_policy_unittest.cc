@@ -11,6 +11,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace network {
@@ -1157,7 +1158,10 @@ TEST(ContentSecurityPolicy, IsValidRequiredCSPAttr) {
     AddContentSecurityPolicyFromHeaders(*required_csp_headers,
                                         GURL("https://example.com/"), &csp);
     std::string out;
-    EXPECT_EQ(test.expected, IsValidRequiredCSPAttr(csp, nullptr, out));
+    EXPECT_EQ(
+        test.expected,
+        IsValidRequiredCSPAttr(
+            csp, nullptr, url::Origin::Create(GURL("https://a.com")), out));
     EXPECT_EQ(test.expected_error, out);
   }
 }
@@ -1165,46 +1169,56 @@ TEST(ContentSecurityPolicy, IsValidRequiredCSPAttr) {
 TEST(ContentSecurityPolicy, Subsumes) {
   struct TestCase {
     std::string name;
-    std::string required_csp;
-    std::string returned_csp;
+    std::string required;
+    std::string returned;
+    bool returned_is_report_only;
     bool expected;
   } cases[] = {
       {
-          "No required csp",
-          "",
+          "Required CSP but no returned CSP should return false.",
           "script-src 'none'",
+          "",
+          false,
+          false,
+      },
+      {
+          "Same CSP should return true.",
+          "script-src 'none'",
+          "script-src 'none'",
+          false,
           true,
       },
       {
-          "Same CSPs",
+          "Same CSP returned in report-only mode should not be subsumed.",
           "script-src 'none'",
           "script-src 'none'",
           true,
+          false,
       },
   };
 
   for (auto& test : cases) {
-    SCOPED_TRACE(test.name);
     std::vector<mojom::ContentSecurityPolicyPtr> required_csp;
-    if (test.required_csp.empty()) {
-      required_csp.push_back(mojom::ContentSecurityPolicy::New());
-    } else {
-      auto required_csp_headers =
-          base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-      required_csp_headers->SetHeader("Content-Security-Policy",
-                                      test.required_csp);
-      AddContentSecurityPolicyFromHeaders(
-          *required_csp_headers, GURL("https://example.com/"), &required_csp);
-    }
+    auto required_csp_headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    required_csp_headers->SetHeader("Content-Security-Policy", test.required);
+    AddContentSecurityPolicyFromHeaders(
+        *required_csp_headers, GURL("https://example.com/"), &required_csp);
 
     auto returned_csp_headers =
         base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-    returned_csp_headers->AddHeader("Content-Security-Policy",
-                                    test.returned_csp);
+    if (test.returned_is_report_only)
+      returned_csp_headers->SetHeader("Content-Security-Policy-Report-Only",
+                                      test.returned);
+    else
+      returned_csp_headers->SetHeader("Content-Security-Policy", test.returned);
     std::vector<mojom::ContentSecurityPolicyPtr> returned_csp;
     AddContentSecurityPolicyFromHeaders(
         *returned_csp_headers, GURL("https://example.com/"), &returned_csp);
-    EXPECT_EQ(test.expected, Subsumes(*required_csp[0], returned_csp));
+    EXPECT_EQ(test.expected,
+              Subsumes(*required_csp[0], returned_csp,
+                       url::Origin::Create(GURL("https://a.com"))))
+        << test.name;
   }
 }
 

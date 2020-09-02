@@ -165,8 +165,9 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::WillStartRequest() {
       request->frame_tree_node()->parent()->required_csp();
 
   std::string error_message;
-  if (!network::IsValidRequiredCSPAttr(frame_csp, parent_required_csp,
-                                       error_message)) {
+  if (!network::IsValidRequiredCSPAttr(
+          frame_csp, parent_required_csp,
+          url::Origin::Create(navigation_handle()->GetURL()), error_message)) {
     if (frame_csp[0]) {
       navigation_handle()->GetParentFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,

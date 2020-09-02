@@ -802,6 +802,19 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
   }
 }
 
+std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
+    CSPDirectiveName directive,
+    const mojom::ContentSecurityPolicy& policy) {
+  for (CSPDirectiveName effective_directive = directive;
+       effective_directive != CSPDirectiveName::Unknown;
+       effective_directive = CSPFallback(effective_directive, directive)) {
+    auto value = policy.directives.find(effective_directive);
+    if (value != policy.directives.end())
+      return std::make_pair(effective_directive, value->second.get());
+  }
+  return std::make_pair(CSPDirectiveName::Unknown, nullptr);
+}
+
 }  // namespace
 
 void AddContentSecurityPolicyFromHeaders(
@@ -947,6 +960,7 @@ void UpgradeInsecureRequest(GURL* url) {
 bool IsValidRequiredCSPAttr(
     const std::vector<mojom::ContentSecurityPolicyPtr>& policy,
     const mojom::ContentSecurityPolicy* context,
+    const url::Origin& origin,
     std::string& error_message) {
   DCHECK(policy.size() == 1);
   if (!policy[0])
@@ -967,7 +981,7 @@ bool IsValidRequiredCSPAttr(
     return false;
   }
 
-  if (context && !Subsumes(*context, policy)) {
+  if (context && !Subsumes(*context, policy, origin)) {
     error_message =
         "The csp attribute Content-Security-Policy is not subsumed by the "
         "frame's parent csp attribute Content-Security-Policy.";
@@ -978,28 +992,55 @@ bool IsValidRequiredCSPAttr(
 }
 
 bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
-              const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b) {
+              const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b,
+              const url::Origin& origin_b) {
   if (policy_a.directives.empty())
     return true;
 
   if (policy_a.header->type == mojom::ContentSecurityPolicyType::kReport)
     return true;
 
-  // TODO(antoniosartori): Complete the implementation of this function
-  return util::ranges::all_of(
-      policy_a.directives, [&policies_b](const auto& directive_a) {
-        return util::ranges::any_of(
-            policies_b, [&directive_a](const auto& policy_b) {
-              if (policy_b->header->type ==
-                  mojom::ContentSecurityPolicyType::kReport) {
-                return false;
-              }
+  if (policies_b.empty())
+    return false;
 
-              auto value_b = policy_b->directives.find(directive_a.first);
-              return value_b != policy_b->directives.end() &&
-                     value_b->second == directive_a.second;
-            });
-      });
+  // A list of directives that we consider for subsumption.
+  // See more about source lists here:
+  // https://w3c.github.io/webappsec-csp/#framework-directive-source-list
+  static const CSPDirectiveName directives[] = {
+      CSPDirectiveName::ChildSrc,       CSPDirectiveName::ConnectSrc,
+      CSPDirectiveName::FontSrc,        CSPDirectiveName::FrameSrc,
+      CSPDirectiveName::ImgSrc,         CSPDirectiveName::ManifestSrc,
+      CSPDirectiveName::MediaSrc,       CSPDirectiveName::ObjectSrc,
+      CSPDirectiveName::ScriptSrc,      CSPDirectiveName::ScriptSrcAttr,
+      CSPDirectiveName::ScriptSrcElem,  CSPDirectiveName::StyleSrc,
+      CSPDirectiveName::StyleSrcAttr,   CSPDirectiveName::StyleSrcElem,
+      CSPDirectiveName::WorkerSrc,      CSPDirectiveName::BaseURI,
+      CSPDirectiveName::FrameAncestors, CSPDirectiveName::FormAction,
+      CSPDirectiveName::NavigateTo};
+
+  return util::ranges::all_of(directives, [&](CSPDirectiveName directive) {
+    auto required = GetSourceList(directive, policy_a);
+    if (!required.second)
+      return true;
+
+    // Aggregate all serialized source lists of the returned CSP into a vector
+    // based on a directive type, defaulting accordingly (for example, to
+    // `default-src`).
+    std::vector<const mojom::CSPSourceList*> returned;
+    for (const auto& policy_b : policies_b) {
+      // Ignore report-only returned policies.
+      if (policy_b->header->type == mojom::ContentSecurityPolicyType::kReport)
+        continue;
+
+      auto source_list = GetSourceList(directive, *policy_b);
+      if (source_list.second)
+        returned.push_back(source_list.second);
+    }
+    // TODO(amalika): Add checks for plugin-types, sandbox, disown-opener,
+    // navigation-to, worker-src.
+    return CSPSourceListSubsumes(*required.second, returned, required.first,
+                                 origin_b);
+  });
 }
 
 CSPDirectiveName ToCSPDirectiveName(const std::string& name) {
