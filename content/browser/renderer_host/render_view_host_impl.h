@@ -206,10 +206,13 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Called when the RenderFrameHostImpls/RenderFrameProxyHosts that own this
   // RenderViewHost leave the BackForwardCache. This occurs immediately before a
   // restored document is committed.
-  // |navigation_start| is the timestamp corresponding to the start of the
-  // back-forward cached navigation, which would be communicated to the page
-  // to allow it to record the latency of this navigation.
-  void LeaveBackForwardCache(base::TimeTicks navigation_start);
+  // |page_restore_params| includes information that is needed by the page after
+  // getting restored, which includes the latest history information (offset,
+  // length) and the timestamp corresponding to the start of the back-forward
+  // cached navigation, which would be communicated to the page to allow it to
+  // record the latency of this navigation.
+  void LeaveBackForwardCache(
+      blink::mojom::PageRestoreParamsPtr page_restore_params);
 
   void SetVisibility(blink::mojom::PageVisibilityState visibility);
 

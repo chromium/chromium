@@ -44,7 +44,7 @@ void PageLifecycleStateManager::SetIsFrozen(bool frozen) {
     return;
   is_set_frozen_called_ = frozen;
 
-  SendUpdatesToRendererIfNeeded(base::nullopt);
+  SendUpdatesToRendererIfNeeded(/*page_restore_params=*/nullptr);
 }
 
 void PageLifecycleStateManager::SetWebContentsVisibility(
@@ -53,14 +53,14 @@ void PageLifecycleStateManager::SetWebContentsVisibility(
     return;
 
   web_contents_visibility_ = visibility;
-  SendUpdatesToRendererIfNeeded(base::nullopt);
+  SendUpdatesToRendererIfNeeded(/*page_restore_params=*/nullptr);
   // TODO(yuzus): When a page is frozen and made visible, the page should
   // automatically resume.
 }
 
 void PageLifecycleStateManager::SetIsInBackForwardCache(
     bool is_in_back_forward_cache,
-    base::Optional<base::TimeTicks> navigation_start) {
+    blink::mojom::PageRestoreParamsPtr page_restore_params) {
   if (is_in_back_forward_cache_ == is_in_back_forward_cache)
     return;
   is_in_back_forward_cache_ = is_in_back_forward_cache;
@@ -76,12 +76,14 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
             kBackForwardCacheTimeoutInSeconds);
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kDispatchedPersisted;
   } else {
+    DCHECK(page_restore_params);
     // When a page is restored from the back-forward cache, we should reset the
     // |pagehide_dispatch_| state so that we'd dispatch the
     // events again the next time we navigate away from the page.
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kNotDispatched;
   }
-  SendUpdatesToRendererIfNeeded(navigation_start);
+
+  SendUpdatesToRendererIfNeeded(std::move(page_restore_params));
 }
 
 blink::mojom::PageLifecycleStatePtr
@@ -113,7 +115,7 @@ void PageLifecycleStateManager::DidSetPagehideDispatchDuringNewPageCommit(
 }
 
 void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
-    base::Optional<base::TimeTicks> navigation_start) {
+    blink::mojom::PageRestoreParamsPtr page_restore_params) {
   if (!render_view_host_impl_->GetAssociatedPageBroadcast()) {
     // For some tests, |render_view_host_impl_| does not have the associated
     // page.
@@ -136,7 +138,7 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
     test_delegate_->OnUpdateSentToRenderer(*last_state_sent_to_renderer_);
 
   render_view_host_impl_->GetAssociatedPageBroadcast()->SetPageLifecycleState(
-      std::move(state), std::move(navigation_start),
+      std::move(state), std::move(page_restore_params),
       base::BindOnce(&PageLifecycleStateManager::OnPageLifecycleChangedAck,
                      weak_ptr_factory_.GetWeakPtr(), std::move(new_state)));
 }

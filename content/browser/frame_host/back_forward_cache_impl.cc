@@ -513,7 +513,7 @@ void BackForwardCacheImpl::StoreEntry(
 
 std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
     int navigation_entry_id,
-    base::TimeTicks navigation_start) {
+    blink::mojom::PageRestoreParamsPtr page_restore_params) {
   TRACE_EVENT0("navigation", "BackForwardCache::RestoreEntry");
   // Select the RenderFrameHostImpl matching the navigation entry.
   auto matching_entry = std::find_if(
@@ -531,12 +531,11 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
           ->render_frame_host->is_evicted_from_back_forward_cache())
     return nullptr;
 
-  // Capture the navigation start timestamp to dispatch to the page when the
-  // entry is restored.
-  (*matching_entry)->restore_navigation_start = navigation_start;
   std::unique_ptr<Entry> entry = std::move(*matching_entry);
   entries_.erase(matching_entry);
-  RequestRecordTimeToVisible(entry->render_frame_host.get(), navigation_start);
+  entry->page_restore_params = std::move(page_restore_params);
+  RequestRecordTimeToVisible(entry->render_frame_host.get(),
+                             entry->page_restore_params->navigation_start);
   entry->render_frame_host->WillLeaveBackForwardCache();
 
   RestoreBrowserControlsState(entry->render_frame_host.get());

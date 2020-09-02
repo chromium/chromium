@@ -3089,10 +3089,24 @@ void NavigationRequest::CommitNavigation() {
   AddOldPageInfoToCommitParamsIfNeeded();
 
   if (IsServedFromBackForwardCache()) {
+    // Navigations served from the back-forward cache must be a history
+    // navigation, and thus should have a valid |pending_history_list_offset|
+    // value. We will pass that value and the |current_history_list_length|
+    // value to update the history offset and length information saved in the
+    // renderer, which might be stale.
+    DCHECK_GE(commit_params_->pending_history_list_offset, 0);
+
+    auto page_restore_params = blink::mojom::PageRestoreParams::New();
+    page_restore_params->navigation_start = NavigationStart();
+    page_restore_params->pending_history_list_offset =
+        commit_params_->pending_history_list_offset;
+    page_restore_params->current_history_list_length =
+        commit_params_->current_history_list_length;
+
     NavigationControllerImpl* controller = GetNavigationController();
     std::unique_ptr<BackForwardCacheImpl::Entry> restored_bfcache_entry =
-        controller->GetBackForwardCache().RestoreEntry(nav_entry_id_,
-                                                       NavigationStart());
+        controller->GetBackForwardCache().RestoreEntry(
+            nav_entry_id_, std::move(page_restore_params));
 
     if (!restored_bfcache_entry) {
       // The only time restored_bfcache_entry can be nullptr here, is if the

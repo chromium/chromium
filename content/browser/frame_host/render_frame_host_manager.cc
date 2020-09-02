@@ -2792,7 +2792,7 @@ void RenderFrameHostManager::CommitPending(
         std::move(pending_bfcache_entry->render_view_hosts);
     for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
       rvh->LeaveBackForwardCache(
-          pending_bfcache_entry->restore_navigation_start);
+          pending_bfcache_entry->page_restore_params.Clone());
     }
   }
 

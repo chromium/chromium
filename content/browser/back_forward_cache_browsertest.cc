@@ -7433,4 +7433,130 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_NE(b_site_instance->GetProcess(), a2_site_instance->GetProcess());
 }
 
+// Tests that the history value saved in the renderer is updated correctly when
+// a page gets restored from the back-forward cache through browser-initiated
+// navigation.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       RendererHistory_BrowserInitiated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // 1) Go to |url1|, then |url2|. Both pages should have script to save the
+  // history.length value when getting restored from the back-forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* subframe = root->child_at(0);
+
+  std::string restore_time_length_saver_script =
+      "var resumeLength = -1;"
+      "var pageshowLength = -1;"
+      "document.onresume = () => {"
+      "  resumeLength = history.length;"
+      "};"
+      "window.onpageshow  = () => {"
+      "  pageshowLength = history.length;"
+      "};";
+  EXPECT_TRUE(ExecJs(root, restore_time_length_saver_script));
+  EXPECT_TRUE(ExecJs(subframe, restore_time_length_saver_script));
+  // We should have one history entry.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 1);
+  EXPECT_EQ(EvalJs(subframe, "history.length").ExtractInt(), 1);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(ExecJs(root, restore_time_length_saver_script));
+  // We should have two history entries.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 2);
+
+  // 2) Go back to |url1|, browser-initiated.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url1);
+
+  // We should still have two history entries, and recorded the correct length
+  // when the 'resume' and 'pageshow' events were dispatched.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "resumeLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "pageshowLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(subframe, "history.length").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(subframe, "resumeLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(subframe, "pageshowLength").ExtractInt(), 2);
+
+  // 3) Go forward to |url2|, browser-initiated.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url2);
+
+  // We should still have two history entries, and recorded the correct length
+  // when the 'resume' and 'pageshow' events were dispatched.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "resumeLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "pageshowLength").ExtractInt(), 2);
+}
+
+// Tests that the history value saved in the renderer is updated correctly when
+// a page gets restored from the back-forward cache through renderer-initiated
+// navigation.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       RendererHistory_RendererInitiated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // 1) Go to |url1|, then |url2|. Both pages should have script to save the
+  // history.length value when getting restored from the back-forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* subframe = root->child_at(0);
+
+  std::string restore_time_length_saver_script =
+      "var resumeLength = -1;"
+      "var pageshowLength = -1;"
+      "document.onresume = () => {"
+      "  resumeLength = history.length;"
+      "};"
+      "window.onpageshow  = () => {"
+      "  pageshowLength = history.length;"
+      "};";
+  EXPECT_TRUE(ExecJs(root, restore_time_length_saver_script));
+  EXPECT_TRUE(ExecJs(subframe, restore_time_length_saver_script));
+  // We should have one history entry.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 1);
+  EXPECT_EQ(EvalJs(subframe, "history.length").ExtractInt(), 1);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(ExecJs(root, restore_time_length_saver_script));
+  // We should have two history entries.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 2);
+
+  // 2) Go back to |url1|, renderer-initiated.
+  EXPECT_TRUE(ExecJs(root, "history.back()"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url1);
+
+  // We should still have two history entries, and recorded the correct length
+  // when the 'resume' and 'pageshow' events were dispatched.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "resumeLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "pageshowLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(subframe, "history.length").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(subframe, "resumeLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(subframe, "pageshowLength").ExtractInt(), 2);
+
+  // 3) Go forward to |url2|, renderer-initiated.
+  EXPECT_TRUE(ExecJs(root, "history.forward()"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url2);
+
+  // We should still have two history entries, and recorded the correct length
+  // when the 'resume' and 'pageshow' events were dispatched.
+  EXPECT_EQ(EvalJs(root, "history.length").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "resumeLength").ExtractInt(), 2);
+  EXPECT_EQ(EvalJs(root, "pageshowLength").ExtractInt(), 2);
+}
+
 }  // namespace content

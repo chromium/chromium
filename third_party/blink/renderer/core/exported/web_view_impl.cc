@@ -2441,21 +2441,23 @@ void WebViewImpl::SetPageLifecycleStateFromNewPageCommit(
       GetPage()->GetPageLifecycleState().Clone();
   state->visibility = visibility;
   state->pagehide_dispatch = pagehide_dispatch;
-  SetPageLifecycleStateInternal(std::move(state), base::nullopt);
+  SetPageLifecycleStateInternal(std::move(state),
+                                /*page_restore_params=*/nullptr);
 }
 
 void WebViewImpl::SetPageLifecycleState(
     mojom::blink::PageLifecycleStatePtr state,
-    base::Optional<base::TimeTicks> navigation_start,
+    mojom::blink::PageRestoreParamsPtr page_restore_params,
     SetPageLifecycleStateCallback callback) {
-  SetPageLifecycleStateInternal(std::move(state), navigation_start);
+  SetPageLifecycleStateInternal(std::move(state),
+                                std::move(page_restore_params));
   // Tell the browser that the lifecycle update was successful.
   std::move(callback).Run();
 }
 
 void WebViewImpl::SetPageLifecycleStateInternal(
     mojom::blink::PageLifecycleStatePtr new_state,
-    base::Optional<base::TimeTicks> navigation_start) {
+    mojom::blink::PageRestoreParamsPtr page_restore_params) {
   Page* page = GetPage();
   if (!page)
     return;
@@ -2503,16 +2505,24 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   if (storing_in_bfcache)
     HookBackForwardCacheEviction(true);
   if (restoring_from_bfcache) {
+    DCHECK(page_restore_params);
+    // Update the history offset and length value saved in RenderViewImpl, as
+    // pages that are kept in the back-forward cache do not get notified about
+    // updates on these values, so the currently saved value might be stale.
+    web_view_client_->OnSetHistoryOffsetAndLength(
+        page_restore_params->pending_history_list_offset,
+        page_restore_params->current_history_list_length);
     HookBackForwardCacheEviction(false);
   }
   if (resuming_page)
     SetPageFrozen(false);
   if (dispatching_pageshow) {
     DCHECK(restoring_from_bfcache);
-    DispatchPageshow(navigation_start.value());
+    DispatchPageshow(page_restore_params->navigation_start);
   }
   if (restoring_from_bfcache) {
     DCHECK(dispatching_pageshow);
+    DCHECK(page_restore_params);
     Scheduler()->SetPageBackForwardCached(new_state->is_in_back_forward_cache);
   }
   if (showing_page) {

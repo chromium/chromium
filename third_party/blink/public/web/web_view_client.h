@@ -171,6 +171,10 @@ class WebViewClient {
   // Policies -------------------------------------------------------------
 
   virtual bool AllowPopupsDuringPageUnload() { return false; }
+
+  // History -------------------------------------------------------------
+  virtual void OnSetHistoryOffsetAndLength(int history_offset,
+                                           int history_length) {}
 };
 
 }  // namespace blink

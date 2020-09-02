@@ -229,9 +229,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void AnimateDoubleTapZoom(const gfx::Point&, const WebRect& block_bounds);
 
   // mojom::blink::PageBroadcast method:
-  void SetPageLifecycleState(mojom::blink::PageLifecycleStatePtr state,
-                             base::Optional<base::TimeTicks> navigation_start,
-                             SetPageLifecycleStateCallback callback) override;
+  void SetPageLifecycleState(
+      mojom::blink::PageLifecycleStatePtr state,
+      mojom::blink::PageRestoreParamsPtr page_restore_params,
+      SetPageLifecycleStateCallback callback) override;
   void AudioStateChanged(bool is_audio_playing) override;
   void SetInsidePortal(bool is_inside_portal) override;
 
@@ -500,7 +501,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void SetPageLifecycleStateInternal(
       mojom::blink::PageLifecycleStatePtr new_state,
-      base::Optional<base::TimeTicks> navigation_start);
+      mojom::blink::PageRestoreParamsPtr page_restore_params);
 
   float MaximumLegiblePageScale() const;
   void RefreshPageScaleFactor();
