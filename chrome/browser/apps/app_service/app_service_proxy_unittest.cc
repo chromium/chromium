@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -81,6 +85,8 @@ class AppServiceProxyTest : public testing::Test {
   int NumOuterFinishedCallbacks() { return num_outer_finished_callbacks_; }
 
   int num_outer_finished_callbacks_ = 0;
+
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(AppServiceProxyTest, IconCache) {
@@ -180,4 +186,38 @@ TEST_F(AppServiceProxyTest, IconCoalescer) {
   EXPECT_EQ(0, fake.NumPendingCallbacks());
   EXPECT_EQ(3, fake.NumInnerFinishedCallbacks());
   EXPECT_EQ(6, NumOuterFinishedCallbacks());
+}
+
+TEST_F(AppServiceProxyTest, RedirectInIncognitoProxyAccessPerProfile) {
+  TestingProfile::Builder profile_builder;
+
+  // We expect an App Service in a regular profile.
+  auto profile = profile_builder.Build();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile.get());
+  EXPECT_TRUE(proxy);
+
+  // We get the same App Service using GetForProfileRedirectInIncognito.
+  auto* redirected_proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+          profile.get());
+  EXPECT_EQ(proxy, redirected_proxy);
+
+  // We expect the same App Service in the incognito profile branched from that
+  // regular profile.
+  TestingProfile::Builder incognito_builder;
+  auto* incognito_proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+          incognito_builder.BuildIncognito(profile.get()));
+  EXPECT_EQ(proxy, incognito_proxy);
+
+  // We expect a different (but still valid) App Service in the Guest Session
+  // profile.
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  auto guest_profile = guest_builder.Build();
+  auto* guest_proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+          guest_profile.get());
+  EXPECT_TRUE(guest_proxy);
+  EXPECT_NE(guest_proxy, proxy);
 }
