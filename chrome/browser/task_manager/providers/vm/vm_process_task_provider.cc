@@ -64,12 +64,10 @@ bool HasValidVmDiskExtension(const std::string& filename) {
 }
 
 // The argument this is extracting from will look like this:
-// /home/root/53d63eda33c610d37b44cde8ed06854a05e9cc84/crosvm/dGVybWluYQ==.qcow2
-// This is the path to a VM disk in the user-specific root directory that is not
-// exposed to the user in the Files app. The base for this is /home/root and
-// the cryptohome ID for the user is the next path element. Then we have the
-// service specific 'crosvm' directory which we put VM images in. VM images use
-// base64 encoding of the VM name as the filename with a .qcow2/.img extension.
+// /run/daemon-store/crosvm/53d63eda33c610d37b44cde8ed06854a05e9cc84/dGVybWluYQ==.img
+// This is the path to a VM disk in the user's cryptohome that's not exposed to
+// the user in the Files app, consisting of the path to crosvm's daemon store,
+// the user hash, then the base64 encoded VM name with a .qcow2/.img extension.
 bool CrostiniExtractVmNameAndOwnerId(const std::string& arg,
                                      std::string* vm_name_out,
                                      std::string* owner_id_out) {
