@@ -166,6 +166,8 @@ class CORE_EXPORT FrameSelection final
                               const SetSelectionOptions&);
   void DidSetSelectionDeprecated(const SelectionInDOMTree&,
                                  const SetSelectionOptions&);
+  void SetSelectionForAccessibility(const SelectionInDOMTree&,
+                                    const SetSelectionOptions&);
 
   // Call this after doing user-triggered selections to make it easy to delete
   // the frame you entirely selected.

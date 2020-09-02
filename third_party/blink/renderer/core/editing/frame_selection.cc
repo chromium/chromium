@@ -349,6 +349,17 @@ void FrameSelection::DidSetSelectionDeprecated(
       TaskType::kMiscPlatformAPI);
 }
 
+void FrameSelection::SetSelectionForAccessibility(
+    const SelectionInDOMTree& selection,
+    const SetSelectionOptions& options) {
+  ClearDocumentCachedRange();
+
+  const bool did_set = SetSelectionDeprecated(selection, options);
+  CacheRangeOfDocument(CreateRange(selection.ComputeRange()));
+  if (did_set)
+    DidSetSelectionDeprecated(selection, options);
+}
+
 void FrameSelection::NodeChildrenWillBeRemoved(ContainerNode& container) {
   if (!container.InActiveDocument())
     return;

@@ -94,6 +94,10 @@ class MODULES_EXPORT AXSelection final {
 
   AXSelection();
 
+  // If a layout is pending, update the style and layout along with the DOM
+  // tree and style versions of the AXSelection and associated AXPositions.
+  void UpdateSelectionIfNecessary();
+
   // Determines whether this selection is targeted to the contents of a text
   // field, and returns the start and end text offsets, as well as its
   // direction. |start| should always be less than equal to |end|.

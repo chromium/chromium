@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -329,6 +330,23 @@ const SelectionInDOMTree AXSelection::AsSelection(
   return selection_builder.Build();
 }
 
+void AXSelection::UpdateSelectionIfNecessary() {
+  Document* document = base_.ContainerObject()->GetDocument();
+  DCHECK(document);
+
+  LocalFrameView* view = document->View();
+  if (!view || !view->LayoutPending())
+    return;
+
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
+#if DCHECK_IS_ON()
+  base_.dom_tree_version_ = extent_.dom_tree_version_ = dom_tree_version_ =
+      document->DomTreeVersion();
+  base_.style_version_ = extent_.style_version_ = style_version_ =
+      document->StyleVersion();
+#endif  // DCHECK_IS_ON()
+}
+
 bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
   if (!IsValid()) {
     NOTREACHED() << "Trying to select an invalid accessibility selection.";
@@ -354,9 +372,9 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
     return true;
   }
 
-  const SelectionInDOMTree selection = AsSelection(selection_behavior);
-  DCHECK(selection.AssertValid());
-  Document* document = selection.Base().GetDocument();
+  const SelectionInDOMTree old_selection = AsSelection(selection_behavior);
+  DCHECK(old_selection.AssertValid());
+  Document* document = old_selection.Base().GetDocument();
   if (!document) {
     NOTREACHED() << "Valid DOM selections should have an attached document.";
     return false;
@@ -374,46 +392,36 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 
   // See the following section in the Selection API Specification:
   // https://w3c.github.io/selection-api/#selectstart-event
-  if (DispatchSelectStart(selection.Extent().ComputeContainerNode()) !=
+  if (DispatchSelectStart(old_selection.Base().ComputeContainerNode()) !=
       DispatchEventResult::kNotCanceled) {
     return false;
   }
+
+  // If the anchor or focus is removed during the "selectstart" event, do
+  // not proceed.
+  if (base_.ContainerObject()->IsDetached() ||
+      extent_.ContainerObject()->IsDetached())
+    return false;
+
+  UpdateSelectionIfNecessary();
+
+  // Dispatching the "selectstart" event could potentially change the document
+  // associated with the current frame.
+  if (!frame_selection.IsAvailable())
+    return false;
+
+  // Re-retrieve the SelectionInDOMTree in case a DOM mutation took place.
+  // That way it will also have the updated DOM tree and Style versions,
+  // and the SelectionTemplate checks for each won't fail.
+  const SelectionInDOMTree selection = AsSelection(selection_behavior);
 
   SetSelectionOptions::Builder options_builder;
   options_builder.SetIsDirectional(true)
       .SetShouldCloseTyping(true)
       .SetShouldClearTypingStyle(true)
       .SetSetSelectionBy(SetSelectionBy::kUser);
-  frame_selection.ClearDocumentCachedRange();
-  frame_selection.SetSelection(selection, options_builder.Build());
-
-  // Cache the newly created document range. This doesn't affect the already
-  // applied selection. Note that DOM's |Range| object has a start and an end
-  // container that need to be in DOM order. See the DOM specification for more
-  // information: https://dom.spec.whatwg.org/#interface-range
-  Range* range = Range::Create(*document);
-  if (selection.Extent().IsNull()) {
-    DCHECK(selection.Base().IsNotNull())
-        << "AX selections converted to DOM selections should have at least one "
-           "endpoint non-null.\n"
-        << *this << '\n'
-        << selection;
-    range->setStart(selection.Base().ComputeContainerNode(),
-                    selection.Base().ComputeOffsetInContainerNode());
-    range->setEnd(selection.Base().ComputeContainerNode(),
-                  selection.Base().ComputeOffsetInContainerNode());
-  } else if (selection.Base() < selection.Extent()) {
-    range->setStart(selection.Base().ComputeContainerNode(),
-                    selection.Base().ComputeOffsetInContainerNode());
-    range->setEnd(selection.Extent().ComputeContainerNode(),
-                  selection.Extent().ComputeOffsetInContainerNode());
-  } else {
-    range->setStart(selection.Extent().ComputeContainerNode(),
-                    selection.Extent().ComputeOffsetInContainerNode());
-    range->setEnd(selection.Base().ComputeContainerNode(),
-                  selection.Base().ComputeOffsetInContainerNode());
-  }
-  frame_selection.CacheRangeOfDocument(range);
+  frame_selection.SetSelectionForAccessibility(selection,
+                                               options_builder.Build());
   return true;
 }
 
