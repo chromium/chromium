@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/screens/error_screen.h"
@@ -220,6 +221,11 @@ class UpdateScreen : public BaseScreen,
   base::TimeDelta finalize_time_;
 
   ErrorScreen::ConnectRequestCallbackSubscription connect_request_subscription_;
+
+  // PowerManagerClient::Observer is used only when screen is shown.
+  std::unique_ptr<
+      ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>
+      power_manager_subscription_;
 
   base::WeakPtrFactory<UpdateScreen> weak_factory_{this};
 

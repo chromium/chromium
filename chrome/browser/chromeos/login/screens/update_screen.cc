@@ -120,15 +120,11 @@ UpdateScreen::UpdateScreen(UpdateView* view,
       version_updater_(std::make_unique<VersionUpdater>(this)),
       wait_before_reboot_time_(kWaitBeforeRebootTime),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
-  if (chromeos::features::IsBetterUpdateEnabled())
-    PowerManagerClient::Get()->AddObserver(this);
   if (view_)
     view_->Bind(this);
 }
 
 UpdateScreen::~UpdateScreen() {
-  if (chromeos::features::IsBetterUpdateEnabled())
-    PowerManagerClient::Get()->RemoveObserver(this);
   if (view_)
     view_->Unbind();
 }
@@ -164,8 +160,13 @@ bool UpdateScreen::MaybeSkip(WizardContext* context) {
 }
 
 void UpdateScreen::ShowImpl() {
-  if (chromeos::features::IsBetterUpdateEnabled())
+  if (chromeos::features::IsBetterUpdateEnabled()) {
+    DCHECK(!power_manager_subscription_);
+    power_manager_subscription_ = std::make_unique<
+        ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>(this);
+    power_manager_subscription_->Add(PowerManagerClient::Get());
     PowerManagerClient::Get()->RequestStatusUpdate();
+  }
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (view_) {
     view_->SetCancelUpdateShortcutEnabled(true);
@@ -181,6 +182,7 @@ void UpdateScreen::ShowImpl() {
 }
 
 void UpdateScreen::HideImpl() {
+  power_manager_subscription_.reset();
   show_timer_.Stop();
   if (view_)
     view_->Hide();
