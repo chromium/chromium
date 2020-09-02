@@ -83,3 +83,11 @@ imageset("mark_read") {
     "mark_read.imageset/mark_read@3x.png",
   ]
 }
+
+imageset("offline") {
+  sources = [
+    "offline.imageset/Contents.json",
+    "offline.imageset/offline@2x.png",
+    "offline.imageset/offline@3x.png",
+  ]
+}

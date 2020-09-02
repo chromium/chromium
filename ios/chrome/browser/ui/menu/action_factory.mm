@@ -207,11 +207,11 @@
                          block:block];
 }
 
-- (UIAction*)actionToViewOfflineVersionInInNewTabWithBlock:
+- (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:
     (ProceduralBlock)block {
   return [self actionWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE)
-                         image:nil
+                                   IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON)
+                         image:[UIImage imageNamed:@"offline"]
                           type:MenuActionType::ViewOffline
                          block:block];
 }
