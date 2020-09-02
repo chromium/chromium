@@ -52614,6 +52614,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="System tray"/>
   <int value="3" label="Virtual keyboard tray"/>
   <int value="4" label="IME tray"/>
+  <int value="5" label="Enterprise enrollment button"/>
 </enum>
 
 <enum name="OomInterventionBrowserMonitorStatus">

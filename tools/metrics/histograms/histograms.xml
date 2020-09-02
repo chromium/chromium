@@ -211740,6 +211740,7 @@ regressions. -->
   <suffix name="Enroll" label=""/>
   <suffix name="Error-message" label=""/>
   <suffix name="Eula" label=""/>
+  <suffix name="Family-link-notice" label=""/>
   <suffix name="Fingerprint-setup" label=""/>
   <suffix name="Gaia-signin" label=""/>
   <suffix name="Gesture-navigation" label=""/>
@@ -211758,6 +211759,7 @@ regressions. -->
   <suffix name="Tos" label=""/>
   <suffix name="Update" label=""/>
   <suffix name="Update-required" label=""/>
+  <suffix name="User-creation" label=""/>
   <suffix name="UserBoard" label=""/>
   <suffix name="Wrong-hwid" label=""/>
   <affected-histogram name="OOBE.StepCompletionTime"/>
@@ -211786,7 +211788,10 @@ regressions. -->
   <suffix name="Eula.AcceptedWithoutStats" label=""/>
   <suffix name="Eula.AcceptedWithStats" label=""/>
   <suffix name="Eula.Back" label=""/>
+  <suffix name="Family-link-notice.Done" label=""/>
   <suffix name="Fingerprint-setup.Next" label=""/>
+  <suffix name="Gaia-signin.Back" label=""/>
+  <suffix name="Gaia-signin.CloseDialog" label=""/>
   <suffix name="Gesture-navigation.Next" label=""/>
   <suffix name="Hid-detection.Next" label=""/>
   <suffix name="Hid-detection.StartDemo" label=""/>
@@ -211809,6 +211814,11 @@ regressions. -->
   <suffix name="Terms-of-service.Declined" label=""/>
   <suffix name="Update.UpdateError" label=""/>
   <suffix name="Update.UpdateNotRequired" label=""/>
+  <suffix name="User-creation.Cancel" label=""/>
+  <suffix name="User-creation.CreateChildAccount" label=""/>
+  <suffix name="User-creation.EnterpriseEnroll" label=""/>
+  <suffix name="User-creation.SignIn" label=""/>
+  <suffix name="User-creation.SignInAsChild" label=""/>
   <suffix name="Wrong-hwid.Next" label=""/>
   <affected-histogram name="OOBE.StepCompletionTimeByExitReason"/>
 </histogram_suffixes>
