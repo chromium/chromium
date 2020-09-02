@@ -264,6 +264,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1975584088563498795">মেলবক্স ১০</translation>
 <translation id="1978555033938440688">ফার্মওয়্যার ভার্সন</translation>
+<translation id="1988881251331415125">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'কানেক্টিভিটি ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">কুকি ও সাইট ডেটা অ্যাক্সেস করার অনুমতি চাইছে।
 
@@ -307,6 +308,7 @@
 <translation id="2154054054215849342">আপনার ডোমেনের জন্য সিঙ্ক উপলভ্য নেই</translation>
 <translation id="2154484045852737596">কার্ড সম্পাদনা করুন</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
+<translation id="2164510882479075877"><ph name="HOST_NAME" />-এ কোনও বানান ভুল লেখা হয়েছে কিনা তা চেক করে দেখুন।</translation>
 <translation id="2166049586286450108">পূর্ণ প্রশাসক অ্যাক্সেস</translation>
 <translation id="2166378884831602661">এই সাইটটি একটি সুরক্ষিত সংযোগ দিতে পারছে না</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
@@ -1686,6 +1688,7 @@
 <translation id="7887683347370398519">আপনার CVC পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="7887885240995164102">'ছবির-মধ্যে-ছবি' মোডে প্রবেশ করুন</translation>
 <translation id="7888575728750733395">প্রিন্ট রেন্ডারিং ইনটেন্ট</translation>
+<translation id="7894280532028510793">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'নেটওয়ার্ক ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7932579305932748336">কোট</translation>
 <translation id="79338296614623784">একটি সঠিক ফোন নম্বর লিখুন</translation>
@@ -1832,6 +1835,7 @@
 <translation id="8508648098325802031">সার্চ আইকন</translation>
 <translation id="8522552481199248698">পাসওয়ার্ড পরিবর্তন করে আপনার Google অ্যাকাউন্ট সুরক্ষিত রাখতে Chrome সাহায্য করতে পারবে।</translation>
 <translation id="8530813470445476232">Chrome সেটিংস থেকে আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু মুছুন</translation>
+<translation id="8533619373899488139">ব্লক করা ইউআরএলের তালিকা এবং আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের প্রয়োগ করা অন্যান্য নীতিগুলি দেখার জন্য &lt;strong&gt;chrome://policy&lt;/strong&gt;-এ যান।</translation>
 <translation id="8541158209346794904">ব্লুটুথ ডিভাইস</translation>
 <translation id="8542014550340843547">নিচে ট্রিপল স্টেপল</translation>
 <translation id="8543181531796978784">আপনি <ph name="BEGIN_ERROR_LINK" />একটি শনাক্তকরণ সমস্যা রিপোর্ট করতে পারেন<ph name="END_ERROR_LINK" /> অথবা, আপনি আপনার নিরাপত্তা ঝুঁকি বুঝতে পারলে, <ph name="BEGIN_LINK" />এই অনিরাপদ সাইটটি ঘুরে দেখুন<ph name="END_LINK" />।</translation>
@@ -1891,6 +1895,7 @@
 <translation id="884923133447025588">কোন প্রত্যাহার নির্মাণকৌশল পাওয়া যায় নি৷</translation>
 <translation id="885730110891505394">Google এর সাথে ভাগ করছে</translation>
 <translation id="8858065207712248076">Chrome-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
+<translation id="885906927438988819">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'Windows নেটওয়ার্ক ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="8866481888320382733">নীতি সেটিংস বিশ্লেষণ করার সময় ত্রুটি</translation>
 <translation id="8866928039507595380">ফোল্ড</translation>
 <translation id="886872106311861689">B3</translation>

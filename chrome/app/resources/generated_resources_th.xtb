@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">บุ๊กมาร์ก ประวัติการเข้าชม และการตั้งค่าอื่นๆ ของคุณจะได้รับการซิงค์ไปยังบัญชี Google ของคุณ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">เครือข่ายในประเทศ ไม่ใช่โรมมิ่ง</translation>
+<translation id="1315144594965013365">ตรวจสอบว่าอุปกรณ์ทั้ง 2 เครื่องปลดล็อกแล้ว อยู่ใกล้กัน และเปิดบลูทูธอยู่ หากจะแชร์กับ Chromebook ให้ตรวจสอบว่าเปิดการแชร์ใกล้เคียงแล้ว (เปิดพื้นที่แสดงสถานะโดยเลือกเวลา จากนั้นเลือกการแชร์ใกล้เคียง)</translation>
 <translation id="1316136264406804862">กำลังค้นหา...</translation>
 <translation id="1316495628809031177">หยุดซิงค์ชั่วคราว</translation>
 <translation id="1317637799698924700">แท่นชาร์จจะทำงานในโหมดที่เข้ากันได้กับ USB Type-C</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">อุปกรณ์ปลดล็อกได้ด้วย Smart Lock กด Enter เพื่อปลดล็อก</translation>
 <translation id="1361164813881551742">เพิ่มด้วยตนเอง</translation>
 <translation id="1361655923249334273">ไม่ได้ใช้</translation>
+<translation id="1361707011052629095">อุปกรณ์ที่อยู่ใกล้ๆ เมื่อการแชร์ใกล้เคียงเปิดอยู่</translation>
 <translation id="1361872463926621533">เปิดเสียงเมื่อเริ่มใช้</translation>
 <translation id="1362865166188278099">ปัญหาด้านกลไก ตรวจสอบเครื่องพิมพ์</translation>
 <translation id="1363585519747660921">เครื่องพิมพ์ USB ต้องการการกำหนดค่า</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1556537182262721003">ไม่สามารถย้ายไดเรกทอรีส่วนขยายเข้าไปในโปรไฟล์</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
+<translation id="1562119309884184621">การเพิ่มรายชื่อติดต่อนี้จะทำให้ระบบจำได้เมื่อรายชื่อนี้แชร์ครั้งถัดไป</translation>
 <translation id="1563702743503072935">รหัสผ่านจากบัญชี Google จะพร้อมใช้งานในอุปกรณ์นี้ด้วยในระหว่างที่คุณลงชื่อเข้าใช้</translation>
 <translation id="1566049601598938765">เว็บไซต์</translation>
 <translation id="15662109988763471">เครื่องพิมพ์ที่เลือกไว้ใช้ไม่ได้หรือติดตั้งไว้ไม่ถูกต้อง โปรดตรวจสอบเครื่องพิมพ์ของคุณหรือลองเลือกเครื่องพิมพ์อื่น</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">ปิดแถบดาวน์โหลด</translation>
 <translation id="1744060673522309905">นำอุปกรณ์เข้าร่วมโดเมนไม่ได้ ตรวจสอบว่าคุณไม่ได้เพิ่มอุปกรณ์เกินจำนวนจำกัด</translation>
 <translation id="1744108098763830590">หน้าพื้นหลัง</translation>
+<translation id="1745732479023874451">จัดการรายชื่อติดต่อ</translation>
 <translation id="1748563609363301860">คุณบันทึกรหัสผ่านนี้ได้ในบัญชี Google หรือเฉพาะในอุปกรณ์นี้</translation>
 <translation id="1750172676754093297">คีย์ความปลอดภัยบันทึกลายนิ้วมือไม่ได้</translation>
 <translation id="1751249301761991853">ส่วนบุคคล</translation>
@@ -1208,6 +1212,7 @@
 <translation id="2433507940547922241">ลักษณะที่ปรากฏ</translation>
 <translation id="2433836460518180625">ปลดล็อกอุปกรณ์เท่านั้น</translation>
 <translation id="2434449159125086437">ตั้งค่าเครื่องพิมพ์ไม่ได้ โปรดตรวจสอบการกำหนดค่าแล้วลองอีกครั้ง</translation>
+<translation id="2434758125294431199">เลือกคนที่แชร์กับคุณได้</translation>
 <translation id="2435248616906486374">เครือข่ายถูกตัดการเชื่อมต่อ</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2436186046335138073">อนุญาตให้ <ph name="HANDLER_HOSTNAME" /> เปิดลิงก์ <ph name="PROTOCOL" /> ทั้งหมดไหม</translation>
@@ -1365,6 +1370,7 @@
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="2616366145935564096">อ่านและเปลี่ยนแปลงข้อมูลของคุณใน <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">ซิมการ์ดถูกล็อก</translation>
+<translation id="2618797463720777311">ตั้งค่าการแชร์ใกล้เคียง</translation>
 <translation id="2619761439309613843">รีเฟรชทุกวัน</translation>
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="262154978979441594">ฝึกรูปแบบเสียงของ Google Assistant</translation>
@@ -1719,6 +1725,7 @@
 <translation id="3029466929721441205">แสดงเครื่องมือสไตลัสในชั้นวาง</translation>
 <translation id="3031417829280473749">เอเจนต์เอ็กซ์</translation>
 <translation id="3031557471081358569">เลือกรายการที่จะนำเข้าต่อไปนี้:</translation>
+<translation id="3036041939445522540">ไม่มีรายชื่อติดต่อที่ใช้ได้</translation>
 <translation id="3036327949511794916">เลยกำหนดเวลาส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้แล้ว</translation>
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
 <translation id="3037754279345160234">แยกวิเคราะห์การกำหนดค่าเพื่อเข้าร่วมโดเมนไม่ได้ โปรดติดต่อผู้ดูแลระบบ</translation>
@@ -1983,6 +1990,7 @@
 <translation id="3388788256054548012">ไฟล์นี้มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส</translation>
 <translation id="3390013585654699824">รายละเอียดแอป</translation>
 <translation id="3390741581549395454">สำรองข้อมูลแอปและไฟล์ Linux เรียบร้อยแล้ว การอัปเกรดจะเริ่มในไม่ช้า</translation>
+<translation id="339507021360520688">ผู้ที่เลือกให้คุณมองเห็นได้เมื่อหน้าจอของตนไม่ได้ล็อกอยู่</translation>
 <translation id="3396800784455899911">การคลิกปุ่ม "ยอมรับและดำเนินการต่อ" แสดงว่าคุณยอมรับการดำเนินการของบริการต่างๆ ของ Google ตามที่ชี้แจ้งไว้ด้านบน</translation>
 <translation id="3399432415385675819">ระบบจะปิดใช้การแจ้งเตือน</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> เฮิรตซ์) - อินเตอร์เลซ</translation>
@@ -2059,7 +2067,7 @@
 <translation id="3471876058939596279">ใช้พอร์ต HDMI และ USB Type-C สำหรับวิดีโอพร้อมกันไม่ได้ โปรดใช้พอร์ตวิดีโออื่น</translation>
 <translation id="3473241910002674503">ไปยังหน้าแรก ย้อนกลับ และสลับแอปด้วยปุ่มในโหมดแท็บเล็ต</translation>
 <translation id="3473479545200714844">แว่นขยายหน้าจอ</translation>
-<translation id="347394413229268704">อ่านภายหลัง</translation>
+<translation id="347394413229268704">อ่านในภายหลัง</translation>
 <translation id="3475843873335999118">ขออภัย ระบบยังคงไม่รู้จักลายนิ้วมือของคุณ โปรดป้อนรหัสผ่าน</translation>
 <translation id="3476303763173086583">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของบุตรหลานให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุชื่อบุตรหลานของคุณ และจะช่วยปรับปรุงความเสถียรของแอปและระบบ และอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาซอฟต์แวร์ Android เจ้าของเป็นผู้บังคับใช้<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" />นี้ เจ้าของอาจเลือกที่จะส่งข้อมูลการวินิจฉัยและการใช้งานสำหรับอุปกรณ์นี้ไปยัง Google หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK2" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">อ๊ะ! ระบบไม่สามารถดึงข้อมูลนโยบายจากอุปกรณ์</translation>
@@ -3954,6 +3962,7 @@
 <translation id="5799508265798272974">เครื่องเสมือนของ Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">ไฟล์ปลายทางไม่สมบูรณ์หรือถูกลบไปตั้งแต่การดาวน์โหลดครั้งล่าสุด</translation>
 <translation id="5801568494490449797">ค่ากำหนด</translation>
+<translation id="580297286642726158">อุปกรณ์ที่คุณจะแชร์ด้วยได้</translation>
 <translation id="5804175651771201311">ปิดโรมมิ่ง</translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
 <translation id="5805697420284793859">ตัวจัดการหน้าต่าง</translation>
@@ -3970,6 +3979,7 @@
 <translation id="5826993284769733527">เปิดเผยบางส่วน</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
+<translation id="5830659417568730973">รายชื่อติดต่อที่เลือกไว้และอยู่ใกล้ๆ เมื่อหน้าจอของคุณไม่ได้ล็อกอยู่</translation>
 <translation id="5830720307094128296">บันทึกหน้าเ&amp;ป็น...</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
@@ -4026,6 +4036,7 @@
 <translation id="5886009770935151472">นิ้วที่ 1</translation>
 <translation id="5889282057229379085">จำนวนสูงสุดของ CA ระดับกลาง: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">เครือข่าย Wi-Fi ที่ต้องการ</translation>
+<translation id="5893589697005440881">แชร์ไฟล์กับผู้คนรอบตัวคุณ</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5900302528761731119">รูปภาพ Google โปรไฟล์</translation>
 <translation id="5900358982890952556">อัปเกรด Linux (เบต้า)</translation>
@@ -4139,6 +4150,7 @@
 <translation id="6031600495088157824">ตัวเลือกการป้อนข้อมูลในแถบเครื่องมือ</translation>
 <translation id="6032715498678347852">หากต้องการให้สิทธิ์เข้าถึงเว็บไซต์นี้แก่ส่วนขยาย ให้คลิกส่วนขยาย</translation>
 <translation id="6032912588568283682">ระบบไฟล์</translation>
+<translation id="6035517790085323771">ผู้ที่แชร์กับอุปกรณ์ของคุณได้</translation>
 <translation id="6038929619733116134">บล็อกหากเว็บไซต์แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="6039651071822577588">พจนานุกรมคุณสมบัติเครือข่ายมีรูปแบบไม่ถูกต้อง</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -4221,6 +4233,7 @@
 <translation id="6122081475643980456">กำลังมีการควบคุมการเชื่อมต่ออินเทอร์เน็ตของคุณ</translation>
 <translation id="6122095009389448667">บล็อกเว็บไซต์ไม่ให้เห็นคลิปบอร์ดต่อไป</translation>
 <translation id="6122191549521593678">ออนไลน์</translation>
+<translation id="6122600716821516697">แชร์กับอุปกรณ์นี้ใช่ไหม</translation>
 <translation id="6122831415929794347">ปิด Google Safe Browsing ใช่ไหม</translation>
 <translation id="6122875415561139701">ไม่อนุญาตให้เขียนใน "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6124213551517593835">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="SITE_GROUP_NAME" /> และเว็บไซต์ใดก็ตามภายใต้กลุ่มนี้จัดเก็บไว้</translation>
@@ -4777,6 +4790,7 @@
 <translation id="6824584962142919697">&amp;ตรวจสอบองค์ประกอบ</translation>
 <translation id="6825184156888454064">จัดเรียงตามชื่อ</translation>
 <translation id="6826872289184051766">ยืนยันผ่าน USB</translation>
+<translation id="6827487342470222762">ไม่มีรายชื่อติดต่อที่ใช้ได้ หากต้องการใช้การแชร์ใกล้เคียงกับรายชื่อติดต่อ ให้เพิ่มอีเมลที่ลิงก์กับบัญชี Google ของรายชื่อติดต่อนั้นลงในรายชื่อติดต่อของคุณ</translation>
 <translation id="6827623133556594466">ระบบจะไม่รองรับ Google Cloud Print อีกต่อไปหลังจากวันที่ 31 ธันวาคม <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">จำกัดการลงชื่อเข้าใช้ของผู้ใช้ต่อไปนี้:</translation>
 <translation id="6828182567531805778">ป้อนรหัสผ่านเพื่อซิงค์ข้อมูล</translation>
@@ -5581,6 +5595,7 @@
 <translation id="7819992334107904369">การซิงค์ของ Chrome</translation>
 <translation id="782057141565633384">คัด&amp;ลอกที่อยู่วิดีโอ</translation>
 <translation id="7824864914877854148">สำรองข้อมูลให้เสร็จสมบูรณ์ไม่ได้เนื่องจากเกิดข้อผิดพลาด</translation>
+<translation id="7825666486843191125">รายชื่อติดต่อทั้งหมดที่อยู่ใกล้ๆ เมื่อหน้าจอของคุณไม่ได้ล็อกอยู่</translation>
 <translation id="782590969421016895">ใช้หน้าเว็บปัจจุบัน</translation>
 <translation id="7826249772873145665">ปิดใช้การแก้ไขข้อบกพร่อง ADB แล้ว</translation>
 <translation id="7826254698725248775">ตัวระบุอุปกรณ์ขัดแย้งกัน</translation>
@@ -5678,6 +5693,7 @@
 <translation id="7918257978052780342">ลงทะเบียน</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> วิ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ดู "<ph name="FILENAME" />" ได้</translation>
+<translation id="7924080089023843180">ไม่มี เว้นแต่จะเปิดการแชร์ใกล้เคียง</translation>
 <translation id="7924358170328001543">เกิดข้อผิดพลาดในการส่งต่อพอร์ต</translation>
 <translation id="792514962475806987">ระดับการซูมหน้าจอบางส่วน:</translation>
 <translation id="7925247922861151263">การตรวจสอบ AAA ล้มเหลว</translation>
@@ -5725,6 +5741,7 @@
 <translation id="7970673414865679092">รายละเอียดอีเทอร์เน็ต</translation>
 <translation id="7970882136539140748">บันทึกบัตรไม่ได้ในตอนนี้</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 พร้อมการเข้ารหัส RSA</translation>
+<translation id="797394244396603170">เลือกอุปกรณ์ที่คุณต้องการแชร์ไฟล์ด้วย</translation>
 <translation id="7973962044839454485">การตรวจสอบสิทธิ์ PPP ล้มเหลวเนื่องจากชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</translation>
 <translation id="7974566588408714340">ลองอีกครั้งโดยใช้ <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">โอเวอร์สแกน</translation>
@@ -6237,6 +6254,7 @@
 <translation id="8613164732773110792">อักขระตัวพิมพ์เล็ก ตัวเลข ขีดล่าง หรือขีดกลางเท่านั้น</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย ไฟล์ที่เปิดต้องมีขนาดไม่เกิน 50 MB</translation>
 <translation id="8615618338313291042">แอปพลิเคชันที่ไม่ระบุตัวตน: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">เพิ่ม <ph name="CONTACT_NAME" /> ลงในรายชื่อติดต่อ</translation>
 <translation id="8619803522055190423">เงาตกกระทบ</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">ผู้ปกครองยังไม่ได้อนุมัติเว็บไซต์นี้</translation>
@@ -6466,6 +6484,7 @@
 <translation id="8859402192569844210">โหลดข้อกำหนดในการให้บริการไม่สำเร็จ</translation>
 <translation id="8859662783913000679">บัญชีผู้ปกครอง</translation>
 <translation id="8862003515646449717">เปลี่ยนเป็นเบราว์เซอร์ที่เร็ว</translation>
+<translation id="8863140399813345099">ระดับการเข้าถึงอุปกรณ์จะควบคุมผู้ที่แชร์ไฟล์กับคุณได้ขณะที่หน้าจอของคุณไม่ได้ล็อกอยู่</translation>
 <translation id="8863753581171631212">เปิดลิงก์ใน <ph name="APP" /> ใหม่</translation>
 <translation id="8864055848767439877">กำลังแชร์ <ph name="TAB_NAME" /> กับ <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">นำ <ph name="EMAIL" /> ออกจากอุปกรณ์นี้แล้ว</translation>

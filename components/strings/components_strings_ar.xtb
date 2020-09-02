@@ -307,7 +307,7 @@
 <translation id="2154054054215849342">المزامنة غير متاحة لنطاقك</translation>
 <translation id="2154484045852737596">تعديل البطاقة</translation>
 <translation id="2161656808144014275">نص</translation>
-<translation id="2164510882479075877">تحقَّق مما إذا كان هناك خطًأ إملائيًا في <ph name="HOST_NAME" />.</translation>
+<translation id="2164510882479075877">تحقَّق ما إذا ورد خطأ إملائي في <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">الوصول الكامل للمشرف</translation>
 <translation id="2166378884831602661">لا يمكن لهذا الموقع الإلكتروني توفير اتصال آمن</translation>
 <translation id="2169984857010174799">‏Kaku2 (مغلف)</translation>
@@ -1111,6 +1111,7 @@
 <translation id="5509780412636533143">الإشارات المرجعية المُدارة</translation>
 <translation id="5510481203689988000">تتم إدارة هذا الإعداد في إعدادات ملفات تعريف الارتباط.</translation>
 <translation id="5510766032865166053">ربما يكون تم نقله أو حذفه.</translation>
+<translation id="5519516356611866228">مع التغييرات التي أجريتها</translation>
 <translation id="5523118979700054094">اسم السياسة</translation>
 <translation id="55293785478302737">خزم الحواف</translation>
 <translation id="553484882784876924">‏Prc6 (مغلف)</translation>
@@ -1350,6 +1351,7 @@
 <translation id="6476284679642588870">إدارة طرق الدفع</translation>
 <translation id="6489534406876378309">بدء تحميل الأعطال</translation>
 <translation id="6499038740797743453">هل تريد إعادة ضبط كلمة المرور؟</translation>
+<translation id="6502991525169604759">بدون التغييرات التي أجريتها</translation>
 <translation id="6508722015517270189">‏إعادة تشغيل Chrome</translation>
 <translation id="6517596291481585650">تحذير: لم يتم دمج هذه السياسة كقائمة كما هو موضح بموجب السياسة؛ لأنها ليست قائمة.</translation>
 <translation id="6518133107902771759">تحقق</translation>

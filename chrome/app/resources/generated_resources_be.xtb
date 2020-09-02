@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">Вашы закладкі, гісторыя і іншыя налады будуць сінхранізавацца з Уліковым запісам Google.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
+<translation id="1315144594965013365">Упэўніцеся, што абедзве прылады разблакіраваны, знаходзяцца адна пры адной і на іх уключаны Bluetooth. Пры абагульванні з дапамогай Chromebook упэўніцеся, што ўключана функцыя "Абагульванне паблізу" (адкрыйце панэль стану, націснуўшы на гадзіннік, і выберыце "Абагульванне паблізу").</translation>
 <translation id="1316136264406804862">Ідзе пошук...</translation>
 <translation id="1316495628809031177">Сінхранізацыя прыпынена</translation>
 <translation id="1317637799698924700">Док-станцыя будзе працаваць у рэжыме, сумяшчальным з USB Type-C.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Разблакіроўка прылады можа ажыццяўляцца з дапамогай Smart Lock. Каб разблакіраваць яе, націсніце Enter.</translation>
 <translation id="1361164813881551742">Дадаць уручную</translation>
 <translation id="1361655923249334273">Не выкарыстоўваецца</translation>
+<translation id="1361707011052629095">Прылады паблізу вас, калі ўключана функцыя "Абагульванне паблізу"</translation>
 <translation id="1361872463926621533">Прайграваць гук пры запуску</translation>
 <translation id="1362865166188278099">Механічная праблема. Праверце прынтар</translation>
 <translation id="1363585519747660921">Неабходна наладзіць USB-прынтар</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="1556537182262721003">Не ўдалося перанесці каталог пашырэнняў у профіль.</translation>
 <translation id="155865706765934889">Сэнсарная панэль</translation>
+<translation id="1562119309884184621">Дададзены кантакт будзе распазнаны пры наступным абагульванні</translation>
 <translation id="1563702743503072935">Паролі, захаваныя ва Уліковым запісе Google, будуць даступныя таксама на гэтай прыладзе, пакуль вы не выканаеце выхад</translation>
 <translation id="1566049601598938765">Вэб-сайт</translation>
 <translation id="15662109988763471">Выбраны прынтар недаступны або ўсталяваны няправільна. Праверце прынтар або выберыце іншы.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">Закрыць панэль спамповак</translation>
 <translation id="1744060673522309905">Не ўдалося далучыць прыладу да дамена. Праверце, ці не перавышана колькасць прылад, якую вы можаце дадаць.</translation>
 <translation id="1744108098763830590">фонавая старонка</translation>
+<translation id="1745732479023874451">Кіраваць кантактамі</translation>
 <translation id="1748563609363301860">Вы можаце захаваць пароль ва Уліковым запісе Google або толькі на гэтай прыладзе</translation>
 <translation id="1750172676754093297">Не ўдалося захаваць адбіткі пальцаў на вашым ключы бяспекі</translation>
 <translation id="1751249301761991853">Персаналізацыя</translation>
@@ -1208,6 +1212,7 @@
 <translation id="2433507940547922241">Выгляд</translation>
 <translation id="2433836460518180625">Толькі разблакіраваць прыладу</translation>
 <translation id="2434449159125086437">Не ўдаецца наладзіць прынтар. Праверце параметры канфігурацыі і паўтарыце спробу.</translation>
+<translation id="2434758125294431199">Выберыце, хто можа ажыццяўляць абагульванне з вамі</translation>
 <translation id="2435248616906486374">Сетка адключана</translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
 <translation id="2436186046335138073">Дазволіць <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />"?</translation>
@@ -1365,6 +1370,7 @@
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="2616366145935564096">Прагляд і змена вашых даных на сайце <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM-карта заблакіравана</translation>
+<translation id="2618797463720777311">Наладжванне функцыі "Абагульванне паблізу"</translation>
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="262154978979441594">Навучыце Памочніка Google распазнаваць узор голасу</translation>
@@ -1719,6 +1725,7 @@
 <translation id="3029466929721441205">Паказваць інструменты для пяра на паліцы</translation>
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Выберыце, што імпартаваць:</translation>
+<translation id="3036041939445522540">Няма даступных кантактаў</translation>
 <translation id="3036327949511794916">Тэрмін вяртання прылады <ph name="DEVICE_TYPE" /> мінуў.</translation>
 <translation id="3036546437875325427">Уключыць Flash</translation>
 <translation id="3037754279345160234">Не ўдалося прааналізаваць канфігурацыю, каб далучыцца да дамена. Звярніцеся да адміністратара.</translation>
@@ -1983,6 +1990,7 @@
 <translation id="3388788256054548012">Файл зашыфраваны. Папрасіце ўладальніка файла расшыфраваць яго.</translation>
 <translation id="3390013585654699824">Звесткі пра праграму</translation>
 <translation id="3390741581549395454">Рэзервовая копія файлаў і праграм Linux створана. Хутка пачнецца абнаўленне.</translation>
+<translation id="339507021360520688">Карыстальнікі, якія ўказалі, што іх прылада павінна быць бачнай вам, калі яе экран разблакіраваны</translation>
 <translation id="3396800784455899911">Націскаючы на кнопку "Прыняць і працягнуць", вы згаджаецеся з апісанымі вышэй умовамі гэтых сэрвісаў Google.</translation>
 <translation id="3399432415385675819">Апавяшчэнні будуць выключаны</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Гц) – празрадковая разгортка</translation>
@@ -3954,6 +3962,7 @@
 <translation id="5799508265798272974">Віртуальная машына Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">З моманту апошняга спампоўвання мэтавы файл быў абрэзаны або выдалены.</translation>
 <translation id="5801568494490449797">Параметры</translation>
+<translation id="580297286642726158">Прылады, з якімі вы можаце ажыццяўляць абагульванне</translation>
 <translation id="5804175651771201311">Роўмінг выключаны</translation>
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5805697420284793859">Менеджар вокнаў</translation>
@@ -3970,6 +3979,7 @@
 <translation id="5826993284769733527">Напаўпразрыста</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Ідзе друк...</translation>
+<translation id="5830659417568730973">Пры разблакіраваным экране – выбраныя кантакты, якія знаходзяцца побач з вамі</translation>
 <translation id="5830720307094128296">Захаваць старонку &amp;як...</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
 <translation id="583281660410589416">Невядома</translation>
@@ -4026,6 +4036,7 @@
 <translation id="5886009770935151472">Палец 1</translation>
 <translation id="5889282057229379085">Максімальная колькасць прамежкавых ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Прыярытэтныя сеткі Wi-Fi</translation>
+<translation id="5893589697005440881">Абагульвайце файлы з карыстальнікамі паблізу</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5900302528761731119">Фота профілю Google</translation>
 <translation id="5900358982890952556">Абнаўленне Linux (бэта-версія)</translation>
@@ -4139,6 +4150,7 @@
 <translation id="6031600495088157824">Параметры ўводу ў панэлі</translation>
 <translation id="6032715498678347852">Каб даць пашырэнню доступ да гэтага сайта, націсніце на яго.</translation>
 <translation id="6032912588568283682">Файлавая сістэма</translation>
+<translation id="6035517790085323771">Хто можа ажыццяўляць абагульванне з вашай прыладай</translation>
 <translation id="6038929619733116134">Блакіраваць, калі сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>
 <translation id="6039651071822577588">Слоўнік уласцівасцей сеткі ў няправільным фармаце</translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -4221,6 +4233,7 @@
 <translation id="6122081475643980456">Ваша падключэнне да інтэрнэту кантралюецца</translation>
 <translation id="6122095009389448667">Працягваць блакіраваць гэтаму сайту доступ да буфера абмену</translation>
 <translation id="6122191549521593678">У інтэрнэце</translation>
+<translation id="6122600716821516697">Абагуліць з гэтай прыладай?</translation>
 <translation id="6122831415929794347">Выключыць Бяспечны прагляд?</translation>
 <translation id="6122875415561139701">Аперацыя запісу забаронена на прыладзе "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">Будуць выдалены файлы cookie і даныя, захаваныя групай сайтаў <ph name="SITE_GROUP_NAME" /></translation>
@@ -4777,6 +4790,7 @@
 <translation id="6824584962142919697">&amp;Праверыць элементы</translation>
 <translation id="6825184156888454064">Сартаваць па назве</translation>
 <translation id="6826872289184051766">Спраўдзіць праз USB</translation>
+<translation id="6827487342470222762">Няма даступных кантактаў. Каб выкарыстоўваць функцыю "Абагульванне паблізу" са сваімі кантактамі, дадайце ў кантакты адрасы электроннай пошты, звязаныя з іх Уліковымі запісамі Google.</translation>
 <translation id="6827623133556594466">Пасля 31 снежня 2020 г. Google Cloud Print падтрымлівацца не будзе. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Дазволіць уваход толькі наступным карыстальнікам:</translation>
 <translation id="6828182567531805778">Для сінхранізацыі даных увядзіце фразу-пароль</translation>
@@ -5581,6 +5595,7 @@
 <translation id="7819992334107904369">Сінхранізацыя Chrome</translation>
 <translation id="782057141565633384">К&amp;апіраваць адрас відэа</translation>
 <translation id="7824864914877854148">Рэзервовае капіраванне не ўдалося завяршыць з-за памылкі</translation>
+<translation id="7825666486843191125">Пры разблакіраваным экране – усе кантакты, якія знаходзяцца побач з вамі</translation>
 <translation id="782590969421016895">Выкарыстоўваць бягучыя старонкі</translation>
 <translation id="7826249772873145665">Адладка ADB выключана</translation>
 <translation id="7826254698725248775">Канфлікт ідэнтыфікатараў прылад.</translation>
@@ -5678,6 +5693,7 @@
 <translation id="7918257978052780342">Зарэгістраваць</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920363873148656176">Сайт <ph name="ORIGIN" /> можа праглядаць файл <ph name="FILENAME" /></translation>
+<translation id="7924080089023843180">Ніхто, пакуль вы не адкрыеце "Абагульванне паблізу"</translation>
 <translation id="7924358170328001543">Памылка пераадрасацыі партоў</translation>
 <translation id="792514962475806987">Маштаб прыстыкаванай лупы:</translation>
 <translation id="7925247922861151263">Не ўдалося выканаць праверку AAA</translation>
@@ -5725,6 +5741,7 @@
 <translation id="7970673414865679092">Звесткі пра Ethernet</translation>
 <translation id="7970882136539140748">Не ўдаецца захаваць даныя крэдытнай карткі</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 з шыфраваннем RSA</translation>
+<translation id="797394244396603170">Выберыце, з якой прыладай трэба абагуліць файлы</translation>
 <translation id="7973962044839454485">Не ўдалося выканаць аўтэнтыфікацыю PPP: няправільнае імя карыстальніка ці пароль</translation>
 <translation id="7974566588408714340">Паўтарыць спробу, выкарыстаўшы <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Вылет разгорткі</translation>
@@ -6236,6 +6253,7 @@
 <translation id="8613164732773110792">Толькі малыя літары, лічбы, сімвалы падкрэслівання і злучкі</translation>
 <translation id="8613786722548417558">Файл "<ph name="FILE_NAME" />" занадта вялікі, каб прайсці праверку бяспекі. Вы можаце адкрываць файлы памерам да 50 МБ.</translation>
 <translation id="8615618338313291042">Праграма інкогніта: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">Дадаць у кантакты карыстальніка <ph name="CONTACT_NAME" />.</translation>
 <translation id="8619803522055190423">З ценем</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Вашы бацькі пакуль што не ўхвалілі гэта</translation>
@@ -6465,6 +6483,7 @@
 <translation id="8859402192569844210">Не ўдалося загрузіць Умовы выкарыстання</translation>
 <translation id="8859662783913000679">Бацькоўскі ўліковы запіс</translation>
 <translation id="8862003515646449717">Пераключыцца на хуткі браўзер</translation>
+<translation id="8863140399813345099">Налады бачнасці прылады вызначаюць, хто можа абагульваць з вамі даныя, калі экран вашай прылады разблакіраваны</translation>
 <translation id="8863753581171631212">Адкрыць спасылку ў новым акне праграмы <ph name="APP" /></translation>
 <translation id="8864055848767439877">Укладка "<ph name="TAB_NAME" />" абагульваецца з <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">Уліковы запіс <ph name="EMAIL" /> выдалены з гэтай прылады</translation>

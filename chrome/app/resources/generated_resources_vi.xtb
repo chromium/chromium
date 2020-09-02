@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">Dấu trang, lịch sử và các cài đặt khác sẽ được đồng bộ hóa với tài khoản Google của bạn.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Mạng chủ, không chuyển vùng</translation>
+<translation id="1315144594965013365">Hãy đảm bảo cả hai thiết bị đã mở khóa, ở gần nhau và bật Bluetooth. Nếu bạn đang chia sẻ với Chromebook, hãy đảm bảo thiết bị này đã bật tính năng Chia sẻ lân cận (mở khu vực trạng thái bằng cách chọn thời gian, sau đó chọn tính năng Chia sẻ lân cận).</translation>
 <translation id="1316136264406804862">Đang tìm kiếm...</translation>
 <translation id="1316495628809031177">Quá trình đồng bộ hóa hiện tạm dừng</translation>
 <translation id="1317637799698924700">Đế sạc sẽ hoạt động ở chế độ tương thích với USB Type-C.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Bạn có thể mở khóa thiết bị của mình bằng Smart Lock. Hãy nhấn phím Enter để mở khóa.</translation>
 <translation id="1361164813881551742">Thêm thủ công</translation>
 <translation id="1361655923249334273">Không sử dụng</translation>
+<translation id="1361707011052629095">Các thiết bị ở gần bạn khi tính năng Chia sẻ lân cận đang bật</translation>
 <translation id="1361872463926621533">Phát âm thanh khi khởi động</translation>
 <translation id="1362865166188278099">Vấn đề về máy móc. Hãy kiểm tra máy in</translation>
 <translation id="1363585519747660921">Máy in USB cần định cấu hình</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1556537182262721003">Không thể di chuyển thư mục tiện ích vào hồ sơ.</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
+<translation id="1562119309884184621">Khi bạn thêm người liên hệ này, hệ thống sẽ ghi nhớ người đó để dễ dàng chia sẻ lần sau</translation>
 <translation id="1563702743503072935">Các mật khẩu trên Tài khoản Google của bạn cũng sẽ hiển thị trên thiết bị này khi bạn đăng nhập</translation>
 <translation id="1566049601598938765">Trang web</translation>
 <translation id="15662109988763471">Máy in đã chọn không hoạt động hoặc được cài đặt không chính xác. Hãy kiểm tra máy in của bạn hoặc thử chọn một máy in khác.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">Đóng thanh tệp đã tải xuống</translation>
 <translation id="1744060673522309905">Không thể kết hợp thiết bị với miền. Hãy đảm bảo số thiết bị bạn thêm không vượt quá giới hạn.</translation>
 <translation id="1744108098763830590">trang nền</translation>
+<translation id="1745732479023874451">Quản lý danh bạ</translation>
 <translation id="1748563609363301860">Bạn có thể lưu mật khẩu này trong Tài khoản Google của mình hoặc chỉ trên thiết bị này</translation>
 <translation id="1750172676754093297">Khóa bảo mật của bạn không thể lưu trữ vân tay số</translation>
 <translation id="1751249301761991853">Cá nhân</translation>
@@ -1208,6 +1212,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2433507940547922241">Hình thức</translation>
 <translation id="2433836460518180625">Chỉ mở khóa thiết bị</translation>
 <translation id="2434449159125086437">Không thể thiết lập máy in. Vui lòng kiểm tra cấu hình rồi thử lại.</translation>
+<translation id="2434758125294431199">Chọn người có thể chia sẻ với bạn</translation>
 <translation id="2435248616906486374">Mạng đã bị ngắt kết nối</translation>
 <translation id="2435457462613246316">Hiển thị mật khẩu</translation>
 <translation id="2436186046335138073">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" />?</translation>
@@ -1365,6 +1370,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2612676031748830579">Số thẻ</translation>
 <translation id="2616366145935564096">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
+<translation id="2618797463720777311">Thiết lập tính năng Chia sẻ lân cận</translation>
 <translation id="2619761439309613843">Làm mới hàng ngày</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="262154978979441594">Đào tạo mẫu giọng nói cho Trợ lý Google</translation>
@@ -1719,6 +1725,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3029466929721441205">Hiển thị các công cụ bút cảm ứng trong giá</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
 <translation id="3031557471081358569">Chọn các mục cần nhập:</translation>
+<translation id="3036041939445522540">Chưa có người liên hệ nào</translation>
 <translation id="3036327949511794916">Đã quá thời hạn trả lại thiết bị <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="3036546437875325427">Bật Flash</translation>
 <translation id="3037754279345160234">Không thể phân tích cú pháp cấu hình để tham gia miền. Vui lòng liên hệ với quản trị viên của bạn.</translation>
@@ -1983,6 +1990,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3388788256054548012">Tệp này đã được mã hóa. Hãy yêu cầu chủ sở hữu tệp giải mã.</translation>
 <translation id="3390013585654699824">Thông tin chi tiết về ứng dụng</translation>
 <translation id="3390741581549395454">Đã sao lưu thành công các ứng dụng và tệp Linux. Quá trình nâng cấp sẽ bắt đầu sau giây lát.</translation>
+<translation id="339507021360520688">Những người đã chọn hiển thị thiết bị với bạn khi màn hình của họ đang mở khóa</translation>
 <translation id="3396800784455899911">Bằng cách nhấp vào nút "Đồng ý và tiếp tục", bạn đồng ý với quy trình xử lý mô tả ở trên cho các dịch vụ này của Google.</translation>
 <translation id="3399432415385675819">Thông báo sẽ bị tắt</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - đan xen</translation>
@@ -3954,6 +3962,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5799508265798272974">Máy ảo Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Tệp đích đã bị cắt bớt hoặc xóa kể từ lần tải xuống cuối cùng.</translation>
 <translation id="5801568494490449797">Tùy chọn</translation>
+<translation id="580297286642726158">Thiết bị mà bạn chia sẻ</translation>
 <translation id="5804175651771201311">Chế độ chuyển vùng đang tắt</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5805697420284793859">Trình quản lý cửa sổ</translation>
@@ -3970,6 +3979,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5826993284769733527">Nửa trong suốt</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Đang in...</translation>
+<translation id="5830659417568730973">Những người liên hệ đã chọn ở gần bạn khi màn hình của bạn đang mở khóa</translation>
 <translation id="5830720307094128296">Lưu Trang &amp;Dưới dạng...</translation>
 <translation id="5832805196449965646">Thêm người</translation>
 <translation id="583281660410589416">Không xác định</translation>
@@ -4026,6 +4036,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5886009770935151472">Ngón tay số 1</translation>
 <translation id="5889282057229379085">Số CA gián tiếp tối đa: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Các mạng Wi-Fi ưu tiên</translation>
+<translation id="5893589697005440881">Chia sẻ tệp với những người xung quanh bạn</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5900302528761731119">Ảnh hồ sơ trên Google</translation>
 <translation id="5900358982890952556">Nâng cấp Linux (Thử nghiệm)</translation>
@@ -4139,6 +4150,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6031600495088157824">Các tùy chọn phương thức nhập trên thanh công cụ</translation>
 <translation id="6032715498678347852">Để cấp cho một tiện ích quyền truy cập vào trang web này, hãy nhấp vào tiện ích đó.</translation>
 <translation id="6032912588568283682">Hệ thống tệp</translation>
+<translation id="6035517790085323771">Người có thể chia sẻ với thiết bị của bạn</translation>
 <translation id="6038929619733116134">Chặn nếu trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
 <translation id="6039651071822577588">Từ điển thuộc tính mạng có định dạng không đúng</translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -4221,6 +4233,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6122081475643980456">Kết nối Internet của bạn đang bị kiểm soát</translation>
 <translation id="6122095009389448667">Tiếp tục chặn trang web này xem khay nhớ tạm</translation>
 <translation id="6122191549521593678">Trực tuyến</translation>
+<translation id="6122600716821516697">Chia sẻ với thiết bị này?</translation>
 <translation id="6122831415929794347">Tắt tính năng Duyệt web an toàn?</translation>
 <translation id="6122875415561139701">Tác vụ ghi không được phép trên: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="SITE_GROUP_NAME" /> cũng như trong mọi trang web thuộc nhóm này</translation>
@@ -4777,6 +4790,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6824584962142919697">&amp;Kiểm tra các yếu tố</translation>
 <translation id="6825184156888454064">Sắp xếp theo tên</translation>
 <translation id="6826872289184051766">Xác minh qua USB</translation>
+<translation id="6827487342470222762">Chưa có người liên hệ nào. Để chia sẻ với những người liên hệ bằng tính năng Chia sẻ lân cận, hãy thêm địa chỉ email liên kết với Tài khoản Google của họ vào danh bạ của bạn.</translation>
 <translation id="6827623133556594466">Sau ngày 31 tháng 12, Google Cloud Print sẽ không còn được hỗ trợ nữa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Giới hạn đăng nhập cho những người dùng sau:</translation>
 <translation id="6828182567531805778">Nhập cụm mật khẩu để đồng bộ hóa dữ liệu</translation>
@@ -5581,6 +5595,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7819992334107904369">Đồng bộ hóa Chrome</translation>
 <translation id="782057141565633384">S&amp;ao chép địa chỉ video</translation>
 <translation id="7824864914877854148">Không thể hoàn tất quá trình sao lưu do lỗi</translation>
+<translation id="7825666486843191125">Tất cả những người liên hệ ở gần bạn khi màn hình của bạn đang mở khóa</translation>
 <translation id="782590969421016895">Sử dụng trang hiện tại</translation>
 <translation id="7826249772873145665">Đã tắt tùy chọn gỡ lỗi ADB</translation>
 <translation id="7826254698725248775">Xung đột mã nhận dạng thiết bị.</translation>
@@ -5678,6 +5693,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7918257978052780342">Đăng ký</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> giây</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> có thể xem <ph name="FILENAME" /></translation>
+<translation id="7924080089023843180">Không người nào cả, trừ khi bạn mở tính năng Chia sẻ lân cận</translation>
 <translation id="7924358170328001543">Lỗi khi chuyển tiếp cổng</translation>
 <translation id="792514962475806987">Mức thu phóng ở vị trí cố định:</translation>
 <translation id="7925247922861151263">Không thể kiểm tra AAA</translation>
@@ -5725,6 +5741,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7970673414865679092">Thông tin chi tiết về Ethernet</translation>
 <translation id="7970882136539140748">Hệ thống không thể lưu thẻ vào lúc này</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Với Mã hóa RSA</translation>
+<translation id="797394244396603170">Chọn thiết bị mà bạn muốn chia sẻ tệp</translation>
 <translation id="7973962044839454485">Xác thực PPP không thành công do tên người dùng hoặc mật khẩu không đúng</translation>
 <translation id="7974566588408714340">Thử lại bằng <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Quét thừa</translation>
@@ -6237,6 +6254,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8613164732773110792">Chỉ các ký tự viết thường, chữ số, dấu gạch dưới hoặc dấu gạch ngang</translation>
 <translation id="8613786722548417558">Hệ thống không thể kiểm tra bảo mật do tệp <ph name="FILE_NAME" /> có dung lượng quá lớn. Bạn có thể mở tệp có dung lượng tối đa là 50 MB.</translation>
 <translation id="8615618338313291042">Ứng dụng Ẩn danh: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">Thêm <ph name="CONTACT_NAME" /> vào danh bạ của bạn</translation>
 <translation id="8619803522055190423">Bóng đổ</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Cha mẹ của bạn chưa phê duyệt trang web</translation>
@@ -6466,6 +6484,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8859402192569844210">Không thể tải Điều khoản dịch vụ</translation>
 <translation id="8859662783913000679">Tài khoản của cha mẹ</translation>
 <translation id="8862003515646449717">Chuyển sang một trình duyệt nhanh</translation>
+<translation id="8863140399813345099">Tùy chọn hiển thị thiết bị sẽ quyết định người có thể chia sẻ với bạn khi màn hình của bạn đang mở khóa</translation>
 <translation id="8863753581171631212">Mở liên kết trong <ph name="APP" /> mới</translation>
 <translation id="8864055848767439877">Đang chia sẻ <ph name="TAB_NAME" /> với <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">Đã xóa <ph name="EMAIL" /> khỏi thiết bị này</translation>

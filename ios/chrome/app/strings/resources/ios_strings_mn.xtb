@@ -94,7 +94,7 @@
 <translation id="1941314575388338491">Хуулахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1952172573699511566">Вэбсайт текстийг таны сонгосон хэлээр (хэрэв тухайн хэл боломжтой бол) харуулна.</translation>
 <translation id="1952728750904661634">Удирдсан бүртгэлээр нэвтрэх</translation>
-<translation id="1965935827552890526">Chrome-н нээлттэй бусад цонхон дээрээ хийж байсан зүйлээ дуусгах.</translation>
+<translation id="1965935827552890526">Chrome-н нээлттэй нөгөө цонхон дээрээ хийж байсан зүйлээ дуусгах.</translation>
 <translation id="1968338221203929109">Нээлттэй цонх руу сэлгэх.</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
@@ -247,6 +247,7 @@
 <translation id="3638472932233958418">Вэб хуудсуудыг урьдчилан ачаалах</translation>
 <translation id="3670030362669914947">Тоо</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" />-д хавчуулсан</translation>
+<translation id="3709582977625132201">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="3740397331642243698">Оруулсан URL-г Google Chrome дээр нууцлалтайгаар нээдэг.</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
 <translation id="3775743491439407556">Синк ажиллахгүй байна</translation>
@@ -335,6 +336,7 @@
 <translation id="4818522717893377262">Хэл нэмэх</translation>
 <translation id="481968316161811770">Күүки, Сайтын өгөгдөл</translation>
 <translation id="4826218269716039351">Гуравдагч талын күүкийг блоклосон</translation>
+<translation id="48274138579728272">Уншсан гэж тэмдэглэх</translation>
 <translation id="4833786495304741580">Хэрэглээний статистик мэдээ болон гэмтлийн тайланг Google-д автоматаар илгээдэг.</translation>
 <translation id="4840495572919996524">Таны хавчуурга, түүх, нууц үг болон бусад зүйлийг таны Google Бүртгэлд цаашид синк хийхгүй.</translation>
 <translation id="4854345657858711387">Нууц код тохируулах</translation>

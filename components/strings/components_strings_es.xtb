@@ -263,7 +263,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1975584088563498795">Buzón de correo 10</translation>
 <translation id="1978555033938440688">Versión de firmware</translation>
-<translation id="1988881251331415125">Si está correctamente escrito, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de conexión<ph name="END_LINK" />.</translation>
+<translation id="1988881251331415125">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de conexión<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Acceder a cookies y datos de sitios web.
 
@@ -1111,6 +1111,7 @@ De lo contrario, tu configuración de privacidad lo impedirá. Permitirá que el
 <translation id="5509780412636533143">Marcadores administrados</translation>
 <translation id="5510481203689988000">Este ajuste se controla en la configuración de cookies.</translation>
 <translation id="5510766032865166053">Es posible que se haya movido o eliminado.</translation>
+<translation id="5519516356611866228">Con tus cambios</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
 <translation id="55293785478302737">Grapado en el borde</translation>
 <translation id="553484882784876924">Prc6 (sobre)</translation>
@@ -1350,6 +1351,7 @@ De lo contrario, tu configuración de privacidad lo impedirá. Permitirá que el
 <translation id="6476284679642588870">Gestionar métodos de pago</translation>
 <translation id="6489534406876378309">Empezar a subir errores</translation>
 <translation id="6499038740797743453">¿Quieres cambiar la contraseña?</translation>
+<translation id="6502991525169604759">Sin tus cambios</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
 <translation id="6517596291481585650">Advertencia: Esta política no se ha combinado como lista tal como se especifica en la política porque no es una lista.</translation>
 <translation id="6518133107902771759">Verificar</translation>
@@ -1688,7 +1690,7 @@ Más información:
 <translation id="7887683347370398519">Comprueba el código CVC y vuelve a intentarlo</translation>
 <translation id="7887885240995164102">Activar el modo imagen en imagen</translation>
 <translation id="7888575728750733395">Imprimir intent de renderizado</translation>
-<translation id="7894280532028510793">Si está correctamente escrito, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
+<translation id="7894280532028510793">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (sobre)</translation>
 <translation id="7932579305932748336">Capa</translation>
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
@@ -1895,7 +1897,7 @@ Más información:
 <translation id="884923133447025588">No se ha encontrado ningún mecanismo de revocación.</translation>
 <translation id="885730110891505394">Compartir con Google</translation>
 <translation id="8858065207712248076">Chrome te recomienda que cambies tu contraseña de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si la has vuelto a utilizar en otros sitios web.</translation>
-<translation id="885906927438988819">Si está correctamente escrito, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de red de Windows<ph name="END_LINK" />.</translation>
+<translation id="885906927438988819">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de red de Windows<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Error al analizar la configuración de la política</translation>
 <translation id="8866928039507595380">Plegar</translation>
 <translation id="886872106311861689">B3</translation>

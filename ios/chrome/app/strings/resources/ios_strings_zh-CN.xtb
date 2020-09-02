@@ -94,7 +94,7 @@
 <translation id="1941314575388338491">点按两次即可复制。</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
 <translation id="1952728750904661634">登录受管理的帐号</translation>
-<translation id="1965935827552890526">完成您先前在另一已打开的 Chrome 窗口中正执行的操作。</translation>
+<translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
 <translation id="1968338221203929109">切换到另一已打开的窗口。</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1989112275319619282">浏览</translation>
@@ -247,6 +247,7 @@
 <translation id="3638472932233958418">预先加载网页</translation>
 <translation id="3670030362669914947">卡号</translation>
 <translation id="3691593122358196899">已将书签添加到“<ph name="FOLDER_TITLE" />”</translation>
+<translation id="3709582977625132201">标记为未读</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
 <translation id="3771033907050503522">隐身标签页</translation>
 <translation id="3775743491439407556">同步功能无法正常运行</translation>
@@ -336,6 +337,7 @@
 <translation id="4818522717893377262">添加语言…</translation>
 <translation id="481968316161811770">Cookie 和网站数据</translation>
 <translation id="4826218269716039351">阻止第三方 Cookie</translation>
+<translation id="48274138579728272">标记为已读</translation>
 <translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送至 Google。</translation>
 <translation id="4840495572919996524">您的书签、历史记录、密码和其他信息将不再同步到您的 Google 帐号中。</translation>
 <translation id="4854345657858711387">设置密码</translation>

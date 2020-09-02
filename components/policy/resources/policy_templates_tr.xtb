@@ -1974,7 +1974,7 @@ Bu politika yanlış seçeneğine ayarlanırsa kiosk oturum bilgileri rapor edil
 
           Örneğin, tüm hızlı kilit açma modlarına izin vermek için ["all"] değerini kullanın. Yalnızca PIN ile kilit açmaya izin vermek için ["PIN"] değerini kullanın. PIN ve parmak izine izin vermek için ["PIN", "FINGERPRINT"] değerini kullanın.
 
-          Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen cihazlarda hızlı kilit açma modları kullanılamaz</translation>
+          Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen cihazlarda hızlı kilit açma modları kullanılamaz.</translation>
 <translation id="3877517141460819966">Entegre iki etmenli kimlik doğrulama modu</translation>
 <translation id="3879196885908353077">İndirmeler için hassas verileri koruma kuralı ihlallerini denetle</translation>
 <translation id="3879208481373875102">Zorunlu yüklenmiş Web Uygulamaları listesini yapılandır</translation>
@@ -4821,11 +4821,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
           Varsayılan olarak, tüm yerel mesajlaşma ana makinelerine izin verilir. Ancak yerel mesajlaşma ana makinelerinin tamamının politika tarafından engellenmesi halinde, söz konusu politikayı geçersiz kılmak için izin verilenler listesi kullanılabilir.</translation>
 <translation id="7818131573217430250">Giriş ekranında yüksek kontrast modunun varsayılan durumunu ayarla</translation>
-<translation id="7823420548819808002">Bu politika ayarlanırsa, güvenli olmayan kaynaklarda güvenlik kısıtlamalarının geçerli olmayacağı kaynakların (URL'ler) veya ana makine adı kalıplarının (örneğin, *.example.com) bir listesi belirtilir. Kuruluşlar, TLS dağıtamayan eski uygulamalar için beyaz liste kaynakları ayarlayabilir veya dahili web geliştirme için hazırlık sunucusu kurulumu yapabilir. Böylece geliştiriciler hazırlık sunucusunda TLS dağıtmak zorunda kalmadan güvenli içerik gerektiren özellikleri test edebilir. Bu politika, kaynağın adres çubuğunda "Güvenli Değil" olarak etiketlenmesini de önler.
-
-      Bu politikada bir URL listesi ayarlamakla, aynı URL'lerin virgülle ayrılmış bir listesine --unsafely-treat-insecure-origin-as-secure komut satırı işaretini ayarlamak aynı sonucu verir. Bu politika ayarlanırsa komut satırı işaretini ve UnsafelyTreatInsecureOriginAsSecure politikasını geçersiz kılar.
-
-      Güvenli içerikler hakkında daha fazla bilgi için Secure Contexts sayfasına (https://www.w3.org/TR/secure-contexts) bakabilirsiniz.</translation>
 <translation id="7823902813460802031">Politika Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, cihazın Geliştirici moduna girmesini engeller.
 
        Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa Geliştirici modu cihaz için kullanılabilir durumda kalır.</translation>

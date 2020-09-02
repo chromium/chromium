@@ -771,7 +771,7 @@
 <translation id="1880905663253319515">Slet certifikatet "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Tastaturlayout</translation>
 <translation id="1884013283844450420">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, opret forbindelse</translation>
-<translation id="1884340228047885921">Indstillingen for synlighed er indstillet til nogle kontakter</translation>
+<translation id="1884340228047885921">Den aktuelle indstilling for synlighed er Nogle kontakter</translation>
 <translation id="1884705339276589024">Juster størrelsen på Linux-disken</translation>
 <translation id="1885106732301550621">Diskplads</translation>
 <translation id="1886996562706621347">Tillad, at websites må bede om at håndtere protokoller som standard (anbefales)</translation>
@@ -1108,7 +1108,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2307462900900812319">Konfigurer netværk</translation>
 <translation id="230927227160767054">Denne side ønsker at installere en tjenestehåndtering.</translation>
 <translation id="2309620859903500144">Dette website er blevet blokeret fra at få adgang til dine bevægelses- eller lyssensorer.</translation>
-<translation id="2314165183524574721">Den aktuelle indstilling for synlighed er indstillet til skjult</translation>
+<translation id="2314165183524574721">Den aktuelle indstilling for synlighed er Skjult</translation>
 <translation id="2314873619957287124">Opstil digitale spilleregler, der kan hjælpe dit barn med at lære, spille og udforske</translation>
 <translation id="2315414688463285945">Der opstod en fejl ved konfiguration af Linux-filer. Prøv igen.</translation>
 <translation id="2315587498123194634">Send link til <ph name="DEVICE_NAME" /></translation>
@@ -6740,7 +6740,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9169496697824289689">Se tastaturgenveje</translation>
 <translation id="916964310188958970">Hvorfor vises dette forslag?</translation>
 <translation id="9169931577761441333">Føj <ph name="APP_NAME" /> til startskærmen</translation>
-<translation id="9170061643796692986">Den aktuelle indstilling for synlighed er indstillet til alle kontakter</translation>
+<translation id="9170061643796692986">Den aktuelle indstilling for synlighed er Alle kontakter</translation>
 <translation id="9170848237812810038">&amp;Fortryd</translation>
 <translation id="9170884462774788842">Et andet program på din computer tilføjede et tema, der kan ændre den måde, hvorpå Chrome fungerer.</translation>
 <translation id="917350715406657904">Du har nået den grænse, din forælder har angivet for <ph name="APP_NAME" />. Du kan bruge den i <ph name="TIME_LIMIT" /> i morgen.</translation>

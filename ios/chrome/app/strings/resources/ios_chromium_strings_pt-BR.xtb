@@ -4,7 +4,7 @@
 <translation id="102360288709523007">Ajude a melhorar o Chromium. Envie estatísticas e relatórios de erros ao Google.</translation>
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1257458525759135959">Para salvar imagens, toque em "Configurações" e permita que o Chromium adicione às suas fotos</translation>
-<translation id="1361748954329991663">O Chromium está desatualizado. Se nenhuma atualização estiver disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja compatível com novas versões do Chromium.</translation>
+<translation id="1361748954329991663">O Chromium está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja compatível com novas versões do Chromium.</translation>
 <translation id="1472013873724362412">Sua conta não funciona com o Chromium. Entre em contato com o administrador do domínio ou use uma Conta do Google normal para fazer login.</translation>
 <translation id="1507010443238049608">Ajudar a melhorar os recursos e o desempenho do Chromium</translation>
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
@@ -55,10 +55,6 @@
 <translation id="725427773388857052">O Chromium pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
 <translation id="7269362888766543920">Alguns complementos causam falhas do Chromium. Tente desinstalá-los.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Para tornar o Chromium seu navegador padrão:
-        1. Abra "Ajustes". 
-        2. Toque em "App padrão de navegador".
-        3. Selecione o Chromium.</translation>
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>
 <translation id="7400689562045506105">Use o Chromium em qualquer lugar</translation>
 <translation id="766897673682622022">Sua senha foi exposta em uma violação de dados. Por recomendação do Chromium, mude a senha imediatamente.</translation>

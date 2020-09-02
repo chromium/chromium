@@ -264,7 +264,7 @@
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1975584088563498795">میل باکس 10</translation>
 <translation id="1978555033938440688">فرم ویئر ورژن</translation>
-<translation id="1988881251331415125">اگر ہجے درست ہے تو، <ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
+<translation id="1988881251331415125">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">کوکیز اور سائٹ کے ڈیٹا تک رسائی حاصل کریں۔
 
@@ -308,7 +308,7 @@
 <translation id="2154054054215849342">مطابقت پذیری آپ کے ڈومین کیلئے دستیاب نہیں ہے</translation>
 <translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
 <translation id="2161656808144014275">متن</translation>
-<translation id="2164510882479075877">چیک کریں کہ آیا <ph name="HOST_NAME" /> میں کوئی ٹائپو موجود ہے۔</translation>
+<translation id="2164510882479075877">چیک کریں کہ آیا <ph name="HOST_NAME" /> میں کوئی ہجوں کی کوئی غلطی تو نہیں۔</translation>
 <translation id="2166049586286450108">منتظم کیلئے مکمل رسائی</translation>
 <translation id="2166378884831602661">یہ سائٹ ایک محفوظ کنکشن فراہم نہیں کر سکتی ہے</translation>
 <translation id="2169984857010174799">Kaku2 ‎(Envelope‎)‎</translation>
@@ -1114,6 +1114,7 @@
 <translation id="5509780412636533143">زیر انتظام بُک مارکس</translation>
 <translation id="5510481203689988000">یہ ترتیب کوکیز کی ترتیبات میں کنٹرول ہے۔</translation>
 <translation id="5510766032865166053">ممکن ہے اسے منتقل یا حذف کر دیا گیا ہو۔</translation>
+<translation id="5519516356611866228">آپ کی تبدیلیوں کے ساتھ</translation>
 <translation id="5523118979700054094">پالیسی کا نام</translation>
 <translation id="55293785478302737">کنارے کی سلائی</translation>
 <translation id="553484882784876924">Prc6 ‎(Envelope‎)‎</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6476284679642588870">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="6489534406876378309">کریشز اپ لوڈ کرنا شروع کریں</translation>
 <translation id="6499038740797743453">پاس ورڈ کو ری سیٹ کریں؟</translation>
+<translation id="6502991525169604759">آپ کی تبدیلیوں کے بغیر</translation>
 <translation id="6508722015517270189">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="6517596291481585650">وارننگ: اس پالیسی کو پالیسی کی وضاحت کے مطابق فہرست کے طور پر ضم نہیں کیا گیا ہے کیوں کہ یہ کوئی فہرست نہیں ہے۔</translation>
 <translation id="6518133107902771759">توثیق کریں</translation>
@@ -1692,7 +1694,7 @@
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7887885240995164102">'تصویر میں تصویر' میں داخل ہوں</translation>
 <translation id="7888575728750733395">پرنٹ رینڈرنگ انٹینٹ</translation>
-<translation id="7894280532028510793">اگر ہجے درست ہے تو، <ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
+<translation id="7894280532028510793">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="7904208859782148177">C3 ‎(Envelope‎)‎</translation>
 <translation id="7932579305932748336">کوٹ</translation>
 <translation id="79338296614623784">ایک درست فون نمبر درج کریں</translation>
@@ -1899,7 +1901,7 @@
 <translation id="884923133447025588">کوئی منسوخی کا میکانزم نہیں ملا۔</translation>
 <translation id="885730110891505394">‏Google کے ساتھ اشتراک کرنا</translation>
 <translation id="8858065207712248076">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chrome آپ کو اپنا <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
-<translation id="885906927438988819">‏اگر ہجے درست ہے تو، <ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
+<translation id="885906927438988819">‏اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="8866481888320382733">پالیسی کی ترتیبات کو پارس کرنے میں خرابی</translation>
 <translation id="8866928039507595380">فولڈ</translation>
 <translation id="886872106311861689">B3</translation>

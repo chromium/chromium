@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">ブックマークや履歴などの設定が Google アカウントに同期されます。</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ホーム ネットワーク、ローミングなし</translation>
+<translation id="1315144594965013365">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。Chromebook でファイルを共有する場合は、Chromebook でニアバイシェアが有効になっていることも確認してください（時刻を選択してステータス領域を開き、ニアバイシェアを選択します）。</translation>
 <translation id="1316136264406804862">検索しています...</translation>
 <translation id="1316495628809031177">同期は一時停止中です</translation>
 <translation id="1317637799698924700">ドッキング ステーションは USB Type-C 互換モードで動作します。</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Smart Lock でデバイスのロックを解除できます。解除するには Enter キーを押してください。</translation>
 <translation id="1361164813881551742">手動で追加</translation>
 <translation id="1361655923249334273">使用されていない</translation>
+<translation id="1361707011052629095">ニアバイシェア画面が開いているときに近くにあるデバイス</translation>
 <translation id="1361872463926621533">起動時にサウンドを再生する</translation>
 <translation id="1362865166188278099">機械的な問題が発生しました。プリンタを確認してください</translation>
 <translation id="1363585519747660921">USB プリンタの設定が必要です</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">青</translation>
 <translation id="1556537182262721003">拡張機能ディレクトリをプロフィールに移動できませんでした。</translation>
 <translation id="155865706765934889">タッチパッド</translation>
+<translation id="1562119309884184621">この連絡先を追加すると、次回ファイルが共有されたときに表示されます</translation>
 <translation id="1563702743503072935">Google アカウントに保存したパスワードをこのデバイスでもログイン中に使用できるようになります</translation>
 <translation id="1566049601598938765">ウェブサイト</translation>
 <translation id="15662109988763471">選択したプリンタは利用できないか、正しくインストールされていません。プリンタを確認するか、別のプリンタを選択してみてください。</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">ダウンロード バーを閉じる</translation>
 <translation id="1744060673522309905">デバイスをドメインに追加できません。追加できるデバイスの上限数を超えていないかご確認ください。</translation>
 <translation id="1744108098763830590">バックグラウンド ページ</translation>
+<translation id="1745732479023874451">連絡先を管理</translation>
 <translation id="1748563609363301860">このパスワードは、Google アカウントまたはこのデバイスのみに保存できます。</translation>
 <translation id="1750172676754093297">セキュリティ キーにフィンガープリントを保存できません</translation>
 <translation id="1751249301761991853">パーソナライズ</translation>
@@ -1208,6 +1212,7 @@
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2433836460518180625">デバイスのロック解除のみ</translation>
 <translation id="2434449159125086437">プリンタをセットアップできません。設定を確認してもう一度お試しください。</translation>
+<translation id="2434758125294431199">あなたとファイルを共有できる相手を選択してください</translation>
 <translation id="2435248616906486374">ネットワークが切断されました</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2436186046335138073">すべての <ph name="PROTOCOL" /> リンクを <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
@@ -1365,6 +1370,7 @@
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="2617342710774726426">SIM カードはロックされています</translation>
+<translation id="2618797463720777311">ニアバイシェアの設定</translation>
 <translation id="2619761439309613843">毎日更新する</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="262154978979441594">Google アシスタントの音声モデルのトレーニング</translation>
@@ -1719,6 +1725,7 @@
 <translation id="3029466929721441205">シェルフでのタッチペン ツールの表示</translation>
 <translation id="3031417829280473749">エージェント X</translation>
 <translation id="3031557471081358569">インポートするデータを選択:</translation>
+<translation id="3036041939445522540">連絡先はありません</translation>
 <translation id="3036327949511794916">この <ph name="DEVICE_TYPE" />の返却期限が過ぎています。</translation>
 <translation id="3036546437875325427">Flash を有効にする</translation>
 <translation id="3037754279345160234">ドメインの参加設定を解析できません。管理者にお問い合わせください。</translation>
@@ -1983,6 +1990,7 @@
 <translation id="3388788256054548012">このファイルは暗号化されています。所有者に復号するよう依頼してください。</translation>
 <translation id="3390013585654699824">アプリの詳細</translation>
 <translation id="3390741581549395454">Linux のアプリとファイルをバックアップしました。まもなくアップグレードを開始します。</translation>
+<translation id="339507021360520688">画面のロックが解除されているときに、あなたに表示するよう選択している連絡先</translation>
 <translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
 <translation id="3399432415385675819">通知が無効になります</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> Hz）インターレース</translation>
@@ -3954,6 +3962,7 @@
 <translation id="5799508265798272974">Linux 仮想マシン: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">対象ファイルは前回のダウンロード後に一部または全体が削除されました。</translation>
 <translation id="5801568494490449797">設定</translation>
+<translation id="580297286642726158">あなたがファイルを共有できるデバイス</translation>
 <translation id="5804175651771201311">ローミング オフ</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5805697420284793859">ウィンドウ マネージャ</translation>
@@ -3970,6 +3979,7 @@
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">印刷中...</translation>
+<translation id="5830659417568730973">画面のロックが解除されているときに近くにいる指定した連絡先</translation>
 <translation id="5830720307094128296">ページを別名で保存(&amp;A)...</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
@@ -4026,6 +4036,7 @@
 <translation id="5886009770935151472">指 1</translation>
 <translation id="5889282057229379085">中間認証局の最大数: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">優先 Wi-Fi ネットワーク</translation>
+<translation id="5893589697005440881">近くのユーザーとファイルを共有できます</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5900302528761731119">Google プロフィール写真</translation>
 <translation id="5900358982890952556">Linux のアップグレード（ベータ版）</translation>
@@ -4139,6 +4150,7 @@
 <translation id="6031600495088157824">ツールバーの入力オプション</translation>
 <translation id="6032715498678347852">このサイトに拡張機能がアクセスするのを許可するには、クリックしてください。</translation>
 <translation id="6032912588568283682">ファイル システム</translation>
+<translation id="6035517790085323771">あなたのデバイスとファイルを共有できる相手</translation>
 <translation id="6038929619733116134">煩わしい広告や誤解を招く広告が表示されるサイトの場合にブロックします</translation>
 <translation id="6039651071822577588">ネットワーク プロパティ辞書が不正です</translation>
 <translation id="6040143037577758943">閉じる</translation>
@@ -4221,6 +4233,7 @@
 <translation id="6122081475643980456">インターネット接続が制限されています</translation>
 <translation id="6122095009389448667">このサイトによるクリップボードへのアクセスを引き続きブロックする</translation>
 <translation id="6122191549521593678">オンライン</translation>
+<translation id="6122600716821516697">このデバイスとファイルを共有しますか？</translation>
 <translation id="6122831415929794347">セーフ ブラウジングをオフにしますか？</translation>
 <translation id="6122875415561139701">「<ph name="DEVICE_NAME" />」での書き込み操作は許可されていません。</translation>
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> とその下位のサイトにより保存されたすべてのデータと Cookie が削除されます</translation>
@@ -4777,6 +4790,7 @@
 <translation id="6824584962142919697">要素の検証(&amp;I)</translation>
 <translation id="6825184156888454064">名前順</translation>
 <translation id="6826872289184051766">USB を使って確認</translation>
+<translation id="6827487342470222762">選択できる連絡先はありません。連絡先とニアバイシェアを使用するには、Google アカウントにリンクされているメールアドレスを連絡先に追加してください。</translation>
 <translation id="6827623133556594466">Google クラウド プリントのサポートは 12 月 31 日で終了します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">ログインを以下のユーザーに制限する:</translation>
 <translation id="6828182567531805778">データを同期するにはパスフレーズを入力してください</translation>
@@ -5581,6 +5595,7 @@
 <translation id="7819992334107904369">Chrome 同期</translation>
 <translation id="782057141565633384">動画アドレスをコピー(&amp;C)</translation>
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>
+<translation id="7825666486843191125">画面のロックが解除されているときに近くにいるすべての連絡先</translation>
 <translation id="782590969421016895">現在のページを使用</translation>
 <translation id="7826249772873145665">ADB デバッグが無効になりました</translation>
 <translation id="7826254698725248775">競合するデバイス識別子です。</translation>
@@ -5678,6 +5693,7 @@
 <translation id="7918257978052780342">登録</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
+<translation id="7924080089023843180">ニアバイシェアを開かない場合、誰とも共有しません</translation>
 <translation id="7924358170328001543">ポート転送エラー</translation>
 <translation id="792514962475806987">ドッキング画面のズームレベル:</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>
@@ -5725,6 +5741,7 @@
 <translation id="7970673414865679092">イーサネットの詳細</translation>
 <translation id="7970882136539140748">現在、カードを保存できません</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 with RSA 暗号化</translation>
+<translation id="797394244396603170">ファイルを共有するデバイスを選択してください</translation>
 <translation id="7973962044839454485">ユーザー名またはパスワードが正しくないため、PPP 認証に失敗しました</translation>
 <translation id="7974566588408714340">「<ph name="EXTENSIONNAME" />」で再試行</translation>
 <translation id="7974936243149753750">オーバースキャン</translation>
@@ -6237,6 +6254,7 @@
 <translation id="8613164732773110792">英小文字、数字、アンダースコア、ダッシュのみ</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> はセキュリティ チェックには大きすぎます。開けるファイルは 50 MB までです。</translation>
 <translation id="8615618338313291042">シークレット モード アプリ: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">連絡先に <ph name="CONTACT_NAME" /> さんを追加する</translation>
 <translation id="8619803522055190423">ドロップ シャドウ</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">保護者がまだサイトを開くことを許可していません</translation>
@@ -6466,6 +6484,7 @@
 <translation id="8859402192569844210">利用規約を読み込むことができませんでした。</translation>
 <translation id="8859662783913000679">保護者のアカウント</translation>
 <translation id="8862003515646449717">高速なブラウザをぜひご利用ください</translation>
+<translation id="8863140399813345099">デバイスの公開設定では、画面のロックが解除されているときに、あなたとファイルを共有できる相手を管理します</translation>
 <translation id="8863753581171631212">新しい <ph name="APP" /> でリンクを開く</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> を <ph name="APP_NAME" /> に共有しています</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> はこのデバイスから削除されました</translation>

@@ -247,6 +247,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="3638472932233958418">Lataa verkkosivut</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3691593122358196899">Lisätty kirjanmerkiksi kansioon <ph name="FOLDER_TITLE" /></translation>
+<translation id="3709582977625132201">Merkitse lukemattomaksi</translation>
 <translation id="3740397331642243698">Avaa syötetyt URL-osoitteet Google Chromen incognito-tilassa.</translation>
 <translation id="3771033907050503522">Incognito</translation>
 <translation id="3775743491439407556">Synkronointi ei toimi</translation>
@@ -336,6 +337,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4818522717893377262">Lisää kieli…</translation>
 <translation id="481968316161811770">Evästeet, sivuston tiedot</translation>
 <translation id="4826218269716039351">Estä kolmannen osapuolen evästeet</translation>
+<translation id="48274138579728272">Merkitse luetuksi</translation>
 <translation id="4833786495304741580">Lähettää automaattisesti käyttötilastoja ja virheraportteja Googlelle.</translation>
 <translation id="4840495572919996524">Kirjanmerkkejä, historiaa, salasanoja tai muita tietojasi ei enää synkronoida Google-tilille.</translation>
 <translation id="4854345657858711387">Määritä tunnuskoodi</translation>

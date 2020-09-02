@@ -4812,11 +4812,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
           Standaard zijn alle hosts voor systeemeigen berichten toegestaan, maar als alle hosts voor systeemeigen berichten door een beleidsregel zijn geblokkeerd, kan de toelatingslijst worden gebruikt om die beleidsregel te overschrijven.</translation>
 <translation id="7818131573217430250">De standaardstatus van de modus voor hoog contrast op het inlogscherm instellen</translation>
-<translation id="7823420548819808002">Als je dit beleid instelt, wordt een lijst met herkomsten (URL's) of hostnaampatronen (zoals '*.example.com') gedefinieerd waarop beveiligingsbeperkingen voor onveilige beginpunten niet van toepassing zijn. Organisaties kunnen herkomsten voor verouderde apps die geen TLS kunnen implementeren, op de witte lijst zetten, of een staging server voor interne webontwikkelingen in te stellen, zodat de ontwikkelaars functies die een veilige context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als 'Niet veilig' in de adresbalk.
-
-      Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
-
-      Voor meer informatie over een veilige context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="7823902813460802031">Als je dit beleid inschakelt, voorkomt <ph name="PRODUCT_OS_NAME" /> dat het apparaat in de ontwikkelaarsmodus gaat.
 
        Als je het beleid uitschakelt of niet instelt, blijft de ontwikkelaarsmodus beschikbaar voor het apparaat.</translation>

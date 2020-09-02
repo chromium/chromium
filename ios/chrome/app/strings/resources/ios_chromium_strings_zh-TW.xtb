@@ -4,7 +4,7 @@
 <translation id="102360288709523007">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chromium 更臻完美。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕觸 [設定] 並允許 Chromium 新增相片</translation>
-<translation id="1361748954329991663">Chromium 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，你的裝置可能已停止支援新版 Chromium。</translation>
+<translation id="1361748954329991663">Chromium 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chromium。</translation>
 <translation id="1472013873724362412">無法使用您的帳戶登入 Chromium，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
 <translation id="1507010443238049608">協助改善 Chromium 的功能與效能</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
@@ -24,10 +24,10 @@
 <translation id="2977470724722393594">Chromium 目前是最新版本</translation>
 <translation id="3256316712990552818">已複製到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
-<translation id="3472200483164753384">Chromium Canary 上不支援這項功能</translation>
+<translation id="3472200483164753384">Chromium Canary 不支援這項功能</translation>
 <translation id="3639997914391704523">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼。</translation>
 <translation id="3805899903892079518">Chromium 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
-<translation id="4099085513035183040">Chromium Beta 版上不支援這項功能</translation>
+<translation id="4099085513035183040">Chromium Beta 版不支援這項功能</translation>
 <translation id="4166206055865952171">將 Chromium 設為預設瀏覽器</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
@@ -55,10 +55,6 @@
 <translation id="725427773388857052">Chromium 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
 <translation id="7269362888766543920">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式。</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">如要將 Chromium 設為預設瀏覽器：
-        1. 開啟「設定」。
-        2. 輕觸 [預設的瀏覽器應用程式]。
-        3. 選取 [Chromium]。</translation>
 <translation id="7357211569052832586">系統已將你所選取的資料從 Chromium 和其他同步的裝置中移除。你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
 <translation id="7400689562045506105">Chromium 隨時隨地都能派上用場</translation>
 <translation id="766897673682622022">你的密碼因為資料侵害事件遭到外洩。Chromium 建議你立即變更密碼。</translation>

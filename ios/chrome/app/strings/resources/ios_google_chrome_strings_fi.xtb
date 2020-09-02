@@ -54,10 +54,6 @@
 <translation id="6600954340915313787">Kopioitiin Chromeen.</translation>
 <translation id="6648150602980899529">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="6676840375528380067">Poistetaanko Chrome-data tältä laitteelta?</translation>
-<translation id="6724102885918156196">Näin teet Chromesta oletusselaimesi:
-        1. Avaa Asetukset. 
-        2. Valitse Oletusselain.
-        3. Valitse Chrome.</translation>
 <translation id="6822673484890854830">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="7161390184744336561">Google Chrome on vanhentunut</translation>
 <translation id="7165736900384873061">Aloita Google Chromen QR-lukijan käyttö</translation>

@@ -303,7 +303,7 @@
 <translation id="2154054054215849342">您的网域不支持同步</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2161656808144014275">文字</translation>
-<translation id="2164510882479075877">检查 <ph name="HOST_NAME" /> 中有无拼写错误。</translation>
+<translation id="2164510882479075877">检查 <ph name="HOST_NAME" /> 中是否有拼写错误。</translation>
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
 <translation id="2166378884831602661">此网站无法提供安全连接</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5509780412636533143">受管理的书签</translation>
 <translation id="5510481203689988000">您可在“Cookie”设置中控制此设置。</translation>
 <translation id="5510766032865166053">该文件可能已被移至别处或遭到删除。</translation>
+<translation id="5519516356611866228">含您所做更改</translation>
 <translation id="5523118979700054094">政策名</translation>
 <translation id="55293785478302737">边缘装订</translation>
 <translation id="553484882784876924">Prc6 (Envelope)</translation>
@@ -1334,6 +1335,7 @@
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6489534406876378309">开始上传崩溃数据</translation>
 <translation id="6499038740797743453">重置密码？</translation>
+<translation id="6502991525169604759">不含您所做更改</translation>
 <translation id="6508722015517270189">重新启动 Chrome</translation>
 <translation id="6517596291481585650">警告：系统未按照相关政策中指定的方式将此政策合并为列表，因为此政策不是一个列表。</translation>
 <translation id="6518133107902771759">验证</translation>

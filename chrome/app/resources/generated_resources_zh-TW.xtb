@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">系統會將你的書籤、歷史記錄和其他設定與你的 Google 帳戶同步處理。</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網路，非漫遊狀態</translation>
+<translation id="1315144594965013365">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果你要與 Chromebook 分享內容，請確認該 Chromebook 已開啟鄰近分享功能 (請透過選取時間開啟狀態區，然後選取鄰近分享)。</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
 <translation id="1317637799698924700">你的座架將以 USB Type-C 相容模式執行。</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">可透過 Smart Lock 解鎖裝置。按下 Enter 鍵即可解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
 <translation id="1361655923249334273">未使用</translation>
+<translation id="1361707011052629095">開啟鄰近分享功能的附近裝置</translation>
 <translation id="1361872463926621533">啟動時播放音效</translation>
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="155865706765934889">觸控板</translation>
+<translation id="1562119309884184621">新增這位聯絡人後，下次該聯絡人分享內容時，系統將可辨識出該聯絡人</translation>
 <translation id="1563702743503072935">當你登入帳戶時，也可以在這部裝置上使用 Google 帳戶中的密碼</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">選取的印表機無法使用或未正確安裝。請檢查你的印表機，或改選其他印表機。</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">關閉下載內容列</translation>
 <translation id="1744060673522309905">無法將這個裝置加入網域。請確認裝置數量沒有超過添加上限。</translation>
 <translation id="1744108098763830590">背景頁面</translation>
+<translation id="1745732479023874451">管理聯絡人</translation>
 <translation id="1748563609363301860">你可以將這組密碼儲存在 Google 帳戶中，也可以只儲存在這部裝置上</translation>
 <translation id="1750172676754093297">你的安全金鑰無法儲存指紋</translation>
 <translation id="1751249301761991853">個人化</translation>
@@ -767,7 +771,7 @@
 <translation id="1880905663253319515">要刪除憑證「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="1881445033931614352">鍵盤配置</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，連線</translation>
-<translation id="1884340228047885921">目前的瀏覽權限設定是部分聯絡人</translation>
+<translation id="1884340228047885921">目前的瀏覽權限設為「部分聯絡人」</translation>
 <translation id="1884705339276589024">調整 Linux 磁碟大小</translation>
 <translation id="1885106732301550621">磁碟空間</translation>
 <translation id="1886996562706621347">允許網站要求成為通訊協定的預設處理常式 (建議)</translation>
@@ -1104,7 +1108,7 @@
 <translation id="2307462900900812319">設定網路</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">這個網站已遭封鎖，無法存取你的動作感應器或光源感應器。</translation>
-<translation id="2314165183524574721">目前的瀏覽權限設定是隱藏</translation>
+<translation id="2314165183524574721">目前的瀏覽權限設為「隱藏」</translation>
 <translation id="2314873619957287124">設定數位裝置基本使用規則，以協助子女學習、玩樂及探索</translation>
 <translation id="2315414688463285945">設定 Linux 檔案時發生錯誤，請再試一次。</translation>
 <translation id="2315587498123194634">傳送連結到「<ph name="DEVICE_NAME" />」</translation>
@@ -1207,6 +1211,7 @@
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2433836460518180625">僅限解鎖裝置</translation>
 <translation id="2434449159125086437">無法設定印表機，請檢查設定後再試一次。</translation>
+<translation id="2434758125294431199">選取可以與你分享內容的人</translation>
 <translation id="2435248616906486374">網路已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
@@ -1364,6 +1369,7 @@
 <translation id="2612676031748830579">卡號</translation>
 <translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
+<translation id="2618797463720777311">設定鄰近分享功能</translation>
 <translation id="2619761439309613843">每日變換新桌布</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="262154978979441594">訓練 Google 助理的語音模型</translation>
@@ -1718,6 +1724,7 @@
 <translation id="3029466929721441205">在檔案櫃中顯示觸控筆工具</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
+<translation id="3036041939445522540">沒有可選取的聯絡人</translation>
 <translation id="3036327949511794916">這部「<ph name="DEVICE_TYPE" />」的退貨期限已過。</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
 <translation id="3037754279345160234">無法對加入網域的設定進行剖析，請與你的管理員聯絡。</translation>
@@ -1982,6 +1989,7 @@
 <translation id="3388788256054548012">這個檔案已加密。請要求檔案擁有者解密。</translation>
 <translation id="3390013585654699824">應用程式詳細資料</translation>
 <translation id="3390741581549395454">已成功備份 Linux 應用程式和檔案，即將開始升級。</translation>
+<translation id="339507021360520688">已選擇向你顯示裝置且已解鎖螢幕的使用者</translation>
 <translation id="3396800784455899911">點選 [接受並繼續] 按鈕即表示您同意上述的 Google 服務處理程序。</translation>
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> 赫茲) - 交錯顯示</translation>
@@ -3470,7 +3478,7 @@
 <translation id="5222676887888702881">登出</translation>
 <translation id="52232769093306234">封裝失敗。</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
-<translation id="52254442782792731">目前的瀏覽權限設定是尚未設定</translation>
+<translation id="52254442782792731">目前尚未設定瀏覽權限</translation>
 <translation id="5227679487546032910">預設的藍綠色顯示圖片</translation>
 <translation id="5228088094491423618">即時字幕</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
@@ -3952,6 +3960,7 @@
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已遭截斷或移除。</translation>
 <translation id="5801568494490449797">偏好設定</translation>
+<translation id="580297286642726158">你可以分享內容的裝置</translation>
 <translation id="5804175651771201311">已關閉漫遊服務</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5805697420284793859">視窗管理員</translation>
@@ -3968,6 +3977,7 @@
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">列印中...</translation>
+<translation id="5830659417568730973">當你的螢幕處於解鎖狀態時，位於附近且你已選取的聯絡人皆可與你分享內容</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)...</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">未知</translation>
@@ -4024,6 +4034,7 @@
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5889282057229379085">中繼 CA 數目上限：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">偏好的 Wi-Fi 網路</translation>
+<translation id="5893589697005440881">與周遭的人分享檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5900302528761731119">Google 個人資料相片</translation>
 <translation id="5900358982890952556">升級 Linux (Beta 版)</translation>
@@ -4137,6 +4148,7 @@
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
 <translation id="6032715498678347852">如要授予擴充功能這個網站的存取權，請按一下該擴充功能。</translation>
 <translation id="6032912588568283682">檔案系統</translation>
+<translation id="6035517790085323771">哪些人可與你的裝置分享內容</translation>
 <translation id="6038929619733116134">封鎖干擾性或誤導性的網站廣告</translation>
 <translation id="6039651071822577588">網路屬性字典格式錯誤</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -4219,6 +4231,7 @@
 <translation id="6122081475643980456">你的網際網路連線目前受到控制</translation>
 <translation id="6122095009389448667">繼續禁止這個網站讀取剪貼簿</translation>
 <translation id="6122191549521593678">線上</translation>
+<translation id="6122600716821516697">要與這部裝置分享內容嗎？</translation>
 <translation id="6122831415929794347">要停用安全瀏覽功能嗎？</translation>
 <translation id="6122875415561139701">無法在以下裝置上執行寫入作業：「<ph name="DEVICE_NAME" />」。</translation>
 <translation id="6124213551517593835">這會清除 <ph name="SITE_GROUP_NAME" /> 和其底下網站儲存的所有資料和 Cookie</translation>
@@ -4775,6 +4788,7 @@
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
 <translation id="6825184156888454064">依名稱排序</translation>
 <translation id="6826872289184051766">透過 USB 進行驗證</translation>
+<translation id="6827487342470222762">沒有可選取的聯絡人。如要與聯絡人使用鄰近分享功能，請將他們與 Google 帳戶連結的電子郵件地址加入聯絡人。</translation>
 <translation id="6827623133556594466">12 月 31 日之後，系統將不再支援 Google 雲端列印服務。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">只允許下列使用者登入：</translation>
 <translation id="6828182567531805778">如果要同步處理資料，請輸入你的通關密語</translation>
@@ -5579,6 +5593,7 @@
 <translation id="7819992334107904369">Chrome 同步</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
+<translation id="7825666486843191125">當你的螢幕處於解鎖狀態時，位於附近的所有聯絡人皆可與你分享內容</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7826249772873145665">已停用 ADB 偵錯</translation>
 <translation id="7826254698725248775">裝置識別碼發生衝突。</translation>
@@ -5676,6 +5691,7 @@
 <translation id="7918257978052780342">註冊</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以檢視「<ph name="FILENAME" />」</translation>
+<translation id="7924080089023843180">除非你開啟鄰近分享功能，否則沒有人可與你分享內容</translation>
 <translation id="7924358170328001543">轉送通訊埠時發生錯誤</translation>
 <translation id="792514962475806987">停駐縮放比例：</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>
@@ -5723,6 +5739,7 @@
 <translation id="7970673414865679092">乙太網路詳細資料</translation>
 <translation id="7970882136539140748">目前無法儲存信用卡</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
+<translation id="797394244396603170">選取你要分享檔案的裝置</translation>
 <translation id="7973962044839454485">使用者名稱或密碼錯誤，導致 PPP 驗證失敗</translation>
 <translation id="7974566588408714340">使用「<ph name="EXTENSIONNAME" />」重試</translation>
 <translation id="7974936243149753750">遮視區域</translation>
@@ -6234,6 +6251,7 @@
 <translation id="8613164732773110792">僅限小寫字元、數字、底線或破折號</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 大小過大，無法進行安全性檢查。可開啟的檔案大小上限為 50 MB。</translation>
 <translation id="8615618338313291042">無痕模式應用程式：<ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">將「<ph name="CONTACT_NAME" />」加入聯絡人</translation>
 <translation id="8619803522055190423">投射陰影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
 <translation id="8620436878122366504">你的家長尚未核准這個網站</translation>
@@ -6463,6 +6481,7 @@
 <translation id="8859402192569844210">無法載入《服務條款》</translation>
 <translation id="8859662783913000679">家長帳戶</translation>
 <translation id="8862003515646449717">改用速度飛快的瀏覽器</translation>
+<translation id="8863140399813345099">你可以透過裝置瀏覽權限，控管當你的螢幕處於解鎖狀態時，哪些人可與你分享內容</translation>
 <translation id="8863753581171631212">另外在「<ph name="APP" />」中開啟連結</translation>
 <translation id="8864055848767439877">正在與 <ph name="APP_NAME" /> 共用 <ph name="TAB_NAME" /></translation>
 <translation id="8864458770072227512">已將 <ph name="EMAIL" /> 從這個裝置中移除</translation>
@@ -6717,7 +6736,7 @@
 <translation id="9169496697824289689">查看鍵盤快速鍵</translation>
 <translation id="916964310188958970">為什麼會顯示這項建議？</translation>
 <translation id="9169931577761441333">將 <ph name="APP_NAME" /> 新增至主畫面</translation>
-<translation id="9170061643796692986">目前的瀏覽權限設定是所有聯絡人</translation>
+<translation id="9170061643796692986">目前的瀏覽權限設為「所有聯絡人」</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9170884462774788842">電腦中其他程式所新增的主題可能會變更 Chrome 的運作方式。</translation>
 <translation id="917350715406657904">你已達到貴家長為「<ph name="APP_NAME" />」設定的使用時間限制。你明天可以使用 <ph name="TIME_LIMIT" />。</translation>

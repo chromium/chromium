@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">Marcajele, istoricul și alte setări vor fi sincronizate cu Contul Google</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rețeaua de domiciliu, nu de roaming</translation>
+<translation id="1315144594965013365">Asigură-te că ambele dispozitive sunt deblocate, apropiate unul de celălalt și au activată conexiunea Bluetooth. Dacă trimiți fișiere unui Chromebook, asigură-te că are funcția Nearby Share deschisă (deschide zona de stare selectând ora, apoi selectează Nearby Share).</translation>
 <translation id="1316136264406804862">Se caută...</translation>
 <translation id="1316495628809031177">Sincronizarea este întreruptă</translation>
 <translation id="1317637799698924700">Stația de andocare va funcționa în modul compatibil cu USB Type-C.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Dispozitivul se deblochează cu Smart Lock. Apasă pe Enter pentru a-l debloca.</translation>
 <translation id="1361164813881551742">Adaugă manual</translation>
 <translation id="1361655923249334273">Neutilizat</translation>
+<translation id="1361707011052629095">Dispozitive din apropiere, atunci când funcția Nearby Share este deschisă</translation>
 <translation id="1361872463926621533">Redă sunetul la pornire</translation>
 <translation id="1362865166188278099">Defecțiune mecanică. Verifică imprimanta.</translation>
 <translation id="1363585519747660921">Imprimanta USB necesită configurare</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1556537182262721003">Directorul extensiei nu se poate muta în profil.</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1562119309884184621">Dacă adaugi persoana de contact, aceasta va fi recunoscută data viitoare când trimite fișiere</translation>
 <translation id="1563702743503072935">Parolele din Contul tău Google vor fi disponibile și pe acest dispozitiv după ce te conectezi</translation>
 <translation id="1566049601598938765">Site</translation>
 <translation id="15662109988763471">Imprimanta selectată nu este disponibilă sau nu este instalată corect. Verifică imprimanta sau încearcă să selectezi altă imprimantă.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">Închide bara de descărcări</translation>
 <translation id="1744060673522309905">Dispozitivul nu a putut fi asociat domeniului. Asigură-te că nu ai depășit numărul de dispozitive pe care le poți adăuga.</translation>
 <translation id="1744108098763830590">pagină de fundal</translation>
+<translation id="1745732479023874451">Gestionează agenda</translation>
 <translation id="1748563609363301860">Poți salva parola în Contul Google sau numai pe acest dispozitiv</translation>
 <translation id="1750172676754093297">Cheia ta de securitate nu poate stoca amprente digitale</translation>
 <translation id="1751249301761991853">Personal</translation>
@@ -1208,6 +1212,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2433507940547922241">Aspect</translation>
 <translation id="2433836460518180625">Deblochează numai dispozitivul</translation>
 <translation id="2434449159125086437">Nu s-a putut configura imprimanta. Fă o verificare a configurației și încearcă din nou.</translation>
+<translation id="2434758125294431199">Selectează cine îți poate trimite fișiere</translation>
 <translation id="2435248616906486374">Rețea deconectată</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="2436186046335138073">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" />?</translation>
@@ -1365,6 +1370,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="2616366145935564096">Citește și modifică datele de pe <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Cardul SIM este blocat</translation>
+<translation id="2618797463720777311">Configurează Nearby Share</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Creează un model vocal pentru Asistentul Google</translation>
@@ -1719,6 +1725,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Afișează instrumentele pentru creion pe raft</translation>
 <translation id="3031417829280473749">Agenta X</translation>
 <translation id="3031557471081358569">Selectează elementele de importat:</translation>
+<translation id="3036041939445522540">Nu sunt disponibile persoane de contact</translation>
 <translation id="3036327949511794916">A trecut termenul limită pentru returnarea acestui <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Activează Flash</translation>
 <translation id="3037754279345160234">Nu se poate analiza configurația de conectare la domeniu. Contactează administratorul.</translation>
@@ -1983,6 +1990,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3388788256054548012">Fișierul este criptat. Solicită-i proprietarului să îl decripteze.</translation>
 <translation id="3390013585654699824">Detalii despre aplicație</translation>
 <translation id="3390741581549395454">S-a făcut backup pentru aplicațiile și fișierele Linux. Upgrade-ul va începe în scurt timp.</translation>
+<translation id="339507021360520688">Persoane care au ales să rămână vizibile pentru tine când au ecranul deblocat</translation>
 <translation id="3396800784455899911">Dacă dai clic pe butonul „Acceptă și continuă” înseamnă că ești de acord cu procesarea descrisă mai sus pentru aceste servicii Google.</translation>
 <translation id="3399432415385675819">Notificările vor fi dezactivate</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertzi) – întrețesut</translation>
@@ -3954,6 +3962,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5799508265798272974">Mașină virtuală Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Fișierul de destinație a fost trunchiat sau eliminat de la ultima descărcare.</translation>
 <translation id="5801568494490449797">Preferințe</translation>
+<translation id="580297286642726158">Dispozitive la care poți trimite fișiere</translation>
 <translation id="5804175651771201311">Roaming dezactivat</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5805697420284793859">Managerul de ferestre</translation>
@@ -3970,6 +3979,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5826993284769733527">Semitransparent</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Se printează...</translation>
+<translation id="5830659417568730973">Persoanele de contact selectate din apropiere, atunci când ecranul este deblocat</translation>
 <translation id="5830720307094128296">Salvează pagina c&amp;a...</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
 <translation id="583281660410589416">Necunoscut</translation>
@@ -4026,6 +4036,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5886009770935151472">Deget 1</translation>
 <translation id="5889282057229379085">Număr maxim de Autorități de certificare (CA) intermediare: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Rețele Wi-Fi preferate</translation>
+<translation id="5893589697005440881">Trimite fișiere persoanelor din jur</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5900302528761731119">Fotografie de profil Google</translation>
 <translation id="5900358982890952556">Fă upgrade la Linux (Beta)</translation>
@@ -4139,6 +4150,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6031600495088157824">Opțiunile de introducere a textului din bara de instrumente</translation>
 <translation id="6032715498678347852">Pentru a permite accesul unei extensii la acest site, dă clic pe extensie.</translation>
 <translation id="6032912588568283682">Sistem de fișiere</translation>
+<translation id="6035517790085323771">Cine poate trimite fișiere dispozitivului tău</translation>
 <translation id="6038929619733116134">Blochează dacă site-ul afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="6039651071822577588">Dicționarul proprietăților de rețea este deteriorat</translation>
 <translation id="6040143037577758943">Închide</translation>
@@ -4221,6 +4233,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6122081475643980456">Conexiunea la internet este controlată</translation>
 <translation id="6122095009389448667">Blochează în continuare accesul la clipboard pentru acest site</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122600716821516697">Trimiți fișiere acestui dispozitiv?</translation>
 <translation id="6122831415929794347">Dezactivezi Navigarea sigură?</translation>
 <translation id="6122875415561139701">Operațiunea de scriere nu este permisă pe: „<ph name="DEVICE_NAME" />”.</translation>
 <translation id="6124213551517593835">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="SITE_GROUP_NAME" /> și de site-urile subordonate</translation>
@@ -4777,6 +4790,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6824584962142919697">&amp;Inspectează elementele</translation>
 <translation id="6825184156888454064">Sortează după nume</translation>
 <translation id="6826872289184051766">Confirmă prin USB</translation>
+<translation id="6827487342470222762">Nu este disponibilă nicio persoană de contact. Pentru a folosi Nearby Share cu persoanele de contact, adaugă în agendă adresa de e-mail asociată Contului Google respectiv.</translation>
 <translation id="6827623133556594466">Google Cloud Print nu va mai fi acceptat după data de 31 decembrie. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Restricționează conectarea la următorii utilizatori:</translation>
 <translation id="6828182567531805778">Introdu expresia de acces pentru a sincroniza datele</translation>
@@ -5581,6 +5595,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7819992334107904369">Sincronizare Chrome</translation>
 <translation id="782057141565633384">C&amp;opiază adresa videoclipului</translation>
 <translation id="7824864914877854148">Backupul nu s-a putut finaliza din cauza unei erori</translation>
+<translation id="7825666486843191125">Toate persoanele de contact din apropiere, atunci când ecranul este deblocat</translation>
 <translation id="782590969421016895">Utilizează paginile actuale</translation>
 <translation id="7826249772873145665">Remedierea erorilor prin ADB a fost dezactivată</translation>
 <translation id="7826254698725248775">Identificator de dispozitiv în conflict.</translation>
@@ -5678,6 +5693,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7918257978052780342">Înscrieți</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sec.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> poate să vadă <ph name="FILENAME" /></translation>
+<translation id="7924080089023843180">Nimeni, dacă nu deschizi Nearby Share</translation>
 <translation id="7924358170328001543">Eroare la redirecționarea de port</translation>
 <translation id="792514962475806987">Nivelul de zoom al lupei andocate:</translation>
 <translation id="7925247922861151263">Verificarea AAA nu a reușit</translation>
@@ -5725,6 +5741,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7970673414865679092">Detalii despre Ethernet</translation>
 <translation id="7970882136539140748">Nu se poate salva cardul în acest moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 cu criptare RSA</translation>
+<translation id="797394244396603170">Selectează dispozitivul căruia vrei să îi trimiți fișiere</translation>
 <translation id="7973962044839454485">Autentificarea PPP nu a reușit, din cauza unui nume de utilizator sau a unei parole greșite</translation>
 <translation id="7974566588408714340">Reîncearcă folosind <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Suprascanare</translation>
@@ -6237,6 +6254,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8613164732773110792">Numai litere mici, cifre, caractere de subliniere sau cratime</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> este prea mare pentru verificarea de securitate. Poți să deschizi fișiere de maximum 50 MB.</translation>
 <translation id="8615618338313291042">Aplicație incognito: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">Adaugă utilizatorul <ph name="CONTACT_NAME" /> în agendă</translation>
 <translation id="8619803522055190423">Proiectare umbră</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Părinții tăi nu l-au aprobat încă</translation>
@@ -6466,6 +6484,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8859402192569844210">Nu s-au putut încărca termenii și condițiile</translation>
 <translation id="8859662783913000679">Cont de părinte</translation>
 <translation id="8862003515646449717">Comută la un browser rapid</translation>
+<translation id="8863140399813345099">Vizibilitatea dispozitivului controlează cine îți poate trimite conținut atunci când ecranul este deblocat</translation>
 <translation id="8863753581171631212">Deschide linkul într-o fereastră nouă în <ph name="APP" /></translation>
 <translation id="8864055848767439877">Se trimite <ph name="TAB_NAME" /> la <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> a fost eliminat de pe acest dispozitiv</translation>

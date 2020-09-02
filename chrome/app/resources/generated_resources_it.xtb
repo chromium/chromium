@@ -746,7 +746,7 @@
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
 <translation id="1858585891038687145">Considera attendibile questo certificato per l'identificazione dei creatori di software</translation>
-<translation id="1860346308203060432">Visualizza visibilità dispositivo</translation>
+<translation id="1860346308203060432">Visualizza visibilità del dispositivo</translation>
 <translation id="1861262398884155592">Questa cartella è vuota</translation>
 <translation id="1863182668524159459">Nessuna porta seriale trovata</translation>
 <translation id="1863316578636157783">L'estensione "<ph name="EXTENSION_NAME" />" è stata disattivata perché contiene malware</translation>
@@ -1108,7 +1108,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2307462900900812319">Configura rete</translation>
 <translation id="230927227160767054">Questa pagina vuole installare un gestore di servizi.</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
-<translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosta</translation>
+<translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
 <translation id="2314873619957287124">Stabilisci delle regole di base relative all'utilizzo dei dispositivi digitali per aiutare tuo figlio imparare, giocare e navigare sul Web</translation>
 <translation id="2315414688463285945">Errore durante la configurazione dei file Linux. Riprova.</translation>
 <translation id="2315587498123194634">Invia link a <ph name="DEVICE_NAME" /></translation>
@@ -2764,7 +2764,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4296575653627536209">Aggiungi utente supervisionato</translation>
 <translation id="4297219207642690536">Riavvia e reimposta</translation>
 <translation id="4297813521149011456">Rotazione del display</translation>
-<translation id="4299596693977045093">Impostazione eSim</translation>
+<translation id="4299596693977045093">Impostazione eSIM</translation>
 <translation id="4301671483919369635">Questa pagina è autorizzata a modificare i file</translation>
 <translation id="4303079906735388947">Configura un nuovo PIN per il token di sicurezza</translation>
 <translation id="4305402730127028764">Copia su <ph name="DEVICE_NAME" /></translation>
@@ -4080,7 +4080,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5941153596444580863">Aggiungi persona...</translation>
 <translation id="5941343993301164315">Accedi a <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
-<translation id="5942779427914696408">Visibilità dispositivo</translation>
+<translation id="5942779427914696408">Visibilità del dispositivo</translation>
 <translation id="5942964813783878922">Il dispositivo <ph name="DEVICE_TYPE" /> si riavvierà dopo questo aggiornamento. I futuri aggiornamenti software e della sicurezza verranno installati automaticamente.</translation>
 <translation id="5944869793365969636">Scansiona codice QR</translation>
 <translation id="5946591249682680882">ID rapporto <ph name="WEBRTC_LOG_REPORT_ID" /></translation>

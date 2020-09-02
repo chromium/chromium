@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
 <translation id="1856715684130786728">লোকেশন যোগ করুন...</translation>
 <translation id="1858585891038687145">সফ্টওয়্যার প্রস্তুতকারকদের শনাক্তকরণের জন্য এই সার্টিফিকেটটিকে বিশ্বাস করুন</translation>
+<translation id="1860346308203060432">আপনার 'ডিভাইসের দৃশ্যমানতা' দেখুন</translation>
 <translation id="1861262398884155592">ফোল্ডারটি খালি</translation>
 <translation id="1863182668524159459">কোনও সিরিয়াল পোর্ট পাওয়া যায়নি</translation>
 <translation id="1863316578636157783">ম্যালওয়্যার থাকার জন্য "<ph name="EXTENSION_NAME" />" বন্ধ করে দেওয়া হয়েছে</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">সার্টিফিকেট মুছবেন "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">কীবোর্ডের লেআউট</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, কানেক্ট করুন</translation>
+<translation id="1884340228047885921">বর্তমানে 'ডিভাইসের দৃশ্যমানতা' সেটিংয়ে কয়েকটি পরিচিতি সেট করা আছে</translation>
 <translation id="1884705339276589024">Linux ডিস্কের সাইজ বদলান</translation>
 <translation id="1885106732301550621">ডিস্কের স্টোরেজ স্পেস</translation>
 <translation id="1886996562706621347">সাইটগুলিকে প্রোটোকলের জন্য ডিফল্ট পরিচালক হতে জিজ্ঞাসা করার অনুমতি দেয় (প্রস্তাবিত)</translation>
@@ -1102,6 +1104,7 @@
 <translation id="2307462900900812319">নেটওয়ার্ক কনফিগার করুন</translation>
 <translation id="230927227160767054">এই পৃষ্ঠাটি একটি পরিষেবা নিয়ন্ত্রক ইনস্টল করতে চায়৷</translation>
 <translation id="2309620859903500144">এই সাইটটি আপনার মোশন এবং লাইট সেন্সর অ্যাক্সেস করতে পারবে না।</translation>
+<translation id="2314165183524574721">বর্তমানে 'ডিভাইসের দৃশ্যমানতা' সেটিং লুকানো রয়েছে</translation>
 <translation id="2314873619957287124">আপনার সন্তানকে শেখা, খেলা এবং বিভিন্ন জিনিস জানার ব্যাপারে সাহায্য করতে মূল ডিজিটাল নিয়ম সেট করুন</translation>
 <translation id="2315414688463285945">Linux ফাইল কনফিগার করতে সমস্যা হচ্ছে। আবার চেষ্টা করুন।</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" />-এ লিঙ্ক পাঠান</translation>
@@ -1687,6 +1690,7 @@
 <translation id="3004391367407090544">অনুগ্রহ করে পরে আবার আসবেন</translation>
 <translation id="3006881078666935414">কোনও ব্যবহারের ডেটা নেই</translation>
 <translation id="3007771295016901659">ট্যাব ডুপ্লিকেট করুন</translation>
+<translation id="3008232374986381779">আপনার <ph name="DEVICE_TYPE" />-এ Linux টুল, এডিটর ও IDE চালান। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>
 <translation id="3009300415590184725">আপনি কি মোবাইল ডেটা পরিষেবা সেট-আপ প্রক্রিয়া বাতিল করার ব্যাপারে নিশ্চিত?</translation>
 <translation id="3009779501245596802">সূচিবদ্ধ ডেটাবেস</translation>
@@ -1828,6 +1832,7 @@
 <translation id="3183143381919926261">মোবাইল ডেটা নেটওয়ার্ক</translation>
 <translation id="3183944777708523606">মনিটর সাজানো</translation>
 <translation id="3184536091884214176">CUPS প্রিন্টার সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">ফিজিক্যাল সিম</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3188465121994729530">সরানোর গড়</translation>
 <translation id="3189187154924005138">বড় কার্সর</translation>
@@ -2448,6 +2453,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> পুরনো হয়ে গেছে</translation>
 <translation id="3908501907586732282">এক্সটেনশন চালু করুন</translation>
 <translation id="3909791450649380159">কা&amp;ট করুন</translation>
+<translation id="39103738135459590">অ্যাক্টিভেশন কোড</translation>
 <translation id="3911824782900911339">নতুন ট্যাব পৃষ্ঠা</translation>
 <translation id="3915280005470252504">ভয়েস দ্বারা খুঁজুন</translation>
 <translation id="3916233823027929090">নিরাপত্তা পরীক্ষা করা হয়েছে</translation>
@@ -2660,6 +2666,7 @@
 <translation id="4159681666905192102">এটি <ph name="CUSTODIAN_EMAIL" /> এবং <ph name="SECOND_CUSTODIAN_EMAIL" /> দ্বারা পরিচালিত বাচ্চাদের জন্য একটি অ্যাকাউন্ট৷</translation>
 <translation id="4163560723127662357">অজানা কীবোর্ড</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />-এর কিছু সেটিংস আপনার সাথে শেয়ার করা হচ্ছে৷ এই সেটিংস শুধুমাত্র আপনার অ্যাকাউন্টে একাধিক সাইন-ইন ব্যবহারের সময় কাজ করে৷</translation>
+<translation id="4170256733935344210">আপনার ডিভাইসের ক্যামেরা ব্যবহার করে QR কোড স্ক্যান করুন অথবা আপনার পরিষেবা প্রদানকারীর কাছ থেকে পাওয়া অ্যাক্টিভেশন কোডটি লিখুন</translation>
 <translation id="4170314459383239649">ছেড়ে গেলে কুকিজ মুছে দিন</translation>
 <translation id="4175137578744761569">হালকা বেগুনি ও সাদা</translation>
 <translation id="4175737294868205930">অনবরত স্টোরেজ</translation>
@@ -2748,6 +2755,7 @@
 <translation id="4296575653627536209">তত্ত্বাবধানে থাকা ব্যবহারকারীকে যোগ করুন</translation>
 <translation id="4297219207642690536">রিস্টার্ট করুন এবং রিসেট করুন</translation>
 <translation id="4297813521149011456">সেটিংস বিভিন্ন কোণে ঘুরিয়ে দেখানোর বিকল্প</translation>
+<translation id="4299596693977045093">eSIM সেট-আপ</translation>
 <translation id="4301671483919369635">এই পৃষ্ঠাকে ফাইল এডিট করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4303079906735388947">আপনার নিরাপত্তা কীয়ের জন্য একটি নতুন পিন সেট-আপ করুন</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />-এ কপি করুন</translation>
@@ -3462,6 +3470,7 @@
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="52232769093306234">প্যাকিং করা যায়নি।</translation>
 <translation id="5225324770654022472">অ্যাপ্লিকেশানগুলির শর্টকাট দেখান</translation>
+<translation id="52254442782792731">বর্তমানে 'ডিভাইসের দৃশ্যমানতা' সেটিং এখনও সেট করা হয়নি</translation>
 <translation id="5227679487546032910">ডিফল্ট টিল রঙের অবতার</translation>
 <translation id="5228088094491423618">লাইভ ক্যাপশন</translation>
 <translation id="5228579091201413441">সিঙ্ক সক্ষম করুন</translation>
@@ -4060,6 +4069,7 @@
 <translation id="5941153596444580863">ব্যক্তিকে যোগ করুন...</translation>
 <translation id="5941343993301164315">অনুগ্রহ করে <ph name="TOKEN_NAME" />-এ সাইন-ইন করুন৷</translation>
 <translation id="5941711191222866238">ছোট করুন</translation>
+<translation id="5942779427914696408">ডিভাইসের দৃশ্যমানতা</translation>
 <translation id="5942964813783878922">আপডেট হয়ে গেলে আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট হয়ে যাবে। ভবিষ্যতে সফ্টওয়্যার এবং সুরক্ষা সংক্রান্ত আপডেট অটোমেটিক ইনস্টল হয়ে যাবে।</translation>
 <translation id="5944869793365969636">QR কোড স্ক্যান করুন</translation>
 <translation id="5946591249682680882">আইডি অভিযোগ করুন <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4232,6 +4242,7 @@
 <translation id="6148576794665275391">এখনই খুলুন</translation>
 <translation id="6149015141270619212">ইন্টারনেটে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="614940544461990577">এটি করে দেখুন:</translation>
+<translation id="6150278227694566734">কিছু পরিচিতি</translation>
 <translation id="6150961653851236686">পৃষ্ঠা অনুবাদ করার সময়ে এই ভাষা ব্যবহার করা হয়</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> সার্চের জন্য <ph name="SEARCH_KEY" /> টিপুন</translation>
 <translation id="6151771661215463137">ফাইলটি আগে থেকেই আপনার ডাউনলোড ফোল্ডারে রয়েছে।</translation>
@@ -5080,6 +5091,7 @@
 <translation id="7210499381659830293">এক্সটেনশন প্রিন্টার</translation>
 <translation id="7211890396916697230">eSIM হিসেবে সেট আপ করুন</translation>
 <translation id="7212097698621322584">পরিবর্তন করার জন্য আপনি পিন লিখুন। আপনি যদি পিন না জানেন তাহলে আপনাকে নিরাপত্তা কী রিসেট করতে হবে, তারপর নতুন পিন তৈরি করুন।</translation>
+<translation id="7213903639823314449">অ্যাড্রেস বারে যে সার্চ ইঞ্জিন ব্যবহার করা হয়েছে</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
 <translation id="7216595297012131718">আপনার পছন্দের উপর ভিত্তি করে ভাষাগুলি সাজান</translation>
 <translation id="7220019174139618249">"<ph name="FOLDER" />" এ পাসওয়ার্ড এক্সপোর্ট করাযাবে না</translation>
@@ -6166,6 +6178,7 @@
 <translation id="8539766201049804895">আপগ্রেড করুন</translation>
 <translation id="8540136935098276800">সঠিকভাবে ফর্ম্যাট করা একটি ইউআরএল লিখুন</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
+<translation id="854071720451629801">'পড়া হয়েছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="8541462173655894684">প্রিন্ট সার্ভার থেকে কোনও প্রিন্টার খুঁজে পাওয়া যায়নি</translation>
 <translation id="8542618328173222274">সাইটগুলি আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে চাইলে, অনুমতি নিতে বলুন</translation>
 <translation id="8543556556237226809">প্রশ্ন? আপনার প্রোফাইল যে তত্ত্বাবধান করে তার সাথে যোগাযোগ করুন।</translation>
@@ -6440,6 +6453,7 @@
 <translation id="8846141544112579928">কীবোর্ডের জন্য সার্চ করা হচ্ছে...</translation>
 <translation id="8847523528195140327">ডিভাইসের কভার বন্ধ করলে সাইন-আউট হয়ে যাবে</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8850251000316748990">আরও দেখুন…</translation>
 <translation id="885246833287407341">এপিআই ফাংশন আর্গুমেন্ট</translation>
 <translation id="8853586775156634952">কার্ডটি শুধু এই ডিভাইসেই সেভ করা হবে</translation>
@@ -6465,6 +6479,7 @@
 <translation id="8872777911145321141">সাইটগুলি আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে চাইলে, অনুমতি নিতে বলুন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8875520811099717934">Linux আপগ্রেড করা</translation>
+<translation id="8875736897340638404">আপনার 'ডিভাইসের দৃশ্যমানতা' সেটিংয়ে নিজের পছন্দমতো বিকল্প বেছে নিন</translation>
 <translation id="8876307312329369159">ডেমো সেশনে এই সেটিংটি পরিবর্তন করা যাবে না।</translation>
 <translation id="8877448029301136595">[parent directory]</translation>
 <translation id="8879284080359814990">ট্যাব রূপে &amp;দেখান</translation>
@@ -6621,6 +6636,7 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> থেকে <ph name="ERROR_LINE_END" /> নম্বর লাইনে কোনও ভুল আছে</translation>
 <translation id="9064275926664971810">এক ক্লিকে ফর্মগুলি পূরণ করার জন্য স্বতঃপূর্ণ সক্ষম করুন</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
+<translation id="9065772380960598487">‘পরে পড়ুন’ বিকল্পে যোগ করুন</translation>
 <translation id="9066773882585798925">'টেক্সট পড়ে শোনানো'র বৈশিষ্ট্যটি চালু করুন</translation>
 <translation id="9066782832737749352">পাঠ্য থেকে ভাষ্য</translation>
 <translation id="9068849894565669697">রঙ বেছে নিন</translation>
@@ -6702,6 +6718,7 @@
 <translation id="9169496697824289689">কীবোর্ড শর্টকাটগুলি দেখুন</translation>
 <translation id="916964310188958970">এই সাজেশন কেন দেখানো হচ্ছে?</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> অ্যাপটি হোম স্ক্রিনে যোগ করুন</translation>
+<translation id="9170061643796692986">বর্তমানে 'ডিভাইসের দৃশ্যমানতা' সেটিংয়ে সমস্ত পরিচিতি সেট করা আছে</translation>
 <translation id="9170848237812810038">&amp;পূর্বাবস্থায় ফিরুন</translation>
 <translation id="9170884462774788842">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি থিম জুড়েছে যা Chrome এর কাজ করার পদ্ধতিকে পাল্টে দিতে পারে৷</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" />-এর জন্য আপনার অভিভাবক যে সময়সীমা সেট করেছেন তা পার হয়ে গেছে। আগামীকাল আপনি আবার এটি <ph name="TIME_LIMIT" />-এর জন্য ব্যবহার করতে পারবেন।</translation>

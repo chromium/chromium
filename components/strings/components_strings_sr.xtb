@@ -1111,6 +1111,7 @@
 <translation id="5509780412636533143">Обележивачи којим се управља</translation>
 <translation id="5510481203689988000">Ово подешавање се контролише у подешавањима колачића.</translation>
 <translation id="5510766032865166053">Можда је премештен или избрисан.</translation>
+<translation id="5519516356611866228">Са променама</translation>
 <translation id="5523118979700054094">Назив смерница</translation>
 <translation id="55293785478302737">Спајање ивица шавом</translation>
 <translation id="553484882784876924">Prc6 (коверат)</translation>
@@ -1349,6 +1350,7 @@
 <translation id="6476284679642588870">Управљајте начинима плаћања</translation>
 <translation id="6489534406876378309">Покрени отпремање отказивања</translation>
 <translation id="6499038740797743453">Желите ли да ресетујете лозинку?</translation>
+<translation id="6502991525169604759">Без ваших промена</translation>
 <translation id="6508722015517270189">Поново покрените Chrome</translation>
 <translation id="6517596291481585650">Упозорење: Ове смернице нису обједињене као листа како је наведено у смерницама јер нису листа.</translation>
 <translation id="6518133107902771759">Верификуј</translation>
@@ -1834,7 +1836,7 @@
 <translation id="8508648098325802031">Икона Претрага</translation>
 <translation id="8522552481199248698">Chrome може да вам помогне да заштитите Google налог и промените лозинку.</translation>
 <translation id="8530813470445476232">Обришите историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
-<translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је наметнуо администратор система.</translation>
+<translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>
 <translation id="8541158209346794904">Bluetooth уређај</translation>
 <translation id="8542014550340843547">Троструко спајање на дну</translation>
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />пријавите проблем са откривањем<ph name="END_ERROR_LINK" /> или, ако схватате безбедносне ризике, <ph name="BEGIN_LINK" />посетите овај небезбедан сајт<ph name="END_LINK" />.</translation>

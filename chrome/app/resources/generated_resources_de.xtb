@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">Ihre Lesezeichen, Ihr Verlauf und andere Einstellungen werden mit Ihrem Google-Konto synchronisiert.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Heimnetzwerk, kein Roaming</translation>
+<translation id="1315144594965013365">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn Sie Inhalte mit einem Chromebook teilen, muss Nearby Share darauf aktiviert sein (wählen Sie die Uhrzeit aus, um den Statusbereich zu öffnen, und wählen Sie "Nearby Share").</translation>
 <translation id="1316136264406804862">Suche läuft...</translation>
 <translation id="1316495628809031177">Synchronisierung pausiert</translation>
 <translation id="1317637799698924700">Ihre Dockingstation arbeitet im Modus für USB Typ-C-Kompatibilität.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Ihr Gerät kann mit Smart Lock entsperrt werden. Drücken Sie zum Entsperren die Eingabetaste.</translation>
 <translation id="1361164813881551742">Manuell hinzufügen</translation>
 <translation id="1361655923249334273">Nicht verwendet</translation>
+<translation id="1361707011052629095">Geräte in der Nähe, wenn Nearby Share geöffnet ist</translation>
 <translation id="1361872463926621533">Ton beim Start abspielen</translation>
 <translation id="1362865166188278099">Mechanischer Fehler. Drucker prüfen.</translation>
 <translation id="1363585519747660921">USB-Drucker muss konfiguriert werden</translation>
@@ -479,6 +481,7 @@
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1556537182262721003">Erweiterungsverzeichnis konnte nicht in Profil verschoben werden.</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1562119309884184621">Wenn Sie diesen Kontakt hinzufügen, wird er beim nächsten Teilen von Inhalten wiedererkannt</translation>
 <translation id="1563702743503072935">Die Passwörter aus Ihrem Google-Konto sind auch auf diesem Gerät verfügbar, solange Sie angemeldet sind</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Der ausgewählte Drucker ist entweder nicht verfügbar oder nicht ordnungsgemäß installiert. Überprüfen Sie den Drucker oder wählen Sie einen anderen Drucker aus.</translation>
@@ -640,6 +643,7 @@
 <translation id="1743970419083351269">Downloadleiste schließen</translation>
 <translation id="1744060673522309905">Das Gerät konnte der Domain nicht beitreten. Sie dürfen nicht mehr als die erlaubte Anzahl von Geräten hinzufügen.</translation>
 <translation id="1744108098763830590">Hintergrundseite</translation>
+<translation id="1745732479023874451">Kontakte verwalten</translation>
 <translation id="1748563609363301860">Sie können dieses Passwort entweder in Ihrem Google-Konto oder nur auf diesem Gerät speichern</translation>
 <translation id="1750172676754093297">Auf Ihrem Sicherheitsschlüssel können keine Fingerabdrücke gespeichert werden</translation>
 <translation id="1751249301761991853">Personalisierung</translation>
@@ -1204,6 +1208,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
 <translation id="2434449159125086437">Der Drucker kann nicht eingerichtet werden. Prüfen Sie die Konfiguration und probieren Sie es dann noch einmal.</translation>
+<translation id="2434758125294431199">Hier wählen Sie aus, wer Inhalte mit Ihnen teilen kann</translation>
 <translation id="2435248616906486374">Netzwerkverbindung getrennt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2436186046335138073">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> zulassen?</translation>
@@ -1361,6 +1366,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2612676031748830579">Kartennummer</translation>
 <translation id="2616366145935564096">Eigene Daten auf <ph name="WEBSITE_1" /> lesen und ändern</translation>
 <translation id="2617342710774726426">SIM-Karte ist gesperrt</translation>
+<translation id="2618797463720777311">Nearby Share einrichten</translation>
 <translation id="2619761439309613843">Tägliche Aktualisierung</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Sprachmodell von Google Assistant trainieren</translation>
@@ -1715,6 +1721,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Eingabestift-Tools in Ablage anzeigen</translation>
 <translation id="3031417829280473749">Agentin X</translation>
 <translation id="3031557471081358569">Zu importierende Daten wählen:</translation>
+<translation id="3036041939445522540">Keine Kontakte verfügbar</translation>
 <translation id="3036327949511794916">Die Rückgabefrist für dieses <ph name="DEVICE_TYPE" /> ist abgelaufen.</translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
 <translation id="3037754279345160234">Die Konfiguration zum Domainbeitritt kann nicht geparst werden. Bitte wenden Sie sich an Ihren Administrator.</translation>
@@ -1979,6 +1986,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3388788256054548012">Diese Datei ist verschlüsselt. Bitten Sie den Inhaber, sie zu entschlüsseln.</translation>
 <translation id="3390013585654699824">App-Details</translation>
 <translation id="3390741581549395454">Linux-Apps und -Dateien wurden gesichert. Das Upgrade beginnt demnächst.</translation>
+<translation id="339507021360520688">Nutzer, die festgelegt haben, dass sie für Sie sichtbar sind, während ihr Display entsperrt ist</translation>
 <translation id="3396800784455899911">Wenn Sie auf die Schaltfläche "Akzeptieren und fortfahren" klicken, willigen Sie damit in die oben für diese Google-Dienste beschriebene Verarbeitung Ihrer Daten ein.</translation>
 <translation id="3399432415385675819">Benachrichtigungen werden deaktiviert</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – Zeilensprung</translation>
@@ -2396,7 +2404,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3842552989725514455">Schriftart Serif</translation>
 <translation id="3843464315703645664">Intern auf der Zulassungsliste</translation>
 <translation id="3844888638014364087">Emoji eingefügt</translation>
-<translation id="3846116211488856547">Tools für die Entwicklung erhalten, z. B. von Websites und Android-Apps. Für die Installation von Linux werden <ph name="DOWNLOAD_SIZE" /> an Daten heruntergeladen.</translation>
+<translation id="3846116211488856547">Entwicklertools für Websites, Android-Apps und mehr – für die Installation von Linux werden <ph name="DOWNLOAD_SIZE" /> an Daten heruntergeladen.</translation>
 <translation id="3847319713229060696">Dabei helfen, das Web für alle sicherer zu machen</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3850914401008572843"><ph name="ORIGIN" /> kann diesen Ordner nicht öffnen, weil er Systemdateien enthält</translation>
@@ -3608,7 +3616,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5390677308841849479">Dunkelrot und Orange</translation>
 <translation id="5390743329570580756">Senden für</translation>
 <translation id="5397794290049113714">Ich</translation>
-<translation id="5398497406011404839">Verborgene Lesezeichen</translation>
+<translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
 <translation id="5398572795982417028">Der Seitenbereich ist zu groß. Die maximale Seitenanzahl liegt bei <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5401938042319910061">Alle Abläufe ausführen</translation>
@@ -3950,6 +3958,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5799508265798272974">Virtuelle Maschine für Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Die Zieldatei wurde seit dem letzen Download gekürzt oder entfernt.</translation>
 <translation id="5801568494490449797">Einstellungen</translation>
+<translation id="580297286642726158">Geräte, mit denen ich Inhalte teilen kann</translation>
 <translation id="5804175651771201311">Roaming aus</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5805697420284793859">Fenstermanager</translation>
@@ -3966,6 +3975,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5826993284769733527">Halbtransparent</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Wird gedruckt...</translation>
+<translation id="5830659417568730973">Ausgewählte Kontakte in meiner Nähe, wenn das Display entsperrt ist</translation>
 <translation id="5830720307094128296">Seite speichern &amp;unter...</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
 <translation id="583281660410589416">Unbekannt</translation>
@@ -4022,6 +4032,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Bevorzugte WLANs</translation>
+<translation id="5893589697005440881">Mit dieser Funktion können Sie Dateien mit Menschen in der Nähe teilen</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
 <translation id="5900358982890952556">Linux (Beta) aktualisieren</translation>
@@ -4098,7 +4109,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5978277834170881274">&amp;Einfache Rechtschreibprüfung verwenden</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Sie haben 1 potenziell schädliche Erweiterung wieder aktiviert}other{Sie haben {NUM_EXTENSIONS} potenziell schädliche Erweiterungen wieder aktiviert}}</translation>
-<translation id="5979421442488174909">Überse&amp;tzen in <ph name="LANGUAGE" /></translation>
+<translation id="5979421442488174909">&amp;Auf <ph name="LANGUAGE" /> übersetzen</translation>
 <translation id="5979469435153841984">Klicken Sie auf den Stern in der Adressleiste, um Seiten als Lesezeichen zu speichern</translation>
 <translation id="5983642582671533177">Dieser Drucker wird ab Januar nicht mehr unterstützt. Wenden Sie sich an Ihren Administrator.</translation>
 <translation id="5984222099446776634">Kürzlich besucht</translation>
@@ -4135,6 +4146,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6031600495088157824">Eingabeoptionen in Symbolleiste</translation>
 <translation id="6032715498678347852">Wenn eine Erweiterung Zugriff auf diese Website haben soll, klicken Sie sie an.</translation>
 <translation id="6032912588568283682">Dateisystem</translation>
+<translation id="6035517790085323771">Wer Inhalte mit meinem Gerät teilen kann</translation>
 <translation id="6038929619733116134">Blockieren, wenn Website aufdringliche oder irreführende Werbung anzeigt</translation>
 <translation id="6039651071822577588">Netzwerkeigenschaften-Wörterbuch ungültig</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -4217,6 +4229,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6122081475643980456">Internetverbindung wird kontrolliert</translation>
 <translation id="6122095009389448667">Weiterhin verhindern, dass diese Website die Zwischenablage aufrufen kann</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122600716821516697">Mit diesem Gerät teilen?</translation>
 <translation id="6122831415929794347">Safe Browsing deaktivieren?</translation>
 <translation id="6122875415561139701">Der Schreibvorgang ist auf folgendem Gerät nicht erlaubt: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">Dadurch werden alle Daten und Cookies gelöscht, die von <ph name="SITE_GROUP_NAME" /> und ihren untergeordneten Websites gespeichert wurden</translation>
@@ -4773,6 +4786,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6824584962142919697">&amp;Elemente untersuchen</translation>
 <translation id="6825184156888454064">Nach Name sortieren</translation>
 <translation id="6826872289184051766">Über USB bestätigen</translation>
+<translation id="6827487342470222762">Es sind keine Kontakte verfügbar. Wenn Sie Nearby Share mit Ihren Kontakten verwenden möchten, müssen Sie Ihren Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.</translation>
 <translation id="6827623133556594466">Google Cloud Print wird ab dem 1. Januar nicht mehr unterstützt. <ph name="BEGIN_LINK" />Weitere Informationen.<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Anmeldung auf die folgenden Nutzer beschränken:</translation>
 <translation id="6828182567531805778">Geben Sie die Passphrase ein, um Ihre Daten zu synchronisieren</translation>
@@ -5577,6 +5591,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7819992334107904369">Chrome-Synchronisierung</translation>
 <translation id="782057141565633384">Videoadresse k&amp;opieren</translation>
 <translation id="7824864914877854148">Sicherung konnte aufgrund eines Fehlers nicht abgeschlossen werden</translation>
+<translation id="7825666486843191125">Alle Kontakte in meiner Nähe, wenn das Display entsperrt ist</translation>
 <translation id="782590969421016895">Aktuelle Seiten verwenden</translation>
 <translation id="7826249772873145665">ADB-Fehlerbehebung deaktiviert</translation>
 <translation id="7826254698725248775">In Konflikt stehende Gerätekennung.</translation>
@@ -5674,6 +5689,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7918257978052780342">Anmelden</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> darf <ph name="FILENAME" /> aufrufen</translation>
+<translation id="7924080089023843180">Niemand, solange Nearby Share nicht geöffnet wurde</translation>
 <translation id="7924358170328001543">Fehler bei der Portweiterleitung</translation>
 <translation id="792514962475806987">Zoomstufe für angedockte Lupe:</translation>
 <translation id="7925247922861151263">AAA-Prüfung fehlgeschlagen</translation>
@@ -5721,6 +5737,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7970673414865679092">Ethernet-Details</translation>
 <translation id="7970882136539140748">Karte kann momentan nicht gespeichert werden</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
+<translation id="797394244396603170">Hier wählen Sie das Gerät aus, mit dem Sie Dateien teilen möchten</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7974566588408714340">Über <ph name="EXTENSIONNAME" /> erneut versuchen</translation>
 <translation id="7974936243149753750">Overscan</translation>
@@ -6232,6 +6249,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8613164732773110792">Nur Kleinbuchstaben, Zahlen, Unterstriche und Bindestriche</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> ist zu groß für eine Sicherheitsprüfung. Sie können Dateien mit einer Größe von bis zu 50 MB öffnen.</translation>
 <translation id="8615618338313291042">Anonyme App: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662"><ph name="CONTACT_NAME" /> zu meinen Kontakten hinzufügen</translation>
 <translation id="8619803522055190423">Schlagschatten</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Deine Eltern haben die Berechtigung noch nicht erteilt</translation>
@@ -6461,6 +6479,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8859402192569844210">Nutzungsbedingungen konnten nicht geladen werden</translation>
 <translation id="8859662783913000679">Elternkonto</translation>
 <translation id="8862003515646449717">Steigen Sie auf einen schnellen Browser um</translation>
+<translation id="8863140399813345099">Über die Sichtbarkeit Ihres Geräts legen Sie fest, wer Dateien mit Ihnen teilen kann, während Ihr Display entsperrt ist</translation>
 <translation id="8863753581171631212">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wird mit <ph name="APP_NAME" /> geteilt</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> wurde von diesem Gerät entfernt</translation>
@@ -6474,7 +6493,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8871974300055371298">Inhaltseinstellungen</translation>
 <translation id="8872155268274985541">Ungültige Manifestdatei für externes Kiosk-Update gefunden. Die Kiosk-App konnte nicht aktualisiert werden. Bitte entfernen Sie den USB-Stick.</translation>
 <translation id="8872777911145321141">Nachfragen, wenn eine Website meine Virtual-Reality-Geräte und ‑Daten verwenden möchte (empfohlen)</translation>
-<translation id="8874184842967597500">Nicht verbun.</translation>
+<translation id="8874184842967597500">Nicht verbunden</translation>
 <translation id="8875520811099717934">Linux-Upgrade</translation>
 <translation id="8875736897340638404">Sichtbarkeit festlegen</translation>
 <translation id="8876307312329369159">Diese Einstellung kann nicht in einer Demositzung geändert werden.</translation>

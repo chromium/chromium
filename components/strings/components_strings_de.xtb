@@ -905,7 +905,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4738601419177586157">Suchvorschlag: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>
-<translation id="4744603770635761495">Ausführbarer Pfad</translation>
+<translation id="4744603770635761495">Pfad zur ausführbaren Datei</translation>
 <translation id="4750917950439032686">Ihre Daten wie Passwörter oder Kreditkartennummern sind geschützt, wenn Sie sie an diese Website senden.</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
 <translation id="4758311279753947758">Kontaktdaten hinzufügen</translation>
@@ -1098,6 +1098,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5509780412636533143">Verwaltete Lesezeichen</translation>
 <translation id="5510481203689988000">Dies kann in den Cookie-Einstellungen festgelegt werden.</translation>
 <translation id="5510766032865166053">Eventuell wurde sie verschoben oder gelöscht.</translation>
+<translation id="5519516356611866228">Mit meinen Änderungen</translation>
 <translation id="5523118979700054094">Richtlinienname</translation>
 <translation id="55293785478302737">Mehrere Heftklammern</translation>
 <translation id="553484882784876924">Prc6 (Umschlag)</translation>
@@ -1337,6 +1338,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6489534406876378309">Hochladen von Abstürzen starten</translation>
 <translation id="6499038740797743453">Passwort zurücksetzen?</translation>
+<translation id="6502991525169604759">Ohne meine Änderungen</translation>
 <translation id="6508722015517270189">Chrome neu starten</translation>
 <translation id="6517596291481585650">Warnung: Diese Richtlinie wurde nicht gemäß Richtlinie in einer Liste zusammengeführt, weil sie keine Liste ist.</translation>
 <translation id="6518133107902771759">Bestätigen</translation>
@@ -1582,7 +1584,7 @@ Weitere Details:
 <translation id="7542995811387359312">Die Funktion zur automatischen Ausfüllung der Kreditkartendaten ist deaktiviert, da dieses Formular keine sichere Verbindung nutzt.</translation>
 <translation id="7548892272833184391">Verbindungsfehler beheben</translation>
 <translation id="7549584377607005141">Damit diese Webseite richtig angezeigt wird, werden die Daten benötigt, die Sie vorher eingegeben haben. Sie können diese Daten noch einmal senden, dabei werden jedoch sämtliche Aktionen wiederholt, die vorher durch diese Seite ausgeführt wurden.</translation>
-<translation id="7550637293666041147">Nutzername für Ihr Gerät und Chrome-Nutzername</translation>
+<translation id="7550637293666041147">Ihre Nutzernamen auf dem Gerät und in Chrome</translation>
 <translation id="7552846755917812628">Probieren Sie folgende Tipps aus:</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>
 <translation id="7564049878696755256">Sie könnten den Zugriff auf Ihr <ph name="ORG_NAME" />-Konto verlieren oder zum Opfer von Identitätsdiebstahl werden. Chrome empfiehlt Ihnen, Ihr Passwort jetzt zu ändern.</translation>

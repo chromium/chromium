@@ -347,7 +347,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4623167406982293031">Konto bestätigen</translation>
 <translation id="4628757576491864469">Geräte</translation>
 <translation id="4659419629803378708">ChromeVox aktiviert</translation>
-<translation id="4665114317261903604">"Bitte nicht stören" aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
+<translation id="4665114317261903604">"Bitte nicht stören" an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Gerät mit Elterncode entsperren</translation>
 <translation id="4702647871202761252">Der Datenschutzbildschirm ist momentan deaktiviert</translation>
 <translation id="4705716602320768426">Feedback geben</translation>
@@ -712,7 +712,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8850991929411075241">Suche + Esc</translation>
 <translation id="8853703225951107899">Ihre PIN oder Ihr Passwort konnten noch immer nicht bestätigt werden. Hinweis: Wenn Sie kürzlich Ihr Passwort geändert haben, verwenden Sie Ihr altes Passwort. Ihr neues Passwort wird übernommen, sobald Sie sich abmelden.</translation>
 <translation id="8870509716567206129">Das Teilen des Bildschirms wird in dieser App nicht unterstützt.</translation>
-<translation id="8874184842967597500">Nicht verbun.</translation>
+<translation id="8874184842967597500">Nicht verbunden</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>
 <translation id="890616557918890486">Quelle ändern</translation>

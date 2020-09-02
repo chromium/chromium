@@ -26,10 +26,10 @@
 <translation id="5082793167783849073">Napravite grupu da biste brzo upoređivali stranice. Za početak dodirnite i zadržite link.</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5533021382642990449">Prikaži kasnije</translation>
-<translation id="5558362125926932819">Zatvorite grupu od ovoliko kartica: <ph name="NUMBER_OF_TABS" /></translation>
+<translation id="5558362125926932819">Zatvorite grupu od kartica: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Kartice su grupisane (<ph name="TAB_COUNT" />)</translation>
 <translation id="58326064309361797">Prevucite kartice da biste ih grupisali</translation>
-<translation id="5846292395804797011">Zatvorite grupu <ph name="TITLE_OF_GROUP" /> sa ovoliko kartica: <ph name="NUMBER_OF_TABS" /></translation>
+<translation id="5846292395804797011">Zatvorite grupu <ph name="TITLE_OF_GROUP" /> sa kartica: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6193448654517602979">Izaberite kartice</translation>
 <translation id="6510648526783655549">Zatvorite traku sa karticama</translation>
@@ -49,7 +49,7 @@
 <translation id="8205266828577616993">Premesti karticu nagore</translation>
 <translation id="8304833501377495048">Želite li da se traka sa karticama više ne prikazuje?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zatvorite <ph name="TABS_COUNT_ONE" /> izabranu karticu}one{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranu karticu}few{Zatvorite <ph name="TABS_COUNT_MANY" /> izabrane kartice}other{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranih kartica}}</translation>
-<translation id="8557923272772633250">Proširite grupu sa ovoliko kartica: <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="8557923272772633250">Proširite grupu sa kartica: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8749939518995770034">Zatvorena traka sa karticama</translation>
 <translation id="9150694013019234766">Prelazite sa jedne kartice na drugu u grupi kartica u dnu ekrana</translation>
 <translation id="9169594135889675189">Dodajte novu karticu u grupu</translation>

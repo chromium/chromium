@@ -4821,11 +4821,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 
           De forma predeterminada, se permiten todos los hosts de mensajería nativa. Sin embargo, si todos los hosts de mensajería nativa se bloquearon mediante una política, se puede utilizar la lista de elementos permitidos para anular la política.</translation>
 <translation id="7818131573217430250">Establece el estado predeterminado del modo de contraste alto en la pantalla de acceso.</translation>
-<translation id="7823420548819808002">Si estableces la política, se especificará una lista de orígenes (URL) o patrones de nombres de host (como *.example.com) para los que no se aplicarán restricciones de seguridad en orígenes inseguros. Las organizaciones pueden establecer una lista de orígenes permitidos para las apps heredadas que no pueden implementar TLS o configurar un servidor de etapa de pruebas para desarrollos web internos. Así, los desarrolladores pueden probar las funciones que requieren contextos seguros sin tener que implementar TLS en el servidor de pruebas. Esta política también previene que el origen se considere "No seguro" en la barra de direcciones.
-
-      Establecer una lista de URL en esta política equivale a establecer la marca de línea de comandos --unsafely-treat-insecure-origin-as-secure en una lista separada por comas de las mismas URL. La política anulará esta marca y también UnsafelyTreatInsecureOriginAsSecure, si se aplica.
-
-      Para obtener más información sobre contextos seguros, consulta Secure Contexts ( https://www.w3.org/TR/secure-contexts ).</translation>
 <translation id="7823902813460802031">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> sacará el dispositivo del Modo de desarrollador.
 
        Si la inhabilitas o no la estableces, seguirá disponible el Modo de desarrollador para el dispositivo.</translation>

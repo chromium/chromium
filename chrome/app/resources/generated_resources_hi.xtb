@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">आपके बुकमार्क, इतिहास, और अन्य सेटिंग को आपके Google खाते में समन्वयित किया जाएगा</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">होम नेटवर्क, रोमिंग नहीं</translation>
+<translation id="1315144594965013365">पक्का करें कि दोनों डिवाइस अनलॉक हों और एक-दूसरे के पास रखे हों. साथ ही, ब्लूटूथ चालू हो. अगर आप किसी Chromebook के साथ शेयर कर रहे हैं, तो पक्का करें कि उसमें आस-पास शेयर करने की सुविधा चालू हो (समय चुनकर, स्टेटस बताने वाली जगह खोलें और इसके बाद, आस-पास शेयर करने की सुविधा चुनें).</translation>
 <translation id="1316136264406804862">खोज रहा है...</translation>
 <translation id="1316495628809031177">सिंक रोका हुआ है</translation>
 <translation id="1317637799698924700">आपका डॉकिंग स्टेशन, यूएसबी टाइप-सी पर काम करने वाले मोड पर चलेगा.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">आपका डिवाइस, Smart Lock से अनलॉक किया जा सकता है. अनलॉक करने के लिए Enter दबाएं.</translation>
 <translation id="1361164813881551742">मैन्युअल रूप से जोड़ें</translation>
 <translation id="1361655923249334273">अप्रयुक्त</translation>
+<translation id="1361707011052629095">आस-पास शेयर करने की सुविधा चालू होने पर, आपके आस-पास उपलब्ध डिवाइस</translation>
 <translation id="1361872463926621533">शुरू होने पर आवाज़ चालू करें</translation>
 <translation id="1362865166188278099">मशीन से जुड़ी समस्या. प्रिंटर जांचें</translation>
 <translation id="1363585519747660921">यूएसबी प्रिंटर को कॉन्फ़िगर करना होगा</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">नीला</translation>
 <translation id="1556537182262721003">एक्सटेंशन निर्देशिका को प्रोफ़ाइल में नहीं ले जा सका.</translation>
 <translation id="155865706765934889">टचपैड</translation>
+<translation id="1562119309884184621">इस संपर्क को जोड़ने पर, अगली बार शेयर करते समय याद रखा जाएगा</translation>
 <translation id="1563702743503072935">साइन इन होने के दौरान, आपके Google खाते में सेव किए गए पासवर्ड, इस डिवाइस पर भी उपलब्ध होंगे</translation>
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">चुना गया प्रिंटर उपलब्ध नहीं है या ठीक से इंस्टॉल नहीं किया गया है. अपना प्रिंटर जाँचें या कोई दूसरा प्रिंटर चुनकर देखें.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">डाउनलोड बार बंद करें</translation>
 <translation id="1744060673522309905">डिवाइस को डोमेन से नहीं जोड़ सकते. पक्का करें कि आपने जोड़े जा सकने वाले डिवाइस की संख्या पार नहीं की है.</translation>
 <translation id="1744108098763830590">पेजभूमि पेज</translation>
+<translation id="1745732479023874451">संपर्क प्रबंधित करें</translation>
 <translation id="1748563609363301860">आप इस पासवर्ड को अपने Google खाते या सिर्फ़ इस डिवाइस में सेव कर सकते हैं</translation>
 <translation id="1750172676754093297">आपकी सुरक्षा कुंजी फ़िंगरप्रिंट स्टोर नहीं कर सकती है.</translation>
 <translation id="1751249301761991853">मनमुताबिक सेटिंग</translation>
@@ -1208,6 +1212,7 @@
 <translation id="2433507940547922241">प्रकटन</translation>
 <translation id="2433836460518180625">सिर्फ़ डिवाइस अनलॉक करें</translation>
 <translation id="2434449159125086437">प्रिंटर सेट अप नहीं किया जा सका. कृपया कॉन्फ़िगरेशन की जाँच करें और फिर से कोशिश करें.</translation>
+<translation id="2434758125294431199">चुनें कि आपके डिवाइस के साथ कौन डेटा शेयर कर सकता है</translation>
 <translation id="2435248616906486374">नेटवर्क डिस्‍कनेक्‍ट है</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> को सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
@@ -1365,6 +1370,7 @@
 <translation id="2612676031748830579">कार्ड संख्या</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> पर मौजूद आपका डेटा पढ़ और बदल सकता है</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक है</translation>
+<translation id="2618797463720777311">आस-पास शेयर करने की सुविधा सेट अप करें</translation>
 <translation id="2619761439309613843">हर दिन रीफ़्रेश करें</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="262154978979441594">Google Assistant की आवाज़ के नमूने को ट्रेनिंग दें</translation>
@@ -1691,7 +1697,7 @@
 <translation id="3004391367407090544">कृपया बाद में वापस आएं</translation>
 <translation id="3006881078666935414">कोई उपयोग डेटा नहीं</translation>
 <translation id="3007771295016901659">डुप्लीकेट टैब</translation>
-<translation id="3008232374986381779">अपने <ph name="DEVICE_TYPE" /> पर Linux टूल, एडिटर, और IDE चलाएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="3008232374986381779">अपने <ph name="DEVICE_TYPE" /> पर Linux टूल, एडिटर, और IDEs चलाएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">अनुमतियां रीसेट करें</translation>
 <translation id="3009300415590184725">क्‍या आप वाकई मोबाइल डेटा सेवा सेटअप प्रक्रिया को रद्द करना चाहते हैं?</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
@@ -1719,6 +1725,7 @@
 <translation id="3029466929721441205">शेल्फ़ में स्टाइलस टूल दिखाएं</translation>
 <translation id="3031417829280473749">एजेंट X</translation>
 <translation id="3031557471081358569">आयात करने के लिए आइटम को चुनें:</translation>
+<translation id="3036041939445522540">कोई भी संपर्क उपलब्ध नहीं है</translation>
 <translation id="3036327949511794916">इस <ph name="DEVICE_TYPE" /> को वापस करने की समयसीमा खत्म हो चुकी है.</translation>
 <translation id="3036546437875325427">Flash चालू करें</translation>
 <translation id="3037754279345160234">डोमेन जोड़ने का कॉन्फ़िगरेशन पार्स नहीं किया जा सकता. कृपया अपने एडमिन से संपर्क करें.</translation>
@@ -1983,6 +1990,7 @@
 <translation id="3388788256054548012">यह फ़ाइल सुरक्षित की गई है. इसके मालिक से इसे सबकी पहुंच में लाने के लिए कहें.</translation>
 <translation id="3390013585654699824">ऐप्लिकेशन की जानकारी</translation>
 <translation id="3390741581549395454">Linux ऐप्लिकेशन और फ़ाइलों का बैक अप ले लिया गया है. जल्द ही बेहतर बनाने की प्रोसेस शुरू हो जाएगी.</translation>
+<translation id="339507021360520688">वे लोग जिन्होंने अपनी स्क्रीन अनलॉक होने पर, आपको दिखने का विकल्प चुना है</translation>
 <translation id="3396800784455899911">"स्वीकार करें और जारी रखें" बटन पर क्लिक करके, आप पुष्टि करते हैं कि इन Google सेवाओं के लिए ऊपर बताई गई प्रोसेसिंग से आप सहमत हैं.</translation>
 <translation id="3399432415385675819">नोटिफ़िकेशन अक्षम हो जाएंगे</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> हर्ट्ज़) - जाली की तरह</translation>
@@ -3953,6 +3961,7 @@
 <translation id="5799508265798272974">Linux वर्चुअल मशीन: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">अंतिम डाउनलोड के बाद से गंतव्य फ़ाइल छोटी हो गई थी या निकाल दी गई थी.</translation>
 <translation id="5801568494490449797">प्राथमिकताएं</translation>
+<translation id="580297286642726158">वे डिवाइस जिनके साथ आप शेयर कर सकते हैं</translation>
 <translation id="5804175651771201311">रोमिंग बंद है</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5805697420284793859">विंडो मैनेजर</translation>
@@ -3969,6 +3978,7 @@
 <translation id="5826993284769733527">आधा-पारदर्शी</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">प्रिंट हो रहा है...</translation>
+<translation id="5830659417568730973">आस-पास शेयर करने की सुविधा 'किसको दिखाई दे' की सेटिंग अभी इस पर सेट है: चुने गए संपर्क</translation>
 <translation id="5830720307094128296">पेज को इस रूप में सेव करें...</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -4025,6 +4035,7 @@
 <translation id="5886009770935151472">उंगली एक</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA की अधिकतम संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">पसंदीदा वाई-फ़ाई नेटवर्क</translation>
+<translation id="5893589697005440881">अपने आस-पास के लोगों के साथ फ़ाइलें शेयर करें</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5900302528761731119">Google प्रोफ़ाइल फ़ोटो</translation>
 <translation id="5900358982890952556">Linux (बीटा) बेहतर बनाएं</translation>
@@ -4138,6 +4149,7 @@
 <translation id="6031600495088157824">टूलबार में इनपुट के विकल्प</translation>
 <translation id="6032715498678347852">किसी एक्सटेंशन को इस साइट का ऐक्सेस देने के लिए, उस पर क्लिक करें.</translation>
 <translation id="6032912588568283682">फ़ाइल सिस्टम</translation>
+<translation id="6035517790085323771">आपकी डिवाइस के साथ कौन शेयर कर सकता है</translation>
 <translation id="6038929619733116134">अगर साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई दें तो उन्हें ब्लॉक करें</translation>
 <translation id="6039651071822577588">नेटवर्क गुण शब्‍दकोश दूषित</translation>
 <translation id="6040143037577758943">बंद करें</translation>
@@ -4220,6 +4232,7 @@
 <translation id="6122081475643980456">आपका इंटरनेट कनेक्शन नियंत्रित किया जा रहा है</translation>
 <translation id="6122095009389448667">इस साइट को क्लिपबोर्ड देखने से ब्लॉक करते रहें</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
+<translation id="6122600716821516697">क्या आप इस डिवाइस के साथ शेयर करना चाहते हैं?</translation>
 <translation id="6122831415929794347">क्या आप सुरक्षित ब्राउज़िंग की सुविधा का इस्तेमाल बंद करना चाहते हैं?</translation>
 <translation id="6122875415561139701">लिखें कार्रवाई की इस पर अनुमति नहीं है: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">इससे वे सभी डेटा और कुकी मिट जाएंगे जिन्हें <ph name="SITE_GROUP_NAME" /> और इसके तहत आने वाली सभी साइटों ने सेव किया है</translation>
@@ -4776,6 +4789,7 @@
 <translation id="6824584962142919697">&amp;एलिमेंट जाँचें</translation>
 <translation id="6825184156888454064">नाम के अनुसार क्रम से लगाएं</translation>
 <translation id="6826872289184051766">USB के ज़रिए पुष्टि करें</translation>
+<translation id="6827487342470222762">कोई भी संपर्क उपलब्ध नहीं है. अपने संपर्कों के साथ आस-पास शेयर करने की सुविधा इस्तेमाल करने के लिए, उनके Google खाते से जुड़े ईमेल पते अपने संपर्कों में जोड़ें.</translation>
 <translation id="6827623133556594466">Google Cloud Print, 31 दिसंबर के बाद काम नहीं करेगा. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">नीचे दिए गए उपयोगकर्ताओं के लिए साइन इन पर रोक लगाएं:</translation>
 <translation id="6828182567531805778">डेटा सिंक करने के लिए लंबा पासवर्ड डालें</translation>
@@ -5579,6 +5593,7 @@
 <translation id="7819992334107904369">Chrome सिंक</translation>
 <translation id="782057141565633384">वीडियो के पते को कॉ&amp;पी करें</translation>
 <translation id="7824864914877854148">गड़बड़ी की वजह से बैकअप पूरा नहीं किया जा सका</translation>
+<translation id="7825666486843191125">आस-पास शेयर करने की सुविधा 'किसको दिखाई दे' की सेटिंग अभी इस पर सेट है: सभी संपर्क</translation>
 <translation id="782590969421016895">वर्तमान पृष्ठों का उपयोग करें</translation>
 <translation id="7826249772873145665">ADB को डीबग करने की सुविधा बंद की गई</translation>
 <translation id="7826254698725248775">विरोधी डिवाइस पहचानकर्ता</translation>
@@ -5676,6 +5691,7 @@
 <translation id="7918257978052780342">नामांकित करें</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकंड</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> को देख सकती है</translation>
+<translation id="7924080089023843180">जब तक आप आस-पास शेयर करने की सुविधा चालू नहीं करते, तब तक कोई भी आपके डिवाइस के साथ डेटा शेयर नहीं कर सकता</translation>
 <translation id="7924358170328001543">पोर्ट को फ़ॉरवर्ड करने में गड़बड़ी हुई</translation>
 <translation id="792514962475806987">डॉक किया गया ज़ूम स्तर:</translation>
 <translation id="7925247922861151263">AAA जाँच पूरा नहीं हो सका</translation>
@@ -5723,6 +5739,7 @@
 <translation id="7970673414865679092">ईथरनेट की जानकारी</translation>
 <translation id="7970882136539140748">कार्ड को अभी सेव नहीं किया जा सकता</translation>
 <translation id="7972714317346275248">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
+<translation id="797394244396603170">वह डिवाइस चुनें जिसके साथ आप फ़ाइलें शेयर करना चाहते हैं</translation>
 <translation id="7973962044839454485">किसी गलत उपयोगकर्ता नाम या पासवर्ड के कारण PPP प्रमाणीकरण विफल रहा</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> का उपयोग करके फिर से प्रयास करें</translation>
 <translation id="7974936243149753750">ओवरस्कैन</translation>
@@ -6235,6 +6252,7 @@
 <translation id="8613164732773110792">सिर्फ़ छोटे अक्षर, अंक, अंडरस्कोर या डैश</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> बहुत बड़ी है, इसलिए इसकी सुरक्षा जांच नहीं की जा सकती. आप 50 एमबी तक की फ़ाइलें खोल सकते हैं.</translation>
 <translation id="8615618338313291042">गुप्‍त ऐप्लिकेशन: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662"><ph name="CONTACT_NAME" /> को अपने संपर्कों में जोड़ें</translation>
 <translation id="8619803522055190423">ड्रॉप शैडो</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">आपके अभिभावकों ने अभी तक इसकी अनुमति नहीं दी है</translation>
@@ -6464,6 +6482,7 @@
 <translation id="8859402192569844210">सेवा की शर्तें लोड नहीं की जा सकीं</translation>
 <translation id="8859662783913000679">अभिभावक का खाता</translation>
 <translation id="8862003515646449717">किसी तेज़ ब्राउज़र पर जाएं</translation>
+<translation id="8863140399813345099">जब आपकी स्क्रीन अनलॉक हो, तो वही व्यक्ति आपको फ़ाइलें भेज सकता है जिसके फ़ोन में आपके डिवाइस का नाम दिख रहा हो</translation>
 <translation id="8863753581171631212">नए <ph name="APP" /> में लिंक खोलें</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> को <ph name="APP_NAME" /> के साथ शेयर किया जा रहा है</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> को इस डिवाइस से हटा दिया गया</translation>

@@ -247,6 +247,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="3638472932233958418">Unap. učitaj veb-stranice</translation>
 <translation id="3670030362669914947">Broj</translation>
 <translation id="3691593122358196899">Obeleživač je dodat u <ph name="FOLDER_TITLE" /></translation>
+<translation id="3709582977625132201">Označi kao nepročitano</translation>
 <translation id="3740397331642243698">Otvara unete URL-ove u Google Chrome-u u režimu bez arhiviranja.</translation>
 <translation id="3771033907050503522">Kartice Bez arhiviranja</translation>
 <translation id="3775743491439407556">Sinhronizacija ne radi</translation>
@@ -336,6 +337,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4818522717893377262">Dodajte jezik…</translation>
 <translation id="481968316161811770">Kolačići, podaci o sajtovima</translation>
 <translation id="4826218269716039351">Kolačići treće strane se blokiraju</translation>
+<translation id="48274138579728272">Označi kao pročitano</translation>
 <translation id="4833786495304741580">Automatski šalje Google-u statistiku korišćenja i izveštaje o otkazivanju.</translation>
 <translation id="4840495572919996524">Obeleživači, istorija, lozinke i drugi podaci više se neće sinhronizovati sa Google nalogom.</translation>
 <translation id="4854345657858711387">Podesite šifru</translation>

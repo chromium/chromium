@@ -3247,7 +3247,7 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
 
           Por exemplo, para permitir todos os modos de desbloqueio rápido, use ["all"]. Para permitir apenas o desbloqueio com PIN, use ["PIN"]. Para permitir o desbloqueio com PIN e impressão digital, use ["PIN", "FINGERPRINT"].
 
-          Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados
+          Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados.
 
           Esta política está obsoleta. Use a <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
@@ -4793,11 +4793,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
           Por padrão, todos os hosts de mensagens nativas são permitidos, mas se todos eles tiverem sido bloqueados por uma política, a lista de permissões será usada para modificar essa política.</translation>
 <translation id="7818131573217430250">Definir o estado padrão do modo de alto contraste na tela de login</translation>
-<translation id="7823420548819808002">Se a política for definida, será possível especificar uma lista de origens (URLs) ou padrões de nome de host (como *.example.com) aos quais as restrições de segurança de origens inseguras não serão aplicadas. As organizações podem definir listas de origens permitidas para aplicativos legados que não possam implantar TLS ou configurar um servidor de preparo para desenvolvimento da Web interno. Dessa forma, os desenvolvedores podem testar recursos que necessitam de contextos seguros sem precisar implantar o TLS no servidor de preparo. Essa política também impede que origens sejam marcadas como "Não seguras" na barra de endereço.
-
-      A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a sinalização de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a sinalização de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
-
-      Para ver mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="7823902813460802031">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> impedirá que o dispositivo entre no modo de desenvolvedor.
 
        Se a política for definida como "Desativada" ou não for definida, o modo de desenvolvedor continuará disponível no dispositivo.</translation>

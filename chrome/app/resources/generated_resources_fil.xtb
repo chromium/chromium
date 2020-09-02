@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">Isi-sync ang iyong mga bookmark, kasaysayan, at iba pang mga setting sa iyong Google Account.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Home network, hindi roaming</translation>
+<translation id="1315144594965013365">Tiyaking naka-unlock at magkalapit ang dalawang device, at naka-on ang Bluetooth ng mga ito. Kung nagbabahagi ka sa isang Chromebook, tiyaking naka-on ang Nearby Sharing nito (buksan ang lugar ng status sa pamamagitan ng pagpili sa oras, pagkatapos ay piliin ang Nearby Share).</translation>
 <translation id="1316136264406804862">Naghahanap...</translation>
 <translation id="1316495628809031177">Naka-pause ang pag-sync</translation>
 <translation id="1317637799698924700">Gagana ang iyong istasyon ng pag-dock sa USB Type-C compatible mode.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Puwedeng i-unlock ang iyong device gamit ang Smart Lock. Pindutin ang Enter para ma-unlock.</translation>
 <translation id="1361164813881551742">Idagdag nang Manual</translation>
 <translation id="1361655923249334273">Hindi nagamit</translation>
+<translation id="1361707011052629095">Mga device na malapit sa iyo kapag nakabukas ang Nearby Share</translation>
 <translation id="1361872463926621533">Magpatugtog sa startup</translation>
 <translation id="1362865166188278099">Mekanikal na isyu. Tingnan ang printer</translation>
 <translation id="1363585519747660921">Kailangan ng pag-configure ng USB printer</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1556537182262721003">Hindi maililipat ang direktoryo ng extension papunta sa profile.</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1562119309884184621">Kapag idinagdag ang contact na ito, makikilala siya sa susunod na magbahagi siya</translation>
 <translation id="1563702743503072935">Magiging available din sa device na ito ang mga password mula sa iyong Google Account habang naka-sign in ka</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Ang napiling printer ay hindi available o hindi naka-install nang tama. Tingnan ang iyong printer o subukang pumili ng isa pang printer.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">Isara ang Bar ng Mga Download</translation>
 <translation id="1744060673522309905">Hindi maisama ang device sa domain. Tiyaking hindi mo nalampasan ang bilang ng mga device na maaari mong idagdag.</translation>
 <translation id="1744108098763830590">pahina ng background</translation>
+<translation id="1745732479023874451">Pamahalaan ang mga contact</translation>
 <translation id="1748563609363301860">Puwede mong i-save ang password na ito sa iyong Google Account o sa device lang na ito</translation>
 <translation id="1750172676754093297">Hindi puwedeng mag-store ng mga fingerprint ang iyong security key</translation>
 <translation id="1751249301761991853">Personal</translation>
@@ -1208,6 +1212,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2433507940547922241">Hitsura</translation>
 <translation id="2433836460518180625">I-unlock lang ang device</translation>
 <translation id="2434449159125086437">Hindi na-set up ang printer. Pakisuri ang configuration at subukan ulit.</translation>
+<translation id="2434758125294431199">Piliin kung sino ang puwedeng magbahagi sa iyo</translation>
 <translation id="2435248616906486374">Nadiskonekta ang network</translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="2436186046335138073">Papayagan ang <ph name="HANDLER_HOSTNAME" /> na buksan ang lahat ng link ng <ph name="PROTOCOL" />?</translation>
@@ -1365,6 +1370,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2612676031748830579">Numero ng card</translation>
 <translation id="2616366145935564096">Basahin at baguhin ang iyong data sa <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Naka-lock ang SIM card</translation>
+<translation id="2618797463720777311">I-set up ang Nearby Share</translation>
 <translation id="2619761439309613843">Araw-araw na Pag-refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Sanayin ang voice model ng Google Assistant</translation>
@@ -1719,6 +1725,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3029466929721441205">Ipakita ang mga tool ng stylus sa shelf</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Pumili ng mga item na ii-import:</translation>
+<translation id="3036041939445522540">Walang available na contact</translation>
 <translation id="3036327949511794916">Lumipas na ang deadline para ibalik ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="3036546437875325427">I-enable ang Flash</translation>
 <translation id="3037754279345160234">Hindi ma-parse ang configuration para magsama ng domain. Makipag-ugnayan sa iyong administrator.</translation>
@@ -1983,6 +1990,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3388788256054548012">Naka-encrypt ang file na ito. Hilingin sa may-ari nitong i-decrypt ito.</translation>
 <translation id="3390013585654699824">Mga detalye ng app</translation>
 <translation id="3390741581549395454">Na-back up na ang mga app at file ng Linux. Magsisimula na ang pag-upgrade sa loob ng ilang sandali.</translation>
+<translation id="339507021360520688">Mga tao na piniling maging visible sa iyo kapag naka-unlock ang screen nila</translation>
 <translation id="3396800784455899911">Sa pamamagitan ng pag-click sa button na "Tanggapin at magpatuloy," sumasang-ayon ka sa pagpoproseso na inilarawan sa itaas para sa mga serbisyong ito ng Google.</translation>
 <translation id="3399432415385675819">Madi-disable ang mga notification</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - naka-interlace</translation>
@@ -3954,6 +3962,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5799508265798272974">Linux Virtual Machine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Naputol o natanggal ang patutunguhang file simula noong huling pag-download.</translation>
 <translation id="5801568494490449797">Mga Kagustuhan</translation>
+<translation id="580297286642726158">Mga device kung saan ka puwedeng magbahagi</translation>
 <translation id="5804175651771201311">Naka-off ang roaming</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5805697420284793859">Window manager</translation>
@@ -3970,6 +3979,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5826993284769733527">Semi-transparent</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Nagpi-print...</translation>
+<translation id="5830659417568730973">Mga piniling contact malapit sa iyo kapag naka-unlock ang screen mo</translation>
 <translation id="5830720307094128296">Save Page &amp;As...</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
@@ -4026,6 +4036,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5886009770935151472">Daliri 1</translation>
 <translation id="5889282057229379085">Maximum na bilang ng intermediate CAs: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Mga gustong Wi-Fi network</translation>
+<translation id="5893589697005440881">Magbahagi ng mga file sa mga tao sa paligid mo</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5900302528761731119">Larawan sa Profile sa Google</translation>
 <translation id="5900358982890952556">I-upgrade ang Linux (Beta)</translation>
@@ -4139,6 +4150,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6031600495088157824">Mga opsyon sa pag-input sa toolbar</translation>
 <translation id="6032715498678347852">Para bigyan ng access ang isang extension sa site na ito, i-click ito.</translation>
 <translation id="6032912588568283682">System ng file</translation>
+<translation id="6035517790085323771">Sino ang puwedeng magbahagi sa iyong device</translation>
 <translation id="6038929619733116134">I-block kung nagpapakita ang site ng mga nakakasagabal o nakakapanlinlang na ad</translation>
 <translation id="6039651071822577588">Mali ang anyo ng diskyunaryo ng katangian ng network</translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -4221,6 +4233,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6122081475643980456">Kinokontrol ang iyong koneksyon sa Internet</translation>
 <translation id="6122095009389448667">Patuloy na i-block ang site na ito sa pagtingin sa clipboard</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122600716821516697">Ibahagi sa device na ito?</translation>
 <translation id="6122831415929794347">I-off ang Ligtas na Pag-browse?</translation>
 <translation id="6122875415561139701">Hindi pinapahintulutan ang write na operation sa: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">Iki-clear nito ang lahat ng data at cookies na na-store ng <ph name="SITE_GROUP_NAME" /> at anumang site na nasa ilalim nito</translation>
@@ -4777,6 +4790,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6824584962142919697">&amp;Siyasatin ang mga element</translation>
 <translation id="6825184156888454064">Uriin ayon sa pangalan</translation>
 <translation id="6826872289184051766">I-verify sa pamamagitan ng USB</translation>
+<translation id="6827487342470222762">Walang available na contact. Para magamit ang Nearby Share sa iyong mga contact, idagdag sa iyong mga contact ang email address na naka-link sa kanilang Google Account.</translation>
 <translation id="6827623133556594466">Hindi na susuportahan ang Google Cloud Print pagkalipas ng Disyembre 31. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Higpitan ang pag-sign-in sa mga sumusunod na user:</translation>
 <translation id="6828182567531805778">Ilagay ang iyong passphrase para i-sync ang data mo</translation>
@@ -5581,6 +5595,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7819992334107904369">Chrome sync</translation>
 <translation id="782057141565633384">K&amp;opyahin ang address ng video</translation>
 <translation id="7824864914877854148">Hindi makumpleto ang pag-back up dahil sa error</translation>
+<translation id="7825666486843191125">Ang lahat ng contact na malapit sa iyo kapag naka-unlock ang screen mo</translation>
 <translation id="782590969421016895">Gamitin ang mga kasalukuyang page</translation>
 <translation id="7826249772873145665">Na-disable ang pag-debug ng ADB</translation>
 <translation id="7826254698725248775">Hindi tumutugma ang pagkakakilanlan ng device</translation>
@@ -5678,6 +5693,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7918257978052780342">Magpatala</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176">Puwedeng tingnan ng <ph name="ORIGIN" /> ang <ph name="FILENAME" /></translation>
+<translation id="7924080089023843180">Wala, maliban na lang kung bubuksan mo ang Nearby Share</translation>
 <translation id="7924358170328001543">Nagka-error sa pag-forward ng port</translation>
 <translation id="792514962475806987">Antas ng naka-dock na pag-zoom:</translation>
 <translation id="7925247922861151263">Nabigo ang pagsusuri sa AAA</translation>
@@ -5725,6 +5741,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7970673414865679092">Mga detalye ng ethernet</translation>
 <translation id="7970882136539140748">Hindi ma-save ang card sa ngayon</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 na May RSA Encryption</translation>
+<translation id="797394244396603170">Piliin ang device kung saan mo gustong magbahagi ng mga file</translation>
 <translation id="7973962044839454485">Nabigo ang pagpapatotoo sa PPP dahil sa hindi tamang username o password</translation>
 <translation id="7974566588408714340">Subukang muli gamit ang <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Overscan</translation>
@@ -6238,6 +6255,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8613164732773110792">Maliliit na character, digit, underscore, o gitling lang</translation>
 <translation id="8613786722548417558">Masyadong malaki ang <ph name="FILE_NAME" /> para sa pagsusuri sa seguridad. Makakapagbukas ka ng mga file na hanggang 50 MB.</translation>
 <translation id="8615618338313291042">Incognito App: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">Idagdag si <ph name="CONTACT_NAME" /> sa iyong mga contact</translation>
 <translation id="8619803522055190423">Drop shadow</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Hindi pa ito inaaprubahan ng iyong mga magulang</translation>
@@ -6467,6 +6485,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8859402192569844210">Hindi ma-load ang Mga Tuntunin ng Serbisyo</translation>
 <translation id="8859662783913000679">Account ng magulang</translation>
 <translation id="8862003515646449717">Lumipat sa isang mabilis na browser</translation>
+<translation id="8863140399813345099">Kinokontrol ng pagiging visible ng iyong device kung sino ang puwedeng magbahagi sa iyo habang naka-unlock ang screen mo</translation>
 <translation id="8863753581171631212">Buksan ang link sa bagong <ph name="APP" /></translation>
 <translation id="8864055848767439877">Ibinabahagi ang <ph name="TAB_NAME" /> sa <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">Inalis ang <ph name="EMAIL" /> sa device na ito</translation>

@@ -182,7 +182,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya dinonaktifkan bagi penggun
 <translation id="1291880496936992484">Peringatan: RC4 akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> setelah versi 52 (sekitar September 2016) dan sejak saat itu kebijakan ini tidak akan berlaku lagi.
 
       Jika kebijakan tidak disetel, atau disetel ke False, maka cipher suite RC4 di TLS tidak akan diaktifkan. Jika kebijakan disetel ke True, kebijakan akan tetap berlaku untuk mempertahankan kompatibilitas dengan server yang sudah usang. Tindakan ini hanya untuk sementara dan server sebaiknya dikonfigurasi ulang.</translation>
-<translation id="1294263471858445589">Mengaktifkan autentikasi standby di sesi samaran dan reguler.</translation>
+<translation id="1294263471858445589">Mengaktifkan autentikasi pasif di sesi samaran dan reguler.</translation>
 <translation id="1295737447968372331">Mengaktifkan dikte di layar login</translation>
 <translation id="1297182715641689552">Gunakan skrip proxy .pac</translation>
 <translation id="1297961932043741908">Menetapkan batas megabyte memori yang dapat digunakan oleh satu instance Chrome.</translation>
@@ -1399,21 +1399,21 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
         Kebijakan ini tidak memengaruhi kebijakan yang sudah dirilis.</translation>
 <translation id="3016255526521614822">Beri akses aplikasi pencatat yang diizinkan di layar kunci <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3020064401262077616">Mengontrol kebijakan pengawasan orang tua, yang diterapkan hanya ke akun anak.</translation>
-<translation id="3020953534071988875">Jika kebijakan ini dikonfigurasi, profil Samaran dan Tamu di <ph name="PRODUCT_NAME" /> akan diizinkan/dilarang untuk melakukan autentikasi standby.
+<translation id="3020953534071988875">Jika kebijakan ini dikonfigurasi, profil Samaran dan Tamu di <ph name="PRODUCT_NAME" /> akan diizinkan/dilarang untuk melakukan autentikasi pasif.
 
-      Autentikasi Standby adalah autentikasi http dengan kredensial default jika kredensial eksplisit tidak diberikan melalui skema verifikasi/respons NTLM/Kerberos/Negotiate.
+      Autentikasi Pasif adalah autentikasi http dengan kredensial default jika kredensial eksplisit tidak diberikan melalui skema verifikasi/respons NTLM/Kerberos/Negotiate.
 
-      Jika <ph name="REGULAR_ONLY_OPTION_NAME" /> (nilai 0) ditetapkan, hanya sesi Reguler yang akan diizinkan untuk melakukan autentikasi standby. Sesi Samaran dan Tamu tidak akan diizinkan untuk melakukan autentikasi secara standby.
+      Jika <ph name="REGULAR_ONLY_OPTION_NAME" /> (nilai 0) ditetapkan, hanya sesi Reguler yang akan diizinkan untuk melakukan autentikasi pasif. Sesi Samaran dan Tamu tidak akan diizinkan untuk melakukan autentikasi pasif.
 
-      Jika <ph name="INCOGNITO_AND_REGULAR_OPTION_NAME" /> (nilai 1) ditetapkan, sesi Samaran dan Reguler akan diizinkan untuk melakukan autentikasi standby. Sesi Tamu tidak akan diizinkan untuk melakukan autentikasi secara standby.
+      Jika <ph name="INCOGNITO_AND_REGULAR_OPTION_NAME" /> (nilai 1) ditetapkan, sesi Samaran dan Reguler akan diizinkan untuk melakukan autentikasi pasif. Sesi Tamu tidak akan diizinkan untuk melakukan autentikasi pasif.
 
-      Jika <ph name="GUEST_AND_REGULAR_OPTION_NAME" /> (nilai 2) ditetapkan, sesi Tamu dan Reguler akan diizinkan untuk melakukan autentikasi standby. Sesi Samaran tidak akan diizinkan untuk melakukan autentikasi secara standby.
+      Jika <ph name="GUEST_AND_REGULAR_OPTION_NAME" /> (nilai 2) ditetapkan, sesi Tamu dan Reguler akan diizinkan untuk melakukan autentikasi pasif. Sesi Samaran tidak akan diizinkan untuk melakukan autentikasi pasif.
 
-      Jika <ph name="ALL_OPTION_NAME" /> (nilai 3) ditetapkan, semua sesi akan diizinkan untuk melakukan autentikasi standby.
+      Jika <ph name="ALL_OPTION_NAME" /> (nilai 3) ditetapkan, semua sesi akan diizinkan untuk melakukan autentikasi pasif.
 
-      Perlu diketahui, autentikasi standby selalu diizinkan pada profil reguler.
+      Perlu diketahui, autentikasi pasif selalu diizinkan pada profil reguler.
 
-      Dalam <ph name="PRODUCT_NAME" /> versi 81 dan setelahnya, jika kebijakan tidak ditetapkan, autentikasi standby hanya akan diaktifkan di sesi reguler.</translation>
+      Dalam <ph name="PRODUCT_NAME" /> versi 81 dan setelahnya, jika kebijakan tidak ditetapkan, autentikasi pasif hanya akan diaktifkan di sesi reguler.</translation>
 <translation id="3021288356473993647">Kebijakan ini mengontrol pemeriksaan URL secara real time untuk mengidentifikasi URL tidak aman.
 
       Jika kebijakan ini tidak disetel atau disetel ke ‘Nonaktif’, pemeriksaan Safe Browsing pelanggan akan diterapkan. Pemeriksaan Safe Browsing pelanggan tetap dapat disertai pencarian real-time, bergantung pada preferensi "Jadikan penelusuran dan penjelajahan lebih baik" dan nilai kebijakan UrlKeyedAnonymizedDataCollectionEnabled.
@@ -1668,7 +1668,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 <translation id="3412937883532015092">Jika kebijakan disetel ke angka, <ph name="PRODUCT_NAME" /> akan menampilkan pesan untuk angka milidetik tersebut, kemudian membuka browser alternatif.
 
       Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan akan segera membuka kebijakan tersebut di browser alternatif.</translation>
-<translation id="3415954062311826850">Kebijakan ini tidak didukung dalam Arc.</translation>
+<translation id="3415954062311826850">Kebijakan ini tidak didukung dalam ARC.</translation>
 <translation id="34160070798637152">Mengontrol konfigurasi jaringan tingkat perangkat.</translation>
 <translation id="3417130629744653218">Izinkan situs membuat kueri untuk metode pembayaran yang tersedia.</translation>
 <translation id="3417418267404583991">Jika kebijakan ini disetel ke true atau tidak dikonfigurasi, <ph name="PRODUCT_OS_NAME" /> akan mengaktifkan login sebagai tamu. Login sebagai tamu adalah sesi pengguna anonim dan tidak memerlukan sandi.
@@ -1997,7 +1997,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
           Misalnya, gunakan ["all"] untuk mengaktifkan setiap mode buka kunci cepat. Gunakan ["PIN"] untuk mengaktifkan buka kunci dengan PIN saja. Gunakan ["PIN", "FINGERPRINT"] untuk mengaktifkan buka kunci dengan PIN dan sidik jari.
 
-          Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak akan ada mode buka kunci cepat yang tersedia bagi perangkat terkelola</translation>
+          Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak akan ada mode buka kunci cepat yang tersedia bagi perangkat terkelola.</translation>
 <translation id="3877517141460819966">Mode autentikasi faktor kedua yang terintegrasi</translation>
 <translation id="3879196885908353077">Memeriksa pelanggaran aturan perlindungan data sensitif pada download</translation>
 <translation id="3879208481373875102">Konfigurasi daftar Aplikasi Web yang diinstal otomatis</translation>
@@ -2077,7 +2077,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3942080695743860553">Menyetel kebijakan akan mengontrol perintah yang digunakan untuk membuka URL dalam browser alternatif. Kebijakan ini dapat disetel ke salah satu <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, atau jalur file. Ketika kebijakan ini disetel ke jalur file, file tersebut akan digunakan sebagai file yang dapat dijalankan. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" />, dan <ph name="SAFARI_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" />.
 
       Kebijakan yang tidak disetel menempatkan default khusus platform yang digunakan: <ph name="IE_PRODUCT_NAME" /> untuk <ph name="MS_WIN_NAME" />, atau <ph name="SAFARI_PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" />. Pada <ph name="LINUX_OS_NAME" />, peluncuran browser alternatif akan gagal.</translation>
-<translation id="3950110092991281616">Mengaktifkan autentikasi standby di sesi reguler saja.</translation>
+<translation id="3950110092991281616">Mengaktifkan autentikasi pasif di sesi reguler saja.</translation>
 <translation id="3950239119790560549">Memperbarui Batasan Waktu</translation>
 <translation id="3956686688560604829">Gunakan kebijakan SiteList Internet Explorer untuk Dukungan Browser Lama.</translation>
 <translation id="3958586912393694012">Izinkan Smart Lock digunakan</translation>
@@ -3286,9 +3286,9 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
           Misalnya, gunakan ["all"] untuk mengaktifkan setiap mode buka kunci cepat. Gunakan ["PIN"] untuk mengaktifkan buka kunci dengan PIN saja. Gunakan ["PIN", "FINGERPRINT"] untuk mengaktifkan buka kunci dengan PIN dan sidik jari.
 
-          Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak akan ada mode buka kunci cepat yang tersedia bagi perangkat terkelola
+          Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak akan ada mode buka kunci cepat yang tersedia bagi perangkat terkelola.
 
-          Kebijakan ini sudah tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />=</translation>
+          Kebijakan ini sudah tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
 <translation id="5630352020869108293">Mengembalikan sesi terakhir</translation>
 <translation id="5633871703004128675">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan</translation>
 <translation id="5641279111657132737">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />'.
@@ -3980,8 +3980,8 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan ini tidak disetel, tampilan URL default akan diterapkan dan pengguna akan dapat beralih antara tampilan URL lengkap dan default dengan opsi menu konteks.
       </translation>
 <translation id="6672070613706645316">Izinkan pengguna menyesuaikan latar belakang di halaman Tab Baru</translation>
-<translation id="6672630473862787247">Mengaktifkan autentikasi standby di sesi reguler, samaran, dan tamu.</translation>
-<translation id="6685903773201985073">Mengaktifkan autentikasi standby di sesi tamu dan reguler.</translation>
+<translation id="6672630473862787247">Mengaktifkan autentikasi pasif di sesi reguler, samaran, dan tamu.</translation>
+<translation id="6685903773201985073">Mengaktifkan autentikasi pasif di sesi tamu dan reguler.</translation>
 <translation id="6689792153960219308">Melaporkan status hardware</translation>
 <translation id="6698632841807204978">Aktifkan pencetakan monokrom</translation>
 <translation id="6699880231565102694">Mengaktifkan autentikasi dua faktor untuk hosting akses jarak jauh</translation>
@@ -4813,7 +4813,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengklik halaman peringatan apa pun.</translation>
 <translation id="7750991880413385988">Buka Halaman Tab Baru</translation>
 <translation id="7754704193130578113">Tanyakan lokasi penyimpanan setiap file sebelum mendownload</translation>
-<translation id="7758378441185523981">Mengaktifkan Autentikasi Standby untuk jenis profil.</translation>
+<translation id="7758378441185523981">Mengaktifkan Autentikasi Pasif untuk jenis profil.</translation>
 <translation id="7763614521440615342">Tampilkan saran konten di halaman Tab Baru</translation>
 <translation id="7765879851993224640">Izinkan Smart Lock Signin digunakan.</translation>
 <translation id="7774768074957326919">Gunakan setelan proxy sistem</translation>
@@ -4837,11 +4837,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
           Secara default, semua host pesan native diizinkan, tetapi jika semua host pesan native diblokir oleh kebijakan, daftar yang diizinkan dapat digunakan untuk mengganti kebijakan tersebut.</translation>
 <translation id="7818131573217430250">Menyetel status default mode kontras tinggi di layar masuk</translation>
-<translation id="7823420548819808002">Menyetel kebijakan akan menentukan daftar sumber (URL) dan pola hostname (seperti *.example.com) yang tidak dikenai pembatasan keamanan untuk sumber yang tidak aman. Organisasi dapat membuat daftar sumber yang diizinkan untuk aplikasi lama yang tidak dapat menerapkan TLS atau menyiapkan server staging untuk pengembangan web internal, sehingga developer dapat menguji fitur yang memerlukan konteks aman tanpa harus menerapkan TLS di server staging. Kebijakan ini juga mencegah sumber diberi label "Not Secure" (Tidak Aman) di kolom URL.
-
-      Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke daftar yang dipisahkan koma, yang berisi URL yang sama. Jika ditetapkan, kebijakan ini akan mengganti tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
-
-      Untuk informasi selengkapnya tentang konteks aman, lihat Secure Contexts ( https://www.w3.org/TR/secure-contexts ).</translation>
 <translation id="7823902813460802031">Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan menghentikan perangkat beralih ke mode Developer.
 
        Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, mode Developer akan tersedia untuk perangkat.</translation>

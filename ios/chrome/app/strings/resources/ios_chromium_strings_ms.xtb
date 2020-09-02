@@ -12,7 +12,7 @@
 <translation id="1838412507805038478">Chromium mengesahkan bahawa <ph name="ISSUER" /> telah mengeluarkan sijil tapak web ini.</translation>
 <translation id="1843424232666537147">Chromium mempunyai ciri yang membantu anda mengurus data Internet dan kepantasan anda memuatkan halaman web.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="2006345422933397527">Chromium tidak dapat menyemak kemas kini. Cuba periksa sambungan internet anda.</translation>
+<translation id="2006345422933397527">Chromium tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
 <translation id="2075400798887076382">Akses tab yang telah dibuka pada komputer anda di sini. Cuma buka Chromium pada komputer anda, pergi ke menu dan pilih "Log masuk ke Chromium…"</translation>
 <translation id="2168108852149185974">Beberapa alat tambah menyebabkan Chromium ranap. Sila nyahpasang:</translation>
 <translation id="2178608107313874732">Chromium tidak dapat menggunakan kamera anda sekarang</translation>
@@ -33,10 +33,10 @@
 <translation id="4681781466797808448">Hidupkan pengimbas Chromium</translation>
 <translation id="4787850887676698916">Tab yang telah dibuka dalam Chromium pada peranti anda yang lain akan dipaparkan di sini.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
-<translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemas kini</translation>
+<translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="4999538639245140991">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Akaun Google anda.</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
-<translation id="5308226104666789935">Chromium tidak dapat menyemak kemas kini</translation>
+<translation id="5308226104666789935">Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="5521125884468363740">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chromium, log masuk dan hidupkan penyegerakan</translation>
 <translation id="5573014823074921752">Petua Chromium. Untuk melihat lebih banyak pilihan tab, sentuh &amp; tahan butang Tunjukkan Tab dalam bar alat, yang terletak di bahagian bawah atau atas skrin anda.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat menyemak kata laluan anda</translation>
@@ -55,10 +55,6 @@
 <translation id="725427773388857052">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, tapak web yang tidak selamat dan pelbagai lagi.</translation>
 <translation id="7269362888766543920">Beberapa alat tambah menyebabkan Chromium ranap. Sila cuba menyahpasang alat tambah tersebut.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Untuk menjadikan Chromium sebagai penyemak imbas lalai anda:
-        1. Buka Tetapan. 
-        2. Ketik Apl Penyemak Imbas Lalai.
-        3. Pilih Chromium.</translation>
 <translation id="7357211569052832586">Data yang dipilih telah dialih keluar daripada Chromium dan peranti yang disegerakkan. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain seperti carian dan aktiviti daripada perkhidmatan Google yang lain di history.google.com.</translation>
 <translation id="7400689562045506105">Gunakan Chromium Di Mana-mana Sahaja</translation>
 <translation id="766897673682622022">Kata laluan anda terdedah dalam suatu pelanggaran data. Chromium mengesyorkan supaya kata laluan ditukar sekarang.</translation>
@@ -69,7 +65,7 @@
 <translation id="8013573822802650211">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chromium, log masuk ke semua peranti anda</translation>
 <translation id="8073677936375100957">Kosongkan data Chromium anda daripada peranti ini?</translation>
 <translation id="8175055321229419309">Petua: <ph name="BEGIN_LINK" />Alihkan Chromium ke dok anda<ph name="END_LINK" /></translation>
-<translation id="8240981428553046115">Chromium tidak dapat menyemak kemas kini. Cuba lagi nanti.</translation>
+<translation id="8240981428553046115">Chromium tidak dapat menyemak kemaskinian. Cuba lagi nanti.</translation>
 <translation id="8252885722420466166">Dapatkan pengalaman yang lebih baik di Chromium berdasarkan lokasi anda.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8776843108004031667">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chromium.</translation>

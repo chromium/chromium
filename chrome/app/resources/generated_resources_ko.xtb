@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">북마크, 방문 기록 및 기타 설정이 Google 계정에 동기화됩니다.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">홈 네트워크 로밍 안함</translation>
+<translation id="1315144594965013365">두 기기 모두 잠금 해제되어 있고 가까이에 있으며 블루투스가 켜져 있어야 합니다. Chromebook과 공유하는 경우 Chromebook의 Nearby Share가 사용 설정되어 있는지 확인하세요. 시간, Nearby Share를 차례로 선택하면 상태 영역에서 확인할 수 있습니다.</translation>
 <translation id="1316136264406804862">검색 중...</translation>
 <translation id="1316495628809031177">동기화 일시중지됨</translation>
 <translation id="1317637799698924700">현재 도킹 스테이션은 USB 타입-C 호환 모드에서 작동합니다.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Smart Lock으로 기기를 잠금 해제할 수 있습니다. 잠금 해제하려면 Enter 키를 누르세요.</translation>
 <translation id="1361164813881551742">직접 추가</translation>
 <translation id="1361655923249334273">사용되지 않음</translation>
+<translation id="1361707011052629095">Nearby Share 실행 시 근처에 있는 기기</translation>
 <translation id="1361872463926621533">시작 시 소리 재생</translation>
 <translation id="1362865166188278099">기술 문제입니다. 프린터를 확인하세요.</translation>
 <translation id="1363585519747660921">USB 프린터를 구성해야 함</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1556537182262721003">확장 프로그램 디렉터리를 프로필로 이동하지 못했습니다.</translation>
 <translation id="155865706765934889">터치패드</translation>
+<translation id="1562119309884184621">이 연락처를 추가하면 다음번 공유 시 연락처에 내 기기가 표시됩니다.</translation>
 <translation id="1563702743503072935">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호를 사용할 수 있습니다.</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">다운로드바 닫기</translation>
 <translation id="1744060673522309905">기기가 도메인에 가입하지 못했습니다. 추가할 수 있는 기기 수를 초과하지 않았는지 확인하세요.</translation>
 <translation id="1744108098763830590">백그라운드 페이지</translation>
+<translation id="1745732479023874451">연락처 관리</translation>
 <translation id="1748563609363301860">이 비밀번호는 Google 계정이나 이 기기에만 저장할 수 있습니다.</translation>
 <translation id="1750172676754093297">보안 키에 지문을 저장할 수 없습니다.</translation>
 <translation id="1751249301761991853">개인</translation>
@@ -1208,6 +1212,7 @@
 <translation id="2433507940547922241">모양</translation>
 <translation id="2433836460518180625">기기만 잠금 해제</translation>
 <translation id="2434449159125086437">프린터를 설정할 수 없습니다. 설정을 확인하고 다시 시도해 보세요.</translation>
+<translation id="2434758125294431199">나에게 공유할 수 있는 사람을 선택하세요.</translation>
 <translation id="2435248616906486374">네트워크 연결 끊김</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />에서 모든 <ph name="PROTOCOL" /> 링크를 열도록 허용하시겠습니까?</translation>
@@ -1365,6 +1370,7 @@
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />의 데이터를 읽고 변경</translation>
 <translation id="2617342710774726426">SIM 카드가 잠겨 있습니다.</translation>
+<translation id="2618797463720777311">Nearby Share 설정</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="262154978979441594">Google 어시스턴트 음성 모델 학습시키기</translation>
@@ -1719,6 +1725,7 @@
 <translation id="3029466929721441205">실행기에 스타일러스 도구 표시</translation>
 <translation id="3031417829280473749">X 요원</translation>
 <translation id="3031557471081358569">가져올 항목 선택:</translation>
+<translation id="3036041939445522540">사용 가능한 연락처 없음</translation>
 <translation id="3036327949511794916"><ph name="DEVICE_TYPE" /> 반납 기한이 지났습니다.</translation>
 <translation id="3036546437875325427">Flash 사용</translation>
 <translation id="3037754279345160234">도메인 연결 구성을 파싱할 수 없습니다. 관리자에게 문의하세요.</translation>
@@ -1983,6 +1990,7 @@
 <translation id="3388788256054548012">암호화된 파일입니다. 소유자에게 복호화를 요청하세요.</translation>
 <translation id="3390013585654699824">앱 세부정보</translation>
 <translation id="3390741581549395454">Linux 앱 및 파일 백업이 완료되었습니다. 업그레이드가 곧 시작됩니다.</translation>
+<translation id="339507021360520688">본인의 화면 잠금 해제 시 나에게 표시되도록 선택한 사용자</translation>
 <translation id="3396800784455899911">'동의 및 계속' 버튼을 클릭하면 이러한 Google 서비스와 관련하여 위에 설명된 처리 방식에 동의하는 것으로 간주됩니다.</translation>
 <translation id="3399432415385675819">알림이 사용 중지됩니다.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" />(<ph name="REFRESH_RATE" />Hz) - 인터레이스</translation>
@@ -3952,6 +3960,7 @@
 <translation id="5799508265798272974">Linux 가상 머신: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">마지막 다운로드 이후 대상 파일이 잘렸거나 삭제되었습니다.</translation>
 <translation id="5801568494490449797">환경설정</translation>
+<translation id="580297286642726158">내가 공유할 수 있는 기기</translation>
 <translation id="5804175651771201311">로밍 꺼짐</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5805697420284793859">창 관리자</translation>
@@ -3968,6 +3977,7 @@
 <translation id="5826993284769733527">반투명</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">인쇄 중...</translation>
+<translation id="5830659417568730973">화면 잠금 해제 시 근처에 있으며 내가 선택한 연락처</translation>
 <translation id="5830720307094128296">페이지를 다른 이름으로 저장(&amp;A)...</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -4024,6 +4034,7 @@
 <translation id="5886009770935151472">지문 1</translation>
 <translation id="5889282057229379085">중간 인증기관(CA)의 최대 개수: <ph name="NUM_INTERMEDIATE_CA" />개</translation>
 <translation id="5891688036610113830">선호하는 Wi-Fi 네트워크</translation>
+<translation id="5893589697005440881">주변의 사람들과 파일을 공유하세요.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5900302528761731119">Google 프로필 사진</translation>
 <translation id="5900358982890952556">Linux 업그레이드(베타)</translation>
@@ -4137,6 +4148,7 @@
 <translation id="6031600495088157824">툴바의 입력 옵션</translation>
 <translation id="6032715498678347852">사이트 액세스를 허용하려면 확장 프로그램을 클릭하세요.</translation>
 <translation id="6032912588568283682">파일 시스템</translation>
+<translation id="6035517790085323771">내 기기와 공유할 수 있는 사람</translation>
 <translation id="6038929619733116134">사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시하는 경우 광고를 차단합니다.</translation>
 <translation id="6039651071822577588">네트워크 속성 사전 형식이 잘못되었습니다.</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -4219,6 +4231,7 @@
 <translation id="6122081475643980456">인터넷 연결이 제어되고 있습니다.</translation>
 <translation id="6122095009389448667">이 사이트에서 클립보드를 보지 못하게 계속 차단</translation>
 <translation id="6122191549521593678">온라인</translation>
+<translation id="6122600716821516697">이 기기와 공유할까요?</translation>
 <translation id="6122831415929794347">세이프 브라우징을 사용 중지하시겠습니까?</translation>
 <translation id="6122875415561139701">기기(<ph name="DEVICE_NAME" />)에서 쓰기 작업이 허용되지 않습니다.</translation>
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> 및 모든 하위 사이트에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
@@ -4775,6 +4788,7 @@
 <translation id="6824584962142919697">요소 검사(&amp;I)</translation>
 <translation id="6825184156888454064">이름순 정렬</translation>
 <translation id="6826872289184051766">USB를 통해 인증</translation>
+<translation id="6827487342470222762">사용 가능한 연락처가 없습니다. 내 연락처에 있는 사용자와 Nearby Share를 사용하려면 사용자의 Google 계정에 연결된 이메일 주소를 내 연락처에 추가하세요.</translation>
 <translation id="6827623133556594466">Google 클라우드 프린트는 12월 31일 이후 지원이 중단됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">로그인할 수 있는 사용자 설정:</translation>
 <translation id="6828182567531805778">데이터를 동기화하려면 암호를 입력합니다.</translation>
@@ -5579,6 +5593,7 @@
 <translation id="7819992334107904369">Chrome 동기화</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
 <translation id="7824864914877854148">오류로 인해 백업을 완료할 수 없습니다.</translation>
+<translation id="7825666486843191125">화면 잠금 해제 시 근처에 있는 모든 연락처</translation>
 <translation id="782590969421016895">현재 페이지 사용</translation>
 <translation id="7826249772873145665">ADB 디버깅 사용 중지됨</translation>
 <translation id="7826254698725248775">기기 식별자가 충돌합니다.</translation>
@@ -5676,6 +5691,7 @@
 <translation id="7918257978052780342">등록</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />초</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
+<translation id="7924080089023843180">Nearby Share를 실행하지 않으면 아무도 공유할 수 없음</translation>
 <translation id="7924358170328001543">포트 전달 중 오류 발생</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>
 <translation id="7925247922861151263">AAA 확인 실패</translation>
@@ -5723,6 +5739,7 @@
 <translation id="7970673414865679092">이더넷 세부정보</translation>
 <translation id="7970882136539140748">지금은 카드를 저장할 수 없음</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384(RSA 암호화 사용)</translation>
+<translation id="797394244396603170">파일을 공유할 기기를 선택하세요.</translation>
 <translation id="7973962044839454485">사용자 이름 또는 비밀번호가 잘못되어 PPP 인증에 실패했습니다.</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" />을(를) 사용하여 다시 시도</translation>
 <translation id="7974936243149753750">오버스캔</translation>
@@ -6235,6 +6252,7 @@
 <translation id="8613164732773110792">소문자, 숫자, 밑줄 및 대시만 사용할 수 있습니다.</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 파일이 너무 커서 보안 확인을 진행할 수 없습니다. 최대 50MB 크기의 파일을 열 수 있습니다.</translation>
 <translation id="8615618338313291042">시크릿 모드 애플리케이션:<ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662"><ph name="CONTACT_NAME" />님을 내 연락처에 추가</translation>
 <translation id="8619803522055190423">그림자</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">부모님이 아직 승인하지 않았습니다.</translation>
@@ -6464,6 +6482,7 @@
 <translation id="8859402192569844210">서비스 약관을 로드할 수 없습니다.</translation>
 <translation id="8859662783913000679">부모 계정</translation>
 <translation id="8862003515646449717">빠른 브라우저로 전환</translation>
+<translation id="8863140399813345099">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다.</translation>
 <translation id="8863753581171631212">새 <ph name="APP" />에서 링크 열기</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
 <translation id="8864458770072227512">기기에서 <ph name="EMAIL" />이(가) 삭제되었습니다.</translation>

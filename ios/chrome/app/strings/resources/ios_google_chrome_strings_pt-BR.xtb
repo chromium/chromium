@@ -41,7 +41,7 @@
 <translation id="4698415050768537821">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
-<translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização estiver disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
+<translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5639704535586432836">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Google Chrome e ative a câmera.</translation>
 <translation id="5642200033778930880">O Google Chrome não pode usar a câmera no modo Visualização dividida</translation>
@@ -54,10 +54,6 @@
 <translation id="6600954340915313787">Copiado no Chrome</translation>
 <translation id="6648150602980899529">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
 <translation id="6676840375528380067">Limpar seus dados do Chrome deste dispositivo?</translation>
-<translation id="6724102885918156196">Para tornar o Chrome seu navegador padrão:
-        1. Abra "Ajustes". 
-        2. Toque em "App padrão de navegador".
-        3. Selecione o Chrome.</translation>
 <translation id="6822673484890854830">Não foi possível verificar todas as senhas com o Chrome. Tente novamente mais tarde.</translation>
 <translation id="7161390184744336561">O Google Chrome está desatualizado</translation>
 <translation id="7165736900384873061">Começar a usar o leitor de QR do Google Chrome</translation>

@@ -1626,7 +1626,7 @@
 <translation id="3412937883532015092">如果將這項政策設為數值，<ph name="PRODUCT_NAME" /> 在開啟替代瀏覽器前會先顯示一則等待訊息，並依據該數值 (以毫秒為單位) 來設定這則訊息要顯示多久的時間。
 
       如果未設定這項政策或設為 0，當使用者前往指定網址時，系統會立即在替代瀏覽器中開啟該網址。</translation>
-<translation id="3415954062311826850">ARC 中不支援這項政策。</translation>
+<translation id="3415954062311826850">ARC 不支援這項政策。</translation>
 <translation id="34160070798637152">控管裝置通用的網路設定。</translation>
 <translation id="3417130629744653218">允許網站查詢可用的付款方式。</translation>
 <translation id="3417418267404583991">如果這項政策設為 True 或未設定，<ph name="PRODUCT_OS_NAME" /> 會啟用訪客登入。訪客登入是匿名的使用者工作階段，並且不需要密碼。
@@ -1770,7 +1770,7 @@
 <translation id="3577251398714997599">含侵入式廣告的網站的廣告設定</translation>
 <translation id="3577628175311752799">使用預設的參照政策 no-referrer-when-downgrade。</translation>
 <translation id="357917253161699596">允許使用者管理使用者憑證</translation>
-<translation id="3580414086211696382">控管能否透過 File System API 要求讀取權限</translation>
+<translation id="3580414086211696382">控管使用 File System API 讀取的權限</translation>
 <translation id="3583230441447348508">指定一組預先設定的網路檔案共用清單。
 
       這項政策的每個清單項目都是一個物件，由下列兩個元素組成：「share_url」和「mode」。「share_url」是檔案共用網址，「mode」則應設為「drop_down」或「pre_mount」。如果是「drop_down」模式，系統會將「share_url」新增至共用項目搜尋下拉式選單中。如果是「pre_mount」模式，則系統會掛接「share_url」。</translation>
@@ -1950,7 +1950,7 @@
 
           舉例來說，如要允許所有快速解鎖模式，請使用 ["all"]。如果只要允許 PIN 碼解鎖，請使用 ["PIN"]。如要允許 PIN 碼和指紋解鎖，請使用 ["PIN", "FINGERPRINT"]。
 
-          如果不設定這項政策或將清單設為空白，受管理的裝置將無法使用任何快速解鎖模式</translation>
+          如果不設定這項政策或將清單設為空白，受管理的裝置將無法使用任何快速解鎖模式。</translation>
 <translation id="3877517141460819966">整合式雙重驗證模式</translation>
 <translation id="3879196885908353077">檢查下載內容是否違反機密資料保護規則</translation>
 <translation id="3879208481373875102">設定強制安裝的網頁應用程式清單</translation>
@@ -3473,7 +3473,7 @@
 
       如果你停用這項政策或將其設為 False，列印指令就會啟動列印預覽畫面。</translation>
 <translation id="6022948604095165524">起始動作</translation>
-<translation id="6026722971789064331">控管能否透過 File System API 要求寫入權限</translation>
+<translation id="6026722971789064331">控管使用 File System API 寫入的權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>
 <translation id="6034341625190551415">控管公開工作階段和資訊站帳戶類型。</translation>
@@ -4777,11 +4777,6 @@
 
           根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用允許清單覆寫該政策。</translation>
 <translation id="7818131573217430250">設定高反差模式在登入畫面的預設狀態</translation>
-<translation id="7823420548819808002">你可以透過這項政策建立清單，指定針對不安全來源所設的安全性限制不適用於哪些來源 (網址) 或主機名稱模式 (例如 *.example.com)。機構可以為無法部署傳輸層安全標準 (TLS) 的舊版應用程式設定許可清單來源，或設定內部網頁開發所需的暫存伺服器。這樣一來，開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
-
-      如果在這項政策中設定網址清單，效果等同於將「--unsafely-treat-insecure-origin-as-secure」命令列標記設定至相同的網址清單 (以逗號分隔)。這項政策會覆寫前述命令列標記與 UnsafelyTreatInsecureOriginAsSecure 政策 (如已設定)。
-
-      如要進一步瞭解安全內容，請參閱「安全內容」：https://www.w3.org/TR/secure-contexts。</translation>
 <translation id="7823902813460802031">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會阻止裝置進入開發人員模式。
 
        如果將這項設為停用或不設定，裝置便可以使用開發人員模式。</translation>

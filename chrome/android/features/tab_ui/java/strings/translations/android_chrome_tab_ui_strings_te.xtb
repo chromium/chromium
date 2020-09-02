@@ -16,7 +16,7 @@
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
 <translation id="2977480621796371840">గుంపు నుండి తీసివేయి</translation>
 <translation id="3328308545011660196">సూచన: <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
 <translation id="4212246570487010370">బ్రౌజింగ్‌ను కొనసాగించండి</translation>
 <translation id="4450893287417543264">మళ్లీ చూపవద్దు</translation>
@@ -26,10 +26,10 @@
 <translation id="5082793167783849073">పేజీలను సమూహంగా వర్గీకరించడం ద్వారా వేగంగా సరిపోల్చండి. ప్రారంభించడానికి, లింక్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి.</translation>
 <translation id="5490235265819901748">ట్యాబ్ గ్రూప్ విస్తరించబడింది</translation>
 <translation id="5533021382642990449">తర్వాత చూపించు</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ట్యాబ్ గ్రూప్‌ను మూసివేయండి</translation>
+<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ట్యాబ్‌లు గ్రూప్ చేయబడ్డాయి</translation>
 <translation id="58326064309361797">గ్రూప్‌గా చేయడానికి ట్యాబ్‌లను లాగండి</translation>
-<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో <ph name="TITLE_OF_GROUP" /> గ్రూప్‌ను మూసివేయండి</translation>
+<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ఉన్న <ph name="TITLE_OF_GROUP" /> గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
 <translation id="6510648526783655549">ట్యాబ్‌ స్ట్రిప్‌ను మూసివేస్తుంది</translation>

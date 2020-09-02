@@ -51,6 +51,9 @@
 <translation id="6233780560267770709">3-г харьцах нь 3</translation>
 <translation id="6243827288366940320">Алтан харьцаа</translation>
 <translation id="6248749904681914629">Гадаад камер</translation>
+<translation id="6353688143752491039">Камер аппын талаар санал хүсэлт ирүүлсэнд баярлалаа.
+
+Хэрэв таны санал хүсэлт зургийн эсвэл видеоны чанартай холбоотой бол жишээ зураг эсвэл видеог хавсаргаад ямар алдаа байгааг тодорхойлно уу. (Жишээлбэл, зураг хэт бараан эсвэл субъект фокусгүй байна.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мега пиксел</translation>
 <translation id="6681668084120808868">Гэрэл зураг авах</translation>
 <translation id="6778482348691154169">Зураг авах боломжгүй байна</translation>

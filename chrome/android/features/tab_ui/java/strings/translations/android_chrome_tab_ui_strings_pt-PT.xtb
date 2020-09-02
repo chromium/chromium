@@ -49,7 +49,7 @@
 <translation id="8205266828577616993">Mover separador para cima</translation>
 <translation id="8304833501377495048">Não mostrar a Faixa de separadores novamente?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
-<translation id="8557923272772633250">Expanda o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
+<translation id="8557923272772633250">Expandir o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores</translation>
 <translation id="8749939518995770034">Faixa de separadores fechada</translation>
 <translation id="9150694013019234766">Alterne entre separadores no grupo de separadores junto à parte inferior do ecrã.</translation>
 <translation id="9169594135889675189">Adicionar um novo separador ao grupo</translation>

@@ -262,6 +262,7 @@
 <translation id="1974060860693918893">I përparuar</translation>
 <translation id="1975584088563498795">Kutia postare 10</translation>
 <translation id="1978555033938440688">Versioni i firmuerit</translation>
+<translation id="1988881251331415125">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e lidhshmërisë"<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Të ketë qasje në kukit dhe të dhënat e sajtit.
 
@@ -305,6 +306,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2154054054215849342">Sinkronizimi nuk ofrohet për domenin tënd</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
 <translation id="2161656808144014275">Teksti</translation>
+<translation id="2164510882479075877">Kontrollo nëse ka ndonjë gabim drejtshkrimor në <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Qasja e plotë e administratorit</translation>
 <translation id="2166378884831602661">Ky sajt nuk mund të ofrojë një lidhje të sigurt</translation>
 <translation id="2169984857010174799">Kaku2 (Zarf)</translation>
@@ -1104,6 +1106,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5509780412636533143">Faqeshënuesit e menaxhuar</translation>
 <translation id="5510481203689988000">Ky cilësim kontrollohet te "Cilësimet e kukive".</translation>
 <translation id="5510766032865166053">Ai mund të jetë zhvendosur ose fshirë.</translation>
+<translation id="5519516356611866228">Me ndryshimet e tua</translation>
 <translation id="5523118979700054094">Emri i politikës</translation>
 <translation id="55293785478302737">Qepje anësore</translation>
 <translation id="553484882784876924">Prc6 (Zarf)</translation>
@@ -1342,6 +1345,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6476284679642588870">Menaxho mënyrat e pagesës</translation>
 <translation id="6489534406876378309">Nis ngarkimin e ndërprerjeve aksidentale</translation>
 <translation id="6499038740797743453">Të rivendoset fjalëkalimi?</translation>
+<translation id="6502991525169604759">Pa ndryshimet e tua</translation>
 <translation id="6508722015517270189">Rinis Chrome</translation>
 <translation id="6517596291481585650">Paralajmërim: Kjo politikë nuk është bashkuar si listë siç specifikohet nga politika sepse nuk është listë.</translation>
 <translation id="6518133107902771759">Verifiko</translation>
@@ -1680,6 +1684,7 @@ Detaje shtesë:
 <translation id="7887683347370398519">Kontrollo CVC-në tënde dhe provo përsëri</translation>
 <translation id="7887885240995164102">Hyr në veçorinë "figurë brenda figurës"</translation>
 <translation id="7888575728750733395">Synimi i paraqitjes për printimin</translation>
+<translation id="7894280532028510793">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e rrjetit"<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Zarf)</translation>
 <translation id="7932579305932748336">Veshje</translation>
 <translation id="79338296614623784">Fut një numër të vlefshëm telefoni</translation>
@@ -1826,6 +1831,7 @@ Detaje shtesë:
 <translation id="8508648098325802031">Ikona e kërkimit</translation>
 <translation id="8522552481199248698">Chrome mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>
 <translation id="8530813470445476232">Pastro historikun e shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
+<translation id="8533619373899488139">Vizito &lt;strong&gt;chrome://policy&lt;/strong&gt; për të parë listën e URL-ve të bllokuara dhe politika të tjera të detyruara nga administratori i sistemit tënd.</translation>
 <translation id="8541158209346794904">Pajisje me Bluetooth</translation>
 <translation id="8542014550340843547">Tri kapje me tel poshtë</translation>
 <translation id="8543181531796978784">Mund <ph name="BEGIN_ERROR_LINK" />të raportosh një problem të zbulimit<ph name="END_ERROR_LINK" /> ose, nëse i kupton rreziqet ndaj sigurisë tënde, <ph name="BEGIN_LINK" />vizito këtë sajt të pasigurt<ph name="END_LINK" />.</translation>
@@ -1885,6 +1891,7 @@ Detaje shtesë:
 <translation id="884923133447025588">Nuk u gjet asnjë mekanizëm revokimi.</translation>
 <translation id="885730110891505394">Ndarja me Google</translation>
 <translation id="8858065207712248076">Chrome rekomandon rivendosjen e fjalëkalimit tënd të <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> nëse e ke ripërdorur në sajte të tjera.</translation>
+<translation id="885906927438988819">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e rrjetit të Windows"<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Gabim gjatë analizimit të cilësimeve të politikës</translation>
 <translation id="8866928039507595380">Palosje</translation>
 <translation id="886872106311861689">B3</translation>

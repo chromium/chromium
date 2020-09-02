@@ -216,7 +216,7 @@
 <translation id="1752021286346845558">8. postontzia</translation>
 <translation id="1753706481035618306">Orri-zenbakia</translation>
 <translation id="1763864636252898013">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Zure gailuaren sistema eragilea ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
-<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Abiarazi Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
+<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Exekutatu Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Aukeratu duzun zerbitzariak (<ph name="ORIGIN" />) goiburu bat ezarri du; haren arabera, jatorri-gidalerro bat aplikatuko zaie zerbitzari hartako eskaera guztiei. Alabaina, goiburua oker dago eratuta; ondorioz, arakatzaileak ezin du gauzatu <ph name="SITE" /> webgunean sartzeko egin duzun eskaera. Webgunearen segurtasuna eta beste propietate batzuk konfiguratzeko erabili ohi dituzte webguneen eragileek jatorri-gidalerroak.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1783075131180517613">Eguneratu sinkronizatzeko pasaesaldia.</translation>
@@ -259,7 +259,7 @@
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1975584088563498795">10. postontzia</translation>
 <translation id="1978555033938440688">Firmware-bertsioa</translation>
-<translation id="1988881251331415125">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />abiarazi konexio-diagnostikoak<ph name="END_LINK" />.</translation>
+<translation id="1988881251331415125">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />exekutatu konexio-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Atzitu cookieak eta webgunearen datuak.
 
@@ -370,7 +370,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Aukeratu entrega-metodoa</translation>
 <translation id="2465688316154986572">Grapatu</translation>
-<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Sare-diagnostikoak abiarazten<ph name="END_LINK" /></translation>
+<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Sare-diagnostikoak exekutatzen<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1etik N-rako ordena</translation>
 <translation id="2479410451996844060">Bilaketa URLak ez du balio.</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
@@ -789,7 +789,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     &lt;p&gt;Gogoratu bukatzean antibirusa berriro ere aktibatzea.&lt;/p&gt;
     &lt;h4&gt;5. urratsa: lortu laguntza gehiago&lt;/h4&gt;
     &lt;p&gt;Oraindik ere errorea ikusten baduzu, jarri harremanetan webgunearen jabearekin.&lt;/p&gt;</translation>
-<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Abiarazi sare-diagnostikoak<ph name="END_LINK" />.</translation>
+<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Exekutatu sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Joan <ph name="SITE" /> webgunera<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Balio du</translation>
 <translation id="4250431568374086873">Webgune honetarako konexioa ez da guztiz segurua</translation>
@@ -893,7 +893,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4702504834785592287">Aldea</translation>
 <translation id="4708268264240856090">Eten egin da konexioa</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
-<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-en sare-diagnostikoak abiarazten<ph name="END_LINK" /></translation>
+<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-en sare-diagnostikoak exekutatzen<ph name="END_LINK" /></translation>
 <translation id="4726672564094551039">Kargatu berriro gidalerroak</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4731638775147756694">Administratzaileak blokeatu du aplikazio hori</translation>
@@ -1096,6 +1096,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5509780412636533143">Kudeatutako laster-markak</translation>
 <translation id="5510481203689988000">Cookieen ezarpenek kontrolatzen dute ezarpen hau.</translation>
 <translation id="5510766032865166053">Lekuz aldatu edo ezabatu egin da agian.</translation>
+<translation id="5519516356611866228">Aldaketekin</translation>
 <translation id="5523118979700054094">Gidalerroaren izena</translation>
 <translation id="55293785478302737">Josi ertza</translation>
 <translation id="553484882784876924">Prc6 (gutun-azala)</translation>
@@ -1334,6 +1335,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6476284679642588870">Kudeatu ordainketa-metodoak</translation>
 <translation id="6489534406876378309">Hasi hutsegite-txostenak kargatzen</translation>
 <translation id="6499038740797743453">Pasahitza berrezarri nahi duzu?</translation>
+<translation id="6502991525169604759">Aldaketarik gabe</translation>
 <translation id="6508722015517270189">Berrabiarazi Chrome</translation>
 <translation id="6517596291481585650">Abisua: gidalerro hau ez da bateratu zerrenda gisa gidalerroak zehaztu bezala, ez delako zerrenda bat.</translation>
 <translation id="6518133107902771759">Egiaztatu</translation>
@@ -1672,7 +1674,7 @@ Xehetasun gehiago:
 <translation id="7887683347370398519">Begiratu CVC kodea eta saiatu berriro</translation>
 <translation id="7887885240995164102">Sartu pantaila txiki gainjarriko moduan</translation>
 <translation id="7888575728750733395">Inprimatzeko errendatzearen helburua</translation>
-<translation id="7894280532028510793">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />egin sarearen diagnostikoa<ph name="END_LINK" />.</translation>
+<translation id="7894280532028510793">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />exekutatu sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (gutun-azala)</translation>
 <translation id="7932579305932748336">Forratu</translation>
 <translation id="79338296614623784">Idatzi balio duen telefono-zenbaki bat</translation>
@@ -1819,7 +1821,7 @@ Xehetasun gehiago:
 <translation id="8508648098325802031">Bilaketa-ikonoa</translation>
 <translation id="8522552481199248698">Google-ko kontua babesten eta pasahitza aldatzen lagun diezazuke Chrome-k.</translation>
 <translation id="8530813470445476232">Garbitu arakatze-historia, cookieak, cachea eta beste Chrome-ren ezarpenetan</translation>
-<translation id="8533619373899488139">Joan &lt;strong&gt;chrome://policy&lt;/strong&gt; orrira sistema-administratzaileak blokeatutako URLen zerrenda eta aplikatutako gidalerroak ikusteko.</translation>
+<translation id="8533619373899488139">Joan &lt;strong&gt;chrome://policy&lt;/strong&gt; orrira sistemaren administratzaileak blokeatutako URLen zerrenda eta aplikatutako gidalerroak ikusteko.</translation>
 <translation id="8541158209346794904">Bluetooth bidezko gailua</translation>
 <translation id="8542014550340843547">Hiru grapa behean</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Detekzio-arazoaren berri eman dezakezu<ph name="END_ERROR_LINK" /> edo, segurtasunari eragiten dioten arriskuak ulertzen badituzu, <ph name="BEGIN_LINK" />webgune ez-segurura joan zaitezke<ph name="END_LINK" />.</translation>
@@ -1879,7 +1881,7 @@ Xehetasun gehiago:
 <translation id="884923133447025588">Ez da baliogabetze-mekanismorik aurkitu.</translation>
 <translation id="885730110891505394">Google-rekin partekatzea</translation>
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chrome-k.</translation>
-<translation id="885906927438988819">Behar bezala idatzi baduzu, <ph name="BEGIN_LINK" />abiarazi Windows-en sare-diagnostikoa<ph name="END_LINK" />.</translation>
+<translation id="885906927438988819">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />exekutatu Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Errore bat gertatu da gidalerro-ezarpenak analizatzean</translation>
 <translation id="8866928039507595380">Tolestu</translation>
 <translation id="886872106311861689">B3</translation>

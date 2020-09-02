@@ -4,7 +4,7 @@
 <translation id="102360288709523007">Contribuie la îmbunătățirea Chromium trimițând statistici de utilizare și rapoarte de blocare la Google.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1257458525759135959">Pentru a salva imaginile, atinge Setări ca să permiți browserului Chromium să adauge fotografiile</translation>
-<translation id="1361748954329991663">Chromium nu este actualizat. Dacă nu este disponibilă nicio actualizare în <ph name="BEGIN_LINK" />Magazinul de aplicații<ph name="END_LINK" />, e posibil ca dispozitivul tău să nu mai accepte versiuni noi de Chromium.</translation>
+<translation id="1361748954329991663">Chromium nu este actualizat. Dacă nu este disponibilă nicio actualizare în <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, e posibil ca dispozitivul tău să nu mai accepte versiuni noi de Chromium.</translation>
 <translation id="1472013873724362412">Contul nu funcționează pe Chromium. Contactează administratorul domeniului sau folosește un Cont Google obișnuit pentru a te conecta.</translation>
 <translation id="1507010443238049608">Contribuie la îmbunătățirea funcțiilor și performanței Chromium</translation>
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
@@ -55,10 +55,6 @@
 <translation id="725427773388857052">Chromium te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>
 <translation id="7269362888766543920">Unele suplimente blochează Chromium. Încearcă să le dezinstalezi.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Pentru a seta Chromium ca browser prestabilit:
-        1. deschide Setările; 
-        2. atinge Aplicația browser prestabilită;
-        3. selectează Chromium.</translation>
 <translation id="7357211569052832586">Datele selectate au fost eliminate din Chromium și de pe dispozitivele sincronizate. Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi căutările și activitatea din alte servicii Google, la history.google.com.</translation>
 <translation id="7400689562045506105">Folosește Chromium pretutindeni</translation>
 <translation id="766897673682622022">Parola a fost expusă în urma încălcării securității datelor. Chromium recomandă să-ți schimbi acum parola.</translation>

@@ -16,7 +16,7 @@
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> adlı <ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişletin.</translation>
 <translation id="2977480621796371840">Gruptan kaldır</translation>
 <translation id="3328308545011660196">Öneri: <ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TITLE_OF_GROUP" /> adlı, <ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
@@ -29,7 +29,7 @@
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu kapat</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> sekme gruplandı</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>
-<translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> adlı, <ph name="NUMBER_OF_TABS" /> sekmeli grubu kapat</translation>
+<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6193448654517602979">Sekmeleri seçin</translation>
 <translation id="6510648526783655549">Sekme şeridini kapat</translation>

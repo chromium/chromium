@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">系统会将您的书签、浏览记录和其他设置同步到您的Google帐号。</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家庭网络，非漫游</translation>
+<translation id="1315144594965013365">请确保这两部设备均已解锁、相距很近且均已开启蓝牙。如果您的分享对象是一部 Chromebook，请确保已为它开启“附近分享”功能（先通过选择时间打开状态区，然后选择“附近分享”）。</translation>
 <translation id="1316136264406804862">正在搜索...</translation>
 <translation id="1316495628809031177">同步已暂停</translation>
 <translation id="1317637799698924700">您的基座将以与 USB C 型兼容的模式运行。</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">您的设备可通过 Smart Lock 解锁。按 Enter 键即可解锁。</translation>
 <translation id="1361164813881551742">手动添加</translation>
 <translation id="1361655923249334273">未使用</translation>
+<translation id="1361707011052629095">当“附近分享”功能处于开启状态时位于您附近的设备</translation>
 <translation id="1361872463926621533">启动时播放声音</translation>
 <translation id="1362865166188278099">发生机械问题，请检查打印机</translation>
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
@@ -479,6 +481,7 @@
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="155865706765934889">触控板</translation>
+<translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享文件时，系统会提醒您</translation>
 <translation id="1563702743503072935">登录后，您在此设备上也能获取您 Google 帐号中保存的密码</translation>
 <translation id="1566049601598938765">网站</translation>
 <translation id="15662109988763471">所选打印机无法使用或未正确安装。请检查打印机，或尝试选择其他打印机。</translation>
@@ -640,6 +643,7 @@
 <translation id="1743970419083351269">关闭下载内容栏</translation>
 <translation id="1744060673522309905">无法将此设备加入到该网域中。请确保您未超出可添加的设备数量上限。</translation>
 <translation id="1744108098763830590">背景页</translation>
+<translation id="1745732479023874451">管理联系人</translation>
 <translation id="1748563609363301860">您可以将这个密码保存到您的 Google 帐号中，或者仅保存到此设备上</translation>
 <translation id="1750172676754093297">您的安全密钥无法存储指纹</translation>
 <translation id="1751249301761991853">个人</translation>
@@ -1204,6 +1208,7 @@
 <translation id="2433507940547922241">外观</translation>
 <translation id="2433836460518180625">仅解锁设备</translation>
 <translation id="2434449159125086437">无法设置打印机。请检查配置，然后重试。</translation>
+<translation id="2434758125294431199">选择哪些人员可与您分享文件</translation>
 <translation id="2435248616906486374">网络连接已断开</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
@@ -1361,6 +1366,7 @@
 <translation id="2612676031748830579">卡号</translation>
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
+<translation id="2618797463720777311">设置“附近分享”功能</translation>
 <translation id="2619761439309613843">每日刷新</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="262154978979441594">训练 Google 助理语音模型</translation>
@@ -1715,6 +1721,7 @@
 <translation id="3029466929721441205">在任务栏中显示触控笔工具</translation>
 <translation id="3031417829280473749">女特工</translation>
 <translation id="3031557471081358569">选择要导入的内容：</translation>
+<translation id="3036041939445522540">无可选联系人</translation>
 <translation id="3036327949511794916">退还此 <ph name="DEVICE_TYPE" /> 的截止日期已过。</translation>
 <translation id="3036546437875325427">启用 Flash</translation>
 <translation id="3037754279345160234">无法对加入网域的配置进行解析，请与您的管理员联系。</translation>
@@ -1979,6 +1986,7 @@
 <translation id="3388788256054548012">这个文件已加密。请让它的所有者进行解密。</translation>
 <translation id="3390013585654699824">应用详细信息</translation>
 <translation id="3390741581549395454">已成功备份 Linux 应用和文件。即将开始升级。</translation>
+<translation id="339507021360520688">已选择在自己的屏幕处于解锁状态时对您可见的人员</translation>
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
 <translation id="3399432415385675819">通知将被停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> 赫兹） - 交错</translation>
@@ -3467,7 +3475,7 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="52232769093306234">打包失败。</translation>
 <translation id="5225324770654022472">显示应用快捷方式</translation>
-<translation id="52254442782792731">当前的公开范围设置是“尚未设置”</translation>
+<translation id="52254442782792731">当前尚未设置公开范围</translation>
 <translation id="5227679487546032910">默认的蓝绿色头像</translation>
 <translation id="5228088094491423618">实时字幕</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
@@ -3949,6 +3957,7 @@
 <translation id="5799508265798272974">Linux 虚拟机：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">目标文件在上次下载后被截断或删除。</translation>
 <translation id="5801568494490449797">偏好设置</translation>
+<translation id="580297286642726158">您可与以下人员/设备分享文件</translation>
 <translation id="5804175651771201311">漫游服务已关闭</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5805697420284793859">窗口管理器</translation>
@@ -3965,6 +3974,7 @@
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">正在打印...</translation>
+<translation id="5830659417568730973">当您的屏幕处于解锁状态时位于您附近的所选联系人</translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="583281660410589416">未知</translation>
@@ -4021,6 +4031,7 @@
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
+<translation id="5893589697005440881">与您附近的人员分享文件</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5900302528761731119">Google 个人资料照片</translation>
 <translation id="5900358982890952556">升级 Linux（测试版）</translation>
@@ -4134,6 +4145,7 @@
 <translation id="6031600495088157824">在工具栏中显示输入选项</translation>
 <translation id="6032715498678347852">若要授权某个扩展程序访问此网站，请点击该扩展程序。</translation>
 <translation id="6032912588568283682">文件系统</translation>
+<translation id="6035517790085323771">以下人员/设备可与您的设备分享文件</translation>
 <translation id="6038929619733116134">屏蔽会展示侵扰性或误导性广告的网站</translation>
 <translation id="6039651071822577588">网络属性字典格式不正确</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -4216,6 +4228,7 @@
 <translation id="6122081475643980456">您的互联网连接受到控制</translation>
 <translation id="6122095009389448667">继续禁止此网站查看剪贴板</translation>
 <translation id="6122191549521593678">在线</translation>
+<translation id="6122600716821516697">与此设备分享？</translation>
 <translation id="6122831415929794347">要关闭“安全浏览”功能吗？</translation>
 <translation id="6122875415561139701">禁止在“<ph name="DEVICE_NAME" />”上执行写入操作。</translation>
 <translation id="6124213551517593835">此操作会清除 <ph name="SITE_GROUP_NAME" /> 及其下属所有网站存储的所有数据和 Cookie</translation>
@@ -4772,6 +4785,7 @@
 <translation id="6824584962142919697">检查元素(&amp;I)</translation>
 <translation id="6825184156888454064">按名称排序</translation>
 <translation id="6826872289184051766">通过 USB 进行验证</translation>
+<translation id="6827487342470222762">没有任何可供选择的联系人。如果想与您的联系人进行“附近分享”，请将其 Google 帐号所关联的电子邮件地址添加到您的通讯录中。</translation>
 <translation id="6827623133556594466">12 月 31 日之后，Google 云打印将不再受支持。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">只允许以下用户登录：</translation>
 <translation id="6828182567531805778">输入密码以同步您的数据</translation>
@@ -5576,6 +5590,7 @@
 <translation id="7819992334107904369">Chrome 同步</translation>
 <translation id="782057141565633384">复制视频地址(&amp;O)</translation>
 <translation id="7824864914877854148">发生错误，因此无法完成备份</translation>
+<translation id="7825666486843191125">当您的屏幕处于解锁状态时位于您附近的所有联系人</translation>
 <translation id="782590969421016895">使用当前网页</translation>
 <translation id="7826249772873145665">ADB 调试已停用</translation>
 <translation id="7826254698725248775">设备标识符冲突。</translation>
@@ -5673,6 +5688,7 @@
 <translation id="7918257978052780342">注册</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>
+<translation id="7924080089023843180">无（除非您开启“附近分享”功能）</translation>
 <translation id="7924358170328001543">转发端口时出错</translation>
 <translation id="792514962475806987">停靠的放大镜的缩放级别：</translation>
 <translation id="7925247922861151263">AAA 检查失败</translation>
@@ -5720,6 +5736,7 @@
 <translation id="7970673414865679092">以太网详细信息</translation>
 <translation id="7970882136539140748">此刻无法保存信用卡信息</translation>
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
+<translation id="797394244396603170">请选择您要与哪部设备分享文件</translation>
 <translation id="7973962044839454485">用户名或密码不正确，导致 PPP 身份验证失败</translation>
 <translation id="7974566588408714340">使用“<ph name="EXTENSIONNAME" />”重试</translation>
 <translation id="7974936243149753750">过扫描</translation>
@@ -6231,6 +6248,7 @@
 <translation id="8613164732773110792">只能包含小写字符、数字、下划线或连字符</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 太大，无法进行安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="8615618338313291042">隐身模式下使用的应用...<ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">将<ph name="CONTACT_NAME" />添加到您的通讯录</translation>
 <translation id="8619803522055190423">阴影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
 <translation id="8620436878122366504">您的父母尚未批准此请求</translation>
@@ -6460,6 +6478,7 @@
 <translation id="8859402192569844210">无法加载《服务条款》</translation>
 <translation id="8859662783913000679">家长帐号</translation>
 <translation id="8862003515646449717">改用极速浏览器</translation>
+<translation id="8863140399813345099">您可指定自己的设备公开范围，从而控制哪些人员能在您的屏幕处于解锁状态时与您分享文件</translation>
 <translation id="8863753581171631212">在<ph name="APP" />的新窗口中打开链接</translation>
 <translation id="8864055848767439877">正在将“<ph name="TAB_NAME" />”分享到 <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> 已从此设备中移除</translation>

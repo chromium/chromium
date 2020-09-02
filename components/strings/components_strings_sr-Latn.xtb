@@ -1111,6 +1111,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5509780412636533143">Obeleživači kojim se upravlja</translation>
 <translation id="5510481203689988000">Ovo podešavanje se kontroliše u podešavanjima kolačića.</translation>
 <translation id="5510766032865166053">Možda je premešten ili izbrisan.</translation>
+<translation id="5519516356611866228">Sa promenama</translation>
 <translation id="5523118979700054094">Naziv smernica</translation>
 <translation id="55293785478302737">Spajanje ivica šavom</translation>
 <translation id="553484882784876924">Prc6 (koverat)</translation>
@@ -1349,6 +1350,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6489534406876378309">Pokreni otpremanje otkazivanja</translation>
 <translation id="6499038740797743453">Želite li da resetujete lozinku?</translation>
+<translation id="6502991525169604759">Bez vaših promena</translation>
 <translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
 <translation id="6517596291481585650">Upozorenje: Ove smernice nisu objedinjene kao lista kako je navedeno u smernicama jer nisu lista.</translation>
 <translation id="6518133107902771759">Verifikuj</translation>
@@ -1834,7 +1836,7 @@ Dodatni detalji:
 <translation id="8508648098325802031">Ikona Pretraga</translation>
 <translation id="8522552481199248698">Chrome može da vam pomogne da zaštitite Google nalog i promenite lozinku.</translation>
 <translation id="8530813470445476232">Obrišite istoriju pregledanja, kolačiće, keš i drugo u podešavanjima Chrome-a</translation>
-<translation id="8533619373899488139">Posetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste videli listu blokiranih URL-ova i druge smernice koje je nametnuo administrator sistema.</translation>
+<translation id="8533619373899488139">Posetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste videli listu blokiranih URL-ova i druge smernice koje je odredio administrator sistema.</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>
 <translation id="8542014550340843547">Trostruko spajanje na dnu</translation>
 <translation id="8543181531796978784">Možete da <ph name="BEGIN_ERROR_LINK" />prijavite problem sa otkrivanjem<ph name="END_ERROR_LINK" /> ili, ako shvatate bezbednosne rizike, <ph name="BEGIN_LINK" />posetite ovaj nebezbedan sajt<ph name="END_LINK" />.</translation>

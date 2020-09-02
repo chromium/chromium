@@ -185,7 +185,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">మరింత తేలికగా చదవడానికి వీలుగా Chrome ఈ పేజీని సులభతరం చేసింది. సురక్షిత కనెక్షన్ ద్వారా Chrome అసలు పేజీని తిరిగి పొందింది.</translation>
 <translation id="1656489000284462475">పికప్</translation>
-<translation id="1662550410081243962">చెల్లింపు పద్ధతులను సేవ్ చేసి, పూరించండి</translation>
+<translation id="1662550410081243962">పేమెంట్ ఆప్షన్‌లను సేవ్ చేసి, ఆటోమేటిక్‌గా ఫిల్ చేయండి</translation>
 <translation id="1663943134801823270">కార్డ్‌లు మరియు చిరునామాలు Chrome నుండి పొందినవి. మీరు <ph name="BEGIN_LINK" />సెట్టింగ్‌లు<ph name="END_LINK" />లో వాటిని నిర్వహించవచ్చు.</translation>
 <translation id="1671391448414634642">ఇప్పటి నుండి <ph name="SOURCE_LANGUAGE" /> భాషలో ఉన్న పేజీలు <ph name="TARGET_LANGUAGE" /> భాషలోకి అనువదించబడతాయి.</translation>
 <translation id="1676269943528358898"><ph name="SITE" /> సాధారణంగా మీ సమాచారాన్ని రక్షించడానికి ఎన్‌క్రిప్ష‌న్‌ను ఉపయోగిస్తుంది. Google Chrome ఈసారి <ph name="SITE" />కు కనెక్ట్ చేయడానికి ప్రయత్నించినప్పుడు, వెబ్‌సైట్ అసాధారణ మరియు తప్పు ఆధారాలు అని ప్రతిస్పందించింది. దాడి చేసే వ్యక్తి <ph name="SITE" />గా వ్యవహరించి మోసగించడానికి ప్రయత్నిస్తున్నప్పుడు లేదా Wi-Fi సైన్-ఇన్ స్క్రీన్ కనెక్షన్‌కు అంతరాయం కలిగించినప్పుడు ఇలా జరగవచ్చు. Google Chrome డేటా వినిమయం సంభవించక ముందే కనెక్షన్‌ను ఆపివేసినందున మీ సమాచారం ఇప్పటికీ సురక్షితంగానే ఉంది.</translation>
@@ -1111,6 +1111,7 @@
 <translation id="5509780412636533143">నిర్వహించబడిన బుక్‌మార్క్‌లు</translation>
 <translation id="5510481203689988000">ఈ సెట్టింగ్, కుక్కీల సెట్టింగ్‌లలో నియంత్రించబడుతోంది.</translation>
 <translation id="5510766032865166053">ఇది తరలించబడి ఉండవచ్చు లేదా తొలగించబడి ఉండవచ్చు.</translation>
+<translation id="5519516356611866228">మీరు చేసిన మార్పులతో డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="5523118979700054094">విధానం పేరు</translation>
 <translation id="55293785478302737">కుట్టిన అంచులు</translation>
 <translation id="553484882784876924">Prc6 (ఎన్వలప్)</translation>
@@ -1350,6 +1351,7 @@
 <translation id="6476284679642588870">చెల్లింపు పద్ధతులను నిర్వహించండి</translation>
 <translation id="6489534406876378309">క్రాష్‌లను అప్‌లోడ్ చేయడాన్ని ప్రారంభించండి</translation>
 <translation id="6499038740797743453">పాస్‌వర్డ్‌ను రీసెట్ చేయాలా?</translation>
+<translation id="6502991525169604759">మీరు చేసిన మార్పులు లేకుండా డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="6508722015517270189">Chromeను పునఃప్రారంభించండి</translation>
 <translation id="6517596291481585650">హెచ్చరిక: ఈ విధానం ఒక జాబితా కానందున, విధానంలో పేర్కొన్నట్లుగా ఇది జాబితా రూపంలో విలీనం చేయబడలేదు.</translation>
 <translation id="6518133107902771759">ధృవీకరించు</translation>
@@ -1488,7 +1490,7 @@
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7179323680825933600">చెల్లింపు పద్ధతులను సేవ్ చేసి, పూరించు</translation>
+<translation id="7179323680825933600">పేమెంట్ ఆప్షన్‌లను సేవ్ చేసి, ఆటోమేటిక్‌గా ఫిల్ చేయండి</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
 <translation id="7181261019481237103">అజ్ఞాత విండోను తెరువు</translation>
 <translation id="7182878459783632708">విధానాలను సెట్ చేయలేదు</translation>
@@ -1635,7 +1637,7 @@
 <translation id="7673278391011283842">మెయిల్‌బాక్స్ 6</translation>
 <translation id="7676643023259824263">క్లిప్‌బోర్డ్ వచనం, <ph name="TEXT" /> కోసం వెతకండి</translation>
 <translation id="7682287625158474539">ఓడ రవాణా</translation>
-<translation id="7687186412095877299">సేవ్ చేయబడిన మీ చెల్లింపు పద్ధతులతో చెల్లింపు ఫారమ్‌లను పూరిస్తుంది</translation>
+<translation id="7687186412095877299">పేమెంట్ ఫారమ్‌లను, మీరు సేవ్ చేసిన పేమెంట్ ఆప్షన్‌లతో ఫిల్ చేస్తుంది</translation>
 <translation id="7687305263118037187">పునఃప్రయత్న సమయం ముగిసింది</translation>
 <translation id="7693583928066320343">పేజీ క్రమం స్వీకరించబడింది</translation>
 <translation id="7697066736081121494">Prc8 (ఎన్వలప్)</translation>
@@ -1971,7 +1973,7 @@
 <translation id="9154194610265714752">నవీకరించబడింది</translation>
 <translation id="9157595877708044936">అమర్చుతోంది...</translation>
 <translation id="9158625974267017556">C6 (ఎన్వలప్)</translation>
-<translation id="9168814207360376865">మీ వద్ద సేవ్ చేయబడిన చెల్లింపు పద్ధతులు ఉన్నాయో లేదో తనిఖీ చేయడానికి సైట్‌లను అనుమతించండి</translation>
+<translation id="9168814207360376865">ఏవైనా పేమెంట్ ఆప్షన్‌లను మీరు సేవ్ చేశారో లేదో చెక్ చేసేందుకు వెబ్‌సైట్‌లను అనుమతించండి</translation>
 <translation id="9169664750068251925">ఈ సైట్‌లో ఎప్పుడూ బ్లాక్ చేయి</translation>
 <translation id="9170848237812810038">&amp;అన్డు</translation>
 <translation id="9171296965991013597">యాప్ నుండి నిష్క్రమించాలా?</translation>

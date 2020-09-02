@@ -1667,7 +1667,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="3412937883532015092">Si a esta política se le asigna un número como valor, <ph name="PRODUCT_NAME" /> mostrará un mensaje durante ese número de milisegundos y después abrirá un navegador alternativo.
 
       Si no se le asigna ningún valor o el valor es 0 (cero), al ir a una URL designada se abrirá inmediatamente en un navegador alternativo.</translation>
-<translation id="3415954062311826850">Esta política no se admite en Arc.</translation>
+<translation id="3415954062311826850">Esta política no se admite en ARC.</translation>
 <translation id="34160070798637152">Controla la configuración de red de todo el dispositivo.</translation>
 <translation id="3417130629744653218">Permite a los sitios web consultar los métodos de pago disponibles.</translation>
 <translation id="3417418267404583991">Si esta política no se configura o el valor correspondiente se establece en "true", <ph name="PRODUCT_OS_NAME" /> permitirá iniciar sesión como invitado. Los inicios de sesión como invitado son sesiones de usuario anónimas y no necesitan contraseña.
@@ -1996,7 +1996,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
           Por ejemplo, para permitir todos los modos de desbloqueo rápido, utiliza ["todos"]. Para permitir solo el desbloqueo con PIN, utiliza ["PIN"]. Para permitir el uso de PIN y de huella digital, utiliza ["PIN" o "HUELLA DIGITAL"].
 
-          Si esta política no se define o se le asigna una lista vacía, no habrá ningún modo de desbloqueo rápido disponible para los dispositivos administrados</translation>
+          Si esta política no se define o se le asigna una lista vacía, no habrá ningún modo de desbloqueo rápido disponible para los dispositivos administrados.</translation>
 <translation id="3877517141460819966">Modo de autenticación de dos factores integrado</translation>
 <translation id="3879196885908353077">Comprueba si se han infringido las normas de protección de datos sensibles en las descargas</translation>
 <translation id="3879208481373875102">Configurar lista de aplicaciones web de instalación forzada</translation>
@@ -4852,11 +4852,6 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
           Todos los hosts de mensajes nativos están permitidos de manera predeterminada, pero si todos los hosts de mensajes nativos se han bloqueado de acuerdo con la política, se puede usar una lista de permitidos para anular dicha política.</translation>
 <translation id="7818131573217430250">Establecer el estado predeterminado del modo de contraste alto en la pantalla de inicio de sesión</translation>
-<translation id="7823420548819808002">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes inseguros. Las organizaciones pueden incluir orígenes en lista de permitidos para aplicaciones antiguas que no pueden implementar TLS o para configurar un servidor provisional para el desarrollo interno de webs, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
-
-      Definir la lista de URLs de esta política tiene el mismo resultado que asignar la instrucción de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto instrucción de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
-
-      Para obtener más información sobre los contextos seguros, consulta la página https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="7823902813460802031">Si se habilita esta política, <ph name="PRODUCT_OS_NAME" /> impide que el dispositivo entre en el modo desarrollador.
 
        Si se inhabilita o no se define, el modo desarrollador estará disponible para el dispositivo.</translation>

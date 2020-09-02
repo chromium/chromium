@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">‏نشانک‌ها، سابقه و سایر تنظیماتتان با حساب Google شما همگام خواهند شد.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">شبکه اصلی، بدون فراگردی</translation>
+<translation id="1315144594965013365">‏مطمئن شوید قفل هر دو دستگاه باز باشد، نزدیک یکدیگر باشند، و بلوتوث در هر دو دستگاه روشن باشد. اگر درحال هم‌رسانی با Chromebook هستید، مطمئن شوید «هم‌رسانی با اطراف» در آن روشن باشد (ناحیه نشانگر وضعیت را با انتخاب کردن زمان باز کنید، سپس «هم‌رسانی با اطراف» را انتخاب کنید).</translation>
 <translation id="1316136264406804862">در حال جستجو...</translation>
 <translation id="1316495628809031177">همگام‌سازی موقتاً متوقف شده است</translation>
 <translation id="1317637799698924700">‏ایستگاه پایه اتصال در حالت سازگار با «USB نوع C» کار می‌کند.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">‏قفل دستگاه می‌تواند با Smart Lock باز شود. برای باز کردن قفل، Enter را فشار دهید.</translation>
 <translation id="1361164813881551742">افزودن دستی</translation>
 <translation id="1361655923249334273">استفاده نشده</translation>
+<translation id="1361707011052629095">دستگاه‌های مجاور، زمانی که «هم‌رسانی با اطراف» باز است</translation>
 <translation id="1361872463926621533">پخش صدا هنگام شروع به کار</translation>
 <translation id="1362865166188278099">مشکل مکانیکی. چاپگر را بررسی کنید</translation>
 <translation id="1363585519747660921">‏چاپگر USB باید پیکربندی شود</translation>
@@ -479,6 +481,7 @@
 <translation id="1555130319947370107">آبی</translation>
 <translation id="1556537182262721003">انتقال دایرکتوری برنامهٔ افزودنی به نمایه ممکن نیست.</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
+<translation id="1562119309884184621">افزودن این مخاطب باعث می‌شود برای هم‌رسانی بعدی‌اش در حافظه ذخیره شود</translation>
 <translation id="1563702743503072935">‏وقتی به سیستم وارد شده باشید، گذرواژه‌های ذخیره‌شده در «حساب Google» شما در این دستگاه هم دردسترس خواهد بود</translation>
 <translation id="1566049601598938765">وب‌سایت</translation>
 <translation id="15662109988763471">چاپگر انتخابی موجود نیست یا به‌درستی نصب نشده است. چاپگر خود را بررسی کنید یا چاپگر دیگری را انتخاب کنید.</translation>
@@ -640,6 +643,7 @@
 <translation id="1743970419083351269">بستن نوار بارگیری‌</translation>
 <translation id="1744060673522309905">نمی‌توان دستگاه را به دامنه وصل کرد. مطمئن شوید بیشتر از تعداد مجاز دستگاه اضافه نکرده‌اید.</translation>
 <translation id="1744108098763830590">صفحه پس‌زمینه</translation>
+<translation id="1745732479023874451">مدیریت مخاطبین</translation>
 <translation id="1748563609363301860">‏می‌توانید این گذرواژه را در «حساب Google» خود یا فقط در این دستگاه ذخیره کنید</translation>
 <translation id="1750172676754093297">کلید امنیتی نمی‌تواند اثر انگشت را ذخیره کند</translation>
 <translation id="1751249301761991853">شخصی</translation>
@@ -1205,6 +1209,7 @@
 <translation id="2433507940547922241">شکل ظاهری</translation>
 <translation id="2433836460518180625">فقط باز کردن قفل دستگاه</translation>
 <translation id="2434449159125086437">چاپگر راه‌اندازی نشد لطفاً پیکربندی را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="2434758125294431199">انتخاب افرادی که می‌توانند با شما هم‌رسانی انجام دهند</translation>
 <translation id="2435248616906486374">شبکه قطع شد</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
@@ -1362,6 +1367,7 @@
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="2616366145935564096">خواندن و تغییر داده‌هایتان در <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
+<translation id="2618797463720777311">راه‌اندازی «هم‌رسانی با اطراف»</translation>
 <translation id="2619761439309613843">بازخوانی روزانه</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="262154978979441594">‏آموزش مدل صوتی «دستیار Google»</translation>
@@ -1716,6 +1722,7 @@
 <translation id="3029466929721441205">نمایش ابزارهای قلم در قفسه</translation>
 <translation id="3031417829280473749">‏مأمور X</translation>
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
+<translation id="3036041939445522540">مخاطبی دردسترس نیست</translation>
 <translation id="3036327949511794916">مهلت برگرداندن این <ph name="DEVICE_TYPE" /> گذشته است.</translation>
 <translation id="3036546437875325427">‏فعال کردن Flash</translation>
 <translation id="3037754279345160234">نمی‌توان پیکربندی پیوستن به دامنه را تجزیه کرد. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
@@ -1980,6 +1987,7 @@
 <translation id="3388788256054548012">این فایل رمزگذاری شده است. از مالک بخواهید آن را رمزگشایی کند.</translation>
 <translation id="3390013585654699824">جزئیات برنامه</translation>
 <translation id="3390741581549395454">‏از برنامه‌ها و فایل‌های Linux پشتیبان‌گیری شد ارتقا به‌زودی شروع خواهد شد.</translation>
+<translation id="339507021360520688">افرادی که انتخاب کرده‌اند هنگام باز بودن قفل صفحه‌نمایش، برای شما قابل‌مشاهده باشند</translation>
 <translation id="3396800784455899911">‏با کلیک کردن روی دکمه «پذیرفتن و ادامه»، با پردازش مربوط به این سرویس‌های Google که در بالا توضیح داده شد موافقت می‌کنید.</translation>
 <translation id="3399432415385675819">اعلان‌ها غیرفعال خواهند شد</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> هرتز) - درهم‌بافته</translation>
@@ -3951,6 +3959,7 @@
 <translation id="5799508265798272974">‏ماشین مجازی Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">فایل مقصد از زمان آخرین بارگیری برداشته شده است یا ناقص است.</translation>
 <translation id="5801568494490449797">موارد برگزیده</translation>
+<translation id="580297286642726158">دستگاه‌هایی که می‌توانید با آن‌ها هم‌رسانی کنید</translation>
 <translation id="5804175651771201311">فراگیری خاموش است</translation>
 <translation id="5804241973901381774">مجوزها</translation>
 <translation id="5805697420284793859">مدیر پنجره</translation>
@@ -3967,6 +3976,7 @@
 <translation id="5826993284769733527">نیمه شفاف</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">در حال چاپ...</translation>
+<translation id="5830659417568730973">مخاطبین انتخاب‌شده مجاور، زمانی که قفل صفحه‌نمایش باز است</translation>
 <translation id="5830720307094128296">ذخیره صفحه &amp;بعنوان...</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
 <translation id="583281660410589416">ناشناس</translation>
@@ -4023,6 +4033,7 @@
 <translation id="5886009770935151472">انگشت ۱</translation>
 <translation id="5889282057229379085">‏حداکثر تعداد CA های متوسط: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">‏شبکه‌های Wi-Fi انتخابی</translation>
+<translation id="5893589697005440881">هم‌رسانی فایل‌ها با افراد مجاور</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5900302528761731119">‏عکس نمایهٔ Google</translation>
 <translation id="5900358982890952556">‏ارتقای Linux (بتا)</translation>
@@ -4136,6 +4147,7 @@
 <translation id="6031600495088157824">گزینه‌های ورودی در نوارابزار</translation>
 <translation id="6032715498678347852">برای اینکه افزونه‌ای بتواند به این سایت دسترسی داشته باشد، روی آن کلیک کنید.</translation>
 <translation id="6032912588568283682">سیستم فایل</translation>
+<translation id="6035517790085323771">افرادی که می‌توانند با دستگاه شما هم‌رسانی انجام دهند</translation>
 <translation id="6038929619733116134">اگر سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد مسدود شود</translation>
 <translation id="6039651071822577588">قالب واژه‌نامه مشخصات شبکه اشتباه است</translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -4218,6 +4230,7 @@
 <translation id="6122081475643980456">اتصال اینترنت شما کنترل می‌شود</translation>
 <translation id="6122095009389448667">دسترسی این سایت به بریده‌دان همچنان مسدود باشد</translation>
 <translation id="6122191549521593678">آنلاین</translation>
+<translation id="6122600716821516697">با این دستگاه هم‌رسانی شود؟</translation>
 <translation id="6122831415929794347">«مرور ایمن» خاموش شود؟</translation>
 <translation id="6122875415561139701">عملیات نوشتن در این دستگاه مجاز نیست: «<ph name="DEVICE_NAME" />».</translation>
 <translation id="6124213551517593835">با این کار همه داده‌ها و کوکی‌هایی که توسط <ph name="SITE_GROUP_NAME" /> و سایت‌های زیرمجموعه آن ذخیره شده‌اند پاک می‌شود</translation>
@@ -4774,6 +4787,7 @@
 <translation id="6824584962142919697">&amp;بازرسی عناصر</translation>
 <translation id="6825184156888454064">مرتب‌سازی براساس نام</translation>
 <translation id="6826872289184051766">‏به‌تأیید رساندن ازطریق USB</translation>
+<translation id="6827487342470222762">‏مخاطبی دردسترس نیست. برای استفاده از «هم‌رسانی با اطراف» با مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
 <translation id="6827623133556594466">‏Google Cloud Print پس از ۳۱ دسامبر دیگر پشتیبانی نخواهد شد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">محدود کردن ورود به سیستم برای کاربران زیر:</translation>
 <translation id="6828182567531805778">برای همگام‌سازی داده‌ها، عبارت عبورتان را وارد کنید</translation>
@@ -5577,6 +5591,7 @@
 <translation id="7819992334107904369">‏همگام‌سازی Chrome</translation>
 <translation id="782057141565633384">کپی آدرس ویدئو</translation>
 <translation id="7824864914877854148">به‌دلیل بروز خطا، پشتیبان‌گیری کامل نشد</translation>
+<translation id="7825666486843191125">همه مخاطبین مجاور، زمانی که قفل صفحه‌نمایش باز است</translation>
 <translation id="782590969421016895">استفاده از صفحات فعلی</translation>
 <translation id="7826249772873145665">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شد</translation>
 <translation id="7826254698725248775">شناسه دستگاه یکسان نیست.</translation>
@@ -5675,6 +5690,7 @@
 <translation id="7918257978052780342">ثبت‌نام</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /></translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> می‌تواند <ph name="FILENAME" /> را مشاهده کند</translation>
+<translation id="7924080089023843180">هیچ‌کس، مگراینکه «هم‌رسانی با اطراف» را باز کنید</translation>
 <translation id="7924358170328001543">خطا هنگام ارسال درگاه</translation>
 <translation id="792514962475806987">میزان بزرگ‌نمایی متصل:</translation>
 <translation id="7925247922861151263">‏بررسی AAA انجام نشد</translation>
@@ -5722,6 +5738,7 @@
 <translation id="7970673414865679092">جزئیات اترنت</translation>
 <translation id="7970882136539140748">درحال‌حاضر نمی‌توان کارت را ذخیره کرد</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 با رمزگذاری RSA</translation>
+<translation id="797394244396603170">انتخاب دستگاه موردنظر برای هم‌رسانی فایل‌ها</translation>
 <translation id="7973962044839454485">‏احراز هویت PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
 <translation id="7974566588408714340">تلاش مجدد با <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">تصویر بزرگ‌تر از صفحه</translation>
@@ -6234,6 +6251,7 @@
 <translation id="8613164732773110792">نویسه‌های حروف کوچک، ارقام، زیرخط‌ها یا فقط خطوط تیره</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> برای بررسی امنیتی بسیار بزرگ است. فایل‌های تا حداکثر ۵۰ مگابایت را می‌توانید باز کنید.</translation>
 <translation id="8615618338313291042">برنامه ناشناس: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">افزودن <ph name="CONTACT_NAME" /> به مخاطبین</translation>
 <translation id="8619803522055190423">سایه‌دار</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">والدینتان هنوز این سایت را تأیید نکرده‌اند</translation>
@@ -6463,6 +6481,7 @@
 <translation id="8859402192569844210">«شرایط خدمات» بارگیری نشد</translation>
 <translation id="8859662783913000679">حساب والدین</translation>
 <translation id="8862003515646449717">به مرورگر سریعی جابه‌جا شوید</translation>
+<translation id="8863140399813345099">تنظیم نمایان بودن دستگاه کنترل می‌کند که چه‌کسی می‌تواند هنگام باز بودن قفل صفحه‌نمایش با شما هم‌رسانی کند</translation>
 <translation id="8863753581171631212">باز کردن پیوند در پنجره جدید <ph name="APP" /></translation>
 <translation id="8864055848767439877">درحال هم‌رسانی <ph name="TAB_NAME" /> با <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> از این دستگاه برداشته شد</translation>

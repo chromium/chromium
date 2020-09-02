@@ -247,6 +247,7 @@ Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler til �
 <translation id="3638472932233958418">Last inn nettsider på forhånd</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Satt som bokmerke i <ph name="FOLDER_TITLE" /></translation>
+<translation id="3709582977625132201">Merk som ulest</translation>
 <translation id="3740397331642243698">Åpner de oppgitte nettadressene i Google Chrome i inkognitomodus.</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
@@ -336,6 +337,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4818522717893377262">Legg til språk...</translation>
 <translation id="481968316161811770">Informasjonskapsler og nettstedsdata</translation>
 <translation id="4826218269716039351">Blokkér fra tredjeparter</translation>
+<translation id="48274138579728272">Merk som lest</translation>
 <translation id="4833786495304741580">Sender automatisk bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="4840495572919996524">Bokmerkene, loggen, passord med mer synkroniseres ikke lenger med Google-kontoen din.</translation>
 <translation id="4854345657858711387">Angi en adgangskode</translation>

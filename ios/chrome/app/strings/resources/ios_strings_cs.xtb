@@ -247,6 +247,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="3638472932233958418">Přednačítat stránky</translation>
 <translation id="3670030362669914947">Číslo</translation>
 <translation id="3691593122358196899">Záložka přidána do složky <ph name="FOLDER_TITLE" /></translation>
+<translation id="3709582977625132201">Označit jako nepřečtené</translation>
 <translation id="3740397331642243698">Otevře zadané adresy URL v prohlížeči Google Chrome v anonymním režimu.</translation>
 <translation id="3771033907050503522">Anonymní karty</translation>
 <translation id="3775743491439407556">Synchronizace nefunguje</translation>
@@ -336,6 +337,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4818522717893377262">Přidat jazyk...</translation>
 <translation id="481968316161811770">Soubory cookie a data webů</translation>
 <translation id="4826218269716039351">Blokovat cookie třetích stran</translation>
+<translation id="48274138579728272">Označit jako přečtené</translation>
 <translation id="4833786495304741580">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
 <translation id="4840495572919996524">Vaše záložky, historie, hesla a další nastavení již nebudou synchronizovány do účtu Google.</translation>
 <translation id="4854345657858711387">Nastavte heslo</translation>

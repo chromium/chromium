@@ -247,6 +247,7 @@
 <translation id="3638472932233958418">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
 <translation id="3691593122358196899">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_TITLE" /> แล้ว</translation>
+<translation id="3709582977625132201">ทำเครื่องหมายว่ายังไม่อ่าน</translation>
 <translation id="3740397331642243698">เปิด URL ที่ป้อนใน Google Chrome ในโหมดไม่ระบุตัวตน</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="3775743491439407556">การซิงค์ไม่ทำงาน</translation>
@@ -336,6 +337,7 @@
 <translation id="4818522717893377262">เพิ่มภาษา...</translation>
 <translation id="481968316161811770">คุกกี้ ข้อมูลเว็บไซต์</translation>
 <translation id="4826218269716039351">บล็อกของบุคคลที่สาม</translation>
+<translation id="48274138579728272">ทำเครื่องหมายว่าอ่านแล้ว</translation>
 <translation id="4833786495304741580">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="4840495572919996524">บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป</translation>
 <translation id="4854345657858711387">ตั้งพาสโค้ด</translation>
@@ -450,7 +452,7 @@
 <translation id="6127379762771434464">นำรายการออกแล้ว</translation>
 <translation id="6136914049981179737">วินาทีแล้ว</translation>
 <translation id="6144589619057374135">เปิด ${url} ในโหมดไม่ระบุตัวตน</translation>
-<translation id="616831107264507309">อ่านทีหลัง</translation>
+<translation id="616831107264507309">อ่านในภายหลัง</translation>
 <translation id="6177442314419606057">ค้นหาใน Chrome</translation>
 <translation id="6184086493125982861">แสดงแท็บ</translation>
 <translation id="6187302354554850004">ซิงค์ครั้งล่าสุด: <ph name="LAST_USED_TIME" /></translation>

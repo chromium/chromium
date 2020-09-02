@@ -1974,7 +1974,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
           Ad esempio, per consentire tutte le modalità di sblocco rapido utilizza ["tutte"]. Per consentire solo lo sblocco tramite PIN, utilizza ["PIN"]. Per consentire PIN e impronta, utilizza ["PIN", "IMPRONTA"].
 
-          Se il criterio non è impostato o è impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti</translation>
+          Se il criterio non è impostato o è impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.</translation>
 <translation id="3877517141460819966">Modalità di autenticazione a due fattori integrata</translation>
 <translation id="3879196885908353077">Verifica eventuali violazioni delle regole relative alla protezione dei dati sensibili dei download</translation>
 <translation id="3879208481373875102">Configura l'elenco delle app web con installazione forzata</translation>
@@ -3263,7 +3263,7 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
 
           Ad esempio, per consentire tutte le modalità di sblocco rapido utilizza ["tutte"]. Per consentire solo lo sblocco tramite PIN, utilizza ["PIN"]. Per consentire PIN e impronta, utilizza ["PIN", "IMPRONTA"].
 
-          Se il criterio non è impostato o è impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti
+          Se il criterio non è impostato o è impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.
 
           Questa norma è deprecata, utilizzare <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />=</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
@@ -4810,11 +4810,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Per impostazione predefinita sono consentiti tutti gli host di messaggi nativi, ma se sono stati bloccati tutti gli host di messaggi nativi in base al criterio, la lista consentita può essere utilizzata per ignorare tale criterio.</translation>
 <translation id="7818131573217430250">Impostazione stato predefinito modalità ad alto contrasto nella schermata di accesso</translation>
-<translation id="7823420548819808002">La configurazione del criterio consente di specificare un elenco di origini (URL) o schemi di nomi host (come *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. Le organizzazioni possono impostare le origini autorizzate per le applicazioni precedenti che non possono eseguire il deployment di TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server temporaneo. Inoltre questo criterio impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
-
-      La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
-
-      Per ulteriori informazioni sui contesti sicuri, visita la pagina Contesti sicuri (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="7823902813460802031">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> impedisce al dispositivo di avviare la modalità sviluppatore.
 
        Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità sviluppatore continua a essere disponibile per il dispositivo.</translation>

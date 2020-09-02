@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">तुमचे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आपल्या Google खात्यामध्ये संकालित केल्या जातील.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">घरगुती नेटवर्क, रोमिंग नाही</translation>
+<translation id="1315144594965013365">तुमची दोन्ही डिव्हाइस अनलॉक केली असल्याची, ती एकमेकांच्या जवळ धरल्याची आणि त्यांचे ब्लूटूथ सुरू केलेले असल्याची खात्री करा. तुम्ही Chromebook सह शेअर करत असल्यास, Nearby सह शेअरिंग सुरू केले असल्याची खात्री करा (वेळ निवडून स्थिती क्षेत्र उघडा, त्यानंतर Nearby सह शेअरिंग निवडा).</translation>
 <translation id="1316136264406804862">शोधत आहे...</translation>
 <translation id="1316495628809031177">सिंक थांबवले आहे</translation>
 <translation id="1317637799698924700">तुमचे डॉकिंग स्टेशन हे USB केबल कंपॅटिबिल मोडमध्ये काम करेल.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">तुमचे डिव्हाइस Smart Lock वापरून अनलॉक केले जाऊ शकते. अनलॉक करण्यासाठी Enter दाबा.</translation>
 <translation id="1361164813881551742">व्यक्तिचलितपणे जोडा</translation>
 <translation id="1361655923249334273">न वापरलेले</translation>
+<translation id="1361707011052629095">Nearby सह शेअरिंग सुरू असताना तुमच्या जवळपास असलेली डिव्हाइस</translation>
 <translation id="1361872463926621533">स्टार्टअपवर ध्वनी प्ले करा</translation>
 <translation id="1362865166188278099">यांत्रिकी समस्या. प्रिंटर तपासा</translation>
 <translation id="1363585519747660921">USB प्रिंटर कॉन्फिगर करणे आवश्यक आहे</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1556537182262721003">प्रोफाइलमध्ये एक्स्टेंशन डिरेक्टरी हलविणे शक्य नाही.</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1562119309884184621">हा संपर्क जोडल्याने पुढील वेळी त्यांनी काही शेअर केल्यास, लक्षात ठेवले जाईल</translation>
 <translation id="1563702743503072935">तुमच्या Google खाते मधील तुमचे पासवर्ड तुम्ही साइन इन केलेले असताना या डिव्हाइसवरदेखील उपलब्ध असतील</translation>
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">निवडलेला प्रिंटर उपलब्ध नाही किंवा योग्यरीत्या इंस्टॉल केलेला नाही. तुमचा प्रिंटर तपासा किंवा दुसरा प्रिंटर निवडून पाहा.</translation>
@@ -642,6 +645,7 @@
 <translation id="1743970419083351269">डाउनलोड बार बंद करा</translation>
 <translation id="1744060673522309905">डिव्हाइस डोमेनशी जोडू शकत नाही. तुम्हाला जोडता येऊ शकणाऱ्या डिव्हाइसची संख्या तुम्ही ओलांडलेली नाही याची खात्री करा.</translation>
 <translation id="1744108098763830590">पार्श्वभूमी पृष्ठ</translation>
+<translation id="1745732479023874451">संपर्क व्यवस्थापित करा</translation>
 <translation id="1748563609363301860">तुम्ही हा पासवर्ड तुमच्या Google खाते मध्ये किंवा फक्त या डिव्हाइसवर सेव्ह करू शकता</translation>
 <translation id="1750172676754093297">तुमची सिक्युरिटी की फिंगरप्रिंट स्टोअर करू शकत नाही</translation>
 <translation id="1751249301761991853">वैयक्तिक</translation>
@@ -1207,6 +1211,7 @@
 <translation id="2433507940547922241">स्वरूप</translation>
 <translation id="2433836460518180625">फक्त डिव्हाइस अनलॉक करा</translation>
 <translation id="2434449159125086437">प्रिंटर सेट करू शकलो नाही. कृपया कॉन्फिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="2434758125294431199">तुमच्यासोबत कोण शेअर करू शकते ते निवडा</translation>
 <translation id="2435248616906486374">नेटवर्क डिस्कनेक्ट झाले</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ला सर्व <ph name="PROTOCOL" /> लिंक उघडण्याची अनुमती द्यायची?</translation>
@@ -1364,6 +1369,7 @@
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक केले आहे</translation>
+<translation id="2618797463720777311">Nearby सह शेअरिंग सेट करा</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="262154978979441594">Google Assistant व्हॉइस मॉडेलला प्रशिक्षण द्या</translation>
@@ -1718,6 +1724,7 @@
 <translation id="3029466929721441205">शेल्फमध्ये स्टायलस टूल दाखवा</translation>
 <translation id="3031417829280473749">एजंट X</translation>
 <translation id="3031557471081358569">इंपोर्ट करण्यासाठी आयटम निवडा:</translation>
+<translation id="3036041939445522540">कोणतेही संपर्क उपलब्ध नाहीत</translation>
 <translation id="3036327949511794916">हे <ph name="DEVICE_TYPE" /> परत करण्याची डेडलाइन निघून गेली आहे.</translation>
 <translation id="3036546437875325427">फ्लॅश सुरू करा</translation>
 <translation id="3037754279345160234">डोमेनला कॉंफिगरेशनमध्ये सामील करण्यासाठी पार्स करू शकत नाही. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -1982,6 +1989,7 @@
 <translation id="3388788256054548012">ही फाइल एंक्रिप्ट केलेली आहे. तिच्या मालकाला ती डिक्रिप्ट करण्यास सांगा.</translation>
 <translation id="3390013585654699824">अ‍ॅपचे तपशील</translation>
 <translation id="3390741581549395454">Linux अ‍ॅप्स आणि फाइलचा यशस्वीरीत्या बॅकअप घेतला. अपग्रेड लवकरच सुरू होईल.</translation>
+<translation id="339507021360520688">असे लोक ज्यांनी त्यांची स्क्रीन अनलॉक असतानाही ते तुम्हाला दृश्यमान असणे निवडलेले आहे</translation>
 <translation id="3396800784455899911">"स्वीकारा आणि सुरू ठेवा" या बटणावर क्लिक करून तुम्ही या Google सेवांसाठी वर वर्णन केलेल्या प्रक्रियांना सहमती दर्शवता.</translation>
 <translation id="3399432415385675819">सूचना बंद केल्या जातील</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - हस्तक्षेप केला</translation>
@@ -3951,6 +3959,7 @@
 <translation id="5799508265798272974">Linux व्हर्च्युअल मशीन: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">अंतिम डाउनलोडपासून गंतव्य फाइल कापली किंवा काढली.</translation>
 <translation id="5801568494490449797">प्राधान्ये</translation>
+<translation id="580297286642726158">तुम्ही शेअर करू शकत असलेली डिव्हाइस</translation>
 <translation id="5804175651771201311">रोमिंग बंद आहे</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="5805697420284793859">विंडो व्यवस्थापक</translation>
@@ -3967,6 +3976,7 @@
 <translation id="5826993284769733527">अर्धपारदर्शक</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">प्रिंट करत आहे...</translation>
+<translation id="5830659417568730973">तुमची स्क्रीन अनलॉक केलेली असताना तुमच्या जवळपासचे निवडलेले संपर्क</translation>
 <translation id="5830720307094128296">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -4023,6 +4033,7 @@
 <translation id="5886009770935151472">पहिले बोट</translation>
 <translation id="5889282057229379085">कमाल इंटरमिजिएट CA संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">प्राधान्य दिलेली वाय-फाय नेटवर्क</translation>
+<translation id="5893589697005440881">तुमच्या आसपासच्या लोकांसोबत फाइल शेअर करा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5900302528761731119">Google प्रोफाइल फोटो</translation>
 <translation id="5900358982890952556">Linux (बीटा) अपग्रेड करा</translation>
@@ -4137,6 +4148,7 @@
 <translation id="6031600495088157824">टूलबारमध्ये इनपुट पर्याय</translation>
 <translation id="6032715498678347852">या साइटला एक्स्टेंशन अ‍ॅक्सेस देण्यासाठी, त्यावर क्लिक करा.</translation>
 <translation id="6032912588568283682">फाइल सिस्‍टिम</translation>
+<translation id="6035517790085323771">तुमच्या डिव्हाइससह कोण शेअर करू शकते</translation>
 <translation id="6038929619733116134">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवत असल्यास ब्लॉक करा</translation>
 <translation id="6039651071822577588">नेटवर्क प्रॉपर्टी शब्दकोश विकृत झाला आहे</translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -4219,6 +4231,7 @@
 <translation id="6122081475643980456">तुमचे इंटरनेट कनेक्शन नियंत्रित केले जात आहे</translation>
 <translation id="6122095009389448667">क्लिपबोर्ड पाहण्यापासून या साइटला ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
+<translation id="6122600716821516697">या डिव्हाइससह शेअर करायचे आहे का?</translation>
 <translation id="6122831415929794347">सुरक्षित ब्राउझिंग बंद करायचे का?</translation>
 <translation id="6122875415561139701">लिहा ऑपरेशनला यावर परवानगी नाही: " <ph name="DEVICE_NAME" /> ".</translation>
 <translation id="6124213551517593835">हे <ph name="SITE_GROUP_NAME" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी व त्याअंतर्गत असलेल्या कोणत्याही साइट साफ करेल</translation>
@@ -4775,6 +4788,7 @@
 <translation id="6824584962142919697">&amp;तपासणी घटक</translation>
 <translation id="6825184156888454064">नावानुसार क्रमाने लावा</translation>
 <translation id="6826872289184051766">USB वापरून पडताळणी करा</translation>
+<translation id="6827487342470222762">कोणतेही संपर्क उपलब्ध नाहीत. तुमच्या संपर्कांसह Nearby सह शेअरिंग वापरण्यासाठी त्यांच्या Google खाते शी लिंक केलेला ईमेल अ‍ॅड्रेस तुमच्या संपर्कांमध्ये जोडा.</translation>
 <translation id="6827623133556594466">३१ डिसेंबरनंतर Google Cloud Print ला सपोर्ट केला जाणार नाही. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">खालील वापरकर्त्यांना साइन- इन करणे प्रतिबंधित करा:</translation>
 <translation id="6828182567531805778">तुमचा डेटा सिंक करण्यासाठी तुमची पासफ्रेझ एंटर करा</translation>
@@ -5577,6 +5591,7 @@
 <translation id="7819992334107904369">Chrome सिंक</translation>
 <translation id="782057141565633384">व्हिडिओ पत्ता कॉपी करा</translation>
 <translation id="7824864914877854148">एररमुळे बॅकअप पूर्ण करता आला नाही</translation>
+<translation id="7825666486843191125">तुमची स्क्रीन अनलॉक केलेली असताना तुमच्या जवळपासचे सर्व संपर्क</translation>
 <translation id="782590969421016895">वर्तमान पेज वापरा</translation>
 <translation id="7826249772873145665">ADB डीबगिंग बंद केले आहे</translation>
 <translation id="7826254698725248775">परस्परविरोधी डिव्हाइस आयडेंटिफायर.</translation>
@@ -5674,6 +5689,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7918257978052780342">नोंदणी</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> से</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> पाहता येते</translation>
+<translation id="7924080089023843180">तुम्ही Nearby सह शेअरिंग सुरू करत नाही तोपर्यंत कोणीही शेअर करू शकत नाही</translation>
 <translation id="7924358170328001543">पोर्ट फॉरवर्ड करताना एरर आली</translation>
 <translation id="792514962475806987">डॉक केलेली झूम पातळी:</translation>
 <translation id="7925247922861151263">AAA तपास अयशस्वी</translation>
@@ -5721,6 +5737,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7970673414865679092">इथरनेटचे तपशील</translation>
 <translation id="7970882136539140748">आता कार्ड सेव्ह केले जाऊ शकत नाही</translation>
 <translation id="7972714317346275248">PKCS #1 RSA एंक्रिप्शनसह SHA-384</translation>
+<translation id="797394244396603170">तुम्हाला ज्या डिव्हाइससह फाइल शेअर करायच्या आहेत ते डिव्हाइस निवडा</translation>
 <translation id="7973962044839454485">अयोग्य वापरकर्तानावामुळे किंवा पासवर्डमुळे PPP ऑथेंटिकेशन अयशस्वी झाले</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> वापरून पुन्हा प्रयत्न करून पहा</translation>
 <translation id="7974936243149753750">ओव्हरस्कॅन</translation>
@@ -6233,6 +6250,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8613164732773110792">फक्त लोअरकेस वर्ण, अंक, अंडरस्कोअर किंवा डॅश</translation>
 <translation id="8613786722548417558">सुरक्षा तपासणीसाठी <ph name="FILE_NAME" /> बरेच मोठे आहे. तुम्ही कमाल ५०MB च्या फाइल उघडू शकता.</translation>
 <translation id="8615618338313291042">गुप्त ॲप्लिकेशन: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662"><ph name="CONTACT_NAME" /> यांना तुमच्या संपर्कांमध्ये जोडा</translation>
 <translation id="8619803522055190423">ड्रॉप शॅडो</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">आपल्या पालकांनी अद्याप ती मंजूर केली नाही</translation>
@@ -6463,6 +6481,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8859402192569844210">सेवा अटी लोड करता आल्या नाहीत</translation>
 <translation id="8859662783913000679">पालक खाते</translation>
 <translation id="8862003515646449717">वेगवान ब्राउझरवर बदला</translation>
+<translation id="8863140399813345099">तुमची स्क्रीन अनलॉक केलेली असताना तुमच्यासोबत कोण शेअर करू शकते हे तुमच्या डिव्हाइसची दृश्यमानता नियंत्रित करते</translation>
 <translation id="8863753581171631212">लिंक नवीन <ph name="APP" /> मध्ये उघडा</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> <ph name="APP_NAME" />वर शेअर करत आहे</translation>
 <translation id="8864458770072227512">या डिव्हाइसवरून <ph name="EMAIL" /> काढून टाकण्यात आला</translation>

@@ -307,7 +307,7 @@
 <translation id="2154054054215849342">Таны домайнд синк хийх боломжгүй байна</translation>
 <translation id="2154484045852737596">Картыг засах</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2164510882479075877"><ph name="HOST_NAME" /> үг үсгийн алдаатай бичигдсэн эсэхийг шалгана уу</translation>
+<translation id="2164510882479075877"><ph name="HOST_NAME" /> үг үсгийн алдаатай бичигдсэн эсэхийг шалгана уу.</translation>
 <translation id="2166049586286450108">Админы бүрэн хандалт</translation>
 <translation id="2166378884831602661">Энэ сайтад холбогдоход аюултай</translation>
 <translation id="2169984857010174799">Kaku2 (Дугтуй)</translation>
@@ -1112,6 +1112,7 @@
 <translation id="5509780412636533143">Зохицуулагдсан хавчуурга</translation>
 <translation id="5510481203689988000">Күүкигийн тохиргоо хэсэгт энэ тохиргоог хянадаг.</translation>
 <translation id="5510766032865166053">Үүнийг зөөсөн, эсвэл устгасан байна.</translation>
+<translation id="5519516356611866228">Таны өөрчилснөөр</translation>
 <translation id="5523118979700054094">Тохиргооны нэр</translation>
 <translation id="55293785478302737">Ирмэгийг нь нийлүүлж үдэх</translation>
 <translation id="553484882784876924">Prc6 (Дугтуй)</translation>
@@ -1350,6 +1351,7 @@
 <translation id="6476284679642588870">Төлбөрийн хэрэгсэл удирдах</translation>
 <translation id="6489534406876378309">Гэмтлүүдийг ачаалж эхэл</translation>
 <translation id="6499038740797743453">Нууц үгийг шинэчлэх үү?</translation>
+<translation id="6502991525169604759">Таны өөрчлөлтгүйгээр</translation>
 <translation id="6508722015517270189">Chrome-г дахин эхлүүлэх</translation>
 <translation id="6517596291481585650">Анхааруулга: Энэ удирдамж нь жагсаалт биш тул үүнийг удирдамжид тодорхойлсны дагуу жагсаалт шиг нэгтгэж чадсангүй.</translation>
 <translation id="6518133107902771759">Баталгаажуул</translation>

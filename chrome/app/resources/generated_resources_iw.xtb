@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">‏הסימניות, ההיסטוריה והגדרות נוספות יסונכרנו עם חשבון Google שלך.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">רשת ביתית, לא בנדידה</translation>
+<translation id="1315144594965013365">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. אם השיתוף נעשה עם Chromebook, יש לוודא שהתכונה 'שיתוף בקרבת מקום' פועלת (פותחים את אזור הסטטוס על ידי בחירה בזמן, ולאחר מכן בוחרים 'שיתוף בקרבת מקום').</translation>
 <translation id="1316136264406804862">מחפש...</translation>
 <translation id="1316495628809031177">הסינכרון הושהה</translation>
 <translation id="1317637799698924700">‏תחנת העגינה תעבוד במצב התואם ל-USB-C.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">‏אפשר לבטל את נעילת המכשיר באמצעות Smart Lock. יש להקיש על Enter כדי לבטל את הנעילה.</translation>
 <translation id="1361164813881551742">הוסף ידנית</translation>
 <translation id="1361655923249334273">לא בשימוש</translation>
+<translation id="1361707011052629095">המכשירים בקרבתך כאשר התכונה 'שיתוף בקרבת מקום' פועלת</translation>
 <translation id="1361872463926621533">השמעת צליל בהפעלה</translation>
 <translation id="1362865166188278099">בעייה מכנית. יש לבדוק את המדפסת.</translation>
 <translation id="1363585519747660921">‏יש להגדיר מדפסת USB</translation>
@@ -479,6 +481,7 @@
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1556537182262721003">לא היתה אפשרות להעביר ספריית תוספים לפרופיל.</translation>
 <translation id="155865706765934889">לוח מגע</translation>
+<translation id="1562119309884184621">לאחר שאיש הקשר הזה יתווסף, המערכת תזכור אותו לפעם הבאה שיתבצע שיתוף</translation>
 <translation id="1563702743503072935">‏הסיסמאות מחשבון Google יהיו זמינות גם במכשיר הזה, כל עוד הוא מחובר לחשבון</translation>
 <translation id="1566049601598938765">אתר</translation>
 <translation id="15662109988763471">המדפסת שנבחרה אינה זמינה או שאינה מותקנת כראוי. יש לבדוק את המדפסת או לנסות לבחור מדפסת אחרת.</translation>
@@ -640,6 +643,7 @@
 <translation id="1743970419083351269">סגירת סרגל ההורדות</translation>
 <translation id="1744060673522309905">אי אפשר לצרף את המכשיר אל הדומיין. יש לוודא שלא חרגת ממספר המכשירים שניתן להוסיף.</translation>
 <translation id="1744108098763830590">דף רקע</translation>
+<translation id="1745732479023874451">ניהול אנשי קשר</translation>
 <translation id="1748563609363301860">‏אפשר לשמור את הסיסמה הזו בחשבון Google או רק במכשיר</translation>
 <translation id="1750172676754093297">אי אפשר לשמור טביעות אצבעות במפתח האבטחה שלך</translation>
 <translation id="1751249301761991853">התאמה אישית</translation>
@@ -1205,6 +1209,7 @@
 <translation id="2433507940547922241">מראה</translation>
 <translation id="2433836460518180625">ביטול הנעילה של המכשיר בלבד</translation>
 <translation id="2434449159125086437">לא ניתן להגדיר את המדפסת. יש לבדוק את התצורה ולנסות שוב.</translation>
+<translation id="2434758125294431199">אנשי קשר לבחירתך שיוכלו לשתף איתך</translation>
 <translation id="2435248616906486374">הרשת מנותקת</translation>
 <translation id="2435457462613246316">הצג סיסמה</translation>
 <translation id="2436186046335138073">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" />?</translation>
@@ -1362,6 +1367,7 @@
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2616366145935564096">לקרוא ולשנות את הנתונים שלך ב-<ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">‏כרטיס ה-SIM נעול</translation>
+<translation id="2618797463720777311">הגדרת 'שיתוף בקרבת מקום'</translation>
 <translation id="2619761439309613843">רענון יומי</translation>
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="262154978979441594">‏אימון תבנית הקול של Google Assistant</translation>
@@ -1717,6 +1723,7 @@
 <translation id="3029466929721441205">הצגה של כלי סטיילוס במדף</translation>
 <translation id="3031417829280473749">‏סוכנת X</translation>
 <translation id="3031557471081358569">בחר פריטים לייבוא:</translation>
+<translation id="3036041939445522540">אין אנשי קשר זמינים</translation>
 <translation id="3036327949511794916">תאריך היעד להחזרת מכשיר ה-<ph name="DEVICE_TYPE" /> חלף.</translation>
 <translation id="3036546437875325427">‏הפעל Flash</translation>
 <translation id="3037754279345160234">אי אפשר לנתח את התצורה כדי להצטרף לדומיין. יש לפנות למנהל המערכת.</translation>
@@ -1981,6 +1988,7 @@
 <translation id="3388788256054548012">הקובץ הזה מוצפן. צריך לבקש מהבעלים שלו לפענח אותו.</translation>
 <translation id="3390013585654699824">פרטי האפליקציה</translation>
 <translation id="3390741581549395454">‏הקבצים והאפליקציות של Linux גובו בהצלחה. השדרוג יתחיל בקרוב.</translation>
+<translation id="339507021360520688">משתמשים שבחרו להיות זמינים עבורך כאשר המסך שלהם לא נעול</translation>
 <translation id="3396800784455899911">‏לחיצה על הלחצן "קבלה והמשך" מבטאת את הסכמתך לעיבוד שתואר קודם לכן לגבי השירותים האלה של Google.</translation>
 <translation id="3399432415385675819">הודעות יושבתו</translation>
 <translation id="3400390787768057815">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> הרץ) – סריקה שזורה (Interlaced)</translation>
@@ -3952,6 +3960,7 @@
 <translation id="5799508265798272974">‏מכונה וירטואלית של Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">קובץ היעד נקטע או הוסר מאז ההורדה האחרונה.</translation>
 <translation id="5801568494490449797">העדפות</translation>
+<translation id="580297286642726158">מכשירים שניתן לשתף איתם</translation>
 <translation id="5804175651771201311">נדידה מושבתת</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5805697420284793859">מנהל החלונות</translation>
@@ -3968,6 +3977,7 @@
 <translation id="5826993284769733527">שקוף למחצה</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">מדפיס...</translation>
+<translation id="5830659417568730973">אנשי קשר שנבחרו הנמצאים בקרבתך כשהמסך אינו נעול</translation>
 <translation id="5830720307094128296">שמור דף &amp;כ...</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
@@ -4024,6 +4034,7 @@
 <translation id="5886009770935151472">אצבע ראשונה</translation>
 <translation id="5889282057229379085">המספר המרבי של רשויות אישורים ברמת ביניים: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">‏רשתות Wi-Fi מועדפות</translation>
+<translation id="5893589697005440881">שיתוף קבצים עם משתמשים בסביבה</translation>
 <translation id="5895138241574237353">הפעל מחדש</translation>
 <translation id="5900302528761731119">‏תמונת פרופיל Google</translation>
 <translation id="5900358982890952556">‏שדרוג Linux (בטא)</translation>
@@ -4137,6 +4148,7 @@
 <translation id="6031600495088157824">אפשרויות קלט בסרגל הכלים</translation>
 <translation id="6032715498678347852">כדי להעניק לתוסף גישה לאתר הזה, יש ללחוץ על התוסף.</translation>
 <translation id="6032912588568283682">מערכת קבצים</translation>
+<translation id="6035517790085323771">מי יכול לשתף עם המכשיר שלך</translation>
 <translation id="6038929619733116134">חסימה אם באתר מוצגות מודעות מפריעות או מטעות</translation>
 <translation id="6039651071822577588">מילון מאפייני הרשת פגום</translation>
 <translation id="6040143037577758943">סגור</translation>
@@ -4219,6 +4231,7 @@
 <translation id="6122081475643980456">החיבור שלך לאינטרנט נשלט על ידי גורם כלשהו</translation>
 <translation id="6122095009389448667">המשך חסימת הגישה של האתר הזה ללוח</translation>
 <translation id="6122191549521593678">מקוון</translation>
+<translation id="6122600716821516697">לשתף עם המכשיר הזה?</translation>
 <translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="6122875415561139701">פעולת כתיבה אסורה במכשיר: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">‏הפעולה הזו תגרום למחיקת כל הנתונים וקובצי ה-cookie שאוחסנו על ידי קבוצת האתרים <ph name="SITE_GROUP_NAME" /> ועל-ידי כל האתרים הכלולים בקבוצה</translation>
@@ -4775,6 +4788,7 @@
 <translation id="6824584962142919697">&amp;בדיקת רכיבים</translation>
 <translation id="6825184156888454064">מיון לפי שם</translation>
 <translation id="6826872289184051766">‏אימות באמצעות USB</translation>
+<translation id="6827487342470222762">‏אין אנשי קשר זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.</translation>
 <translation id="6827623133556594466">‏לא תהיה יותר תמיכה ב-Google Cloud Print אחרי 31 בדצמבר. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">הגבל כניסה של המשתמשים הבאים:</translation>
 <translation id="6828182567531805778">כדי לסנכרן את הנתונים יש להזין את הסיסמה</translation>
@@ -5578,6 +5592,7 @@
 <translation id="7819992334107904369">‏סנכרון Chrome</translation>
 <translation id="782057141565633384">העתק כתובת &amp;וידאו</translation>
 <translation id="7824864914877854148">אירעה שגיאה ולא ניתן להשלים את הגיבוי</translation>
+<translation id="7825666486843191125">כל אנשי הקשר בקרבתך כשהמסך אינו נעול</translation>
 <translation id="782590969421016895">השתמש בדפים הנוכחיים</translation>
 <translation id="7826249772873145665">‏ניפוי באגים באמצעות ADB מושבת</translation>
 <translation id="7826254698725248775">מזהה מכשיר מתנגש.</translation>
@@ -5675,6 +5690,7 @@
 <translation id="7918257978052780342">הירשם</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> שנ'</translation>
 <translation id="7920363873148656176">ל-<ph name="ORIGIN" /> יש אפשרות להציג את <ph name="FILENAME" /></translation>
+<translation id="7924080089023843180">אף אחד, אלא אם התכונה 'שיתוף בקרבת מקום' מופעלת</translation>
 <translation id="7924358170328001543">שגיאה בהעברת היציאה</translation>
 <translation id="792514962475806987">רמת זום במצב מעוגן:</translation>
 <translation id="7925247922861151263">‏בדיקת AAA נכשלה</translation>
@@ -5722,6 +5738,7 @@
 <translation id="7970673414865679092">‏פרטי Ethernet</translation>
 <translation id="7970882136539140748">אי אפשר לשמור את הכרטיס עכשיו</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
+<translation id="797394244396603170">יש לבחור את המכשיר שאיתו ברצונך לשתף קבצים</translation>
 <translation id="7973962044839454485">‏אימות PPP נכשל בשל שם משתמש או סיסמה שגויים</translation>
 <translation id="7974566588408714340">נסה שוב באמצעות <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">סריקת יתר</translation>
@@ -6236,6 +6253,7 @@
 <translation id="8613164732773110792">אותיות קטנות, ספרות, תווי קו תחתון או תווי קו מפריד בלבד</translation>
 <translation id="8613786722548417558">‏<ph name="FILE_NAME" /> גדול מדי לביצוע בדיקת אבטחה. אפשר לפתוח קבצים בגודל של עד 50 MB.</translation>
 <translation id="8615618338313291042">יישום גלישה בסתר: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">הוספת <ph name="CONTACT_NAME" /> לאנשי הקשר שלך</translation>
 <translation id="8619803522055190423">הטלת צללית</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">ההורים שלך עדיין לא אישרו זאת</translation>
@@ -6465,6 +6483,7 @@
 <translation id="8859402192569844210">לא ניתן לטעון את התנאים וההגבלות</translation>
 <translation id="8859662783913000679">חשבון הורה</translation>
 <translation id="8862003515646449717">החלף לדפדפן מהיר</translation>
+<translation id="8863140399813345099">הרשאות הגישה של המכשיר קובעות מי יכול לשתף איתך כשהמסך לא נעול</translation>
 <translation id="8863753581171631212">פתח את הקישור ב-<ph name="APP" /></translation>
 <translation id="8864055848767439877">המערכת משתפת את <ph name="TAB_NAME" /> עם <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> הוסר מהמכשיר הזה</translation>
