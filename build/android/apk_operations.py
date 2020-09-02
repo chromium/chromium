@@ -96,7 +96,8 @@ def _GenerateBundleApks(info,
                         output_path=None,
                         minimal=False,
                         minimal_sdk_version=None,
-                        mode=None):
+                        mode=None,
+                        optimize_for=None):
   """Generate an .apks archive from a bundle on demand.
 
   Args:
@@ -105,6 +106,8 @@ def _GenerateBundleApks(info,
     minimal: Create the minimal set of apks possible (english-only).
     minimal_sdk_version: When minimal=True, use this sdkVersion.
     mode: Build mode, either None, or one of app_bundle_utils.BUILD_APKS_MODES.
+    optimize_for: Override split config, either None, or one of
+      app_bundle_utils.OPTIMIZE_FOR_OPTIONS.
   """
   logging.info('Generating .apks file')
   app_bundle_utils.GenerateBundleApks(
@@ -118,7 +121,8 @@ def _GenerateBundleApks(info,
       system_image_locales=info.system_image_locales,
       mode=mode,
       minimal=minimal,
-      minimal_sdk_version=minimal_sdk_version)
+      minimal_sdk_version=minimal_sdk_version,
+      optimize_for=optimize_for)
 
 
 def _InstallBundle(devices, apk_helper_instance, package_name,
@@ -1732,6 +1736,10 @@ class _BuildBundleApks(_Command):
         'single universal APK, "system" generates an archive with a system '
         'image APK, while "system_compressed" generates a compressed system '
         'APK, with an additional stub APK for the system image.')
+    group.add_argument(
+        '--optimize-for',
+        choices=app_bundle_utils.OPTIMIZE_FOR_OPTIONS,
+        help='Override split configuration.')
 
   def Run(self):
     _GenerateBundleApks(
@@ -1739,7 +1747,8 @@ class _BuildBundleApks(_Command):
         output_path=self.args.output_apks,
         minimal=self.args.minimal,
         minimal_sdk_version=self.args.sdk_version,
-        mode=self.args.build_mode)
+        mode=self.args.build_mode,
+        optimize_for=self.args.optimize_for)
 
 
 class _ManifestCommand(_Command):

@@ -18,6 +18,8 @@ import bundletool
 
 # List of valid modes for GenerateBundleApks()
 BUILD_APKS_MODES = ('default', 'universal', 'system', 'system_compressed')
+OPTIMIZE_FOR_OPTIONS = ('ABI', 'SCREEN_DENSITY', 'LANGUAGE',
+                        'TEXTURE_COMPRESSION_FORMAT')
 _SYSTEM_MODES = ('system_compressed', 'system')
 
 _ALL_ABIS = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
@@ -50,7 +52,8 @@ def GenerateBundleApks(bundle_path,
                        minimal=False,
                        minimal_sdk_version=None,
                        check_for_noop=True,
-                       system_image_locales=None):
+                       system_image_locales=None,
+                       optimize_for=None):
   """Generate an .apks archive from a an app bundle if needed.
 
   Args:
@@ -68,6 +71,8 @@ def GenerateBundleApks(bundle_path,
     check_for_noop: Use md5_check to short-circuit when inputs have not changed.
     system_image_locales: Locales to package in the APK when mode is "system"
       or "system_compressed".
+    optimize_for: Overrides split configuration, which must be None or
+      one of OPTIMIZE_FOR_OPTIONS.
   """
   device_spec = None
   if minimal_sdk_version:
@@ -109,6 +114,13 @@ def GenerateBundleApks(bundle_path,
           raise Exception('Invalid mode parameter %s (should be in %s)' %
                           (mode, BUILD_APKS_MODES))
         cmd_args += ['--mode=' + mode]
+
+      if optimize_for:
+        if optimize_for not in OPTIMIZE_FOR_OPTIONS:
+          raise Exception('Invalid optimize_for parameter %s '
+                          '(should be in %s)' %
+                          (mode, OPTIMIZE_FOR_OPTIONS))
+        cmd_args += ['--optimize-for=' + optimize_for]
 
       with tempfile.NamedTemporaryFile(suffix='.json') as spec_file:
         if device_spec:
