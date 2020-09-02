@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 52 tests; 49 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
 PASS Property font-family value 'Ahem' in ::marker
 PASS Property font-feature-settings value '"smcp"' in ::marker
@@ -35,7 +36,14 @@ PASS Property transition-delay value '1s' in ::marker
 PASS Property transition-duration value '2s' in ::marker
 PASS Property transition-property value 'display' in ::marker
 PASS Property transition-timing-function value 'linear' in ::marker
+PASS Property hyphens value 'none' in ::marker
+PASS Property letter-spacing value '10px' in ::marker
+PASS Property line-break value 'anywhere' in ::marker
+PASS Property overflow-wrap value 'anywhere' in ::marker
+PASS Property tab-size value '10px' in ::marker
 PASS Property text-transform value 'uppercase' in ::marker
+PASS Property word-break value 'break-word' in ::marker
+PASS Property word-spacing value '10px' in ::marker
 PASS Property display value 'none' in ::marker
 PASS Property position value 'absolute' in ::marker
 PASS Property float value 'right' in ::marker

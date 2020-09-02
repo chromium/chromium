@@ -2233,7 +2233,8 @@
       keywords: ["none", "manual", "auto"],
       default_value: "manual",
       type_name: "Hyphens",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      valid_for_marker: true,
     },
     {
       name: "image-rendering",
@@ -2324,6 +2325,7 @@
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length"],
       valid_for_first_letter: true,
+      valid_for_marker: true,
     },
     {
       name: "lighting-color",
@@ -2814,7 +2816,8 @@
       field_template: "keyword",
       keywords: ["normal", "break-word", "anywhere"],
       default_value: "normal",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      valid_for_marker: true,
     },
     {
       name: "overflow-inline",
@@ -3520,7 +3523,8 @@
       type_name: "TabSize",
       converter: "ConvertLengthOrTabSpaces",
       computed_style_custom_functions: ["setter"],
-      typedom_types: ["Number", "Length"]
+      typedom_types: ["Number", "Length"],
+      valid_for_marker: true,
     },
     {
       name: "text-align",
@@ -4201,7 +4205,8 @@
       inherited: true,
       type_name: "LineBreak",
       keywords: ["auto", "loose", "normal", "strict", "anywhere"],
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      valid_for_marker: true,
     },
     // An Apple extension.
     {
@@ -4574,7 +4579,8 @@
       // Word Break Values. Matches WinIE and CSS3
       keywords: ["normal", "break-all", "keep-all", "break-word"],
       default_value: "normal",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      valid_for_marker: true,
     },
     {
       name: "word-spacing",
@@ -4586,6 +4592,7 @@
       typedom_types: ["normal"],
       typedom_types: ["Keyword", "Length"],
       valid_for_first_letter: true,
+      valid_for_marker: true,
     },
     {
       name: "z-index",
