@@ -26,7 +26,6 @@ void ReturnDataFunction(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 ScriptValue FontManager::query(ScriptState* script_state,
                                ExceptionState& exception_state) {
-  ValidateRequest(ExecutionContext::From(script_state), exception_state);
   if (exception_state.HadException())
     return ScriptValue();
 
@@ -49,17 +48,6 @@ ScriptValue FontManager::query(ScriptState* script_state,
 
 void FontManager::Trace(blink::Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-}
-
-void FontManager::ValidateRequest(ExecutionContext* context,
-                                  ExceptionState& exception_state) {
-  DCHECK(context);
-  auto* frame = To<LocalDOMWindow>(context)->GetFrame();
-
-  if (!LocalFrame::HasTransientUserActivation(frame)) {
-    exception_state.ThrowSecurityError(
-        "Must be handling a user gesture to enumerate local fonts.");
-  }
 }
 
 }  // namespace blink

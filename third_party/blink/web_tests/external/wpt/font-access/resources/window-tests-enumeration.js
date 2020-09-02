@@ -1,10 +1,13 @@
 'use strict';
 
 promise_test(async t => {
-  assert_throws_dom('SecurityError', () => {
-    navigator.fonts.query();
-  });
-}, 'query(): fails if there is no user activation');
+  const iterator = navigator.fonts.query();
+
+  await promise_rejects_dom(t, 'NotAllowedError', (async () => {
+                              for await (const f of iterator) {
+                              }
+                            })());
+}, 'iteration fails if there is no user activation');
 
 font_access_test(async t => {
   const iterator = navigator.fonts.query();

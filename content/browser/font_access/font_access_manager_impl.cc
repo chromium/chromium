@@ -43,9 +43,6 @@ void FontAccessManagerImpl::RequestPermission(
   const BindingContext& context = receivers_.current_context();
   RenderFrameHost* rfh = RenderFrameHost::FromID(context.frame_id);
 
-  // Double checking: renderer processes should already have checked for user
-  // activation before the RPC has been made. It is not an error, because it is
-  // possible that user activation has lapsed before reaching here.
   if (!rfh->HasTransientUserActivation()) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
@@ -74,9 +71,17 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
   const BindingContext& context = receivers_.current_context();
   RenderFrameHost* rfh = RenderFrameHost::FromID(context.frame_id);
 
-  // Double checking: renderer processes should already have checked for user
-  // activation before the RPC has been made. It is not an error, because it is
-  // possible that user activation has lapsed before reaching here.
+  auto status = PermissionControllerImpl::FromBrowserContext(
+                    rfh->GetProcess()->GetBrowserContext())
+                    ->GetPermissionStatusForFrame(PermissionType::FONT_ACCESS,
+                                                  rfh, context.origin.GetURL());
+
+  if (status != blink::mojom::PermissionStatus::ASK) {
+    // Permission has been requested before.
+    DidRequestPermission(std::move(callback), std::move(status));
+    return;
+  }
+
   if (!rfh->HasTransientUserActivation()) {
     std::move(callback).Run(
         blink::mojom::FontEnumerationStatus::kPermissionDenied,
