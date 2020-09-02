@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.password_check.PasswordCheckProperties
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.COMPROMISED_CREDENTIALS_COUNT;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.LAUNCH_ACCOUNT_CHECKUP_ACTION;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.RESTART_BUTTON_ACTION;
+import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.SHOW_CHECK_SUBTITLE;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.UNKNOWN_PROGRESS;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.ITEMS;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.VIEW_CREDENTIAL;
@@ -407,8 +408,19 @@ public class PasswordCheckViewTest {
 
     @Test
     @MediumTest
+    public void testStatusDisplaysSubtitle() {
+        runOnUiThreadBlocking(() -> { mModel.get(ITEMS).add(buildHeader(ERROR_UNKNOWN, true)); });
+        waitForListViewToHaveLength(1);
+        assertThat(getHeaderSubtitle().getText(),
+                is(getString(
+                        R.string.password_check_status_subtitle_found_compromised_credentials)));
+        assertThat(getHeaderSubtitle().getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    @MediumTest
     public void testStatusNotDisplaysSubtitle() {
-        runOnUiThreadBlocking(() -> { mModel.get(ITEMS).add(buildHeader(ERROR_UNKNOWN)); });
+        runOnUiThreadBlocking(() -> { mModel.get(ITEMS).add(buildHeader(ERROR_UNKNOWN, false)); });
         waitForListViewToHaveLength(1);
         assertThat(getHeaderSubtitle().getVisibility(), is(View.GONE));
     }
@@ -693,21 +705,26 @@ public class PasswordCheckViewTest {
 
     private MVCListAdapter.ListItem buildHeader(@PasswordCheckUIStatus int status,
             Integer compromisedCredentialsCount, Long checkTimestamp) {
-        return buildHeader(status, compromisedCredentialsCount, checkTimestamp, null);
+        return buildHeader(status, compromisedCredentialsCount, checkTimestamp, null, true);
     }
 
     private MVCListAdapter.ListItem buildHeader(
             @PasswordCheckUIStatus int status, Pair<Integer, Integer> progress) {
-        return buildHeader(status, null, null, progress);
+        return buildHeader(status, null, null, progress, false);
+    }
+
+    private MVCListAdapter.ListItem buildHeader(
+            @PasswordCheckUIStatus int status, boolean showStatusSubtitle) {
+        return buildHeader(status, null, null, null, showStatusSubtitle);
     }
 
     private MVCListAdapter.ListItem buildHeader(@PasswordCheckUIStatus int status) {
-        return buildHeader(status, null, null, null);
+        return buildHeader(status, null, null, null, false);
     }
 
     private MVCListAdapter.ListItem buildHeader(@PasswordCheckUIStatus int status,
             Integer compromisedCredentialsCount, Long checkTimestamp,
-            Pair<Integer, Integer> progress) {
+            Pair<Integer, Integer> progress, boolean showStatusSubtitle) {
         return new MVCListAdapter.ListItem(PasswordCheckProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(CHECK_PROGRESS, progress)
@@ -716,6 +733,7 @@ public class PasswordCheckViewTest {
                         .with(COMPROMISED_CREDENTIALS_COUNT, compromisedCredentialsCount)
                         .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mMockLaunchCheckupInAccount)
                         .with(RESTART_BUTTON_ACTION, mMockStartButtonCallback)
+                        .with(SHOW_CHECK_SUBTITLE, showStatusSubtitle)
                         .build());
     }
 

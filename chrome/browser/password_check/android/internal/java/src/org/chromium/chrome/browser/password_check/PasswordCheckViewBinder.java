@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.password_check.PasswordCheckProperties
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.COMPROMISED_CREDENTIALS_COUNT;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.LAUNCH_ACCOUNT_CHECKUP_ACTION;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.RESTART_BUTTON_ACTION;
+import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.SHOW_CHECK_SUBTITLE;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.UNKNOWN_PROGRESS;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.ITEMS;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.VIEW_CREDENTIAL;
@@ -216,6 +217,7 @@ class PasswordCheckViewBinder {
         Long checkTimestamp = model.get(CHECK_TIMESTAMP);
         Integer compromisedCredentialsCount = model.get(COMPROMISED_CREDENTIALS_COUNT);
         Runnable launchCheckupInAccount = model.get(LAUNCH_ACCOUNT_CHECKUP_ACTION);
+        boolean showStatusSubtitle = model.get(SHOW_CHECK_SUBTITLE);
 
         if (key == CHECK_PROGRESS) {
             updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
@@ -226,7 +228,7 @@ class PasswordCheckViewBinder {
             updateStatusIllustration(view, status, compromisedCredentialsCount);
             updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
                     launchCheckupInAccount);
-            updateStatusSubtitle(view, status, compromisedCredentialsCount);
+            updateStatusSubtitle(view, status, showStatusSubtitle, compromisedCredentialsCount);
         } else if (key == CHECK_TIMESTAMP) {
             updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
                     launchCheckupInAccount);
@@ -235,12 +237,14 @@ class PasswordCheckViewBinder {
             updateStatusIllustration(view, status, compromisedCredentialsCount);
             updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
                     launchCheckupInAccount);
-            updateStatusSubtitle(view, status, compromisedCredentialsCount);
+            updateStatusSubtitle(view, status, showStatusSubtitle, compromisedCredentialsCount);
         } else if (key == LAUNCH_ACCOUNT_CHECKUP_ACTION) {
             assert model.get(LAUNCH_ACCOUNT_CHECKUP_ACTION)
                     != null : "Launch checkup in account is always required.";
         } else if (key == RESTART_BUTTON_ACTION) {
             assert model.get(RESTART_BUTTON_ACTION) != null : "Restart action is always required.";
+        } else if (key == SHOW_CHECK_SUBTITLE) {
+            updateStatusSubtitle(view, status, showStatusSubtitle, compromisedCredentialsCount);
         } else {
             assert false : "Unhandled update to property:" + key;
         }
@@ -454,17 +458,18 @@ class PasswordCheckViewBinder {
         return 0;
     }
 
-    private static void updateStatusSubtitle(
-            View view, @PasswordCheckUIStatus int status, Integer compromisedCredentialsCount) {
+    private static void updateStatusSubtitle(View view, @PasswordCheckUIStatus int status,
+            boolean showStatusSubtitle, Integer compromisedCredentialsCount) {
         // TODO(crbug.com/1114051): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE && compromisedCredentialsCount == null) return;
         TextView statusSubtitle = view.findViewById(R.id.check_status_subtitle);
-        statusSubtitle.setText(getSubtitleText(view, status, compromisedCredentialsCount));
-        statusSubtitle.setVisibility(getSubtitleVisibility(status));
+        statusSubtitle.setText(
+                getSubtitleText(view, status, showStatusSubtitle, compromisedCredentialsCount));
+        statusSubtitle.setVisibility(showStatusSubtitle ? View.VISIBLE : View.GONE);
     }
 
-    private static String getSubtitleText(
-            View view, @PasswordCheckUIStatus int status, Integer compromisedCredentialsCount) {
+    private static String getSubtitleText(View view, @PasswordCheckUIStatus int status,
+            boolean showStatusSubtitle, Integer compromisedCredentialsCount) {
         switch (status) {
             case PasswordCheckUIStatus.IDLE:
                 assert compromisedCredentialsCount != null;
@@ -479,15 +484,12 @@ class PasswordCheckViewBinder {
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT:
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT_ACCOUNT_CHECK:
             case PasswordCheckUIStatus.ERROR_UNKNOWN:
-                return null;
+                return getString(view,
+                        R.string.password_check_status_subtitle_found_compromised_credentials);
             default:
                 assert false : "Unhandled check status " + status + "on icon update";
         }
         return null;
-    }
-
-    private static int getSubtitleVisibility(@PasswordCheckUIStatus int status) {
-        return status == PasswordCheckUIStatus.IDLE ? View.VISIBLE : View.GONE;
     }
 
     private static ListMenu createCredentialMenu(Context context, CompromisedCredential credential,
