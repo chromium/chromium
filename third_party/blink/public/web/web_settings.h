@@ -298,6 +298,7 @@ class WebSettings {
   virtual void SetAriaModalPrunesAXTree(bool) = 0;
   virtual void SetUseAXMenuList(bool) = 0;
   virtual void SetSelectionClipboardBufferAvailable(bool) = 0;
+  virtual void SetAccessibilityIncludeSvgGElement(bool) = 0;
 
  protected:
   ~WebSettings() = default;

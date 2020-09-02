@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
@@ -744,6 +745,14 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     return true;
+  }
+
+  // If setting enabled, do not ignore SVG grouping (<g>) elements.
+  if (IsA<SVGGElement>(GetNode())) {
+    Settings* settings = GetDocument()->GetSettings();
+    if (settings->GetAccessibilityIncludeSvgGElement()) {
+      return false;
+    }
   }
 
   // By default, objects should be ignored so that the AX hierarchy is not

@@ -222,6 +222,12 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   settings->SetAriaModalPrunesAXTree(true);
 #endif
 
+#if defined(OS_CHROMEOS)
+  // Do not ignore SVG grouping (<g>) elements on ChromeOS, which is needed so
+  // Select-to-Speak can read SVG text nodes in natural reading order.
+  settings->SetAccessibilityIncludeSvgGElement(true);
+#endif
+
   if (render_frame_->IsMainFrame())
     event_schedule_mode_ = EventScheduleMode::kDeferEvents;
   else

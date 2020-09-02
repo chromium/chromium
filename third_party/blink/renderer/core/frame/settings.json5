@@ -1091,5 +1091,10 @@
       initial: false,
       type: "bool",
     },
+    {
+      name: "accessibilityIncludeSvgGElement",
+      initial: false,
+      type: "bool",
+    },
   ],
 }

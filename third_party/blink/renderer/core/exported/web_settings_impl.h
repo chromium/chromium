@@ -225,6 +225,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAriaModalPrunesAXTree(bool) override;
   void SetUseAXMenuList(bool) override;
   void SetSelectionClipboardBufferAvailable(bool) override;
+  void SetAccessibilityIncludeSvgGElement(bool) override;
 
   bool RenderVSyncNotificationEnabled() const {
     return render_v_sync_notification_enabled_;

@@ -2276,8 +2276,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvg) {
   RunHtmlTest(FILE_PATH_LITERAL("svg.html"));
 }
 
+// On ChromeOS, SVG <g> elements are included.
+#if defined(OS_CHROMEOS)
+#define AccessibilitySvgG_TestFile FILE_PATH_LITERAL("svg-g-for-cros.html")
+#else
+#define AccessibilitySvgG_TestFile FILE_PATH_LITERAL("svg-g.html")
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgG) {
-  RunHtmlTest(FILE_PATH_LITERAL("svg-g.html"));
+  RunHtmlTest(AccessibilitySvgG_TestFile);
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableSimple) {

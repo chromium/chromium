@@ -788,6 +788,10 @@ void WebSettingsImpl::SetSelectionClipboardBufferAvailable(bool available) {
   settings_->SetSelectionClipboardBufferAvailable(available);
 }
 
+void WebSettingsImpl::SetAccessibilityIncludeSvgGElement(bool include) {
+  settings_->SetAccessibilityIncludeSvgGElement(include);
+}
+
 STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kAllowed,
                    kImageAnimationPolicyAllowed);
 STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kAnimateOnce,
