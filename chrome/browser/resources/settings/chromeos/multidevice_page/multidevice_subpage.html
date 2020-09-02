@@ -135,6 +135,15 @@
               page-content-data="[[pageContentData]]">
           </settings-multidevice-feature-item>
         </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.WIFI_SYNC, pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="wifiSyncItem"
+              feature="[[MultiDeviceFeature.WIFI_SYNC]]"
+              page-content-data="[[pageContentData]]">
+          </settings-multidevice-feature-item>
+        </template>
       </div>
     </template>
     <div class="settings-box two-line">

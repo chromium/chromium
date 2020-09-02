@@ -105,6 +105,18 @@ GetMultiDeviceOptedInPhoneHubSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>&
+GetMultiDeviceOptedInWifiSyncSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC,
+        mojom::kMultiDeviceFeaturesSubpagePath,
+        mojom::SearchResultIcon::kWifi,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kWifiSyncOnOff}}});
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
     // Special-case: The "set up" search tag also includes the names of the
@@ -122,23 +134,31 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
          IDS_OS_SETTINGS_TAG_MULTIDEVICE_SMART_LOCK, SearchConcept::kAltTagEnd},
     };
 
-    bool is_phone_hub_enabled = features::IsPhoneHubEnabled();
-    bool is_instant_tether_enabled =
-        base::FeatureList::IsEnabled(features::kInstantTethering);
+    // Include the following features in alternate message IDs if they are
+    // enabled and the alt tag limit has not been reached: Phone Hub, Instant
+    // Tethering and Wifi Sync.
+    int alt_tag_index = 3;
 
-    // If Phone Hub and/or Instant Tethering is available, also include them in
-    // the list.
-    if (is_phone_hub_enabled) {
-      set_up_concept.alt_tag_ids[3] = IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB;
+    if (features::IsPhoneHubEnabled()) {
+      set_up_concept.alt_tag_ids[alt_tag_index] =
+          IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB;
+      alt_tag_index++;
+    }
+    if (base::FeatureList::IsEnabled(features::kInstantTethering)) {
+      set_up_concept.alt_tag_ids[alt_tag_index] =
+          IDS_OS_SETTINGS_TAG_INSTANT_TETHERING;
+      alt_tag_index++;
+    }
 
-      if (is_instant_tether_enabled) {
-        set_up_concept.alt_tag_ids[4] = IDS_OS_SETTINGS_TAG_INSTANT_TETHERING;
-      } else {
-        set_up_concept.alt_tag_ids[4] = SearchConcept::kAltTagEnd;
-      }
-    } else if (is_instant_tether_enabled) {
-      set_up_concept.alt_tag_ids[3] = IDS_OS_SETTINGS_TAG_INSTANT_TETHERING;
-      set_up_concept.alt_tag_ids[4] = SearchConcept::kAltTagEnd;
+    // TODO(cvandermerwe): Update 5 alt tag limit to 6 and remove condition
+    if (alt_tag_index < 5 && features::IsWifiSyncAndroidEnabled()) {
+      set_up_concept.alt_tag_ids[alt_tag_index] =
+          IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC;
+      alt_tag_index++;
+    }
+
+    if (alt_tag_index < 5) {
+      set_up_concept.alt_tag_ids[alt_tag_index] = SearchConcept::kAltTagEnd;
     }
 
     return std::vector<SearchConcept>{set_up_concept};
@@ -257,6 +277,8 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATION_BADGE_SUMMARY},
       {"multidevicePhoneHubTaskContinuationItemSummary",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY},
+      {"multideviceWifiSyncItemTitle",
+       IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE},
       {"multideviceNotificationAccessSetupAckTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE},
       {"multideviceNotificationAccessSetupConnectingTitle",
@@ -341,6 +363,15 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY,
           ui::GetChromeOSDeviceName()));
+  html_source->AddString(
+      "multideviceWifiSyncItemSummary",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SUMMARY,
+          // TODO(cvandermerwe) Replace with WifiSyncLearnMoreUrl once created
+          base::UTF8ToUTF16(
+              multidevice_setup::
+                  GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
+                      .spec())));
 
   AddEasyUnlockStrings(html_source);
   ::settings::AddNearbyShareData(html_source);
@@ -400,6 +431,7 @@ void MultiDeviceSection::RegisterHierarchy(
       mojom::Setting::kPhoneHubNotificationsOnOff,
       mojom::Setting::kPhoneHubNotificationBadgeOnOff,
       mojom::Setting::kPhoneHubTaskContinuationOnOff,
+      mojom::Setting::kWifiSyncOnOff,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kMultiDeviceFeatures,
                             kMultiDeviceFeaturesSettings, generator);
@@ -442,12 +474,15 @@ void MultiDeviceSection::OnHostStatusChanged(
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetMultiDeviceOptedOutSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+  updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInSearchConcepts());
 
   if (IsOptedIn(host_status_with_device.first)) {
     updater.AddSearchTags(GetMultiDeviceOptedInSearchConcepts());
     if (features::IsPhoneHubEnabled())
       updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+    if (features::IsWifiSyncAndroidEnabled())
+      updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   } else {
     updater.AddSearchTags(GetMultiDeviceOptedOutSearchConcepts());
   }

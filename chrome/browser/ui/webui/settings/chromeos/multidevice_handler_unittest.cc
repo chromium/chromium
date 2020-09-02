@@ -66,6 +66,8 @@ GenerateDefaultFeatureStatesMap() {
       {multidevice_setup::mojom::Feature::kPhoneHubNotificationBadge,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation,
+       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+      {multidevice_setup::mojom::Feature::kWifiSync,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost}};
 }
 
@@ -132,6 +134,11 @@ void VerifyPageContentDict(
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation);
   EXPECT_EQ(static_cast<int>(it->second), phone_hub_task_continuation_state);
+
+  int wifi_sync_state;
+  EXPECT_TRUE(page_content_dict->GetInteger("wifiSyncState", &wifi_sync_state));
+  it = feature_states_map.find(multidevice_setup::mojom::Feature::kWifiSync);
+  EXPECT_EQ(static_cast<int>(it->second), wifi_sync_state);
 
   std::string host_device_name;
   if (expected_host_device) {

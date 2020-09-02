@@ -42,6 +42,7 @@ const char kPageContentDataPhoneHubNotificationBadgeStateKey[] =
     "phoneHubNotificationBadgeState";
 const char kPageContentDataPhoneHubTaskContinuationStateKey[] =
     "phoneHubTaskContinuationState";
+const char kPageContentDataWifiSyncStateKey[] = "wifiSyncState";
 const char kPageContentDataSmartLockStateKey[] = "smartLockState";
 const char kIsNotificationAccessGranted[] = "isNotificationAccessGranted";
 const char kIsAndroidSmsPairingComplete[] = "isAndroidSmsPairingComplete";
@@ -457,6 +458,10 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
       static_cast<int32_t>(
           feature_states
               [multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation]));
+  page_content_dictionary->SetInteger(
+      kPageContentDataWifiSyncStateKey,
+      static_cast<int32_t>(
+          feature_states[multidevice_setup::mojom::Feature::kWifiSync]));
 
   if (host_status_with_device.second) {
     page_content_dictionary->SetString(kPageContentDataHostDeviceNameKey,

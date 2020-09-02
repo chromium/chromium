@@ -53032,6 +53032,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="210" label="Phone Hub Notifications: On/Off"/>
   <int value="211" label="Phone Hub Notification Badge: On/Off"/>
   <int value="212" label="Phone Hub Task Continuation: On/Off"/>
+  <int value="213" label="Wifi Sync: On/Off"/>
   <int value="300" label="Add Account"/>
   <int value="301" label="Remove Account"/>
   <int value="302" label="Split Sync On/Off"/>

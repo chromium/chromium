@@ -31,7 +31,8 @@ MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap() {
       {mojom::Feature::kPhoneHubNotificationBadge,
        mojom::FeatureState::kProhibitedByPolicy},
       {mojom::Feature::kPhoneHubTaskContinuation,
-       mojom::FeatureState::kProhibitedByPolicy}};
+       mojom::FeatureState::kProhibitedByPolicy},
+      {mojom::Feature::kWifiSync, mojom::FeatureState::kProhibitedByPolicy}};
 }
 
 MultiDeviceSetupClient::MultiDeviceSetupClient() = default;
