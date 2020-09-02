@@ -2209,6 +2209,29 @@
             ]
         }
     ],
+    "DownloadsAsMixedContentAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "BlockExtensionList": "mix_dl_blocked_for_testing",
+                        "SilentBlockExtensionList": "mix_dl_silently_blocked_for_testing",
+                        "TreatBlockListAsAllowlist": "false",
+                        "TreatSilentBlockListAsAllowlist": "false",
+                        "TreatWarnListAsAllowlist": "false",
+                        "WarnExtensionList": "exe,scr,msi,vb,dmg,pkg,crx"
+                    },
+                    "enable_features": [
+                        "TreatUnsafeDownloadsAsActive"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadsAutoResumptionNative": [
         {
             "platforms": [
