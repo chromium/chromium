@@ -382,7 +382,7 @@ var CrSettingsSiteDetailsV3Test = class extends CrSettingsV3BrowserTest {
 // Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
 // https://crbug.com/825304 - later for other platforms in crbug.com/1021219.
 // Disabling on Linux CFI due to flaky timeout (crbug.com/1031960).
-GEN('#if (!defined(NDEBUG)) || (defined(OS_LINUX) && defined(IS_CFI))');
+GEN('#if (!defined(NDEBUG)) || ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(IS_CFI))');
 GEN('#define MAYBE_SiteDetails DISABLED_SiteDetails');
 GEN('#else');
 GEN('#define MAYBE_SiteDetails SiteDetails');
