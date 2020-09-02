@@ -397,8 +397,7 @@ class TelemetryProxy {
    */
   convertAllEnums(telemetryInfo) {
     if (telemetryInfo && telemetryInfo.cpuResult &&
-        telemetryInfo.cpuResult.cpuInfo &&
-        telemetryInfo.cpuResult.cpuInfo.architecture) {
+        telemetryInfo.cpuResult.cpuInfo) {
       /** @suppress {checkTypes} */
       telemetryInfo.cpuResult.cpuInfo.architecture =
           this.convertCpuArch(telemetryInfo.cpuResult.cpuInfo.architecture);

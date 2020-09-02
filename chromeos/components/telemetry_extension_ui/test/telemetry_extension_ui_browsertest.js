@@ -136,6 +136,12 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
   assertDeepEquals(
       telemetryProxy.convertAllEnums({
         cpuResult:
+            {cpuInfo: {architecture: cpuArchEnum.kUnknown, physicalCpus: []}}
+      }),
+      {cpuResult: {cpuInfo: {architecture: 'unknown', physicalCpus: []}}});
+  assertDeepEquals(
+      telemetryProxy.convertAllEnums({
+        cpuResult:
             {cpuInfo: {architecture: cpuArchEnum.kX86_64, physicalCpus: []}}
       }),
       {cpuResult: {cpuInfo: {architecture: 'x86-64', physicalCpus: []}}});
