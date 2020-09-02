@@ -46,8 +46,10 @@ def CreateHardlink(target, output):
   If output already exists, it is first removed. In all cases, the
   parent directory containing output is created.
   """
-  if os.path.exists(output):
+  if os.path.isdir(output):
     shutil.rmtree(output)
+  elif os.path.exists(output):
+    os.unlink(output)
 
   parent_dir = os.path.dirname(os.path.abspath(output))
   if not os.path.isdir(parent_dir):
