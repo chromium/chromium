@@ -8,6 +8,7 @@
 #include <string>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/editing/commands/edit_command.h"
 #include "third_party/blink/renderer/core/editing/selection_modifier.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/text_granularity.h"
@@ -29,6 +30,7 @@ namespace blink {
 // previous word, or it could have been moved to the end of the next line.
 class CORE_EXPORT BlinkAXEventIntent final {
  public:
+  static BlinkAXEventIntent FromEditCommand(const EditCommand& edit_command);
   static BlinkAXEventIntent FromClearedSelection(
       const SetSelectionBy set_selection_by);
   static BlinkAXEventIntent FromModifiedSelection(

@@ -15,13 +15,17 @@ async_test((t) => {
   const axTextBox = accessibilityController.accessibleElementById('textbox');
   let valueChangedCount = 0;
   let selectedTextChangedCount = 0;
-  const expectedIntents = [];
+  const expectedValueChangedIntents = [];
+  const expectedSelectedTextChangedIntents = [];
 
   axTextBox.setNotificationListener(t.step_func((notification, intents) => {
     if (notification == "ValueChanged") {
+      assert_array_equals(intents,
+                          expectedValueChangedIntents[valueChangedCount]);
       ++valueChangedCount;
     } else if (notification == "SelectedTextChanged") {
-      assert_array_equals(intents, [expectedIntents[selectedTextChangedCount]]);
+      assert_array_equals(intents,
+                          expectedSelectedTextChangedIntents[selectedTextChangedCount]);
       ++selectedTextChangedCount;
     }
 
@@ -30,28 +34,67 @@ async_test((t) => {
     }
   }));
 
-  runAfterLayoutAndPaint(t.step_func(() => {
-    textbox.focus();
-    // Initial setting of the selection.
-    expectedIntents.push('AXEventIntent(setSelection,character,forward)');
-    eventSender.keyDown("ArrowDown", []);
-    expectedIntents.push('AXEventIntent(moveSelection,lineStart,forward)');
-    eventSender.keyDown("ArrowDown", []);
-    expectedIntents.push('AXEventIntent(moveSelection,lineStart,forward)');
-    eventSender.keyDown("ArrowLeft", []);
-    expectedIntents.push('AXEventIntent(moveSelection,character,backward)');
-    eventSender.keyDown("ArrowLeft", []);
-    expectedIntents.push('AXEventIntent(moveSelection,character,backward)');
-    eventSender.keyDown("w", []);
-    // TODO(nektar): Support an intent for the typing command.
-    expectedIntents.push('AXEventIntent(setSelection,character,forward)');
-    eventSender.keyDown("x", []);
-    expectedIntents.push('AXEventIntent(setSelection,character,forward)');
-    eventSender.keyDown("y", []);
-    expectedIntents.push('AXEventIntent(setSelection,character,forward)');
-    eventSender.keyDown("z", []);
-    expectedIntents.push('AXEventIntent(setSelection,character,forward)');
-  }));
-}, 'Moving the cursor in a contentEditable sends a selected text change notification, and typing in a contentEditable sends both a value changed and selected text changed notification.');
+  // Initial setting of the selection.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,character,forward)'
+  ]);
+  textbox.focus();
+
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,lineStart,forward)'
+  ]);
+  eventSender.keyDown("ArrowDown", []);
+
+  expectedValueChangedIntents.push([
+    'AXEventIntent(type,character,forward)'
+  ]);
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,character,forward)',
+    'AXEventIntent(type,character,forward)'
+  ]);
+  eventSender.keyDown("w", []);
+
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,lineStart,forward)'
+  ]);
+  eventSender.keyDown("ArrowDown", []);
+
+  expectedValueChangedIntents.push([
+    'AXEventIntent(type,character,forward)'
+  ]);
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(type,character,forward)',
+    'AXEventIntent(setSelection,character,forward)'
+  ]);
+  eventSender.keyDown("x", []);
+
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,character,backward)'
+  ]);
+  eventSender.keyDown("ArrowLeft", []);
+
+  expectedValueChangedIntents.push([
+    'AXEventIntent(type,character,forward)'
+  ]);
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,character,forward)',
+    'AXEventIntent(type,character,forward)'
+  ]);
+  eventSender.keyDown("y", []);
+
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,character,backward)'
+  ]);
+  eventSender.keyDown("ArrowLeft", []);
+
+  expectedValueChangedIntents.push([
+    'AXEventIntent(type,character,forward)'
+  ]);
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,character,forward)',
+    'AXEventIntent(type,character,forward)'
+  ]);
+  eventSender.keyDown("z", []);
+}, 'This test ensures that moving the cursor in a contentEditable sends a selected text change notification, and typing in a contentEditable sends both a value changed and selected text changed notification.');
 
 </script>
