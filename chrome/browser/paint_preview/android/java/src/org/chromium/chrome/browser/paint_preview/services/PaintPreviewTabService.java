@@ -11,12 +11,14 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 
 import java.io.File;
@@ -30,6 +32,9 @@ import java.util.HashSet;
  */
 @JNINamespace("paint_preview")
 public class PaintPreviewTabService implements NativePaintPreviewServiceProvider {
+    private static final long AUDIT_START_DELAY_MS = 2 * 60 * 1000; // Two minutes;
+
+    private Runnable mAuditRunnable;
     private long mNativePaintPreviewTabService;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     @VisibleForTesting
@@ -123,8 +128,21 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
             TabModelSelector tabModelSelector, boolean runAudit, boolean captureOnSwitch) {
         mTabModelSelectorTabObserver = new PaintPreviewTabServiceTabModelSelectorTabObserver(
                 this, tabModelSelector, captureOnSwitch);
-        TabModel regularTabModel = tabModelSelector.getModel(/*incognito*/ false);
 
+        if (!runAudit || mAuditRunnable != null) return;
+
+        // Delay actually performing the audit by a bit to avoid contention with the native task
+        // runner that handles IO when showing at startup.
+        mAuditRunnable = () -> auditOnStart(tabModelSelector.getModel(/*incognito*/ false));
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+                () -> {
+                    mAuditRunnable.run();
+                    mAuditRunnable = null;
+                },
+                AUDIT_START_DELAY_MS);
+    }
+
+    private void auditOnStart(TabModel regularTabModel) {
         int tabCount = regularTabModel.getCount();
         int[] tabIds = new int[tabCount];
         for (int i = 0; i < tabCount; i++) {
@@ -132,7 +150,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
             tabIds[i] = tab.getId();
         }
 
-        if (runAudit) auditArtifacts(tabIds);
+        auditArtifacts(tabIds);
     }
 
     private boolean isNativeCacheInitialized() {
