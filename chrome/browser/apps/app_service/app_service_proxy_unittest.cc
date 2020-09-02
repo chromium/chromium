@@ -188,6 +188,33 @@ TEST_F(AppServiceProxyTest, IconCoalescer) {
   EXPECT_EQ(6, NumOuterFinishedCallbacks());
 }
 
+TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
+  TestingProfile::Builder profile_builder;
+
+  // We expect an App Service in a regular profile.
+  auto profile = profile_builder.Build();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile.get());
+  EXPECT_TRUE(proxy);
+
+  // We expect the same App Service in the incognito profile branched from that
+  // regular profile.
+  // TODO(https://crbug.com/1122463): this should be nullptr once we address all
+  // incognito access to the App Service.
+  TestingProfile::Builder incognito_builder;
+  auto* incognito_proxy = apps::AppServiceProxyFactory::GetForProfile(
+      incognito_builder.BuildIncognito(profile.get()));
+  EXPECT_EQ(proxy, incognito_proxy);
+
+  // We expect a different App Service in the Guest Session profile.
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  auto guest_profile = guest_builder.Build();
+  auto* guest_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(guest_profile.get());
+  EXPECT_TRUE(guest_proxy);
+  EXPECT_NE(guest_proxy, proxy);
+}
+
 TEST_F(AppServiceProxyTest, RedirectInIncognitoProxyAccessPerProfile) {
   TestingProfile::Builder profile_builder;
 
