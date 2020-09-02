@@ -21,23 +21,23 @@ class PhoneStatusModel {
   enum class MobileStatus {
     // The phone does not have a physical SIM inserted or an eSIM profile set
     // up.
-    kNoSim,
+    kNoSim = 0,
 
     // The phone has a SIM, but it is not connected to a mobile network.
-    kSimButNoReception,
+    kSimButNoReception = 1,
 
     // The phone has a SIM and is connected to a mobile network using that SIM.
-    kSimWithReception
+    kSimWithReception = 2
   };
 
   // Number of "bars" in the connection strength; only applies when the device
   // has reception.
   enum class SignalStrength {
-    kZeroBars,
-    kOneBar,
-    kTwoBars,
-    kThreeBars,
-    kFourBars
+    kZeroBars = 0,
+    kOneBar = 1,
+    kTwoBars = 2,
+    kThreeBars = 3,
+    kFourBars = 4
   };
 
   struct MobileConnectionMetadata {
@@ -52,19 +52,19 @@ class PhoneStatusModel {
 
   enum class ChargingState {
     // Not charging (i.e., on battery power).
-    kNotCharging,
+    kNotCharging = 0,
 
     // Charging via AC adapter.
-    kChargingAc,
+    kChargingAc = 1,
 
     // Charging via a USB connection.
-    kChargingUsb
+    kChargingUsb = 2
   };
 
   // Android devices can enable "battery saver" mode, which causes the battery
   // charge to last longer by reducing/eliminating functionality with
   // significant power impact.
-  enum class BatterySaverState { kOff, kOn };
+  enum class BatterySaverState { kOff = 0, kOn = 1 };
 
   // Note: If |mobile_status| is not kSimWithReception,
   // |mobile_connection_metadata| should be null.

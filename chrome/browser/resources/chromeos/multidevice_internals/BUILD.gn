@@ -13,17 +13,32 @@ js_type_check("closure_compile") {
     ":multidevice_internals",
     ":multidevice_logs_browser_proxy",
     ":multidevice_phonehub_browser_proxy",
+    ":phone_status_model_form",
     ":phonehub_tab",
     ":types",
   ]
 }
 
+js_library("phone_status_model_form") {
+  deps = [
+    ":multidevice_phonehub_browser_proxy",
+    ":types",
+  ]
+}
+
 js_library("phonehub_tab") {
-  deps = [ ":multidevice_phonehub_browser_proxy" ]
+  deps = [
+    ":multidevice_phonehub_browser_proxy",
+    ":phone_status_model_form",
+    ":types",
+  ]
 }
 
 js_library("multidevice_phonehub_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    ":types",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("multidevice_internals") {
@@ -74,6 +89,7 @@ html_to_js("web_components") {
     "logging_tab.js",
     "multidevice_internals.js",
     "phonehub_tab.js",
+    "phone_status_model_form.js",
     "shared_style.js",
   ]
 }

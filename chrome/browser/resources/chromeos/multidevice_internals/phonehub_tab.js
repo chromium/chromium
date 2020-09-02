@@ -6,25 +6,11 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './shared_style.js';
+import './phone_status_model_form.js';
 
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
-
-/**
- * Numerical values should not be changed because they must stay in sync with
- * chromeos/components/phonehub/feature_status.h.
- * @enum{number}
- */
-const FeatureStatus = {
-  NOT_ELIGIBLE_FOR_FEATURE: 0,
-  ELIGIBLE_PHONE_BUT_NOT_SETUP: 1,
-  PHONE_SELECTED_AND_PENDING_SETUP: 2,
-  DISABLED: 3,
-  UNAVAILABLE_BLUETOOTH_OFF: 4,
-  ENABLED_BUT_DISCONNECTED: 5,
-  ENABLED_AND_CONNECTING: 6,
-  ENABLED_AND_CONNECTED: 7,
-};
+import {FeatureStatus} from './types.js';
 
 /**
  * Maps a FeatureStatus to it's title label in the dropdown.
@@ -80,6 +66,18 @@ Polymer({
       },
       readonly: true,
     },
+
+    /** @private {!FeatureStatus} */
+    featureStatus_: {
+      type: Number,
+      value: FeatureStatus.NOT_ELIGIBLE_FOR_FEATURE,
+    },
+
+    /** @private */
+    isFeatureEnabledAndConnected_: {
+      type: Boolean,
+      computed: 'isFeatureEnabledAndConnectedComputed_(featureStatus_)',
+    }
   },
 
   /** @private {?MultidevicePhoneHubBrowserProxy}*/
@@ -88,6 +86,14 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isFeatureEnabledAndConnectedComputed_() {
+    return this.featureStatus_ === FeatureStatus.ENABLED_AND_CONNECTED;
   },
 
   /** @private */
@@ -108,7 +114,8 @@ Polymer({
   onFeatureStatusSelected_() {
     const select = /** @type {!HTMLSelectElement} */
         (this.$$('#featureStatusList'));
-    this.browserProxy_.setFeatureStatus(select.selectedIndex);
+    this.featureStatus_ = this.featureStatusList_[select.selectedIndex];
+    this.browserProxy_.setFeatureStatus(this.featureStatus_);
   },
 
   /**
@@ -118,4 +125,5 @@ Polymer({
   getFeatureStatusName_(featureStatus) {
     return featureStatusToStringMap.get(featureStatus);
   },
+
 });

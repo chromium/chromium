@@ -5,6 +5,7 @@
   }
 
   .cr-row {
+    display: flex;
     flex: 0 0 100%;
   }
 
@@ -31,5 +32,14 @@
         <option>[[getFeatureStatusName_(item)]]</option>
       </template>
     </select>
+    <div class="cr-padded-text" hidden="[[isFeatureEnabledAndConnected_]]">
+      More controls will appear if the feature status is set to
+      <div class="emphasize">ENABLED_AND_CONNECTED</div>.
+    </div>
   </div>
+  <template is="dom-if" if="[[isFeatureEnabledAndConnected_]]" restamp>
+    <div class="cr-row">
+      <phone-status-model-form></phone-status-model-form>
+    </div>
+  </template>
 </template>

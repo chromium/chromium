@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {FeatureStatus, PhoneStatusModel} from './types.js';
 
 /**
  * JavaScript hooks into the native WebUI handler for Phonehub tab.
@@ -18,10 +19,19 @@ export class MultidevicePhoneHubBrowserProxy {
 
   /**
    * Enables or disables the FakePhoneHubManager.
-   * @param {number} featureStatus The status of the feature.
+   * @param {!FeatureStatus} featureStatus The status of the feature.
    */
   setFeatureStatus(featureStatus) {
     chrome.send('setFeatureStatus', [featureStatus]);
+  }
+
+  /**
+   * Sets the phone model.
+   * @param {!PhoneStatusModel} phoneStatusModel The phone status with fake
+   *     values.
+   */
+  setFakePhoneStatus(phoneStatusModel) {
+    chrome.send('setFakePhoneStatus', [phoneStatusModel]);
   }
 }
 
