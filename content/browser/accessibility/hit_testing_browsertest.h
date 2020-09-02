@@ -50,7 +50,7 @@ class AccessibilityHitTestingBrowserTest
 
   BrowserAccessibility* CallNearestLeafNode(const gfx::Point& page_point);
   void SynchronizeThreads();
-  base::string16 FormatHitTestAccessibilityTree();
+  std::string FormatHitTestAccessibilityTree();
   std::string GetScopedTrace(gfx::Point css_point);
   void SimulatePinchZoom(float desired_page_scale);
 

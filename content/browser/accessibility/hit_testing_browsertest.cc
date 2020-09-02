@@ -262,7 +262,7 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
   accessibility_waiter.WaitForNotification();
 }
 
-base::string16
+std::string
 AccessibilityHitTestingBrowserTest::FormatHitTestAccessibilityTree() {
   std::unique_ptr<AccessibilityTreeFormatter> accessibility_tree_formatter =
       AccessibilityTreeFormatterBlink::CreateBlink();
@@ -271,7 +271,7 @@ AccessibilityHitTestingBrowserTest::FormatHitTestAccessibilityTree() {
       {{"name=*", AccessibilityTreeFormatter::PropertyFilter::ALLOW},
        {"location=*", AccessibilityTreeFormatter::PropertyFilter::ALLOW},
        {"size=*", AccessibilityTreeFormatter::PropertyFilter::ALLOW}});
-  base::string16 accessibility_tree;
+  std::string accessibility_tree;
   accessibility_tree_formatter->FormatAccessibilityTreeForTesting(
       GetRootAndAssertNonNull(), &accessibility_tree);
   return accessibility_tree;

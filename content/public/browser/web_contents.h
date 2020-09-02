@@ -420,7 +420,7 @@ class WebContents : public PageNavigator,
 
   virtual void SetAccessibilityMode(ui::AXMode mode) = 0;
 
-  virtual base::string16 DumpAccessibilityTree(
+  virtual std::string DumpAccessibilityTree(
       bool internal,
       std::vector<content::AccessibilityTreeFormatter::PropertyFilter>
           property_filters) = 0;

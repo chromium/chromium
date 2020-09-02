@@ -77,10 +77,9 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
   BrowserAccessibility* root = GetManager()->GetRoot();
   CHECK(root);
 
-  base::string16 contents;
-  formatter->FormatAccessibilityTreeForTesting(root, &contents);
+  std::string got;
+  formatter->FormatAccessibilityTreeForTesting(root, &got);
 
-  auto got = base::UTF16ToUTF8(contents);
   EXPECT_EQ(got, expected);
 }
 

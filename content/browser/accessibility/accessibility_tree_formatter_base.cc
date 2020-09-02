@@ -291,7 +291,7 @@ AccessibilityTreeFormatter::TestPass AccessibilityTreeFormatter::GetTestPass(
 }
 
 // static
-base::string16 AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
+std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
     BrowserAccessibilityManager* ax_mgr,
     bool internal,
     std::vector<PropertyFilter> property_filters) {
@@ -300,13 +300,13 @@ base::string16 AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
     formatter = std::make_unique<AccessibilityTreeFormatterBlink>();
   else
     formatter = Create();
-  base::string16 accessibility_contents_utf16;
+  std::string accessibility_contents;
   formatter->SetPropertyFilters(property_filters);
   std::unique_ptr<base::DictionaryValue> dict =
       static_cast<AccessibilityTreeFormatterBase*>(formatter.get())
           ->BuildAccessibilityTree(ax_mgr->GetRoot());
-  formatter->FormatAccessibilityTree(*dict, &accessibility_contents_utf16);
-  return accessibility_contents_utf16;
+  formatter->FormatAccessibilityTree(*dict, &accessibility_contents);
+  return accessibility_contents;
 }
 
 bool AccessibilityTreeFormatter::MatchesPropertyFilters(
@@ -362,13 +362,13 @@ AccessibilityTreeFormatterBase::~AccessibilityTreeFormatterBase() = default;
 
 void AccessibilityTreeFormatterBase::FormatAccessibilityTree(
     const base::DictionaryValue& dict,
-    base::string16* contents) {
+    std::string* contents) {
   RecursiveFormatAccessibilityTree(dict, contents);
 }
 
 void AccessibilityTreeFormatterBase::FormatAccessibilityTreeForTesting(
     ui::AXPlatformNodeDelegate* root,
-    base::string16* contents) {
+    std::string* contents) {
   auto* node_internal = BrowserAccessibility::FromAXPlatformNodeDelegate(root);
   DCHECK(node_internal);
   FormatAccessibilityTree(*BuildAccessibilityTree(node_internal), contents);
@@ -395,28 +395,26 @@ AccessibilityTreeFormatterBase::FilterAccessibilityTree(
 
 void AccessibilityTreeFormatterBase::RecursiveFormatAccessibilityTree(
     const base::DictionaryValue& dict,
-    base::string16* contents,
+    std::string* contents,
     int depth) {
   // Check dictionary against node filters, may require us to skip this node
   // and its children.
   if (MatchesNodeFilters(dict))
     return;
 
-  base::string16 indent =
-      base::string16(depth * kIndentSymbolCount, kIndentSymbol);
-  base::string16 line = indent + ProcessTreeForOutput(dict);
-  if (line.find(base::ASCIIToUTF16(kSkipString)) != base::string16::npos)
+  std::string indent = std::string(depth * kIndentSymbolCount, kIndentSymbol);
+  std::string line = indent + base::UTF16ToUTF8(ProcessTreeForOutput(dict));
+  if (line.find(kSkipString) != std::string::npos)
     return;
 
   // Normalize any Windows-style line endings by removing \r.
-  base::RemoveChars(line, base::ASCIIToUTF16("\r"), &line);
+  base::RemoveChars(line, "\r", &line);
 
   // Replace literal newlines with "<newline>"
-  base::ReplaceChars(line, base::ASCIIToUTF16("\n"),
-                     base::ASCIIToUTF16("<newline>"), &line);
+  base::ReplaceChars(line, "\n", "<newline>", &line);
 
-  *contents += line + base::ASCIIToUTF16("\n");
-  if (line.find(base::ASCIIToUTF16(kSkipChildren)) != base::string16::npos)
+  *contents += line + "\n";
+  if (line.find(kSkipChildren) != std::string::npos)
     return;
 
   const base::ListValue* children;

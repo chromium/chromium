@@ -141,14 +141,14 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   disabled_features->emplace_back(features::kExperimentalAccessibilityLabels);
 }
 
-base::string16
+std::string
 DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   std::unique_ptr<AccessibilityTreeFormatter> formatter(formatter_factory_());
   std::vector<PropertyFilter> property_filters;
   property_filters.emplace_back("*", PropertyFilter::ALLOW);
   formatter->SetPropertyFilters(property_filters);
   formatter->set_show_ids(true);
-  base::string16 ax_tree_dump;
+  std::string ax_tree_dump;
   formatter->FormatAccessibilityTreeForTesting(
       GetRootAccessibilityNode(shell()->web_contents()), &ax_tree_dump);
   return ax_tree_dump;
@@ -357,8 +357,8 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     bool wait_for_string = str != "";
     while (wait_for_string) {
       // Loop until specified string is found.
-      base::string16 tree_dump = DumpUnfilteredAccessibilityTreeAsString();
-      if (base::UTF16ToUTF8(tree_dump).find(str) != std::string::npos) {
+      std::string tree_dump = DumpUnfilteredAccessibilityTreeAsString();
+      if (tree_dump.find(str) != std::string::npos) {
         wait_for_string = false;
         // Append an additional dump if the specified string was found.
         std::vector<std::string> additional_dump = Dump(run_until);
@@ -452,9 +452,9 @@ void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
 
       // Check to see if the @WAIT-FOR text has appeared yet.
       bool all_wait_for_strings_found = true;
-      base::string16 tree_dump = DumpUnfilteredAccessibilityTreeAsString();
+      std::string tree_dump = DumpUnfilteredAccessibilityTreeAsString();
       for (const auto& str : wait_for) {
-        if (base::UTF16ToUTF8(tree_dump).find(str) == std::string::npos) {
+        if (tree_dump.find(str) == std::string::npos) {
           VLOG(1) << "Still waiting on this text to be found: " << str;
           all_wait_for_strings_found = false;
           break;

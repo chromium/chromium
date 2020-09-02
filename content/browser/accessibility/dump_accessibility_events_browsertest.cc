@@ -95,8 +95,8 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
     waiter->Quit();
   }
 
-  base::string16 initial_tree_;
-  base::string16 final_tree_;
+  std::string initial_tree_;
+  std::string final_tree_;
 };
 
 bool IsRecordingComplete(AccessibilityEventRecorder& event_recorder,
@@ -202,7 +202,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     }
 
     if (run_go_again) {
-      final_tree_.append(base::ASCIIToUTF16("=== Start Continuation ===\n"));
+      final_tree_.append("=== Start Continuation ===\n");
       result.emplace_back("=== Start Continuation ===");
     }
   } while (run_go_again);
@@ -213,10 +213,10 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
 void DumpAccessibilityEventsTest::OnDiffFailed() {
   printf("\n");
   printf("Initial accessibility tree (after load complete):\n");
-  printf("%s\n", base::UTF16ToUTF8(initial_tree_).c_str());
+  printf("%s\n", initial_tree_.c_str());
   printf("\n");
   printf("Final accessibility tree after events fired:\n");
-  printf("%s\n", base::UTF16ToUTF8(final_tree_).c_str());
+  printf("%s\n", final_tree_.c_str());
   printf("\n");
 }
 

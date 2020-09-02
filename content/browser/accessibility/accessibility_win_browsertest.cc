@@ -69,7 +69,7 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
 
  protected:
   class AccessibleChecker;
-  base::string16 PrintAXTree() const;
+  std::string PrintAXTree() const;
   void SetUpInputField(Microsoft::WRL::ComPtr<IAccessibleText>* input_text);
   void SetUpScrollableInputField(
       Microsoft::WRL::ComPtr<IAccessibleText>* input_text);
@@ -139,7 +139,7 @@ AccessibilityWinBrowserTest::AccessibilityWinBrowserTest() = default;
 
 AccessibilityWinBrowserTest::~AccessibilityWinBrowserTest() = default;
 
-base::string16 AccessibilityWinBrowserTest::PrintAXTree() const {
+std::string AccessibilityWinBrowserTest::PrintAXTree() const {
   std::unique_ptr<AccessibilityTreeFormatter> formatter(
       AccessibilityTreeFormatter::Create());
   DCHECK(formatter);
@@ -147,7 +147,7 @@ base::string16 AccessibilityWinBrowserTest::PrintAXTree() const {
   formatter->SetPropertyFilters({AccessibilityTreeFormatter::PropertyFilter(
       "*", AccessibilityTreeFormatter::PropertyFilter::ALLOW)});
 
-  base::string16 str;
+  std::string str;
   formatter->FormatAccessibilityTreeForTesting(
       GetRootAccessibilityNode(shell()->web_contents()), &str);
   return str;

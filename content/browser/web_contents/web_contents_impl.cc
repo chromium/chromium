@@ -3856,7 +3856,7 @@ void WebContentsImpl::AccessibilityLocationChangesReceived(
   });
 }
 
-base::string16 WebContentsImpl::DumpAccessibilityTree(
+std::string WebContentsImpl::DumpAccessibilityTree(
     bool internal,
     std::vector<AccessibilityTreeFormatter::PropertyFilter> property_filters) {
   auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();

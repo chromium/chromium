@@ -146,13 +146,13 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
 
   // Dumps a BrowserAccessibility tree into a string.
   virtual void FormatAccessibilityTree(const base::DictionaryValue& tree_node,
-                                       base::string16* contents) = 0;
+                                       std::string* contents) = 0;
 
   // Test version of FormatAccessibilityTree().
   // |root| must be non-null and must be in web content.
   virtual void FormatAccessibilityTreeForTesting(
       ui::AXPlatformNodeDelegate* root,
-      base::string16* contents) = 0;
+      std::string* contents) = 0;
 
   // Set regular expression filters that apply to each property of every node
   // before it's output.

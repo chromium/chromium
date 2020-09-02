@@ -606,7 +606,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const AXEventNotificationDetails& details) override;
   void AccessibilityLocationChangesReceived(
       const std::vector<AXLocationChangeNotificationDetails>& details) override;
-  base::string16 DumpAccessibilityTree(
+  std::string DumpAccessibilityTree(
       bool internal,
       std::vector<content::AccessibilityTreeFormatter::PropertyFilter>
           property_filters) override;

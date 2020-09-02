@@ -581,10 +581,9 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
 
   PrefService* pref = Profile::FromWebUI(web_ui())->GetPrefs();
   bool internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
-  base::string16 accessibility_contents_utf16 =
+  std::string accessibility_contents =
       web_contents->DumpAccessibilityTree(internal, property_filters);
-  result->SetString(kTreeField,
-                    base::UTF16ToUTF8(accessibility_contents_utf16));
+  result->SetString(kTreeField, accessibility_contents);
   CallJavascriptFunction(request_type, *(result.get()));
 }
 

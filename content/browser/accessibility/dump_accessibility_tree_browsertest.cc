@@ -151,11 +151,9 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     std::unique_ptr<AccessibilityTreeFormatter> formatter(formatter_factory_());
     formatter->SetPropertyFilters(property_filters_);
     formatter->SetNodeFilters(node_filters_);
-    base::string16 actual_contents_utf16;
+    std::string actual_contents;
     formatter->FormatAccessibilityTreeForTesting(
-        GetRootAccessibilityNode(shell()->web_contents()),
-        &actual_contents_utf16);
-    std::string actual_contents = base::UTF16ToUTF8(actual_contents_utf16);
+        GetRootAccessibilityNode(shell()->web_contents()), &actual_contents);
     return base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
   }

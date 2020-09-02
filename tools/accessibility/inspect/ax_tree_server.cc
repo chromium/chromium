@@ -110,7 +110,7 @@ void AXTreeServer::Format(AccessibilityTreeFormatter& formatter,
   // Set filters.
   formatter.SetPropertyFilters(filters);
 
-  std::string accessibility_contents_utf8;
+  std::string accessibility_contents;
 
   // Format accessibility tree as JSON or text.
   if (use_json) {
@@ -118,16 +118,13 @@ void AXTreeServer::Format(AccessibilityTreeFormatter& formatter,
         formatter.FilterAccessibilityTree(dict);
     base::JSONWriter::WriteWithOptions(*filtered_dict,
                                        base::JSONWriter::OPTIONS_PRETTY_PRINT,
-                                       &accessibility_contents_utf8);
+                                       &accessibility_contents);
   } else {
-    base::string16 accessibility_contents_utf16;
-    formatter.FormatAccessibilityTree(dict, &accessibility_contents_utf16);
-    accessibility_contents_utf8 =
-        base::UTF16ToUTF8(accessibility_contents_utf16);
+    formatter.FormatAccessibilityTree(dict, &accessibility_contents);
   }
 
   // Write to console.
-  printf("%s", accessibility_contents_utf8.c_str());
+  printf("%s", accessibility_contents.c_str());
 }
 
 }  // namespace content
