@@ -493,8 +493,9 @@ class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// This test flakes on most platforms: https://crbug.com/1122371.
 IN_PROC_BROWSER_TEST_F(ScrollLatencyScrollbarBrowserTest,
-                       ScrollbarButtonLatency) {
+                       DISABLED_ScrollbarButtonLatency) {
   LoadURL();
 
   RunScrollbarButtonLatencyTest();
