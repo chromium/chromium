@@ -323,26 +323,6 @@ void DeviceSyncImpl::PendingSetSoftwareFeatureRequest::InvokeCallback(
   std::move(callback_).Run(result);
 }
 
-// static
-void DeviceSyncImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  CryptAuthGCMManager::RegisterPrefs(registry);
-  CryptAuthDeviceManager::RegisterPrefs(registry);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCryptAuthV2Enrollment)) {
-    CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
-    CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
-    CryptAuthSchedulerImpl::RegisterPrefs(registry);
-  } else {
-    CryptAuthEnrollmentManagerImpl::RegisterPrefs(registry);
-  }
-
-  if (features::ShouldUseV2DeviceSync()) {
-    CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);
-    CryptAuthMetadataSyncerImpl::RegisterPrefs(registry);
-    SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
-  }
-}
-
 DeviceSyncImpl::PendingSetFeatureStatusRequest::PendingSetFeatureStatusRequest(
     const std::string& device_instance_id,
     multidevice::SoftwareFeature software_feature,

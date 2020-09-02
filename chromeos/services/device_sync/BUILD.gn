@@ -173,6 +173,7 @@ static_library("device_sync") {
   visibility = [
     ":*",
     "//chrome/browser/chromeos",
+    "//chromeos/services/device_sync/public/cpp:prefs",
     "//chrome/test:test_support_ui",
     "//chromeos/services/device_sync/public/cpp:unit_tests",
   ]
@@ -300,6 +301,7 @@ source_set("unit_tests") {
     "//chromeos/network:test_support",
     "//chromeos/services/device_sync/proto:test_support",
     "//chromeos/services/device_sync/proto:util",
+    "//chromeos/services/device_sync/public/cpp:prefs",
     "//chromeos/services/device_sync/public/cpp:test_support",
     "//chromeos/services/device_sync/public/cpp:unit_tests",
     "//chromeos/services/device_sync/public/mojom",

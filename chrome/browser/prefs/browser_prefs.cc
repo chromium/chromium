@@ -351,7 +351,7 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/proxy/proxy_config_handler.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/device_sync/device_sync_impl.h"
+#include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/timezone/timezone_resolver.h"
 #include "components/arc/arc_prefs.h"
@@ -1060,7 +1060,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::bluetooth::DebugLogsManager::RegisterPrefs(registry);
   chromeos::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
-  chromeos::device_sync::DeviceSyncImpl::RegisterProfilePrefs(registry);
+  chromeos::device_sync::RegisterProfilePrefs(registry);
   chromeos::FamilyUserMetricsService::RegisterProfilePrefs(registry);
   chromeos::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);
   chromeos::first_run::RegisterProfilePrefs(registry);

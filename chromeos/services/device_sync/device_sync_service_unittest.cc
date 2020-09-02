@@ -46,6 +46,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
+#include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 #include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
@@ -747,7 +748,7 @@ class DeviceSyncServiceTest
     fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
 
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    DeviceSyncImpl::RegisterProfilePrefs(test_pref_service_->registry());
+    RegisterProfilePrefs(test_pref_service_->registry());
 
     simple_test_clock_ = std::make_unique<base::SimpleTestClock>();
 

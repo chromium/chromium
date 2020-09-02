@@ -25,6 +25,7 @@
 #include "chromeos/services/device_sync/fake_device_sync.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
+#include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 #include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
@@ -176,7 +177,7 @@ class DeviceSyncClientImplTest : public testing::Test {
             }));
 
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    DeviceSyncImpl::RegisterProfilePrefs(test_pref_service_->registry());
+    RegisterProfilePrefs(test_pref_service_->registry());
 
     device_sync_ = DeviceSyncImpl::Factory::Create(
         identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),

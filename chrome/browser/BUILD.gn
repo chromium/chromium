@@ -4065,6 +4065,7 @@ static_library("browser") {
       "//chromeos/memory/userspace_swap:mojom",
       "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/cellular_setup",
+      "//chromeos/services/device_sync/public/cpp:prefs",
       "//chromeos/services/device_sync/public/mojom",
       "//chromeos/services/multidevice_setup",
       "//chromeos/services/multidevice_setup/public/cpp:first_run_field_trial",

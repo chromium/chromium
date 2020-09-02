@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
@@ -101,8 +100,6 @@ class DeviceSyncImpl : public DeviceSyncBase,
    private:
     static Factory* test_factory_instance_;
   };
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   ~DeviceSyncImpl() override;
 
