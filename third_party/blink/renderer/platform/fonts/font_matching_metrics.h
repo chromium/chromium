@@ -6,16 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_MATCHING_METRICS_H_
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -23,58 +21,56 @@ class UkmRecorder;
 
 namespace blink {
 
-struct LocalFontLookupKey {
-  unsigned name_hash{0};
-  UChar32 fallback_character{-1};
-  unsigned font_selection_request_hash{0};
-  bool is_deleted_value_{false};
+// A (generic) wrapper around IdentifiableToken to enable its use as a HashMap
+// key. The |token| represents the parameters by which a font was looked up.
+// However, if |is_deleted_value| or |is_empty_value|, this key represents an
+// object for HashMap's internal use only. In that case, |token| is left as a
+// default value.
+struct IdentifiableTokenKey {
+  IdentifiableToken token;
+  bool is_deleted_value = false;
+  bool is_empty_value = false;
 
-  LocalFontLookupKey() = default;
-  LocalFontLookupKey(const AtomicString& name,
-                     FontSelectionRequest font_selection_request)
-      : name_hash(AtomicStringHash::GetHash(name)),
-        font_selection_request_hash(font_selection_request.GetHash()) {}
+  IdentifiableTokenKey() : is_empty_value(true) {}
+  explicit IdentifiableTokenKey(const IdentifiableToken& token)
+      : token(token) {}
+  explicit IdentifiableTokenKey(WTF::HashTableDeletedValueType)
+      : is_deleted_value(true) {}
 
-  LocalFontLookupKey(UChar32 fallback_character,
-                     FontSelectionRequest font_selection_request)
-      : fallback_character(fallback_character),
-        font_selection_request_hash(font_selection_request.GetHash()) {}
+  bool IsHashTableDeletedValue() const { return is_deleted_value; }
 
-  explicit LocalFontLookupKey(FontSelectionRequest font_selection_request)
-      : font_selection_request_hash(font_selection_request.GetHash()) {}
-
-  explicit LocalFontLookupKey(WTF::HashTableDeletedValueType)
-      : is_deleted_value_(true) {}
-
-  bool IsHashTableDeletedValue() const { return is_deleted_value_; }
-
-  bool operator==(const LocalFontLookupKey& other) const {
-    return name_hash == other.name_hash &&
-           fallback_character == other.fallback_character &&
-           font_selection_request_hash == other.font_selection_request_hash &&
-           is_deleted_value_ == other.is_deleted_value_;
+  bool operator==(const IdentifiableTokenKey& other) const {
+    return token == other.token && is_deleted_value == other.is_deleted_value &&
+           is_empty_value == other.is_empty_value;
+  }
+  bool operator!=(const IdentifiableTokenKey& other) const {
+    return !(*this == other);
   }
 };
 
-struct LocalFontLookupKeyHash {
-  STATIC_ONLY(LocalFontLookupKeyHash);
-  static unsigned GetHash(const LocalFontLookupKey& key) {
-    unsigned hash_codes[4] = {key.name_hash, key.fallback_character,
-                              key.font_selection_request_hash,
-                              key.is_deleted_value_};
-    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
+// A helper that defines the hash and equality functions that HashMap should use
+// internally for comparing IdentifiableTokenKeys.
+struct IdentifiableTokenKeyHash {
+  STATIC_ONLY(IdentifiableTokenKeyHash);
+  static unsigned GetHash(const IdentifiableTokenKey& key) {
+    IntHash<int64_t> hasher;
+    return hasher.GetHash(key.token.ToUkmMetricValue()) ^
+           hasher.GetHash((key.is_deleted_value << 1) + key.is_empty_value);
   }
-  static bool Equal(const LocalFontLookupKey& a, const LocalFontLookupKey& b) {
+  static bool Equal(const IdentifiableTokenKey& a,
+                    const IdentifiableTokenKey& b) {
     return a == b;
   }
-
   static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
-struct LocalFontLookupKeyHashTraits
-    : WTF::SimpleClassHashTraits<LocalFontLookupKey> {
-  STATIC_ONLY(LocalFontLookupKeyHashTraits);
+// A helper that defines the invalid 'empty value' that HashMap should use
+// internally.
+struct IdentifiableTokenKeyHashTraits
+    : WTF::SimpleClassHashTraits<IdentifiableTokenKey> {
+  STATIC_ONLY(IdentifiableTokenKeyHashTraits);
   static const bool kEmptyValueIsZero = false;
+  static IdentifiableTokenKey EmptyValue() { return IdentifiableTokenKey(); }
 };
 
 enum class LocalFontLookupType {
@@ -86,62 +82,6 @@ enum class LocalFontLookupType {
   kFallbackPriorityFont,
   kSystemFallbackFont,
   kLastResortInFontFallbackIterator,
-};
-
-struct LocalFontLookupResult {
-  int64_t hash;  // 0 if font was not found
-  LocalFontLookupType check_type;
-  bool is_loading_fallback;
-};
-
-struct GenericFontLookupKey {
-  unsigned generic_font_family_name_hash;
-  UScriptCode script{UScriptCode::USCRIPT_INVALID_CODE};
-  FontDescription::GenericFamilyType generic_family_type;
-  bool is_deleted_value_{false};
-
-  GenericFontLookupKey() = default;
-  GenericFontLookupKey(const AtomicString& generic_font_family_name,
-                       UScriptCode script,
-                       FontDescription::GenericFamilyType generic_family_type)
-      : generic_font_family_name_hash(
-            AtomicStringHash::GetHash(generic_font_family_name)),
-        script(script),
-        generic_family_type(generic_family_type) {}
-
-  explicit GenericFontLookupKey(WTF::HashTableDeletedValueType)
-      : is_deleted_value_(true) {}
-
-  bool IsHashTableDeletedValue() const { return is_deleted_value_; }
-
-  bool operator==(const GenericFontLookupKey& other) const {
-    return generic_font_family_name_hash ==
-               other.generic_font_family_name_hash &&
-           script == other.script &&
-           generic_family_type == other.generic_family_type &&
-           is_deleted_value_ == other.is_deleted_value_;
-  }
-};
-
-struct GenericFontLookupKeyHash {
-  STATIC_ONLY(GenericFontLookupKeyHash);
-  static unsigned GetHash(const GenericFontLookupKey& key) {
-    unsigned hash_codes[4] = {key.generic_font_family_name_hash, key.script,
-                              key.generic_family_type, key.is_deleted_value_};
-    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
-  }
-  static bool Equal(const GenericFontLookupKey& a,
-                    const GenericFontLookupKey& b) {
-    return a == b;
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-struct GenericFontLookupKeyHashTraits
-    : WTF::SimpleClassHashTraits<GenericFontLookupKey> {
-  STATIC_ONLY(GenericFontLookupKeyHashTraits);
-  static const bool kEmptyValueIsZero = false;
 };
 
 // Tracks and reports UKM metrics of attempted font family match attempts (both
@@ -262,16 +202,17 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   // otherwise.
   const bool top_level_ = false;
 
-  HashMap<LocalFontLookupKey,
-          LocalFontLookupResult,
-          LocalFontLookupKeyHash,
-          LocalFontLookupKeyHashTraits>
-      font_lookups_;
-  HashMap<GenericFontLookupKey,
-          unsigned,
-          GenericFontLookupKeyHash,
-          GenericFontLookupKeyHashTraits>
-      generic_font_lookups_;
+  // This HashMap generically stores details of font lookups, i.e. what was used
+  // to search for the font, and what the resulting font was. The key is an
+  // IdentifiableTokenKey representing a wrapper around a digest of the lookup
+  // parameters. The value is an IdentifiableToken representing either a digest
+  // of the returned typeface or 0, if no valid typeface was found.
+  using TokenToTokenHashMap = HashMap<IdentifiableTokenKey,
+                                      IdentifiableToken,
+                                      IdentifiableTokenKeyHash,
+                                      IdentifiableTokenKeyHashTraits>;
+  TokenToTokenHashMap font_lookups_;
+  TokenToTokenHashMap generic_font_lookups_;
 
   ukm::UkmRecorder* const ukm_recorder_;
   const ukm::SourceId source_id_;
