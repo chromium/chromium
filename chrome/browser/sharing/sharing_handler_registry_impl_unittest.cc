@@ -45,7 +45,7 @@ class SharingHandlerRegistryImplTest : public testing::Test {
     return std::make_unique<SharingHandlerRegistryImpl>(
         /*profile=*/nullptr, &sharing_device_registration_,
         /*message_sender=*/nullptr, /*device_source=*/nullptr,
-        /*sms_fetcher=*/nullptr, /*sharing_service_host=*/nullptr);
+        /*sms_fetcher=*/nullptr);
   }
 
  protected:

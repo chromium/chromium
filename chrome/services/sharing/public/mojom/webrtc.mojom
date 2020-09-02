@@ -6,17 +6,6 @@ module sharing.mojom;
 
 import "url/mojom/url.mojom";
 
-// Represents an ICE candidate as defined in RFC 5245. These will be exchanged
-// OOB via the SignalingSender and SignalingReceiver interfaces.
-struct IceCandidate {
-  // Represents the remote address to connect to as defined in RFC 5245 # 15.1.
-  string candidate;
-  // Value of the "a=" attribute of the "m=" section in the SDP.
-  string sdp_mid;
-  // Index of the "m=" section if the endpoint does not support MIDs.
-  int32 sdp_mline_index;
-};
-
 // Represents an ICE server to be used for communication.
 struct IceServer {
   // URLs of this server.
@@ -27,53 +16,9 @@ struct IceServer {
   string? credential;
 };
 
-// Result of sending a message to a PeerConnection.
-enum SendMessageResult {
-  // Message sent successfully.
-  kSuccess,
-  // Error while sending message.
-  kError,
-};
-
 // Used to fetch ice servers for WebRtc communication. Implemented in browser
 // process.
 interface IceConfigFetcher {
   // Returns a list of ice servers for WebRtc communication.
   GetIceServers() => (array<IceServer> ice_servers);
-};
-
-// Signaling sender interface used to exchange offer / answer pairs and a list
-// of ICE candidates OOB. Implemented in the browser process.
-interface SignalingSender {
-  // Sends an offer to the remote expecting an answer in response. The content
-  // of both is in SDP format.
-  SendOffer(string offer) => (string answer);
-
-  // Sends a list of ICE candidates to the remote.
-  SendIceCandidates(array<IceCandidate> ice_candidates);
-};
-
-// Signalling receiver interface used to notify about incoming offers and ICE
-// candidates from a remote. Implemented in a sandboxed utility process.
-interface SignalingReceiver {
-  // Received an offer from a remote, expecting an answer in response.
-  OnOfferReceived(string offer) => (string answer);
-
-  // Received a list of ICE candidates from a remote.
-  OnIceCandidatesReceived(array<IceCandidate> ice_candidates);
-};
-
-// Delegate for a sharing connection used to receive messages. Implemented in
-// the browser process.
-interface SharingWebRtcConnectionDelegate {
-  // Received a message from the remote. Ordering of these messages is
-  // guaranteed to match the sending order.
-  OnMessageReceived(array<uint8> message);
-};
-
-// Sharing connection interface used to send messages via WebRTC. Implemented
-// in a sandboxed utility process.
-interface SharingWebRtcConnection {
-  // Sends a message to the remove via WebRTC and returns the result.
-  SendMessage(array<uint8> message) => (SendMessageResult result);
 };

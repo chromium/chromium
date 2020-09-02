@@ -11,8 +11,6 @@ source_set("sharing") {
   deps = [
     "nearby",
     "webrtc",
-    "//jingle:webrtc_glue",
-    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   public_deps = [
@@ -32,7 +30,6 @@ source_set("unit_tests") {
     ":sharing",
     "nearby",
     "nearby/test_support",
-    "webrtc/test",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

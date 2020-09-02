@@ -6,31 +6,12 @@ module sharing.mojom;
 
 import "chrome/services/sharing/public/mojom/nearby_connections.mojom";
 import "chrome/services/sharing/public/mojom/nearby_decoder.mojom";
-import "chrome/services/sharing/public/mojom/webrtc.mojom";
 import "services/network/public/mojom/p2p.mojom";
 import "services/network/public/mojom/mdns_responder.mojom";
 
 // Interface for sharing related services. Lives in a sandboxed utility process
 // and is used by the browser process to offload unsafe protocol parsing.
 interface Sharing {
-  // Creates a new Sharing connection via WebRTC.
-  // Signaling of WebRTC is done OOB by the browser using the |signaling_sender|
-  // and |signaling_receiver| interfaces.
-  // WebRTC messages to and from the browser process are handled via the
-  // |delegate| and |connection| interfaces.
-  // All network communication is handled by the |socket_manager| and
-  // |mdns_responder| interfaces from the network service.
-  // |ice_servers| contains the list of ICE servers to be used to establish a
-  // connection.
-  CreateSharingWebRtcConnection(
-      pending_remote<SignalingSender> signaling_sender,
-      pending_receiver<SignalingReceiver> signaling_receiver,
-      pending_remote<SharingWebRtcConnectionDelegate> delegate,
-      pending_receiver<SharingWebRtcConnection> connection,
-      pending_remote<network.mojom.P2PSocketManager> socket_manager,
-      pending_remote<network.mojom.MdnsResponder> mdns_responder,
-      array<IceServer> ice_servers);
-
   // Creates a new Nearby Connections stack. All dependencies should be provided
   // via the |dependencies| struct. Closing the returned |connections| interface
   // destroys the stack. Calling this method with an existing instance of the

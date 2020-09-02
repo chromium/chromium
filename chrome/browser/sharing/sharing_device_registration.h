@@ -66,9 +66,6 @@ class SharingDeviceRegistration {
   // Returns if device can handle receiving of remote copy contents.
   virtual bool IsRemoteCopySupported() const;
 
-  // Returns if device can handle an incoming webrtc peer connection request.
-  bool IsPeerConnectionSupported() const;
-
   // For testing
   void SetEnabledFeaturesForTesting(
       std::set<sync_pb::SharingSpecificFields_EnabledFeatures>

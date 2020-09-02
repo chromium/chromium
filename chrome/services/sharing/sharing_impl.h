@@ -20,10 +20,6 @@
 #include "services/network/public/mojom/mdns_responder.mojom-forward.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"
 
-namespace webrtc {
-class PeerConnectionFactoryInterface;
-}  // namespace webrtc
-
 namespace location {
 namespace nearby {
 namespace connections {
@@ -35,8 +31,6 @@ class NearbyConnections;
 namespace sharing {
 
 class NearbySharingDecoder;
-
-class SharingWebRtcConnection;
 
 class SharingImpl : public mojom::Sharing {
  public:
@@ -52,35 +46,16 @@ class SharingImpl : public mojom::Sharing {
   ~SharingImpl() override;
 
   // mojom::Sharing:
-  void CreateSharingWebRtcConnection(
-      mojo::PendingRemote<mojom::SignalingSender> signaling_sender,
-      mojo::PendingReceiver<mojom::SignalingReceiver> signaling_receiver,
-      mojo::PendingRemote<mojom::SharingWebRtcConnectionDelegate> delegate,
-      mojo::PendingReceiver<mojom::SharingWebRtcConnection> connection,
-      mojo::PendingRemote<network::mojom::P2PSocketManager> socket_manager,
-      mojo::PendingRemote<network::mojom::MdnsResponder> mdns_responder,
-      std::vector<mojom::IceServerPtr> ice_servers) override;
   void CreateNearbyConnections(
       NearbyConnectionsDependenciesPtr dependencies,
       CreateNearbyConnectionsCallback callback) override;
   void CreateNearbySharingDecoder(
       CreateNearbySharingDecoderCallback callback) override;
 
-  size_t GetWebRtcConnectionCountForTesting() const;
-
  private:
-  void InitializeWebRtcFactory();
-
-  void SharingWebRtcConnectionDisconnected(SharingWebRtcConnection* connection);
-
   void NearbyConnectionsDisconnected();
 
   mojo::Receiver<mojom::Sharing> receiver_;
-
-  std::map<SharingWebRtcConnection*, std::unique_ptr<SharingWebRtcConnection>>
-      sharing_webrtc_connections_;
-  scoped_refptr<webrtc::PeerConnectionFactoryInterface>
-      webrtc_peer_connection_factory_;
 
   std::unique_ptr<NearbyConnections> nearby_connections_;
 

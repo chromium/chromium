@@ -46,16 +46,6 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
   ~FakeSharingMojoService() override = default;
 
   // sharing::mojom::Sharing:
-  void CreateSharingWebRtcConnection(
-      mojo::PendingRemote<sharing::mojom::SignalingSender>,
-      mojo::PendingReceiver<sharing::mojom::SignalingReceiver>,
-      mojo::PendingRemote<sharing::mojom::SharingWebRtcConnectionDelegate>,
-      mojo::PendingReceiver<sharing::mojom::SharingWebRtcConnection>,
-      mojo::PendingRemote<network::mojom::P2PSocketManager>,
-      mojo::PendingRemote<network::mojom::MdnsResponder>,
-      std::vector<sharing::mojom::IceServerPtr>) override {
-    NOTIMPLEMENTED();
-  }
   void CreateNearbyConnections(
       NearbyConnectionsDependenciesPtr dependencies,
       CreateNearbyConnectionsCallback callback) override {

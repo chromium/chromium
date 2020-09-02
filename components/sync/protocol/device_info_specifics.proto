@@ -104,6 +104,9 @@ message SharingSpecificFields {
 
   // Enum defining available Sharing features.
   enum EnabledFeatures {
+    reserved 5;
+    reserved "PEER_CONNECTION";
+
     UNKNOWN = 0;
     // Supports Click to Call only via VAPID.
     CLICK_TO_CALL_VAPID = 1;
@@ -111,7 +114,6 @@ message SharingSpecificFields {
     SHARED_CLIPBOARD_VAPID = 2;
     SMS_FETCHER = 3;
     REMOTE_COPY = 4;
-    PEER_CONNECTION = 5;
     DISCOVERY = 6;
     // Suppots Click to Call via both VAPID and sender ID.
     CLICK_TO_CALL_V2 = 7;

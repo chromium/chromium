@@ -40,10 +40,6 @@
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/storage_partition.h"
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/sharing/webrtc/sharing_service_host.h"
-#endif  // !defined(OS_ANDROID)
-
 namespace {
 constexpr char kServiceName[] = "SharingService";
 
@@ -58,37 +54,6 @@ void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
   encryption_provider->RemoveEncryptionInfo(kSharingFCMAppID,
                                             /*authorized_entity=*/std::string(),
                                             /*callback=*/base::DoNothing());
-}
-
-// Creates a new SharingServiceHost and registers it with the
-// |sharing_message_sender| to send messages via WebRTC.
-// Returns nullptr if WebRTC sending is not available on this device.
-SharingServiceHost* MaybeRegisterSharingServiceHost(
-    SharingMessageSender* sharing_message_sender,
-    gcm::GCMDriver* gcm_driver,
-    SharingSyncPreference* sync_prefs,
-    SharingDeviceSource* device_source,
-    content::BrowserContext* context) {
-#if defined(OS_ANDROID)
-  // Sending via WebRTC is not supported on Android.
-  return nullptr;
-#else
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
-  auto sharing_service_host = std::make_unique<SharingServiceHost>(
-      sharing_message_sender, gcm_driver, sync_prefs, device_source,
-      url_loader_factory);
-
-  // Get pointer as |sharing_message_sender| takes ownership.
-  SharingServiceHost* sharing_service_host_ptr = sharing_service_host.get();
-
-  sharing_message_sender->RegisterSendDelegate(
-      SharingMessageSender::DelegateType::kWebRtc,
-      std::move(sharing_service_host));
-
-  return sharing_service_host_ptr;
-#endif  // !defined(OS_ANDROID)
 }
 
 }  // namespace
@@ -174,13 +139,9 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
       sync_service, local_device_info_provider, device_info_tracker);
 
   content::SmsFetcher* sms_fetcher = content::SmsFetcher::Get(context);
-  SharingServiceHost* sharing_service_host_ptr =
-      MaybeRegisterSharingServiceHost(sharing_message_sender.get(), gcm_driver,
-                                      sync_prefs.get(), device_source.get(),
-                                      context);
   auto handler_registry = std::make_unique<SharingHandlerRegistryImpl>(
       profile, sharing_device_registration.get(), sharing_message_sender.get(),
-      device_source.get(), sms_fetcher, sharing_service_host_ptr);
+      device_source.get(), sms_fetcher);
 
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());

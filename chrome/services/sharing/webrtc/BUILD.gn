@@ -17,10 +17,6 @@ source_set("webrtc") {
     "p2p_socket_client.cc",
     "p2p_socket_client.h",
     "p2p_socket_client_delegate.h",
-    "sharing_webrtc_connection.cc",
-    "sharing_webrtc_connection.h",
-    "sharing_webrtc_timing_recorder.cc",
-    "sharing_webrtc_timing_recorder.h",
   ]
 
   deps = [
@@ -33,23 +29,5 @@ source_set("webrtc") {
     "//chrome/services/sharing/public/cpp",
     "//chrome/services/sharing/public/mojom",
     "//mojo/public/cpp/bindings",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [
-    "sharing_webrtc_connection_integration_test.cc",
-    "sharing_webrtc_connection_unittest.cc",
-  ]
-
-  deps = [
-    ":webrtc",
-    "test",
-    "//base/test:test_support",
-    "//jingle:webrtc_glue",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 }

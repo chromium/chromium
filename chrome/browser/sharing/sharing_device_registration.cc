@@ -21,7 +21,6 @@
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing/vapid_key_manager.h"
-#include "chrome/browser/sharing/webrtc/webrtc_flags.h"
 #include "chrome/common/pref_names.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -290,8 +289,6 @@ SharingDeviceRegistration::GetEnabledFeatures(bool supports_vapid) const {
     enabled_features.insert(SharingSpecificFields::SMS_FETCHER);
   if (IsRemoteCopySupported())
     enabled_features.insert(SharingSpecificFields::REMOTE_COPY);
-  if (IsPeerConnectionSupported())
-    enabled_features.insert(SharingSpecificFields::PEER_CONNECTION);
 #if BUILDFLAG(ENABLE_DISCOVERY)
   enabled_features.insert(SharingSpecificFields::DISCOVERY);
 #endif
@@ -331,15 +328,6 @@ bool SharingDeviceRegistration::IsRemoteCopySupported() const {
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
   return base::FeatureList::IsEnabled(kRemoteCopyReceiver);
-#else
-  return false;
-#endif
-}
-
-bool SharingDeviceRegistration::IsPeerConnectionSupported() const {
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-  return base::FeatureList::IsEnabled(kSharingPeerConnectionReceiver);
 #else
   return false;
 #endif

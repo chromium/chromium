@@ -165501,6 +165501,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sharing.WebRtc.AddIceCandidate" enum="BooleanSuccess"
     expires_after="M88">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <owner>himanshujaju@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165511,6 +165514,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sharing.WebRtc.ConnectionErrorReason"
     enum="SharingWebRtcConnectionErrorReason" expires_after="M88">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <owner>himanshujaju@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165521,6 +165527,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sharing.WebRtc.ConnectionType"
     enum="SharingWebRtcConnectionType" expires_after="M88">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <owner>himanshujaju@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165541,6 +165550,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sharing.WebRtc.OnMessageReceivedResult"
     enum="SharingWebRtcOnMessageReceivedResult" expires_after="M88">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <owner>himanshujaju@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165551,6 +165563,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sharing.WebRtc.SendMessageResult"
     enum="SharingWebRtcSendMessageResult" expires_after="M88">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <owner>himanshujaju@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165561,6 +165576,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sharing.WebRtc.Timeout" enum="SharingWebRtcTimeoutState"
     expires_after="M88">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <owner>himanshujaju@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165571,6 +165589,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram base="true" name="Sharing.WebRtc.TimingEvents" units="ms"
     expires_after="M88">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="SharingWebRtcTimingEventRole"
        and name="SharingWebRtcTimingEvent" -->
 
@@ -216962,7 +216983,11 @@ regressions. -->
   <suffix name="FcmVapid" label="FCM VAPID"/>
   <suffix name="Server" label="Server"/>
   <suffix name="Unknown" label="Unknown"/>
-  <suffix name="WebRTC" label="WebRTC"/>
+  <suffix name="WebRTC" label="WebRTC">
+    <obsolete>
+      Removed 2020-09 as the WebRTC experiment is shut down.
+    </obsolete>
+  </suffix>
   <affected-histogram name="Sharing.MessageAckTime"/>
   <affected-histogram name="Sharing.SendAckMessageResult"/>
   <affected-histogram name="Sharing.SendMessageResult"/>
@@ -217099,6 +217124,9 @@ regressions. -->
 </histogram_suffixes>
 
 <histogram_suffixes name="SharingWebRtcTimingEvent" separator=".">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <suffix name="AnswerCreated" label="Local answer created"/>
   <suffix name="AnswerReceived" label="Remote answer received"/>
   <suffix name="Closed" label="Connection closed"/>
@@ -217120,6 +217148,9 @@ regressions. -->
 </histogram_suffixes>
 
 <histogram_suffixes name="SharingWebRtcTimingEventRole" separator=".">
+  <obsolete>
+    Removed 2020-09 as the WebRTC experiment is shut down.
+  </obsolete>
   <suffix name="Receiver" label="Receiver device"/>
   <suffix name="Sender" label="Sender device"/>
   <suffix name="Unknown" label="Unknown"/>
