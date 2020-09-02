@@ -13,7 +13,7 @@
 namespace base {
 namespace internal {
 
-// A class combining a TaskSource and the SequenceSortKey that determines its
+// A class combining a TaskSource and the TaskSourceSortKey that determines its
 // position in a PriorityQueue. Instances are only mutable via
 // take_task_source() which can only be called once and renders its instance
 // invalid after the call.
@@ -21,7 +21,7 @@ class PriorityQueue::TaskSourceAndSortKey {
  public:
   TaskSourceAndSortKey() = default;
   TaskSourceAndSortKey(RegisteredTaskSource task_source,
-                       const SequenceSortKey& sort_key)
+                       const TaskSourceSortKey& sort_key)
       : task_source_(std::move(task_source)), sort_key_(sort_key) {
     DCHECK(task_source_);
   }
@@ -73,11 +73,11 @@ class PriorityQueue::TaskSourceAndSortKey {
   const RegisteredTaskSource& task_source() const { return task_source_; }
   RegisteredTaskSource& task_source() { return task_source_; }
 
-  const SequenceSortKey& sort_key() const { return sort_key_; }
+  const TaskSourceSortKey& sort_key() const { return sort_key_; }
 
  private:
   RegisteredTaskSource task_source_;
-  SequenceSortKey sort_key_;
+  TaskSourceSortKey sort_key_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskSourceAndSortKey);
 };
@@ -99,14 +99,15 @@ PriorityQueue& PriorityQueue::operator=(PriorityQueue&& other) = default;
 
 void PriorityQueue::Push(
     TransactionWithRegisteredTaskSource transaction_with_task_source) {
-  auto sequence_sort_key =
+  auto task_source_sort_key =
       transaction_with_task_source.transaction.GetSortKey();
-  container_.insert(TaskSourceAndSortKey(
-      std::move(transaction_with_task_source.task_source), sequence_sort_key));
-  IncrementNumTaskSourcesForPriority(sequence_sort_key.priority());
+  container_.insert(
+      TaskSourceAndSortKey(std::move(transaction_with_task_source.task_source),
+                           task_source_sort_key));
+  IncrementNumTaskSourcesForPriority(task_source_sort_key.priority());
 }
 
-const SequenceSortKey& PriorityQueue::PeekSortKey() const {
+const TaskSourceSortKey& PriorityQueue::PeekSortKey() const {
   DCHECK(!IsEmpty());
   return container_.Min().sort_key();
 }

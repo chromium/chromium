@@ -103,9 +103,9 @@ bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
   return true;
 }
 
-SequenceSortKey Sequence::GetSortKey() const {
+TaskSourceSortKey Sequence::GetSortKey() const {
   DCHECK(!queue_.empty());
-  return SequenceSortKey(traits_.priority(), queue_.front().queue_time);
+  return TaskSourceSortKey(traits_.priority(), queue_.front().queue_time);
 }
 
 Task Sequence::Clear(TaskSource::Transaction* transaction) {

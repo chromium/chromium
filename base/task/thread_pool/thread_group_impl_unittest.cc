@@ -30,7 +30,7 @@
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
 #include "base/task/thread_pool/sequence.h"
-#include "base/task/thread_pool/sequence_sort_key.h"
+#include "base/task/thread_pool/task_source_sort_key.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/test_task_factory.h"
 #include "base/task/thread_pool/test_utils.h"

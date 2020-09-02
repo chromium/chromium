@@ -127,7 +127,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyBestEffort) {
   best_effort_sequence_transaction.PushTask(std::move(best_effort_task));
 
   // Get the sort key.
-  const SequenceSortKey best_effort_sort_key =
+  const TaskSourceSortKey best_effort_sort_key =
       best_effort_sequence_transaction.GetSortKey();
 
   // Take the task from the sequence, so that its sequenced time is available
@@ -161,7 +161,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyForeground) {
   foreground_sequence_transaction.PushTask(std::move(foreground_task));
 
   // Get the sort key.
-  const SequenceSortKey foreground_sort_key =
+  const TaskSourceSortKey foreground_sort_key =
       foreground_sequence_transaction.GetSortKey();
 
   // Take the task from the sequence, so that its sequenced time is available

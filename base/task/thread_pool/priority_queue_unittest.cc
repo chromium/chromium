@@ -59,19 +59,19 @@ class PriorityQueueWithSequencesTest : public testing::Test {
 
   scoped_refptr<TaskSource> sequence_a =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::USER_VISIBLE));
-  SequenceSortKey sort_key_a = sequence_a->BeginTransaction().GetSortKey();
+  TaskSourceSortKey sort_key_a = sequence_a->BeginTransaction().GetSortKey();
 
   scoped_refptr<TaskSource> sequence_b =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::USER_BLOCKING));
-  SequenceSortKey sort_key_b = sequence_b->BeginTransaction().GetSortKey();
+  TaskSourceSortKey sort_key_b = sequence_b->BeginTransaction().GetSortKey();
 
   scoped_refptr<TaskSource> sequence_c =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::USER_BLOCKING));
-  SequenceSortKey sort_key_c = sequence_c->BeginTransaction().GetSortKey();
+  TaskSourceSortKey sort_key_c = sequence_c->BeginTransaction().GetSortKey();
 
   scoped_refptr<TaskSource> sequence_d =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::BEST_EFFORT));
-  SequenceSortKey sort_key_d = sequence_d->BeginTransaction().GetSortKey();
+  TaskSourceSortKey sort_key_d = sequence_d->BeginTransaction().GetSortKey();
 
   PriorityQueue pq;
 };

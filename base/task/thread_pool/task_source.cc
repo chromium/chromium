@@ -32,7 +32,7 @@ TaskSource::Transaction::~Transaction() {
   }
 }
 
-SequenceSortKey TaskSource::Transaction::GetSortKey() const {
+TaskSourceSortKey TaskSource::Transaction::GetSortKey() const {
   return task_source_->GetSortKey();
 }
 

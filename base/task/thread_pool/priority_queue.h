@@ -12,8 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/intrusive_heap.h"
-#include "base/task/thread_pool/sequence_sort_key.h"
 #include "base/task/thread_pool/task_source.h"
+#include "base/task/thread_pool/task_source_sort_key.h"
 
 namespace base {
 namespace internal {
@@ -27,14 +27,14 @@ class BASE_EXPORT PriorityQueue {
 
   PriorityQueue& operator=(PriorityQueue&& other);
 
-  // Inserts |task_source| in the PriorityQueue with |sequence_sort_key|.
+  // Inserts |task_source| in the PriorityQueue with |task_source_sort_key|.
   void Push(TransactionWithRegisteredTaskSource transaction_with_task_source);
 
-  // Returns a reference to the SequenceSortKey representing the priority of
+  // Returns a reference to the TaskSourceSortKey representing the priority of
   // the highest pending task in this PriorityQueue. The reference becomes
   // invalid the next time that this PriorityQueue is modified.
   // Cannot be called on an empty PriorityQueue.
-  const SequenceSortKey& PeekSortKey() const;
+  const TaskSourceSortKey& PeekSortKey() const;
 
   // Returns a reference to the highest priority TaskSource in this
   // PriorityQueue. Cannot be called on an empty PriorityQueue. The returned
@@ -73,8 +73,8 @@ class BASE_EXPORT PriorityQueue {
   void EnableFlushTaskSourcesOnDestroyForTesting();
 
  private:
-  // A class combining a TaskSource and the SequenceSortKey that determines its
-  // position in a PriorityQueue.
+  // A class combining a TaskSource and the TaskSourceSortKey that determines
+  // its position in a PriorityQueue.
   class TaskSourceAndSortKey;
 
   using ContainerType = IntrusiveHeap<TaskSourceAndSortKey>;

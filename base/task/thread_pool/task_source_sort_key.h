@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_THREAD_POOL_SEQUENCE_SORT_KEY_H_
-#define BASE_TASK_THREAD_POOL_SEQUENCE_SORT_KEY_H_
+#ifndef BASE_TASK_THREAD_POOL_TASK_SOURCE_SORT_KEY_H_
+#define BASE_TASK_THREAD_POOL_TASK_SOURCE_SORT_KEY_H_
 
 #include "base/base_export.h"
 #include "base/task/task_traits.h"
@@ -13,10 +13,10 @@ namespace base {
 namespace internal {
 
 // An immutable but assignable representation of the priority of a Sequence.
-class BASE_EXPORT SequenceSortKey final {
+class BASE_EXPORT TaskSourceSortKey final {
  public:
-  SequenceSortKey() = default;
-  SequenceSortKey(TaskPriority priority, TimeTicks next_task_sequenced_time);
+  TaskSourceSortKey() = default;
+  TaskSourceSortKey(TaskPriority priority, TimeTicks next_task_sequenced_time);
 
   TaskPriority priority() const { return priority_; }
   TimeTicks next_task_sequenced_time() const {
@@ -24,13 +24,13 @@ class BASE_EXPORT SequenceSortKey final {
   }
 
   // Lower sort key means more important.
-  bool operator<=(const SequenceSortKey& other) const;
+  bool operator<=(const TaskSourceSortKey& other) const;
 
-  bool operator==(const SequenceSortKey& other) const {
+  bool operator==(const TaskSourceSortKey& other) const {
     return priority_ == other.priority_ &&
            next_task_sequenced_time_ == other.next_task_sequenced_time_;
   }
-  bool operator!=(const SequenceSortKey& other) const {
+  bool operator!=(const TaskSourceSortKey& other) const {
     return !(other == *this);
   }
 
@@ -50,4 +50,4 @@ class BASE_EXPORT SequenceSortKey final {
 }  // namespace internal
 }  // namespace base
 
-#endif  // BASE_TASK_THREAD_POOL_SEQUENCE_SORT_KEY_H_
+#endif  // BASE_TASK_THREAD_POOL_TASK_SOURCE_SORT_KEY_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/thread_pool/sequence_sort_key.h"
+#include "base/task/thread_pool/task_source_sort_key.h"
 
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
@@ -11,19 +11,19 @@
 namespace base {
 namespace internal {
 
-TEST(SequenceSortKeyTest, OperatorLessThanOrEqual) {
-  SequenceSortKey key_a(TaskPriority::USER_BLOCKING,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_b(TaskPriority::USER_BLOCKING,
-                        TimeTicks::FromInternalValue(2000));
-  SequenceSortKey key_c(TaskPriority::USER_VISIBLE,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_d(TaskPriority::USER_VISIBLE,
-                        TimeTicks::FromInternalValue(2000));
-  SequenceSortKey key_e(TaskPriority::BEST_EFFORT,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_f(TaskPriority::BEST_EFFORT,
-                        TimeTicks::FromInternalValue(2000));
+TEST(TaskSourceSortKeyTest, OperatorLessThanOrEqual) {
+  TaskSourceSortKey key_a(TaskPriority::USER_BLOCKING,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_b(TaskPriority::USER_BLOCKING,
+                          TimeTicks::FromInternalValue(2000));
+  TaskSourceSortKey key_c(TaskPriority::USER_VISIBLE,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_d(TaskPriority::USER_VISIBLE,
+                          TimeTicks::FromInternalValue(2000));
+  TaskSourceSortKey key_e(TaskPriority::BEST_EFFORT,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_f(TaskPriority::BEST_EFFORT,
+                          TimeTicks::FromInternalValue(2000));
 
   EXPECT_LE(key_a, key_a);
   EXPECT_FALSE(key_b <= key_a);
@@ -68,19 +68,19 @@ TEST(SequenceSortKeyTest, OperatorLessThanOrEqual) {
   EXPECT_LE(key_f, key_f);
 }
 
-TEST(SequenceSortKeyTest, OperatorEqual) {
-  SequenceSortKey key_a(TaskPriority::USER_BLOCKING,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_b(TaskPriority::USER_BLOCKING,
-                        TimeTicks::FromInternalValue(2000));
-  SequenceSortKey key_c(TaskPriority::USER_VISIBLE,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_d(TaskPriority::USER_VISIBLE,
-                        TimeTicks::FromInternalValue(2000));
-  SequenceSortKey key_e(TaskPriority::BEST_EFFORT,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_f(TaskPriority::BEST_EFFORT,
-                        TimeTicks::FromInternalValue(2000));
+TEST(TaskSourceSortKeyTest, OperatorEqual) {
+  TaskSourceSortKey key_a(TaskPriority::USER_BLOCKING,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_b(TaskPriority::USER_BLOCKING,
+                          TimeTicks::FromInternalValue(2000));
+  TaskSourceSortKey key_c(TaskPriority::USER_VISIBLE,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_d(TaskPriority::USER_VISIBLE,
+                          TimeTicks::FromInternalValue(2000));
+  TaskSourceSortKey key_e(TaskPriority::BEST_EFFORT,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_f(TaskPriority::BEST_EFFORT,
+                          TimeTicks::FromInternalValue(2000));
 
   EXPECT_EQ(key_a, key_a);
   EXPECT_FALSE(key_b == key_a);
@@ -125,19 +125,19 @@ TEST(SequenceSortKeyTest, OperatorEqual) {
   EXPECT_EQ(key_f, key_f);
 }
 
-TEST(SequenceSortKeyTest, OperatorNotEqual) {
-  SequenceSortKey key_a(TaskPriority::USER_BLOCKING,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_b(TaskPriority::USER_BLOCKING,
-                        TimeTicks::FromInternalValue(2000));
-  SequenceSortKey key_c(TaskPriority::USER_VISIBLE,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_d(TaskPriority::USER_VISIBLE,
-                        TimeTicks::FromInternalValue(2000));
-  SequenceSortKey key_e(TaskPriority::BEST_EFFORT,
-                        TimeTicks::FromInternalValue(1000));
-  SequenceSortKey key_f(TaskPriority::BEST_EFFORT,
-                        TimeTicks::FromInternalValue(2000));
+TEST(TaskSourceSortKeyTest, OperatorNotEqual) {
+  TaskSourceSortKey key_a(TaskPriority::USER_BLOCKING,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_b(TaskPriority::USER_BLOCKING,
+                          TimeTicks::FromInternalValue(2000));
+  TaskSourceSortKey key_c(TaskPriority::USER_VISIBLE,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_d(TaskPriority::USER_VISIBLE,
+                          TimeTicks::FromInternalValue(2000));
+  TaskSourceSortKey key_e(TaskPriority::BEST_EFFORT,
+                          TimeTicks::FromInternalValue(1000));
+  TaskSourceSortKey key_f(TaskPriority::BEST_EFFORT,
+                          TimeTicks::FromInternalValue(2000));
 
   EXPECT_FALSE(key_a != key_a);
   EXPECT_NE(key_b, key_a);

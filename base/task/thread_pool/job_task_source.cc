@@ -343,8 +343,8 @@ bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
          GetMaxConcurrency(state_before_sub.worker_count() - 1);
 }
 
-SequenceSortKey JobTaskSource::GetSortKey() const {
-  return SequenceSortKey(traits_.priority(), queue_time_);
+TaskSourceSortKey JobTaskSource::GetSortKey() const {
+  return TaskSourceSortKey(traits_.priority(), queue_time_);
 }
 
 Task JobTaskSource::Clear(TaskSource::Transaction* transaction) {

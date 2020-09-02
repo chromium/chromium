@@ -15,9 +15,9 @@
 #include "base/sequence_token.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
-#include "base/task/thread_pool/sequence_sort_key.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
+#include "base/task/thread_pool/task_source_sort_key.h"
 #include "base/threading/sequence_local_storage_map.h"
 
 namespace base {
@@ -102,7 +102,7 @@ class BASE_EXPORT Sequence : public TaskSource {
   Task TakeTask(TaskSource::Transaction* transaction) override;
   Task Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
-  SequenceSortKey GetSortKey() const override;
+  TaskSourceSortKey GetSortKey() const override;
 
   // Releases reference to TaskRunner.
   void ReleaseTaskRunner();
