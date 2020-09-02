@@ -42,7 +42,8 @@ CreateDiscardableMemoryAllocator() {
       manager_remote.InitWithNewPipeAndPassReceiver());
   return std::make_unique<
       discardable_memory::ClientDiscardableSharedMemoryManager>(
-      std::move(manager_remote), ChildProcess::current()->io_task_runner());
+      std::move(manager_remote), ChildProcess::current()->io_task_runner(),
+      ChildProcess::current()->main_thread()->main_thread_runner());
 }
 
 }  // namespace content
