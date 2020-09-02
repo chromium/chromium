@@ -464,6 +464,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
                            DiscardDelegatedFrames);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
                            ScrollOOPIFEditableElement);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip);
 
   class WindowObserver;
   friend class WindowObserver;

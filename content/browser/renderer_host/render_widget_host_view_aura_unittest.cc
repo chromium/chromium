@@ -129,6 +129,8 @@
 #endif
 
 #if defined(OS_WIN)
+#include "ui/base/view_prop.h"
+#include "ui/base/win/window_event_target.h"
 #include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
@@ -5296,6 +5298,109 @@ TEST_F(RenderWidgetHostViewAuraTest, ForwardMouseEvent) {
   // view_ will be destroyed when parent is destroyed.
   view_ = nullptr;
 }
+
+#if defined(OS_WIN)
+class MockWindowEventTarget : public ui::WindowEventTarget {
+ public:
+  MockWindowEventTarget() = default;
+
+  LRESULT HandleMouseMessage(unsigned int message,
+                             WPARAM w_param,
+                             LPARAM l_param,
+                             bool* handled) override {
+    return S_OK;
+  }
+
+  LRESULT HandlePointerMessage(unsigned int message,
+                               WPARAM w_param,
+                               LPARAM l_param,
+                               bool* handled) override {
+    return S_OK;
+  }
+
+  LRESULT HandleKeyboardMessage(unsigned int message,
+                                WPARAM w_param,
+                                LPARAM l_param,
+                                bool* handled) override {
+    return S_OK;
+  }
+
+  LRESULT HandleTouchMessage(unsigned int message,
+                             WPARAM w_param,
+                             LPARAM l_param,
+                             bool* handled) override {
+    return S_OK;
+  }
+
+  LRESULT HandleInputMessage(unsigned int message,
+                             WPARAM w_param,
+                             LPARAM l_param,
+                             bool* handled) override {
+    return S_OK;
+  }
+
+  LRESULT HandleScrollMessage(unsigned int message,
+                              WPARAM w_param,
+                              LPARAM l_param,
+                              bool* handled) override {
+    return S_OK;
+  }
+
+  LRESULT HandleNcHitTestMessage(unsigned int message,
+                                 WPARAM w_param,
+                                 LPARAM l_param,
+                                 bool* handled) override {
+    return S_OK;
+  }
+
+  void HandleParentChanged() override {}
+  void ApplyPinchZoomScale(float scale) override {}
+  void ApplyPinchZoomBegin() override {}
+  void ApplyPinchZoomEnd() override {}
+  void ApplyPanGestureScroll(int scroll_x, int scroll_y) override {}
+  void ApplyPanGestureFling(int scroll_x, int scroll_y) override {}
+  void ApplyPanGestureScrollBegin(int scroll_x, int scroll_y) override {}
+  void ApplyPanGestureFlingBegin() override {}
+  void ApplyPanGestureFlingEnd() override {}
+  void ApplyPanGestureScrollEnd(bool tranisitioning_to_pinch) override {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MockWindowEventTarget);
+};
+
+// On Windows, a native HWND (Chrome_RenderWidgetHostHWND) forwards mouse events
+// to the browser window so that they can reach the tooltip controller. Since we
+// reparent this HWND when the view is occluded, some mouse exits might not be
+// forwarded, resulting in stuck tooltips. Test that tooltips are cleared.
+TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
+  // Give the host window an event target, which allows the view to create the
+  // Chrome_RenderWidgetHostHWND window.
+  MockWindowEventTarget event_target;
+  auto prop_window_target = std::make_unique<ui::ViewProp>(
+      parent_view_->GetHostWindowHWND(),
+      ui::WindowEventTarget::kWin32InputEventTarget,
+      static_cast<ui::WindowEventTarget*>(&event_target));
+
+  // Initialize the view.
+  view_->InitAsChild(nullptr);
+  aura::client::ParentWindowWithContext(
+      view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
+      gfx::Rect());
+  view_->Show();
+  EXPECT_TRUE(view_->UsesNativeWindowFrame());
+
+  // Simulate a tooltip.
+  base::string16 tooltip_text(base::ASCIIToUTF16("The tooltip!"));
+  view_->SetTooltipText(tooltip_text);
+  EXPECT_FALSE(widget_host_->is_hidden());
+  EXPECT_EQ(tooltip_text, view_->tooltip_);
+
+  // Simulate occlusion, which should clear the tooltip.
+  view_->WasOccluded();
+  EXPECT_TRUE(widget_host_->is_hidden());
+  EXPECT_EQ(base::string16(), view_->tooltip_);
+}
+#endif
 
 class TouchpadRenderWidgetHostViewAuraTest
     : public base::test::WithFeatureOverride,

@@ -83,6 +83,10 @@ void LegacyRenderWidgetHostHWND::UpdateParent(HWND parent) {
   direct_manipulation_helper_ = DirectManipulationHelper::CreateInstance(
       hwnd(), host_->GetNativeView()->GetHost()->compositor(),
       GetWindowEventTarget(GetParent()));
+
+  // Reset tooltips when parent changed; otherwise tooltips could stay open as
+  // the former parent wouldn't be forwarded any mouse leave messages.
+  host_->DisplayTooltipText(base::string16());
 }
 
 HWND LegacyRenderWidgetHostHWND::GetParent() {
