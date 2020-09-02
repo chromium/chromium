@@ -37,12 +37,6 @@ cr.define('settings', function() {
     setSelectedTemperatureUnit(temperatureUnit) {}
 
     /**
-     * Updates the selected topic source to server.
-     * @param {!AmbientModeTopicSource} topicSource the selected topic source.
-     */
-    setSelectedTopicSource(topicSource) {}
-
-    /**
      * Updates the selected albums of Google Photos or art categories to server.
      * @param {!AmbientModeSettings} settings the selected albums or categeries.
      */
@@ -64,11 +58,6 @@ cr.define('settings', function() {
     /** @override */
     setSelectedTemperatureUnit(temperatureUnit) {
       chrome.send('setSelectedTemperatureUnit', [temperatureUnit]);
-    }
-
-    /** @override */
-    setSelectedTopicSource(topicSource) {
-      chrome.send('setSelectedTopicSource', [topicSource]);
     }
 
     /** @override */

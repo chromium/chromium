@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -52,9 +53,9 @@ class AmbientModeHandlerTest : public testing::Test {
     handler_->HandleRequestSettings(&args);
   }
 
-  void RequestAlbums(int topic_source) {
+  void RequestAlbums(ash::AmbientModeTopicSource topic_source) {
     base::ListValue args;
-    args.Append(topic_source);
+    args.Append(static_cast<int>(topic_source));
     handler_->HandleRequestAlbums(&args);
   }
 
@@ -74,7 +75,10 @@ class AmbientModeHandlerTest : public testing::Test {
               topic_source_call_data.arg1()->GetString());
     // In FakeAmbientBackendControllerImpl, the |topic_source| is
     // kGooglePhotos.
-    EXPECT_EQ(0, topic_source_call_data.arg2()->GetInt());
+    const base::DictionaryValue* dictionary = nullptr;
+    topic_source_call_data.arg2()->GetAsDictionary(&dictionary);
+    const base::Value* topic_source_value = dictionary->FindKey("topicSource");
+    EXPECT_EQ(0, topic_source_value->GetInt());
 
     // Temperature Unit
     EXPECT_EQ(kWebCallbackFunctionName,
@@ -87,8 +91,21 @@ class AmbientModeHandlerTest : public testing::Test {
     run_loop->Quit();
   }
 
-  void VerifyAlbumsSent(int expected_topic_source, base::RunLoop* run_loop) {
-    EXPECT_EQ(1U, web_ui_->call_data().size());
+  void VerifyAlbumsSent(ash::AmbientModeTopicSource topic_source,
+                        base::RunLoop* run_loop) {
+    // Art gallery has an extra call to update the topic source to Art gallery.
+    std::vector<std::unique_ptr<content::TestWebUI::CallData>>::size_type call_size =
+        topic_source == ash::AmbientModeTopicSource::kGooglePhotos ? 1U : 2U;
+    EXPECT_EQ(call_size, web_ui_->call_data().size());
+
+    if (topic_source == ash::AmbientModeTopicSource::kArtGallery) {
+      const auto& topic_source_call_data = *web_ui_->call_data().front();
+      const base::DictionaryValue* dictionary = nullptr;
+      topic_source_call_data.arg2()->GetAsDictionary(&dictionary);
+      const base::Value* topic_source_value =
+          dictionary->FindKey("topicSource");
+      EXPECT_EQ(static_cast<int>(topic_source), topic_source_value->GetInt());
+    }
 
     const content::TestWebUI::CallData& call_data =
         *web_ui_->call_data().back();
@@ -103,7 +120,7 @@ class AmbientModeHandlerTest : public testing::Test {
     call_data.arg2()->GetAsDictionary(&dictionary);
 
     const base::Value* topic_source_value = dictionary->FindKey("topicSource");
-    EXPECT_EQ(expected_topic_source, topic_source_value->GetInt());
+    EXPECT_EQ(static_cast<int>(topic_source), topic_source_value->GetInt());
 
     const base::Value* albums = dictionary->FindKey("albums");
     EXPECT_EQ(2U, albums->GetList().size());
@@ -112,22 +129,20 @@ class AmbientModeHandlerTest : public testing::Test {
     albums->GetList()[0].GetAsDictionary(&album0);
     EXPECT_EQ("0", album0->FindKey("albumId")->GetString());
 
-    if (expected_topic_source == 0) {
-      EXPECT_EQ(false, album0->FindKey("checked")->GetBool());
-      EXPECT_EQ("album0", album0->FindKey("title")->GetString());
-
-    } else {
-      EXPECT_EQ(true, album0->FindKey("checked")->GetBool());
-      EXPECT_EQ("art0", album0->FindKey("title")->GetString());
-    }
     const base::DictionaryValue* album1;
     albums->GetList()[1].GetAsDictionary(&album1);
     EXPECT_EQ("1", album1->FindKey("albumId")->GetString());
 
-    if (expected_topic_source == 0) {
+    if (topic_source == ash::AmbientModeTopicSource::kGooglePhotos) {
+      EXPECT_EQ(false, album0->FindKey("checked")->GetBool());
+      EXPECT_EQ("album0", album0->FindKey("title")->GetString());
+
       EXPECT_EQ(true, album1->FindKey("checked")->GetBool());
       EXPECT_EQ("album1", album1->FindKey("title")->GetString());
     } else {
+      EXPECT_EQ(true, album0->FindKey("checked")->GetBool());
+      EXPECT_EQ("art0", album0->FindKey("title")->GetString());
+
       EXPECT_EQ(false, album1->FindKey("checked")->GetBool());
       EXPECT_EQ("art1", album1->FindKey("title")->GetString());
     }
@@ -145,16 +160,15 @@ TEST_F(AmbientModeHandlerTest, TestSendTemperatureUnitAndTopicSource) {
   RequestSettings();
 
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AmbientModeHandlerTest::VerifySettingsSent,
-                     base::Unretained(this), &run_loop),
-      base::TimeDelta::FromSeconds(1));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&AmbientModeHandlerTest::VerifySettingsSent,
+                                base::Unretained(this), &run_loop));
   run_loop.Run();
 }
 
 TEST_F(AmbientModeHandlerTest, TestSendAlbumsForGooglePhotos) {
-  int topic_source = 0;
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kGooglePhotos;
   RequestAlbums(topic_source);
 
   base::RunLoop run_loop;
@@ -166,7 +180,8 @@ TEST_F(AmbientModeHandlerTest, TestSendAlbumsForGooglePhotos) {
 }
 
 TEST_F(AmbientModeHandlerTest, TestSendAlbumsForArtGallery) {
-  int topic_source = 1;
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kArtGallery;
   RequestAlbums(topic_source);
 
   base::RunLoop run_loop;

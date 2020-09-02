@@ -22,7 +22,6 @@ class TestAmbientModeBrowserProxy extends TestBrowserProxy {
       'requestSettings',
       'requestAlbums',
       'setSelectedTemperatureUnit',
-      'setSelectedTopicSource',
       'setSelectedAlbums',
     ]);
   }
@@ -40,11 +39,6 @@ class TestAmbientModeBrowserProxy extends TestBrowserProxy {
   /** @override */
   setSelectedTemperatureUnit(temperatureUnit) {
     this.methodCalled('setSelectedTemperatureUnit', [temperatureUnit]);
-  }
-
-  /** @override */
-  setSelectedTopicSource(topicSource) {
-    this.methodCalled('setSelectedTopicSource', [topicSource]);
   }
 
   /** @override */
@@ -126,8 +120,10 @@ suite('AmbientModeHandler', function() {
 
   test('doubleClickTopicSource', () => {
     // Select the google photos topic source.
-    cr.webUIListenerCallback(
-        'topic-source-changed', AmbientModeTopicSource.GOOGLE_PHOTOS);
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
 
     const topicSourceList = ambientModePage.$$('topic-source-list');
     const ironList = topicSourceList.$$('iron-list');
@@ -177,7 +173,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('hasAlbums', function() {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
       {albumId: 'id1', checked: false, title: 'album1'}
     ];

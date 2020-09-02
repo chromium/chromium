@@ -21,6 +21,16 @@
 };
 
 /**
+ * Item of AmbientModeTopicSource.
+ *
+ * @typedef {{
+ *   topicSource: AmbientModeTopicSource,
+ *   hasGooglePhotosAlbums: boolean,
+ * }}
+ */
+/* #export */ let TopicSourceItem;
+
+/**
  * Album metadata for UI.
  *
  * @typedef {{

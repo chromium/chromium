@@ -124,11 +124,6 @@ void AmbientModeHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      "setSelectedTopicSource",
-      base::BindRepeating(&AmbientModeHandler::HandleSetSelectedTopicSource,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       "setSelectedTemperatureUnit",
       base::BindRepeating(&AmbientModeHandler::HandleSetSelectedTemperatureUnit,
                           base::Unretained(this)));
@@ -184,15 +179,6 @@ void AmbientModeHandler::HandleSetSelectedTemperatureUnit(
   UpdateSettings();
 }
 
-void AmbientModeHandler::HandleSetSelectedTopicSource(
-    const base::ListValue* args) {
-  DCHECK(settings_);
-  CHECK_EQ(1U, args->GetSize());
-
-  settings_->topic_source = ExtractTopicSource(args);
-  UpdateSettings();
-}
-
 void AmbientModeHandler::HandleSetSelectedAlbums(const base::ListValue* args) {
   const base::DictionaryValue* dictionary = nullptr;
   CHECK(!args->GetList().empty());
@@ -217,6 +203,12 @@ void AmbientModeHandler::HandleSetSelectedAlbums(const base::ListValue* args) {
         DCHECK(personal_album);
         settings_->selected_album_ids.emplace_back(personal_album->album_id);
       }
+
+      // Update topic source based on selections.
+      if (settings_->selected_album_ids.empty())
+        settings_->topic_source = ash::AmbientModeTopicSource::kArtGallery;
+      else
+        settings_->topic_source = ash::AmbientModeTopicSource::kGooglePhotos;
       break;
     case ash::AmbientModeTopicSource::kArtGallery:
       // For Art gallery, we set the corresponding setting to be enabled or not
@@ -235,6 +227,8 @@ void AmbientModeHandler::HandleSetSelectedAlbums(const base::ListValue* args) {
   }
 
   UpdateSettings();
+  // TODO(wutao): Undate the UI when success in OnUpdateSettings.
+  SendTopicSource();
 }
 
 void AmbientModeHandler::SendTemperatureUnit() {
@@ -246,8 +240,13 @@ void AmbientModeHandler::SendTemperatureUnit() {
 
 void AmbientModeHandler::SendTopicSource() {
   DCHECK(settings_);
+  base::Value topic_source(base::Value::Type::DICTIONARY);
+  topic_source.SetKey("hasGooglePhotosAlbums",
+                      base::Value(!personal_albums_.albums.empty()));
+  topic_source.SetKey("topicSource",
+                      base::Value(static_cast<int>(settings_->topic_source)));
   FireWebUIListener("topic-source-changed",
-                    base::Value(static_cast<int>(settings_->topic_source)));
+                    base::Value(std::move(topic_source)));
 }
 
 void AmbientModeHandler::SendAlbums(ash::AmbientModeTopicSource topic_source) {
@@ -281,6 +280,8 @@ void AmbientModeHandler::SendAlbums(ash::AmbientModeTopicSource topic_source) {
   }
 
   dictionary.SetKey("topicSource", base::Value(static_cast<int>(topic_source)));
+  dictionary.SetKey("selectedTopicSource",
+                    base::Value(static_cast<int>(settings_->topic_source)));
   dictionary.SetKey("albums", std::move(albums));
   FireWebUIListener("albums-changed", std::move(dictionary));
 }
@@ -342,6 +343,7 @@ void AmbientModeHandler::OnSettingsAndAlbumsFetched(
   if (chromeos::features::IsAmbientModePhotoPreviewEnabled())
     DownloadAlbumPreviewImage(*topic_source);
 
+  UpdateTopicSource(*topic_source);
   SendAlbums(*topic_source);
 }
 
@@ -358,6 +360,40 @@ void AmbientModeHandler::SyncSettingsAndAlbums() {
       it = settings_->selected_album_ids.erase(it);
     }
   }
+
+  if (settings_->selected_album_ids.empty())
+    MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kArtGallery);
+}
+
+void AmbientModeHandler::UpdateTopicSource(
+    ash::AmbientModeTopicSource topic_source) {
+  // If this is an Art gallery album page, will select art gallery topic source.
+  if (topic_source == ash::AmbientModeTopicSource::kArtGallery) {
+    MaybeUpdateTopicSource(topic_source);
+    return;
+  }
+
+  // If this is a Google Photos album page, will
+  // 1. Select art gallery topic source if no albums or no album is selected.
+  if (settings_->selected_album_ids.empty()) {
+    MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kArtGallery);
+    return;
+  }
+
+  // 2. Select Google Photos topic source if at least one album is selected.
+  MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
+}
+
+void AmbientModeHandler::MaybeUpdateTopicSource(
+    ash::AmbientModeTopicSource topic_source) {
+  // If the setting is the same, no need to update.
+  if (settings_->topic_source == topic_source)
+    return;
+
+  settings_->topic_source = topic_source;
+  UpdateSettings();
+  // TODO(wutao): Undate the UI when success in OnUpdateSettings.
+  SendTopicSource();
 }
 
 void AmbientModeHandler::DownloadAlbumPreviewImage(

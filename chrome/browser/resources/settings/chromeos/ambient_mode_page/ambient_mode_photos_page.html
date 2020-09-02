@@ -18,12 +18,19 @@
     <style include="settings-shared">
     </style>
     <settings-localized-link class="cr-row first"
-        localized-string="[[getTitleInnerHtml_(topicSource_)]]">
+        localized-string="[[getTitleInnerHtml_(topicSource)]]">
     </settings-localized-link>
+
+    <template is="dom-if" if="[[hasNoAlbums_(albums)]]">
+      <settings-localized-link class="cr-row first"
+          localized-string=
+              $i18nPolymer{ambientModeAlbumsSubpageGooglePhotosNoAlbum}
+      </settings-localized-link>
+    </template>
 
     <!-- Text based album selection. -->
     <template is="dom-if" if="[[!photoPreviewEnabled]]">
-      <iron-list id="albums" class="list-frame" items="[[albums_]]">
+      <iron-list id="albums" class="list-frame" items="[[albums]]">
         <template>
           <cr-checkbox class="list-item"
               checked="[[item.checked]]"
@@ -38,7 +45,7 @@
 
     <!-- Photo based album selection. -->
     <template is="dom-if" if="[[photoPreviewEnabled]]">
-      <album-list albums="{{albums_}}" topic-source="[[topicSource_]]">
+      <album-list albums="{{albums}}" topic-source="[[topicSource]]">
       </album-list>
     </template>
   </template>
