@@ -246,7 +246,13 @@ CSPSource* CSPSource::Intersect(CSPSource* other) const {
         stricter->host_wildcard_, stricter->port_wildcard_);
   }
 
-  String host = host_wildcard_ == kNoWildcard ? host_ : other->host_;
+  // Pick the host without wildcard, or if both have a wildcard, pick the
+  // longer one.
+  String host = (host_wildcard_ == kNoWildcard ||
+                 (other->host_wildcard_ == kHasWildcard &&
+                  host_.length() > other->host_.length()))
+                    ? host_
+                    : other->host_;
   // Since sources are similar and paths match, pick the longer one.
   String path = path_.length() > other->path_.length() ? path_ : other->path_;
   // Choose this port if the other port is empty, has wildcard or is a port for

@@ -294,7 +294,6 @@ TEST_F(SourceListDirectiveTest, GetIntersectCSPSourcesSchemes) {
   struct TestCase {
     String sources;
     String expected;
-    String expected_reversed;
   } cases[] = {{"http:", "http:"},
                {"https:", "https:"},
                {"ws:", "wss: ws://another.test/bar/"},
@@ -309,11 +308,13 @@ TEST_F(SourceListDirectiveTest, GetIntersectCSPSourcesSchemes) {
                 "https://example1.com/foo/ http://example1.com/bar/page.html"},
                {"http://example1.com/foo/ https://example1.com/foo/",
                 "http://example1.com/foo/ https://example1.com/foo/ "
-                "http://example1.com/foo/ https://example1.com/foo/"},
+                "http://example1.com/foo/ https://example1.com/foo/ "
+                "https://example1.com/foo/ https://example1.com/foo/"},
                {"https://example1.com/foo/ http://example1.com/foo/",
                 "https://example1.com/foo/ http://example1.com/foo/ "
-                "http://example1.com/foo/ https://example1.com/foo/"},
-               // If exaclty the same policy is specified, it is optimized.
+                "https://example1.com/foo/ http://example1.com/foo/ "
+                "https://example1.com/foo/ https://example1.com/foo/"},
+               // If exactly the same policy is specified, it is optimized.
                {"http: http://example1.com/foo/ https://example1.com/foo/ "
                 "http://example1.com/bar/page.html wss: ws://another.test/bar/",
                 "http: wss: ws://another.test/bar/"}};
@@ -408,6 +409,7 @@ TEST_F(SourceListDirectiveTest, Subsumes) {
       {{"http://*.non-example3.com:*/bar/"}, false},
       {{"http://example3.com/foo/"}, false},
       {{"http://not-example1.com", "http://not-example1.com"}, false},
+      {{"http://*", "http://*.com http://*.example3.com:*/bar/"}, false},
   };
 
   for (const auto& test : cases) {
