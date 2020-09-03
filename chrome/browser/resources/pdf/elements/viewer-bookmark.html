@@ -1,6 +1,6 @@
     <style>
       #item {
-        align-items: center;
+        align-items: flex-start;
         cursor: pointer;
         display: flex;
         height: 30px;
@@ -10,6 +10,7 @@
 
       :host-context([pdf-viewer-update-enabled]) #item {
         height: initial;
+        padding: 5px 0;
       }
 
       #item:hover {
@@ -34,11 +35,28 @@
         white-space: initial;
       }
 
+      #expand-container {
+        --expand-button-size: 28px;
+        flex-shrink: 0;
+        position: relative;
+        width: var(--expand-button-size);
+      }
+
+      /* Forces #expand-container to have a height of 1 line-height. */
+      #expand-container::before {
+        content: '.';
+        visibility: hidden;
+      }
+
       #expand {
         --cr-icon-button-fill-color: var(--primary-text-color);
         --cr-icon-button-icon-size: 16px;
-        --cr-icon-button-size: 28px;
+        --cr-icon-button-size: var(--expand-button-size);
+        left: 0;
         margin: 0;
+        position: absolute;
+        /* Vertically aligns the expand icon with the first line of #title. */
+        top: calc((100% - var(--cr-icon-button-size)) / 2);
         transition: transform 150ms;
       }
 
@@ -51,8 +69,10 @@
       }
     </style>
     <div id="item" on-click="onClick_">
-      <cr-icon-button id="expand" iron-icon="cr:chevron-right"
-          on-click="toggleChildren_"></cr-icon-button>
+      <div id="expand-container">
+        <cr-icon-button id="expand" iron-icon="cr:chevron-right"
+            on-click="toggleChildren_"></cr-icon-button>
+      </div>
       <span id="title" tabindex="0">[[bookmark.title]]</span>
     </div>
     <!-- dom-if will stamp the complex bookmark tree lazily as individual nodes
