@@ -17,6 +17,7 @@ class MockNativeFileSystemPermissionGrant
   MockNativeFileSystemPermissionGrant();
 
   MOCK_METHOD0(GetStatus, PermissionStatus());
+  MOCK_METHOD0(GetPath, base::FilePath());
   void RequestPermission(
       GlobalFrameRoutingId frame_id,
       UserActivationState user_activation_state,

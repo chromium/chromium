@@ -34,6 +34,11 @@ class CONTENT_EXPORT NativeFileSystemPermissionGrant
 
   virtual PermissionStatus GetStatus() = 0;
 
+  // Returns the path this permission grant is associated with. Can return an
+  // empty FilePath if the permission grant isn't associated with any specific
+  // path.
+  virtual base::FilePath GetPath() = 0;
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class PermissionRequestOutcome {

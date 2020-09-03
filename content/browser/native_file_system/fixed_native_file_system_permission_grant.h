@@ -19,10 +19,12 @@ namespace content {
 class CONTENT_EXPORT FixedNativeFileSystemPermissionGrant
     : public NativeFileSystemPermissionGrant {
  public:
-  explicit FixedNativeFileSystemPermissionGrant(PermissionStatus status);
+  explicit FixedNativeFileSystemPermissionGrant(PermissionStatus status,
+                                                base::FilePath path);
 
   // NativeFileSystemPermissionGrant:
   PermissionStatus GetStatus() override;
+  base::FilePath GetPath() override;
   void RequestPermission(
       GlobalFrameRoutingId frame_id,
       UserActivationState user_activation_state,
@@ -33,6 +35,7 @@ class CONTENT_EXPORT FixedNativeFileSystemPermissionGrant
 
  private:
   const PermissionStatus status_;
+  const base::FilePath path_;
 };
 
 }  // namespace content

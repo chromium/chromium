@@ -7,8 +7,9 @@
 namespace content {
 
 FixedNativeFileSystemPermissionGrant::FixedNativeFileSystemPermissionGrant(
-    PermissionStatus status)
-    : status_(status) {}
+    PermissionStatus status,
+    base::FilePath path)
+    : status_(status), path_(std::move(path)) {}
 
 FixedNativeFileSystemPermissionGrant::~FixedNativeFileSystemPermissionGrant() =
     default;
@@ -16,6 +17,10 @@ FixedNativeFileSystemPermissionGrant::~FixedNativeFileSystemPermissionGrant() =
 FixedNativeFileSystemPermissionGrant::PermissionStatus
 FixedNativeFileSystemPermissionGrant::GetStatus() {
   return status_;
+}
+
+base::FilePath FixedNativeFileSystemPermissionGrant::GetPath() {
+  return path_;
 }
 
 void FixedNativeFileSystemPermissionGrant::RequestPermission(

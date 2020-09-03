@@ -340,7 +340,8 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
 
   scoped_refptr<FixedNativeFileSystemPermissionGrant> permission_grant_ =
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED);
+          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+          base::FilePath());
   std::unique_ptr<NativeFileSystemFileWriterImpl> handle_;
 };
 

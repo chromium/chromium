@@ -448,9 +448,10 @@ void NativeFileSystemManagerImpl::DidResolveForSerializeHandle(
   switch (url.type()) {
     case storage::kFileSystemTypeNativeLocal: {
       DCHECK_EQ(url.mount_type(), storage::kFileSystemTypeIsolated);
-      base::FilePath root_path;
-      storage::IsolatedContext::GetInstance()->GetRegisteredPath(
-          url.filesystem_id(), &root_path);
+      base::FilePath root_path = resolved_token->GetWriteGrant()->GetPath();
+      if (root_path.empty())
+        root_path = url.path();
+
       data.mutable_native()->set_root_path(SerializePath(root_path));
 
       base::FilePath relative_path;
@@ -512,7 +513,7 @@ void NativeFileSystemManagerImpl::DeserializeHandle(
 
       auto permission_grant =
           base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-              PermissionStatus::GRANTED);
+              PermissionStatus::GRANTED, base::FilePath());
       CreateTransferTokenImpl(
           url, origin,
           SharedHandleState(permission_grant, permission_grant, {}),
@@ -754,7 +755,7 @@ void NativeFileSystemManagerImpl::DidOpenSandboxedFileSystem(
 
   auto permission_grant =
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          PermissionStatus::GRANTED);
+          PermissionStatus::GRANTED, base::FilePath());
 
   std::move(callback).Run(
       native_file_system_error::Ok(),
@@ -1037,7 +1038,8 @@ NativeFileSystemManagerImpl::GetSharedHandleStateForPath(
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableExperimentalWebPlatformFeatures)
             ? PermissionStatus::GRANTED
-            : PermissionStatus::DENIED);
+            : PermissionStatus::DENIED,
+        path);
     if (user_action ==
         NativeFileSystemPermissionContext::UserAction::kLoadFromStorage) {
       read_grant = write_grant;
@@ -1045,7 +1047,7 @@ NativeFileSystemManagerImpl::GetSharedHandleStateForPath(
       // Grant read permission even without a permission_context_, as the picker
       // itself is enough UI to assume user intent.
       read_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          PermissionStatus::GRANTED);
+          PermissionStatus::GRANTED, path);
     }
   }
   return SharedHandleState(std::move(read_grant), std::move(write_grant),

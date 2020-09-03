@@ -115,7 +115,8 @@ class NativeFileSystemFileHandleImplTest : public testing::Test {
 
   scoped_refptr<FixedNativeFileSystemPermissionGrant> allow_grant_ =
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED);
+          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+          base::FilePath());
   std::unique_ptr<NativeFileSystemFileHandleImpl> handle_;
 };
 

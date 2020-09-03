@@ -50,11 +50,21 @@ class OriginScopedNativeFileSystemPermissionContext::PermissionGrantImpl
         type_(type) {}
 
   // NativeFileSystemPermissionGrant:
-  PermissionStatus GetStatus() override { return status_; }
+  PermissionStatus GetStatus() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return status_;
+  }
+  base::FilePath GetPath() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return path_;
+  }
+
   void RequestPermission(
       content::GlobalFrameRoutingId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     // Check if a permission request has already been processed previously. This
     // check is done first because we don't want to reset the status of a
     // permission if it has already been granted.

@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   auto read_grant = base::MakeRefCounted<
       testing::StrictMock<MockNativeFileSystemPermissionGrant>>();
   auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-      PermissionStatus::ASK);
+      PermissionStatus::ASK, base::FilePath());
 
   EXPECT_CALL(permission_context,
               CanObtainReadPermission(url::Origin::Create(

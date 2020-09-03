@@ -150,16 +150,19 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
   mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle>
   GetHandleForDirectory(const base::FilePath& path) {
+    auto grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+        FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED, path);
+
     EXPECT_CALL(permission_context_,
                 GetReadPermissionGrant(
                     kTestOrigin, path, HandleType::kDirectory,
                     NativeFileSystemPermissionContext::UserAction::kOpen))
-        .WillOnce(testing::Return(allow_grant_));
+        .WillOnce(testing::Return(grant));
     EXPECT_CALL(permission_context_,
                 GetWritePermissionGrant(
                     kTestOrigin, path, HandleType::kDirectory,
                     NativeFileSystemPermissionContext::UserAction::kOpen))
-        .WillOnce(testing::Return(allow_grant_));
+        .WillOnce(testing::Return(grant));
 
     blink::mojom::NativeFileSystemEntryPtr entry =
         manager_->CreateDirectoryEntryFromPath(kBindingContext, path);
@@ -219,13 +222,16 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
   scoped_refptr<FixedNativeFileSystemPermissionGrant> ask_grant_ =
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::ASK);
+          FixedNativeFileSystemPermissionGrant::PermissionStatus::ASK,
+          base::FilePath());
   scoped_refptr<FixedNativeFileSystemPermissionGrant> ask_grant2_ =
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::ASK);
+          FixedNativeFileSystemPermissionGrant::PermissionStatus::ASK,
+          base::FilePath());
   scoped_refptr<FixedNativeFileSystemPermissionGrant> allow_grant_ =
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
-          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED);
+          FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+          base::FilePath());
 };
 
 TEST_F(NativeFileSystemManagerImplTest, GetSandboxedFileSystem_Permissions) {
@@ -454,17 +460,21 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_SandboxedDirectory) {
 TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_Native_SingleFile) {
   const base::FilePath kTestPath(dir_.GetPath().AppendASCII("foo"));
 
+  auto grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
+      FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED,
+      kTestPath);
+
   // Expect calls to get grants when creating the initial handle.
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
                   NativeFileSystemPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(allow_grant_));
+      .WillOnce(testing::Return(grant));
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, kTestPath, HandleType::kFile,
                   NativeFileSystemPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(allow_grant_));
+      .WillOnce(testing::Return(grant));
 
   blink::mojom::NativeFileSystemEntryPtr entry =
       manager_->CreateFileEntryFromPath(kBindingContext, kTestPath);
