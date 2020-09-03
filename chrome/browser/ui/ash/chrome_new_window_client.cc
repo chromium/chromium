@@ -24,6 +24,7 @@
 #include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/chromeos/arc/intent_helper/custom_tab_session_impl.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/extensions/api/terminal/terminal_extension_helper.h"
@@ -362,6 +363,34 @@ void ChromeNewWindowClient::OpenFileManager() {
                             true /* preferred_containner */),
                         apps::mojom::LaunchSource::kFromKeyboard,
                         display::kInvalidDisplayId);
+        }
+      });
+}
+
+void ChromeNewWindowClient::OpenDownloadsFolder() {
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  auto downloads_path =
+      file_manager::util::GetDownloadsFolderForProfile(profile);
+  DCHECK(proxy);
+  proxy->AppRegistryCache().ForOneApp(
+      file_manager::kFileManagerAppId,
+      [proxy, downloads_path](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady) {
+          apps::mojom::FilePathsPtr launch_files =
+              apps::mojom::FilePaths::New();
+          launch_files->file_paths.push_back(downloads_path);
+
+          proxy->LaunchAppWithFiles(
+              update.AppId(),
+              apps::mojom::LaunchContainer::kLaunchContainerNone,
+              apps::GetEventFlags(
+                  apps::mojom::LaunchContainer::kLaunchContainerNone,
+                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  true /* preferred_containner */),
+              apps::mojom::LaunchSource::kFromKeyboard,
+              std::move(launch_files));
         }
       });
 }
