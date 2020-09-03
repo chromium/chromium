@@ -268,9 +268,14 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
           std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
                                    resource_size_in_dip),
           resource_size);
+
+      // ArcAppIcon::Source::GetImageForScale calls host_->LoadForScaleFactor to
+      // read both the foreground and background files, so the
+      // |background_image_skia_| doesn't need to set the host to call
+      // LoadForScaleFactor again. Otherwise, it might duplicate the opened
+      // files number, and cause the system crash,
       background_image_skia_ = gfx::ImageSkia(
-          std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
-                                   resource_size_in_dip),
+          std::make_unique<Source>(nullptr, resource_size_in_dip),
           resource_size);
       for (const auto& scale_factor : scale_factors) {
         foreground_incomplete_scale_factors_.insert(
