@@ -5,7 +5,9 @@
 module crosapi.mojom;
 
 // Each pixel is represented by 4 bytes [RGBA].
+// NOTE: For UI images prefer gfx.mojom.ImageSkia, which supports high-DPI.
 // TODO(https://crbug.com/1094460): Use a more performant transport mechanism.
+[Stable]
 struct Bitmap {
   uint32 width;
   uint32 height;

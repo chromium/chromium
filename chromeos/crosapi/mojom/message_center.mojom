@@ -10,34 +10,36 @@ import "mojo/public/mojom/base/string16.mojom";
 // Handles notifications created via the Notifications web platform API and the
 // chrome.notifications() extension API. Shows the notifications in the
 // message center. Implemented in ash-chrome.
+[Stable]
 interface MessageCenter {
   // Displays a notification. If the notification's ID is the same as an
   // existing notification, that notification is replaced. The delegate will be
   // called with user actions.
-  DisplayNotification(Notification notification,
-                      pending_remote<NotificationDelegate> delegate);
+  DisplayNotification@0(Notification notification,
+                        pending_remote<NotificationDelegate> delegate);
 
   // Closes a notification by the ID provided in |notification| above.
-  CloseNotification(string id);
+  CloseNotification@1(string id);
 };
 
 // Handles responses to user actions on notifications. Multiple actions may
 // occur on a single notification. For example, clicking a notification button
 // may not close the notification. Implemented in lacros-chrome.
+[Stable]
 interface NotificationDelegate {
   // Called when a notification previously displayed by the client is closed.
-  OnNotificationClosed(bool by_user);
+  OnNotificationClosed@0(bool by_user);
 
   // Called when the body of a notification is clicked.
-  OnNotificationClicked();
+  OnNotificationClicked@1();
 
   // Called when a notification that has buttons (e.g., "Learn more") receives a
   // click on one of the buttons.
-  OnNotificationButtonClicked(uint32 button_index);
+  OnNotificationButtonClicked@2(uint32 button_index);
 
   // Called when a notification's settings button has been pressed.
-  OnNotificationSettingsButtonClicked();
+  OnNotificationSettingsButtonClicked@3();
 
   // Called when a notification has been disabled (via inline settings).
-  OnNotificationDisabled();
+  OnNotificationDisabled@4();
 };

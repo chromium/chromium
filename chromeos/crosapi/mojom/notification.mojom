@@ -12,7 +12,7 @@ import "url/mojom/url.mojom";
 
 // Type of notification to show. See the chrome.notifications extension API:
 // https://developer.chrome.com/extensions/notifications#type-TemplateType
-[Extensible]
+[Stable, Extensible]
 enum NotificationType {
   // Icon, title and message.
   kSimple = 0,
@@ -30,7 +30,7 @@ enum NotificationType {
 // How to display notifications when a fullscreen window is open. For example,
 // a child account time limit notification should appear over a fullscreen
 // video.
-[Extensible]
+[Stable, Extensible]
 enum FullscreenVisibility {
   // Do not show over fullscreen windows.
   kNone = 0,
@@ -40,6 +40,7 @@ enum FullscreenVisibility {
 };
 
 // List items for NotificationType::kList.
+[Stable]
 struct NotificationItem {
   mojo_base.mojom.String16 title;
   mojo_base.mojom.String16 message;
@@ -47,6 +48,7 @@ struct NotificationItem {
 
 // Data for each button. Implemented as a struct for extensibility (e.g. so we
 // could add icon buttons).
+[Stable]
 struct ButtonInfo {
   mojo_base.mojom.String16 title;
 };
@@ -56,6 +58,7 @@ struct ButtonInfo {
 // API. See documentation at:
 // https://developer.mozilla.org/en-US/docs/Web/API/notification
 // https://developer.chrome.com/extensions/notifications#type-NotificationOptions
+[Stable]
 struct Notification {
   // Type of notification to show.
   NotificationType type;
