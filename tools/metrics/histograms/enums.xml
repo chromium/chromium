@@ -16276,6 +16276,18 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="8" label="showGridTrackSizes.true"/>
 </enum>
 
+<enum name="DevToolsHighlightedPersistentCSSGridCount">
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="4"/>
+  <int value="5" label="5 to 9"/>
+  <int value="6" label="10 to 19"/>
+  <int value="7" label="20 to 49"/>
+  <int value="8" label="More than 50"/>
+</enum>
+
 <enum name="DevToolsIssuesPanelOpenedFrom">
   <int value="0" label="Console Info Bar"/>
   <int value="1" label="Learn More Link COEP"/>

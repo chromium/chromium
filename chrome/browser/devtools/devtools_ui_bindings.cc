@@ -117,6 +117,8 @@ static const char kDevtoolsGridSettingChangedHistogram[] =
     "DevTools.GridSettingChanged";
 static const char kDevtoolsCSSGridSettingsHistogram[] =
     "DevTools.CSSGridSettings2";
+static const char kDevToolsHighlightedPersistentCSSGridCountHistogram[] =
+    "DevTools.HighlightedPersistentCSSGridCount";
 static const char kDevtoolsExperimentEnabledHistogram[] =
     "DevTools.ExperimentEnabled";
 static const char kDevtoolsExperimentDisabledHistogram[] =
@@ -1289,6 +1291,8 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
   else if (name == kDevtoolsGridSettingChangedHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else if (name == kDevtoolsCSSGridSettingsHistogram)
+    base::UmaHistogramExactLinear(name, sample, boundary_value);
+  else if (name == kDevToolsHighlightedPersistentCSSGridCountHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else if (name == kDevtoolsExperimentEnabledHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
