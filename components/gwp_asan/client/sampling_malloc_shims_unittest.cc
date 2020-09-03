@@ -36,7 +36,7 @@ static size_t GetAllocatedSize(void* mem) {
 static size_t GetAllocatedSize(void* mem) {
   return malloc_size(mem);
 }
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <malloc.h>
 static size_t GetAllocatedSize(void* mem) {
   return malloc_usable_size(mem);

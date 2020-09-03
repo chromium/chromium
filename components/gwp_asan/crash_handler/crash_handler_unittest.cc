@@ -34,7 +34,7 @@
 #include "third_party/crashpad/crashpad/snapshot/minidump/process_snapshot_minidump.h"
 #include "third_party/crashpad/crashpad/tools/tool_support.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "third_party/crashpad/crashpad/snapshot/sanitized/sanitization_information.h"
 #endif
 
@@ -122,7 +122,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   std::map<std::string, std::string> annotations;
   std::vector<std::string> arguments;
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   static crashpad::SanitizationInformation sanitization_info = {};
   static crashpad::SanitizationAllowedMemoryRanges allowed_memory_ranges;
   if (cmd_line->HasSwitch("sanitize")) {
@@ -150,7 +150,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
 #endif
 
   crashpad::CrashpadClient* client = new crashpad::CrashpadClient();
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool handler =
       client->StartHandlerAtCrash(/* handler */ cmd_line->GetProgram(),
                                   /* database */ directory,
@@ -458,7 +458,7 @@ TEST_P(CrashHandlerTest, MAYBE_DISABLED(UnrelatedException)) {
 INSTANTIATE_TEST_SUITE_P(VaryAllocator,
                          CrashHandlerTest,
                          testing::Values(
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
                              TestParams("malloc", true),
 #endif
                              TestParams("malloc", false),
