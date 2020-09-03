@@ -132,12 +132,6 @@
         "parameters": []
       },
       {
-        "name": "runNextTest",
-        "type": "function",
-        "nocompile": true,
-        "parameters": []
-      },
-      {
         "name": "fail",
         "type": "function",
         "nocompile": true,
@@ -197,22 +191,6 @@
               {"type": "boolean"}
             ]
           },
-          {"type": "string", "name": "message", "optional": true}
-        ]
-      },
-      {
-        "name": "assertBool",
-        "type": "function",
-        "nocompile": true,
-        "parameters": [
-          {
-            "name": "test",
-            "choices": [
-              {"type": "string"},
-              {"type": "boolean"}
-            ]
-          },
-          {"type": "boolean", "name": "expected"},
           {"type": "string", "name": "message", "optional": true}
         ]
       },

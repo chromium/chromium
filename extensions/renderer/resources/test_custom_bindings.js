@@ -29,52 +29,20 @@ apiBridge.registerCustomHook(function(api) {
   var testsFailed = 0;
   var testCount = 1;
   var failureException = 'chrome.test.failure';
+  var pendingCallbacks = 0;
 
-  // Helper function to get around the fact that function names in javascript
-  // are read-only, and you can't assign one to anonymous functions.
-  function testName(test) {
-    return test ? (test.name || test.generatedName) : "(no test)";
-  }
-
-  function testDone() {
-    environmentSpecificBindings.testDone(chromeTest.runNextTest);
-  }
-
-  function allTestsDone() {
-    if (testsFailed == 0) {
-      chromeTest.notifyPass();
-    } else {
-      chromeTest.notifyFail('Failed ' + testsFailed + ' of ' +
-                             testCount + ' tests');
+  function safeFunctionApply(func, args) {
+    try {
+      if (func)
+        return $Function.apply(func, undefined, args);
+    } catch (e) {
+      if (e === failureException)
+        throw e;
+      handleException(e.message, e);
     }
   }
 
-  var pendingCallbacks = 0;
-
-  apiFunctions.setHandleRequest('callbackAdded', function() {
-    pendingCallbacks++;
-
-    var called = null;
-    return function() {
-      if (called != null) {
-        var redundantPrefix = 'Error\n';
-        chromeTest.fail(
-          'Callback has already been run. ' +
-          'First call:\n' +
-          $String.slice(called, redundantPrefix.length) + '\n' +
-          'Second call:\n' +
-          $String.slice(new Error().stack, redundantPrefix.length));
-      }
-      called = new Error().stack;
-
-      pendingCallbacks--;
-      if (pendingCallbacks == 0) {
-        chromeTest.succeed();
-      }
-    };
-  });
-
-  apiFunctions.setHandleRequest('runNextTest', function() {
+  function runNextTest() {
     // There may have been callbacks which were interrupted by failure
     // exceptions.
     pendingCallbacks = 0;
@@ -97,6 +65,61 @@ apiBridge.registerCustomHook(function(api) {
     } catch (e) {
       handleException(e.message, e);
     }
+  }
+
+  // Helper function to get around the fact that function names in javascript
+  // are read-only, and you can't assign one to anonymous functions.
+  function testName(test) {
+    return test ? (test.name || test.generatedName) : "(no test)";
+  }
+
+  function testDone() {
+    environmentSpecificBindings.testDone(runNextTest);
+  }
+
+  function allTestsDone() {
+    if (testsFailed == 0) {
+      chromeTest.notifyPass();
+    } else {
+      chromeTest.notifyFail('Failed ' + testsFailed + ' of ' +
+                             testCount + ' tests');
+    }
+  }
+
+  // Helper function for boolean asserts. Compares |test| to |expected|.
+  function assertBool(test, expected, message) {
+    if (test !== expected) {
+      if (typeof(test) == "string") {
+        if (message)
+          message = test + "\n" + message;
+        else
+          message = test;
+      }
+      chromeTest.fail(message);
+    }
+  }
+
+  apiFunctions.setHandleRequest('callbackAdded', function() {
+    pendingCallbacks++;
+
+    var called = null;
+    return function() {
+      if (called != null) {
+        var redundantPrefix = 'Error\n';
+        chromeTest.fail(
+          'Callback has already been run. ' +
+          'First call:\n' +
+          $String.slice(called, redundantPrefix.length) + '\n' +
+          'Second call:\n' +
+          $String.slice(new Error().stack, redundantPrefix.length));
+      }
+      called = new Error().stack;
+
+      pendingCallbacks--;
+      if (pendingCallbacks == 0) {
+        chromeTest.succeed();
+      }
+    };
   });
 
   apiFunctions.setHandleRequest('fail', function failHandler(message) {
@@ -135,24 +158,11 @@ apiBridge.registerCustomHook(function(api) {
   });
 
   apiFunctions.setHandleRequest('assertTrue', function(test, message) {
-    chromeTest.assertBool(test, true, message);
+    assertBool(test, true, message);
   });
 
   apiFunctions.setHandleRequest('assertFalse', function(test, message) {
-    chromeTest.assertBool(test, false, message);
-  });
-
-  apiFunctions.setHandleRequest('assertBool',
-                                function(test, expected, message) {
-    if (test !== expected) {
-      if (typeof(test) == "string") {
-        if (message)
-          message = test + "\n" + message;
-        else
-          message = test;
-      }
-      chromeTest.fail(message);
-    }
+    assertBool(test, false, message);
   });
 
   apiFunctions.setHandleRequest('checkDeepEq', function(expected, actual) {
@@ -274,17 +284,6 @@ apiBridge.registerCustomHook(function(api) {
     }
   });
 
-  function safeFunctionApply(func, args) {
-    try {
-      if (func)
-        return $Function.apply(func, undefined, args);
-    } catch (e) {
-      if (e === failureException)
-        throw e;
-      handleException(e.message, e);
-    }
-  };
-
   // Wrapper for generating test functions, that takes care of calling
   // assertNoLastError() and (optionally) succeed() for you.
   apiFunctions.setHandleRequest('callback', function(func, expectedError) {
@@ -347,7 +346,7 @@ apiBridge.registerCustomHook(function(api) {
   apiFunctions.setHandleRequest('runTests', function(tests) {
     chromeTest.tests = tests;
     testCount = chromeTest.tests.length;
-    chromeTest.runNextTest();
+    runNextTest();
   });
 
   apiFunctions.setHandleRequest('getApiDefinitions', function() {
