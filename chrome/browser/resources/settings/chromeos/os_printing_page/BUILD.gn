@@ -108,6 +108,7 @@ js_library("cups_printers") {
     ":cups_printers_browser_proxy",
     ":cups_printers_entry_manager",
     ":cups_saved_printers",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../localized_link:localized_link",
@@ -165,6 +166,7 @@ js_library("cups_saved_printers") {
 
 js_library("os_printing_page") {
   deps = [
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../../settings_page:settings_animated_pages",
@@ -285,6 +287,7 @@ js_library("cups_printers.m") {
     ":cups_printer_types.m",
     ":cups_printers_browser_proxy.m",
     ":cups_settings_add_printer_dialog.m",
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
@@ -342,6 +345,7 @@ js_library("os_printing_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_printing_page/os_printing_page.m.js" ]
   deps = [
     ":cups_printers_browser_proxy.m",
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

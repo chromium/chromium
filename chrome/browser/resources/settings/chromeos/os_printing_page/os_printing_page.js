@@ -5,6 +5,11 @@
 Polymer({
   is: 'os-settings-printing-page',
 
+  behaviors: [
+    DeepLinkingBehavior,
+    settings.RouteObserverBehavior,
+  ],
+
   properties: {
     /** Preferences state. */
     prefs: {
@@ -35,6 +40,28 @@ Polymer({
         return loadTimeData.getBoolean('printManagementEnabled');
       }
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([chromeos.settings.mojom.Setting.kPrintJobs]),
+    },
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.OS_PRINTING) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /** @private */

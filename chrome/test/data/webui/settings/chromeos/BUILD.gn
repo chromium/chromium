@@ -52,6 +52,7 @@ js_modulizer("modulize") {
     "os_languages_page_tests.js",
     "os_languages_page_v2_tests.js",
     "os_reset_page_test.js",
+    "os_printing_page_tests.js",
     "os_people_page_test.js",
     "os_privacy_page_test.js",
     "smb_shares_page_tests.js",

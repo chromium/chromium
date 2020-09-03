@@ -14,6 +14,8 @@
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {flushTasks} from '../../test_util.m.js';
 // #import {getPrinterEntries} from './cups_printer_test_utils.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 /**
@@ -611,6 +613,36 @@ suite('CupsSavedPrintersTests', function() {
                   'google', '4', 'id4', PrinterType.SAVED)],
               searchTerm);
         });
+  });
+
+  test('Deep link to saved printers', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+    createCupsPrinterPage([
+      cups_printer_test_util.createCupsPrinterInfo('google', '4', 'id4'),
+      cups_printer_test_util.createCupsPrinterInfo('test1', '1', 'id1'),
+      cups_printer_test_util.createCupsPrinterInfo('test2', '2', 'id2'),
+      cups_printer_test_util.createCupsPrinterInfo('test3', '3', 'id3'),
+    ]);
+
+    await cupsPrintersBrowserProxy.whenCalled('getCupsPrintersList');
+
+    const params = new URLSearchParams;
+    params.append('settingId', '1401');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.CUPS_PRINTERS, params);
+
+    Polymer.dom.flush();
+
+    const savedPrinters = page.$$('settings-cups-saved-printers');
+    const printerEntry =
+        savedPrinters && savedPrinters.$$('settings-cups-printers-entry');
+    const deepLinkElement = printerEntry && printerEntry.$$('#moreActions');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'First saved printer menu button should be focused for settingId=1401.');
   });
 
   test('ShowMoreButtonIsInitiallyHiddenAndANewPrinterIsAdded', function() {

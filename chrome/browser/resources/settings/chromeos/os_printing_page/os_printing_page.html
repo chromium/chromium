@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
@@ -25,7 +26,7 @@
               on-click="onOpenPrintManagement_"
               label="$i18n{printJobsTitle}"
               sub-label="$i18n{printJobsSublabel}"
-              external>
+              external deep-link-focus-id$="[[Setting.kPrintJobs]]">
           </cr-link-row>
         </template>
       </div>

@@ -91,6 +91,7 @@ TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'All', () => mocha.run());
  ['PeoplePageChangePicture', 'people_page_change_picture_test.m.js'],
  ['PeoplePageKerberosAccounts', 'people_page_kerberos_accounts_test.m.js'],
  ['PersonalizationPage', 'personalization_page_test.m.js'],
+ ['PrintingPage', 'os_printing_page_tests.m.js'],
  ['PrivacyPage', 'os_privacy_page_test.m.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],
  ['FilesPage', 'os_files_page_test.m.js'],

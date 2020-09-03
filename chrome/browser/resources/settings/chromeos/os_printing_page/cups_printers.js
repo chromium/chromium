@@ -13,6 +13,7 @@ Polymer({
   is: 'settings-cups-printers',
 
   behaviors: [
+    DeepLinkingBehavior,
     NetworkListenerBehavior,
     settings.RouteObserverBehavior,
     WebUIListenerBehavior,
@@ -85,6 +86,18 @@ Polymer({
       type: Number,
       value: 0,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kAddPrinter,
+        chromeos.settings.mojom.Setting.kSavedPrinters,
+      ]),
+    },
   },
 
   listeners: {
@@ -128,6 +141,33 @@ Polymer({
   },
 
   /**
+   * Overridden from DeepLinkingBehavior.
+   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @return {boolean}
+   */
+  beforeDeepLinkAttempt(settingId) {
+    // Manually show the deep links for settings nested within elements.
+    if (settingId !== chromeos.settings.mojom.Setting.kSavedPrinters) {
+      // Continue with deep link attempt.
+      return true;
+    }
+
+    Polymer.RenderStatus.afterNextRender(this, () => {
+      const savedPrinters = this.$$('#savedPrinters');
+      const printerEntry =
+          savedPrinters && savedPrinters.$$('settings-cups-printers-entry');
+      const deepLinkElement = printerEntry && printerEntry.$$('#moreActions');
+      if (!deepLinkElement || deepLinkElement.hidden) {
+        console.warn(`Element with deep link id ${settingId} not focusable.`);
+        return;
+      }
+      this.showDeepLinkElement(deepLinkElement);
+    });
+    // Stop deep link attempt since we completed it manually.
+    return false;
+  },
+
+  /**
    * settings.RouteObserverBehavior
    * @param {!settings.Route} route
    * @protected
@@ -147,6 +187,7 @@ Polymer({
     this.onPrintersChangedListener_ = cr.addWebUIListener(
         'on-printers-changed', this.onPrintersChanged_.bind(this));
     this.updateCupsPrintersList_();
+    this.attemptDeepLink();
   },
 
   /**

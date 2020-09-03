@@ -24,8 +24,9 @@
         </div>
       </div>
       <template is="dom-if" if="[[isSavedPrinter_(printerEntry.printerType)]]">
-        <cr-icon-button class="icon-more-vert" on-click="onOpenActionMenuTap_"
-            title="$i18n{moreActions}" aria-labelledby="printerName">
+        <cr-icon-button id="moreActions" class="icon-more-vert"
+            on-click="onOpenActionMenuTap_" title="$i18n{moreActions}"
+            aria-labelledby="printerName">
         </cr-icon-button>
       </template>
       <template is="dom-if"

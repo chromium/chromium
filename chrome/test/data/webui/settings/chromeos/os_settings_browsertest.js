@@ -1443,6 +1443,28 @@ TEST_F(
     });
 GEN('#endif');
 
+// Tests for the OS Printing page.
+// eslint-disable-next-line no-var
+var OSSettingsPrintingPageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/os_printing_page/os_printing_page.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'os_printing_page_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsPrintingPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 // Tests for the CUPS printer entry.
 // eslint-disable-next-line no-var
 var OSSettingsCupsPrinterEntryTest = class extends OSSettingsBrowserTest {

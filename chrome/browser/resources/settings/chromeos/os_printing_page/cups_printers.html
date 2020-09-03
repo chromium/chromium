@@ -24,6 +24,7 @@
 <link rel="import" href="cups_nearby_printers.html">
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../../icons.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="./cups_printers_browser_proxy.html">
@@ -141,7 +142,8 @@
             on-click="onAddPrinterTap_"
             disabled="[[!addPrinterButtonActive_(canAddPrinter,
                 prefs.native_printing.user_native_printers_allowed.value)]]"
-            title="$i18n{addCupsPrinter}">
+            title="$i18n{addCupsPrinter}"
+            deep-link-focus-id$="[[Setting.kAddPrinter]]">
         </cr-icon-button>
       </div>
     </div>
