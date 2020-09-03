@@ -639,6 +639,7 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     dbus::MessageReader reader(response);
     if (!ReadRecordsFromMessage(&reader, &records)) {
       std::move(callback).Run(ServiceRecordList());
+      return;
     }
 
     std::move(callback).Run(records);

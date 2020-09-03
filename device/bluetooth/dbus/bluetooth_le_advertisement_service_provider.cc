@@ -172,6 +172,7 @@ class BluetoothAdvertisementServiceProviderImpl
               method_call, kErrorInvalidArgs,
               "No such property: '" + property_name + "'.");
       std::move(response_sender).Run(std::move(error_response));
+      return;
     }
 
     writer.CloseContainer(&variant_writer);
