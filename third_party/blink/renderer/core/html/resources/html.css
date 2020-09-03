@@ -890,7 +890,7 @@ output {
 /* meter */
 
 meter {
-    -webkit-appearance: meter; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
     display: inline-block;
     height: 1em;
@@ -900,7 +900,7 @@ meter {
 }
 
 meter::-webkit-meter-inner-element {
-    -webkit-appearance: inherit; /* AutoAppearanceFor() should match to this. */
+    appearance: inherit;
     box-sizing: inherit;
     display: none;
     -webkit-user-modify: read-only !important;
@@ -948,7 +948,7 @@ meter::-webkit-meter-even-less-good-value {
 /* progress */
 
 progress {
-    -webkit-appearance: progress-bar; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
     display: inline-block;
     height: 1em;

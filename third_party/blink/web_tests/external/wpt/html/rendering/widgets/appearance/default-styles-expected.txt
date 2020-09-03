@@ -26,8 +26,8 @@ FAIL <select multiple=""> assert_equals: -webkit-appearance expected "auto" but 
 FAIL <select size="2"> assert_equals: -webkit-appearance expected "auto" but got "listbox"
 FAIL <button> assert_equals: -webkit-appearance expected "auto" but got "button"
 FAIL <textarea> assert_equals: -webkit-appearance expected "auto" but got "textarea"
-FAIL <meter> assert_equals: -webkit-appearance expected "auto" but got "meter"
-FAIL <progress> assert_equals: -webkit-appearance expected "auto" but got "progress-bar"
+PASS <meter>
+PASS <progress>
 PASS <input type="hidden">
 PASS <input type="HIDDEN">
 PASS <input type="file">
