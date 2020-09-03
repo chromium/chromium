@@ -616,6 +616,9 @@ group("gn_all") {
     deps += [
       "//third_party/breakpad:crash_inspector",
       "//third_party/breakpad:dump_syms",
+
+      # The following are accessibility API tools.
+      "//tools/accessibility/inspect:ax_dump_tree",
     ]
     deps -= [
       # Mojo in GN contains some things which are never compiled in GYP on Mac,

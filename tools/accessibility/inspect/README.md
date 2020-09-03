@@ -14,16 +14,26 @@ Press Ctrl+C to quit.
 
 ## ax_dump_tree
 
-This tool helps monitor accessibility events. It currently works on Windows,
-and Mac is TBD.
+This tool helps to inspect accessibility trees of applications. Trees are dumped into console.
 
-Events are dumped to the console. To use it, run
-`ax_dump_events --window=[hwnd]`
+### Build
+
+`autoninja -C out/Default ax_dump_tree`
+
+### Run
+
+To dump accessibility tree of application, run
+`ax_dump_tree --window=id`
+where `id` is HWND on Windows, PID on Linux and Mac.
+
+Alternatively, you can indicate an application by its title:
+`ax_dump_tree --pattern=title`
 
 Notes:
 * To use a hex window handle prefix it with `0x`.
 * For json output, use the `--json` option
 * To filter certain properties, use `--filters=[path-to-filters.txt]` where the filters text file has a series of `@ALLOW` and/or `@DENY` lines. See example-tree-filters.txt in tools/accessibility/inspect.
+* [Mac] You have to turn on Accessibility for Terminal in Security & Privacy System Preferences.
 
 ## Convenience PowerShell scripts
 
