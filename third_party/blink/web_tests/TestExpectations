@@ -1294,14 +1294,11 @@ crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-3.html [ Fail
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/integration-point-4.html [ Failure ]
 
 # Need to handle OOF for these.
-crbug.com/6606 external/wpt/mathml/presentation-markup/fractions/frac-rendering-from-in-flow.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-002.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-movablelimits-from-in-flow.html [ Skip ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/radicals/radical-rendering-from-in-flow.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/cramped-001.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Skip ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/not-participating-to-parent-layout.html [ Skip ]
 
 # This test fails on macOS.
 crbug.com/6606 [ Mac ] external/wpt/mathml/relations/text-and-math/use-typo-metrics-1.html [ Failure ]
