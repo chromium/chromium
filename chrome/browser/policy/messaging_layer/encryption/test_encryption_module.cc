@@ -14,7 +14,7 @@ using ::testing::Invoke;
 namespace reporting {
 namespace test {
 
-TestEncryptionModule::TestEncryptionModule() {
+TestEncryptionModuleStrict::TestEncryptionModuleStrict() {
   ON_CALL(*this, EncryptRecord)
       .WillByDefault(
           Invoke([](base::StringPiece record,
@@ -26,7 +26,7 @@ TestEncryptionModule::TestEncryptionModule() {
           }));
 }
 
-void TestEncryptionModule::UpdateAsymmetricKey(
+void TestEncryptionModuleStrict::UpdateAsymmetricKey(
     base::StringPiece new_key,
     base::OnceCallback<void(Status)> response_cb) {
   std::move(response_cb)
@@ -34,7 +34,7 @@ void TestEncryptionModule::UpdateAsymmetricKey(
                   "Test Encryption Module does not accept any keys"));
 }
 
-TestEncryptionModule::~TestEncryptionModule() = default;
+TestEncryptionModuleStrict::~TestEncryptionModuleStrict() = default;
 
 }  // namespace test
 }  // namespace reporting

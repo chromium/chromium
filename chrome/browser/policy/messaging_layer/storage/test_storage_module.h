@@ -18,11 +18,11 @@
 namespace reporting {
 namespace test {
 
-class TestStorageModule : public StorageModule {
+class TestStorageModuleStrict : public StorageModule {
  public:
   // As opposed to the production |StorageModule|, test module does not need to
   // call factory method - it is created directly by constructor.
-  TestStorageModule();
+  TestStorageModuleStrict();
 
   MOCK_METHOD(void,
               AddRecord,
@@ -35,7 +35,7 @@ class TestStorageModule : public StorageModule {
   Priority priority() const;
 
  protected:
-  ~TestStorageModule() override;
+  ~TestStorageModuleStrict() override;
 
  private:
   void AddRecordSuccessfully(Priority priority,
@@ -45,6 +45,9 @@ class TestStorageModule : public StorageModule {
   base::Optional<Record> record_;
   base::Optional<Priority> priority_;
 };
+
+// Most of the time no need to log uninterested calls to |AddRecord|.
+typedef ::testing::NiceMock<TestStorageModuleStrict> TestStorageModule;
 
 }  // namespace test
 }  // namespace reporting

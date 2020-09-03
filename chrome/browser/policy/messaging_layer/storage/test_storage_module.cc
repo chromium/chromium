@@ -18,24 +18,24 @@ using ::testing::Invoke;
 namespace reporting {
 namespace test {
 
-TestStorageModule::TestStorageModule() {
+TestStorageModuleStrict::TestStorageModuleStrict() {
   ON_CALL(*this, AddRecord)
       .WillByDefault(Invoke(this, &TestStorageModule::AddRecordSuccessfully));
 }
 
-TestStorageModule::~TestStorageModule() = default;
+TestStorageModuleStrict::~TestStorageModuleStrict() = default;
 
-Record TestStorageModule::record() const {
+Record TestStorageModuleStrict::record() const {
   EXPECT_TRUE(record_.has_value());
   return record_.value();
 }
 
-Priority TestStorageModule::priority() const {
+Priority TestStorageModuleStrict::priority() const {
   EXPECT_TRUE(priority_.has_value());
   return priority_.value();
 }
 
-void TestStorageModule::AddRecordSuccessfully(
+void TestStorageModuleStrict::AddRecordSuccessfully(
     Priority priority,
     Record record,
     base::OnceCallback<void(Status)> callback) {

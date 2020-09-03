@@ -17,9 +17,9 @@ namespace reporting {
 namespace test {
 
 // An |EncryptionModule| that does no encryption.
-class TestEncryptionModule : public EncryptionModule {
+class TestEncryptionModuleStrict : public EncryptionModule {
  public:
-  TestEncryptionModule();
+  TestEncryptionModuleStrict();
 
   MOCK_METHOD(void,
               EncryptRecord,
@@ -32,8 +32,11 @@ class TestEncryptionModule : public EncryptionModule {
       base::OnceCallback<void(Status)> response_cb) override;
 
  protected:
-  ~TestEncryptionModule() override;
+  ~TestEncryptionModuleStrict() override;
 };
+
+// Most of the time no need to log uninterested calls to |EncryptRecord|.
+typedef ::testing::NiceMock<TestEncryptionModuleStrict> TestEncryptionModule;
 
 }  // namespace test
 }  // namespace reporting
