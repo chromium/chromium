@@ -1488,10 +1488,9 @@ TEST_F(WidgetTest, EventHandlersOnRootView) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
   View* root_view = widget->GetRootView();
 
-  std::unique_ptr<EventCountView> view(new EventCountView());
-  view->set_owned_by_client();
+  EventCountView* view =
+      root_view->AddChildView(std::make_unique<EventCountView>());
   view->SetBounds(0, 0, 20, 20);
-  root_view->AddChildView(view.get());
 
   EventCountHandler h1;
   root_view->AddPreTargetHandler(&h1);

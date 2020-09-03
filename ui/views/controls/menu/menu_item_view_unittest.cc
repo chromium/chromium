@@ -28,7 +28,6 @@ using MenuItemViewUnitTest = ViewsTestBase;
 
 TEST_F(MenuItemViewUnitTest, AddAndRemoveChildren) {
   views::TestMenuItemView root_menu;
-  root_menu.set_owned_by_client();
 
   auto* item = root_menu.AppendMenuItem(0);
 
@@ -60,7 +59,6 @@ class SquareView : public views::View {
 
 TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
   views::TestMenuItemView root_menu;
-  root_menu.set_owned_by_client();
 
   // Append a normal MenuItemView.
   views::MenuItemView* label_view =
@@ -191,10 +189,9 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
 
   void PerformLayout() {
     // SubmenuView does not lay out its children unless it is contained in a
-    // view. Make a simple container for it. We have to call
-    // set_owned_by_client() since |submenu| is owned by |root_menu|.
+    // view, so make a simple container for it.
     SubmenuView* submenu = root_menu_.GetSubmenu();
-    submenu->set_owned_by_client();
+    ASSERT_TRUE(submenu->owned_by_client());
 
     submenu_parent_ = std::make_unique<View>();
     submenu_parent_->AddChildView(submenu);

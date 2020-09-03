@@ -33,40 +33,73 @@ using base::ASCIIToUTF16;
 
 namespace views {
 
-class StyledLabelTest : public ViewsTestBase, public StyledLabelListener {
+namespace {
+
+Label* LabelAt(StyledLabel* styled,
+               size_t index,
+               std::string expected_classname = Label::kViewClassName) {
+  View* const child = styled->children()[index];
+  EXPECT_EQ(expected_classname, child->GetClassName());
+  return static_cast<Label*>(child);
+}
+
+int StyledLabelContentHeightForWidth(StyledLabel* styled, int w) {
+  return styled->GetHeightForWidth(w) - styled->GetInsets().height();
+}
+
+}  // namespace
+
+class StyledLabelTest : public ViewsTestBase {
  public:
   StyledLabelTest() = default;
+  StyledLabelTest(const StyledLabelTest&) = delete;
+  StyledLabelTest& operator=(const StyledLabelTest&) = delete;
   ~StyledLabelTest() override = default;
 
-  // StyledLabelListener implementation.
-  void StyledLabelLinkClicked(StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override {}
-
  protected:
-  StyledLabel* styled() { return styled_.get(); }
-
-  Label* LabelAt(size_t index,
-                 std::string expected_classname = Label::kViewClassName) {
-    View* const child = styled_->children()[index];
-    EXPECT_EQ(expected_classname, child->GetClassName());
-    return static_cast<Label*>(child);
-  }
+  StyledLabel* styled() const { return styled_.get(); }
 
   void InitStyledLabel(const std::string& ascii_text) {
-    styled_ = std::make_unique<StyledLabel>(this);
+    styled_ = std::make_unique<StyledLabel>();
     styled_->SetText(ASCIIToUTF16(ascii_text));
-    styled_->set_owned_by_client();
-  }
-
-  int StyledLabelContentHeightForWidth(int w) {
-    return styled_->GetHeightForWidth(w) - styled_->GetInsets().height();
   }
 
  private:
   std::unique_ptr<StyledLabel> styled_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(StyledLabelTest);
+class StyledLabelInWidgetTest : public ViewsTestBase {
+ public:
+  StyledLabelInWidgetTest() = default;
+  StyledLabelInWidgetTest(const StyledLabelInWidgetTest&) = delete;
+  StyledLabelInWidgetTest& operator=(const StyledLabelInWidgetTest&) = delete;
+  ~StyledLabelInWidgetTest() override = default;
+
+ protected:
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+
+    widget_ = CreateTestWidget();
+  }
+
+  void TearDown() override {
+    widget_.reset();
+
+    ViewsTestBase::TearDown();
+  }
+
+  StyledLabel* styled() const { return styled_; }
+  Widget* widget() const { return widget_.get(); }
+
+  void InitStyledLabel(const std::string& ascii_text) {
+    View* container = widget_->SetContentsView(std::make_unique<View>());
+    styled_ = container->AddChildView(std::make_unique<StyledLabel>());
+    styled_->SetText(ASCIIToUTF16(ascii_text));
+  }
+
+ private:
+  StyledLabel* styled_;
+  std::unique_ptr<Widget> widget_;
 };
 
 TEST_F(StyledLabelTest, NoWrapping) {
@@ -75,7 +108,8 @@ TEST_F(StyledLabelTest, NoWrapping) {
   Label label(ASCIIToUTF16(text));
   const gfx::Size label_preferred_size = label.GetPreferredSize();
   EXPECT_EQ(label_preferred_size.height(),
-            StyledLabelContentHeightForWidth(label_preferred_size.width() * 2));
+            StyledLabelContentHeightForWidth(styled(),
+                                             label_preferred_size.width() * 2));
 }
 
 TEST_F(StyledLabelTest, TrailingWhitespaceiIgnored) {
@@ -87,7 +121,7 @@ TEST_F(StyledLabelTest, TrailingWhitespaceiIgnored) {
 
   ASSERT_EQ(1u, styled()->children().size());
   EXPECT_EQ(ASCIIToUTF16("This is a test block of text"),
-            LabelAt(0)->GetText());
+            LabelAt(styled(), 0)->GetText());
 }
 
 TEST_F(StyledLabelTest, RespectLeadingWhitespace) {
@@ -99,7 +133,7 @@ TEST_F(StyledLabelTest, RespectLeadingWhitespace) {
 
   ASSERT_EQ(1u, styled()->children().size());
   EXPECT_EQ(ASCIIToUTF16("   This is a test block of text"),
-            LabelAt(0)->GetText());
+            LabelAt(styled(), 0)->GetText());
 }
 
 TEST_F(StyledLabelTest, RespectLeadingSpacesInNonFirstLine) {
@@ -109,7 +143,7 @@ TEST_F(StyledLabelTest, RespectLeadingSpacesInNonFirstLine) {
   styled()->SetBounds(0, 0, 1000, 1000);
   styled()->Layout();
   ASSERT_EQ(2u, styled()->children().size());
-  EXPECT_EQ(ASCIIToUTF16(indented_line), LabelAt(1)->GetText());
+  EXPECT_EQ(ASCIIToUTF16(indented_line), LabelAt(styled(), 1)->GetText());
 }
 
 TEST_F(StyledLabelTest, CorrectWrapAtNewline) {
@@ -123,8 +157,8 @@ TEST_F(StyledLabelTest, CorrectWrapAtNewline) {
   styled()->SetBounds(0, 0, label_preferred_size.width(), 1000);
   styled()->Layout();
   ASSERT_EQ(2u, styled()->children().size());
-  EXPECT_EQ(ASCIIToUTF16(first_line), LabelAt(0)->GetText());
-  const auto* label_1 = LabelAt(1);
+  EXPECT_EQ(ASCIIToUTF16(first_line), LabelAt(styled(), 0)->GetText());
+  const auto* label_1 = LabelAt(styled(), 1);
   EXPECT_EQ(ASCIIToUTF16(second_line), label_1->GetText());
   EXPECT_EQ(styled()->GetHeightForWidth(1000), label_1->bounds().bottom());
 }
@@ -140,7 +174,7 @@ TEST_F(StyledLabelTest, FirstLineNotEmptyWhenLeadingWhitespaceTooLong) {
   styled()->Layout();
 
   ASSERT_EQ(1u, styled()->children().size());
-  EXPECT_EQ(ASCIIToUTF16("a"), LabelAt(0)->GetText());
+  EXPECT_EQ(ASCIIToUTF16("a"), LabelAt(styled(), 0)->GetText());
   EXPECT_EQ(label_preferred_size.height(),
             styled()->GetHeightForWidth(label_preferred_size.width() / 2));
 }
@@ -150,8 +184,9 @@ TEST_F(StyledLabelTest, BasicWrapping) {
   InitStyledLabel(text);
   Label label(ASCIIToUTF16(text.substr(0, text.size() * 2 / 3)));
   gfx::Size label_preferred_size = label.GetPreferredSize();
-  EXPECT_EQ(label_preferred_size.height() * 2,
-            StyledLabelContentHeightForWidth(label_preferred_size.width()));
+  EXPECT_EQ(
+      label_preferred_size.height() * 2,
+      StyledLabelContentHeightForWidth(styled(), label_preferred_size.width()));
 
   // Also respect the border.
   styled()->SetBorder(CreateEmptyBorder(3, 3, 3, 3));
@@ -184,8 +219,9 @@ TEST_F(StyledLabelTest, WrapLongWords) {
   InitStyledLabel(text);
   Label label(ASCIIToUTF16(text.substr(0, text.size() * 2 / 3)));
   gfx::Size label_preferred_size = label.GetPreferredSize();
-  EXPECT_EQ(label_preferred_size.height() * 2,
-            StyledLabelContentHeightForWidth(label_preferred_size.width()));
+  EXPECT_EQ(
+      label_preferred_size.height() * 2,
+      StyledLabelContentHeightForWidth(styled(), label_preferred_size.width()));
 
   styled()->SetBounds(
       0, 0, styled()->GetInsets().width() + label_preferred_size.width(),
@@ -194,8 +230,8 @@ TEST_F(StyledLabelTest, WrapLongWords) {
 
   ASSERT_EQ(2u, styled()->children().size());
   ASSERT_EQ(gfx::Point(), styled()->origin());
-  const auto* label_0 = LabelAt(0);
-  const auto* label_1 = LabelAt(1);
+  const auto* label_0 = LabelAt(styled(), 0);
+  const auto* label_1 = LabelAt(styled(), 1);
   EXPECT_EQ(gfx::Point(), label_0->origin());
   EXPECT_EQ(gfx::Point(0, styled()->height() / 2), label_1->origin());
 
@@ -295,7 +331,8 @@ TEST_F(StyledLabelTest, StyledRangeCustomFontUnderlined) {
   styled()->Layout();
 
   ASSERT_EQ(2u, styled()->children().size());
-  EXPECT_EQ(gfx::Font::UNDERLINE, LabelAt(1)->font_list().GetFontStyle());
+  EXPECT_EQ(gfx::Font::UNDERLINE,
+            LabelAt(styled(), 1)->font_list().GetFontStyle());
 }
 
 TEST_F(StyledLabelTest, StyledRangeTextStyleBold) {
@@ -331,7 +368,7 @@ TEST_F(StyledLabelTest, StyledRangeTextStyleBold) {
 
   // Sanity check that |bold_text| with normal font style would fit on a single
   // line in a styled label with width |styled_width|.
-  StyledLabel unstyled(this);
+  StyledLabel unstyled;
   unstyled.SetText(ASCIIToUTF16(bold_text));
   unstyled.SetBounds(0, 0, styled_width, pref_height);
   unstyled.Layout();
@@ -343,9 +380,9 @@ TEST_F(StyledLabelTest, StyledRangeTextStyleBold) {
   ASSERT_EQ(3u, styled()->children().size());
 
   // The bold text should be broken up into two parts.
-  const auto* label_0 = LabelAt(0);
-  const auto* label_1 = LabelAt(1);
-  const auto* label_2 = LabelAt(2);
+  const auto* label_0 = LabelAt(styled(), 0);
+  const auto* label_1 = LabelAt(styled(), 1);
+  const auto* label_2 = LabelAt(styled(), 2);
   EXPECT_EQ(gfx::Font::Weight::BOLD, label_0->font_list().GetFontWeight());
   EXPECT_EQ(gfx::Font::Weight::BOLD, label_1->font_list().GetFontWeight());
   EXPECT_EQ(gfx::Font::NORMAL, label_2->font_list().GetFontStyle());
@@ -356,7 +393,7 @@ TEST_F(StyledLabelTest, StyledRangeTextStyleBold) {
   EXPECT_EQ(label_1->bounds().right(), label_2->x());
 }
 
-TEST_F(StyledLabelTest, Color) {
+TEST_F(StyledLabelInWidgetTest, Color) {
   const std::string text_blue("BLUE");
   const std::string text_link("link");
   const std::string text("word");
@@ -375,14 +412,10 @@ TEST_F(StyledLabelTest, Color) {
   styled()->SetBounds(0, 0, 1000, 1000);
   styled()->Layout();
 
-  std::unique_ptr<Widget> widget = CreateTestWidget();
-  View* container = widget->SetContentsView(std::make_unique<View>());
-
   // The code below is not prepared to deal with dark mode.
-  widget->GetNativeTheme()->set_use_dark_colors(false);
+  widget()->GetNativeTheme()->set_use_dark_colors(false);
 
-  container->AddChildView(styled());
-
+  auto* container = widget()->GetContentsView();
   // Obtain the default text color for a label.
   Label* label =
       container->AddChildView(std::make_unique<Label>(ASCIIToUTF16(text)));
@@ -394,10 +427,10 @@ TEST_F(StyledLabelTest, Color) {
   const SkColor kDefaultLinkColor = link->GetEnabledColor();
 
   ASSERT_EQ(3u, styled()->children().size());
-  EXPECT_EQ(SK_ColorBLUE, LabelAt(0)->GetEnabledColor());
+  EXPECT_EQ(SK_ColorBLUE, LabelAt(styled(), 0)->GetEnabledColor());
   EXPECT_EQ(kDefaultLinkColor,
-            LabelAt(1, Link::kViewClassName)->GetEnabledColor());
-  EXPECT_EQ(kDefaultTextColor, LabelAt(2)->GetEnabledColor());
+            LabelAt(styled(), 1, Link::kViewClassName)->GetEnabledColor());
+  EXPECT_EQ(kDefaultTextColor, LabelAt(styled(), 2)->GetEnabledColor());
 
   // Test adjusted color readability.
   styled()->SetDisplayedOnBackgroundColor(SK_ColorBLACK);
@@ -406,9 +439,7 @@ TEST_F(StyledLabelTest, Color) {
 
   const SkColor kAdjustedTextColor = label->GetEnabledColor();
   EXPECT_NE(kAdjustedTextColor, kDefaultTextColor);
-  EXPECT_EQ(kAdjustedTextColor, LabelAt(2)->GetEnabledColor());
-
-  widget->CloseNow();
+  EXPECT_EQ(kAdjustedTextColor, LabelAt(styled(), 2)->GetEnabledColor());
 }
 
 TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
@@ -479,7 +510,7 @@ TEST_F(StyledLabelTest, SetTextContextAndDefaultStyle) {
 
   styled()->Layout();
   ASSERT_EQ(1u, styled()->children().size());
-  Label* sublabel = LabelAt(0);
+  Label* sublabel = LabelAt(styled(), 0);
   EXPECT_EQ(style::CONTEXT_DIALOG_TITLE, sublabel->GetTextContext());
 
   EXPECT_NE(SK_ColorBLACK, label.GetEnabledColor());  // Sanity check,
