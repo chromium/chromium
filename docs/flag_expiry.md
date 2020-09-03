@@ -41,6 +41,17 @@ Then:
 There are other elements of this process not described here, such as emails to
 flags-dev@ tracking the status of the process.
 
+Google employees: See more at
+[go/flags-expiry-process](http://goto.google.com/flags-expiry-process) and
+[go/chrome-flags:expiry-process](http://goto.google.com/chrome-flags:expiry-process).
+
+## Removing A Flag
+If a flag is no longer used (for instance, it was used to control a feature
+that has since launched), the flag should be removed. Delete the entry in
+[about\_flags.cc](/chrome/browser/about_flags.cc) (and any corresponding entries
+for the flag description), and remove any references in
+[flag-metadata.json](/chrome/browser/flag-metadata.json).
+
 ## The Set
 
 In M78, the following flags are being hidden as the second step of this process.
