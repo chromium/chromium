@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS SanitizerAPI sanitize function for string
+PASS SanitizerAPI sanitize function for html fragment
+PASS SanitizerAPI sanitize function for broken html
+PASS SanitizerAPI sanitize function for empty object
+PASS SanitizerAPI sanitize function for number
+PASS SanitizerAPI sanitize function for zeros
+PASS SanitizerAPI sanitize function for arithmetic
+PASS SanitizerAPI sanitize function for empty string
+PASS SanitizerAPI sanitize function for undefined
+PASS SanitizerAPI sanitize function for null
+PASS SanitizerAPI sanitize function for document
+PASS SanitizerAPI sanitize function for html without close tag
+FAIL SanitizerAPI sanitize function for scripts assert_equals: expected "" but got "<script>alert('i am a test')</script>"
+FAIL SanitizerAPI sanitize function for onclick scripts assert_equals: expected "<p>Click.</p>" but got "<p onclick=\"a= 123\">Click.</p>"
+Harness: the test ran to completion.
+
