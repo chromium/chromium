@@ -58,6 +58,11 @@ class FeedStreamApi {
   virtual void SetArticlesListVisible(bool is_visible) = 0;
   virtual bool IsArticlesListVisible() = 0;
 
+  // Returns true if activity logging is enabled. The returned value is
+  // ephemeral, this should be called for each candidate log, as it can change
+  // as the feed is refreshed or the user signs in/out.
+  virtual bool IsActivityLoggingEnabled() const = 0;
+
   // Returns the client_instance_id. This value is reset whenever the feed
   // stream is cleared (on sign-in, sign-out, and some data clear events).
   virtual std::string GetClientInstanceId() = 0;

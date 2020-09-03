@@ -45,6 +45,12 @@ message StreamData {
   int64 last_added_time_millis = 4;
   // The content ID of the shared state for this stream.
   feedwire.ContentId shared_state_id = 6;
+  // Was this feed signed in.
+  bool signed_in = 7;
+  // Is activity logging enabled?
+  bool logging_enabled = 8;
+  // Has the privacy notice been fulfilled?
+  bool privacy_notice_fulfilled = 9;
   reserved 3, 5;
 }
 

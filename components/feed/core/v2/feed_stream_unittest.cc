@@ -361,6 +361,7 @@ class TestWireResponseTranslator : public FeedStream::WireResponseTranslator {
   RefreshResponseData TranslateWireResponse(
       feedwire::Response response,
       StreamModelUpdateRequest::Source source,
+      bool was_signed_in_request,
       base::Time current_time) const override {
     if (!injected_responses_.empty()) {
       if (injected_responses_[0].model_update_request)
@@ -370,7 +371,7 @@ class TestWireResponseTranslator : public FeedStream::WireResponseTranslator {
       return result;
     }
     return FeedStream::WireResponseTranslator::TranslateWireResponse(
-        std::move(response), source, current_time);
+        std::move(response), source, was_signed_in_request, current_time);
   }
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response) {
     RefreshResponseData data;
@@ -1414,12 +1415,23 @@ TEST_F(FeedStreamTest, ReadNetworkResponse) {
   // Verify we're processing some of the data on the request.
 
   // The response has a privacy_notice_fulfilled=true.
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ActivityLoggingEnabled", 1, 1);
+
+  // The response has a privacy_notice_fulfilled=true.
   histograms.ExpectUniqueSample("ContentSuggestions.Feed.NoticeCardFulfilled",
                                 1, 1);
 
-  // A request schedule with two entries was in the response.
+  // A request schedule with two entries was in the response. The first entry
+  // should have already been scheduled/consumed, leaving only the second
+  // entry still in the the refresh_offsets vector.
   RequestSchedule schedule = prefs::GetRequestSchedule(profile_prefs_);
-  EXPECT_EQ(std::vector<base::TimeDelta>({}), schedule.refresh_offsets);
+  EXPECT_EQ(
+      std::vector<base::TimeDelta>({base::TimeDelta::FromSeconds(120000)}),
+      schedule.refresh_offsets);
+
+  // The stream's user attributes are set, so activity logging is enabled.
+  EXPECT_TRUE(stream_->IsActivityLoggingEnabled());
 }
 
 TEST_F(FeedStreamTest, ClearAllAfterLoadResultsInRefresh) {
@@ -1486,6 +1498,7 @@ TEST_F(FeedStreamTest, ClearAllWipesAllState) {
 
   EXPECT_EQ("", DumpStoreState());
   EXPECT_EQ("", stream_->GetMetadata()->GetConsistencyToken());
+  EXPECT_FALSE(stream_->IsActivityLoggingEnabled());
 }
 
 TEST_F(FeedStreamTest, StorePendingAction) {
@@ -1617,6 +1630,29 @@ TEST_F(FeedStreamTest, LoadMoreUploadsActions) {
   EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
   EXPECT_EQ(100ul,
             network_.action_request_sent->feed_actions(0).content_id().id());
+}
+
+TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
+  EXPECT_FALSE(stream_->IsActivityLoggingEnabled());
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(stream_->IsActivityLoggingEnabled());
+
+  int page = 2;
+  for (bool signed_in : {true, false}) {
+    for (bool waa_on : {true, false}) {
+      for (bool privacy_notice_fulfilled : {true, false}) {
+        response_translator_.InjectResponse(
+            MakeTypicalNextPageState(page++, kTestTimeEpoch, signed_in, waa_on,
+                                     privacy_notice_fulfilled));
+        CallbackReceiver<bool> callback;
+        stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+        WaitForIdleTaskQueue();
+        EXPECT_EQ(stream_->IsActivityLoggingEnabled(), signed_in && waa_on);
+      }
+    }
+  }
 }
 
 TEST_F(FeedStreamTest, BackgroundingAppUploadsActions) {

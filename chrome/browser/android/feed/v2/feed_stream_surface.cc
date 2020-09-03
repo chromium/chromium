@@ -156,6 +156,12 @@ void FeedStreamSurface::SurfaceClosed(JNIEnv* env,
   }
 }
 
+bool FeedStreamSurface::IsActivityLoggingEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return feed_stream_api_ && feed_stream_api_->IsActivityLoggingEnabled();
+}
+
 void FeedStreamSurface::ReportOpenAction(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

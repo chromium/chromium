@@ -116,6 +116,8 @@ void LoadStreamTask::LoadFromStoreComplete(
 }
 
 void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
+  bool force_signed_out_request =
+      stream_->ShouldForceSignedOutFeedQueryRequest();
   upload_actions_result_ =
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
@@ -123,11 +125,13 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       CreateFeedQueryRefreshRequest(
           GetRequestReason(load_type_), stream_->GetRequestMetadata(),
           stream_->GetMetadata()->GetConsistencyToken()),
-      stream_->ShouldForceSignedOutFeedQueryRequest(),
-      base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
+      force_signed_out_request,
+      base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr(),
+                     force_signed_out_request));
 }
 
 void LoadStreamTask::QueryRequestComplete(
+    bool was_forced_signed_out_request,
     FeedNetwork::QueryRequestResult result) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 
@@ -145,20 +149,19 @@ void LoadStreamTask::QueryRequestComplete(
       return Done(LoadStreamStatus::kNoResponseBody);
   }
 
+  bool was_signed_in_request =
+      !was_forced_signed_out_request && stream_->IsSignedIn();
+
   RefreshResponseData response_data =
       stream_->GetWireResponseTranslator()->TranslateWireResponse(
           *result.response_body,
           StreamModelUpdateRequest::Source::kNetworkUpdate,
-          stream_->GetClock()->Now());
+          was_signed_in_request, stream_->GetClock()->Now());
   if (!response_data.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 
-  MetricsReporter::NoticeCardFulfilled(result.response_body->feed_response()
-                                           .feed_response_metadata()
-                                           .chrome_feed_response_metadata()
-                                           .privacy_notice_fulfilled());
-
   loaded_new_content_from_network_ = true;
+
   stream_->GetStore()->OverwriteStream(
       std::make_unique<StreamModelUpdateRequest>(
           *response_data.model_update_request),

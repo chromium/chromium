@@ -223,6 +223,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             return ContextUtils.getApplicationContext();
         }
 
+        @Deprecated
         @Override
         public String getAccountName() {
             assert ThreadUtils.runningOnUiThread();
@@ -230,15 +231,17 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
                     IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED);
-            return primaryAccount == null ? "" : primaryAccount.getEmail();
+            return (primaryAccount == null) ? "" : primaryAccount.getEmail();
         }
 
+        @Deprecated
         @Override
         public int[] getExperimentIds() {
             // Note: this is thread-safe.
             return FeedStreamSurfaceJni.get().getExperimentIds();
         }
 
+        @Deprecated
         @Override
         public String getClientInstanceId() {
             assert ThreadUtils.runningOnUiThread();
@@ -281,10 +284,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     /**
      * Provides activity and darkmode context for a single surface.
      */
-    private static class FeedSurfaceScopeDependencyProvider
-            implements SurfaceScopeDependencyProvider {
+    private class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider {
         final Context mActivityContext;
         final boolean mDarkMode;
+
         FeedSurfaceScopeDependencyProvider(Context activityContext, boolean darkMode) {
             mActivityContext = activityContext;
             mDarkMode = darkMode;
@@ -298,6 +301,34 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         @Override
         public boolean isDarkModeEnabled() {
             return mDarkMode;
+        }
+
+        @Override
+        public boolean isActivityLoggingEnabled() {
+            return FeedStreamSurfaceJni.get().isActivityLoggingEnabled(
+                    mNativeFeedStreamSurface, FeedStreamSurface.this);
+        }
+
+        @Override
+        public String getAccountName() {
+            assert ThreadUtils.runningOnUiThread();
+            CoreAccountInfo primaryAccount =
+                    IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED);
+            return (primaryAccount == null) ? "" : primaryAccount.getEmail();
+        }
+
+        @Override
+        public int[] getExperimentIds() {
+            assert ThreadUtils.runningOnUiThread();
+            return FeedStreamSurfaceJni.get().getExperimentIds();
+        }
+
+        @Override
+        public String getClientInstanceId() {
+            assert ThreadUtils.runningOnUiThread();
+            return FeedServiceBridge.getClientInstanceId();
         }
     }
 
@@ -362,7 +393,6 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         if (processScope != null) {
             mSurfaceScope = processScope.obtainSurfaceScope(
                     new FeedSurfaceScopeDependencyProvider(context, isBackgroundDark));
-            ;
         } else {
             mSurfaceScope = null;
         }
@@ -1040,6 +1070,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     @NativeMethods
     interface Natives {
         long init(FeedStreamSurface caller);
+        boolean isActivityLoggingEnabled(long nativeFeedStreamSurface, FeedStreamSurface caller);
         int[] getExperimentIds();
         void reportFeedViewed(long nativeFeedStreamSurface, FeedStreamSurface caller);
         void reportSliceViewed(

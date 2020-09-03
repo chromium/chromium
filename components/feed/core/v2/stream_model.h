@@ -89,6 +89,17 @@ class StreamModel {
 
   // Data access.
 
+  // Was this feed signed in.
+  bool signed_in() const { return stream_data_.signed_in(); }
+
+  // Is activity logging enabled?
+  bool logging_enabled() const { return stream_data_.logging_enabled(); }
+
+  // Has the privacy notice been fulfilled?
+  bool privacy_notice_fulfilled() const {
+    return stream_data_.privacy_notice_fulfilled();
+  }
+
   // Returns the full list of content in the order it should be presented.
   const std::vector<ContentRevision>& GetContentList() const {
     return content_list_;

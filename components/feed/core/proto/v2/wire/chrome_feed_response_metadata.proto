@@ -10,4 +10,5 @@ option optimize_for = LITE_RUNTIME;
 
 message ChromeFeedResponseMetadata {
   optional bool privacy_notice_fulfilled = 1;
+  optional bool logging_enabled = 2;
 }

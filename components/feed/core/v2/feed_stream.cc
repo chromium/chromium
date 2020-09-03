@@ -99,9 +99,10 @@ class FeedStream::OfflineSuggestionsProvider
 RefreshResponseData FeedStream::WireResponseTranslator::TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
+    bool was_signed_in_request,
     base::Time current_time) const {
   return ::feed::TranslateWireResponse(std::move(response), source,
-                                       current_time);
+                                       was_signed_in_request, current_time);
 }
 
 FeedStream::Metadata::Metadata(FeedStore* store) : store_(store) {}
@@ -208,6 +209,7 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   metrics_reporter_->OnLoadStream(result.load_from_store_status,
                                   result.final_status,
                                   std::move(result.latencies));
+  UpdateIsActivityLoggingEnabled();
 
   model_loading_in_progress_ = false;
 
@@ -224,6 +226,15 @@ void FeedStream::OnEnterBackground() {
         this, base::BindOnce(&FeedStream::UploadActionsComplete,
                              base::Unretained(this))));
   }
+}
+
+bool FeedStream::IsActivityLoggingEnabled() const {
+  return is_activity_logging_enabled_;
+}
+
+void FeedStream::UpdateIsActivityLoggingEnabled() {
+  is_activity_logging_enabled_ =
+      model_ && model_->signed_in() && model_->logging_enabled();
 }
 
 void FeedStream::AttachSurface(SurfaceInterface* surface) {
@@ -311,6 +322,7 @@ void FeedStream::LoadMore(SurfaceId surface_id,
 }
 
 void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
+  UpdateIsActivityLoggingEnabled();
   metrics_reporter_->OnLoadMore(result.final_status);
   surface_updater_->SetLoadingMore(false);
   std::vector<base::OnceCallback<void(bool)>> moved_callbacks =
@@ -415,7 +427,10 @@ void FeedStream::ForceRefreshForDebuggingTask() {
 std::string FeedStream::DumpStateForDebugging() {
   std::stringstream ss;
   if (model_) {
-    ss << "model loaded, " << model_->GetContentList().size() << " contents\n";
+    ss << "model loaded, " << model_->GetContentList().size() << " contents, "
+       << "signed_in=" << model_->signed_in()
+       << ", logging_enabled=" << model_->logging_enabled()
+       << ", privacy_notice_fulfilled=" << model_->privacy_notice_fulfilled();
   }
   RequestSchedule schedule = prefs::GetRequestSchedule(*profile_prefs_);
   if (schedule.refresh_offsets.empty()) {
@@ -558,10 +573,20 @@ void FeedStream::OnCacheDataCleared() {
 }
 
 void FeedStream::OnSignedIn() {
+  // On sign-in, turn off activity logging. This avoids the possibility that we
+  // send logs with the wrong user info attached, but may cause us to lose
+  // buffered events.
+  is_activity_logging_enabled_ = false;
+
   ClearAll();
 }
 
 void FeedStream::OnSignedOut() {
+  // On sign-out, turn off activity logging. This avoids the possibility that we
+  // send logs with the wrong user info attached, but may cause us to lose
+  // buffered events.
+  is_activity_logging_enabled_ = false;
+
   ClearAll();
 }
 
