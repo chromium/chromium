@@ -419,6 +419,8 @@ crbug.com/1111652 [ win10 intel vulkan passthrough ] conformance/context/context
 crbug.com/844311 [ mac no-swiftshader-gl ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 crbug.com/599272 [ mac no-passthrough ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/928926 [ mac ] conformance/ogles/GL/abs/abs_001_to_006.html [ RetryOnFailure ]
+crbug.com/1108676 [ mac ] conformance/ogles/GL/acos/acos_001_to_006.html [ RetryOnFailure ]
+crbug.com/1108676 [ mac ] conformance/ogles/GL/asin/asin_001_to_006.html [ RetryOnFailure ]
 
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
