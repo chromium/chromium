@@ -105,8 +105,6 @@ void ClipboardHistory::OnClipboardDataChanged() {
                      commit_data_weak_factory_.GetWeakPtr(), *clipboard_data));
 }
 
-void ClipboardHistory::OnClipboardDataRead() {}
-
 void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
   if (!ClipboardHistoryUtil::IsSupported(data))
     return;

@@ -42,7 +42,6 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
   void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item) override;
 
   // ui::ClipboardObserver:
-  void OnClipboardDataChanged() override;
   void OnClipboardDataRead() override;
 
   // Resets nudge state and show nudge timer.

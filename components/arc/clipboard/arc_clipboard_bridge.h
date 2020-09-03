@@ -36,7 +36,6 @@ class ArcClipboardBridge : public KeyedService,
 
   // ClipboardObserver overrides.
   void OnClipboardDataChanged() override;
-  void OnClipboardDataRead() override {}
 
   // mojom::ClipboardHost overrides.
   void SetClipContent(mojom::ClipDataPtr clip_data) override;

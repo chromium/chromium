@@ -63,8 +63,6 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
   }
 }
 
-void ClipboardNudgeController::OnClipboardDataChanged() {}
-
 void ClipboardNudgeController::OnClipboardDataRead() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();

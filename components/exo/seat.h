@@ -8,7 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "build/build_config.h"
 #include "components/exo/data_source_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -99,9 +98,6 @@ class Seat : public aura::client::FocusChangeObserver,
 
   // Overridden from ui::ClipboardObserver:
   void OnClipboardDataChanged() override;
-#if defined(OS_CHROMEOS)
-  void OnClipboardDataRead() override {}
-#endif  // defined(OS_CHROMEOS)
 
   // Overridden from DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;

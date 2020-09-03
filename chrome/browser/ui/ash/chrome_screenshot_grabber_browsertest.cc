@@ -78,7 +78,6 @@ class ChromeScreenshotGrabberBrowserTest
     clipboard_changed_ = true;
     message_loop_runner_->Quit();
   }
-  void OnClipboardDataRead() override {}
 
   void RunLoop() {
     message_loop_runner_ = new content::MessageLoopRunner;

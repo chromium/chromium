@@ -72,7 +72,6 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
 
   // ClipboardMonitor:
   void OnClipboardDataChanged() override;
-  void OnClipboardDataRead() override;
 
  private:
   // Adds `data` to the `history_list_` if it's supported. If `data` is not

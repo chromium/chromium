@@ -2032,9 +2032,6 @@ class PDFExtensionClipboardTest : public PDFExtensionTestWithParam,
     clipboard_changed_ = true;
     std::move(clipboard_quit_closure_).Run();
   }
-#if defined(OS_CHROMEOS)
-  void OnClipboardDataRead() override {}
-#endif
 
   void LoadTestComboBoxPdfGetGuestContents() {
     GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
