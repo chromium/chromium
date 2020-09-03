@@ -49,23 +49,18 @@ namespace {
 
 }  // namespace
 
-LineIndexesMap::LineIndexesMap(const BrowserAccessibilityCocoa* cocoa_node) {
-  int counter = 0;
-  Build(cocoa_node, &counter);
-}
+LineIndexer::LineIndexer() {}
+LineIndexer::~LineIndexer() {}
 
-LineIndexesMap::~LineIndexesMap() {}
-
-std::string LineIndexesMap::IndexBy(
-    const BrowserAccessibilityCocoa* cocoa_node) const {
+std::string LineIndexer::IndexBy(const gfx::NativeViewAccessible node) const {
   std::string line_index = ":unknown";
-  if (map.find(cocoa_node) != map.end()) {
-    line_index = map.at(cocoa_node);
+  if (map.find(node) != map.end()) {
+    line_index = map.at(node);
   }
   return line_index;
 }
 
-gfx::NativeViewAccessible LineIndexesMap::NodeBy(
+gfx::NativeViewAccessible LineIndexer::NodeBy(
     const std::string& line_index) const {
   for (std::pair<const gfx::NativeViewAccessible, std::string> item : map) {
     if (item.second == line_index) {
@@ -75,21 +70,30 @@ gfx::NativeViewAccessible LineIndexesMap::NodeBy(
   return nil;
 }
 
-void LineIndexesMap::Build(const BrowserAccessibilityCocoa* cocoa_node,
-                           int* counter) {
+void LineIndexer::Build(const gfx::NativeViewAccessible node, int* counter) {
   const std::string line_index =
       std::string(1, ':') + base::NumberToString(++(*counter));
-  map.insert({cocoa_node, line_index});
-  for (BrowserAccessibilityCocoa* cocoa_child in [cocoa_node children]) {
-    Build(cocoa_child, counter);
+  map.insert({node, line_index});
+  NSArray* children = Children(node);
+  for (gfx::NativeViewAccessible child in children) {
+    Build(child, counter);
   }
+}
+
+CocoaLineIndexer::CocoaLineIndexer(const BrowserAccessibilityCocoa* node) {
+  int counter = 0;
+  Build(node, &counter);
+}
+
+NSArray* CocoaLineIndexer::Children(gfx::NativeViewAccessible node) const {
+  return [node children];
 }
 
 // AttributeInvoker
 
 AttributeInvoker::AttributeInvoker(const BrowserAccessibilityCocoa* cocoa_node,
-                                   const LineIndexesMap& line_indexes_map)
-    : cocoa_node(cocoa_node), line_indexes_map(line_indexes_map) {
+                                   const LineIndexer* line_indexer)
+    : cocoa_node(cocoa_node), line_indexer(line_indexer) {
   attributes = [cocoa_node accessibilityAttributeNames];
   parameterized_attributes =
       [cocoa_node accessibilityParameterizedAttributeNames];
@@ -216,7 +220,7 @@ NSValue* AttributeInvoker::PropertyNodeToRange(
 gfx::NativeViewAccessible AttributeInvoker::PropertyNodeToUIElement(
     const PropertyNode& uielement_node) const {
   gfx::NativeViewAccessible uielement =
-      line_indexes_map.NodeBy(uielement_node.name_or_value);
+      line_indexer->NodeBy(uielement_node.name_or_value);
   if (!uielement) {
     UIELEMENT_FAIL(uielement_node,
                    "no corresponding UIElement was found in the tree")
@@ -233,7 +237,7 @@ id AttributeInvoker::DictNodeToTextMarker(const PropertyNode& dictnode) const {
   }
 
   BrowserAccessibilityCocoa* anchor_cocoa =
-      line_indexes_map.NodeBy(dictnode.parameters[0].name_or_value);
+      line_indexer->NodeBy(dictnode.parameters[0].name_or_value);
   if (!anchor_cocoa) {
     TEXTMARKER_FAIL(dictnode, "1st argument: wrong anchor")
   }

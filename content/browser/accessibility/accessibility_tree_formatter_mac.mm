@@ -25,7 +25,8 @@ using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
 using base::SysUTF16ToNSString;
 using std::string;
-using content::a11y::LineIndexesMap;
+using content::a11y::LineIndexer;
+using content::a11y::CocoaLineIndexer;
 using content::a11y::OptionalNSObject;
 using content::a11y::AttributeInvoker;
 
@@ -69,7 +70,7 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
 
  private:
   void RecursiveBuildAccessibilityTree(const BrowserAccessibilityCocoa* node,
-                                       const LineIndexesMap& line_indexes_map,
+                                       const LineIndexer* line_indexer,
                                        base::DictionaryValue* dict);
 
   base::FilePath::StringType GetExpectedFileSuffix() override;
@@ -80,27 +81,26 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   const std::string GetRunUntilEventString() override;
 
   void AddProperties(const BrowserAccessibilityCocoa* node,
-                     const LineIndexesMap& line_indexes_map,
+                     const LineIndexer* line_indexer,
                      base::Value* dict);
 
   // Invokes an attributes by a property node.
   OptionalNSObject InvokeAttributeFor(
       const BrowserAccessibilityCocoa* cocoa_node,
       const PropertyNode& property_node,
-      const LineIndexesMap& line_indexes_map) const;
+      const LineIndexer* line_indexer) const;
 
   base::Value PopulateSize(const BrowserAccessibilityCocoa*) const;
   base::Value PopulatePosition(const BrowserAccessibilityCocoa*) const;
   base::Value PopulateRange(NSRange) const;
   base::Value PopulateTextPosition(
       BrowserAccessibilityPosition::AXPositionInstance::pointer,
-      const LineIndexesMap&) const;
-  base::Value PopulateTextMarkerRange(id, const LineIndexesMap&) const;
-  base::Value PopulateObject(id, const LineIndexesMap& line_indexes_map) const;
-  base::Value PopulateArray(NSArray*,
-                            const LineIndexesMap& line_indexes_map) const;
+      const LineIndexer*) const;
+  base::Value PopulateTextMarkerRange(id, const LineIndexer*) const;
+  base::Value PopulateObject(id, const LineIndexer* line_indexer) const;
+  base::Value PopulateArray(NSArray*, const LineIndexer* line_indexer) const;
 
-  std::string NodeToLineIndex(id, const LineIndexesMap&) const;
+  std::string NodeToLineIndex(id, const LineIndexer*) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
@@ -148,13 +148,10 @@ std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterMac::BuildAccessibilityTree(
     BrowserAccessibility* root) {
   DCHECK(root);
-
   BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(root);
-
-  LineIndexesMap line_indexes_map(cocoa_root);
-
+  CocoaLineIndexer line_indexer(cocoa_root);
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  RecursiveBuildAccessibilityTree(cocoa_root, line_indexes_map, dict.get());
+  RecursiveBuildAccessibilityTree(cocoa_root, &line_indexer, dict.get());
   return dict;
 }
 
@@ -181,15 +178,15 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForPattern(
 
 void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(
     const BrowserAccessibilityCocoa* cocoa_node,
-    const LineIndexesMap& line_indexes_map,
+    const LineIndexer* line_indexer,
     base::DictionaryValue* dict) {
-  AddProperties(cocoa_node, line_indexes_map, dict);
+  AddProperties(cocoa_node, line_indexer, dict);
 
   auto children = std::make_unique<base::ListValue>();
   for (BrowserAccessibilityCocoa* cocoa_child in [cocoa_node children]) {
     std::unique_ptr<base::DictionaryValue> child_dict(
         new base::DictionaryValue);
-    RecursiveBuildAccessibilityTree(cocoa_child, line_indexes_map,
+    RecursiveBuildAccessibilityTree(cocoa_child, line_indexer,
                                     child_dict.get());
     children->Append(std::move(child_dict));
   }
@@ -198,7 +195,7 @@ void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(
 
 void AccessibilityTreeFormatterMac::AddProperties(
     const BrowserAccessibilityCocoa* cocoa_node,
-    const LineIndexesMap& line_indexes_map,
+    const LineIndexer* line_indexer,
     base::Value* dict) {
   // DOM element id
   BrowserAccessibility* node = [cocoa_node owner];
@@ -210,15 +207,15 @@ void AccessibilityTreeFormatterMac::AddProperties(
       dict->SetPath(
           SysNSStringToUTF8(attribute),
           PopulateObject([cocoa_node accessibilityAttributeValue:attribute],
-                         line_indexes_map));
+                         line_indexer));
     }
     return;
   }
 
   // Otherwise dump attributes matching allow filters only.
-  std::string line_index = line_indexes_map.IndexBy(cocoa_node);
+  std::string line_index = line_indexer->IndexBy(cocoa_node);
   for (const PropertyNode& property_node : PropertyFilterNodesFor(line_index)) {
-    AttributeInvoker invoker(cocoa_node, line_indexes_map);
+    AttributeInvoker invoker(cocoa_node, line_indexer);
     OptionalNSObject value = invoker.Invoke(property_node);
     if (value.IsNotApplicable()) {
       continue;
@@ -229,7 +226,7 @@ void AccessibilityTreeFormatterMac::AddProperties(
       continue;
     }
     dict->SetPath(property_node.original_property,
-                  PopulateObject(*value, line_indexes_map));
+                  PopulateObject(*value, line_indexer));
   }
 
   // Position and size
@@ -277,14 +274,14 @@ base::Value AccessibilityTreeFormatterMac::PopulatePosition(
 
 base::Value AccessibilityTreeFormatterMac::PopulateObject(
     id value,
-    const LineIndexesMap& line_indexes_map) const {
+    const LineIndexer* line_indexer) const {
   if (value == nil) {
     return base::Value(kNULLValue);
   }
 
   // NSArray
   if ([value isKindOfClass:[NSArray class]]) {
-    return PopulateArray((NSArray*)value, line_indexes_map);
+    return PopulateArray((NSArray*)value, line_indexer);
   }
 
   // NSNumber
@@ -301,17 +298,17 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
   // AXTextMarker
   if (content::IsAXTextMarker(value)) {
     return PopulateTextPosition(content::AXTextMarkerToPosition(value).get(),
-                                line_indexes_map);
+                                line_indexer);
   }
 
   // AXTextMarkerRange
   if (content::IsAXTextMarkerRange(value)) {
-    return PopulateTextMarkerRange(value, line_indexes_map);
+    return PopulateTextMarkerRange(value, line_indexer);
   }
 
   // Accessible object
   if ([value isKindOfClass:[BrowserAccessibilityCocoa class]]) {
-    return base::Value(NodeToLineIndex(value, line_indexes_map));
+    return base::Value(NodeToLineIndex(value, line_indexer));
   }
 
   // Scalar value.
@@ -329,7 +326,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateRange(
 
 base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
     BrowserAccessibilityPosition::AXPositionInstance::pointer position,
-    const LineIndexesMap& line_indexes_map) const {
+    const LineIndexer* line_indexer) const {
   if (position->IsNullPosition()) {
     return base::Value(kNULLValue);
   }
@@ -353,7 +350,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
   base::Value set(base::Value::Type::DICTIONARY);
   const std::string setkey_prefix = kSetKeyPrefixDictAttr;
   set.SetStringPath(setkey_prefix + "index1_anchor",
-                    NodeToLineIndex(cocoa_anchor, line_indexes_map));
+                    NodeToLineIndex(cocoa_anchor, line_indexer));
   set.SetIntPath(setkey_prefix + "index2_offset", position->text_offset());
   set.SetStringPath(setkey_prefix + "index3_affinity",
                     kConstValuePrefix + affinity);
@@ -362,32 +359,31 @@ base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
 
 base::Value AccessibilityTreeFormatterMac::PopulateTextMarkerRange(
     id object,
-    const LineIndexesMap& line_indexes_map) const {
+    const LineIndexer* line_indexer) const {
   auto range = content::AXTextMarkerRangeToRange(object);
   if (range.IsNull()) {
     return base::Value(kNULLValue);
   }
 
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetPath("anchor",
-               PopulateTextPosition(range.anchor(), line_indexes_map));
-  dict.SetPath("focus", PopulateTextPosition(range.focus(), line_indexes_map));
+  dict.SetPath("anchor", PopulateTextPosition(range.anchor(), line_indexer));
+  dict.SetPath("focus", PopulateTextPosition(range.focus(), line_indexer));
   return dict;
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulateArray(
     NSArray* node_array,
-    const LineIndexesMap& line_indexes_map) const {
+    const LineIndexer* line_indexer) const {
   base::Value list(base::Value::Type::LIST);
   for (NSUInteger i = 0; i < [node_array count]; i++)
-    list.Append(PopulateObject([node_array objectAtIndex:i], line_indexes_map));
+    list.Append(PopulateObject([node_array objectAtIndex:i], line_indexer));
   return list;
 }
 
 std::string AccessibilityTreeFormatterMac::NodeToLineIndex(
     id cocoa_node,
-    const LineIndexesMap& line_indexes_map) const {
-  return kConstValuePrefix + line_indexes_map.IndexBy(cocoa_node);
+    const LineIndexer* line_indexer) const {
+  return kConstValuePrefix + line_indexer->IndexBy(cocoa_node);
 }
 
 std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(

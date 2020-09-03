@@ -12,21 +12,34 @@ namespace content {
 namespace a11y {
 
 /**
- * Converts cocoa node object to a line index in the formatted accessibility
- * tree, the node is placed at, and vice versa.
+ * Converts accessible node object to a line index in the formatted
+ * accessibility tree, the node is placed at, and vice versa.
  */
-class LineIndexesMap {
+class LineIndexer {
  public:
-  LineIndexesMap(const BrowserAccessibilityCocoa* cocoa_node);
-  ~LineIndexesMap();
+  LineIndexer();
+  virtual ~LineIndexer();
 
-  std::string IndexBy(const BrowserAccessibilityCocoa* cocoa_node) const;
+  std::string IndexBy(const gfx::NativeViewAccessible node) const;
   gfx::NativeViewAccessible NodeBy(const std::string& index) const;
 
- private:
-  void Build(const BrowserAccessibilityCocoa* cocoa_node, int* counter);
+ protected:
+  virtual NSArray* Children(const gfx::NativeViewAccessible node) const = 0;
+  void Build(const gfx::NativeViewAccessible node, int* counter);
 
+ private:
   std::map<const gfx::NativeViewAccessible, std::string> map;
+};
+
+/**
+ * Line indexer for internal BrowserAccessibilityCocoa trees.
+ */
+class CocoaLineIndexer final : public LineIndexer {
+ public:
+  CocoaLineIndexer(const BrowserAccessibilityCocoa* node);
+
+ protected:
+  NSArray* Children(const gfx::NativeViewAccessible node) const override;
 };
 
 // Implements stateful id values. Can be either id or be in
@@ -64,7 +77,7 @@ class OptionalNSObject final {
 class AttributeInvoker final {
  public:
   AttributeInvoker(const BrowserAccessibilityCocoa* cocoa_node,
-                   const LineIndexesMap& line_indexes_map);
+                   const LineIndexer* line_indexer);
 
   // Invokes an attribute matching to a property filter.
   OptionalNSObject Invoke(const PropertyNode& property_node) const;
@@ -86,7 +99,7 @@ class AttributeInvoker final {
       const base::string16 line_index) const;
 
   const BrowserAccessibilityCocoa* cocoa_node;
-  const LineIndexesMap& line_indexes_map;
+  const LineIndexer* line_indexer;
   const NSArray* attributes;
   const NSArray* parameterized_attributes;
 };
