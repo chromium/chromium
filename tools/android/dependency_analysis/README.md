@@ -38,32 +38,26 @@ required arguments:
 ```
 #### Class Dependency Audit
 Given a JSON dependency graph, output the class-level dependencies for a given
-class.
-```
-usage: print_class_dependencies.py [-h] -f FILE -c CLASS_NAME
+list of classes.
 
-required arguments:
-  -f FILE, --file FILE  Path to the JSON file containing the dependency graph.
-                        See the README on how to generate this file.
-  -c CLASS_NAME, --class CLASS_NAME
-                        Case-insensitive name of the class to print
-                        dependencies for. Matches names of the form ...input,
-                        for example `apphooks` matches
-                        `org.chromium.browser.AppHooks`.
+An example is given at the end of this page. To see the options:
+```
+tools/android/dependency_analysis/print_class_dependencies.py -h
 ```
 #### Package Dependency Audit
 Given a JSON dependency graph, output the package-level dependencies for a
 given package and the class dependencies comprising those dependencies.
-```
-usage: print_package_dependencies.py [-h] -f FILE -p PACKAGE
 
-required arguments:
-  -f FILE, --file FILE  Path to the JSON file containing the dependency graph.
-                        See the README on how to generate this file.
-  -p PACKAGE, --package PACKAGE
-                        Case-insensitive name of the package to print
-                        dependencies for. Matches names of the form ...input,
-                        for example `browser` matches `org.chromium.browser`.
+An example is given at the end of this page. To see the options:
+```
+tools/android/dependency_analysis/print_package_dependencies.py -h
+```
+#### Package Cycle Counting
+Given a JSON dependency graph, counts package cycles up to a given size.
+
+To see the options:
+```
+tools/android/dependency_analysis/count_cycles.py -h
 ```
 
 ## Example Usage
@@ -72,20 +66,20 @@ and that Chromium has been built as per the instructions
 [here](https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md),
 although the only things these assumptions affect are the file paths.
 ```
-$ tools/android/dependency_analysis/generate_json_dependency_graph.py -C out/Debug -o ~/json_graph.txt
+$ tools/android/dependency_analysis/generate_json_dependency_graph.py -C out/Debug -o ~/graph.json
 >>> Running jdeps and parsing output...
 >>> Parsed class-level dependency graph, got 3239 nodes and 19272 edges.
 >>> Created package-level dependency graph, got 500 nodes and 4954 edges.
->>> Dumping JSON representation to ./json_graph.txt.
+>>> Dumping JSON representation to ~/graph.json.
 
-./print_class_dependencies.py --file ./json_graph.txt --class apphooks
+tools/android/dependency_analysis/print_class_dependencies.py -f ~/graph.json -c AppHooks
 >>> Printing class dependencies for org.chromium.chrome.browser.AppHooks:
 >>> 35 inbound dependency(ies) for org.chromium.chrome.browser.AppHooks:
 >>> 	org.chromium.chrome.browser.AppHooksImpl
 >>> 	org.chromium.chrome.browser.ChromeActivity
 >>> ...
 
-./print_package_dependencies.py --file ./json_graph.txt --package chrome.browser
+tools/android/dependency_analysis/print_package_dependencies.py -f ~/graph.json -p chrome.browser
 >>> Printing package dependencies for org.chromium.chrome.browser:
 >>> 121 inbound dependency(ies) for org.chromium.chrome.browser:
 >>> 	org.chromium.chrome.browser.about_settings -> org.chromium.chrome.browser

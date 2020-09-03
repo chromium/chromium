@@ -84,7 +84,7 @@ def main():
     _, package_graph = serialization.load_class_and_package_graphs_from_file(
         arguments.file)
     package_graph_keys = [node.name for node in package_graph.nodes]
-    valid_keys = print_dependencies_helper.get_valid_keys_matching_input(
+    valid_keys = print_dependencies_helper.get_valid_package_keys_matching(
         package_graph_keys, arguments.package)
 
     if len(valid_keys) == 0:
