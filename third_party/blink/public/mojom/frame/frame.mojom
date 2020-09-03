@@ -353,10 +353,6 @@ interface LocalFrameHost {
   [Sync]
   RunBeforeUnloadConfirm(bool is_reload) => (bool success);
 
-  // A request to check whether WebGL is explicitly blocked.
-  [Sync]
-  Are3DAPIsBlocked() => (bool blocked);
-
   // Notifies that the urls for the favicon of a site has been determined.
   UpdateFaviconURL(array<FaviconURL> favicon_urls);
 

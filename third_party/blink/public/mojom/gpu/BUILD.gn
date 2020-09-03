@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom_component("gpu") {
+  output_prefix = "blink_gpu_mojom"
+  macro_prefix = "BLINK_GPU_MOJOM"
+
+  sources = [ "gpu.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+
+  # It's important to specify these settings for Blink bindings, because the
+  # URL dependency above requires direct linkage into the platform library.
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  generate_java = true
+}

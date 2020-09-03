@@ -93,7 +93,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
                             RunModalPromptDialogCallback callback) override;
   void RunBeforeUnloadConfirm(bool is_reload,
                               RunBeforeUnloadConfirmCallback callback) override;
-  void Are3DAPIsBlocked(Are3DAPIsBlockedCallback callback) override;
   void UpdateFaviconURL(
       WTF::Vector<blink::mojom::blink::FaviconURLPtr> favicon_urls) override;
   void DownloadURL(mojom::blink::DownloadURLParamsPtr params) override;

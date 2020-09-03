@@ -44,6 +44,9 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_participation.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -457,12 +460,11 @@ bool HTMLCanvasElement::IsWebGL2Enabled() const {
 
 bool HTMLCanvasElement::IsWebGLBlocked() const {
   Document& document = GetDocument();
-  LocalFrame* frame = document.GetFrame();
-  if (!frame)
-    return false;
-
   bool blocked = false;
-  frame->GetLocalFrameHostRemote().Are3DAPIsBlocked(&blocked);
+  mojo::Remote<mojom::blink::GpuDataManager> gpu_data_manager;
+  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+      gpu_data_manager.BindNewPipeAndPassReceiver());
+  gpu_data_manager->Are3DAPIsBlockedForUrl(document.Url(), &blocked);
   return blocked;
 }
 

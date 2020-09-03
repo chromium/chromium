@@ -4,13 +4,54 @@
 
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 
+#include "base/no_destructor.h"
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
+#include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/memory_stats.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace content {
 
 namespace {
+
 bool g_initialized = false;
+
+// Implementation of the Blink GpuDataManager interface to forward requests from
+// a renderer to the GpuDataManagerImpl.
+class GpuDataManagerReceiver : public blink::mojom::GpuDataManager {
+ public:
+  GpuDataManagerReceiver() = default;
+  GpuDataManagerReceiver(const GpuDataManagerReceiver&) = delete;
+  GpuDataManagerReceiver& operator=(const GpuDataManagerReceiver&) = delete;
+  ~GpuDataManagerReceiver() override = default;
+
+  void Bind(mojo::PendingReceiver<blink::mojom::GpuDataManager> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  // blink::mojom::GpuDataManager:
+  void Are3DAPIsBlockedForUrl(
+      const GURL& url,
+      Are3DAPIsBlockedForUrlCallback callback) override {
+    auto* manager = GpuDataManagerImpl::GetInstance();
+    if (!manager) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    std::move(callback).Run(
+        manager->Are3DAPIsBlocked(url, THREE_D_API_TYPE_WEBGL));
+  }
+
+ private:
+  mojo::ReceiverSet<blink::mojom::GpuDataManager> receivers_;
+};
+
+GpuDataManagerReceiver& GetGpuDataManagerReceiver() {
+  static base::NoDestructor<GpuDataManagerReceiver> receiver;
+  return *receiver.get();
+}
+
 }  // namespace
 
 // static
@@ -272,12 +313,9 @@ void GpuDataManagerImpl::BlockDomainFrom3DAPIs(const GURL& url,
 }
 
 bool GpuDataManagerImpl::Are3DAPIsBlocked(const GURL& top_origin_url,
-                                          int render_process_id,
-                                          int render_frame_id,
                                           ThreeDAPIType requester) {
   base::AutoLock auto_lock(lock_);
-  return private_->Are3DAPIsBlocked(top_origin_url, render_process_id,
-                                    render_frame_id, requester);
+  return private_->Are3DAPIsBlocked(top_origin_url, requester);
 }
 
 void GpuDataManagerImpl::UnblockDomainFrom3DAPIs(const GURL& url) {
@@ -324,6 +362,15 @@ void GpuDataManagerImpl::OnDisplayAdded(const display::Display& new_display) {
 void GpuDataManagerImpl::OnDisplayRemoved(const display::Display& old_display) {
   base::AutoLock auto_lock(lock_);
   private_->OnDisplayRemoved(old_display);
+}
+
+// static
+void GpuDataManagerImpl::BindReceiver(
+    mojo::PendingReceiver<blink::mojom::GpuDataManager> receiver) {
+  // This is intentionally always bound on the IO thread to ensure a low-latency
+  // response to sync IPCs.
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  GetGpuDataManagerReceiver().Bind(std::move(receiver));
 }
 
 GpuDataManagerImpl::GpuDataManagerImpl()

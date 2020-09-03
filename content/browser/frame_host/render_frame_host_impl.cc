@@ -3391,13 +3391,6 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
                                     std::move(dialog_closed_callback));
 }
 
-void RenderFrameHostImpl::Are3DAPIsBlocked(Are3DAPIsBlockedCallback callback) {
-  bool blocked = GpuDataManagerImpl::GetInstance()->Are3DAPIsBlocked(
-      GetMainFrame()->GetLastCommittedURL(), GetProcess()->GetID(),
-      GetRoutingID(), THREE_D_API_TYPE_WEBGL);
-  std::move(callback).Run(blocked);
-}
-
 void RenderFrameHostImpl::ScaleFactorChanged(float scale) {
   delegate_->OnPageScaleFactorChanged(this, scale);
 }

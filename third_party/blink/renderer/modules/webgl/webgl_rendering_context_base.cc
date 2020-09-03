@@ -39,6 +39,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_participation.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/html_canvas_element_or_offscreen_canvas.h"
@@ -8221,7 +8223,11 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
       return;
 
     bool blocked = false;
-    frame->GetLocalFrameHostRemote().Are3DAPIsBlocked(&blocked);
+    mojo::Remote<mojom::blink::GpuDataManager> gpu_data_manager;
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        gpu_data_manager.BindNewPipeAndPassReceiver());
+    gpu_data_manager->Are3DAPIsBlockedForUrl(canvas()->GetDocument().Url(),
+                                             &blocked);
     if (blocked)
       return;
 
