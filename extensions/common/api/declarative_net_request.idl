@@ -199,18 +199,30 @@ namespace declarativeNetRequest {
     // <code>domains</code>. If the list is omitted, the rule is applied to
     // requests from all domains. An empty list is not allowed.
     //
-    // Note: sub-domains like "a.example.com" are also allowed.
-    // The entries must consist of only ascii characters. Use punycode encoding
-    // for internationalized domains.
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>
+    //    This matches against the request initiator and not the request url.
+    //  </li>
+    // </ul>
     DOMString[]? domains;
 
     // The rule will not match network requests originating from the list of
-    // <code> excludedDomains</code>. If the list is empty or omitted, no domains
-    // are excluded. This takes precedence over <code> domains</code>.
+    // <code>excludedDomains</code>. If the list is empty or omitted, no
+    // domains are excluded. This takes precedence over <code>domains</code>.
     //
-    // Note: sub-domains like "a.example.com" are also allowed.
-    // The entries must consist of only ascii characters. Use punycode encoding
-    // for internationalized domains.
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>
+    //    This matches against the request initiator and not the request url.
+    //  </li>
+    // </ul>
     DOMString[]? excludedDomains;
 
     // List of resource types which the rule can match. An empty list is not
