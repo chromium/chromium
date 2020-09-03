@@ -368,33 +368,6 @@ class TouchSelectionControllerClientAuraSiteIsolationTest
   }
 };
 
-class FrameStableObserver {
- public:
-  FrameStableObserver(RenderWidgetHostViewBase* view, base::TimeDelta delta)
-      : view_(view), delta_(delta) {}
-  virtual ~FrameStableObserver() {}
-
-  void WaitUntilStable() {
-    uint32_t current_frame_number = view_->RendererFrameNumber();
-    uint32_t previous_frame_number;
-
-    do {
-      base::RunLoop run_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), delta_);
-      run_loop.Run();
-      previous_frame_number = current_frame_number;
-      current_frame_number = view_->RendererFrameNumber();
-    } while (current_frame_number != previous_frame_number);
-  }
-
- private:
-  RenderWidgetHostViewBase* view_;
-  base::TimeDelta delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameStableObserver);
-};
-
 INSTANTIATE_TEST_SUITE_P(TouchSelectionForCrossProcessFramesTests,
                          TouchSelectionControllerClientAuraSiteIsolationTest,
                          testing::Bool());
@@ -452,9 +425,6 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   EXPECT_EQ(child_url, observer.last_navigation_url());
   EXPECT_TRUE(observer.last_navigation_succeeded());
-  FrameStableObserver child_frame_stable_observer(child_view,
-                                                  TestTimeouts::tiny_timeout());
-  child_frame_stable_observer.WaitUntilStable();
 
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
             parent_view->selection_controller()->active_status());
@@ -567,9 +537,6 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   EXPECT_EQ(child_url, observer.last_navigation_url());
   EXPECT_TRUE(observer.last_navigation_succeeded());
-  FrameStableObserver child_frame_stable_observer(child_view,
-                                                  TestTimeouts::tiny_timeout());
-  child_frame_stable_observer.WaitUntilStable();
 
   ui::TouchSelectionController* selection_controller =
       parent_view->selection_controller();
@@ -662,6 +629,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Make sure we wait for the scroll to actually happen.
   filter->WaitForRect();
+
   // Since the check below that compares the scroll_delta to the actual handle
   // movement requires use of TransformPointToRootCoordSpaceF() in
   // TouchSelectionControllerClientChildFrame::DidScroll(), we need to
@@ -669,7 +637,12 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   // can be trusted. This may point out a general concern with the timing
   // of the main-frame's did-stop-flinging IPC and the rendering of the
   // child frame's compositor frame.
-  child_frame_stable_observer.WaitUntilStable();
+  {
+    base::RunLoop loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    loop.Run();
+  }
 
   // End scrolling: touch handles should re-appear.
   ui::GestureEventDetails scroll_end_details(ui::ET_GESTURE_SCROLL_END);

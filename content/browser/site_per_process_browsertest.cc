@@ -10551,34 +10551,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
 }
 
-// Tests for Android TouchSelectionEditing.
-class FrameStableObserver {
- public:
-  FrameStableObserver(RenderWidgetHostViewBase* view, base::TimeDelta delta)
-      : view_(view), delta_(delta) {}
-  virtual ~FrameStableObserver() {}
-
-  void WaitUntilStable() {
-    uint32_t current_frame_number = view_->RendererFrameNumber();
-    uint32_t previous_frame_number;
-
-    do {
-      base::RunLoop run_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), delta_);
-      run_loop.Run();
-      previous_frame_number = current_frame_number;
-      current_frame_number = view_->RendererFrameNumber();
-    } while (current_frame_number != previous_frame_number);
-  }
-
- private:
-  RenderWidgetHostViewBase* view_;
-  base::TimeDelta delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameStableObserver);
-};
-
 class TouchSelectionControllerClientTestWrapper
     : public ui::TouchSelectionControllerClient {
  public:
@@ -10738,9 +10710,6 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
 
     EXPECT_EQ(child_url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
-    FrameStableObserver child_frame_stable_observer(
-        child_rwhv_, TestTimeouts::tiny_timeout());
-    child_frame_stable_observer.WaitUntilStable();
   }
 
   // This must be called before the main-frame's RenderWidgetHostView is freed,

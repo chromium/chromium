@@ -561,14 +561,6 @@ float RenderWidgetHostViewBase::GetDeviceScaleFactor() {
   return screen_info.device_scale_factor;
 }
 
-uint32_t RenderWidgetHostViewBase::RendererFrameNumber() {
-  return renderer_frame_number_;
-}
-
-void RenderWidgetHostViewBase::DidReceiveRendererFrame() {
-  ++renderer_frame_number_;
-}
-
 void RenderWidgetHostViewBase::OnAutoscrollStart() {
   if (!GetMouseWheelPhaseHandler())
     return;
