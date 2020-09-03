@@ -84,14 +84,6 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // the native appearance.
   virtual bool IsControlStyled(ControlPart part, const ComputedStyle&) const;
 
-  // This method is called whenever a control state changes on a particular
-  // themed object, e.g., the mouse becomes pressed or a control becomes
-  // disabled. The ControlState parameter indicates which state has changed
-  // (from having to not having, or vice versa).
-  bool ControlStateChanged(const Node*,
-                           const ComputedStyle&,
-                           ControlState) const;
-
   bool ShouldDrawDefaultFocusRing(const Node*, const ComputedStyle&) const;
 
   // A method asking if the platform is able to show a calendar picker for a

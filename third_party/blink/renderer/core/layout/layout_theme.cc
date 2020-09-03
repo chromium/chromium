@@ -433,19 +433,6 @@ bool LayoutTheme::ShouldDrawDefaultFocusRing(const Node* node,
   return true;
 }
 
-bool LayoutTheme::ControlStateChanged(const Node* node,
-                                      const ComputedStyle& style,
-                                      ControlState state) const {
-  if (!style.HasEffectiveAppearance())
-    return false;
-
-  // Assume pressed state is only responded to if the control is enabled.
-  if (state == kPressedControlState && !IsEnabled(node))
-    return false;
-
-  return true;
-}
-
 bool LayoutTheme::IsChecked(const Node* node) {
   if (auto* input = DynamicTo<HTMLInputElement>(node))
     return input->ShouldAppearChecked();

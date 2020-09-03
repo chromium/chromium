@@ -212,8 +212,7 @@ void HTMLOptionElement::ParseAttribute(
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
       PseudoStateChanged(CSSSelector::kPseudoEnabled);
-      if (LayoutObject* o = GetLayoutObject())
-        o->InvalidateIfControlStateChanged(kEnabledControlState);
+      InvalidateIfHasEffectiveAppearance();
     }
   } else if (name == html_names::kSelectedAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull() && !is_dirty_)

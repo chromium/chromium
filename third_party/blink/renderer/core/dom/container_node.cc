@@ -1080,7 +1080,7 @@ void ContainerNode::FocusStateChanged() {
   if (this_element && this_element->ChildrenOrSiblingsAffectedByFocus())
     this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
 
-  GetLayoutObject()->InvalidateIfControlStateChanged(kFocusControlState);
+  InvalidateIfHasEffectiveAppearance();
   FocusVisibleStateChanged();
   FocusWithinStateChanged();
 }

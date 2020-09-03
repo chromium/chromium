@@ -6219,8 +6219,7 @@ void Element::SetHovered(bool hovered) {
   if (ChildrenOrSiblingsAffectedByHover())
     PseudoStateChanged(CSSSelector::kPseudoHover);
 
-  if (LayoutObject* layout_object = GetLayoutObject())
-    layout_object->InvalidateIfControlStateChanged(kHoverControlState);
+  InvalidateIfHasEffectiveAppearance();
 }
 
 void Element::SetActive(bool active) {
@@ -6254,7 +6253,8 @@ void Element::SetActive(bool active) {
   if (ChildrenOrSiblingsAffectedByActive())
     PseudoStateChanged(CSSSelector::kPseudoActive);
 
-  GetLayoutObject()->InvalidateIfControlStateChanged(kPressedControlState);
+  if (!IsDisabledFormControl())
+    InvalidateIfHasEffectiveAppearance();
 }
 
 void Element::InvalidateStyleAttribute() {

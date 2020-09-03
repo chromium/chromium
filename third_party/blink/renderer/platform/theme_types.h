@@ -28,22 +28,6 @@
 
 namespace blink {
 
-enum ControlState {
-  kHoverControlState = 1,
-  kPressedControlState = 1 << 1,
-  kFocusControlState = 1 << 2,
-  kEnabledControlState = 1 << 3,
-  kCheckedControlState = 1 << 4,
-  kReadOnlyControlState = 1 << 5,
-  kWindowInactiveControlState = 1 << 7,
-  kIndeterminateControlState = 1 << 8,
-  kSpinUpControlState =
-      1 << 9,  // Sub-state for HoverControlState and PressedControlState.
-  kAllControlStates = 0xffffffff
-};
-
-typedef unsigned ControlStates;
-
 // Must follow css_value_keywords.json5 order
 // kAutoPart is never returned by ComputedStyle::EffectiveAppearance()
 enum ControlPart {

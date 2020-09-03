@@ -2519,8 +2519,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     bitfields_.SetBackgroundNeedsFullPaintInvalidation(true);
   }
 
-  void InvalidateIfControlStateChanged(ControlState);
-
   bool ContainsInlineWithOutlineAndContinuation() const {
     return bitfields_.ContainsInlineWithOutlineAndContinuation();
   }

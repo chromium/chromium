@@ -1025,8 +1025,7 @@ void HTMLInputElement::setChecked(bool now_checked,
 
   if (RadioButtonGroupScope* scope = GetRadioButtonGroupScope())
     scope->UpdateCheckedState(this);
-  if (LayoutObject* o = GetLayoutObject())
-    o->InvalidateIfControlStateChanged(kCheckedControlState);
+  InvalidateIfHasEffectiveAppearance();
   SetNeedsValidityCheck();
 
   // Ideally we'd do this from the layout tree (matching
@@ -1060,8 +1059,7 @@ void HTMLInputElement::setIndeterminate(bool new_value) {
 
   PseudoStateChanged(CSSSelector::kPseudoIndeterminate);
 
-  if (LayoutObject* o = GetLayoutObject())
-    o->InvalidateIfControlStateChanged(kCheckedControlState);
+  InvalidateIfHasEffectiveAppearance();
 
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->CheckedStateChanged(this);

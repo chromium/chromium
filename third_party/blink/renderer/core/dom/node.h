@@ -1087,6 +1087,8 @@ class CORE_EXPORT Node : public EventTarget {
     SetFlag(value, kIsFinishedParsingChildrenFlag);
   }
 
+  void InvalidateIfHasEffectiveAppearance() const;
+
  private:
   // Gets nodeName without caching AtomicStrings. Used by
   // debugName. Compositor may call debugName from the "impl" thread

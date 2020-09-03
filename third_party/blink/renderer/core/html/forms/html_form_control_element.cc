@@ -127,8 +127,7 @@ void HTMLFormControlElement::ParseAttribute(
       UpdateWillValidateCache();
       PseudoStateChanged(CSSSelector::kPseudoReadOnly);
       PseudoStateChanged(CSSSelector::kPseudoReadWrite);
-      if (LayoutObject* o = GetLayoutObject())
-        o->InvalidateIfControlStateChanged(kReadOnlyControlState);
+      InvalidateIfHasEffectiveAppearance();
     }
   } else if (name == html_names::kRequiredAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull())
@@ -148,8 +147,7 @@ void HTMLFormControlElement::DisabledAttributeChanged() {
   EventDispatchForbiddenScope event_forbidden;
 
   ListedElement::DisabledAttributeChanged();
-  if (LayoutObject* o = GetLayoutObject())
-    o->InvalidateIfControlStateChanged(kEnabledControlState);
+  InvalidateIfHasEffectiveAppearance();
 
   // TODO(dmazzoni): http://crbug.com/699438.
   // Replace |CheckedStateChanged| with a generic tree changed event.

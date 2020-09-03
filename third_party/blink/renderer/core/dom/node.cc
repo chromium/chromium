@@ -2326,6 +2326,17 @@ uint16_t Node::compareDocumentPosition(const Node* other_node,
                                kDocumentPositionContains | connection;
 }
 
+void Node::InvalidateIfHasEffectiveAppearance() const {
+  auto* layout_object = GetLayoutObject();
+  if (!layout_object)
+    return;
+
+  if (!layout_object->StyleRef().HasEffectiveAppearance())
+    return;
+
+  layout_object->SetSubtreeShouldDoFullPaintInvalidation();
+}
+
 String Node::DebugName() const {
   StringBuilder name;
   AppendUnsafe(name, DebugNodeName());
@@ -3057,10 +3068,9 @@ void Node::UpdateHadKeyboardEvent(const Event& event) {
   GetDocument().SetHadKeyboardEvent(true);
 
   // Changes to HadKeyboardEvent may affect :focus-visible matching,
-  // ShouldHaveFocusAppearance and LayoutTheme::IsFocused().
-  // Inform LayoutTheme if HadKeyboardEvent changes.
+  // ShouldHaveFocusAppearance and theme painting.
   if (GetLayoutObject()) {
-    GetLayoutObject()->InvalidateIfControlStateChanged(kFocusControlState);
+    InvalidateIfHasEffectiveAppearance();
 
     auto* this_node = DynamicTo<ContainerNode>(this);
     if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled() && this_node)
