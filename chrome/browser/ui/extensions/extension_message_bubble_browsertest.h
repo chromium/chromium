@@ -15,11 +15,9 @@ namespace extensions {
 class TestExtensionDir;
 }
 
-class ToolbarActionsBarBubbleViews;
-
 class ExtensionMessageBubbleBrowserTest
     : public BrowserActionsBarBrowserTest {
- protected:
+ public:
   enum AnchorPosition {
     ANCHOR_BROWSER_ACTION,
     ANCHOR_APP_MENU,
@@ -27,26 +25,6 @@ class ExtensionMessageBubbleBrowserTest
 
   ExtensionMessageBubbleBrowserTest();
   ~ExtensionMessageBubbleBrowserTest() override;
-
-  // Returns the toolkit-views bubble that is currently attached to |browser|.
-  // Returns null if there is no bubble showing. Implemented in platform files.
-  static ToolbarActionsBarBubbleViews* GetViewsBubbleForBrowser(
-      Browser* browser);
-
-#if defined(OS_MAC)
-  static ToolbarActionsBarBubbleViews* GetViewsBubbleForCocoaBrowser(
-      Browser* browser);
-#endif
-
-  // Returns the expected test anchor bounds on |browser| which may be a Cocoa
-  // browser or a Views browser. Implemented in platform files.
-  static gfx::Rect GetAnchorReferenceBoundsForBrowser(Browser* browser,
-                                                      AnchorPosition anchor);
-#if defined(OS_MAC)
-  static gfx::Rect GetAnchorReferenceBoundsForCocoaBrowser(
-      Browser* browser,
-      AnchorPosition anchor);
-#endif
 
   // BrowserActionsBarBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;

@@ -9,7 +9,11 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -40,6 +44,43 @@ void CheckBubbleAgainstReferenceBounds(views::BubbleDialogDelegateView* bubble,
   EXPECT_TRUE(bubble->GetVisible());
   // ... as should its Widget.
   EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+}
+
+// Returns the bubble that is currently attached to |browser|, or null if there
+// is no bubble showing.
+ToolbarActionsBarBubbleViews* GetViewsBubbleForBrowser(Browser* browser) {
+  return static_cast<ToolbarActionsBarBubbleViews*>(
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->toolbar_button_provider()
+          ->GetBrowserActionsContainer()
+          ->active_bubble());
+}
+
+// Returns the expected test anchor bounds on |browser|.
+gfx::Rect GetAnchorReferenceBoundsForBrowser(
+    Browser* browser,
+    ExtensionMessageBubbleBrowserTest::AnchorPosition anchor) {
+  auto* const toolbar_button_provider =
+      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
+  auto* const browser_actions_container =
+      toolbar_button_provider->GetBrowserActionsContainer();
+  views::View* anchor_view = nullptr;
+  switch (anchor) {
+    case ExtensionMessageBubbleBrowserTest::ANCHOR_BROWSER_ACTION:
+      EXPECT_GT(browser_actions_container->num_toolbar_actions(), 0u);
+      if (browser_actions_container->num_toolbar_actions() == 0)
+        return gfx::Rect();
+      anchor_view = browser_actions_container->GetToolbarActionViewAt(0);
+      break;
+    case ExtensionMessageBubbleBrowserTest::ANCHOR_APP_MENU:
+      anchor_view = toolbar_button_provider->GetAppMenuButton();
+      break;
+  }
+
+  EXPECT_TRUE(anchor_view);
+  EXPECT_EQ(anchor_view,
+            browser_actions_container->active_bubble()->GetAnchorView());
+  return anchor_view->GetBoundsInScreen();
 }
 
 }  // namespace
