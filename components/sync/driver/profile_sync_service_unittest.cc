@@ -1625,7 +1625,7 @@ TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
        ShouldSendDataTypesToSyncInvalidationsService) {
   CreateService(ProfileSyncService::AUTO_START);
   SignIn();
-  EXPECT_CALL(*sync_invalidations_service(), SetSubscribedDataTypes(_));
+  EXPECT_CALL(*sync_invalidations_service(), SetInterestedDataTypes(_));
   InitializeForFirstSync();
 }
 
@@ -1641,10 +1641,10 @@ TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
   InitializeForNthSync();
 
   EXPECT_CALL(*sync_invalidations_service(),
-              SetSubscribedDataTypes(ContainsSessions()));
+              SetInterestedDataTypes(ContainsSessions()));
   service()->SetInvalidationsForSessionsEnabled(true);
   EXPECT_CALL(*sync_invalidations_service(),
-              SetSubscribedDataTypes(Not(ContainsSessions())));
+              SetInterestedDataTypes(Not(ContainsSessions())));
   service()->SetInvalidationsForSessionsEnabled(false);
 }
 

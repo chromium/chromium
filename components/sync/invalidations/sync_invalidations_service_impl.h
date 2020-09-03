@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/invalidations/subscribed_data_types_manager.h"
+#include "components/sync/invalidations/interested_data_types_manager.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
 namespace gcm {
@@ -39,19 +39,19 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   void AddTokenObserver(FCMRegistrationTokenObserver* observer) override;
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) override;
   const std::string& GetFCMRegistrationToken() const override;
-  void AddSubscribedDataTypesObserver(
-      SubscribedDataTypesObserver* observer) override;
-  void RemoveSubscribedDataTypesObserver(
-      SubscribedDataTypesObserver* observer) override;
-  const ModelTypeSet& GetSubscribedDataTypes() const override;
-  void SetSubscribedDataTypes(const ModelTypeSet& data_types) override;
+  void AddInterestedDataTypesObserver(
+      InterestedDataTypesObserver* observer) override;
+  void RemoveInterestedDataTypesObserver(
+      InterestedDataTypesObserver* observer) override;
+  const ModelTypeSet& GetInterestedDataTypes() const override;
+  void SetInterestedDataTypes(const ModelTypeSet& data_types) override;
 
   // KeyedService overrides.
   void Shutdown() override;
 
  private:
   std::unique_ptr<FCMHandler> fcm_handler_;
-  SubscribedDataTypesManager data_types_manager_;
+  InterestedDataTypesManager data_types_manager_;
 };
 
 }  // namespace syncer

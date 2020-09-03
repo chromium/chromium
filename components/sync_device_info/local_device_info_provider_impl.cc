@@ -27,7 +27,7 @@ LocalDeviceInfoProviderImpl::LocalDeviceInfoProviderImpl(
   DCHECK(sync_client);
   if (sync_invalidations_service_) {
     sync_invalidations_service_->AddTokenObserver(this);
-    sync_invalidations_service_->AddSubscribedDataTypesObserver(this);
+    sync_invalidations_service_->AddInterestedDataTypesObserver(this);
   }
 }
 
@@ -35,7 +35,7 @@ LocalDeviceInfoProviderImpl::~LocalDeviceInfoProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sync_invalidations_service_) {
     sync_invalidations_service_->RemoveTokenObserver(this);
-    sync_invalidations_service_->RemoveSubscribedDataTypesObserver(this);
+    sync_invalidations_service_->RemoveInterestedDataTypesObserver(this);
   }
 }
 
@@ -77,14 +77,14 @@ void LocalDeviceInfoProviderImpl::OnFCMRegistrationTokenChanged() {
   // TODO(crbug.com/1102336): nudge device info update.
 }
 
-void LocalDeviceInfoProviderImpl::OnSubscribedDataTypesChanged() {
+void LocalDeviceInfoProviderImpl::OnInterestedDataTypesChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(
       base::FeatureList::IsEnabled(switches::kSubscribeForSyncInvalidations));
   DCHECK(sync_invalidations_service_);
   if (local_device_info_) {
     local_device_info_->set_interested_data_types(
-        sync_invalidations_service_->GetSubscribedDataTypes());
+        sync_invalidations_service_->GetInterestedDataTypes());
   }
   // TODO(crbug.com/1102336): nudge device info update.
 }
@@ -133,7 +133,7 @@ std::string LocalDeviceInfoProviderImpl::GetFCMRegistrationToken() const {
 
 ModelTypeSet LocalDeviceInfoProviderImpl::GetInterestedDataTypes() const {
   if (sync_invalidations_service_) {
-    return sync_invalidations_service_->GetSubscribedDataTypes();
+    return sync_invalidations_service_->GetInterestedDataTypes();
   }
   return ModelTypeSet();
 }

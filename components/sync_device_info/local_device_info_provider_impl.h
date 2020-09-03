@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
-#include "components/sync/invalidations/subscribed_data_types_observer.h"
+#include "components/sync/invalidations/interested_data_types_observer.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/version_info/version_info.h"
@@ -26,7 +26,7 @@ class SyncInvalidationsService;
 
 class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider,
                                     public syncer::FCMRegistrationTokenObserver,
-                                    public SubscribedDataTypesObserver {
+                                    public InterestedDataTypesObserver {
  public:
   // |sync_invalidations_service| is used to get an FCM registration token and
   // interested data types. It may be nullptr if sync invalidations are
@@ -53,8 +53,8 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider,
   // syncer::FCMRegistrationTokenObserver implementation.
   void OnFCMRegistrationTokenChanged() override;
 
-  // SubscribedDataTypesObserver implementation.
-  void OnSubscribedDataTypesChanged() override;
+  // InterestedDataTypesObserver implementation.
+  void OnInterestedDataTypesChanged() override;
 
  private:
   std::string GetFCMRegistrationToken() const;

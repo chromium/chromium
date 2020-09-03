@@ -91,7 +91,7 @@ class LocalDeviceInfoProviderImplWithSyncInvalidationsTest
         switches::kSubscribeForSyncInvalidations);
     ON_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken())
         .WillByDefault(ReturnRef(kEmptyToken));
-    ON_CALL(mock_sync_invalidations_service_, GetSubscribedDataTypes())
+    ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
         .WillByDefault(ReturnRef(kEmptyTypesSet));
   }
 
@@ -215,16 +215,16 @@ TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
 }
 
 TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
-       ShouldPopulateSubscribedDataTypes) {
+       ShouldPopulateInterestedDataTypes) {
   InitializeProvider();
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().Empty());
 
   const ModelTypeSet kTypes = ModelTypeSet(BOOKMARKS);
-  EXPECT_CALL(mock_sync_invalidations_service_, GetSubscribedDataTypes())
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
       .WillOnce(ReturnRef(kTypes));
 
-  provider_->OnSubscribedDataTypesChanged();
+  provider_->OnInterestedDataTypesChanged();
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->interested_data_types(), kTypes);
 }
 

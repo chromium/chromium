@@ -13,7 +13,7 @@
 namespace syncer {
 class FCMRegistrationTokenObserver;
 class InvalidationsListener;
-class SubscribedDataTypesObserver;
+class InterestedDataTypesObserver;
 
 // Service which is used to register with FCM. It is used to obtain an FCM token
 // which is used to send invalidations from the server. The service also
@@ -36,16 +36,16 @@ class SyncInvalidationsService : public KeyedService {
   // received yet.
   virtual const std::string& GetFCMRegistrationToken() const = 0;
 
-  // Add or remove a subscribed data types change observer. |observer| must not
+  // Add or remove an interested data types change observer. |observer| must not
   // be nullptr.
-  virtual void AddSubscribedDataTypesObserver(
-      SubscribedDataTypesObserver* observer) = 0;
-  virtual void RemoveSubscribedDataTypesObserver(
-      SubscribedDataTypesObserver* observer) = 0;
+  virtual void AddInterestedDataTypesObserver(
+      InterestedDataTypesObserver* observer) = 0;
+  virtual void RemoveInterestedDataTypesObserver(
+      InterestedDataTypesObserver* observer) = 0;
 
   // Get or set for which data types should the device receive invalidations.
-  virtual const ModelTypeSet& GetSubscribedDataTypes() const = 0;
-  virtual void SetSubscribedDataTypes(const ModelTypeSet& data_types) = 0;
+  virtual const ModelTypeSet& GetInterestedDataTypes() const = 0;
+  virtual void SetInterestedDataTypes(const ModelTypeSet& data_types) = 0;
 };
 
 }  // namespace syncer

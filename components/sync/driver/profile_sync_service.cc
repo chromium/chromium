@@ -1451,7 +1451,7 @@ void ProfileSyncService::UpdateDataTypesForInvalidations() {
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
   }
-  invalidations_service->SetSubscribedDataTypes(types);
+  invalidations_service->SetInterestedDataTypes(types);
 }
 
 SyncCycleSnapshot ProfileSyncService::GetLastCycleSnapshotForDebugging() const {

@@ -45,24 +45,24 @@ const std::string& SyncInvalidationsServiceImpl::GetFCMRegistrationToken()
   return fcm_handler_->GetFCMRegistrationToken();
 }
 
-void SyncInvalidationsServiceImpl::AddSubscribedDataTypesObserver(
-    SubscribedDataTypesObserver* observer) {
-  data_types_manager_.AddSubscribedDataTypesObserver(observer);
+void SyncInvalidationsServiceImpl::AddInterestedDataTypesObserver(
+    InterestedDataTypesObserver* observer) {
+  data_types_manager_.AddInterestedDataTypesObserver(observer);
 }
 
-void SyncInvalidationsServiceImpl::RemoveSubscribedDataTypesObserver(
-    SubscribedDataTypesObserver* observer) {
-  data_types_manager_.RemoveSubscribedDataTypesObserver(observer);
+void SyncInvalidationsServiceImpl::RemoveInterestedDataTypesObserver(
+    InterestedDataTypesObserver* observer) {
+  data_types_manager_.RemoveInterestedDataTypesObserver(observer);
 }
 
-const ModelTypeSet& SyncInvalidationsServiceImpl::GetSubscribedDataTypes()
+const ModelTypeSet& SyncInvalidationsServiceImpl::GetInterestedDataTypes()
     const {
-  return data_types_manager_.GetSubscribedDataTypes();
+  return data_types_manager_.GetInterestedDataTypes();
 }
 
-void SyncInvalidationsServiceImpl::SetSubscribedDataTypes(
+void SyncInvalidationsServiceImpl::SetInterestedDataTypes(
     const ModelTypeSet& data_types) {
-  data_types_manager_.SetSubscribedDataTypes(data_types);
+  data_types_manager_.SetInterestedDataTypes(data_types);
 }
 
 void SyncInvalidationsServiceImpl::Shutdown() {

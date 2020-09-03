@@ -494,7 +494,7 @@ source_set("unit_tests") {
     "engine_impl/syncer_proto_util_unittest.cc",
     "engine_impl/syncer_unittest.cc",
     "invalidations/fcm_handler_unittest.cc",
-    "invalidations/subscribed_data_types_manager_unittest.cc",
+    "invalidations/interested_data_types_manager_unittest.cc",
     "js/js_event_details_unittest.cc",
     "js/sync_js_controller_unittest.cc",
     "model/entity_data_unittest.cc",
