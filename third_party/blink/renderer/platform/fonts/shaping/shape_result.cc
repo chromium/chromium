@@ -370,7 +370,8 @@ ShapeResult::ShapeResult(scoped_refptr<const SimpleFontData> font_data,
       num_characters_(num_characters),
       num_glyphs_(0),
       direction_(static_cast<unsigned>(direction)),
-      has_vertical_offsets_(0) {}
+      has_vertical_offsets_(false),
+      is_applied_spacing_(false) {}
 
 ShapeResult::ShapeResult(const Font* font,
                          unsigned start_index,
@@ -892,6 +893,7 @@ void ShapeResult::ApplySpacingImpl(
 
 void ShapeResult::ApplySpacing(ShapeResultSpacing<String>& spacing,
                                int text_start_offset) {
+  is_applied_spacing_ = true;
   ApplySpacingImpl(spacing, text_start_offset);
 }
 

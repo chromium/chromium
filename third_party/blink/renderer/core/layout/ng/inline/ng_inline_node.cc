@@ -231,6 +231,8 @@ class ReusingTextShaper final {
         continue;
       if (!item->TextShapeResult() || item->Direction() != direction)
         continue;
+      if (item->TextShapeResult()->IsAppliedSpacing())
+        continue;
       shape_results.push_back(item->TextShapeResult());
     }
     return shape_results;
