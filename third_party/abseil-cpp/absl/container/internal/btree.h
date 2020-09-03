@@ -1014,6 +1014,7 @@ class btree {
   using node_type = btree_node<Params>;
   using is_key_compare_to = typename Params::is_key_compare_to;
   using init_type = typename Params::init_type;
+  using field_type = typename node_type::field_type;
 
   // We use a static empty node for the root/leftmost/rightmost of empty btrees
   // in order to avoid branching in begin()/end().
@@ -2432,7 +2433,7 @@ inline auto btree<P>::internal_emplace(iterator iter, Args &&... args)
     --iter;
     ++iter.position;
   }
-  const int max_count = iter.node->max_count();
+  const field_type max_count = iter.node->max_count();
   allocator_type *alloc = mutable_allocator();
   if (iter.node->count() == max_count) {
     // Make room in the leaf for the new item.

@@ -65,3 +65,39 @@ cc_test(
         "@com_google_googletest//:gtest_main",
     ],
 )
+
+cc_library(
+    name = "statusor",
+    srcs = [
+        "internal/statusor_internal.h",
+        "statusor.cc",
+    ],
+    hdrs = [
+        "statusor.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    deps = [
+        ":status",
+        "//absl/base:core_headers",
+        "//absl/base:raw_logging_internal",
+        "//absl/meta:type_traits",
+        "//absl/strings",
+        "//absl/types:variant",
+        "//absl/utility",
+    ],
+)
+
+cc_test(
+    name = "statusor_test",
+    size = "small",
+    srcs = ["statusor_test.cc"],
+    deps = [
+        ":status",
+        ":statusor",
+        "//absl/base",
+        "//absl/memory",
+        "//absl/types:any",
+        "//absl/utility",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

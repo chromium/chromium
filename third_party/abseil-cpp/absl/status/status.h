@@ -11,6 +11,52 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// -----------------------------------------------------------------------------
+// File: status.h
+// -----------------------------------------------------------------------------
+//
+// This header file defines the Abseil `status` library, consisting of:
+//
+//   * An `absl::Status` class for holding error handling information
+//   * A set of canonical `absl::StatusCode` error codes, and associated
+//     utilities for generating and propogating status codes.
+//   * A set of helper functions for creating status codes and checking their
+//     values
+//
+// Within Google, `absl::Status` is the primary mechanism for indicating
+// recoverable errors across API boundaries (and in particular across RPC
+// boundaries). Most functions which can produce a recoverable error should
+// be designed to return an `absl::Status` (or `absl::StatusOr`).
+//
+// Example:
+//
+// absl::Status myFunction(absl::string_view fname, ...) {
+//   ...
+//   // encounter error
+//   if (error condition) {
+//     return absl::InvalidArgumentError("bad mode");
+//   }
+//   // else, return OK
+//   return absl::OkStatus();
+// }
+//
+// An `absl::Status` is designed to either return "OK" or one of a number of
+// different error codes, corresponding to typical error conditions.
+// In almost all cases, when using `absl::Status` you should use the canonical
+// error codes (of type `absl::StatusCode`) enumerated in this header file.
+// These canonical codes are understood across the codebase and will be
+// accepted across all API and RPC boundaries.
+//
+// An `absl::Status` can optionally include a payload with more information
+// about the error. Typically, this payload serves one of several purposes:
+//
+//   * It may provide more fine-grained semantic information about the error to
+//     facilitate actionable remedies.
+//   * It may provide human-readable contexual information that is more
+//     appropriate
+//     to display to an end user.
+//
 #ifndef ABSL_STATUS_STATUS_H_
 #define ABSL_STATUS_STATUS_H_
 
@@ -25,72 +71,125 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
-// Sometimes multiple error codes may apply.  Services should return
-// the most specific error code that applies.  For example, prefer
-// `kOutOfRange` over `kFailedPrecondition` if both codes apply.
-// Similarly prefer `kNotFound` or `kAlreadyExists` over `kFailedPrecondition`.
+// absl::StatusCode
+//
+// An `absl::StatusCode` is an enumerated type indicating either no error ("OK")
+// or an error condition. In most cases, an `absl::Status` indicates a
+// recoverable error, and the purpose of signalling an error is to indicate what
+// action to take in response to that error. These error codes map to the proto
+// RPC error codes indicated in https://cloud.google.com/apis/design/errors.
+//
+// The errors listed below are the canonical errors associated with
+// `absl::Status` and are used throughout the codebase. As a result, these
+// error codes are somewhat generic.
+//
+// In general, try to return the most specific error that applies if more than
+// one error may pertain. For example, prefer `kOutOfRange` over
+// `kFailedPrecondition` if both codes apply. Similarly prefer `kNotFound` or
+// `kAlreadyExists` over `kFailedPrecondition`.
+//
+// Because these errors may travel RPC boundaries, these codes are tied to the
+// `google.rpc.Code` definitions within
+// https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+// The string value of these RPC codes is denoted within each enum below.
+//
+// If your error handling code requires more context, you can attach payloads
+// to your status. See `absl::Status::SetPayload()` and
+// `absl::Status::GetPayload()` below.
 enum class StatusCode : int {
-  // Not an error; returned on success
+  // StatusCode::kOk
+  //
+  // kOK (gRPC code "OK") does not indicate an error; this value is returned on
+  // success. It is typical to check for this value before proceeding on any
+  // given call across an API or RPC boundary. To check this value, use the
+  // `absl::Status::ok()` member function rather than inspecting the raw code.
   kOk = 0,
 
-  // The operation was cancelled, typically by the caller.
+  // StatusCode::kCancelled
+  //
+  // kCanelled (gRPC code "CANCELLED") indicates the operation was cancelled,
+  // typically by the caller.
   kCancelled = 1,
 
-  // Unknown error. For example, errors raised by APIs that do not return
-  // enough error information may be converted to this error.
+  // StatusCode::kUnknown
+  //
+  // kUnknown (gRPC code "UNKNOWN") indicates an unknown error occurred. In
+  // general, more specific errors should be raised, if possible. Errors raised
+  // by APIs that do not return enough error information may be converted to
+  // this error.
   kUnknown = 2,
 
-  // The client specified an invalid argument. Note that this differs
-  // from `kFailedPrecondition`. `kInvalidArgument` indicates arguments
-  // that are problematic regardless of the state of the system
-  // (such as a malformed file name).
+  // StatusCode::kInvalidArgument
+  //
+  // kInvalidArgument (gRPC code "INVALID_ARGUMENT") indicates the caller
+  // specified an invalid argument, such a malformed filename. Note that such
+  // errors should be narrowly limited to indicate to the invalid nature of the
+  // arguments themselves. Errors with validly formed arguments that may cause
+  // errors with the state of the receiving system should be denoted with
+  // `kFailedPrecondition` instead.
   kInvalidArgument = 3,
 
-  // The deadline expired before the operation could complete. For operations
-  // that change the state of the system, this error may be returned
-  // even if the operation has completed successfully. For example, a
-  // successful response from a server could have been delayed long
-  // enough for the deadline to expire.
+  // StatusCode::kDeadlineExceeded
+  //
+  // kDeadlineExceeded (gRPC code "DEADLINE_EXCEEDED") indicates a deadline
+  // expired before the operation could complete. For operations that may change
+  // state within a system, this error may be returned even if the operation has
+  // completed successfully. For example, a successful response from a server
+  // could have been delayed long enough for the deadline to expire.
   kDeadlineExceeded = 4,
 
-  // Some requested entity (such as file or directory) was not found.
+  // StatusCode::kNotFound
   //
-  // Note to server developers: if a request is denied for an entire class
-  // of users, such as gradual feature rollout or undocumented whitelist,
-  // `kNotFound` may be used. If a request is denied for some users within
-  // a class of users, such as user-based access control, `kPermissionDenied`
-  // must be used.
+  // kNotFound (gRPC code "NOT_FOUND") indicates some requested entity (such as
+  // a file or directory) was not found.
+  //
+  // `kNotFound` is useful if a request should be denied for an entire class of
+  // users, such as during a gradual feature rollout or undocumented allow list.
+  // If, instead, a request should be denied for specific sets of users, such as
+  // through user-based access control, use `kPermissionDenied` instead.
   kNotFound = 5,
 
-  // The entity that a client attempted to create (such as file or directory)
-  // already exists.
+  // StatusCode::kAlreadyExists
+  //
+  // kAlreadyExists (gRPC code "ALREADY_EXISTS") indicates the entity that a
+  // caller attempted to create (such as file or directory) is already present.
   kAlreadyExists = 6,
 
-  // The caller does not have permission to execute the specified
-  // operation. `kPermissionDenied` must not be used for rejections
-  // caused by exhausting some resource (use `kResourceExhausted`
-  // instead for those errors). `kPermissionDenied` must not be
-  // used if the caller can not be identified (use `kUnauthenticated`
-  // instead for those errors). This error code does not imply the
-  // request is valid or the requested entity exists or satisfies
-  // other pre-conditions.
+  // StatusCode::kPermissionDenied
+  //
+  // kPermissionDenied (gRPC code "PERMISSION_DENIED") indicates that the caller
+  // does not have permission to execute the specified operation. Note that this
+  // error is different than an error due to an *un*authenticated user. This
+  // error code does not imply the request is valid or the requested entity
+  // exists or satisfies any other pre-conditions.
+  //
+  // `kPermissionDenied` must not be used for rejections caused by exhausting
+  // some resource. Instead, use `kResourceExhausted` for those errors.
+  // `kPermissionDenied` must not be used if the caller cannot be identified.
+  // Instead, use `kUnauthenticated` for those errors.
   kPermissionDenied = 7,
 
-  // Some resource has been exhausted, perhaps a per-user quota, or
-  // perhaps the entire file system is out of space.
+  // StatusCode::kResourceExhausted
+  //
+  // kResourceExhausted (gRPC code "RESOURCE_EXHAUSTED") indicates some resource
+  // has been exhausted, perhaps a per-user quota, or perhaps the entire file
+  // system is out of space.
   kResourceExhausted = 8,
 
-  // The operation was rejected because the system is not in a state
-  // required for the operation's execution. For example, the directory
-  // to be deleted is non-empty, an rmdir operation is applied to
-  // a non-directory, etc.
+  // StatusCode::kFailedPrecondition
   //
-  // A litmus test that may help a service implementer in deciding
-  // between `kFailedPrecondition`, `kAborted`, and `kUnavailable`:
+  // kFailedPrecondition (gRPC code "FAILED_PRECONDITION") indicates that the
+  // operation was rejected because the system is not in a state required for
+  // the operation's execution. For example, a directory to be deleted may be
+  // non-empty, an "rmdir" operation is applied to a non-directory, etc.
+  //
+  // Some guidelines that may help a service implementer in deciding between
+  // `kFailedPrecondition`, `kAborted`, and `kUnavailable`:
+  //
   //  (a) Use `kUnavailable` if the client can retry just the failing call.
-  //  (b) Use `kAborted` if the client should retry at a higher-level
-  //      (such as when a client-specified test-and-set fails, indicating the
-  //      client should restart a read-modify-write sequence).
+  //  (b) Use `kAborted` if the client should retry at a higher transaction
+  //      level (such as when a client-specified test-and-set fails, indicating
+  //      the client should restart a read-modify-write sequence).
   //  (c) Use `kFailedPrecondition` if the client should not retry until
   //      the system state has been explicitly fixed. For example, if an "rmdir"
   //      fails because the directory is non-empty, `kFailedPrecondition`
@@ -98,15 +197,21 @@ enum class StatusCode : int {
   //      the files are deleted from the directory.
   kFailedPrecondition = 9,
 
-  // The operation was aborted, typically due to a concurrency issue such as
-  // a sequencer check failure or transaction abort.
+  // StatusCode::kAborted
   //
-  // See litmus test above for deciding between `kFailedPrecondition`,
+  // kAborted (gRPC code "ABORTED") indicates the operation was aborted,
+  // typically due to a concurrency issue such as a sequencer check failure or a
+  // failed transaction.
+  //
+  // See the guidelines above for deciding between `kFailedPrecondition`,
   // `kAborted`, and `kUnavailable`.
   kAborted = 10,
 
-  // The operation was attempted past the valid range, such as seeking or
-  // reading past end-of-file.
+  // StatusCode::kOutofRange
+  //
+  // kOutofRange (gRPC code "OUT_OF_RANGE") indicates the operation was
+  // attempted past the valid range, such as seeking or reading past an
+  // end-of-file.
   //
   // Unlike `kInvalidArgument`, this error indicates a problem that may
   // be fixed if the system state changes. For example, a 32-bit file
@@ -122,51 +227,73 @@ enum class StatusCode : int {
   // they are done.
   kOutOfRange = 11,
 
-  // The operation is not implemented or is not supported/enabled in this
-  // service.
+  // StatusCode::kUnimplemented
+  //
+  // kUnimplemented (gRPC code "UNIMPLEMENTED") indicates the operation is not
+  // implemented or supported in this service. In this case, the operation
+  // should not be re-attempted.
   kUnimplemented = 12,
 
-  // Internal errors. This means that some invariants expected by the
-  // underlying system have been broken. This error code is reserved
-  // for serious errors.
+  // StatusCode::kInternal
+  //
+  // kInternal (gRPC code "INTERNAL") indicates an internal error has occurred
+  // and some invariants expected by the underlying system have not been
+  // satisfied. This error code is reserved for serious errors.
   kInternal = 13,
 
-  // The service is currently unavailable. This is most likely a
-  // transient condition, which can be corrected by retrying with
-  // a backoff. Note that it is not always safe to retry
-  // non-idempotent operations.
+  // StatusCode::kUnavailable
   //
-  // See litmus test above for deciding between `kFailedPrecondition`,
+  // kUnavailable (gRPC code "UNAVAILABLE") indicates the service is currently
+  // unavailable and that this is most likely a transient condition. An error
+  // such as this can be corrected by retrying with a backoff scheme. Note that
+  // it is not always safe to retry non-idempotent operations.
+  //
+  // See the guidelines above for deciding between `kFailedPrecondition`,
   // `kAborted`, and `kUnavailable`.
   kUnavailable = 14,
 
-  // Unrecoverable data loss or corruption.
+  // StatusCode::kDataLoss
+  //
+  // kDataLoss (gRPC code "DATA_LOSS") indicates that unrecoverable data loss or
+  // corruption has occurred. As this error is serious, proper alerting should
+  // be attached to errors such as this.
   kDataLoss = 15,
 
-  // The request does not have valid authentication credentials for the
-  // operation.
+  // StatusCode::kUnauthenticated
+  //
+  // kUnauthenticated (gRPC code "UNAUTHENTICATED") indicates that the request
+  // does not have valid authentication credentials for the operation. Correct
+  // the authentication and try again.
   kUnauthenticated = 16,
 
-  // An extra enum entry to prevent people from writing code that
-  // fails to compile when a new code is added.
+  // StatusCode::DoNotUseReservedForFutureExpansionUseDefaultInSwitchInstead_
   //
-  // Nobody should ever reference this enumeration entry. In particular,
-  // if you write C++ code that switches on this enumeration, add a default:
-  // case instead of a case that mentions this enumeration entry.
+  // NOTE: this error code entry should not be used and you should not rely on
+  // its value, which may change.
   //
-  // Nobody should rely on the value (currently 20) listed here.  It
-  // may change in the future.
+  // The purpose of this enumerated value is to force people who handle status
+  // codes with `switch()` statements to *not* simply enumerate all possible
+  // values, but instead provide a "default:" case. Providing such a default
+  // case ensures that code will compile when new codes are added.
   kDoNotUseReservedForFutureExpansionUseDefaultInSwitchInstead_ = 20
 };
 
+// StatusCodeToString()
+//
 // Returns the name for the status code, or "" if it is an unknown value.
 std::string StatusCodeToString(StatusCode code);
 
+// operator<<
+//
 // Streams StatusCodeToString(code) to `os`.
 std::ostream& operator<<(std::ostream& os, StatusCode code);
 
+// absl::Status
+//
 class ABSL_MUST_USE_RESULT Status final {
  public:
+  // Constructors
+
   // Creates an OK status with no message or payload.
   Status();
 
@@ -181,13 +308,16 @@ class ABSL_MUST_USE_RESULT Status final {
   Status(const Status&);
   Status& operator=(const Status& x);
 
-  // Move operations.
+  // Move operators
+
   // The moved-from state is valid but unspecified.
   Status(Status&&) noexcept;
   Status& operator=(Status&&);
 
   ~Status();
 
+  // Status::Update()
+  //
   // If `this->ok()`, stores `new_status` into *this. If `!this->ok()`,
   // preserves the current data. May, in the future, augment the current status
   // with additional information about `new_status`.
@@ -202,17 +332,25 @@ class ABSL_MUST_USE_RESULT Status final {
   void Update(const Status& new_status);
   void Update(Status&& new_status);
 
+  // Status::ok()
+  //
   // Returns true if the Status is OK.
   ABSL_MUST_USE_RESULT bool ok() const;
 
+  // Status::code()
+  //
   // Returns the (canonical) error code.
   absl::StatusCode code() const;
 
+  // Status::raw_code()
+  //
   // Returns the raw (canonical) error code which could be out of the range of
   // the local `absl::StatusCode` enum. NOTE: This should only be called when
   // converting to wire format. Use `code` for error handling.
   int raw_code() const;
 
+  // Status::message()
+  //
   // Returns the error message.  Note: prefer ToString() for debug logging.
   // This message rarely describes the error code.  It is not unusual for the
   // error message to be the empty string.
@@ -221,6 +359,8 @@ class ABSL_MUST_USE_RESULT Status final {
   friend bool operator==(const Status&, const Status&);
   friend bool operator!=(const Status&, const Status&);
 
+  // Status::ToString()
+  //
   // Returns a combination of the error code name, the message and the payloads.
   // You can expect the code name and the message to be substrings of the
   // result, and the payloads to be printed by the registered printer extensions
@@ -229,15 +369,21 @@ class ABSL_MUST_USE_RESULT Status final {
   // which is subject to change.
   std::string ToString() const;
 
+  // Status::IgnoreError()
+  //
   // Ignores any errors. This method does nothing except potentially suppress
   // complaints from any tools that are checking that errors are not dropped on
   // the floor.
   void IgnoreError() const;
 
+  // swap()
+  //
   // Swap the contents of `a` with `b`
   friend void swap(Status& a, Status& b);
 
+  //----------------------------------------------------------------------------
   // Payload management APIs
+  //----------------------------------------------------------------------------
 
   // Type URL should be unique and follow the naming convention below:
   // The idea of type URL comes from `google.protobuf.Any`
@@ -250,19 +396,27 @@ class ABSL_MUST_USE_RESULT Status final {
   // URLs. Users should make sure that the type URL can be mapped to a concrete
   // C++ type if they want to deserialize the payload and read it effectively.
 
+  // Status::GetPayload()
+  //
   // Gets the payload based for `type_url` key, if it is present.
   absl::optional<absl::Cord> GetPayload(absl::string_view type_url) const;
 
+  // Status::SetPayload()
+  //
   // Sets the payload for `type_url` key for a non-ok status, overwriting any
   // existing payload for `type_url`.
   //
   // NOTE: Does nothing if the Status is ok.
   void SetPayload(absl::string_view type_url, absl::Cord payload);
 
+  // Status::ErasePayload()
+  //
   // Erases the payload corresponding to the `type_url` key.  Returns true if
   // the payload was present.
   bool ErasePayload(absl::string_view type_url);
 
+  // Status::ForEachPayload()
+  //
   // Iterates over the stored payloads and calls `visitor(type_key, payload)`
   // for each one.
   //
@@ -338,14 +492,92 @@ class ABSL_MUST_USE_RESULT Status final {
   uintptr_t rep_;
 };
 
+// OkStatus()
+//
 // Returns an OK status, equivalent to a default constructed instance.
 Status OkStatus();
 
+// operator<<()
+//
 // Prints a human-readable representation of `x` to `os`.
 std::ostream& operator<<(std::ostream& os, const Status& x);
 
-// -----------------------------------------------------------------
+// IsAborted()
+// IsAlreadyExists()
+// IsCancelled()
+// IsDataLoss()
+// IsDeadlineExceeded()
+// IsFailedPrecondition()
+// IsInternal()
+// IsInvalidArgument()
+// IsNotFound()
+// IsOutOfRange()
+// IsPermissionDenied()
+// IsResourceExhausted()
+// IsUnauthenticated()
+// IsUnavailable()
+// IsUnimplemented()
+// IsUnknown()
+//
+// These convenience functions return `true` if a given status matches the
+// `absl::StatusCode` error code of its associated function.
+ABSL_MUST_USE_RESULT bool IsAborted(const Status& status);
+ABSL_MUST_USE_RESULT bool IsAlreadyExists(const Status& status);
+ABSL_MUST_USE_RESULT bool IsCancelled(const Status& status);
+ABSL_MUST_USE_RESULT bool IsDataLoss(const Status& status);
+ABSL_MUST_USE_RESULT bool IsDeadlineExceeded(const Status& status);
+ABSL_MUST_USE_RESULT bool IsFailedPrecondition(const Status& status);
+ABSL_MUST_USE_RESULT bool IsInternal(const Status& status);
+ABSL_MUST_USE_RESULT bool IsInvalidArgument(const Status& status);
+ABSL_MUST_USE_RESULT bool IsNotFound(const Status& status);
+ABSL_MUST_USE_RESULT bool IsOutOfRange(const Status& status);
+ABSL_MUST_USE_RESULT bool IsPermissionDenied(const Status& status);
+ABSL_MUST_USE_RESULT bool IsResourceExhausted(const Status& status);
+ABSL_MUST_USE_RESULT bool IsUnauthenticated(const Status& status);
+ABSL_MUST_USE_RESULT bool IsUnavailable(const Status& status);
+ABSL_MUST_USE_RESULT bool IsUnimplemented(const Status& status);
+ABSL_MUST_USE_RESULT bool IsUnknown(const Status& status);
+
+// AbortedError()
+// AlreadyExistsError()
+// CancelledError()
+// DataLossError()
+// DeadlineExceededError()
+// FailedPreconditionError()
+// InternalError()
+// InvalidArgumentError()
+// NotFoundError()
+// OutOfRangeError()
+// PermissionDeniedError()
+// ResourceExhaustedError()
+// UnauthenticatedError()
+// UnavailableError()
+// UnimplementedError()
+// UnknownError()
+//
+// These convenience functions create an `absl::Status` object with an error
+// code as indicated by the associated function name, using the error message
+// passed in `message`.
+Status AbortedError(absl::string_view message);
+Status AlreadyExistsError(absl::string_view message);
+Status CancelledError(absl::string_view message);
+Status DataLossError(absl::string_view message);
+Status DeadlineExceededError(absl::string_view message);
+Status FailedPreconditionError(absl::string_view message);
+Status InternalError(absl::string_view message);
+Status InvalidArgumentError(absl::string_view message);
+Status NotFoundError(absl::string_view message);
+Status OutOfRangeError(absl::string_view message);
+Status PermissionDeniedError(absl::string_view message);
+Status ResourceExhaustedError(absl::string_view message);
+Status UnauthenticatedError(absl::string_view message);
+Status UnavailableError(absl::string_view message);
+Status UnimplementedError(absl::string_view message);
+Status UnknownError(absl::string_view message);
+
+//------------------------------------------------------------------------------
 // Implementation details follow
+//------------------------------------------------------------------------------
 
 inline Status::Status() : rep_(CodeToInlinedRep(absl::StatusCode::kOk)) {}
 
@@ -471,49 +703,10 @@ inline void Status::Unref(uintptr_t rep) {
 
 inline Status OkStatus() { return Status(); }
 
-// Each of the functions below creates a Status object with a particular error
-// code and the given message. The error code of the returned status object
-// matches the name of the function.
-Status AbortedError(absl::string_view message);
-Status AlreadyExistsError(absl::string_view message);
-Status CancelledError(absl::string_view message);
-Status DataLossError(absl::string_view message);
-Status DeadlineExceededError(absl::string_view message);
-Status FailedPreconditionError(absl::string_view message);
-Status InternalError(absl::string_view message);
-Status InvalidArgumentError(absl::string_view message);
-Status NotFoundError(absl::string_view message);
-Status OutOfRangeError(absl::string_view message);
-Status PermissionDeniedError(absl::string_view message);
-Status ResourceExhaustedError(absl::string_view message);
-Status UnauthenticatedError(absl::string_view message);
-Status UnavailableError(absl::string_view message);
-Status UnimplementedError(absl::string_view message);
-Status UnknownError(absl::string_view message);
-
 // Creates a `Status` object with the `absl::StatusCode::kCancelled` error code
 // and an empty message. It is provided only for efficiency, given that
 // message-less kCancelled errors are common in the infrastructure.
 inline Status CancelledError() { return Status(absl::StatusCode::kCancelled); }
-
-// Each of the functions below returns true if the given status matches the
-// error code implied by the function's name.
-ABSL_MUST_USE_RESULT bool IsAborted(const Status& status);
-ABSL_MUST_USE_RESULT bool IsAlreadyExists(const Status& status);
-ABSL_MUST_USE_RESULT bool IsCancelled(const Status& status);
-ABSL_MUST_USE_RESULT bool IsDataLoss(const Status& status);
-ABSL_MUST_USE_RESULT bool IsDeadlineExceeded(const Status& status);
-ABSL_MUST_USE_RESULT bool IsFailedPrecondition(const Status& status);
-ABSL_MUST_USE_RESULT bool IsInternal(const Status& status);
-ABSL_MUST_USE_RESULT bool IsInvalidArgument(const Status& status);
-ABSL_MUST_USE_RESULT bool IsNotFound(const Status& status);
-ABSL_MUST_USE_RESULT bool IsOutOfRange(const Status& status);
-ABSL_MUST_USE_RESULT bool IsPermissionDenied(const Status& status);
-ABSL_MUST_USE_RESULT bool IsResourceExhausted(const Status& status);
-ABSL_MUST_USE_RESULT bool IsUnauthenticated(const Status& status);
-ABSL_MUST_USE_RESULT bool IsUnavailable(const Status& status);
-ABSL_MUST_USE_RESULT bool IsUnimplemented(const Status& status);
-ABSL_MUST_USE_RESULT bool IsUnknown(const Status& status);
 
 ABSL_NAMESPACE_END
 }  // namespace absl

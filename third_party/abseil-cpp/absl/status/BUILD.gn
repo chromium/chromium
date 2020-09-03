@@ -28,3 +28,23 @@ absl_source_set("status") {
     "//third_party/abseil-cpp/absl/types:optional",
   ]
 }
+
+absl_source_set("statusor") {
+  public = [
+    "statusor.h",
+  ]
+  sources = [
+    "internal/statusor_internal.h",
+    "statusor.cc",
+  ]
+  deps = [
+    ":status",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/types:variant",
+    "//third_party/abseil-cpp/absl/utility",
+  ]
+}
+

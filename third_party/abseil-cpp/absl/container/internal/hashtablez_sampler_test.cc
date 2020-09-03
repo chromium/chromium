@@ -76,6 +76,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.capacity.load(), 0);
   EXPECT_EQ(info.size.load(), 0);
   EXPECT_EQ(info.num_erases.load(), 0);
+  EXPECT_EQ(info.num_rehashes.load(), 0);
   EXPECT_EQ(info.max_probe_length.load(), 0);
   EXPECT_EQ(info.total_probe_length.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0);
@@ -95,6 +96,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.capacity.load(), 0);
   EXPECT_EQ(info.size.load(), 0);
   EXPECT_EQ(info.num_erases.load(), 0);
+  EXPECT_EQ(info.num_rehashes.load(), 0);
   EXPECT_EQ(info.max_probe_length.load(), 0);
   EXPECT_EQ(info.total_probe_length.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0);
@@ -167,6 +169,7 @@ TEST(HashtablezInfoTest, RecordRehash) {
   EXPECT_EQ(info.size.load(), 2);
   EXPECT_EQ(info.total_probe_length.load(), 3);
   EXPECT_EQ(info.num_erases.load(), 0);
+  EXPECT_EQ(info.num_rehashes.load(), 1);
 }
 
 #if defined(ABSL_HASHTABLEZ_SAMPLE)

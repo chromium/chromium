@@ -73,6 +73,7 @@ struct HashtablezInfo {
   std::atomic<size_t> capacity;
   std::atomic<size_t> size;
   std::atomic<size_t> num_erases;
+  std::atomic<size_t> num_rehashes;
   std::atomic<size_t> max_probe_length;
   std::atomic<size_t> total_probe_length;
   std::atomic<size_t> hashes_bitwise_or;
@@ -105,6 +106,11 @@ inline void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
 #endif
   info->total_probe_length.store(total_probe_length, std::memory_order_relaxed);
   info->num_erases.store(0, std::memory_order_relaxed);
+  // There is only one concurrent writer, so `load` then `store` is sufficient
+  // instead of using `fetch_add`.
+  info->num_rehashes.store(
+      1 + info->num_rehashes.load(std::memory_order_relaxed),
+      std::memory_order_relaxed);
 }
 
 inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
@@ -113,7 +119,8 @@ inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
   info->capacity.store(capacity, std::memory_order_relaxed);
   if (size == 0) {
     // This is a clear, reset the total/num_erases too.
-    RecordRehashSlow(info, 0);
+    info->total_probe_length.store(0, std::memory_order_relaxed);
+    info->num_erases.store(0, std::memory_order_relaxed);
   }
 }
 
@@ -122,7 +129,11 @@ void RecordInsertSlow(HashtablezInfo* info, size_t hash,
 
 inline void RecordEraseSlow(HashtablezInfo* info) {
   info->size.fetch_sub(1, std::memory_order_relaxed);
-  info->num_erases.fetch_add(1, std::memory_order_relaxed);
+  // There is only one concurrent writer, so `load` then `store` is sufficient
+  // instead of using `fetch_add`.
+  info->num_erases.store(
+      1 + info->num_erases.load(std::memory_order_relaxed),
+      std::memory_order_relaxed);
 }
 
 HashtablezInfo* SampleSlow(int64_t* next_sample);

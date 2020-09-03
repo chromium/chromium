@@ -205,7 +205,7 @@ class BinaryToDecimal {
   }
 
  private:
-  static constexpr size_t kDigitsPerChunk = 9;
+  static constexpr int kDigitsPerChunk = 9;
 
   int decimal_start_;
   int decimal_end_;
@@ -442,8 +442,10 @@ struct Padding {
 };
 
 Padding ExtraWidthToPadding(size_t total_size, const FormatState &state) {
-  if (state.conv.width() < 0 || state.conv.width() <= total_size)
+  if (state.conv.width() < 0 ||
+      static_cast<size_t>(state.conv.width()) <= total_size) {
     return {0, 0, 0};
+  }
   int missing_chars = state.conv.width() - total_size;
   if (state.conv.has_left_flag()) {
     return {0, 0, missing_chars};
@@ -685,9 +687,7 @@ bool IncrementNibble(int nibble_index, Int *n) {
   // i.e., if the nibble_index is out of range. So therefore we check for this
   // and if we are out of range we just add 0 which leaves *n unchanged, which
   // seems like the reasonable thing to do in that case.
-  *n +=
-      ((nibble_index * 4 >= sizeof(Int) * 8) ? 0
-                                             : (Int{1} << (nibble_index * 4)));
+  *n += ((nibble_index >= kNumNibbles) ? 0 : (Int{1} << (nibble_index * 4)));
   Int after = *n >> kShift;
   return (before && !after) || (nibble_index >= kNumNibbles);
 }
