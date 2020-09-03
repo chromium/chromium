@@ -22,49 +22,29 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+namespace {
+constexpr uint32_t kVendorId = 25;
+constexpr uint32_t kProductId = 17;
+constexpr uint32_t kRevision = 92;
+constexpr uint64_t kFwVersion = 0xA0EF1;
+constexpr uint64_t kSizeMb = 1024;
+constexpr uint64_t kSize = kSizeMb * 1000;
+constexpr char kModel[] = "fabulous";
+constexpr char kSubsystem[] = "block:nvme:pcie";
+constexpr auto kType =
+    metrics::SystemProfileProto::Hardware::InternalStorageDevice::TYPE_NVME;
+constexpr auto kMojoPurpose =
+    chromeos::cros_healthd::mojom::StorageDevicePurpose::kSwapDevice;
+constexpr auto kUmaPurpose =
+    metrics::SystemProfileProto::Hardware::InternalStorageDevice::PURPOSE_SWAP;
+}  // namespace
+
 class CrosHealthdMetricsProviderTest : public testing::Test {
  public:
   CrosHealthdMetricsProviderTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kUmaStorageDimensions);
-  }
+    chromeos::CrosHealthdClient::InitializeFake();
 
-  void SetUp() override { chromeos::CrosHealthdClient::InitializeFake(); }
-
-  void TearDown() override {
-    chromeos::CrosHealthdClient::Shutdown();
-
-    // Wait for cros_healthd::ServiceConnection to observe the destruction of
-    // the client.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
-  constexpr uint32_t kVendorId = 25;
-  constexpr uint32_t kProductId = 17;
-  constexpr uint32_t kRevision = 92;
-  constexpr uint64_t kFwVersion = 0xA0EF1;
-  constexpr uint64_t kSizeMb = 1024;
-  constexpr uint64_t kSize = kSizeMb * 1000;
-  constexpr char kModel[] = "fabulous";
-  constexpr char kSubsystem[] = "block:nvme:pcie";
-  constexpr metrics::SystemProfileProto::Hardware::InternalStorageDevice::Type
-      kType = metrics::SystemProfileProto::Hardware::InternalStorageDevice::
-          TYPE_NVME;
-  constexpr chromeos::cros_healthd::mojom::StorageDevicePurpose kMojoPurpose =
-      chromeos::cros_healthd::mojom::StorageDevicePurpose::kSwapDevice;
-  constexpr metrics::SystemProfileProto::Hardware::InternalStorageDevice::
-      Purpose kUmaPurpose = metrics::SystemProfileProto::Hardware::
-          InternalStorageDevice::PURPOSE_SWAP;
-
-  // Setup fake response from cros_healthd
-  {
     chromeos::cros_healthd::mojom::NonRemovableBlockDeviceInfo storage_info;
     storage_info.vendor_id = chromeos::cros_healthd::mojom::BlockDeviceVendor::
         NewNvmeSubsystemVendor(kVendorId);
@@ -91,29 +71,45 @@ TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
         ->SetProbeTelemetryInfoResponseForTesting(info);
   }
 
+  ~CrosHealthdMetricsProviderTest() override {
+    chromeos::CrosHealthdClient::Shutdown();
+
+    // Wait for cros_healthd::ServiceConnection to observe the destruction of
+    // the client.
+    base::RunLoop().RunUntilIdle();
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
   base::RunLoop run_loop;
   CrosHealthdMetricsProvider provider;
-  provider.AsyncInit(base::BindLambdaForTesting([&]() {
-    metrics::SystemProfileProto profile;
-    provider.ProvideSystemProfileMetrics(&profile);
-
-    const auto& hardware = profile.hardware();
-    ASSERT_EQ(1, hardware.internal_storage_devices_size());
-
-    const auto& dev = hardware.internal_storage_devices(0);
-
-    EXPECT_EQ(kVendorId, dev.vendor_id());
-    EXPECT_EQ(kProductId, dev.product_id());
-    EXPECT_EQ(kRevision, dev.revision());
-    EXPECT_EQ(kFwVersion, dev.firmware_version());
-    EXPECT_EQ(kSizeMb, dev.size_mb());
-    EXPECT_EQ(kModel, dev.model());
-    EXPECT_EQ(kType, dev.type());
-    EXPECT_EQ(kUmaPurpose, dev.purpose());
-
-    run_loop.Quit();
-  }));
+  provider.AsyncInit(base::BindOnce(
+      [](base::OnceClosure callback) { std::move(callback).Run(); },
+      run_loop.QuitClosure()));
   run_loop.Run();
+
+  ASSERT_TRUE(provider.IsInitialized());
+  metrics::SystemProfileProto profile;
+  provider.ProvideSystemProfileMetrics(&profile);
+
+  const auto& hardware = profile.hardware();
+  ASSERT_EQ(1, hardware.internal_storage_devices_size());
+
+  const auto& dev = hardware.internal_storage_devices(0);
+
+  EXPECT_EQ(kVendorId, dev.vendor_id());
+  EXPECT_EQ(kProductId, dev.product_id());
+  EXPECT_EQ(kRevision, dev.revision());
+  EXPECT_EQ(kFwVersion, dev.firmware_version());
+  EXPECT_EQ(kSizeMb, dev.size_mb());
+  EXPECT_EQ(kModel, dev.model());
+  EXPECT_EQ(kType, dev.type());
+  EXPECT_EQ(kUmaPurpose, dev.purpose());
 }
 
 TEST_F(CrosHealthdMetricsProviderTest, EndToEndTimeout) {
@@ -130,7 +126,14 @@ TEST_F(CrosHealthdMetricsProviderTest, EndToEndTimeout) {
   // FastForward by timeout period.
   task_environment_.FastForwardBy(CrosHealthdMetricsProvider::GetTimeout());
   run_loop.Run();
-  ASSERT_FALSE(provider.IsInitialized());
+
+  EXPECT_FALSE(provider.IsInitialized());
+
+  metrics::SystemProfileProto profile;
+  provider.ProvideSystemProfileMetrics(&profile);
+
+  const auto& hardware = profile.hardware();
+  EXPECT_EQ(0, hardware.internal_storage_devices_size());
 }
 
 TEST_F(CrosHealthdMetricsProviderTest, EndToEndNoFeature) {
@@ -144,5 +147,12 @@ TEST_F(CrosHealthdMetricsProviderTest, EndToEndNoFeature) {
       run_loop.QuitClosure()));
 
   run_loop.Run();
-  ASSERT_FALSE(provider.IsInitialized());
+
+  EXPECT_FALSE(provider.IsInitialized());
+
+  metrics::SystemProfileProto profile;
+  provider.ProvideSystemProfileMetrics(&profile);
+
+  const auto& hardware = profile.hardware();
+  EXPECT_EQ(0, hardware.internal_storage_devices_size());
 }
