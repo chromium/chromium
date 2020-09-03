@@ -254,7 +254,7 @@ message CastLogsProto {
   // Next tag: 13
   message CastDeviceMutableInfo {
     // This is the last type of reboot the device encountered
-    // Next tag: 14
+    // Next tag: 17
     enum RebootType {
       REBOOT_TYPE_UNKNOWN = 0;  // Fail to get reboot type from system property
       REBOOT_TYPE_FORCED = 1;   // Power removed from device
@@ -273,6 +273,16 @@ message CastLogsProto {
       REBOOT_TYPE_REGENERATE_CLOUD_ID = 12;
       // Reboot triggered due to successive OOM events.
       REBOOT_TYPE_REPEATED_OOM = 13;
+      // Reboot triggered when the utility process is found to be in
+      // crash loop.
+      REBOOT_TYPE_UTILITY_PROCESS_CRASH = 14;
+      // design doc go/fuchsia-session-restart-metrics
+      // Restart triggered due to graceful component teardown by the Fuchsia
+      // platform. Device has not rebooted.
+      REBOOT_TYPE_GRACEFUL_RESTART = 15;
+      // Restart triggered due to ungraceful component teardown by the Fuchsia
+      // platform. Device has not rebooted.
+      REBOOT_TYPE_UNGRACEFUL_RESTART = 16;
     }
     optional RebootType last_reboot_type = 1;
 
