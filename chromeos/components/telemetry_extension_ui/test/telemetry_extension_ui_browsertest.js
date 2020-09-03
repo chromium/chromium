@@ -115,6 +115,15 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
       diagnosticsProxy.convertUserMessage(userMessageEnum.kPlugInACPower),
       'plug-in-ac-power');
 
+  // Unit tests for convertPowerStatusToEnum
+  const acPowerStatusEnum = chromeos.health.mojom.AcPowerStatusEnum;
+  assertEquals(
+      diagnosticsProxy.convertPowerStatusToEnum('connected'),
+      acPowerStatusEnum.kConnected);
+  assertEquals(
+      diagnosticsProxy.convertPowerStatusToEnum('disconnected'),
+      acPowerStatusEnum.kDisconnected);
+
   testDone();
 });
 
@@ -365,6 +374,21 @@ TEST_F(
     'UntrustedDiagnosticsRequestRunSmartctlCheckRoutine', async () => {
       await runTestInUntrusted(
           'UntrustedDiagnosticsRequestRunSmartctlCheckRoutine');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunAcPowerRoutineInvalidInput', async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunAcPowerRoutineInvalidInput');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunAcPowerRoutine', async () => {
+      await runTestInUntrusted('UntrustedDiagnosticsRequestRunAcPowerRoutine');
       testDone();
     });
 

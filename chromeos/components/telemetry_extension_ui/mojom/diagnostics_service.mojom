@@ -84,6 +84,24 @@ interface DiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunSmartctlCheckRoutine() => (RunRoutineResponse response);
+
+  // Requests that the AcPower routine is created and started on the
+  // platform. This routine checks the status of the power supply, and if
+  // |expected_power_type| is specified, checks to see that
+  // |expected_power_type| matches the type reported by the power supply. This
+  // routine is only available if GetAvailableRoutines returned kAcPower.
+  //
+  // The request:
+  // * |expected_status| - whether or not the adapter is expected to be online.
+  // * |expected_power_type| - if specified, must match the type of the power
+  //                           supply for the routine to succeed.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunAcPowerRoutine(AcPowerStatusEnum expected_status,
+                    string? expected_power_type)
+      => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
@@ -188,4 +206,12 @@ struct RunRoutineResponse {
   // Current status of the newly-created routine. A status of kFailedToStart
   // means the routine was unable to be created.
   DiagnosticRoutineStatusEnum status;
+};
+
+// Enumeration of the possible statuses for a power supply in the AC power
+// routine.
+[Extensible]
+enum AcPowerStatusEnum {
+  kConnected = 0,     // Power supply is connected.
+  kDisconnected = 1,  // Power supply is disconnected.
 };

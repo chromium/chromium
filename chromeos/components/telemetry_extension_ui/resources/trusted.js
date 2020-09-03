@@ -130,6 +130,22 @@ class DiagnosticsProxy {
       throw RangeError(
           'enumToUserMessage_ does not contain all items from enum!');
     }
+
+    const acPowerStatusEnum = chromeos.health.mojom.AcPowerStatusEnum;
+
+    /**
+     * @type { !Map<!string, !chromeos.health.mojom.AcPowerStatusEnum> }
+     * @const
+     */
+    this.acPowerStatusToEnum_ = new Map([
+      ['connected', acPowerStatusEnum.kConnected],
+      ['disconnected', acPowerStatusEnum.kDisconnected],
+    ]);
+
+    if (this.acPowerStatusToEnum_.size !== acPowerStatusEnum.MAX_VALUE + 1) {
+      throw RangeError(
+          'acPowerStatusToEnum_ does not contain all items from enum!');
+    }
   }
 
   /**
@@ -324,6 +340,34 @@ class DiagnosticsProxy {
    */
   async handleRunSmartctlCheckRoutine() {
     return await getOrCreateDiagnosticsService().runSmartctlCheckRoutine();
+  };
+
+  /**
+   * Converts expected status string to AcPowerStatusEnum.
+   * @param { !string } expectedStatus
+   * @return { !chromeos.health.mojom.AcPowerStatusEnum }
+   */
+  convertPowerStatusToEnum(expectedStatus) {
+    if (!this.acPowerStatusToEnum_.has(expectedStatus)) {
+      throw TypeError(
+          `Diagnostic expected status '${expectedStatus}' is unknown.`);
+    }
+
+    return this.acPowerStatusToEnum_.get(expectedStatus);
+  }
+
+  /**
+   * Runs ac power routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunAcPowerRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunAcPowerRoutineRequest} */ (
+            message);
+    const expectedStatus = this.convertPowerStatusToEnum(request.expectedStatus)
+    return await getOrCreateDiagnosticsService().runAcPowerRoutine(
+        expectedStatus, request.expectedPowerType);
   };
 };
 
@@ -621,6 +665,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         () => diagnosticsProxy.handleRunSmartctlCheckRoutine(), message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_AC_POWER_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunAcPowerRoutine(message),
+        message));
 
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.PROBE_TELEMETRY_INFO,

@@ -26,6 +26,7 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunBatteryHealthRoutine',
   DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE:
       'DiagnosticsService.RunSmartctlCheckRoutine',
+  DIAGNOSTICS_RUN_AC_POWER_ROUTINE: 'DiagnosticsService.RunAcPowerRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -84,6 +85,15 @@ dpsl_internal.DiagnosticsRunBatteryHealthRoutineRequest;
  * @typedef { null }
  */
 dpsl_internal.DiagnosticsRunSmartctlCheckRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run ac power routine.
+ * @typedef {{
+ *  expectedStatus: !string,
+ *  expectedPowerType: string}}
+ */
+dpsl_internal.DiagnosticsRunAcPowerRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

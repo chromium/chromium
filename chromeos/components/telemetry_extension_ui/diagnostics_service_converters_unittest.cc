@@ -66,5 +66,15 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {
             cros_healthd::DiagnosticRoutineCommandEnum::kRemove);
 }
 
+TEST(DiagnosticsServiceConvertersTest, ConvertAcPowerStatusEnum) {
+  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace health = ::chromeos::health::mojom;
+
+  EXPECT_EQ(Convert(health::AcPowerStatusEnum::kConnected),
+            cros_healthd::AcPowerStatusEnum::kConnected);
+  EXPECT_EQ(Convert(health::AcPowerStatusEnum::kDisconnected),
+            cros_healthd::AcPowerStatusEnum::kDisconnected);
+}
+
 }  // namespace converters
 }  // namespace chromeos

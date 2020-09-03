@@ -175,5 +175,18 @@ std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
   return output;
 }
 
+cros_healthd::mojom::AcPowerStatusEnum Convert(
+    health::mojom::AcPowerStatusEnum input) {
+  switch (input) {
+    case health::mojom::AcPowerStatusEnum::kConnected:
+      return cros_healthd::mojom::AcPowerStatusEnum::kConnected;
+    case health::mojom::AcPowerStatusEnum::kDisconnected:
+      return cros_healthd::mojom::AcPowerStatusEnum::kDisconnected;
+  }
+  NOTREACHED();
+  return static_cast<cros_healthd::mojom::AcPowerStatusEnum>(
+      static_cast<int>(cros_healthd::mojom::AcPowerStatusEnum::kMaxValue) + 1);
+}
+
 }  // namespace converters
 }  // namespace chromeos

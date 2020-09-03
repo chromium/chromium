@@ -137,6 +137,31 @@ chromeos.test_support = {};
               dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE));
       return response;
     }
+
+    /**
+     * Requests ac power routine to be run.
+     * @param { !string } expectedStatus
+     * @param { !string= } expectedPowerType
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runAcPowerRoutine(expectedStatus, expectedPowerType) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunAcPowerRoutineRequest}
+               */
+          ({
+            expectedStatus: expectedStatus,
+            expectedPowerType: expectedPowerType
+          });
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_AC_POWER_ROUTINE, message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

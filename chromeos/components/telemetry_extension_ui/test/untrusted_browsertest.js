@@ -152,6 +152,38 @@ UNTRUSTED_TEST(
       assertDeepEquals(response, {id: 123456789, status: 'ready'});
     });
 
+// Tests that runAcPowerRoutine throws the correct error
+// when invalid enum is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunAcPowerRoutineInvalidInput', async () => {
+      let caughtError;
+      try {
+        await chromeos.diagnostics.runAcPowerRoutine('this-does-not-exist');
+      } catch (error) {
+        caughtError = error;
+      }
+
+      assertEquals(caughtError.name, 'TypeError');
+      assertEquals(
+          caughtError.message,
+          `Diagnostic expected status \'this-does-not-exist\' is unknown.`);
+    });
+
+// Tests that runAcPowerRoutine returns the correct Object when one or two
+// parameters are given as input.
+UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunAcPowerRoutine', async () => {
+  const response1 = await chromeos.diagnostics.runAcPowerRoutine('connected');
+  assertDeepEquals(response1, {id: 123456789, status: 'ready'});
+
+  const response2 =
+      await chromeos.diagnostics.runAcPowerRoutine('connected', 'Mains');
+  assertDeepEquals(response2, {id: 123456789, status: 'ready'});
+
+  const response3 =
+      await chromeos.diagnostics.runAcPowerRoutine('disconnected', 'Battery');
+  assertDeepEquals(response3, {id: 123456789, status: 'ready'});
+});
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
