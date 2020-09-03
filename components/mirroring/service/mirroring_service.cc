@@ -15,10 +15,7 @@ MirroringService::MirroringService(
     mojo::PendingReceiver<mojom::MirroringService> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : receiver_(this, std::move(receiver)),
-      io_task_runner_(std::move(io_task_runner)) {
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&MirroringService::OnDisconnect, base::Unretained(this)));
-}
+      io_task_runner_(std::move(io_task_runner)) {}
 
 MirroringService::~MirroringService() = default;
 
@@ -34,10 +31,6 @@ void MirroringService::Start(
       std::move(params), max_resolution, std::move(observer),
       std::move(resource_provider), std::move(outbound_channel),
       std::move(inbound_channel), io_task_runner_);
-}
-
-void MirroringService::OnDisconnect() {
-  session_.reset();
 }
 
 }  // namespace mirroring
