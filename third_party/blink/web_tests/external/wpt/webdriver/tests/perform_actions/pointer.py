@@ -148,7 +148,7 @@ def test_drag_and_drop_with_draggable_element(session_new_window,
                        test_actions_page,
                        mouse_chain,
                        drag_duration):
-    new_session = session_with_new_window
+    new_session = session_new_window
     drag_target = new_session.find.css("#draggable", all=False)
     drop_target = new_session.find.css("#droppable", all=False)
     # Conclude chain with extra move to allow time for last queued
