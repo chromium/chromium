@@ -54,7 +54,7 @@ class CORE_EXPORT SVGExternalDocumentCache
     explicit Entry(ExecutionContext* context) : context_(context) {}
     ~Entry() override = default;
     void Trace(Visitor*) const override;
-    Document* GetDocument() { return document_.Get(); }
+    Document* GetDocument();
     const KURL& Url() const { return GetResource()->Url(); }
 
    private:

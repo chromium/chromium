@@ -58,22 +58,23 @@ void SVGExternalDocumentCache::Entry::AddClient(Client* client) {
 
 void SVGExternalDocumentCache::Entry::NotifyFinished(Resource* resource) {
   DCHECK_EQ(GetResource(), resource);
-  DCHECK(!document_);
-
-  const TextResource* text_resource = To<TextResource>(resource);
-  if (text_resource->HasData() &&
-      MimeTypeAllowed(text_resource->GetResponse())) {
-    document_ = XMLDocument::CreateSVG(
-        DocumentInit::Create()
-            .WithURL(text_resource->GetResponse().CurrentRequestUrl())
-            .WithExecutionContext(context_.Get()));
-    document_->SetContent(text_resource->DecodedText());
-  }
   for (auto client : clients_) {
     if (client)
       client->NotifyFinished(GetDocument());
   }
-  clients_.clear();
+}
+
+Document* SVGExternalDocumentCache::Entry::GetDocument() {
+  const TextResource* resource = To<TextResource>(GetResource());
+  if (!document_ && resource->IsLoaded() && resource->HasData() &&
+      MimeTypeAllowed(resource->GetResponse())) {
+    document_ = XMLDocument::CreateSVG(
+        DocumentInit::Create()
+            .WithURL(resource->GetResponse().CurrentRequestUrl())
+            .WithExecutionContext(context_.Get()));
+    document_->SetContent(resource->DecodedText());
+  }
+  return document_.Get();
 }
 
 void SVGExternalDocumentCache::Entry::Trace(Visitor* visitor) const {
