@@ -22,19 +22,19 @@
     test(t => {
         fragment = s.sanitize("test");
         assert_equals("[object DocumentFragment]", fragment.toString());
-        assert_equals(getString(fragment), "<head></head><body>test</body>");
+        assert_equals(getString(fragment), "test");
     }, "SanitizerAPI sanitizeToFragment works!");
 
     test(t => {
         fragment = s.sanitize("<b>bla</b>");
         assert_equals(fragment.toString(), "[object DocumentFragment]");
-        assert_equals(getString(fragment), "<head></head><body><b>bla</b></body>");
+        assert_equals(getString(fragment), "<b>bla</b>");
     }, "SanitizerAPI sanitizeToFragment with HTML codes works!");
 
     test(t => {
         fragment = s.sanitize("<a<embla");
         assert_equals(fragment.toString(), "[object DocumentFragment]");
-        assert_equals(getString(fragment), "<head></head><body></body>");
+        assert_equals(getString(fragment), "");
     }, "SanitizerAPI sanitizeToFragment with broken HTML codes works!");
 </script>
 </body>

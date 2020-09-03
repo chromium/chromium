@@ -36,7 +36,8 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
   }
   Document* document = window->document();
   DocumentFragment* fragment = document->createDocumentFragment();
-  fragment->ParseHTML(input, document->documentElement());
+  DCHECK(document->QuerySelector("body"));
+  fragment->ParseHTML(input, document->QuerySelector("body"));
   return fragment;
 }
 
