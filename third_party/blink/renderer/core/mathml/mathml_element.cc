@@ -110,6 +110,16 @@ void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
   Element::ParseAttribute(param);
 }
 
+base::Optional<bool> MathMLElement::BooleanAttribute(
+    const QualifiedName& name) const {
+  const AtomicString& value = FastGetAttribute(name);
+  if (EqualIgnoringASCIICase(value, "true"))
+    return true;
+  if (EqualIgnoringASCIICase(value, "false"))
+    return false;
+  return base::nullopt;
+}
+
 base::Optional<Length> MathMLElement::AddMathLengthToComputedStyle(
     const CSSToLengthConversionData& conversion_data,
     const QualifiedName& attr_name,

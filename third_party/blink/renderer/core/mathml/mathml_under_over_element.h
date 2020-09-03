@@ -14,6 +14,11 @@ class Document;
 class CORE_EXPORT MathMLUnderOverElement final : public MathMLScriptsElement {
  public:
   MathMLUnderOverElement(const QualifiedName& tagName, Document& document);
+  base::Optional<bool> Accent() const;
+  base::Optional<bool> AccentUnder() const;
+
+ private:
+  void ParseAttribute(const AttributeModificationParams&) final;
 };
 
 template <>

@@ -192,16 +192,6 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
   }
 }
 
-base::Optional<bool> MathMLOperatorElement::BooleanAttribute(
-    const QualifiedName& name) const {
-  const AtomicString& value = FastGetAttribute(name);
-  if (EqualIgnoringASCIICase(value, "true"))
-    return true;
-  if (EqualIgnoringASCIICase(value, "false"))
-    return false;
-  return base::nullopt;
-}
-
 void MathMLOperatorElement::ComputeOperatorProperty(OperatorPropertyFlag flag) {
   DCHECK(properties_.dirty_flags & flag);
   const auto& name = OperatorPropertyFlagToAttributeName(flag);

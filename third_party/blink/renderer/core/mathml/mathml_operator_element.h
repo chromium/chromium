@@ -52,7 +52,6 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
   void ComputeOperatorProperty(OperatorPropertyFlag);
   void SetOperatorFormDirty();
   void ParseAttribute(const AttributeModificationParams&) final;
-  base::Optional<bool> BooleanAttribute(const QualifiedName& name) const;
   void SetOperatorPropertyDirtyFlagIfNeeded(const AttributeModificationParams&,
                                             const OperatorPropertyFlag&,
                                             bool& needs_layout);
