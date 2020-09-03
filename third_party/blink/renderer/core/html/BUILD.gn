@@ -252,6 +252,8 @@ blink_core_sources("html") {
     "forms/select_type.h",
     "forms/slider_thumb_element.cc",
     "forms/slider_thumb_element.h",
+    "forms/slider_track_element.cc",
+    "forms/slider_track_element.h",
     "forms/spin_button_element.cc",
     "forms/spin_button_element.h",
     "forms/step_range.cc",

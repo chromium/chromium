@@ -46,8 +46,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
+#include "third_party/blink/renderer/core/html/forms/slider_track_element.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
-#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -244,7 +244,7 @@ void RangeInputType::CreateShadowSubtree() {
   DCHECK(IsShadowHost(GetElement()));
 
   Document& document = GetElement().GetDocument();
-  auto* track = MakeGarbageCollected<HTMLDivElement>(document);
+  auto* track = MakeGarbageCollected<blink::SliderTrackElement>(document);
   track->SetShadowPseudoId(AtomicString("-webkit-slider-runnable-track"));
   track->setAttribute(html_names::kIdAttr,
                       shadow_element_names::kIdSliderTrack);
