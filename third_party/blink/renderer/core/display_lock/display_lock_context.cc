@@ -329,70 +329,55 @@ void DisplayLockContext::Lock() {
 // Should* and Did* function for the lifecycle phases. These functions control
 // whether or not to process the lifecycle for self or for children.
 // =============================================================================
-bool DisplayLockContext::ShouldStyle(DisplayLockLifecycleTarget target) const {
-  return !is_locked_ || target == DisplayLockLifecycleTarget::kSelf ||
-         update_forced_ ||
+bool DisplayLockContext::ShouldStyleChildren() const {
+  return !is_locked_ || update_forced_ ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
           IsActivatable(DisplayLockActivationReason::kAny));
 }
 
-void DisplayLockContext::DidStyle(DisplayLockLifecycleTarget target) {
-  if (target == DisplayLockLifecycleTarget::kSelf) {
-    // TODO(vmpstr): This needs to be in the spec.
-    if (ForceUnlockIfNeeded())
-      return;
-
-    if (!IsLocked() && state_ != EContentVisibility::kVisible) {
-      UpdateActivationObservationIfNeeded();
-      NotifyRenderAffectingStateChanged();
-    }
-
-    if (blocked_style_traversal_type_ == kStyleUpdateSelf)
-      blocked_style_traversal_type_ = kStyleUpdateNotRequired;
-  } else {
-    if (element_->ChildNeedsReattachLayoutTree())
-      element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
-    blocked_style_traversal_type_ = kStyleUpdateNotRequired;
-    MarkElementsForWhitespaceReattachment();
-  }
-}
-
-bool DisplayLockContext::ShouldLayout(DisplayLockLifecycleTarget target) const {
-  return !is_locked_ || target == DisplayLockLifecycleTarget::kSelf ||
-         update_forced_ ||
-         (document_->GetDisplayLockDocumentState()
-              .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny));
-}
-
-void DisplayLockContext::DidLayout(DisplayLockLifecycleTarget target) {
-  if (target == DisplayLockLifecycleTarget::kSelf)
+void DisplayLockContext::DidStyleSelf() {
+  // TODO(vmpstr): This needs to be in the spec.
+  if (ForceUnlockIfNeeded())
     return;
+
+  if (!IsLocked() && state_ != EContentVisibility::kVisible) {
+    UpdateActivationObservationIfNeeded();
+    NotifyRenderAffectingStateChanged();
+  }
+
+  if (blocked_style_traversal_type_ == kStyleUpdateSelf)
+    blocked_style_traversal_type_ = kStyleUpdateNotRequired;
+}
+
+void DisplayLockContext::DidStyleChildren() {
+  if (element_->ChildNeedsReattachLayoutTree())
+    element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
+  blocked_style_traversal_type_ = kStyleUpdateNotRequired;
+  MarkElementsForWhitespaceReattachment();
+}
+
+bool DisplayLockContext::ShouldLayoutChildren() const {
+  return !is_locked_ || update_forced_ ||
+         (document_->GetDisplayLockDocumentState()
+              .ActivatableDisplayLocksForced() &&
+          IsActivatable(DisplayLockActivationReason::kAny));
+}
+
+void DisplayLockContext::DidLayoutChildren() {
   // Since we did layout on children already, we'll clear this.
   child_layout_was_blocked_ = false;
 }
 
-bool DisplayLockContext::ShouldPrePaint(
-    DisplayLockLifecycleTarget target) const {
-  return !is_locked_ || target == DisplayLockLifecycleTarget::kSelf ||
-         update_forced_;
+bool DisplayLockContext::ShouldPrePaintChildren() const {
+  return !is_locked_ || update_forced_;
 }
 
-void DisplayLockContext::DidPrePaint(DisplayLockLifecycleTarget target) {
-  // This is here for symmetry, but could be removed if necessary.
-}
-
-bool DisplayLockContext::ShouldPaint(DisplayLockLifecycleTarget target) const {
+bool DisplayLockContext::ShouldPaintChildren() const {
   // Note that forced updates should never require us to paint, so we don't
   // check |update_forced_| here. In other words, although |update_forced_|
-  // could be true here, we still should not paint. This also holds for
-  // kUpdating state, since updates should not paint.
-  return !is_locked_ || target == DisplayLockLifecycleTarget::kSelf;
-}
-
-void DisplayLockContext::DidPaint(DisplayLockLifecycleTarget) {
-  // This is here for symmetry, but could be removed if necessary.
+  // could be true here, we still should not paint.
+  return !is_locked_;
 }
 // End Should* and Did* functions ==============================================
 

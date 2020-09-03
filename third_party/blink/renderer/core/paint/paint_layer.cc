@@ -350,10 +350,8 @@ void PaintLayer::UpdateLayerPositionRecursive() {
   // PaintLayer traversal won't skip locked elements. Thus, we don't have to do
   // an ancestor check, and simply skip iterating children when this element is
   // locked for child layout.
-  if (GetLayoutObject().LayoutBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren)) {
+  if (GetLayoutObject().ChildLayoutBlockedByDisplayLock())
     return;
-  }
 
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
     child->UpdateLayerPositionRecursive();
@@ -533,10 +531,8 @@ void PaintLayer::UpdatePaginationRecursive(bool needs_pagination_update) {
 
   // If this element prevents child painting, then we can skip updating
   // pagination info, since it won't be used anyway.
-  if (GetLayoutObject().PaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren)) {
+  if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return;
-  }
 
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
     child->UpdatePaginationRecursive(needs_pagination_update);
@@ -621,8 +617,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
         GetLayoutObject().CanContainAbsolutePositionObjects();
 
     auto* first_child = [this]() -> PaintLayer* {
-      if (GetLayoutObject().PrePaintBlockedByDisplayLock(
-              DisplayLockLifecycleTarget::kChildren)) {
+      if (GetLayoutObject().ChildPrePaintBlockedByDisplayLock()) {
         GetLayoutObject()
             .GetDisplayLockContext()
             ->NotifyCompositingDescendantDependentFlagUpdateWasBlocked();
@@ -1122,8 +1117,7 @@ void PaintLayer::SetNeedsCompositingInputsUpdateInternal() {
   // (|needs_ancestor_dependent_compositing_inputs_update_|) can be discovered
   // by the compositing update walk.
   bool child_flag_may_persist_after_update =
-      GetLayoutObject().PrePaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren);
+      GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
 
   PaintLayer* initial_layer = child_needs_compositing_inputs_update_ &&
                                       child_flag_may_persist_after_update
@@ -2153,8 +2147,8 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
   if (recursion_data.intersects_location) {
     // Next we want to see if the mouse pos is inside the child LayoutObjects of
     // the layer. Check every fragment in reverse order.
-    if (IsSelfPaintingLayer() && !layout_object.PaintBlockedByDisplayLock(
-                                     DisplayLockLifecycleTarget::kChildren)) {
+    if (IsSelfPaintingLayer() &&
+        !layout_object.ChildPaintBlockedByDisplayLock()) {
       // Hit test with a temporary HitTestResult, because we only want to commit
       // to 'result' if we know we're frontmost.
       STACK_UNINITIALIZED HitTestResult temp_result(
@@ -2431,8 +2425,7 @@ PaintLayer* PaintLayer::HitTestChildren(
   if (!HasSelfPaintingLayerDescendant())
     return nullptr;
 
-  if (GetLayoutObject().PaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren))
+  if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return nullptr;
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
@@ -2675,10 +2668,8 @@ void PaintLayer::ExpandRectForStackingChildren(
   // If we're locked, th en the subtree does not contribute painted output.
   // Furthermore, we might not have up-to-date sizing and position information
   // in the subtree, so skip recursing into the subtree.
-  if (GetLayoutObject().PaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren)) {
+  if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return;
-  }
 
   PaintLayerPaintOrderIterator iterator(*this, kAllChildren);
   while (PaintLayer* child_layer = iterator.Next()) {
@@ -3522,8 +3513,7 @@ void PaintLayer::MarkCompositingContainerChainForNeedsRepaint() {
     // display lock, then stop propagating the dirty bit.
     if (container->descendant_needs_repaint_ ||
         (!layer->SelfNeedsRepaint() &&
-         layer->GetLayoutObject().PaintBlockedByDisplayLock(
-             DisplayLockLifecycleTarget::kChildren))) {
+         layer->GetLayoutObject().ChildPaintBlockedByDisplayLock())) {
       break;
     }
 
@@ -3536,10 +3526,8 @@ void PaintLayer::ClearNeedsRepaintRecursively() {
   self_needs_repaint_ = false;
 
   // Don't clear dirty bits in a display-locked subtree.
-  if (GetLayoutObject().PaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren)) {
+  if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return;
-  }
 
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
     child->ClearNeedsRepaintRecursively();

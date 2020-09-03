@@ -1308,7 +1308,7 @@ void LayoutGrid::UpdateGridAreaLogicalSize(
 }
 
 void LayoutGrid::LayoutGridItems() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   PopulateGridPositionsForDirection(kForColumns);
@@ -1389,7 +1389,7 @@ bool LayoutGrid::HasStaticPositionForChild(
 
 void LayoutGrid::LayoutPositionedObjects(bool relayout_children,
                                          PositionedLayoutBehavior info) {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   column_of_positioned_item_.clear();

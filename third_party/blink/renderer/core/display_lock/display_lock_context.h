@@ -14,12 +14,10 @@
 
 namespace blink {
 
-class DisplayLockScopedLogger;
 class Document;
 class Element;
 class StyleRecalcChange;
 
-enum class DisplayLockLifecycleTarget { kSelf, kChildren };
 enum class DisplayLockActivationReason {
   // Accessibility driven activation
   kAccessibility = 1 << 0,
@@ -89,15 +87,14 @@ class CORE_EXPORT DisplayLockContext final
   void NotifyIsIntersectingViewport();
   void NotifyIsNotIntersectingViewport();
 
-  // Lifecycle observation / state functions.
-  bool ShouldStyle(DisplayLockLifecycleTarget) const;
-  void DidStyle(DisplayLockLifecycleTarget);
-  bool ShouldLayout(DisplayLockLifecycleTarget) const;
-  void DidLayout(DisplayLockLifecycleTarget);
-  bool ShouldPrePaint(DisplayLockLifecycleTarget) const;
-  void DidPrePaint(DisplayLockLifecycleTarget);
-  bool ShouldPaint(DisplayLockLifecycleTarget) const;
-  void DidPaint(DisplayLockLifecycleTarget);
+  // Lifecycle state functions.
+  bool ShouldStyleChildren() const;
+  void DidStyleSelf();
+  void DidStyleChildren();
+  bool ShouldLayoutChildren() const;
+  void DidLayoutChildren();
+  bool ShouldPrePaintChildren() const;
+  bool ShouldPaintChildren() const;
 
   // Returns true if the last style recalc traversal was blocked at this
   // element, either for itself, its children or its descendants.

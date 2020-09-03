@@ -389,8 +389,7 @@ bool LayoutObject::RequiresAnonymousTableWrappers(
 #if DCHECK_IS_ON()
 
 void LayoutObject::AssertClearedPaintInvalidationFlags() const {
-  if (!PaintInvalidationStateIsDirty() ||
-      PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (!PaintInvalidationStateIsDirty() || ChildPrePaintBlockedByDisplayLock())
     return;
   // NG text objects are exempt, as pre-paint walking doesn't visit those with
   // no paint effects (only white-space, for instance).
@@ -1108,9 +1107,7 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout,
     // propagation. Note that it's not enough to check |object|, since the
     // element that is actually locked needs its child bits set properly, we
     // need to go one more iteration after that.
-    if (!last->SelfNeedsLayout() &&
-        last->LayoutBlockedByDisplayLock(
-            DisplayLockLifecycleTarget::kChildren)) {
+    if (!last->SelfNeedsLayout() && last->ChildLayoutBlockedByDisplayLock()) {
       return;
     }
 
@@ -1203,7 +1200,7 @@ void LayoutObject::MarkParentForOutOfFlowPositionedChange() {
 
 #if DCHECK_IS_ON()
 void LayoutObject::CheckBlockPositionedObjectsNeedLayout() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
   DCHECK(!NeedsLayout());
 
@@ -1909,7 +1906,7 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
     string_builder.Append('\t');
     string_builder.Append(GetNode()->ToString());
   }
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     string_builder.Append(" (display-locked)");
 }
 
@@ -1930,7 +1927,7 @@ void LayoutObject::DumpLayoutTreeAndMark(StringBuilder& string_builder,
   DumpLayoutObject(object_info, true, kShowTreeCharacterOffset);
   string_builder.Append(object_info);
 
-  if (!LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren)) {
+  if (!ChildLayoutBlockedByDisplayLock()) {
     for (const LayoutObject* child = SlowFirstChild(); child;
          child = child->NextSibling()) {
       string_builder.Append('\n');
@@ -4210,8 +4207,7 @@ bool LayoutObject::PaintInvalidationStateIsDirty() const {
 #endif
 
 void LayoutObject::EnsureIsReadyForPaintInvalidation() {
-  DCHECK(!NeedsLayout() ||
-         LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
 
   // Force full paint invalidation if the outline may be affected by descendants
   // and this object is marked for checking paint invalidation for any reason.
@@ -4231,7 +4227,7 @@ void LayoutObject::ClearPaintFlags() {
   bitfields_.SetNeedsPaintPropertyUpdate(false);
   bitfields_.SetEffectiveAllowedTouchActionChanged(false);
 
-  if (!PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren)) {
+  if (!ChildPrePaintBlockedByDisplayLock()) {
     bitfields_.SetDescendantNeedsPaintPropertyUpdate(false);
     bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(false);
     bitfields_.ResetSubtreePaintPropertyUpdateReasons();
@@ -4297,7 +4293,7 @@ void LayoutObject::MarkEffectiveAllowedTouchActionChanged() {
   // If we're locked, mark our descendants as needing this change. This is used
   // a signal to ensure we mark the element as needing effective allowed
   // touch action recalculation when the element becomes unlocked.
-  if (PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren)) {
+  if (ChildPrePaintBlockedByDisplayLock()) {
     bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(true);
     return;
   }
@@ -4305,8 +4301,7 @@ void LayoutObject::MarkEffectiveAllowedTouchActionChanged() {
   LayoutObject* obj = ParentCrossingFrames();
   while (obj && !obj->DescendantEffectiveAllowedTouchActionChanged()) {
     obj->bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(true);
-    if (obj->PrePaintBlockedByDisplayLock(
-            DisplayLockLifecycleTarget::kChildren))
+    if (obj->ChildPrePaintBlockedByDisplayLock())
       break;
 
     obj = obj->ParentCrossingFrames();

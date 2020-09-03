@@ -2053,8 +2053,7 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
            parent && parent != this; parent = parent->Parent()) {
         DCHECK(!parent->SelfNeedsLayout());
         DCHECK(!parent->NeedsLayout() ||
-               parent->LayoutBlockedByDisplayLock(
-                   DisplayLockLifecycleTarget::kChildren));
+               parent->ChildLayoutBlockedByDisplayLock());
       }
 #endif
     }
@@ -2393,7 +2392,7 @@ bool LayoutBlockFlow::GeneratesLineBoxesForInlineChild(LayoutObject* inline_obj)
 
 void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
   DCHECK(!NeedsLayout());
-  DCHECK(!PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!ChildPrePaintBlockedByDisplayLock());
 
   if (const NGPaintFragment* paint_fragment = PaintFragment()) {
     for (const NGPaintFragment* child : paint_fragment->Children()) {
@@ -2457,7 +2456,7 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
 }
 
 void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
-  DCHECK(!LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!ChildLayoutBlockedByDisplayLock());
 
   LayoutUnit end_padding =
       HasNonVisibleOverflow() ? PaddingEnd() : LayoutUnit();

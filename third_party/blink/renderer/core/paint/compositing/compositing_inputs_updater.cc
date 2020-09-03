@@ -179,8 +179,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
   // Note that prepaint may use the compositing information, so only skip
   // recursing it if we're skipping prepaint.
   bool recursion_blocked_by_display_lock =
-      layer->GetLayoutObject().PrePaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren);
+      layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
 
   bool should_recurse = (layer->ChildNeedsCompositingInputsUpdate() ||
                          update_type == kForceUpdate);
@@ -540,8 +539,7 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
 void CompositingInputsUpdater::AssertNeedsCompositingInputsUpdateBitsCleared(
     PaintLayer* layer) {
   bool recursion_blocked_by_display_lock =
-      layer->GetLayoutObject().PrePaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren);
+      layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
 
   DCHECK(recursion_blocked_by_display_lock ||
          !layer->ChildNeedsCompositingInputsUpdate());

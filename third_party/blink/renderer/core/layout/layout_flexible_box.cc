@@ -856,8 +856,7 @@ bool LayoutFlexibleBox::CrossAxisLengthIsDefinite(const LayoutBox& child,
 
 void LayoutFlexibleBox::CacheChildMainSize(const LayoutBox& child) {
   DCHECK(!child.SelfNeedsLayout());
-  DCHECK(!child.NeedsLayout() || child.LayoutBlockedByDisplayLock(
-                                     DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!child.NeedsLayout() || child.ChildLayoutBlockedByDisplayLock());
   LayoutUnit main_size;
   if (MainAxisIsInlineAxis(child)) {
     main_size = child.PreferredLogicalWidths().max_size;

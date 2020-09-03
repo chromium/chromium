@@ -2083,18 +2083,8 @@ void CompositedLayerMapping::GraphicsLayersDidChange() {
   frame_view->SetForeignLayerListNeedsUpdate();
 }
 
-bool CompositedLayerMapping::PaintBlockedByDisplayLockIncludingAncestors(
-    DisplayLockContextLifecycleTarget target) const {
-  auto* node = GetLayoutObject().GetNode();
-  if (node) {
-    auto* element = DynamicTo<Element>(node);
-    if (target == DisplayLockContextLifecycleTarget::kSelf && element) {
-      if (auto* context = element->GetDisplayLockContext()) {
-        if (!context->ShouldPaint(DisplayLockLifecycleTarget::kSelf))
-          return true;
-      }
-    }
-  }
+bool CompositedLayerMapping::PaintBlockedByDisplayLockIncludingAncestors()
+    const {
   return DisplayLockUtilities::NearestLockedExclusiveAncestor(
       GetLayoutObject());
 }

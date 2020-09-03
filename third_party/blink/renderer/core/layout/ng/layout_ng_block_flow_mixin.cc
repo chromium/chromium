@@ -76,7 +76,7 @@ void LayoutNGBlockFlowMixin<Base>::ClearNGInlineNodeData() {
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::AddLayoutOverflowFromChildren() {
-  if (Base::LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (Base::ChildLayoutBlockedByDisplayLock())
     return;
 
   // |ComputeOverflow()| calls this, which is called from
@@ -184,8 +184,7 @@ template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::Paint(const PaintInfo& paint_info) const {
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (UNLIKELY(Base::NeedsLayout() &&
-               !Base::LayoutBlockedByDisplayLock(
-                   DisplayLockLifecycleTarget::kChildren))) {
+               !Base::ChildLayoutBlockedByDisplayLock())) {
     NOTREACHED();
     return;
   }

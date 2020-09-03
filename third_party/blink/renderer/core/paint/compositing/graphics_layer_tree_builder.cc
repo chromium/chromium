@@ -86,8 +86,7 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
 #endif
 
   bool recursion_blocked_by_display_lock =
-      layer.GetLayoutObject().PrePaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren);
+      layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
   // If the recursion is blocked meaningfully (i.e. we would have recursed,
   // since the layer has children), then we should inform the display-lock
   // context that we blocked a graphics layer recursion, so that we can ensure

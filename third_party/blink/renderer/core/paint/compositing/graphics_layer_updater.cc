@@ -156,8 +156,7 @@ void GraphicsLayerUpdater::UpdateRecursive(
   }
 
   PaintLayer* first_child =
-      layer.GetLayoutObject().PrePaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren)
+      layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock()
           ? nullptr
           : layer.FirstChild();
   UpdateContext child_context(context, layer);

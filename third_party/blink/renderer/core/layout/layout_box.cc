@@ -708,7 +708,7 @@ void LayoutBox::UpdateLayout() {
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   LayoutObject* child = SlowFirstChild();
@@ -725,7 +725,7 @@ void LayoutBox::UpdateLayout() {
   }
   UpdateAfterLayout();
   ClearNeedsLayout();
-  NotifyDisplayLockDidLayout(DisplayLockLifecycleTarget::kChildren);
+  NotifyDisplayLockDidLayoutChildren();
 }
 
 // ClientWidth and ClientHeight represent the interior of an object excluding
@@ -1881,9 +1881,8 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
       HitTestOverflowControl(result, hit_test_location, accumulated_offset))
     return true;
 
-  bool skip_children =
-      (result.GetHitTestRequest().GetStopNode() == this) ||
-      PaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren);
+  bool skip_children = (result.GetHitTestRequest().GetStopNode() == this) ||
+                       ChildPaintBlockedByDisplayLock();
   if (!skip_children && ShouldClipOverflow()) {
     // PaintLayer::HitTestContentsForFragments checked the fragments'
     // foreground rect for intersection if a layer is self painting,
@@ -2835,7 +2834,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   // layout bits. However, we can still use the cached result, since we will
   // re-layout when unlocking.
   bool child_needs_layout_unless_locked =
-      !LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren) &&
+      !ChildLayoutBlockedByDisplayLock() &&
       (PosChildNeedsLayout() || NormalChildNeedsLayout());
 
   const NGPhysicalBoxFragment& physical_fragment =
@@ -6007,8 +6006,7 @@ bool LayoutBox::ChildNeedsRelayoutForPagination(const LayoutBox& child) const {
 void LayoutBox::MarkChildForPaginationRelayoutIfNeeded(
     LayoutBox& child,
     SubtreeLayoutScope& layout_scope) {
-  DCHECK(!child.NeedsLayout() || child.LayoutBlockedByDisplayLock(
-                                     DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!child.NeedsLayout() || child.ChildLayoutBlockedByDisplayLock());
   LayoutState* layout_state = View()->GetLayoutState();
 
   if (layout_state->PaginationStateChanged() ||
@@ -6099,7 +6097,7 @@ void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,
 DISABLE_CFI_PERF
 void LayoutBox::AddLayoutOverflowFromChild(const LayoutBox& child,
                                            const LayoutSize& delta) {
-  DCHECK(!LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!ChildLayoutBlockedByDisplayLock());
 
   // Never allow flow threads to propagate overflow up to a parent.
   if (child.IsLayoutFlowThread())

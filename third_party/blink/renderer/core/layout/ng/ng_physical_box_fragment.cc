@@ -664,8 +664,7 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
 
   // If display-locked, we may not have any children.
   DCHECK(layout_object_);
-  if (layout_object_ && layout_object_->PaintBlockedByDisplayLock(
-                            DisplayLockLifecycleTarget::kChildren))
+  if (layout_object_ && layout_object_->ChildPaintBlockedByDisplayLock())
     return;
 
   if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {

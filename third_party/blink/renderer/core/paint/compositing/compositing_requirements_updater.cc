@@ -435,8 +435,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   //  * may need compositing requirements update for another reason (
   //    e.g. change of stacking order)
   bool recursion_blocked_by_display_lock =
-      layer->GetLayoutObject().PrePaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren);
+      layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
   bool skip_children =
       recursion_blocked_by_display_lock ||
       (!layer->DescendantHasDirectOrScrollingCompositingReason() &&

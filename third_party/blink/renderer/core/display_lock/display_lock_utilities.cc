@@ -194,10 +194,8 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
   auto ancestor_view = [node, include_self] {
     if (auto* element = DynamicTo<Element>(node)) {
       auto* context = element->GetDisplayLockContext();
-      if (context && (include_self || !context->ShouldLayout(
-                                          DisplayLockLifecycleTarget::kSelf))) {
+      if (context && include_self)
         return FlatTreeTraversal::InclusiveAncestorsOf(*node);
-      }
     }
     return FlatTreeTraversal::AncestorsOf(*node);
   }();
@@ -408,16 +406,6 @@ bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     return false;
   const Node* node = &source_node;
-
-  // Special case self-node checking.
-  auto* element = DynamicTo<Element>(node);
-  if (element && node->GetDocument()
-                     .GetDisplayLockDocumentState()
-                     .LockedDisplayLockCount()) {
-    auto* context = element->GetDisplayLockContext();
-    if (context && !context->ShouldLayout(DisplayLockLifecycleTarget::kSelf))
-      return true;
-  }
   const_cast<Node*>(node)->UpdateDistributionForFlatTreeTraversal();
 
   // Since we handled the self-check above, we need to do inclusive checks
@@ -541,7 +529,7 @@ Element* DisplayLockUtilities::LockedAncestorPreventingPrePaint(
     const LayoutObject& object) {
   return LockedAncestorPreventingUpdate(
       object, [](DisplayLockContext* context) {
-        return !context->ShouldPrePaint(DisplayLockLifecycleTarget::kChildren);
+        return !context->ShouldPrePaintChildren();
       });
 }
 
@@ -549,13 +537,13 @@ Element* DisplayLockUtilities::LockedAncestorPreventingLayout(
     const LayoutObject& object) {
   return LockedAncestorPreventingUpdate(
       object, [](DisplayLockContext* context) {
-        return !context->ShouldLayout(DisplayLockLifecycleTarget::kChildren);
+        return !context->ShouldLayoutChildren();
       });
 }
 
 Element* DisplayLockUtilities::LockedAncestorPreventingStyle(const Node& node) {
   return LockedAncestorPreventingUpdate(node, [](DisplayLockContext* context) {
-    return !context->ShouldStyle(DisplayLockLifecycleTarget::kChildren);
+    return !context->ShouldStyleChildren();
   });
 }
 

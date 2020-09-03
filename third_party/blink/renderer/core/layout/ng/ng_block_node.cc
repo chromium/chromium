@@ -583,9 +583,8 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::SimplifiedLayout(
   if (!box_->NeedsLayout())
     return previous_result;
 
-  DCHECK(
-      box_->NeedsSimplifiedLayoutOnly() ||
-      box_->LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(box_->NeedsSimplifiedLayoutOnly() ||
+         box_->ChildLayoutBlockedByDisplayLock());
 
   // Perform layout on ourselves using the previous constraint space.
   const NGConstraintSpace space(
@@ -695,8 +694,7 @@ void NGBlockNode::FinishLayout(
     bool has_inline_children = items || HasInlineChildren(block_flow);
 
     // Don't consider display-locked objects as having any children.
-    if (has_inline_children && box_->LayoutBlockedByDisplayLock(
-                                   DisplayLockLifecycleTarget::kChildren)) {
+    if (has_inline_children && box_->ChildLayoutBlockedByDisplayLock()) {
       has_inline_children = false;
       // It could be the case that our children are already clean at the time
       // the lock was acquired. This means that |box_| self dirty bits might be
@@ -1099,7 +1097,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
 
   // Position the children inside the box. We skip this if display-lock prevents
   // child layout.
-  if (!LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren)) {
+  if (!ChildLayoutBlockedByDisplayLock()) {
     if (UNLIKELY(flow_thread))
       PlaceChildrenInFlowThread(physical_fragment);
     else
@@ -1155,9 +1153,8 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   // We should notify the display lock that we've done layout on self, and if
   // it's not blocked, on children.
   if (auto* context = box_->GetDisplayLockContext()) {
-    context->DidLayout(DisplayLockLifecycleTarget::kSelf);
-    if (!LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
-      context->DidLayout(DisplayLockLifecycleTarget::kChildren);
+    if (!ChildLayoutBlockedByDisplayLock())
+      context->DidLayoutChildren();
   }
 }
 

@@ -261,8 +261,8 @@ class CORE_EXPORT NGLayoutInputNode {
     DCHECK(box_->GetDisplayLockContext());
     return *box_->GetDisplayLockContext();
   }
-  bool LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget target) const {
-    return box_->LayoutBlockedByDisplayLock(target);
+  bool ChildLayoutBlockedByDisplayLock() const {
+    return box_->ChildLayoutBlockedByDisplayLock();
   }
 
   // Returns the first NGPaintFragment for this node. When block fragmentation

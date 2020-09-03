@@ -92,7 +92,6 @@ class V0CustomElementDefinition;
 enum class CSSPropertyID;
 enum class CSSValueID;
 enum class DisplayLockActivationReason;
-enum class DisplayLockLifecycleTarget;
 enum class DocumentUpdateReason;
 
 struct FocusParams;
@@ -916,7 +915,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   DisplayLockContext* GetDisplayLockContext() const;
   DisplayLockContext& EnsureDisplayLockContext();
 
-  bool StyleRecalcBlockedByDisplayLock(DisplayLockLifecycleTarget) const;
+  bool ChildStyleRecalcBlockedByDisplayLock() const;
 
   // Activates all activatable (for a given reason) locked ancestors for this
   // element. Return true if we activated at least one previously locked

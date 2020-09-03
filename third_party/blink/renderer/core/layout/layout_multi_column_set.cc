@@ -536,7 +536,7 @@ void LayoutMultiColumnSet::ComputeVisualOverflow(
 }
 
 void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   // It's useless to calculate overflow if we haven't determined the page
@@ -553,7 +553,7 @@ void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
 }
 
 void LayoutMultiColumnSet::AddLayoutOverflowFromChildren() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   // It's useless to calculate overflow if we haven't determined the page

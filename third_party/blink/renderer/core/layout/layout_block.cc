@@ -450,7 +450,7 @@ void LayoutBlock::AddVisualOverflowFromChildren() {
   // It is an error to call this function on a LayoutBlock that it itself inside
   // a display-locked subtree.
   DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-  if (PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildPrePaintBlockedByDisplayLock())
     return;
 
   DCHECK(!NeedsLayout());
@@ -462,7 +462,7 @@ void LayoutBlock::AddVisualOverflowFromChildren() {
 }
 
 void LayoutBlock::AddLayoutOverflowFromChildren() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   if (ChildrenInline())
@@ -569,7 +569,7 @@ void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
 }
 
 void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
@@ -677,7 +677,7 @@ bool LayoutBlock::SimplifiedLayout() {
         return false;
     }
 
-    if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+    if (ChildLayoutBlockedByDisplayLock())
       return false;
 
     TextAutosizer::LayoutScope text_autosizer_layout_scope(this);
@@ -813,7 +813,7 @@ static bool NeedsLayoutDueToStaticPosition(LayoutBox* child) {
 
 void LayoutBlock::LayoutPositionedObjects(bool relayout_children,
                                           PositionedLayoutBehavior info) {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
@@ -2151,7 +2151,7 @@ void LayoutBlock::RecalcChildVisualOverflow() {
   // It is an error to call this function on a LayoutBlock that it itself inside
   // a display-locked subtree.
   DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-  if (PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildPrePaintBlockedByDisplayLock())
     return;
 
   if (ChildrenInline()) {
@@ -2267,7 +2267,7 @@ bool LayoutBlock::TryLayoutDoingPositionedMovementOnly() {
 
 #if DCHECK_IS_ON()
 void LayoutBlock::CheckPositionedObjectsNeedLayout() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   if (TrackedLayoutBoxListHashSet* positioned_descendant_set =
@@ -2279,8 +2279,7 @@ void LayoutBlock::CheckPositionedObjectsNeedLayout() {
          it != end; ++it) {
       LayoutBox* curr_box = *it;
       DCHECK(!curr_box->SelfNeedsLayout());
-      DCHECK(curr_box->LayoutBlockedByDisplayLock(
-                 DisplayLockLifecycleTarget::kChildren) ||
+      DCHECK(curr_box->ChildLayoutBlockedByDisplayLock() ||
              !curr_box->NeedsLayout());
     }
   }

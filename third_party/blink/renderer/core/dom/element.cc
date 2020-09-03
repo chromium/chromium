@@ -182,33 +182,27 @@ class DisplayLockStyleScope {
   explicit DisplayLockStyleScope(Element* element) : element_(element) {
     // Note that we don't store context as a member of this scope, since it may
     // get created as part of element self style recalc.
-    auto* context = element->GetDisplayLockContext();
-    should_update_self_ =
-        !context || context->ShouldStyle(DisplayLockLifecycleTarget::kSelf);
   }
 
   ~DisplayLockStyleScope() {
     if (auto* context = element_->GetDisplayLockContext()) {
       if (did_update_children_)
-        context->DidStyle(DisplayLockLifecycleTarget::kChildren);
+        context->DidStyleChildren();
     }
   }
 
-  bool ShouldUpdateSelfStyle() const { return should_update_self_; }
   bool ShouldUpdateChildStyle() const {
     // We can't calculate this on construction time, because the element's lock
     // state may changes after self-style calculation ShouldStyle(children).
     auto* context = element_->GetDisplayLockContext();
-    return !context ||
-           context->ShouldStyle(DisplayLockLifecycleTarget::kChildren);
+    return !context || context->ShouldStyleChildren();
   }
   void DidUpdateChildStyle() { did_update_children_ = true; }
   // Returns true if the element was force unlocked due to missing requirements.
   bool DidUpdateSelfStyle() {
-    DCHECK(should_update_self_);
     if (auto* context = element_->GetDisplayLockContext()) {
       bool was_locked = context->IsLocked();
-      context->DidStyle(DisplayLockLifecycleTarget::kSelf);
+      context->DidStyleSelf();
       return was_locked && !context->IsLocked();
     }
     return false;
@@ -232,7 +226,6 @@ class DisplayLockStyleScope {
 
  private:
   Element* element_;
-  bool should_update_self_ = false;
   bool did_update_children_ = false;
 };
 
@@ -2838,16 +2831,6 @@ void Element::RecalcStyle(const StyleRecalcChange change) {
   DCHECK(!GetDocument().Lifecycle().InDetach());
 
   DisplayLockStyleScope display_lock_style_scope(this);
-  if (!display_lock_style_scope.ShouldUpdateSelfStyle()) {
-    display_lock_style_scope.NotifyUpdateWasBlocked(
-        change.RecalcChildren()
-            ? (change.RecalcDescendants()
-                   ? DisplayLockContext::kStyleUpdateDescendants
-                   : DisplayLockContext::kStyleUpdateChildren)
-            : DisplayLockContext::kStyleUpdateSelf);
-    return;
-  }
-
   if (HasCustomStyleCallbacks())
     WillRecalcStyle(change);
 
@@ -3124,7 +3107,6 @@ StyleRecalcChange Element::RecalcOwnStyle(const StyleRecalcChange change) {
 void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
   DCHECK(InActiveDocument());
   DCHECK(parentNode());
-  DCHECK(!StyleRecalcBlockedByDisplayLock(DisplayLockLifecycleTarget::kSelf));
 
   if (NeedsReattachLayoutTree()) {
     AttachContext reattach_context;
@@ -3135,8 +3117,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     ReattachLayoutTree(reattach_context);
     whitespace_attacher.DidReattachElement(this,
                                            reattach_context.previous_in_flow);
-  } else if (!StyleRecalcBlockedByDisplayLock(
-                 DisplayLockLifecycleTarget::kChildren)) {
+  } else if (!ChildStyleRecalcBlockedByDisplayLock()) {
     // TODO(crbug.com/972752): Make the condition above a DCHECK instead when
     // style recalc and dirty bit propagation uses flat-tree traversal.
     // We create a local WhitespaceAttacher when rebuilding children of an
@@ -3170,13 +3151,10 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     ClearChildNeedsReattachLayoutTree();
   }
   DCHECK(!NeedsStyleRecalc());
-  DCHECK(
-      !ChildNeedsStyleRecalc() ||
-      StyleRecalcBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!ChildNeedsStyleRecalc() || ChildStyleRecalcBlockedByDisplayLock());
   DCHECK(!NeedsReattachLayoutTree());
-  DCHECK(
-      !ChildNeedsReattachLayoutTree() ||
-      StyleRecalcBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!ChildNeedsReattachLayoutTree() ||
+         ChildStyleRecalcBlockedByDisplayLock());
 }
 
 void Element::RebuildShadowRootLayoutTree(
@@ -6217,10 +6195,9 @@ const NamesMap* Element::PartNamesMap() const {
   return HasRareData() ? GetElementRareData()->PartNamesMap() : nullptr;
 }
 
-bool Element::StyleRecalcBlockedByDisplayLock(
-    DisplayLockLifecycleTarget target) const {
+bool Element::ChildStyleRecalcBlockedByDisplayLock() const {
   auto* context = GetDisplayLockContext();
-  return context && !context->ShouldStyle(target);
+  return context && !context->ShouldStyleChildren();
 }
 
 void Element::SetHovered(bool hovered) {

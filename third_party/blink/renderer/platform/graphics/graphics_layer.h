@@ -335,8 +335,7 @@ void ForAllActiveGraphicsLayers(
     return;
   }
 
-  if (layer.Client().PaintBlockedByDisplayLockIncludingAncestors(
-          DisplayLockContextLifecycleTarget::kSelf)) {
+  if (layer.Client().PaintBlockedByDisplayLockIncludingAncestors()) {
     // If we skip the layer, then we need to ensure to notify the
     // display-lock, since we need to force recollect the layers when we commit.
     layer.Client().NotifyDisplayLockNeedsGraphicsLayerCollection();

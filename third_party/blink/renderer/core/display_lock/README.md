@@ -23,13 +23,9 @@ Additionally, the element's containment is also adjusted in style adjuster in
 response to the actual state of the DisplayLockContext.
 
 In lifecycle phases, such as style, layout, and paint, code checks
-LayoutObject::LayoutBlockedByDisplayLock and similar functions in order to
-determine whether processing of work should happen. The function takes a
-DisplayLockLifecycleTarget enum, with either kSelf or kChildren values in order
-to identify whether the element itself should layout.
-
-Note that due to the evolution of the feature, kChildren is the typical value to
-use.
+LayoutObject::ChildLayoutBlockedByDisplayLock and similar functions in order to
+determine whether processing of work should happen. Note that the "self"
+rendering always occurs, so the checks only exist for the "child" rendering.
 
 Note that the LayoutObject checks delegate the decision to the
 DisplayLockContext and can be thought of as helper functions.

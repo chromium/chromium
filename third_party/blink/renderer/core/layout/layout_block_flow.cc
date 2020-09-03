@@ -441,9 +441,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
   DCHECK(NeedsLayout());
   DCHECK(IsInlineBlockOrInlineTable() || !IsInline());
 
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kSelf))
-    return;
-
   if (RuntimeEnabledFeatures::TrackLayoutPassesPerBlockEnabled())
     IncrementLayoutPassCount();
 
@@ -539,7 +536,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 
   ClearNeedsLayout();
   is_self_collapsing_ = CheckIfIsSelfCollapsingBlock();
-  NotifyDisplayLockDidLayout(DisplayLockLifecycleTarget::kSelf);
 }
 
 DISABLE_CFI_PERF
@@ -603,7 +599,7 @@ void LayoutBlockFlow::LayoutChildren(bool relayout_children,
                                      SubtreeLayoutScope& layout_scope) {
   ResetLayout();
 
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+  if (ChildLayoutBlockedByDisplayLock())
     return;
 
   LayoutUnit before_edge = BorderBefore() + PaddingBefore();
@@ -627,7 +623,7 @@ void LayoutBlockFlow::LayoutChildren(bool relayout_children,
       CreatesNewFormattingContext())
     SetLogicalHeight(LowestFloatLogicalBottom() + after_edge);
 
-  NotifyDisplayLockDidLayout(DisplayLockLifecycleTarget::kChildren);
+  NotifyDisplayLockDidLayoutChildren();
 }
 
 void LayoutBlockFlow::AddOverhangingFloatsFromChildren(
@@ -809,9 +805,7 @@ bool LayoutBlockFlow::PositionAndLayoutOnceIfNeeded(
   auto child_needs_layout = [&child] {
     if (!child.NeedsLayout())
       return false;
-    return child.SelfNeedsLayout() ||
-           !child.LayoutBlockedByDisplayLock(
-               DisplayLockLifecycleTarget::kChildren);
+    return child.SelfNeedsLayout() || !child.ChildLayoutBlockedByDisplayLock();
   };
 
   if (!child_needs_layout()) {
@@ -2383,8 +2377,7 @@ EBreakBetween LayoutBlockFlow::BreakAfter() const {
 }
 
 void LayoutBlockFlow::AddVisualOverflowFromFloats() {
-  if (PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren) ||
-      !floating_objects_)
+  if (ChildPrePaintBlockedByDisplayLock() || !floating_objects_)
     return;
 
   DCHECK(!NeedsLayout());
@@ -2402,7 +2395,7 @@ void LayoutBlockFlow::AddVisualOverflowFromFloats() {
 void LayoutBlockFlow::AddVisualOverflowFromFloats(
     const NGPhysicalContainerFragment& fragment) {
   DCHECK(!NeedsLayout());
-  DCHECK(!PrePaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  DCHECK(!ChildPrePaintBlockedByDisplayLock());
   DCHECK(fragment.HasFloatingDescendantsForPaint());
 
   for (const NGLink& child : fragment.PostLayoutChildren()) {
@@ -2424,8 +2417,7 @@ void LayoutBlockFlow::AddVisualOverflowFromFloats(
 }
 
 void LayoutBlockFlow::AddLayoutOverflowFromFloats() {
-  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren) ||
-      !floating_objects_)
+  if (ChildLayoutBlockedByDisplayLock() || !floating_objects_)
     return;
 
   for (auto& floating_object : floating_objects_->Set()) {
@@ -4848,8 +4840,7 @@ void LayoutBlockFlow::ClearOffsetMappingIfNeeded() {
 const NGOffsetMapping* LayoutBlockFlow::GetOffsetMapping() const {
   DCHECK(!IsLayoutNGObject());
   CHECK(!SelfNeedsLayout());
-  CHECK(!NeedsLayout() ||
-        LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren));
+  CHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
   return rare_data_ ? rare_data_->offset_mapping_.get() : nullptr;
 }
 

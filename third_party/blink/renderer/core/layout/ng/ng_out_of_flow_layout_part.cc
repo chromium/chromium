@@ -143,8 +143,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
 
   // If the container is display-locked, then we skip the layout of descendants,
   // so we can early out immediately.
-  if (current_container->LayoutBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren))
+  if (current_container->ChildLayoutBlockedByDisplayLock())
     return;
 
   Vector<NGLogicalOutOfFlowPositionedNode> candidates;

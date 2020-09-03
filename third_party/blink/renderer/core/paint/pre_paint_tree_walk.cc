@@ -419,8 +419,7 @@ bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
     const LayoutObject& object) {
   return object.NeedsPaintPropertyUpdate() ||
          object.ShouldCheckGeometryForPaintInvalidation() ||
-         (!object.PrePaintBlockedByDisplayLock(
-              DisplayLockLifecycleTarget::kChildren) &&
+         (!object.ChildPrePaintBlockedByDisplayLock() &&
           (object.DescendantNeedsPaintPropertyUpdate() ||
            object.DescendantShouldCheckGeometryForPaintInvalidation()));
 }
@@ -866,11 +865,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
 
   WalkInternal(object, iterator, context());
 
-  if (is_last_fragment)
-    object.NotifyDisplayLockDidPrePaint(DisplayLockLifecycleTarget::kSelf);
-
-  bool child_walk_blocked = object.PrePaintBlockedByDisplayLock(
-      DisplayLockLifecycleTarget::kChildren);
+  bool child_walk_blocked = object.ChildPrePaintBlockedByDisplayLock();
   // If we need a subtree walk due to context flags, we need to store that
   // information on the display lock, since subsequent walks might not set the
   // same bits on the context.
@@ -916,8 +911,6 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
         }
       }
     }
-
-    object.NotifyDisplayLockDidPrePaint(DisplayLockLifecycleTarget::kChildren);
   }
   if (is_last_fragment)
     object.GetMutableForPainting().ClearPaintFlags();

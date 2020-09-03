@@ -632,10 +632,8 @@ sk_sp<PaintRecord> GraphicsLayer::CapturePaintRecord() const {
   if (client_.IsUnderSVGHiddenContainer())
     return sk_sp<PaintRecord>(new PaintRecord);
 
-  if (client_.PaintBlockedByDisplayLockIncludingAncestors(
-          DisplayLockContextLifecycleTarget::kSelf)) {
+  if (client_.PaintBlockedByDisplayLockIncludingAncestors())
     return sk_sp<PaintRecord>(new PaintRecord);
-  }
 
   FloatRect bounds((IntRect(IntPoint(), IntSize(Size()))));
   GraphicsContext graphics_context(GetPaintController());

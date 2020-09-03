@@ -38,8 +38,7 @@ template <typename Base>
 void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (UNLIKELY(Base::NeedsLayout() &&
-               !Base::LayoutBlockedByDisplayLock(
-                   DisplayLockLifecycleTarget::kChildren))) {
+               !Base::ChildLayoutBlockedByDisplayLock())) {
     NOTREACHED();
     return;
   }

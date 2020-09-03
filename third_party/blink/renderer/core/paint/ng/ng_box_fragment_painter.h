@@ -344,8 +344,7 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
       // TODO(kojii): To be investigated if this correct or should be fixed.
       if (!box.Children().empty()) {
         if (!box.GetLayoutObject() ||
-            !box.GetLayoutObject()->PaintBlockedByDisplayLock(
-                DisplayLockLifecycleTarget::kChildren)) {
+            !box.GetLayoutObject()->ChildPaintBlockedByDisplayLock()) {
           DCHECK(paint_fragment);
         }
       }

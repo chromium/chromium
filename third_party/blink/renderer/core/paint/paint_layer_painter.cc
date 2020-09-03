@@ -316,17 +316,6 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   if (paint_layer_.GetLayoutObject().GetFrameView()->ShouldThrottleRendering())
     return result;
 
-  // If we're blocked from painting by the display lock, return early.
-  if (paint_layer_.GetLayoutObject().PaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kSelf)) {
-    return result;
-  }
-
-  // TODO(vmpstr): This should be called after paint succeeds, but due to
-  // multiple early outs this is more convenient. We should use RAII here.
-  paint_layer_.GetLayoutObject().NotifyDisplayLockDidPaint(
-      DisplayLockLifecycleTarget::kSelf);
-
   // A paint layer should always have LocalBorderBoxProperties when it's ready
   // for paint.
   if (!paint_layer_.GetLayoutObject()
@@ -614,10 +603,8 @@ PaintResult PaintLayerPainter::PaintChildren(
   if (!paint_layer_.HasSelfPaintingLayerDescendant())
     return result;
 
-  if (paint_layer_.GetLayoutObject().PaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren)) {
+  if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return result;
-  }
 
   PaintLayerPaintOrderIterator iterator(paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
@@ -710,10 +697,9 @@ void PaintLayerPainter::PaintFragmentWithPhase(
                        fragment.fragment_data
                            ? fragment.fragment_data->LogicalTopInFlowThread()
                            : LayoutUnit());
-  if (UNLIKELY(paint_layer_.GetLayoutObject().PaintBlockedByDisplayLock(
-          DisplayLockLifecycleTarget::kChildren))) {
+  if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
     paint_info.SetDescendantPaintingBlocked(true);
-  }
+
   if (fragment.physical_fragment)
     NGBoxFragmentPainter(*fragment.physical_fragment).Paint(paint_info);
   else

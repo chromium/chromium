@@ -194,16 +194,9 @@ TEST_F(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   LockElement(*element, false);
 
   // Finished acquiring the lock.
-  // Note that because the element is locked after append, the "self" phase for
-  // style should still happen.
-  EXPECT_TRUE(element->GetDisplayLockContext()->ShouldStyle(
-      DisplayLockLifecycleTarget::kSelf));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyle(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayout(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaint(
-      DisplayLockLifecycleTarget::kChildren));
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyleChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayoutChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaintChildren());
   EXPECT_EQ(
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount(), 1);
 
@@ -690,12 +683,9 @@ TEST_F(DisplayLockContextTest, CallUpdateStyleAndLayoutAfterChange) {
 
   // Sanity checks to ensure the element is locked.
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyle(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayout(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaint(
-      DisplayLockLifecycleTarget::kChildren));
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyleChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayoutChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaintChildren());
   EXPECT_EQ(
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount(), 1);
   EXPECT_EQ(GetDocument()
@@ -748,8 +738,7 @@ TEST_F(DisplayLockContextTest, CallUpdateStyleAndLayoutAfterChange) {
   // Simulating style recalc happening, will mark for reattachment.
   element->ClearChildNeedsStyleRecalc();
   element->firstChild()->ClearNeedsStyleRecalc();
-  element->GetDisplayLockContext()->DidStyle(
-      DisplayLockLifecycleTarget::kChildren);
+  element->GetDisplayLockContext()->DidStyleChildren();
 
   EXPECT_FALSE(element->ChildNeedsStyleRecalc());
   EXPECT_FALSE(element->NeedsReattachLayoutTree());
@@ -778,12 +767,9 @@ TEST_F(DisplayLockContextTest, CallUpdateStyleAndLayoutAfterChangeCSS) {
   auto* inner = GetDocument().getElementById("inner");
 
   // Sanity checks to ensure the element is locked.
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyle(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayout(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaint(
-      DisplayLockLifecycleTarget::kChildren));
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyleChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayoutChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaintChildren());
   EXPECT_EQ(
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount(), 1);
   EXPECT_EQ(GetDocument()
@@ -851,12 +837,9 @@ TEST_F(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   LockElement(*element, false);
 
   // Sanity checks to ensure the element is locked.
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyle(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayout(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaint(
-      DisplayLockLifecycleTarget::kChildren));
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyleChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayoutChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaintChildren());
   EXPECT_EQ(
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount(), 1);
   EXPECT_EQ(GetDocument()
@@ -877,12 +860,9 @@ TEST_F(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   // Now commit the lock and ensure we can focus the input
   CommitElement(*element);
 
-  EXPECT_TRUE(element->GetDisplayLockContext()->ShouldStyle(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_TRUE(element->GetDisplayLockContext()->ShouldLayout(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_TRUE(element->GetDisplayLockContext()->ShouldPaint(
-      DisplayLockLifecycleTarget::kChildren));
+  EXPECT_TRUE(element->GetDisplayLockContext()->ShouldStyleChildren());
+  EXPECT_TRUE(element->GetDisplayLockContext()->ShouldLayoutChildren());
+  EXPECT_TRUE(element->GetDisplayLockContext()->ShouldPaintChildren());
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -1035,12 +1015,9 @@ TEST_F(DisplayLockContextTest,
   LockElement(*element, false);
 
   // Sanity checks to ensure the element is locked.
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyle(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayout(
-      DisplayLockLifecycleTarget::kChildren));
-  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaint(
-      DisplayLockLifecycleTarget::kChildren));
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldStyleChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldLayoutChildren());
+  EXPECT_FALSE(element->GetDisplayLockContext()->ShouldPaintChildren());
   EXPECT_EQ(
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount(), 1);
   EXPECT_EQ(GetDocument()
