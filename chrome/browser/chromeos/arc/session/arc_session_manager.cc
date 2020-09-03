@@ -531,7 +531,6 @@ void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
     DCHECK_EQ(state_, State::ACTIVE);
     // If ARC is being restarted, here do nothing, and just wait for its
     // next run.
-    VLOG(1) << "ARC session is stopped, but being restarted: " << reason;
     return;
   }
 
@@ -1118,7 +1117,7 @@ void ArcSessionManager::RequestArcDataRemoval() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
   DCHECK(data_remover_);
-  VLOG(1) << "Removing user ARC data.";
+  VLOG(1) << "Scheduling ARC data removal.";
 
   // TODO(hidehiko): DCHECK the previous state. This is called for four cases;
   // 1) Supporting managed user initial disabled case (Please see also

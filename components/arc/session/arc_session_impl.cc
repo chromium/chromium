@@ -427,6 +427,8 @@ void ArcSessionImpl::RequestUpgrade(UpgradeParams params) {
   upgrade_requested_ = true;
   upgrade_params_ = std::move(params);
 
+  VLOG(1) << "Upgrade requested. state: " << state_;
+
   switch (state_) {
     case State::NOT_STARTED:
       NOTREACHED();
@@ -434,7 +436,6 @@ void ArcSessionImpl::RequestUpgrade(UpgradeParams params) {
     case State::WAITING_FOR_LCD_DENSITY:
     case State::WAITING_FOR_NUM_CORES:
     case State::STARTING_MINI_INSTANCE:
-      VLOG(2) << "Requested to upgrade a starting ARC mini instance";
       // OnMiniInstanceStarted() will restart a full instance.
       break;
     case State::RUNNING_MINI_INSTANCE:

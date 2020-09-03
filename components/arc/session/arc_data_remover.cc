@@ -40,7 +40,7 @@ bool ArcDataRemover::IsScheduledForTesting() const {
 void ArcDataRemover::Run(RunCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!pref_.GetValue()) {
-    // Data removal is not scheduled.
+    VLOG(1) << "Data removal is not scheduled, skip.";
     std::move(callback).Run(base::nullopt);
     return;
   }
