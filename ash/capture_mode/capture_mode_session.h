@@ -38,9 +38,14 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   CaptureModeSession& operator=(const CaptureModeSession&) = delete;
   ~CaptureModeSession() override;
 
+  aura::Window* current_root() const { return current_root_; }
   CaptureModeBarView* capture_mode_bar_view() const {
     return capture_mode_bar_view_;
   }
+
+  // Gets the current window selected for |kWindow| capture source. Returns
+  // nullptr if no window is available for selection.
+  aura::Window* GetSelectedWindow() const;
 
   // Called when either the capture source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
@@ -57,7 +62,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnTouchEvent(ui::TouchEvent* event) override;
 
  private:
-  // Gets the current window selected for |kWindow| capture source.
+  // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
 
   // Ensures that the bar widget is on top of everything, and the overlay (which

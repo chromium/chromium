@@ -27,6 +27,11 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Shows the screenshot or screen recording item in the screen capture folder.
   virtual void ShowScreenCaptureItemInFolder(
       const base::FilePath& file_path) = 0;
+
+  // Returns true if the current user is using the 24-hour format (i.e. 14:00
+  // vs. 2:00 PM). This is used to build the file name of the captured image or
+  // video.
+  virtual bool Uses24HourFormat() const = 0;
 };
 
 }  // namespace ash

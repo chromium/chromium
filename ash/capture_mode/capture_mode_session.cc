@@ -88,6 +88,15 @@ CaptureModeSession::~CaptureModeSession() {
   SetMouseWarpEnabled(old_mouse_warp_status_);
 }
 
+aura::Window* CaptureModeSession::GetSelectedWindow() const {
+  // Note that the capture bar widget is activatable, so we can't use
+  // window_util::GetActiveWindow(). Instead, we use the MRU window tracker and
+  // get the top-most window if any.
+  auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  return mru_windows.empty() ? nullptr : mru_windows[0];
+}
+
 void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   capture_mode_bar_view_->OnCaptureSourceChanged(new_source);
   SetMouseWarpEnabled(new_source != CaptureModeSource::kRegion);
@@ -136,14 +145,8 @@ void CaptureModeSession::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
-  // Note that the capture bar widget is activatable, so we can't use
-  // window_util::GetActiveWindow(). Instead, we use the MRU window tracker and
-  // get the top-most window if any.
-  auto mru_windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  if (!mru_windows.empty())
-    return mru_windows[0]->bounds();
-  return gfx::Rect();
+  auto* window = GetSelectedWindow();
+  return window ? window->bounds() : gfx::Rect();
 }
 
 void CaptureModeSession::RefreshStackingOrder(aura::Window* parent_container) {
