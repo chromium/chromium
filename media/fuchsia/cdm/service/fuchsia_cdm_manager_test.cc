@@ -19,6 +19,7 @@
 #include "media/fuchsia/cdm/service/mock_provision_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace media {
@@ -203,5 +204,70 @@ TEST_F(FuchsiaCdmManagerTest, RecreateAfterDisconnect) {
   EXPECT_EQ(mock_key_system(kKeySystem).bindings().size(), 1u);
 }
 
+TEST_F(FuchsiaCdmManagerTest, SameOriginShareDataStore) {
+  constexpr char kKeySystem[] = "com.key_system.a";
+  std::unique_ptr<FuchsiaCdmManager> cdm_manager =
+      CreateFuchsiaCdmManager({kKeySystem});
+
+  base::RunLoop run_loop;
+  drm::ContentDecryptionModulePtr cdm1, cdm2;
+  cdm2.set_error_handler([&](zx_status_t) { run_loop.Quit(); });
+
+  EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(1u), _, _))
+      .WillOnce(
+          WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
+            callback(fit::ok());
+          })));
+  EXPECT_CALL(mock_key_system(kKeySystem),
+              CreateContentDecryptionModule2(Eq(1u), _))
+      .Times(2);
+
+  url::Origin origin = url::Origin::Create(GURL("http://origin_a.com"));
+  cdm_manager->CreateAndProvision(
+      kKeySystem, origin, base::BindRepeating(&CreateMockProvisionFetcher),
+      cdm1.NewRequest());
+  cdm_manager->CreateAndProvision(
+      kKeySystem, origin, base::BindRepeating(&CreateMockProvisionFetcher),
+      cdm2.NewRequest());
+
+  run_loop.Run();
+}
+
+TEST_F(FuchsiaCdmManagerTest, DifferentOriginDoNotShareDataStore) {
+  constexpr char kKeySystem[] = "com.key_system.a";
+  std::unique_ptr<FuchsiaCdmManager> cdm_manager =
+      CreateFuchsiaCdmManager({kKeySystem});
+
+  base::RunLoop run_loop;
+  drm::ContentDecryptionModulePtr cdm1, cdm2;
+  cdm2.set_error_handler([&](zx_status_t) { run_loop.Quit(); });
+  EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(1u), _, _))
+      .WillOnce(
+          WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
+            callback(fit::ok());
+          })));
+  EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(2u), _, _))
+      .WillOnce(
+          WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
+            callback(fit::ok());
+          })));
+  EXPECT_CALL(mock_key_system(kKeySystem),
+              CreateContentDecryptionModule2(Eq(1u), _))
+      .Times(1);
+  EXPECT_CALL(mock_key_system(kKeySystem),
+              CreateContentDecryptionModule2(Eq(2u), _))
+      .Times(1);
+
+  url::Origin origin_a = url::Origin::Create(GURL("http://origin_a.com"));
+  url::Origin origin_b = url::Origin::Create(GURL("http://origin_b.com"));
+  cdm_manager->CreateAndProvision(
+      kKeySystem, origin_a, base::BindRepeating(&CreateMockProvisionFetcher),
+      cdm1.NewRequest());
+  cdm_manager->CreateAndProvision(
+      kKeySystem, origin_b, base::BindRepeating(&CreateMockProvisionFetcher),
+      cdm2.NewRequest());
+
+  run_loop.Run();
+}
 }  // namespace
 }  // namespace media

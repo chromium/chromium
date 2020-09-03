@@ -180,7 +180,7 @@ void FuchsiaCdmManager::CreateAndProvision(
     return;
   }
 
-  base::FilePath storage_path = GetStoragePath(key_system);
+  base::FilePath storage_path = GetStoragePath(key_system, origin);
   base::File::Error error;
   bool success = base::CreateDirectoryAndGetError(storage_path, &error);
   if (!success) {
@@ -235,12 +235,10 @@ FuchsiaCdmManager::KeySystemClient* FuchsiaCdmManager::CreateKeySystemClient(
   return key_system_client_ptr;
 }
 
-base::FilePath FuchsiaCdmManager::GetStoragePath(
-    const std::string& key_system) {
-  // TODO(crbug.com/991723): We should be using a data store for each origin to
-  // satisfy EME isolation requirements, but for now just use a single data
-  // store for the KeySystem.
-  return cdm_data_path_.Append(HexEncodeHash(key_system));
+base::FilePath FuchsiaCdmManager::GetStoragePath(const std::string& key_system,
+                                                 const url::Origin& origin) {
+  return cdm_data_path_.Append(HexEncodeHash(origin.Serialize()))
+      .Append(HexEncodeHash(key_system));
 }
 
 void FuchsiaCdmManager::OnKeySystemClientError(

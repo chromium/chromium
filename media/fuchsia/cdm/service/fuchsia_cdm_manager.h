@@ -61,7 +61,8 @@ class FuchsiaCdmManager {
   KeySystemClient* GetOrCreateKeySystemClient(
       const std::string& key_system_name);
   KeySystemClient* CreateKeySystemClient(const std::string& key_system_name);
-  base::FilePath GetStoragePath(const std::string& key_system_name);
+  base::FilePath GetStoragePath(const std::string& key_system_name,
+                                const url::Origin& origin);
   void OnKeySystemClientError(const std::string& key_system_name);
 
   // A map of callbacks to create KeySystem channels indexed by their EME name.
