@@ -569,6 +569,8 @@ std::string AccessibilitySection::GetSectionPath() const {
 void AccessibilitySection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kA11yQuickSettings);
+  generator->RegisterTopLevelSetting(
+      mojom::Setting::kGetImageDescriptionsFromGoogle);
 
   // Manage accessibility.
   generator->RegisterTopLevelSubpage(
@@ -594,7 +596,6 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kTabletNavigationButtons,
       mojom::Setting::kMonoAudio,
       mojom::Setting::kStartupSound,
-      mojom::Setting::kGetImageDescriptionsFromGoogle,
       mojom::Setting::kLiveCaptions,
       mojom::Setting::kEnableCursorColor,
   };
