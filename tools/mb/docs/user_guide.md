@@ -224,7 +224,7 @@ to a file called `runtime_deps` in the build directory, and pass that to
 
 Once GN has computed the lists of runtime dependencies, MB will then
 look up the command line for each target (currently this is hard-coded
-in [mb.py](https://code.google.com/p/chromium/codesearch?q=mb.py#chromium/src/tools/mb/mb.py&q=mb.py%20GetIsolateCommand&sq=package:chromium&type=cs)), and write out the
+in [mb.py](https://source.chromium.org/chromium/chromium/src/+/master:tools/mb/mb.py;l=1370)), and write out the
 matching `.isolate` and `.isolated.gen.json` files.
 
 ## The mb_config.pyl config file
