@@ -46,8 +46,8 @@ group("vr_perf_tests") {
   }
 
   if (is_win) {
-    if (enable_openvr) {
-      deps += [ "//device/vr:openvr_mock" ]
+    if (enable_openxr) {
+      deps += [ "//device/vr:openxr_mock" ]
     }
   }
 }

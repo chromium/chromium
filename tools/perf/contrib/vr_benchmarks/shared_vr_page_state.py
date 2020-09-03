@@ -11,9 +11,7 @@ from pylib.utils import shared_preference_utils
 from telemetry.core import android_platform
 from telemetry.core import util
 from telemetry.page import shared_page_state
-from contrib.vr_benchmarks.desktop_runtimes import oculus_runtimes
-from contrib.vr_benchmarks.desktop_runtimes import openvr_runtimes
-from contrib.vr_benchmarks.desktop_runtimes import wmr_runtimes
+from contrib.vr_benchmarks.desktop_runtimes import openxr_runtimes
 
 
 CARDBOARD_PATH = os.path.join('chrome', 'android', 'shared_preference_files',
@@ -214,18 +212,10 @@ class WindowsSharedVrPageState(_SharedVrPageState):
   # to be installed, i.e. exactly how a real user would use VR. Mock runtimes
   # avoid this, but can't necessarily be implemented.
   DESKTOP_RUNTIMES = {
-    'oculus': {
-      MOCK_RUNTIME: oculus_runtimes.OculusRuntimeMock,
-      REAL_RUNTIME: oculus_runtimes.OculusRuntimeReal,
-    },
-    'openvr': {
-      MOCK_RUNTIME: openvr_runtimes.OpenVRRuntimeMock,
-      REAL_RUNTIME: openvr_runtimes.OpenVRRuntimeReal
-    },
-    'wmr': {
-      MOCK_RUNTIME: wmr_runtimes.WMRRuntimeMock,
-      REAL_RUNTIME: wmr_runtimes.WMRRuntimeReal,
-    },
+      'openxr': {
+          MOCK_RUNTIME: openxr_runtimes.OpenXRRuntimeMock,
+          REAL_RUNTIME: openxr_runtimes.OpenXRRuntimeReal,
+      },
   }
 
   def __init__(self, test, finder_options, story_set, possible_browser):

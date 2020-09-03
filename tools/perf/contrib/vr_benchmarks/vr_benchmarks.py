@@ -76,7 +76,7 @@ class _BaseVRBenchmark(perf_benchmark.PerfBenchmark):
              'benchmark to run without issues.')
     parser.add_option(
         '--desktop-runtime',
-        default='openvr',
+        default='openxr',
         choices=vr_state.WindowsSharedVrPageState.DESKTOP_RUNTIMES.keys(),
         help='Which VR runtime to use on Windows. Defaults to %default')
     parser.add_option(
