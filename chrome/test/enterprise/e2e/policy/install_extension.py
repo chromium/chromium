@@ -6,6 +6,7 @@ import time
 
 from absl import app, flags
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from pywinauto.application import Application
 from pywinauto.findwindows import ElementNotFoundError
 
@@ -22,20 +23,21 @@ def main(argv):
   #Always set useAutomationExtension as false to avoid failing launch Chrome
   #https://bugs.chromium.org/p/chromedriver/issues/detail?id=2930
   chrome_options.add_experimental_option("useAutomationExtension", False)
-
   driver = test_util.create_chrome_webdriver(chrome_options=chrome_options)
   app = Application(backend="uia")
   app.connect(title_re='.*Chrome|.*Chromium')
-
   driver.get(FLAGS.url)
   time.sleep(5)
-  driver.find_element_by_xpath("//div[@aria-label='Add to Chrome']").click()
 
   try:
+    driver.find_element_by_xpath(
+        "//div[@aria-label='Blocked by admin']").click()
     app.top_window() \
        .child_window(title_re='.*Your admin has blocked', control_type="TitleBar") \
        .print_control_identifiers()
-  except ElementNotFoundError as error:
+  except NoSuchElementException:
+    print("Not blocked")
+  except ElementNotFoundError:
     print("Not blocked")
   finally:
     driver.quit()
