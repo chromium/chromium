@@ -353,18 +353,27 @@ void ChromeNewWindowClient::OpenFileManager() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->AppRegistryCache().ForOneApp(
-      file_manager::kFileManagerAppId, [proxy](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady) {
-          proxy->Launch(update.AppId(),
-                        apps::GetEventFlags(
-                            apps::mojom::LaunchContainer::kLaunchContainerNone,
+  DCHECK(proxy);
+
+  auto launch_files_app = [proxy](const apps::AppUpdate& update) {
+    if (update.Readiness() != apps::mojom::Readiness::kReady) {
+      LOG(WARNING)
+          << "Couldn't launch Files app because it isn't ready, readiness: "
+          << update.Readiness();
+      return;
+    }
+
+    proxy->Launch(
+        update.AppId(),
+        apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            true /* preferred_containner */),
-                        apps::mojom::LaunchSource::kFromKeyboard,
-                        display::kInvalidDisplayId);
-        }
-      });
+                            /*preferred_containner=*/true),
+        apps::mojom::LaunchSource::kFromKeyboard, display::kInvalidDisplayId);
+  };
+
+  bool result = proxy->AppRegistryCache().ForOneApp(
+      file_manager::kFileManagerAppId, std::move(launch_files_app));
+  DCHECK(result);
 }
 
 void ChromeNewWindowClient::OpenDownloadsFolder() {
@@ -374,25 +383,30 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
   auto downloads_path =
       file_manager::util::GetDownloadsFolderForProfile(profile);
   DCHECK(proxy);
-  proxy->AppRegistryCache().ForOneApp(
-      file_manager::kFileManagerAppId,
-      [proxy, downloads_path](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady) {
-          apps::mojom::FilePathsPtr launch_files =
-              apps::mojom::FilePaths::New();
-          launch_files->file_paths.push_back(downloads_path);
 
-          proxy->LaunchAppWithFiles(
-              update.AppId(),
-              apps::mojom::LaunchContainer::kLaunchContainerNone,
-              apps::GetEventFlags(
-                  apps::mojom::LaunchContainer::kLaunchContainerNone,
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                  true /* preferred_containner */),
-              apps::mojom::LaunchSource::kFromKeyboard,
-              std::move(launch_files));
-        }
-      });
+  auto launch_files_app = [proxy,
+                           downloads_path](const apps::AppUpdate& update) {
+    if (update.Readiness() != apps::mojom::Readiness::kReady) {
+      LOG(WARNING)
+          << "Couldn't launch Files app because it isn't ready, readiness: "
+          << update.Readiness();
+      return;
+    }
+
+    apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
+    launch_files->file_paths.push_back(downloads_path);
+
+    proxy->LaunchAppWithFiles(
+        update.AppId(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+        apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            /*preferred_containner=*/true),
+        apps::mojom::LaunchSource::kFromKeyboard, std::move(launch_files));
+  };
+
+  bool result = proxy->AppRegistryCache().ForOneApp(
+      file_manager::kFileManagerAppId, launch_files_app);
+  DCHECK(result);
 }
 
 void ChromeNewWindowClient::OpenCrosh() {
