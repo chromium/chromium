@@ -162,6 +162,9 @@ crbug.com/1123555 paint/frames/frameset-with-stacking-context-and-not-stacking-c
 crbug.com/1123555 virtual/composite-after-paint/paint/frames/frameset-with-stacking-context-and-not-stacking-context-children.html [ Failure ]
 crbug.com/1123555 virtual/dark-color-scheme/media/audio-controls-rendering.html [ Failure ]
 
+# Sheriff on 2020-09-03
+crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
+
 # These tests require portals, and some require cross-origin portals.
 # Keep this in sync with VirtualTestSuites.
 crbug.com/1093466 external/wpt/fetch/metadata/portal.https.sub.html [ Skip ]
