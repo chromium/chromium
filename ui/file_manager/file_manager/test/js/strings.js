@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // loadTimeData contains localized content.  It is populated with
-// file_manager_strings.grpd and chromeos_strings.grdp during build.
+// file_manager_strings.grdp and chromeos_strings.grdp during build.
 
 loadTimeData.data = $GRDP;
 

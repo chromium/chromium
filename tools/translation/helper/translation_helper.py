@@ -159,8 +159,8 @@ def _parse_grd_file(grd_path):
     grdp_rel_path = part_node.get('file')
     grdp_path = os.path.join(os.path.dirname(grd_path), grdp_rel_path)
     grdp_paths.append(grdp_path)
-    grdp_dom, grdp_grpd_paths = _parse_grd_file(grdp_path)
-    grdp_paths.extend(grdp_grpd_paths)
+    grdp_dom, grdp_grdp_paths = _parse_grd_file(grdp_path)
+    grdp_paths.extend(grdp_grdp_paths)
     part_node.append(grdp_dom.getroot())
   return grd_dom, grdp_paths
 
