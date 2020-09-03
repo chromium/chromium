@@ -54,7 +54,7 @@ void TestWebAppUiManager::NotifyOnAllAppWindowsClosed(
                      }));
 }
 
-void TestWebAppUiManager::UninstallAndReplace(
+void TestWebAppUiManager::UninstallAndReplaceIfExists(
     const std::vector<AppId>& from_apps,
     const AppId& to_app) {
   for (const AppId& from_app : from_apps) {

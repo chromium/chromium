@@ -7,6 +7,8 @@
 #include "base/barrier_closure.h"
 #include "base/test/bind_test_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/built_in_chromeos_apps.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/web_app_uninstall_waiter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
@@ -184,90 +187,44 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
 }
 
 #if defined(OS_CHROMEOS)
-class WebAppUiManagerMigrationBrowserTest
-    : public WebAppUiManagerImplBrowserTest {
- public:
-  void SetUp() override {
-    hide_settings_app_for_testing_ =
-        apps::BuiltInChromeOsApps::SetHideSettingsAppForTesting(true);
-    // Disable System Web Apps so that the Internal Apps are installed.
-    scoped_feature_list_.InitAndDisableFeature(features::kSystemWebApps);
-    WebAppUiManagerImplBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-    WebAppUiManagerImplBrowserTest::TearDown();
-    apps::BuiltInChromeOsApps::SetHideSettingsAppForTesting(
-        hide_settings_app_for_testing_);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  bool hide_settings_app_for_testing_ = false;
-};
-
-// Tests that the Settings app migrates the launcher and app list details from
-// the Settings internal app.
-//
-// TODO(https://crbug.com/1012967): Find a way to implement this that does not
-// depend on unsupported behavior of the FeatureList API.
-IN_PROC_BROWSER_TEST_F(WebAppUiManagerMigrationBrowserTest,
-                       DISABLED_SettingsSystemWebAppMigration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kSystemWebApps);
-
-  auto& system_web_app_manager =
-      WebAppProvider::Get(browser()->profile())->system_web_app_manager();
-
-  auto* app_list_service =
+// Tests that app migrations use the UI preferences of the replaced app but only
+// if it's present.
+IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, DoubleMigration) {
+  app_list::AppListSyncableService* app_list_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(
           browser()->profile());
 
-  // Pin the Settings Internal App.
-  syncer::StringOrdinal pin_position =
-      syncer::StringOrdinal::CreateInitialOrdinal();
-  pin_position = pin_position.CreateAfter().CreateAfter();
-  app_list_service->SetPinPosition(ash::kInternalAppIdSettings, pin_position);
+  // Install an old app to be replaced.
+  AppId old_app_id = InstallWebApp(GURL("https://old.app.com"));
+  app_list_service->SetPinPosition(old_app_id,
+                                   syncer::StringOrdinal("positionold"));
 
-  // Add the Settings Internal App to a folder.
-  AppListModelUpdater* updater =
-      test::GetModelUpdater(test::GetAppListClient());
-  updater->MoveItemToFolder(ash::kInternalAppIdSettings, "asdf");
-
-  // Install the Settings System Web App, which should be immediately migrated
-  // to the Settings Internal App's details.
-  system_web_app_manager.InstallSystemAppsForTesting();
-  std::string settings_system_web_app_id =
-      *system_web_app_manager.GetAppIdForSystemApp(SystemAppType::SETTINGS);
+  // Install a new app to migrate the old one to.
+  AppId new_app_id = InstallWebApp(GURL("https://new.app.com"));
   {
-    const app_list::AppListSyncableService::SyncItem* web_app_item =
-        app_list_service->GetSyncItem(settings_system_web_app_id);
-    const app_list::AppListSyncableService::SyncItem* internal_app_item =
-        app_list_service->GetSyncItem(ash::kInternalAppIdSettings);
-
-    EXPECT_TRUE(internal_app_item->item_pin_ordinal.Equals(
-        web_app_item->item_pin_ordinal));
-    EXPECT_TRUE(
-        internal_app_item->item_ordinal.Equals(web_app_item->item_ordinal));
-    EXPECT_EQ(internal_app_item->parent_id, web_app_item->parent_id);
+    WebAppUninstallWaiter waiter(browser()->profile(), old_app_id);
+    ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
+    waiter.Wait();
+    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        ->FlushMojoCallsForTesting();
   }
 
-  // Change Settings System Web App properties.
-  app_list_service->SetPinPosition(
-      settings_system_web_app_id,
-      syncer::StringOrdinal::CreateInitialOrdinal());
-  updater->MoveItemToFolder(settings_system_web_app_id, std::string());
+  // New app should acquire old app's pin position.
+  EXPECT_EQ(app_list_service->GetSyncItem(new_app_id)
+                ->item_pin_ordinal.ToDebugString(),
+            "positionold");
 
-  // Do migration again with the already-installed app. Should be a no-op.
-  system_web_app_manager.InstallSystemAppsForTesting();
-  {
-    const app_list::AppListSyncableService::SyncItem* web_app_item =
-        app_list_service->GetSyncItem(settings_system_web_app_id);
+  // Change the new app's pin position.
+  app_list_service->SetPinPosition(new_app_id,
+                                   syncer::StringOrdinal("positionnew"));
 
-    EXPECT_TRUE(syncer::StringOrdinal::CreateInitialOrdinal().Equals(
-        web_app_item->item_pin_ordinal));
-    EXPECT_EQ(std::string(), web_app_item->parent_id);
-  }
+  // Do migration again. New app should not move.
+  ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
+  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->FlushMojoCallsForTesting();
+  EXPECT_EQ(app_list_service->GetSyncItem(new_app_id)
+                ->item_pin_ordinal.ToDebugString(),
+            "positionnew");
 }
 #endif  // defined(OS_CHROMEOS)
 

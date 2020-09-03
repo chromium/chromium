@@ -174,6 +174,8 @@ source_set("web_applications_test_support") {
     "test/web_app_registration_waiter.h",
     "test/web_app_test.cc",
     "test/web_app_test.h",
+    "test/web_app_uninstall_waiter.cc",
+    "test/web_app_uninstall_waiter.h",
   ]
 
   deps = [

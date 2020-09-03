@@ -853,7 +853,7 @@ TEST_F(PendingAppInstallTaskTest, UninstallAndReplace) {
     run_loop.Run();
   }
   {
-    // Migration shouldn't run on subsequent installs of the same app.
+    // Migration should run on every install of the app.
     options.uninstall_and_replace = {"app3"};
 
     base::RunLoop run_loop;
@@ -864,7 +864,7 @@ TEST_F(PendingAppInstallTaskTest, UninstallAndReplace) {
           EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
           EXPECT_EQ(app_id, *result.app_id);
 
-          EXPECT_FALSE(ui_manager()->DidUninstallAndReplace("app3", app_id));
+          EXPECT_TRUE(ui_manager()->DidUninstallAndReplace("app3", app_id));
 
           run_loop.Quit();
         }));

@@ -240,13 +240,8 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
     return;
   }
 
-  // If this is the first time the app has been installed, run a migration. This
-  // will not happen again, even if the app is uninstalled and reinstalled.
-  if (!externally_installed_app_prefs_.LookupAppId(
-          install_options_.install_url)) {
-    ui_manager_->UninstallAndReplace(install_options().uninstall_and_replace,
-                                     app_id);
-  }
+  ui_manager_->UninstallAndReplaceIfExists(
+      install_options().uninstall_and_replace, app_id);
 
   externally_installed_app_prefs_.Insert(install_options_.install_url, app_id,
                                          install_options_.install_source);

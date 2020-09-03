@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 
@@ -35,6 +36,20 @@
 #endif
 
 namespace web_app {
+
+namespace {
+
+bool IsAppInstalled(apps::AppServiceProxy* proxy, const AppId& app_id) {
+  bool installed = false;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&installed](const apps::AppUpdate& update) {
+        installed =
+            update.Readiness() != apps::mojom::Readiness::kUninstalledByUser;
+      });
+  return installed;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<WebAppUiManager> WebAppUiManager::Create(Profile* profile) {
@@ -123,11 +138,16 @@ void WebAppUiManagerImpl::NotifyOnAllAppWindowsClosed(
   windows_closed_requests_map_[app_id].push_back(std::move(callback));
 }
 
-void WebAppUiManagerImpl::UninstallAndReplace(
+void WebAppUiManagerImpl::UninstallAndReplaceIfExists(
     const std::vector<AppId>& from_apps,
     const AppId& to_app) {
   bool has_migrated = false;
   for (const AppId& from_app : from_apps) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    if (!IsAppInstalled(proxy, from_app))
+      continue;
+
     if (!has_migrated) {
 #if defined(OS_CHROMEOS)
       // Grid position in app list.
@@ -173,8 +193,6 @@ void WebAppUiManagerImpl::UninstallAndReplace(
       }
     }
 
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile_);
     proxy->UninstallSilently(from_app,
                              apps::mojom::UninstallSource::kMigration);
   }

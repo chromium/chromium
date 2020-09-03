@@ -49,8 +49,8 @@ class WebAppUiManager {
   // Uninstalls the the apps in |from_apps| and migrates an |to_app|'s OS
   // attributes (e.g pin position, app list folder/position, shortcuts) to the
   // first |from_app| found.
-  virtual void UninstallAndReplace(const std::vector<AppId>& from_apps,
-                                   const AppId& to_app) = 0;
+  virtual void UninstallAndReplaceIfExists(const std::vector<AppId>& from_apps,
+                                           const AppId& to_app) = 0;
 
   virtual bool CanAddAppToQuickLaunchBar() const = 0;
   virtual void AddAppToQuickLaunchBar(const AppId& app_id) = 0;

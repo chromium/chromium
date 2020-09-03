@@ -207,7 +207,8 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigrateAndRevert) {
+IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
+                       MigrateRevertMigrate) {
   // Set up pre-migration state.
   {
     ASSERT_FALSE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
@@ -252,6 +253,24 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigrateAndRevert) {
 
     EXPECT_TRUE(IsExtensionAppInstalled());
     EXPECT_FALSE(IsWebAppInstalled());
+  }
+
+  // Re-run migration.
+  {
+    base::AutoReset<bool> testing_scope =
+        SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+    ASSERT_TRUE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
+
+    extensions::TestExtensionRegistryObserver uninstall_observer(
+        extensions::ExtensionRegistry::Get(profile()));
+
+    SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
+    EXPECT_TRUE(IsWebAppInstalled());
+
+    scoped_refptr<const extensions::Extension> uninstalled_app =
+        uninstall_observer.WaitForExtensionUninstalled();
+    EXPECT_EQ(uninstalled_app->id(), kExtensionId);
+    EXPECT_FALSE(IsExtensionAppInstalled());
   }
 }
 
