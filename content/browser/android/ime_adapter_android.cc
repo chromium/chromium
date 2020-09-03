@@ -192,7 +192,9 @@ void ImeAdapterAndroid::UpdateState(const ui::mojom::TextInputState& state) {
       state.selection.end(),
       state.composition ? state.composition.value().start() : -1,
       state.composition ? state.composition.value().end() : -1,
-      state.reply_to_request);
+      state.reply_to_request,
+      static_cast<int>(state.last_vk_visibility_request),
+      static_cast<int>(state.vk_policy));
 }
 
 void ImeAdapterAndroid::UpdateOnTouchDown() {

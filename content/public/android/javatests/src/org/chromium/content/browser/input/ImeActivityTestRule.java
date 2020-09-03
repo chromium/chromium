@@ -56,6 +56,8 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     static final String PASSWORD_FORM_HTML = "content/test/data/android/input/password_form.html";
     static final String INPUT_MODE_HTML = "content/test/data/android/input/input_mode.html";
     static final String INPUT_ACTION_HTML = "content/test/data/android/input/input_action.html";
+    static final String INPUT_VK_API_HTML =
+            "content/test/data/android/input/virtual_keyboard_api.html";
 
     private SelectionPopupControllerImpl mSelectionPopupController;
     private TestCallbackHelperContainer mCallbackContainer;

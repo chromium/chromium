@@ -111,6 +111,7 @@ android_library("content_java") {
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
+    "//ui/base/ime/mojom:mojom_java",
     "//ui/gfx/geometry/mojom:mojom_java",
     "//url:gurl_java",
     "//url:origin_java",
@@ -475,6 +476,7 @@ android_library("content_javatests") {
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//ui/base/cursor/mojom:cursor_type_java",
+    "//ui/base/ime/mojom:mojom_java",
     "//ui/gfx/geometry/mojom:mojom_java",
     "//url:gurl_java",
   ]
@@ -528,6 +530,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/input/ImeAutocapitalizeTest.java",
     "javatests/src/org/chromium/content/browser/input/ImeInputActionTest.java",
     "javatests/src/org/chromium/content/browser/input/ImeInputModeTest.java",
+    "javatests/src/org/chromium/content/browser/input/ImeInputVKApiTest.java",
     "javatests/src/org/chromium/content/browser/input/ImeLollipopTest.java",
     "javatests/src/org/chromium/content/browser/input/ImePasswordTest.java",
     "javatests/src/org/chromium/content/browser/input/ImeTest.java",
