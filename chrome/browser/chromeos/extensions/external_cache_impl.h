@@ -119,6 +119,11 @@ class ExternalCacheImpl : public ExternalCache,
                               const base::FilePath& file_path,
                               bool file_ownership_passed);
 
+  // Removes the cached file for |id| from |cached_extensions_| and
+  // |local_cache_| and notifies the |delegate_|. This method should be followed
+  // by a call to UpdateExtensionLoader().
+  void RemoveCachedExtension(const extensions::ExtensionId& id);
+
   extensions::LocalExtensionCache local_cache_;
 
   // URL lader factory used by the |downloader_|.

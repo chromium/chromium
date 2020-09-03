@@ -590,6 +590,7 @@ bool ExternalProviderImpl::HandleDoNotInstallForEnterprise(
 void ExternalProviderImpl::CreateExternalProviders(
     VisitorInterface* service,
     Profile* profile,
+    PendingExtensionManager* pending_extension_manager,
     ProviderCollection* provider_list) {
   TRACE_EVENT0("browser,startup",
                "ExternalProviderImpl::CreateExternalProviders");
@@ -605,7 +606,7 @@ void ExternalProviderImpl::CreateExternalProviders(
     crx_location = Manifest::EXTERNAL_POLICY_DOWNLOAD;
     external_loader =
         base::MakeRefCounted<chromeos::SigninScreenExtensionsExternalLoader>(
-            profile);
+            profile, pending_extension_manager);
     auto signin_profile_provider = std::make_unique<ExternalProviderImpl>(
         service, external_loader, profile, crx_location,
         Manifest::EXTERNAL_POLICY_DOWNLOAD, Extension::FOR_LOGIN_SCREEN);

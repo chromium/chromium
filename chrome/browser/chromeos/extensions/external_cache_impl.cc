@@ -112,13 +112,13 @@ void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
       extensions::ExtensionId id = it.key();
       LOG(ERROR) << "ExternalCacheImpl extension at " << path.value()
                  << " failed to install, deleting it.";
-      cached_extensions_->Remove(id, nullptr);
-
-      local_cache_.RemoveExtension(id, std::string());
+      RemoveCachedExtension(id);
       UpdateExtensionLoader();
 
       // Don't try to DownloadMissingExtensions() from here,
       // since it can cause a fail/retry loop.
+      // TODO(crbug.com/1121546) trigger re-installation mechanism with
+      // exponential back-off.
       return;
     }
   }
@@ -131,11 +131,19 @@ void ExternalCacheImpl::RemoveExtensions(
     return;
 
   for (size_t i = 0; i < ids.size(); ++i) {
-    cached_extensions_->Remove(ids[i], nullptr);
     extensions_->Remove(ids[i], nullptr);
-    local_cache_.RemoveExtension(ids[i], std::string());
+    RemoveCachedExtension(ids[i]);
   }
   UpdateExtensionLoader();
+}
+
+void ExternalCacheImpl::RemoveCachedExtension(
+    const extensions::ExtensionId& id) {
+  cached_extensions_->Remove(id, nullptr);
+  local_cache_.RemoveExtension(id, std::string());
+
+  if (delegate_)
+    delegate_->OnCachedExtensionFileDeleted(id);
 }
 
 bool ExternalCacheImpl::GetExtension(const extensions::ExtensionId& id,

@@ -11,8 +11,13 @@
 #include "chrome/browser/chromeos/extensions/external_cache_impl.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
+
+namespace extensions {
+class PendingExtensionManager;
+}  // namespace extensions
 
 namespace chromeos {
 
@@ -28,7 +33,9 @@ namespace chromeos {
 class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
                                              public ExternalCacheDelegate {
  public:
-  explicit SigninScreenExtensionsExternalLoader(Profile* profile);
+  explicit SigninScreenExtensionsExternalLoader(
+      Profile* profile,
+      extensions::PendingExtensionManager* pending_extension_manager);
   SigninScreenExtensionsExternalLoader(
       const SigninScreenExtensionsExternalLoader&) = delete;
   SigninScreenExtensionsExternalLoader& operator=(
@@ -39,6 +46,7 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
+  void OnCachedExtensionFileDeleted(const extensions::ExtensionId& id) override;
 
  private:
   friend class base::RefCounted<SigninScreenExtensionsExternalLoader>;
@@ -54,6 +62,8 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
   void UpdateStateFromPrefs();
 
   Profile* const profile_;
+  // Owned by ExtensionService, outlives |this|.
+  extensions::PendingExtensionManager* const pending_extension_manager_;
   ExternalCacheImpl external_cache_;
   PrefChangeRegistrar pref_change_registrar_;
   // Whether the list of extensions was already passed via LoadFinished().

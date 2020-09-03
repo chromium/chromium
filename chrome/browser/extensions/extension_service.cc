@@ -422,7 +422,8 @@ ExtensionService::ExtensionService(Profile* profile,
 
   if (extensions_enabled_) {
     ExternalProviderImpl::CreateExternalProviders(
-        this, profile_, &external_extension_providers_);
+        this, profile_, pending_extension_manager(),
+        &external_extension_providers_);
   }
 
   // Set this as the ExtensionService for app sorting to ensure it causes syncs
