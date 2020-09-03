@@ -11,6 +11,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
@@ -211,8 +212,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_Basic) {
   ASSERT_TRUE(VerifyBackgroundMode(false));
 }
 
-// Crashy, http://crbug.com/69215.
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, DISABLED_LacksPermission) {
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, LacksPermission) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
@@ -466,8 +466,13 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenTwoPagesWithManifest) {
   UnloadExtension(extension->id());
 }
 
-// Times out occasionally -- see crbug.com/108493
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, DISABLED_OpenPopupFromBGPage) {
+// TODO(https://crbug.com/1124033): Fails on LaCrOS bot.
+#if BUILDFLAG(IS_LACROS)
+#define MAYBE_OpenPopupFromBGPage DISABLED_OpenPopupFromBGPage
+#else
+#define MAYBE_OpenPopupFromBGPage OpenPopupFromBGPage
+#endif
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenPopupFromBGPage) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
