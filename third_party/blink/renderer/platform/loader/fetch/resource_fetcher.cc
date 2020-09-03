@@ -1147,6 +1147,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   LoadBlockingPolicy load_blocking_policy = LoadBlockingPolicy::kDefault;
   if (resource->GetType() == ResourceType::kImage) {
     image_resources_.insert(resource);
+#if DCHECK_IS_ON()
+    DCHECK(!not_loaded_image_resources_is_being_iterated_);
+#endif
     not_loaded_image_resources_.insert(resource);
     if (params.GetImageRequestBehavior() ==
         FetchParameters::kNonBlockingImage) {
@@ -1713,6 +1716,11 @@ bool ResourceFetcher::ShouldDeferImageLoad(const KURL& url) const {
 }
 
 void ResourceFetcher::ReloadImagesIfNotDeferred() {
+#if DCHECK_IS_ON()
+  DCHECK(!not_loaded_image_resources_is_being_iterated_);
+  base::AutoReset<bool> is_being_modified_resetter(
+      &not_loaded_image_resources_is_being_iterated_, true);
+#endif
   for (Resource* resource : not_loaded_image_resources_) {
     DCHECK_EQ(resource->GetType(), ResourceType::kImage);
     if (resource->StillNeedsLoad() && !ShouldDeferImageLoad(resource->Url()))
@@ -2060,6 +2068,11 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
       "ResourceLoadPriorityOptimizer::updateAllImageResourcePriorities");
 
   HeapVector<Member<Resource>> to_be_removed;
+#if DCHECK_IS_ON()
+  DCHECK(!not_loaded_image_resources_is_being_iterated_);
+  base::AutoReset<bool> is_being_modified_resetter(
+      &not_loaded_image_resources_is_being_iterated_, true);
+#endif
   for (Resource* resource : not_loaded_image_resources_) {
     DCHECK_EQ(resource->GetType(), ResourceType::kImage);
     if (resource->IsLoaded()) {

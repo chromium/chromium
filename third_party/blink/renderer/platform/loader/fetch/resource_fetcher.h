@@ -418,6 +418,11 @@ class PLATFORM_EXPORT ResourceFetcher
   // optimizations and might still contain images which are actually loaded.
   HeapHashSet<WeakMember<Resource>> not_loaded_image_resources_;
 
+#if DCHECK_IS_ON()
+  // TODO(keishi): Added to check for crbug.com/1108676 Remove when fixed.
+  bool not_loaded_image_resources_is_being_iterated_ = false;
+#endif
+
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;
   HeapVector<Member<Resource>> matched_preloads_;
   Member<MHTMLArchive> archive_;
