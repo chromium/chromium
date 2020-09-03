@@ -339,6 +339,9 @@
     ]
   },
   "Linux - Future": {
+    "additional_compile_targets": [
+      "all"
+    ],
     "gtest_tests": [
       {
         "merge": {
@@ -924,6 +927,9 @@
     ]
   },
   "Linux - Future (dbg)": {
+    "additional_compile_targets": [
+      "all"
+    ],
     "gtest_tests": [
       {
         "merge": {
@@ -1483,6 +1489,13 @@
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       }
+    ]
+  },
+  "Linux ASAN Builder": {
+    "additional_compile_targets": [
+      "extensions_browsertests",
+      "net_unittests",
+      "unit_tests"
     ]
   },
   "Linux V8 FYI Release (NVIDIA)": {
@@ -2461,10 +2474,16 @@
   },
   "V8 Android GN (dbg)": {
     "additional_compile_targets": [
-      "chrome_public_apk"
+      "chrome_public_apk",
+      "blink_tests",
+      "gin_unittests",
+      "net_unittests"
     ]
   },
   "V8 Blink Linux": {
+    "additional_compile_targets": [
+      "blink_tests"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -2517,6 +2536,9 @@
     ]
   },
   "V8 Blink Linux Debug": {
+    "additional_compile_targets": [
+      "blink_tests"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -2572,6 +2594,9 @@
     ]
   },
   "V8 Blink Linux Future": {
+    "additional_compile_targets": [
+      "blink_tests"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -2679,6 +2704,9 @@
     ]
   },
   "V8 Blink Mac": {
+    "additional_compile_targets": [
+      "blink_tests"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -2731,6 +2759,9 @@
     ]
   },
   "V8 Blink Win": {
+    "additional_compile_targets": [
+      "blink_tests"
+    ],
     "isolated_scripts": [
       {
         "args": [

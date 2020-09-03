@@ -5171,6 +5171,7 @@
         'mixins': [
           'linux-xenial',
         ],
+        'additional_compile_targets': ['all'],
         'test_suites': {
           'gtest_tests': 'client_v8_chromium_gtests',
           'isolated_scripts': 'client_v8_chromium_isolated_scripts',
@@ -5180,6 +5181,7 @@
         'mixins': [
           'linux-xenial',
         ],
+        'additional_compile_targets': ['all'],
         'test_suites': {
           'gtest_tests': 'client_v8_chromium_gtests',
           'isolated_scripts': 'client_v8_chromium_isolated_scripts',
@@ -5204,6 +5206,13 @@
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_nexus5x_telemetry_tests_v8',
         },
+      },
+      'Linux ASAN Builder': {
+        'additional_compile_targets': [
+          'extensions_browsertests',
+          'net_unittests',
+          'unit_tests',
+        ],
       },
       'Linux V8 FYI Release (NVIDIA)': {
         'os_type': 'linux',
@@ -5237,13 +5246,17 @@
       },
       'V8 Android GN (dbg)': {
         'additional_compile_targets': [
-          'chrome_public_apk'
+          'chrome_public_apk',
+          'blink_tests',
+          'gin_unittests',
+          'net_unittests',
         ],
       },
       'V8 Blink Linux': {
         'mixins': [
           'linux-xenial',
         ],
+        'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'layout_ng_gtests',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -5253,6 +5266,7 @@
         'mixins': [
           'linux-xenial',
         ],
+        'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'layout_ng_gtests',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -5262,6 +5276,7 @@
         'mixins': [
           'linux-xenial',
         ],
+        'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'layout_ng_gtests',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -5289,6 +5304,7 @@
             },
           ],
         },
+        'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'layout_ng_gtests',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -5298,6 +5314,7 @@
         'mixins': [
           'win10',
         ],
+        'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
