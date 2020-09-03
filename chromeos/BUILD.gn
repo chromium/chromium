@@ -164,6 +164,7 @@ test("chromeos_unittests") {
     ":chromeos_buildflags",
     ":test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chromeos/attestation:unit_tests",
     "//chromeos/audio:unit_tests",
     "//chromeos/cryptohome:unit_tests",

@@ -51,7 +51,7 @@ source_set("unit_tests") {
     ":memory",
     "//base/test:test_support",
     "//base/util/memory_pressure",
-    "//chromeos:chromeos_buildflags",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//testing/gmock",
