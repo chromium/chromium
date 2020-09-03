@@ -45,13 +45,6 @@ android_resources("weblayer_resources") {
   ]
 }
 
-# This resource target is kept in the base module when WebLayer is in a split,
-# and allows WebLayer to call onResourcesLoaded() on resources shared with
-# WebView.
-android_resources("weblayer_base_module_resources") {
-  custom_package = "org.chromium.weblayer_private.base"
-}
-
 generate_product_config_srcjar("weblayer_product_config") {
   java_package = weblayer_product_config_java_package
 }
@@ -88,10 +81,7 @@ java_cpp_enum("generated_enums") {
 android_library("base_module_java") {
   sources =
       [ "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java" ]
-  deps = [
-    ":weblayer_base_module_resources",
-    "//base:base_java",
-  ]
+  deps = [ "//base:base_java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 

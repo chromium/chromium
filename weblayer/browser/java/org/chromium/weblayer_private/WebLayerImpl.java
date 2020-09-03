@@ -468,7 +468,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         // TODO: The call to onResourcesLoaded() can be slow, we may need to parallelize this with
         // other expensive startup tasks.
-        org.chromium.weblayer_private.base.R.onResourcesLoaded(lightPackageId);
+        org.chromium.base.R.onResourcesLoaded(lightPackageId);
 
         // Wrap the app context so that it can be used to load WebLayer implementation classes.
         appContext = ClassLoaderContextWrapperFactory.get(appContext);
