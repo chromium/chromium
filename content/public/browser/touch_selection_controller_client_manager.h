@@ -9,6 +9,7 @@
 #include "content/common/content_export.h"
 
 namespace gfx {
+class Point;
 class SelectionBound;
 }
 
@@ -61,6 +62,9 @@ class CONTENT_EXPORT TouchSelectionControllerClientManager {
   // monitor the manager's lifetime.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Used to request the active client to show a context menu at |location|.
+  virtual void ShowContextMenu(const gfx::Point& location) {}
 };
 
 }  // namespace content

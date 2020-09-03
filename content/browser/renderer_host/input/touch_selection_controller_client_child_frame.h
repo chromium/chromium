@@ -37,6 +37,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   void UpdateSelectionBoundsIfNeeded(
       const viz::Selection<gfx::SelectionBound>& selection,
       float device_scale_factor);
+  void ShowTouchSelectionContextMenu(const gfx::Point& location) override;
 
  private:
   void TransformSelectionBoundsAndUpdate();

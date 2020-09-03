@@ -551,9 +551,9 @@ void RenderWidgetHostViewAndroid::ShowContextMenuAtTouchHandle(
     const base::android::JavaParamRef<jobject>& obj,
     jint x,
     jint y) {
-  if (host()) {
-    host()->ShowContextMenuAtPoint(gfx::Point(x, y),
-                                   ui::MENU_SOURCE_TOUCH_HANDLE);
+  if (GetTouchSelectionControllerClientManager()) {
+    GetTouchSelectionControllerClientManager()->ShowContextMenu(
+        gfx::Point(x, y));
   }
 }
 
@@ -1246,6 +1246,11 @@ RenderWidgetHostViewAndroid::CreateDrawable() {
 }
 
 void RenderWidgetHostViewAndroid::DidScroll() {}
+
+void RenderWidgetHostViewAndroid::ShowTouchSelectionContextMenu(
+    const gfx::Point& location) {
+  host()->ShowContextMenuAtPoint(location, ui::MENU_SOURCE_TOUCH_HANDLE);
+}
 
 void RenderWidgetHostViewAndroid::SynchronousCopyContents(
     const gfx::Rect& src_subrect_dip,

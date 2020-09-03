@@ -14,6 +14,7 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -75,6 +76,13 @@ void TouchSelectionControllerClientChildFrame::UpdateSelectionBoundsIfNeeded(
 
     TransformSelectionBoundsAndUpdate();
   }
+}
+
+void TouchSelectionControllerClientChildFrame::ShowTouchSelectionContextMenu(
+    const gfx::Point& location) {
+  // |location| should be in root-view coordinates, and RenderWidgetHostImpl
+  // will do the conversion to renderer coordinates.
+  rwhv_->host()->ShowContextMenuAtPoint(location, ui::MENU_SOURCE_TOUCH_HANDLE);
 }
 
 // Since an active touch selection in a child frame can have its screen position

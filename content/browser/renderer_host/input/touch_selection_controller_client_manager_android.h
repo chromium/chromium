@@ -45,6 +45,7 @@ class TouchSelectionControllerClientManagerAndroid
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void ShowContextMenu(const gfx::Point& location) override;
 
   // TouchSelectionControllerClient implementation.
   bool SupportsAnimation() const override;
@@ -57,6 +58,7 @@ class TouchSelectionControllerClientManagerAndroid
   void OnDragUpdate(const gfx::PointF& position) override;
   std::unique_ptr<ui::TouchHandleDrawable> CreateDrawable() override;
   void DidScroll() override;
+  void ShowTouchSelectionContextMenu(const gfx::Point& location) override;
 
   // viz::HitTestRegionObserver implementation.
   void OnAggregatedHitTestRegionListUpdated(

@@ -96,6 +96,11 @@ void TouchSelectionControllerClientManagerAndroid::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void TouchSelectionControllerClientManagerAndroid::ShowContextMenu(
+    const gfx::Point& location) {
+  active_client_->ShowTouchSelectionContextMenu(location);
+}
+
 // TouchSelectionControllerClient implementation.
 bool TouchSelectionControllerClientManagerAndroid::SupportsAnimation() const {
   return rwhv_->SupportsAnimation();
@@ -139,6 +144,11 @@ TouchSelectionControllerClientManagerAndroid::CreateDrawable() {
 
 void TouchSelectionControllerClientManagerAndroid::DidScroll() {
   // Nothing needs to be done here.
+}
+
+void TouchSelectionControllerClientManagerAndroid::
+    ShowTouchSelectionContextMenu(const gfx::Point& location) {
+  active_client_->ShowTouchSelectionContextMenu(location);
 }
 
 void TouchSelectionControllerClientManagerAndroid::

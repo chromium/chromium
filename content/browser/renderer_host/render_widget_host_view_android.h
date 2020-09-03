@@ -223,6 +223,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnDragUpdate(const gfx::PointF& position) override;
   std::unique_ptr<ui::TouchHandleDrawable> CreateDrawable() override;
   void DidScroll() override;
+  void ShowTouchSelectionContextMenu(const gfx::Point& location) override;
 
   // Non-virtual methods
   void UpdateNativeViewTree(gfx::NativeView parent_native_view);
