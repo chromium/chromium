@@ -22,11 +22,30 @@
 class PrefRegistrySimple;
 class PrefService;
 
+namespace private_membership {
+namespace rlwe {
+class PrivateMembershipRlweClient;
+class RlwePlaintextId;
+}  // namespace rlwe
+}  // namespace private_membership
+
 namespace enterprise_management {
 class DeviceManagementResponse;
 }
 
 namespace policy {
+
+// Construct the private set membership identifier. See
+// go/cros-enterprise-psm and go/cros-client-psm for more details.
+private_membership::rlwe::RlwePlaintextId ConstructDeviceRlweId(
+    const std::string& device_serial_number,
+    const std::string& device_rlz_brand_code);
+
+// A class that handles all communications related to private set membership
+// protocol with DMServer. Also, upon successful determination, it caches the
+// membership state of a given identifier in the local_state PrefService.
+// Upon a failed determination it won't allow another membership check.
+class PrivateSetMembershipHelper;
 
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
@@ -105,7 +124,9 @@ class AutoEnrollmentClientImpl
       int power_initial,
       int power_limit,
       base::Optional<int> power_outdated_server_detect,
-      std::string uma_suffix);
+      std::string uma_suffix,
+      std::unique_ptr<PrivateSetMembershipHelper>
+          private_set_membership_helper);
 
   // Tries to load the result of a previous execution of the protocol from
   // local state. Returns true if that decision has been made and is valid.
@@ -114,6 +135,20 @@ class AutoEnrollmentClientImpl
   // Kicks protocol processing, restarting the current step if applicable.
   // Returns true if progress has been made, false if the protocol is done.
   bool RetryStep();
+
+  // Retries running private set membership protocol, if the protocol
+  // is enabled and it is possible to start. Returns true if the protocol is
+  // enabled and progress has been made, false if the protocol is done. Also,
+  // that protocol is being started only one time.
+  bool PrivateSetMembershipRetryStep();
+
+  // Sets the private set membership RLWE client for testing through
+  // |private_set_membership_helper_|, if the protocol is enabled. Also, the
+  // |private_set_membership_rlwe_client| has to be non-null.
+  void SetPrivateSetMembershipRlweClientForTesting(
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
+          private_set_membership_rlwe_client,
+      private_membership::rlwe::RlwePlaintextId& psm_rlwe_id);
 
   // Cleans up and invokes |progress_callback_|.
   void ReportProgress(AutoEnrollmentState state);
@@ -209,6 +244,9 @@ class AutoEnrollmentClientImpl
   // Fills and parses state retrieval request / response.
   std::unique_ptr<StateDownloadMessageProcessor>
       state_download_message_processor_;
+
+  // Obtains the device state using private set membership protocol.
+  std::unique_ptr<PrivateSetMembershipHelper> private_set_membership_helper_;
 
   // Times used to determine the duration of the protocol, and the extra time
   // needed to complete after the signin was complete.

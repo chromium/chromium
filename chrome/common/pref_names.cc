@@ -2155,6 +2155,11 @@ const char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
 // made yet.
 const char kShouldAutoEnroll[] = "ShouldAutoEnroll";
 
+// A boolean pref of the private-set-membership decision. Its value is only
+// valid if it's not the default value; otherwise, no private-set-membership
+// decision has been made yet.
+const char kShouldRetrieveDeviceState[] = "ShouldRetrieveDeviceState";
+
 // An integer pref with the maximum number of bits used by the client in a
 // previous auto-enrollment request. If the client goes through an auto update
 // during OOBE and reboots into a version of the OS with a larger maximum

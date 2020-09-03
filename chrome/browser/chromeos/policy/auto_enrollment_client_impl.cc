@@ -14,7 +14,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/chromeos/policy/server_backed_device_state.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
@@ -29,10 +31,12 @@
 #include "content/public/browser/network_service_instance.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
 
+namespace psm_rlwe = private_membership::rlwe;
 namespace em = enterprise_management;
 
 namespace policy {
@@ -41,6 +45,10 @@ namespace {
 
 using EnrollmentCheckType =
     em::DeviceAutoEnrollmentRequest::EnrollmentCheckType;
+
+// Timeout for running private set membership protocol.
+constexpr base::TimeDelta kPrivateSetMembershipTimeout =
+    base::TimeDelta::FromSeconds(15);
 
 // UMA histogram names.
 constexpr char kUMAProtocolTime[] = "Enterprise.AutoEnrollmentProtocolTime";
@@ -121,6 +129,18 @@ std::string ConvertInitialEnrollmentMode(
 
 }  // namespace
 
+psm_rlwe::RlwePlaintextId ConstructDeviceRlweId(
+    const std::string& device_serial_number,
+    const std::string& device_rlz_brand_code) {
+  psm_rlwe::RlwePlaintextId rlwe_id;
+
+  std::string rlz_brand_code_hex = base::HexEncode(
+      device_rlz_brand_code.data(), device_rlz_brand_code.size());
+
+  rlwe_id.set_sensitive_id(rlz_brand_code_hex + "/" + device_serial_number);
+  return rlwe_id;
+}
+
 // Subclasses of this class provide an identifier and specify the identifier
 // set for the DeviceAutoEnrollmentRequest,
 class AutoEnrollmentClientImpl::DeviceIdentifierProvider {
@@ -168,6 +188,396 @@ class AutoEnrollmentClientImpl::StateDownloadMessageProcessor {
   // instance. If it is invalid, returns nullopt.
   virtual base::Optional<ParsedResponse> ParseResponse(
       const enterprise_management::DeviceManagementResponse& response) = 0;
+};
+
+class PrivateSetMembershipHelper {
+ public:
+  // Callback will be triggered after completing the protocol, in case of a
+  // successful determination or stopping due to an error. Also, the bool result
+  // is ignored.
+  using CompletionCallback = base::OnceCallback<bool()>;
+
+  // The PrivateSetMembershipHelper doesn't take ownership of
+  // |device_management_service| and |local_state|. Also, both must not be
+  // nullptr. The |device_management_service| and |local_state| must outlive
+  // PrivateSetMembershipHelper.
+  PrivateSetMembershipHelper(
+      DeviceManagementService* device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService* local_state,
+      psm_rlwe::RlwePlaintextId psm_rlwe_id)
+      : random_device_id_(base::GenerateGUID()),
+        url_loader_factory_(url_loader_factory),
+        device_management_service_(device_management_service),
+        local_state_(local_state),
+        psm_rlwe_id_(std::move(psm_rlwe_id)) {
+    CHECK(device_management_service);
+    DCHECK(local_state_);
+
+    // Create PSM client for |psm_rlwe_id_| with use case as CROS_DEVICE_STATE.
+    std::vector<psm_rlwe::RlwePlaintextId> psm_ids = {psm_rlwe_id_};
+    auto status_or_client = psm_rlwe::PrivateMembershipRlweClient::Create(
+        psm_rlwe::RlweUseCase::CROS_DEVICE_STATE, psm_ids);
+    if (!status_or_client.ok()) {
+      // If the private set membership RLWE client hasn't been created
+      // successfully, then report the error and don't run the protocol.
+      LOG(ERROR)
+          << "PSM error: unexpected internal logic error during creating "
+             "PSM RLWE client";
+      has_private_set_membership_error_ = true;
+      return;
+    }
+
+    private_set_membership_rlwe_client_ = std::move(status_or_client).value();
+  }
+
+  // Disallow copy constructor and assignment operator.
+  PrivateSetMembershipHelper(const PrivateSetMembershipHelper&) = delete;
+  PrivateSetMembershipHelper& operator=(const PrivateSetMembershipHelper&) =
+      delete;
+
+  // Cancels the ongoing private set membership operation, if any (without
+  // calling the operation's callbacks).
+  ~PrivateSetMembershipHelper() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  // Determines the private set membership for the |psm_rlwe_id_|. Then, will
+  // call |callback| upon completing the protocol, whether it finished with a
+  // successful determination or stopped in case of errors. Also, the |callback|
+  // has to be non-null. In case a request is already in progress, the callback
+  // is called immediately.
+  void CheckMembership(CompletionCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(callback);
+
+    // Ignore new calls and execute their completion |callback|, if any error
+    // occurred while running private set membership previously, or in case the
+    // requests from previous call didn't finish yet.
+    if (has_private_set_membership_error_ || psm_request_job_) {
+      std::move(callback).Run();
+      return;
+    }
+
+    on_completion_callback_ = std::move(callback);
+
+    // Start the protocol and its timeout timer.
+    private_set_membership_timeout_.Start(
+        FROM_HERE, kPrivateSetMembershipTimeout,
+        base::BindOnce(&PrivateSetMembershipHelper::OnTimeout,
+                       base::Unretained(this)));
+    SendPrivateSetMembershipRlweOprfRequest();
+  }
+
+  // Sets the |private_set_membership_rlwe_client_| and |psm_rlwe_id_| for
+  // testing.
+  void SetRlweClientAndIdForTesting(
+      std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
+          private_set_membership_rlwe_client,
+      psm_rlwe::RlwePlaintextId psm_rlwe_id) {
+    private_set_membership_rlwe_client_ =
+        std::move(private_set_membership_rlwe_client);
+    psm_rlwe_id_ = std::move(psm_rlwe_id);
+  }
+
+  // Tries to load the result of a previous execution of the private set
+  // memberhsip protocol from local state. Returns decision value if it has been
+  // made and is valid, otherwise nullptr.
+  const base::Value* GetPrivateSetMembershipCachedDecision() const {
+    const PrefService::Preference* has_psm_server_state_pref =
+        local_state_->FindPreference(prefs::kShouldRetrieveDeviceState);
+
+    if (!has_psm_server_state_pref ||
+        has_psm_server_state_pref->IsDefaultValue() ||
+        !has_psm_server_state_pref->GetValue()->is_bool()) {
+      return nullptr;
+    }
+
+    return has_psm_server_state_pref->GetValue();
+  }
+
+  // Indicate whether an error occurred while executing the private set
+  // membership protocol.
+  bool HasPrivateSetMembershipError() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return has_private_set_membership_error_;
+  }
+
+  // Returns true if the private set membership protocol is still running,
+  // otherwise false.
+  bool IsCheckMembershipInProgress() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return psm_request_job_ != nullptr;
+  }
+
+ private:
+  void OnTimeout() { StoreErrorAndStop(); }
+
+  void StoreErrorAndStop() {
+    // Stop the private set membership timer.
+    private_set_membership_timeout_.Stop();
+
+    // Stop the current |psm_request_job_|.
+    psm_request_job_.reset();
+
+    has_private_set_membership_error_ = true;
+    std::move(on_completion_callback_).Run();
+  }
+
+  // Constructs and sends the private set membership RLWE OPRF request.
+  void SendPrivateSetMembershipRlweOprfRequest() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Create RLWE OPRF request.
+    const auto status_or_oprf_request =
+        private_set_membership_rlwe_client_->CreateOprfRequest();
+    if (!status_or_oprf_request.ok()) {
+      // If the RLWE OPRF request hasn't been created successfully, then report
+      // the error and stop the protocol.
+      LOG(ERROR)
+          << "PSM error: unexpected internal logic error during creating "
+             "RLWE OPRF request";
+      StoreErrorAndStop();
+      return;
+    }
+
+    LOG(WARNING) << "PSM: prepare and send out the RLWE OPRF request";
+
+    // Prepare the RLWE OPRF request job.
+    // The passed callback will not be called if |psm_request_job_| is
+    // destroyed, so it's safe to use base::Unretained.
+    std::unique_ptr<DMServerJobConfiguration> config =
+        CreatePsmRequestJobConfiguration(base::BindOnce(
+            &PrivateSetMembershipHelper::OnRlweOprfRequestCompletion,
+            base::Unretained(this)));
+
+    em::DeviceManagementRequest* request = config->request();
+    em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
+        request->mutable_private_set_membership_request()
+            ->mutable_rlwe_request();
+
+    *psm_rlwe_request->mutable_oprf_request() = status_or_oprf_request.value();
+    psm_request_job_ = device_management_service_->CreateJob(std::move(config));
+  }
+
+  // If the completion was successful, then it makes another request to
+  // DMServer for performing phase two.
+  void OnRlweOprfRequestCompletion(
+      DeviceManagementService::Job* job,
+      DeviceManagementStatus status,
+      int net_error,
+      const em::DeviceManagementResponse& response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    switch (status) {
+      case DM_STATUS_SUCCESS: {
+        // Check if the RLWE OPRF response is empty.
+        if (!response.private_set_membership_response().has_rlwe_response() ||
+            !response.private_set_membership_response()
+                 .rlwe_response()
+                 .has_oprf_response()) {
+          LOG(ERROR) << "PSM error: empty OPRF RLWE response";
+          StoreErrorAndStop();
+          return;
+        }
+
+        LOG(WARNING) << "PSM RLWE OPRF request completed successfully";
+        SendPrivateSetMembershipRlweQueryRequest(
+            response.private_set_membership_response());
+        return;
+      }
+      case DM_STATUS_REQUEST_FAILED: {
+        LOG(ERROR)
+            << "PSM error: RLWE OPRF request failed due to connection error";
+        StoreErrorAndStop();
+        return;
+      }
+      default: {
+        LOG(ERROR) << "PSM error: RLWE OPRF request failed due to server error";
+        StoreErrorAndStop();
+        return;
+      }
+    }
+  }
+
+  // Constructs and sends the private set membership RLWE Query request.
+  void SendPrivateSetMembershipRlweQueryRequest(
+      const em::PrivateSetMembershipResponse& private_set_membership_response) {
+    // Extract the oprf_response from |private_set_membership_response|.
+    const psm_rlwe::PrivateMembershipRlweOprfResponse oprf_response =
+        private_set_membership_response.rlwe_response().oprf_response();
+
+    const auto status_or_query_request =
+        private_set_membership_rlwe_client_->CreateQueryRequest(oprf_response);
+
+    // Create RLWE query request.
+    if (!status_or_query_request.ok()) {
+      // If the RLWE query request hasn't been created successfully, then report
+      // the error and stop the protocol.
+      LOG(ERROR)
+          << "PSM error: unexpected internal logic error during creating "
+             "RLWE query request";
+      StoreErrorAndStop();
+      return;
+    }
+
+    LOG(WARNING) << "PSM: prepare and send out the RLWE query request";
+
+    // Prepare the RLWE query request job.
+    std::unique_ptr<DMServerJobConfiguration> config =
+        CreatePsmRequestJobConfiguration(base::BindOnce(
+            &PrivateSetMembershipHelper::OnRlweQueryRequestCompletion,
+            base::Unretained(this), oprf_response));
+
+    em::DeviceManagementRequest* request = config->request();
+    em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
+        request->mutable_private_set_membership_request()
+            ->mutable_rlwe_request();
+
+    *psm_rlwe_request->mutable_query_request() =
+        status_or_query_request.value();
+    psm_request_job_ = device_management_service_->CreateJob(std::move(config));
+  }
+
+  // If the completion was successful, then it will parse the result and call
+  // the |on_completion_callback_| for |psm_id_|.
+  void OnRlweQueryRequestCompletion(
+      const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response,
+      DeviceManagementService::Job* job,
+      DeviceManagementStatus status,
+      int net_error,
+      const em::DeviceManagementResponse& response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    switch (status) {
+      case DM_STATUS_SUCCESS: {
+        // Check if the RLWE query response is empty.
+        if (!response.private_set_membership_response().has_rlwe_response() ||
+            !response.private_set_membership_response()
+                 .rlwe_response()
+                 .has_query_response()) {
+          LOG(ERROR) << "PSM error: empty query RLWE response";
+          StoreErrorAndStop();
+          return;
+        }
+
+        const psm_rlwe::PrivateMembershipRlweQueryResponse query_response =
+            response.private_set_membership_response()
+                .rlwe_response()
+                .query_response();
+
+        auto status_or_responses =
+            private_set_membership_rlwe_client_->ProcessResponse(
+                query_response);
+
+        if (!status_or_responses.ok()) {
+          // If the RLWE query response hasn't processed successfully, then
+          // report the error and stop the protocol.
+          LOG(ERROR) << "PSM error: unexpected internal logic error during "
+                        "processing the "
+                        "RLWE query response";
+          StoreErrorAndStop();
+          return;
+        }
+
+        LOG(WARNING) << "PSM query request completed successfully";
+
+        // The RLWE query response has been processed successfully. Extract
+        // the membership response, and report the result.
+        psm_rlwe::MembershipResponseMap membership_responses_map =
+            std::move(status_or_responses).value();
+        private_membership::MembershipResponse membership_response =
+            membership_responses_map.Get(psm_rlwe_id_);
+
+        LOG(WARNING) << "PSM determination successful. Identifier "
+                     << (membership_response.is_member() ? "" : "not ")
+                     << "present on the server";
+
+        // Reset the |psm_request_job_| to allow another call to
+        // CheckMembership.
+        psm_request_job_.reset();
+
+        // Stop the private set membership timer.
+        private_set_membership_timeout_.Stop();
+
+        // Cache the decision in local_state, so that it is reused in case
+        // the device reboots before completing OOBE.
+        local_state_->SetBoolean(prefs::kShouldRetrieveDeviceState,
+                                 membership_response.is_member());
+        local_state_->CommitPendingWrite();
+
+        std::move(on_completion_callback_).Run();
+        return;
+      }
+      case DM_STATUS_REQUEST_FAILED: {
+        LOG(ERROR)
+            << "PSM error: RLWE query request failed due to connection error";
+        StoreErrorAndStop();
+        return;
+      }
+      default: {
+        LOG(ERROR)
+            << "PSM error: RLWE query request failed due to server error";
+        StoreErrorAndStop();
+        return;
+      }
+    }
+  }
+
+  // Returns a job config that has TYPE_PSM_REQUEST as job type and |callback|
+  // will be executed on completion.
+  std::unique_ptr<DMServerJobConfiguration> CreatePsmRequestJobConfiguration(
+      DMServerJobConfiguration::Callback callback) {
+    return std::make_unique<DMServerJobConfiguration>(
+        device_management_service_,
+        DeviceManagementService::JobConfiguration::
+            TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
+        random_device_id_,
+        /*critical=*/true, DMAuth::NoAuth(),
+        /*oauth_token=*/base::nullopt, url_loader_factory_,
+        std::move(callback));
+  }
+
+  // Private Set Membership RLWE client, used for preparing PSM requests and
+  // parsing PSM responses.
+  std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
+      private_set_membership_rlwe_client_;
+
+  // Randomly generated device id for the private set membership requests.
+  std::string random_device_id_;
+
+  // The loader factory to use to perform private set membership requests.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Unowned by PrivateSetMembershipHelper. Its used to communicate with the
+  // device management service.
+  DeviceManagementService* device_management_service_;
+
+  // Its being used for both private set membership requests e.g. RLWE OPRF
+  // request and RLWE query request.
+  std::unique_ptr<DeviceManagementService::Job> psm_request_job_;
+
+  // Callback will be triggered upon completing of the protocol.
+  CompletionCallback on_completion_callback_;
+
+  // PrefService where the private set membership protocol result is cached.
+  PrefService* const local_state_;
+
+  // Private Set Membership identifier, which is going to be used while
+  // preparing the private set membership requests.
+  psm_rlwe::RlwePlaintextId psm_rlwe_id_;
+
+  // Indicates whether there was previously any error occurred while running
+  // private set membership protocol.
+  bool has_private_set_membership_error_ = false;
+
+  // A timer that puts a hard limit on the maximum time to wait for private set
+  // membership protocol.
+  base::OneShotTimer private_set_membership_timeout_;
+
+  // A sequence checker to prevent the race condition of having the possibility
+  // of the destructor being called and any of the callbacks.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 namespace {
@@ -395,7 +805,9 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
       std::make_unique<DeviceIdentifierProviderFRE>(server_backed_state_key),
       std::make_unique<StateDownloadMessageProcessorFRE>(
           server_backed_state_key),
-      power_initial, power_limit, base::nullopt, kUMASuffixFRE));
+      power_initial, power_limit,
+      /*power_outdated_server_detect=*/base::nullopt, kUMASuffixFRE,
+      /*private_set_membership_helper=*/nullptr));
 }
 
 std::unique_ptr<AutoEnrollmentClient>
@@ -418,7 +830,12 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
           device_serial_number, device_brand_code),
       power_initial, power_limit,
       base::make_optional(power_outdated_server_detect),
-      kUMASuffixInitialEnrollment));
+      kUMASuffixInitialEnrollment,
+      chromeos::AutoEnrollmentController::IsPrivateSetMembershipEnabled()
+          ? std::make_unique<PrivateSetMembershipHelper>(
+                device_management_service, url_loader_factory, local_state,
+                ConstructDeviceRlweId(device_serial_number, device_brand_code))
+          : nullptr));
 }
 
 AutoEnrollmentClientImpl::~AutoEnrollmentClientImpl() {
@@ -429,6 +846,7 @@ AutoEnrollmentClientImpl::~AutoEnrollmentClientImpl() {
 void AutoEnrollmentClientImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShouldAutoEnroll, false);
   registry->RegisterIntegerPref(prefs::kAutoEnrollmentPowerLimit, -1);
+  registry->RegisterBooleanPref(prefs::kShouldRetrieveDeviceState, false);
 }
 
 void AutoEnrollmentClientImpl::Start() {
@@ -491,7 +909,8 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
     int power_initial,
     int power_limit,
     base::Optional<int> power_outdated_server_detect,
-    std::string uma_suffix)
+    std::string uma_suffix,
+    std::unique_ptr<PrivateSetMembershipHelper> private_set_membership_helper)
     : progress_callback_(callback),
       state_(AUTO_ENROLLMENT_STATE_IDLE),
       has_server_state_(false),
@@ -507,6 +926,7 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
       device_identifier_provider_(std::move(device_identifier_provider)),
       state_download_message_processor_(
           std::move(state_download_message_processor)),
+      private_set_membership_helper_(std::move(private_set_membership_helper)),
       uma_suffix_(uma_suffix) {
   DCHECK_LE(current_power_, power_limit_);
   DCHECK(!progress_callback_.is_null());
@@ -533,6 +953,9 @@ bool AutoEnrollmentClientImpl::GetCachedDecision() {
 }
 
 bool AutoEnrollmentClientImpl::RetryStep() {
+  if (PrivateSetMembershipRetryStep())
+    return true;
+
   // If there is a pending request job, let it finish.
   if (request_job_)
     return true;
@@ -554,6 +977,40 @@ bool AutoEnrollmentClientImpl::RetryStep() {
   }
 
   return false;
+}
+
+bool AutoEnrollmentClientImpl::PrivateSetMembershipRetryStep() {
+  // Don't retry if the protocol is disabled, protocol is still running, or an
+  // error occurred while executing the protocol.
+  if (!private_set_membership_helper_ ||
+      private_set_membership_helper_->HasPrivateSetMembershipError() ||
+      private_set_membership_helper_->IsCheckMembershipInProgress())
+    return false;
+
+  const base::Value* private_set_membership_server_state =
+      private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
+
+  if (private_set_membership_server_state) {
+    LOG(WARNING) << "PSM Cached: psm_server_state="
+                 << private_set_membership_server_state->GetBool();
+    return false;
+  } else {
+    private_set_membership_helper_->CheckMembership(base::BindOnce(
+        &AutoEnrollmentClientImpl::RetryStep, base::Unretained(this)));
+    return true;
+  }
+}
+
+void AutoEnrollmentClientImpl::SetPrivateSetMembershipRlweClientForTesting(
+    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
+        private_set_membership_rlwe_client,
+    psm_rlwe::RlwePlaintextId& psm_rlwe_id) {
+  if (!private_set_membership_helper_)
+    return;
+
+  DCHECK(private_set_membership_rlwe_client);
+  private_set_membership_helper_->SetRlweClientAndIdForTesting(
+      std::move(private_set_membership_rlwe_client), std::move(psm_rlwe_id));
 }
 
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) {

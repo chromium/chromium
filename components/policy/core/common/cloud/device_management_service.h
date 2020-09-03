@@ -182,6 +182,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_REQUEST_SAML_URL = 23,
       TYPE_CHROME_OS_USER_REPORT = 24,
       TYPE_CERT_PROVISIONING_REQUEST = 25,
+      TYPE_PSM_HAS_DEVICE_STATE_REQUEST = 26,
     };
 
     // The set of HTTP query parameters of the request.

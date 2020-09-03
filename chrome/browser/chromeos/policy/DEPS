@@ -1,0 +1,10 @@
+include_rules = [
+  # Run
+  #
+  #   buildtools/checkdeps/checkdeps.py chrome/browser/chromeos/policy
+  #
+  # to test.
+  # Allow includes for shell-encryption and private_membership third_party libs.
+  "+third_party/private_membership",
+  "+third_party/shell-encryption",
+]

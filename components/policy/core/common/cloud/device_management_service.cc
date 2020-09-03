@@ -189,6 +189,9 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_CERT_PROVISIONING_REQUEST:
       return "CertProvisioningRequest";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
+      return "PSMDeviceStateRequest";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";

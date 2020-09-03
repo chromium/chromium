@@ -36,6 +36,7 @@ POLICY_EXPORT extern const char kEnrollmentTokenAuthHeaderPrefix[];
 POLICY_EXPORT extern const char kValueAppType[];
 POLICY_EXPORT extern const char kValueDeviceType[];
 POLICY_EXPORT extern const char kValueRequestAutoEnrollment[];
+POLICY_EXPORT extern const char kValueRequestPsmHasDeviceState[];
 POLICY_EXPORT extern const char kValueRequestPolicy[];
 POLICY_EXPORT extern const char kValueRequestRegister[];
 POLICY_EXPORT extern const char kValueRequestApiAuthorization[];
