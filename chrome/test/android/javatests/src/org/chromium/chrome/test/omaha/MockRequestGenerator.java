@@ -23,7 +23,6 @@ public class MockRequestGenerator extends RequestGenerator {
     private static final String DEVICE_ID = "some-arbitrary-device-id";
     private static final String LANGUAGE = "zz-ZZ";
     private static final String ADDITIONAL_PARAMETERS = "chromium; manufacturer; model";
-    private static final int DOWNLOAD_MANAGER_STATE = 42;
 
     private final boolean mIsOnTablet;
 
@@ -60,11 +59,6 @@ public class MockRequestGenerator extends RequestGenerator {
     @Override
     public String getDeviceID() {
         return DEVICE_ID;
-    }
-
-    @Override
-    public int getDownloadManagerState() {
-        return DOWNLOAD_MANAGER_STATE;
     }
 
     @Override

@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omaha;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.format.DateUtils;
 import android.util.Xml;
@@ -99,8 +97,6 @@ public abstract class RequestGenerator {
             serializer.attribute(null, "lang", getLanguage());
             serializer.attribute(null, "installage", String.valueOf(installAge));
             serializer.attribute(null, "ap", getAdditionalParameters());
-            serializer.attribute(
-                    null, "_dl_mgr_disabled", String.valueOf(getDownloadManagerState()));
 
             if (data.isSendInstallEvent()) {
                 // Set up <event eventtype="2" eventresult="1" />
@@ -177,48 +173,6 @@ public abstract class RequestGenerator {
         String brand = StringSanitizer.sanitize(Build.BRAND);
         String model = StringSanitizer.sanitize(Build.MODEL);
         return applicationLabel + ";" + brand + ";" + model;
-    }
-
-    /**
-     * Returns DownloadManager system service enabled state as
-     * -1 - manager state unknown
-     *  0 - manager enabled
-     *  1 - manager disabled by user
-     *  2 - manager disabled by unknown source
-     */
-    @VisibleForTesting
-    public int getDownloadManagerState() {
-        PackageInfo info;
-        try {
-            info = getContext().getPackageManager().getPackageInfo(
-                    "com.android.providers.downloads", 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            // DownloadManager Package not found.
-            return -1;
-        }
-        int state = getContext().getPackageManager().getApplicationEnabledSetting(info.packageName);
-        switch (state) {
-            case PackageManager.COMPONENT_ENABLED_STATE_DEFAULT:
-                // Service enable state is taken directly from the manifest.
-                if (info.applicationInfo.enabled) {
-                    return 0;
-                } else {
-                    // Service enable state set to disabled in the manifest.
-                    return 2;
-                }
-            case PackageManager.COMPONENT_ENABLED_STATE_ENABLED:
-                return 0;
-            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER:
-                // Service enable state has been explicitly disabled by the user.
-                return 1;
-            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
-            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED:
-                // Service enable state has been explicitly disabled. Source unknown.
-                return 2;
-            default:
-                // Illegal value returned by getApplicationEnabledSetting(). Should never happen.
-                return -1;
-        }
     }
 
     /**
