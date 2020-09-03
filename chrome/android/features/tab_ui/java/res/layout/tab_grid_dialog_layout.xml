@@ -16,7 +16,8 @@
         android:id="@+id/dialog_container_view"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:background="@drawable/tab_grid_dialog_background">
+        android:background="@drawable/tab_grid_dialog_background"
+        android:contentDescription="@string/accessibility_tab_grid_dialog">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
