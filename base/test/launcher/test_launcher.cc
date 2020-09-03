@@ -928,11 +928,18 @@ bool TestLauncher::Run(CommandLine* command_line) {
 
   // Indicate a test did not succeed.
   bool test_failed = false;
-  int cycles = cycles_;
+  int iterations = cycles_;
+  if (cycles_ > 1 && !stop_on_failure_) {
+    // If we don't stop on failure, execute all the repeats in all iteration,
+    // which allows us to parallelize the execution.
+    iterations = 1;
+    repeats_per_iteration_ = cycles_;
+  }
   // Set to false if any iteration fails.
   bool run_result = true;
 
-  while ((cycles > 0 || cycles == -1) && !(stop_on_failure_ && test_failed)) {
+  while ((iterations > 0 || iterations == -1) &&
+         !(stop_on_failure_ && test_failed)) {
     OnTestIterationStart();
 
     RunTests();
@@ -949,7 +956,7 @@ bool TestLauncher::Run(CommandLine* command_line) {
     test_failed = test_success_count_ != test_finished_count_;
     OnTestIterationFinished();
     // Special value "-1" means "repeat indefinitely".
-    cycles = (cycles == -1) ? cycles : cycles - 1;
+    iterations = (iterations == -1) ? iterations : iterations - 1;
   }
 
   if (cycles_ != 1)
@@ -1347,6 +1354,11 @@ bool TestLauncher::Init(CommandLine* command_line) {
     }
 
     retry_limit_ = retry_limit;
+  } else if (command_line->HasSwitch(kGTestRepeatFlag) ||
+             command_line->HasSwitch(kGTestBreakOnFailure)) {
+    // If we are repeating tests or waiting for the first test to fail, disable
+    // retries.
+    retry_limit_ = 0U;
   } else if (!BotModeEnabled(command_line) &&
              (command_line->HasSwitch(kGTestFilterFlag) ||
               command_line->HasSwitch(kIsolatedScriptTestFilterFlag))) {
@@ -1678,14 +1690,10 @@ void TestLauncher::CombinePositiveTestFilters(
   }
 }
 
-void TestLauncher::RunTests() {
+std::vector<std::string> TestLauncher::CollectTests() {
   std::vector<std::string> test_names;
-  size_t test_found_count = 0;
   for (const TestInfo& test_info : tests_) {
     std::string test_name = test_info.GetFullName();
-
-    // Count tests in the binary, before we apply filter and sharding.
-    test_found_count++;
 
     std::string prefix_stripped_name = test_info.GetPrefixStrippedName();
 
@@ -1738,11 +1746,19 @@ void TestLauncher::RunTests() {
     test_names.push_back(test_name);
   }
 
-  // Save an early test summary in case the launcher crashes or gets killed.
-  results_tracker_.GeneratePlaceholderIteration();
-  MaybeSaveSummaryAsJSON({"EARLY_SUMMARY"});
+  return test_names;
+}
 
-  broken_threshold_ = std::max(static_cast<size_t>(20), test_found_count / 10);
+void TestLauncher::RunTests() {
+  std::vector<std::string> original_test_names = CollectTests();
+
+  std::vector<std::string> test_names;
+  for (int i = 0; i < repeats_per_iteration_; ++i) {
+    test_names.insert(test_names.end(), original_test_names.begin(),
+                      original_test_names.end());
+  }
+
+  broken_threshold_ = std::max(static_cast<size_t>(20), tests_.size() / 10);
 
   test_started_count_ = test_names.size();
 
@@ -1754,8 +1770,17 @@ void TestLauncher::RunTests() {
     fflush(stdout);
   }
 
-  TestRunner test_runner(this, parallel_jobs_,
-                         launcher_delegate_->GetBatchSize());
+  // Save an early test summary in case the launcher crashes or gets killed.
+  results_tracker_.GeneratePlaceholderIteration();
+  MaybeSaveSummaryAsJSON({"EARLY_SUMMARY"});
+
+  // If we are repeating the test, set batch size to 1 to ensure that batch size
+  // does not interfere with repeats (unittests are using filter for batches and
+  // can't run the same test twice in the same batch).
+  size_t batch_size =
+      repeats_per_iteration_ > 1 ? 1U : launcher_delegate_->GetBatchSize();
+
+  TestRunner test_runner(this, parallel_jobs_, batch_size);
   test_runner.Run(test_names);
 }
 

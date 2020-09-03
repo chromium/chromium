@@ -234,6 +234,8 @@ class TestLauncher {
                           bool was_timeout,
                           int leaked_items);
 
+  std::vector<std::string> CollectTests();
+
   // Make sure we don't accidentally call the wrong methods e.g. on the worker
   // pool thread.  Should be the first member so that it's destroyed last: when
   // destroying other members, especially the worker pool, we may check the code
@@ -310,6 +312,11 @@ class TestLauncher {
 
   // redirect stdio of subprocess
   bool redirect_stdio_;
+
+  // Number of times all tests should be repeated during each iteration.
+  // 1 if gtest_repeat is not specified or gtest_break_on_failure is specified.
+  // Otherwise it matches gtest_repeat value.
+  int repeats_per_iteration_ = 1;
 
   DISALLOW_COPY_AND_ASSIGN(TestLauncher);
 };

@@ -265,16 +265,35 @@ TEST_F(TestLauncherTest, FilterIncludePreTest) {
 }
 
 // Test TestLauncher "gtest_repeat" switch.
-TEST_F(TestLauncherTest, RunningMultipleIterations) {
+TEST_F(TestLauncherTest, RepeatTest) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
+  // Unless --gtest-break-on-failure is specified,
   command_line->AppendSwitchASCII("gtest_repeat", "2");
   using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .Times(2)
-      .WillRepeatedly(OnTestResult(&test_launcher, "Test.firstTest",
-                                   TestResult::TEST_SUCCESS));
+      .WillRepeatedly(::testing::DoAll(OnTestResult(
+          &test_launcher, "Test.firstTest", TestResult::TEST_SUCCESS)));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher --gtest_repeat and --gtest_break_on_failure.
+TEST_F(TestLauncherTest, RunningMultipleIterationsUntilFailure) {
+  AddMockedTests("Test", {"firstTest"});
+  SetUpExpectCalls();
+  // Unless --gtest-break-on-failure is specified,
+  command_line->AppendSwitchASCII("gtest_repeat", "4");
+  command_line->AppendSwitch("gtest_break_on_failure");
+  using ::testing::_;
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
+      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
+                                              TestResult::TEST_SUCCESS)))
+      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
+                                              TestResult::TEST_SUCCESS)))
+      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
+                                              TestResult::TEST_FAILURE)));
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
 }
 
 // Test TestLauncher will retry failed test, and stop on success.
@@ -516,6 +535,8 @@ TEST_F(TestLauncherTest, JsonSummary) {
   FilePath path = dir.GetPath().AppendASCII("SaveSummaryResult.json");
   command_line->AppendSwitchPath("test-launcher-summary-output", path);
   command_line->AppendSwitchASCII("gtest_repeat", "2");
+  // Force the repeats to run sequentially.
+  command_line->AppendSwitch("gtest_break_on_failure");
 
   // Setup results to be returned by the test launcher delegate.
   TestResult first_result =
