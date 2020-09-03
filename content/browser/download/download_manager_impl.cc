@@ -1379,7 +1379,8 @@ void DownloadManagerImpl::BeginDownloadInternal(
   // a new factory if we don't have one already.
   if (!blob_url_loader_factory && params->url().SchemeIsBlob()) {
     blob_url_loader_factory = ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-        browser_context_, params->url());
+        BrowserContext::GetStoragePartitionForSite(browser_context_, site_url),
+        params->url());
   }
 
   auto* rfh = RenderFrameHost::FromID(params->render_process_host_id(),

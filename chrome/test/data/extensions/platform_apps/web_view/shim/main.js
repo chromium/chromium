@@ -3139,11 +3139,22 @@ function testMailtoLink() {
 }
 
 // This test verifies that an embedder can navigate a WebView to a blob URL it
-// creates.
+// creates. Additionally this test also verifies that an embedder can't navigate
+// to a blob URL a WebView creates.
 function testBlobURL() {
   var webview = new WebView();
-  var blob = new Blob(['<html><body>Blob content</body></html>'],
-                      {type: 'text/html'});
+  var blob =
+      new Blob([`
+<html>
+  <body>Blob content</body>
+  <script>
+    self.onmessage = e => {
+      const blob = new Blob(['hello world']);
+      const url = URL.createObjectURL(blob);
+      e.ports[0].postMessage(url);
+    };
+  </script>
+</html>`], {type: 'text/html'});
   var blobURL = URL.createObjectURL(blob);
   webview.src = blobURL;
 
@@ -3154,7 +3165,19 @@ function testBlobURL() {
   };
   webview.onloadstop = function() {
     embedder.test.assertTrue(webview.src == blobURL);
-    embedder.test.succeed();
+    const channel = new MessageChannel();
+    webview.contentWindow.postMessage('', '*', [channel.port1]);
+    channel.port2.onmessage = e => {
+      embedder.test.assertTrue(e.data.startsWith('blob:' + window.origin));
+      fetch(e.data).then(
+          () => {
+            window.console.log('Blob URL load incorrectly succeeded.');
+            embedder.test.fail();
+          },
+          () => {
+            embedder.test.succeed();
+          });
+    };
   };
 
   document.body.appendChild(webview);

@@ -56,7 +56,7 @@ void SharedWorkerConnectorImpl::Connect(
     }
     blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            host->GetBrowserContext(), std::move(blob_url_token));
+            host->GetStoragePartition(), std::move(blob_url_token));
   }
   SharedWorkerServiceImpl* service =
       static_cast<StoragePartitionImpl*>(host->GetStoragePartition())

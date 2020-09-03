@@ -615,7 +615,7 @@ std::unique_ptr<blink::PendingURLLoaderFactoryBundle> CloneFactoryBundle(
 // Helper method to download a URL on UI thread.
 void StartDownload(
     std::unique_ptr<download::DownloadUrlParameters> parameters,
-    mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token) {
+    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   RenderProcessHost* render_process_host =
@@ -624,13 +624,6 @@ void StartDownload(
     return;
 
   BrowserContext* browser_context = render_process_host->GetBrowserContext();
-
-  scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
-  if (blob_url_token) {
-    blob_url_loader_factory =
-        ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            browser_context, std::move(blob_url_token));
-  }
 
   DownloadManager* download_manager =
       BrowserContext::GetDownloadManager(browser_context);
@@ -648,7 +641,7 @@ void OnDataURLRetrieved(
   if (!data_url.is_valid())
     return;
   parameters->set_url(std::move(data_url));
-  StartDownload(std::move(parameters), mojo::NullRemote());
+  StartDownload(std::move(parameters), nullptr);
 }
 
 void RecordCrossOriginIsolationMetrics(RenderFrameHostImpl* rfh) {
@@ -3485,8 +3478,14 @@ void RenderFrameHostImpl::DownloadURL(
     return;
   }
 
-  StartDownload(std::move(parameters),
-                std::move(blink_parameters->blob_url_token));
+  scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
+  if (blink_parameters->blob_url_token) {
+    blob_url_loader_factory =
+        ChromeBlobStorageContext::URLLoaderFactoryForToken(
+            GetStoragePartition(), std::move(blink_parameters->blob_url_token));
+  }
+
+  StartDownload(std::move(parameters), std::move(blob_url_loader_factory));
 }
 
 void RenderFrameHostImpl::ReportNoBinderForInterface(const std::string& error) {
@@ -5301,7 +5300,7 @@ void RenderFrameHostImpl::BeginNavigation(
   if (blob_url_token) {
     blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            GetSiteInstance()->GetBrowserContext(), std::move(blob_url_token));
+            GetStoragePartition(), std::move(blob_url_token));
   }
 
   // If the request was for a blob URL, but no blob_url_token was passed in this
@@ -5311,7 +5310,7 @@ void RenderFrameHostImpl::BeginNavigation(
   // care about ordering with other blob URL manipulation anyway.
   if (validated_params->url.SchemeIsBlob() && !blob_url_loader_factory) {
     blob_url_loader_factory = ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-        GetSiteInstance()->GetBrowserContext(), validated_params->url);
+        GetStoragePartition(), validated_params->url);
   }
 
   if (waiting_for_init_) {

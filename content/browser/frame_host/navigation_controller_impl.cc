@@ -3127,8 +3127,11 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
   // the correct url loader factory to use here.
   auto blob_url_loader_factory = params.blob_url_loader_factory;
   if (!blob_url_loader_factory && params.url.SchemeIsBlob()) {
+    // Resolve the blob URL in the storage partition associated with the target
+    // frame. This is the storage partition the URL will be loaded in, and only
+    // URLs that can be resolved by it should be able to access its data.
     blob_url_loader_factory = ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-        GetBrowserContext(), params.url);
+        node->current_frame_host()->GetStoragePartition(), params.url);
   }
 
   std::unique_ptr<NavigationEntryImpl> entry;

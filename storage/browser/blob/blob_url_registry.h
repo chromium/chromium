@@ -24,7 +24,7 @@ namespace storage {
 // This class stores the mapping of blob Urls to blobs.
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
  public:
-  BlobUrlRegistry();
+  explicit BlobUrlRegistry(base::WeakPtr<BlobUrlRegistry> fallback = nullptr);
   ~BlobUrlRegistry();
 
   // Creates a url mapping from blob to the given url. Returns false if
@@ -58,6 +58,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Optional fallback BlobUrlRegistry. If lookups for URLs in this registry
+  // fail, they are retried in the fallback registry. This is used to allow
+  // "child" storage partitions to resolve URLs created by their "parent", while
+  // not allowing the reverse.
+  base::WeakPtr<BlobUrlRegistry> fallback_;
 
   std::map<GURL, mojo::PendingRemote<blink::mojom::Blob>> url_to_blob_;
   std::map<base::UnguessableToken,

@@ -10,7 +10,9 @@
 
 namespace storage {
 
-BlobUrlRegistry::BlobUrlRegistry() = default;
+BlobUrlRegistry::BlobUrlRegistry(base::WeakPtr<BlobUrlRegistry> fallback)
+    : fallback_(std::move(fallback)) {}
+
 BlobUrlRegistry::~BlobUrlRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -38,7 +40,11 @@ bool BlobUrlRegistry::RemoveUrlMapping(const GURL& blob_url) {
 
 bool BlobUrlRegistry::IsUrlMapped(const GURL& blob_url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url_to_blob_.find(blob_url) != url_to_blob_.end();
+  if (url_to_blob_.find(blob_url) != url_to_blob_.end())
+    return true;
+  if (fallback_)
+    return fallback_->IsUrlMapped(blob_url);
+  return false;
 }
 
 mojo::PendingRemote<blink::mojom::Blob> BlobUrlRegistry::GetBlobFromUrl(
@@ -46,7 +52,7 @@ mojo::PendingRemote<blink::mojom::Blob> BlobUrlRegistry::GetBlobFromUrl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = url_to_blob_.find(BlobUrlUtils::ClearUrlFragment(url));
   if (it == url_to_blob_.end())
-    return mojo::NullRemote();
+    return fallback_ ? fallback_->GetBlobFromUrl(url) : mojo::NullRemote();
   mojo::Remote<blink::mojom::Blob> blob(std::move(it->second));
   mojo::PendingRemote<blink::mojom::Blob> result;
   blob->Clone(result.InitWithNewPipeAndPassReceiver());

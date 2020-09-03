@@ -18,6 +18,8 @@
 #include "base/supports_user_data.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
+#include "content/browser/blob_storage/blob_registry_wrapper.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/blob_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -28,6 +30,7 @@
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_memory_controller.h"
+#include "storage/browser/blob/blob_registry_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
@@ -166,7 +169,6 @@ void ChromeBlobStorageContext::InitializeOnIOThread(
     const FilePath& blob_storage_dir,
     scoped_refptr<base::TaskRunner> file_task_runner) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  url_registry_ = std::make_unique<storage::BlobUrlRegistry>();
   context_ = std::make_unique<BlobStorageContext>(profile_dir, blob_storage_dir,
                                                   std::move(file_task_runner));
   // Signal the BlobMemoryController when it's appropriate to calculate its
@@ -181,11 +183,6 @@ void ChromeBlobStorageContext::InitializeOnIOThread(
 storage::BlobStorageContext* ChromeBlobStorageContext::context() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return context_.get();
-}
-
-storage::BlobUrlRegistry* ChromeBlobStorageContext::url_registry() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return url_registry_.get();
 }
 
 void ChromeBlobStorageContext::BindMojoContext(
@@ -218,7 +215,7 @@ std::unique_ptr<BlobHandle> ChromeBlobStorageContext::CreateMemoryBackedBlob(
 // static
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeBlobStorageContext::URLLoaderFactoryForToken(
-    BrowserContext* browser_context,
+    StoragePartition* storage_partition,
     mojo::PendingRemote<blink::mojom::BlobURLToken> token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -226,14 +223,16 @@ ChromeBlobStorageContext::URLLoaderFactoryForToken(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](scoped_refptr<ChromeBlobStorageContext> context,
+          [](scoped_refptr<BlobRegistryWrapper> registry,
              mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
              mojo::PendingRemote<blink::mojom::BlobURLToken> token) {
             storage::BlobURLLoaderFactory::Create(
-                std::move(token), context->url_registry()->AsWeakPtr(),
+                std::move(token), registry->url_registry()->AsWeakPtr(),
                 std::move(receiver));
           },
-          base::WrapRefCounted(GetFor(browser_context)),
+          base::WrapRefCounted(
+              static_cast<StoragePartitionImpl*>(storage_partition)
+                  ->GetBlobRegistry()),
           blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
           std::move(token)));
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
@@ -243,7 +242,7 @@ ChromeBlobStorageContext::URLLoaderFactoryForToken(
 // static
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-    BrowserContext* browser_context,
+    StoragePartition* storage_partition,
     const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -251,14 +250,16 @@ ChromeBlobStorageContext::URLLoaderFactoryForUrl(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](scoped_refptr<ChromeBlobStorageContext> context,
+          [](scoped_refptr<BlobRegistryWrapper> registry,
              mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
              const GURL& url) {
-            auto blob_remote = context->url_registry()->GetBlobFromUrl(url);
+            auto blob_remote = registry->url_registry()->GetBlobFromUrl(url);
             storage::BlobURLLoaderFactory::Create(std::move(blob_remote), url,
                                                   std::move(receiver));
           },
-          base::WrapRefCounted(GetFor(browser_context)),
+          base::WrapRefCounted(
+              static_cast<StoragePartitionImpl*>(storage_partition)
+                  ->GetBlobRegistry()),
           blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
           url));
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(

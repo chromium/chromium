@@ -1187,7 +1187,8 @@ std::unique_ptr<StoragePartitionImpl> StoragePartitionImpl::Create(
       partition_domain, context->GetSpecialStoragePolicy()));
 }
 
-void StoragePartitionImpl::Initialize() {
+void StoragePartitionImpl::Initialize(
+    StoragePartitionImpl* fallback_for_blob_urls) {
   // Ensure that these methods are called on the UI thread, except for
   // unittests where a UI thread might not have been created.
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
@@ -1325,8 +1326,11 @@ void StoragePartitionImpl::Initialize() {
                                 blob_context.get(),
                                 url_loader_factory_getter_.get());
 
-  blob_registry_ =
-      BlobRegistryWrapper::Create(blob_context, filesystem_context_);
+  BlobRegistryWrapper* fallback_blob_registry =
+      fallback_for_blob_urls ? fallback_for_blob_urls->GetBlobRegistry()
+                             : nullptr;
+  blob_registry_ = BlobRegistryWrapper::Create(
+      blob_context, filesystem_context_, fallback_blob_registry);
 
   prefetch_url_loader_service_ =
       base::MakeRefCounted<PrefetchURLLoaderService>(browser_context_);

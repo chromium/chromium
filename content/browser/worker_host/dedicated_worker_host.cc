@@ -143,8 +143,7 @@ void DedicatedWorkerHost::StartScriptLoad(
     }
     blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            storage_partition_impl->browser_context(),
-            std::move(blob_url_token));
+            storage_partition_impl, std::move(blob_url_token));
   } else if (blob_url_token) {
     mojo::ReportBadMessage("DWH_NOT_BLOB_URL");
     return;

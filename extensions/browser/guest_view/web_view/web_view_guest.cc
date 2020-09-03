@@ -51,6 +51,7 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
@@ -290,6 +291,14 @@ bool WebViewGuest::GetGuestPartitionConfigForSite(
 
   *storage_partition_config = content::StoragePartitionConfig::Create(
       site.host(), partition_name, in_memory);
+  // A <webview> inside a chrome app needs to be able to resolve Blob URLs that
+  // were created by the chrome app. The chrome app has the same
+  // partition_domain but empty partition_name. Setting this flag on the
+  // partition config causes it to be used as fallback for the purpose of
+  // resolving blob URLs.
+  bool use_fallback = site.ref() != "nofallback";
+  storage_partition_config->set_fallback_to_partition_domain_for_blob_urls(
+      use_fallback);
   return true;
 }
 
@@ -298,11 +307,14 @@ GURL WebViewGuest::GetSiteForGuestPartitionConfig(
     const content::StoragePartitionConfig& storage_partition_config) {
   std::string url_encoded_partition = net::EscapeQueryParamValue(
       storage_partition_config.partition_name(), false);
-  return GURL(
-      base::StringPrintf("%s://%s/%s?%s", content::kGuestScheme,
-                         storage_partition_config.partition_domain().c_str(),
-                         storage_partition_config.in_memory() ? "" : "persist",
-                         url_encoded_partition.c_str()));
+  return GURL(base::StringPrintf(
+      "%s://%s/%s?%s%s", content::kGuestScheme,
+      storage_partition_config.partition_domain().c_str(),
+      storage_partition_config.in_memory() ? "" : "persist",
+      url_encoded_partition.c_str(),
+      storage_partition_config.fallback_to_partition_domain_for_blob_urls()
+          ? ""
+          : "#nofallback"));
 }
 
 // static
@@ -359,10 +371,21 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     return;
   }
   std::string partition_domain = GetOwnerSiteURL().host();
-  GURL guest_site =
-      GetSiteForGuestPartitionConfig(content::StoragePartitionConfig::Create(
-          partition_domain, storage_partition_id,
-          !persist_storage /* in_memory */));
+  auto partition_config = content::StoragePartitionConfig::Create(
+      partition_domain, storage_partition_id, !persist_storage /* in_memory */);
+
+  if (GetOwnerSiteURL().SchemeIs(extensions::kExtensionScheme)) {
+    auto owner_config =
+        extensions::util::GetStoragePartitionConfigForExtensionId(
+            GetOwnerSiteURL().host(),
+            owner_render_process_host->GetBrowserContext());
+    if (!owner_config.is_default() && !owner_config.in_memory()) {
+      partition_config.set_fallback_to_partition_domain_for_blob_urls(true);
+      DCHECK(owner_config == partition_config.GetFallbackForBlobUrls().value());
+    }
+  }
+
+  GURL guest_site = GetSiteForGuestPartitionConfig(partition_config);
 
   // If we already have a webview tag in the same app using the same storage
   // partition, we should use the same SiteInstance so the existing tag and

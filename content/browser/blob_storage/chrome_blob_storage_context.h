@@ -27,7 +27,6 @@ class TaskRunner;
 
 namespace storage {
 class BlobStorageContext;
-class BlobUrlRegistry;
 namespace mojom {
 class BlobStorageContext;
 }
@@ -36,6 +35,7 @@ class BlobStorageContext;
 namespace content {
 class BlobHandle;
 class BrowserContext;
+class StoragePartition;
 
 // A context class that keeps track of BlobStorageController used by the chrome.
 // There is an instance associated with each BrowserContext. There could be
@@ -63,7 +63,6 @@ class CONTENT_EXPORT ChromeBlobStorageContext
                             scoped_refptr<base::TaskRunner> file_task_runner);
 
   storage::BlobStorageContext* context() const;
-  storage::BlobUrlRegistry* url_registry() const;
 
   // Bind a BlobStorageContext mojo interface to be used by storage apis.
   // This interface should not be exposed to renderers.
@@ -82,7 +81,7 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   // Must be called on the UI thread.
   static scoped_refptr<network::SharedURLLoaderFactory>
   URLLoaderFactoryForToken(
-      BrowserContext* browser_context,
+      StoragePartition* storage_partition,
       mojo::PendingRemote<blink::mojom::BlobURLToken> token);
 
   // Similar to the above method this also returns a factory capable of loading
@@ -95,7 +94,7 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   // holding on to the URL has no such guarantees.
   // Must be called on the UI thread.
   static scoped_refptr<network::SharedURLLoaderFactory> URLLoaderFactoryForUrl(
-      BrowserContext* browser_context,
+      StoragePartition* storage_partition,
       const GURL& url);
 
   // Must be called on the UI thread.
@@ -111,7 +110,6 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   friend class base::DeleteHelper<ChromeBlobStorageContext>;
 
   std::unique_ptr<storage::BlobStorageContext> context_;
-  std::unique_ptr<storage::BlobUrlRegistry> url_registry_;
 };
 
 // Returns the BlobStorageContext associated with the

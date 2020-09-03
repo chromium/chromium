@@ -12,6 +12,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
@@ -119,7 +120,9 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
   if (blob_url_token.is_valid()) {
     *out_blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            process->GetBrowserContext(), std::move(blob_url_token));
+            BrowserContext::GetStoragePartition(
+                site_instance->GetBrowserContext(), site_instance),
+            std::move(blob_url_token));
   }
 
   // Verify |params.post_body|.

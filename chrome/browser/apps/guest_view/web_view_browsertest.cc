@@ -3526,6 +3526,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
 // Tests that the embedder can create a blob URL and navigate a WebView to it.
 // See https://crbug.com/652077.
+// Also tests that the embedder can't navigate to a blob URL created by a
+// WebView. See https://crbug.com/1106890.
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestBlobURL) {
   TestHelper("testBlobURL", "web_view/shim", NEEDS_TEST_SERVER);
 }

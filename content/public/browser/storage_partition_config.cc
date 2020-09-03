@@ -42,8 +42,25 @@ StoragePartitionConfig StoragePartitionConfig::CopyWithInMemorySet() const {
   if (in_memory_)
     return *this;
 
-  return StoragePartitionConfig(partition_domain_, partition_name_,
-                                true /* in_memory */);
+  auto result = StoragePartitionConfig(partition_domain_, partition_name_,
+                                       true /* in_memory */);
+  result.set_fallback_to_partition_domain_for_blob_urls(
+      fallback_to_partition_domain_for_blob_urls_);
+  return result;
+}
+
+base::Optional<StoragePartitionConfig>
+StoragePartitionConfig::GetFallbackForBlobUrls() const {
+  if (!fallback_to_partition_domain_for_blob_urls_)
+    return base::nullopt;
+
+  // Currently this fallback mechanism is only used in cases where the fallback
+  // partition is not in memory. If we ever need to support falling back to a
+  // in memory storage partition, we could change the fallback flag from the
+  // boolean it is today to some kind of enum.
+  // TODO(acolwell): Make this a little more robust.
+  return StoragePartitionConfig(partition_domain_, "",
+                                /*in_memory=*/false);
 }
 
 bool StoragePartitionConfig::operator<(
@@ -57,13 +74,22 @@ bool StoragePartitionConfig::operator<(
   if (in_memory_ != rhs.in_memory_)
     return in_memory_ < rhs.in_memory_;
 
+  if (fallback_to_partition_domain_for_blob_urls_ !=
+      rhs.fallback_to_partition_domain_for_blob_urls_) {
+    return fallback_to_partition_domain_for_blob_urls_ <
+           rhs.fallback_to_partition_domain_for_blob_urls_;
+  }
+
   return false;
 }
 
 bool StoragePartitionConfig::operator==(
     const StoragePartitionConfig& rhs) const {
   return partition_domain_ == rhs.partition_domain_ &&
-         partition_name_ == rhs.partition_name_ && in_memory_ == rhs.in_memory_;
+         partition_name_ == rhs.partition_name_ &&
+         in_memory_ == rhs.in_memory_ &&
+         fallback_to_partition_domain_for_blob_urls_ ==
+             rhs.fallback_to_partition_domain_for_blob_urls_;
 }
 
 bool StoragePartitionConfig::operator!=(

@@ -150,9 +150,13 @@ const std::string& WebAuthFlow::GetAppWindowKey() const {
 // static
 content::StoragePartitionConfig WebAuthFlow::GetWebViewPartitionConfig(
     Partition partition) {
-  return content::StoragePartitionConfig::Create(
+  // This has to mirror the logic in WebViewGuest::CreateWebContents for
+  // creating the correct StoragePartitionConfig.
+  auto result = content::StoragePartitionConfig::Create(
       extension_misc::kIdentityApiUiAppId, GetPartitionName(partition),
       /*in_memory=*/true);
+  result.set_fallback_to_partition_domain_for_blob_urls(true);
+  return result;
 }
 
 void WebAuthFlow::OnAppWindowAdded(AppWindow* app_window) {

@@ -795,19 +795,23 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
   if (frame_entry) {
     navigation_request->blob_url_loader_factory_ =
         frame_entry->blob_url_loader_factory();
-  }
 
-  if (navigation_request->common_params().url.SchemeIsBlob() &&
-      !navigation_request->blob_url_loader_factory_) {
-    // If this navigation entry came from session history then the blob factory
-    // would have been cleared in NavigationEntryImpl::ResetForCommit(). This is
-    // avoid keeping large blobs alive unnecessarily and the spec is unclear. So
-    // create a new blob factory which will work if the blob happens to still be
-    // alive.
-    navigation_request->blob_url_loader_factory_ =
-        ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-            frame_tree_node->navigator().GetController()->GetBrowserContext(),
-            navigation_request->common_params().url);
+    if (navigation_request->common_params().url.SchemeIsBlob() &&
+        !navigation_request->blob_url_loader_factory_) {
+      // If this navigation entry came from session history then the blob
+      // factory would have been cleared in
+      // NavigationEntryImpl::ResetForCommit(). This is avoid keeping large
+      // blobs alive unnecessarily and the spec is unclear. So create a new blob
+      // factory which will work if the blob happens to still be alive,
+      // resolving the blob URL in the site instance it was loaded in.
+      navigation_request->blob_url_loader_factory_ =
+          ChromeBlobStorageContext::URLLoaderFactoryForUrl(
+              BrowserContext::GetStoragePartition(frame_tree_node->navigator()
+                                                      .GetController()
+                                                      ->GetBrowserContext(),
+                                                  frame_entry->site_instance()),
+              navigation_request->common_params().url);
+    }
   }
 
   return navigation_request;

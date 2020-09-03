@@ -67,15 +67,15 @@ class ProtoDatabaseProvider;
 namespace content {
 
 class BackgroundFetchContext;
+class BlobRegistryWrapper;
 class ConversionManagerImpl;
 class CookieStoreContext;
-class BlobRegistryWrapper;
-class IndexedDBContextImpl;
-class PrefetchURLLoaderService;
 class GeneratedCodeCacheContext;
+class IndexedDBContextImpl;
 class NativeFileSystemEntryFactory;
 class NativeFileSystemManagerImpl;
 class NativeIOContext;
+class PrefetchURLLoaderService;
 class QuotaContext;
 
 class CONTENT_EXPORT StoragePartitionImpl
@@ -420,7 +420,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   // The purpose of the Create, Initialize sequence is that code that
   // initializes members of the StoragePartitionImpl and gets a pointer to it
   // can query properties of the StoragePartitionImpl (notably GetPath()).
-  void Initialize();
+  // If `fallback_for_blob_urls` is not null, blob urls that can't be resolved
+  // in this storage partition will be attempted to be resolved in the fallback
+  // storage partition instead.
+  void Initialize(StoragePartitionImpl* fallback_for_blob_urls = nullptr);
 
   // If we're running Storage Service out-of-process and it crashes, this
   // re-establishes a connection and makes sure the service returns to a usable
