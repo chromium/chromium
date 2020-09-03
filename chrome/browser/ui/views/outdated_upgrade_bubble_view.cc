@@ -152,6 +152,9 @@ void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
                                             : IDS_REENABLE_UPDATES))
           .AddBodyText(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TEXT),
                        ui::DialogModelBodyText::Params().SetIsSecondary())
+          .SetWindowClosingCallback(
+              base::BindOnce(&OutdatedUpgradeBubbleDelegate::OnWindowClosing,
+                             base::Unretained(g_upgrade_bubble)))
           .SetCloseCallback(base::BindOnce(
               &base::RecordAction,
               base::UserMetricsAction("OutdatedUpgradeBubble.Later")))
