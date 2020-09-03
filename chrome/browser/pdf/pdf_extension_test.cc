@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_timeouts.h"
@@ -2110,20 +2111,27 @@ class PDFExtensionClipboardTest : public PDFExtensionTestWithParam,
         false);
   }
 
-  // Checks the Linux selection clipboard by polling.
-  void CheckSelectionClipboard(const std::string& expected) {
+  // Runs `action` and checks the Linux selection clipboard contains `expected`.
+  void DoActionAndCheckSelectionClipboard(base::OnceClosure action,
+                                          const std::string& expected) {
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-    CheckClipboard(ui::ClipboardBuffer::kSelection, expected);
+    DoActionAndCheckClipboard(std::move(action),
+                              ui::ClipboardBuffer::kSelection, expected);
+#else
+    // Even though there is no selection clipboard to check, `action` still
+    // needs to run.
+    std::move(action).Run();
 #endif
   }
 
-  // Sends a copy command and checks the copy/paste clipboard by
-  // polling. Note: Trying to send ctrl+c does not work correctly with
+  // Sends a copy command and checks the copy/paste clipboard.
+  // Note: Trying to send ctrl+c does not work correctly with
   // SimulateKeyPress(). Using IDC_COPY does not work on Mac in browser_tests.
   void SendCopyCommandAndCheckCopyPasteClipboard(const std::string& expected) {
-    content::RunAllPendingInMessageLoop();
-    GetWebContentsForInputRouting()->Copy();
-    CheckClipboard(ui::ClipboardBuffer::kCopyPaste, expected);
+    DoActionAndCheckClipboard(base::BindLambdaForTesting([&]() {
+                                GetWebContentsForInputRouting()->Copy();
+                              }),
+                              ui::ClipboardBuffer::kCopyPaste, expected);
   }
 
   content::WebContents* GetWebContentsForInputRouting() {
@@ -2131,14 +2139,17 @@ class PDFExtensionClipboardTest : public PDFExtensionTestWithParam,
   }
 
  private:
-  void CheckClipboard(ui::ClipboardBuffer clipboard_buffer,
-                      const std::string& expected) {
+  // Runs `action` and checks `clipboard_buffer` contains `expected`.
+  void DoActionAndCheckClipboard(base::OnceClosure action,
+                                 ui::ClipboardBuffer clipboard_buffer,
+                                 const std::string& expected) {
     ui::ClipboardMonitor::GetInstance()->AddObserver(this);
     DCHECK(!clipboard_changed_);
     DCHECK(!clipboard_quit_closure_);
 
     base::RunLoop run_loop;
     clipboard_quit_closure_ = run_loop.QuitClosure();
+    std::move(action).Run();
     run_loop.Run();
 
     EXPECT_TRUE(clipboard_changed_);
@@ -2170,12 +2181,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   ClickLeftSideOfEditableComboBox();
 
   // Press shift + right arrow 3 times. Letting go of shift in between.
-  PressShiftRightArrow();
-  CheckSelectionClipboard("H");
-  PressShiftRightArrow();
-  CheckSelectionClipboard("HE");
-  PressShiftRightArrow();
-  CheckSelectionClipboard("HEL");
+  auto action = base::BindLambdaForTesting([&]() { PressShiftRightArrow(); });
+  DoActionAndCheckSelectionClipboard(action, "H");
+  DoActionAndCheckSelectionClipboard(action, "HE");
+  DoActionAndCheckSelectionClipboard(action, "HEL");
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
@@ -2196,17 +2205,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
     PressRightArrow();
 
   // Press shift + left arrow 2 times. Letting go of shift in between.
-  PressShiftLeftArrow();
-  CheckSelectionClipboard("L");
-  PressShiftLeftArrow();
-  CheckSelectionClipboard("EL");
+  auto action = base::BindLambdaForTesting([&]() { PressShiftLeftArrow(); });
+  DoActionAndCheckSelectionClipboard(action, "L");
+  DoActionAndCheckSelectionClipboard(action, "EL");
   SendCopyCommandAndCheckCopyPasteClipboard("EL");
 
   // Press shift + left arrow 2 times. Letting go of shift in between.
-  PressShiftLeftArrow();
-  CheckSelectionClipboard("HEL");
-  PressShiftLeftArrow();
-  CheckSelectionClipboard("HEL");
+  DoActionAndCheckSelectionClipboard(action, "HEL");
+  DoActionAndCheckSelectionClipboard(action, "HEL");
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
@@ -2226,15 +2232,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
         GetWebContentsForInputRouting(), false, true, false, false);
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
-                                   ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
-    CheckSelectionClipboard("H");
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
-                                   ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
-    CheckSelectionClipboard("HE");
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
-                                   ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
-    CheckSelectionClipboard("HEL");
+    auto action = base::BindLambdaForTesting([&]() {
+      hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
+                                     ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
+    });
+    DoActionAndCheckSelectionClipboard(action, "H");
+    DoActionAndCheckSelectionClipboard(action, "HE");
+    DoActionAndCheckSelectionClipboard(action, "HEL");
   }
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
@@ -2257,15 +2261,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest, CombinedShiftArrowPresses) {
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
         GetWebContentsForInputRouting(), false, true, false, false);
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_LEFT,
-                                   ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT);
-    CheckSelectionClipboard("L");
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_LEFT,
-                                   ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT);
-    CheckSelectionClipboard("EL");
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_LEFT,
-                                   ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT);
-    CheckSelectionClipboard("HEL");
+    auto action = base::BindLambdaForTesting([&]() {
+      hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_LEFT,
+                                     ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT);
+    });
+    DoActionAndCheckSelectionClipboard(action, "L");
+    DoActionAndCheckSelectionClipboard(action, "EL");
+    DoActionAndCheckSelectionClipboard(action, "HEL");
   }
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 
@@ -2273,12 +2275,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest, CombinedShiftArrowPresses) {
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
         GetWebContentsForInputRouting(), false, true, false, false);
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
-                                   ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
-    CheckSelectionClipboard("EL");
-    hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
-                                   ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
-    CheckSelectionClipboard("L");
+    auto action = base::BindLambdaForTesting([&]() {
+      hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
+                                     ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
+    });
+    DoActionAndCheckSelectionClipboard(action, "EL");
+    DoActionAndCheckSelectionClipboard(action, "L");
   }
   SendCopyCommandAndCheckCopyPasteClipboard("L");
 }
