@@ -336,8 +336,7 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 }
 
 - (void)compromisedCredentialsDidChange:
-    (password_manager::CompromisedCredentialsManager::CredentialsView)
-        credentials {
+    (password_manager::InsecureCredentialsManager::CredentialsView)credentials {
   self.passwordCheckRowState =
       [self computePasswordCheckRowState:self.currentPasswordCheckState];
   // Push update to the display.

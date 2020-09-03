@@ -169,8 +169,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 }
 
 - (void)compromisedCredentialsDidChange:
-    (password_manager::CompromisedCredentialsManager::CredentialsView)
-        credentials {
+    (password_manager::InsecureCredentialsManager::CredentialsView)credentials {
   // Compromised passwords changes has no effect on UI while check is running.
   if (_passwordCheckManager->GetPasswordCheckState() ==
       PasswordCheckState::kRunning)

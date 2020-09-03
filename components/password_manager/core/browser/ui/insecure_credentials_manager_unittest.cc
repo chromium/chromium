@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/ui/compromised_credentials_manager.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
@@ -34,16 +34,16 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 
-struct MockCompromisedCredentialsManagerObserver
-    : CompromisedCredentialsManager::Observer {
+struct MockInsecureCredentialsManagerObserver
+    : InsecureCredentialsManager::Observer {
   MOCK_METHOD(void,
               OnCompromisedCredentialsChanged,
-              (CompromisedCredentialsManager::CredentialsView),
+              (InsecureCredentialsManager::CredentialsView),
               (override));
 };
 
-using StrictMockCompromisedCredentialsManagerObserver =
-    ::testing::StrictMock<MockCompromisedCredentialsManagerObserver>;
+using StrictMockInsecureCredentialsManagerObserver =
+    ::testing::StrictMock<MockInsecureCredentialsManagerObserver>;
 
 CompromisedCredentials MakeCompromised(
     base::StringPiece signon_realm,
@@ -94,7 +94,7 @@ class CompromisedCredentialsManagerTest : public ::testing::Test {
   }
 
   TestPasswordStore& store() { return *store_; }
-  CompromisedCredentialsManager& provider() { return provider_; }
+  InsecureCredentialsManager& provider() { return provider_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
@@ -104,7 +104,7 @@ class CompromisedCredentialsManagerTest : public ::testing::Test {
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   SavedPasswordsPresenter presenter_{store_};
-  CompromisedCredentialsManager provider_{&presenter_, store_};
+  InsecureCredentialsManager provider_{&presenter_, store_};
 };
 
 }  // namespace
@@ -132,7 +132,7 @@ TEST_F(CompromisedCredentialsManagerTest,
   std::vector<CompromisedCredentials> credentials = {
       MakeCompromised(kExampleCom, kUsername1)};
 
-  StrictMockCompromisedCredentialsManagerObserver observer;
+  StrictMockInsecureCredentialsManagerObserver observer;
   provider().AddObserver(&observer);
 
   // Adding a compromised credential should notify observers.
@@ -179,7 +179,7 @@ TEST_F(CompromisedCredentialsManagerTest,
   CompromisedCredentials leaked_credentials =
       MakeCompromised(kExampleCom, kUsername1, CompromiseType::kLeaked);
 
-  StrictMockCompromisedCredentialsManagerObserver observer;
+  StrictMockInsecureCredentialsManagerObserver observer;
   provider().AddObserver(&observer);
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
   store().AddCompromisedCredentials(phished_credentials);
@@ -208,7 +208,7 @@ TEST_F(CompromisedCredentialsManagerTest,
 // Tests whether adding and removing an observer works as expected.
 TEST_F(CompromisedCredentialsManagerTest,
        NotifyObserversAboutSavedPasswordsChanges) {
-  StrictMockCompromisedCredentialsManagerObserver observer;
+  StrictMockInsecureCredentialsManagerObserver observer;
   provider().AddObserver(&observer);
 
   PasswordForm saved_password =
@@ -492,7 +492,7 @@ TEST_F(CompromisedCredentialsManagerTest, UpdateCompromisedPassword) {
   CredentialWithPassword expected =
       MakeCompromisedCredential(password_form, credential);
 
-  provider().UpdateCompromisedCredentials(expected, kPassword2);
+  provider().UpdateCredential(expected, kPassword2);
   RunUntilIdle();
   expected.password = base::UTF8ToUTF16(kPassword2);
 
@@ -514,7 +514,7 @@ TEST_F(CompromisedCredentialsManagerTest, RemoveCompromisedCredential) {
 
   EXPECT_THAT(provider().GetCompromisedCredentials(), ElementsAre(expected));
 
-  EXPECT_TRUE(provider().RemoveCompromisedCredential(expected));
+  EXPECT_TRUE(provider().RemoveCredential(expected));
   RunUntilIdle();
   EXPECT_THAT(provider().GetCompromisedCredentials(), IsEmpty());
 }
@@ -535,7 +535,7 @@ class CompromisedCredentialsManagerWithTwoStoresTest : public ::testing::Test {
 
   TestPasswordStore& profile_store() { return *profile_store_; }
   TestPasswordStore& account_store() { return *account_store_; }
-  CompromisedCredentialsManager& provider() { return provider_; }
+  InsecureCredentialsManager& provider() { return provider_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
@@ -546,8 +546,8 @@ class CompromisedCredentialsManagerWithTwoStoresTest : public ::testing::Test {
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
   SavedPasswordsPresenter presenter_{profile_store_, account_store_};
-  CompromisedCredentialsManager provider_{&presenter_, profile_store_,
-                                          account_store_};
+  InsecureCredentialsManager provider_{&presenter_, profile_store_,
+                                       account_store_};
 };
 }  // namespace
 
@@ -658,7 +658,7 @@ TEST_F(CompromisedCredentialsManagerWithTwoStoresTest,
   RunUntilIdle();
 
   // Now remove the compromised credentials
-  EXPECT_TRUE(provider().RemoveCompromisedCredential(
+  EXPECT_TRUE(provider().RemoveCredential(
       CredentialView(kExampleCom, GURL(), base::ASCIIToUTF16(kUsername1),
                      base::ASCIIToUTF16(kPassword1))));
   RunUntilIdle();

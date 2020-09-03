@@ -64,14 +64,14 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::StrictMock;
 
-using CompromisedCredentialsView =
-    password_manager::CompromisedCredentialsManager::CredentialsView;
+using InsecureCredentialsView =
+    password_manager::InsecureCredentialsManager::CredentialsView;
 
 struct MockPasswordCheckManagerObserver
     : IOSChromePasswordCheckManager::Observer {
   MOCK_METHOD(void,
               CompromisedCredentialsChanged,
-              (CompromisedCredentialsView),
+              (InsecureCredentialsView),
               (override));
   MOCK_METHOD(void,
               PasswordCheckStatusChanged,

@@ -18,8 +18,8 @@
 namespace {
 using password_manager::CredentialWithPassword;
 using password_manager::LeakCheckCredential;
-using CompromisedCredentialsView =
-    password_manager::CompromisedCredentialsManager::CredentialsView;
+using InsecureCredentialsView =
+    password_manager::InsecureCredentialsManager::CredentialsView;
 using SavedPasswordsView =
     password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using State = password_manager::BulkLeakCheckServiceInterface::State;
@@ -95,22 +95,21 @@ IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
           browser_state,
           ServiceAccessType::EXPLICIT_ACCESS)),
       saved_passwords_presenter_(password_store_),
-      compromised_credentials_manager_(&saved_passwords_presenter_,
-                                       password_store_),
+      insecure_credentials_manager_(&saved_passwords_presenter_,
+                                    password_store_),
       bulk_leak_check_service_adapter_(
           &saved_passwords_presenter_,
           IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
               browser_state),
           browser_state->GetPrefs()) {
   observed_saved_passwords_presenter_.Add(&saved_passwords_presenter_);
-  observed_compromised_credentials_manager_.Add(
-      &compromised_credentials_manager_);
+  observed_insecure_credentials_manager_.Add(&insecure_credentials_manager_);
   observed_bulk_leak_check_service_.Add(
       IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(browser_state));
 
   // Instructs the presenter and manager to initialize and build their caches.
   saved_passwords_presenter_.Init();
-  compromised_credentials_manager_.Init();
+  insecure_credentials_manager_.Init();
 }
 
 IOSChromePasswordCheckManager::~IOSChromePasswordCheckManager() = default;
@@ -149,13 +148,13 @@ base::Time IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
 
 std::vector<CredentialWithPassword>
 IOSChromePasswordCheckManager::GetCompromisedCredentials() const {
-  return compromised_credentials_manager_.GetCompromisedCredentials();
+  return insecure_credentials_manager_.GetCompromisedCredentials();
 }
 
 password_manager::SavedPasswordsPresenter::SavedPasswordsView
 IOSChromePasswordCheckManager::GetSavedPasswordsFor(
     const CredentialWithPassword& credential) const {
-  return compromised_credentials_manager_.GetSavedPasswordsFor(credential);
+  return insecure_credentials_manager_.GetSavedPasswordsFor(credential);
 }
 
 void IOSChromePasswordCheckManager::EditPasswordForm(
@@ -167,7 +166,7 @@ void IOSChromePasswordCheckManager::EditPasswordForm(
 void IOSChromePasswordCheckManager::EditCompromisedPasswordForm(
     const autofill::PasswordForm& form,
     base::StringPiece password) {
-  compromised_credentials_manager_.UpdateCompromisedCredentials(
+  insecure_credentials_manager_.UpdateCredential(
       password_manager::CredentialView(form), password);
 }
 
@@ -182,7 +181,7 @@ void IOSChromePasswordCheckManager::DeletePasswordForm(
 
 void IOSChromePasswordCheckManager::DeleteCompromisedPasswordForm(
     const autofill::PasswordForm& form) {
-  compromised_credentials_manager_.RemoveCompromisedCredential(
+  insecure_credentials_manager_.RemoveCredential(
       password_manager::CredentialView(form));
 }
 
@@ -196,7 +195,7 @@ void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
 }
 
 void IOSChromePasswordCheckManager::OnCompromisedCredentialsChanged(
-    CompromisedCredentialsView credentials) {
+    InsecureCredentialsView credentials) {
   for (auto& observer : observers_) {
     observer.CompromisedCredentialsChanged(credentials);
   }
@@ -233,7 +232,7 @@ void IOSChromePasswordCheckManager::OnCredentialDone(
     const LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
   if (is_leaked) {
-    compromised_credentials_manager_.SaveCompromisedCredential(credential);
+    insecure_credentials_manager_.SaveCompromisedCredential(credential);
   }
 }
 

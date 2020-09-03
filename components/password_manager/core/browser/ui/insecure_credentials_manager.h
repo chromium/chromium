@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_COMPROMISED_CREDENTIALS_MANAGER_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_COMPROMISED_CREDENTIALS_MANAGER_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_INSECURE_CREDENTIALS_MANAGER_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_INSECURE_CREDENTIALS_MANAGER_H_
 
 #include <map>
 #include <vector>
@@ -95,12 +95,12 @@ struct PasswordCredentialLess {
 // Extra information about InsecureCredentials which is required by UI.
 struct CredentialMetadata;
 
-// This class provides clients with saved compromised credentials and
-// possibility to save new LeakedCredentials, edit/delete compromised
-// credentials and match compromised credentials with corresponding
-// autofill::PasswordForms. It supports an observer interface, and clients can
-// register themselves to get notified about changes to the list.
-class CompromisedCredentialsManager
+// This class provides clients with saved insecure credentials and possibility
+// to save new LeakedCredentials, edit/delete insecure credentials and match
+// insecure credentials with corresponding autofill::PasswordForms. It supports
+// an observer interface, and clients can register themselves to get notified
+// about changes to the list.
+class InsecureCredentialsManager
     : public CompromisedCredentialsReader::Observer,
       public SavedPasswordsPresenter::Observer {
  public:
@@ -116,11 +116,11 @@ class CompromisedCredentialsManager
         CredentialsView credentials) = 0;
   };
 
-  CompromisedCredentialsManager(
+  InsecureCredentialsManager(
       SavedPasswordsPresenter* presenter,
       scoped_refptr<PasswordStore> profile_store,
       scoped_refptr<PasswordStore> account_store = nullptr);
-  ~CompromisedCredentialsManager() override;
+  ~InsecureCredentialsManager() override;
 
   void Init();
 
@@ -130,17 +130,17 @@ class CompromisedCredentialsManager
 
   // Attempts to change the stored password of |credential| to |new_password|.
   // Returns whether the change succeeded.
-  bool UpdateCompromisedCredentials(const CredentialView& credential,
-                                    const base::StringPiece password);
+  bool UpdateCredential(const CredentialView& credential,
+                        const base::StringPiece password);
 
   // Attempts to remove |credential| from the password store. Returns whether
   // the remove succeeded.
-  bool RemoveCompromisedCredential(const CredentialView& credential);
+  bool RemoveCredential(const CredentialView& credential);
 
   // Returns a vector of currently compromised credentials.
   std::vector<CredentialWithPassword> GetCompromisedCredentials() const;
 
-  // Returns password forms which map to provided compromised credential.
+  // Returns password forms which map to provided insecure credential.
   // In most of the cases vector will have 1 element only.
   SavedPasswordsPresenter::SavedPasswordsView GetSavedPasswordsFor(
       const CredentialView& credential) const;
@@ -170,11 +170,11 @@ class CompromisedCredentialsManager
   // profile store of the account store accordingly.
   PasswordStore& GetStoreFor(const autofill::PasswordForm& form);
 
-  // A weak handle to the presenter used to join the list of compromised
+  // A weak handle to the presenter used to join the list of insecure
   // credentials with saved passwords. Needs to outlive this instance.
   SavedPasswordsPresenter* presenter_ = nullptr;
 
-  // The password stores containing the compromised credentials.
+  // The password stores containing the insecure credentials.
   scoped_refptr<PasswordStore> profile_store_;
   scoped_refptr<PasswordStore> account_store_;
 
@@ -186,7 +186,7 @@ class CompromisedCredentialsManager
   std::vector<CompromisedCredentials> compromised_credentials_;
 
   // A map that matches CredentialView to corresponding PasswordForms, latest
-  // create_type and combined compromise type.
+  // create_type and combined insecure type.
   CredentialPasswordsMap credentials_to_forms_;
 
   // A scoped observer for |compromised_credentials_reader_| to listen changes
@@ -204,4 +204,4 @@ class CompromisedCredentialsManager
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_COMPROMISED_CREDENTIALS_MANAGER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_INSECURE_CREDENTIALS_MANAGER_H_

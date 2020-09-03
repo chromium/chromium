@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUES_PRESENTER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUES_PRESENTER_H_
 
-#include "components/password_manager/core/browser/ui/compromised_credentials_manager.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 @protocol PasswordIssue;
 

@@ -22,8 +22,7 @@
 // Notifies delegate about a change in a compromised credentials. Mirroring
 // IOSChromePasswordCheckManager::Observer::CompromisedCredentialsChanged.
 - (void)compromisedCredentialsDidChange:
-    (password_manager::CompromisedCredentialsManager::CredentialsView)
-        credentials;
+    (password_manager::InsecureCredentialsManager::CredentialsView)credentials;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -36,8 +35,8 @@ class PasswordCheckObserverBridge
 
   void PasswordCheckStatusChanged(PasswordCheckState state) override;
   void CompromisedCredentialsChanged(
-      password_manager::CompromisedCredentialsManager::CredentialsView
-          credentials) override;
+      password_manager::InsecureCredentialsManager::CredentialsView credentials)
+      override;
 
  private:
   __weak id<PasswordCheckObserver> delegate_ = nil;

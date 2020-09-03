@@ -12,7 +12,7 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/ui/compromised_credentials_manager.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "url/android/gurl_android.h"
 
 namespace {

@@ -37,8 +37,8 @@
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
-#include "components/password_manager/core/browser/ui/compromised_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -62,8 +62,8 @@ using password_manager::InsecureCredentialTypeFlags;
 using password_manager::LeakCheckCredential;
 using ui::TimeFormat;
 
-using CompromisedCredentialsView =
-    password_manager::CompromisedCredentialsManager::CredentialsView;
+using InsecureCredentialsView =
+    password_manager::InsecureCredentialsManager::CredentialsView;
 using SavedPasswordsView =
     password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using State = password_manager::BulkLeakCheckService::State;
@@ -239,16 +239,15 @@ PasswordCheckDelegate::PasswordCheckDelegate(Profile* profile)
           ServiceAccessType::EXPLICIT_ACCESS)),
       saved_passwords_presenter_(profile_password_store_,
                                  account_password_store_),
-      compromised_credentials_manager_(&saved_passwords_presenter_,
-                                       profile_password_store_,
-                                       account_password_store_),
+      insecure_credentials_manager_(&saved_passwords_presenter_,
+                                    profile_password_store_,
+                                    account_password_store_),
       bulk_leak_check_service_adapter_(
           &saved_passwords_presenter_,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),
           profile_->GetPrefs()) {
   observed_saved_passwords_presenter_.Add(&saved_passwords_presenter_);
-  observed_compromised_credentials_manager_.Add(
-      &compromised_credentials_manager_);
+  observed_insecure_credentials_manager_.Add(&insecure_credentials_manager_);
   observed_bulk_leak_check_service_.Add(
       BulkLeakCheckServiceFactory::GetForProfile(profile_));
 
@@ -257,7 +256,7 @@ PasswordCheckDelegate::PasswordCheckDelegate(Profile* profile)
   // GetCompromisedCredentials() that might happen until then will return an
   // empty list.
   saved_passwords_presenter_.Init();
-  compromised_credentials_manager_.Init();
+  insecure_credentials_manager_.Init();
 }
 
 PasswordCheckDelegate::~PasswordCheckDelegate() = default;
@@ -266,7 +265,7 @@ std::vector<api::passwords_private::CompromisedCredential>
 PasswordCheckDelegate::GetCompromisedCredentials() {
   std::vector<CompromisedCredentialAndType>
       ordered_compromised_credential_and_types = OrderCompromisedCredentials(
-          compromised_credentials_manager_.GetCompromisedCredentials());
+          insecure_credentials_manager_.GetCompromisedCredentials());
 
   std::vector<api::passwords_private::CompromisedCredential>
       compromised_credentials;
@@ -284,7 +283,7 @@ PasswordCheckDelegate::GetCompromisedCredentials() {
       // special handling for Android. Here we use affiliation information
       // instead of the origin.
       const PasswordForm& android_form =
-          compromised_credentials_manager_.GetSavedPasswordsFor(credential)[0];
+          insecure_credentials_manager_.GetSavedPasswordsFor(credential)[0];
       if (!android_form.app_display_name.empty()) {
         api_credential.formatted_origin = android_form.app_display_name;
         api_credential.detailed_origin = android_form.app_display_name;
@@ -316,7 +315,7 @@ PasswordCheckDelegate::GetCompromisedCredentials() {
     }
 
     api_credential.id =
-        compromised_credential_id_generator_.GenerateId(credential);
+        insecure_credential_id_generator_.GenerateId(credential);
     api_credential.signon_realm = credential.signon_realm;
     api_credential.username = base::UTF16ToUTF8(credential.username);
     api_credential.compromise_time =
@@ -352,8 +351,8 @@ bool PasswordCheckDelegate::ChangeCompromisedCredential(
   if (!compromised_credential)
     return false;
 
-  return compromised_credentials_manager_.UpdateCompromisedCredentials(
-      *compromised_credential, new_password);
+  return insecure_credentials_manager_.UpdateCredential(*compromised_credential,
+                                                        new_password);
 }
 
 bool PasswordCheckDelegate::RemoveCompromisedCredential(
@@ -364,7 +363,7 @@ bool PasswordCheckDelegate::RemoveCompromisedCredential(
   if (!compromised_credential)
     return false;
 
-  return compromised_credentials_manager_.RemoveCompromisedCredential(
+  return insecure_credentials_manager_.RemoveCredential(
       *compromised_credential);
 }
 
@@ -465,7 +464,7 @@ void PasswordCheckDelegate::OnSavedPasswordsChanged(SavedPasswordsView) {
 }
 
 void PasswordCheckDelegate::OnCompromisedCredentialsChanged(
-    CompromisedCredentialsView credentials) {
+    InsecureCredentialsView credentials) {
   if (auto* event_router =
           PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
     event_router->OnCompromisedCredentialsChanged(GetCompromisedCredentials());
@@ -501,7 +500,7 @@ void PasswordCheckDelegate::OnCredentialDone(
     const LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
   if (is_leaked) {
-    compromised_credentials_manager_.SaveCompromisedCredential(credential);
+    insecure_credentials_manager_.SaveCompromisedCredential(credential);
   }
 
   // Update the progress in case there is one.
@@ -520,7 +519,7 @@ const CredentialWithPassword*
 PasswordCheckDelegate::FindMatchingCompromisedCredential(
     const api::passwords_private::CompromisedCredential& credential) const {
   const CredentialWithPassword* compromised_credential =
-      compromised_credential_id_generator_.TryGetKey(credential.id);
+      insecure_credential_id_generator_.TryGetKey(credential.id);
   if (!compromised_credential)
     return nullptr;
 

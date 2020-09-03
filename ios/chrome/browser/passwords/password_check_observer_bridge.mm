@@ -28,7 +28,6 @@ void PasswordCheckObserverBridge::PasswordCheckStatusChanged(
 }
 
 void PasswordCheckObserverBridge::CompromisedCredentialsChanged(
-    password_manager::CompromisedCredentialsManager::CredentialsView
-        credentials) {
+    password_manager::InsecureCredentialsManager::CredentialsView credentials) {
   [delegate_ compromisedCredentialsDidChange:credentials];
 }

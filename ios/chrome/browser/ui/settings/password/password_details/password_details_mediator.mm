@@ -15,8 +15,8 @@
 #error "This file requires ARC support."
 #endif
 
-using CompromisedCredentialsView =
-    password_manager::CompromisedCredentialsManager::CredentialsView;
+using InsecureCredentialsView =
+    password_manager::InsecureCredentialsManager::CredentialsView;
 
 @interface PasswordDetailsMediator () <
     PasswordCheckObserver,
@@ -80,15 +80,14 @@ using CompromisedCredentialsView =
   // passwords.
 }
 
-- (void)compromisedCredentialsDidChange:
-    (CompromisedCredentialsView)credentials {
+- (void)compromisedCredentialsDidChange:(InsecureCredentialsView)credentials {
   [self fetchPasswordWith:credentials];
 }
 
 #pragma mark - Private
 
 // Updates password details and sets it to a consumer.
-- (void)fetchPasswordWith:(CompromisedCredentialsView)credentials {
+- (void)fetchPasswordWith:(InsecureCredentialsView)credentials {
   PasswordDetails* password =
       [[PasswordDetails alloc] initWithPasswordForm:_password];
   password.compromised = NO;

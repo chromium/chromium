@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/ui/compromised_credentials_manager.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 #include <algorithm>
 #include <iterator>
@@ -64,11 +64,11 @@ InsecureCredentialTypeFlags ConvertCompromiseType(CompromiseType type) {
   NOTREACHED();
 }
 
-// This function takes two lists of compromised credentials and saved passwords
-// and joins them, producing a map that contains CredentialWithPassword as keys
-// and vector<autofill::PasswordForm> as values with InsecureCredentialTypeFlags
-// as values.
-CredentialPasswordsMap JoinCompromisedCredentialsWithSavedPasswords(
+// This function takes two lists of insecure credentials and saved passwords and
+// joins them, producing a map that contains CredentialWithPassword as keys and
+// vector<autofill::PasswordForm> as values with InsecureCredentialTypeFlags as
+// values.
+CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
     const std::vector<CompromisedCredentials>& credentials,
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
   CredentialPasswordsMap credentials_to_forms;
@@ -185,7 +185,7 @@ CredentialWithPassword& CredentialWithPassword::operator=(
 CredentialWithPassword& CredentialWithPassword::operator=(
     CredentialWithPassword&& other) = default;
 
-CompromisedCredentialsManager::CompromisedCredentialsManager(
+InsecureCredentialsManager::InsecureCredentialsManager(
     SavedPasswordsPresenter* presenter,
     scoped_refptr<PasswordStore> profile_store,
     scoped_refptr<PasswordStore> account_store)
@@ -199,13 +199,13 @@ CompromisedCredentialsManager::CompromisedCredentialsManager(
   observed_saved_password_presenter_.Add(presenter_);
 }
 
-CompromisedCredentialsManager::~CompromisedCredentialsManager() = default;
+InsecureCredentialsManager::~InsecureCredentialsManager() = default;
 
-void CompromisedCredentialsManager::Init() {
+void InsecureCredentialsManager::Init() {
   compromised_credentials_reader_.Init();
 }
 
-void CompromisedCredentialsManager::SaveCompromisedCredential(
+void InsecureCredentialsManager::SaveCompromisedCredential(
     const LeakCheckCredential& credential) {
   // Iterate over all currently saved credentials and mark those as compromised
   // that have the same canonicalized username and password.
@@ -227,7 +227,7 @@ void CompromisedCredentialsManager::SaveCompromisedCredential(
   }
 }
 
-bool CompromisedCredentialsManager::UpdateCompromisedCredentials(
+bool InsecureCredentialsManager::UpdateCredential(
     const CredentialView& credential,
     const base::StringPiece password) {
   auto it = credentials_to_forms_.find(credential);
@@ -248,7 +248,7 @@ bool CompromisedCredentialsManager::UpdateCompromisedCredentials(
   return presenter_->EditPassword(forms[0], base::UTF8ToUTF16(password));
 }
 
-bool CompromisedCredentialsManager::RemoveCompromisedCredential(
+bool InsecureCredentialsManager::RemoveCredential(
     const CredentialView& credential) {
   auto it = credentials_to_forms_.find(credential);
   if (it == credentials_to_forms_.end())
@@ -264,12 +264,12 @@ bool CompromisedCredentialsManager::RemoveCompromisedCredential(
 }
 
 std::vector<CredentialWithPassword>
-CompromisedCredentialsManager::GetCompromisedCredentials() const {
+InsecureCredentialsManager::GetCompromisedCredentials() const {
   return ExtractCompromisedCredentials(credentials_to_forms_);
 }
 
 SavedPasswordsPresenter::SavedPasswordsView
-CompromisedCredentialsManager::GetSavedPasswordsFor(
+InsecureCredentialsManager::GetSavedPasswordsFor(
     const CredentialView& credential) const {
   auto it = credentials_to_forms_.find(credential);
   return it != credentials_to_forms_.end()
@@ -277,32 +277,32 @@ CompromisedCredentialsManager::GetSavedPasswordsFor(
              : SavedPasswordsPresenter::SavedPasswordsView();
 }
 
-void CompromisedCredentialsManager::AddObserver(Observer* observer) {
+void InsecureCredentialsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void CompromisedCredentialsManager::RemoveObserver(Observer* observer) {
+void InsecureCredentialsManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
 // Re-computes the list of compromised credentials with passwords after
 // obtaining a new list of compromised credentials.
-void CompromisedCredentialsManager::OnCompromisedCredentialsChanged(
+void InsecureCredentialsManager::OnCompromisedCredentialsChanged(
     const std::vector<CompromisedCredentials>& compromised_credentials) {
   compromised_credentials_ = compromised_credentials;
   UpdateCachedDataAndNotifyObservers(presenter_->GetSavedPasswords());
 }
 
-// Re-computes the list of compromised credentials with passwords after
-// obtaining a new list of saved passwords.
-void CompromisedCredentialsManager::OnSavedPasswordsChanged(
+// Re-computes the list of insecure credentials with passwords after obtaining a
+// new list of saved passwords.
+void InsecureCredentialsManager::OnSavedPasswordsChanged(
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
   UpdateCachedDataAndNotifyObservers(saved_passwords);
 }
 
-void CompromisedCredentialsManager::UpdateCachedDataAndNotifyObservers(
+void InsecureCredentialsManager::UpdateCachedDataAndNotifyObservers(
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
-  credentials_to_forms_ = JoinCompromisedCredentialsWithSavedPasswords(
+  credentials_to_forms_ = JoinInsecureCredentialsWithSavedPasswords(
       compromised_credentials_, saved_passwords);
   std::vector<CredentialWithPassword> credentials =
       ExtractCompromisedCredentials(credentials_to_forms_);
@@ -311,7 +311,7 @@ void CompromisedCredentialsManager::UpdateCachedDataAndNotifyObservers(
   }
 }
 
-PasswordStore& CompromisedCredentialsManager::GetStoreFor(
+PasswordStore& InsecureCredentialsManager::GetStoreFor(
     const autofill::PasswordForm& form) {
   return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }

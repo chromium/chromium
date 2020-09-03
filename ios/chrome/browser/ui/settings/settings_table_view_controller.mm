@@ -1401,8 +1401,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 }
 
 - (void)compromisedCredentialsDidChange:
-    (password_manager::CompromisedCredentialsManager::CredentialsView)
-        credentials {
+    (password_manager::InsecureCredentialsManager::CredentialsView)credentials {
   [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
 }
 

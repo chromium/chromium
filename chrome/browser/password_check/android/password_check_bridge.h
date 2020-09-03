@@ -91,7 +91,7 @@ class PasswordCheckBridge : public PasswordCheckManager::Observer {
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
   // Manager handling the communication with the check service, owning and
-  // observing a `CompromisedCredentialManager` and a `SavedPasswordsPresenter`.
+  // observing a `InsecureCredentialManager` and a `SavedPasswordsPresenter`.
   PasswordCheckManager check_manager_{ProfileManager::GetLastUsedProfile(),
                                       this};
 };
