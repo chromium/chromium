@@ -4020,6 +4020,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "screen-time-integration-ios",
+    "owners": [ "edchin", "bling-flags@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "scroll-to-text-ios",
     "owners": [ "tmartino" ],
     "expiry_milestone": 90

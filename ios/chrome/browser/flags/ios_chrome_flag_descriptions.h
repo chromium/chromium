@@ -367,6 +367,11 @@ extern const char kSafetyCheckIOSDescription[];
 extern const char kSaveCardInfobarMessagesUIName[];
 extern const char kSaveCardInfobarMessagesUIDescription[];
 
+// Title and description for the flag to enable integration with the ScreenTime
+// system.
+extern const char kScreenTimeIntegrationName[];
+extern const char kScreenTimeIntegrationDescription[];
+
 // Title and description for the flag to enable the Scroll to Text feature.
 extern const char kScrollToTextIOSName[];
 extern const char kScrollToTextIOSDescription[];

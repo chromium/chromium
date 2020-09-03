@@ -426,6 +426,10 @@ const char kSaveCardInfobarMessagesUIName[] = "Save Card Infobar Messages UI";
 const char kSaveCardInfobarMessagesUIDescription[] =
     "When enabled, Save Card Infobar uses the new Messages UI.";
 
+const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
+const char kScreenTimeIntegrationDescription[] =
+    "Enables integration with ScreenTime in iOS 14.0 and above.";
+
 const char kScrollToTextIOSName[] = "Enable Scroll to Text";
 const char kScrollToTextIOSDescription[] =
     "When enabled, opening a URL with a text fragment (e.g., "

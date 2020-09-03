@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
+#include "ios/chrome/browser/ui/screen_time/features.h"
 #include "ios/chrome/browser/ui/settings/autofill/features.h"
 #import "ios/chrome/browser/ui/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
@@ -682,6 +683,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCloseAllTabsConfirmationName,
      flag_descriptions::kEnableCloseAllTabsConfirmationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableCloseAllTabsConfirmation)},
+    {"screen-time-integration-ios",
+     flag_descriptions::kScreenTimeIntegrationName,
+     flag_descriptions::kScreenTimeIntegrationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kScreenTimeIntegration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
