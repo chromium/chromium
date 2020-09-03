@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 
@@ -20,5 +21,11 @@ public interface TabGroupUi {
 
     void initializeWithNative(ChromeActivity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController);
+
+    /**
+     * @return {@link Supplier} that provides dialog visibility.
+     */
+    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
+
     void destroy();
 }

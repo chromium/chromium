@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -144,7 +145,7 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
     }
 
     @Override
-    public TabDialogDelegation getTabGridDialogDelegation() {
+    public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
         assert false : "should not reach here";
         return null;
     }

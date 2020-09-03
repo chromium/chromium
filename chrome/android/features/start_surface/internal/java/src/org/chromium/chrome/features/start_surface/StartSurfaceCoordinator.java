@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.TasksSurface;
@@ -230,8 +231,24 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public TabSwitcher.TabDialogDelegation getTabDialogDelegate() {
-        return mTabSwitcher.getTabGridDialogDelegation();
+    public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+        // If TabSwitcher has been created directly, use the TabGridDialogVisibilitySupplier from
+        // TabSwitcher.
+        if (mTabSwitcher != null) {
+            return mTabSwitcher.getTabGridDialogVisibilitySupplier();
+        }
+        return () -> {
+            // Return true if either mTasksSurface or mSecondaryTasksSurface has a visible dialog.
+            assert mTasksSurface != null;
+            if (mTasksSurface.getTabGridDialogVisibilitySupplier() != null) {
+                if (mTasksSurface.getTabGridDialogVisibilitySupplier().get()) return true;
+            }
+            if (mSecondaryTasksSurface != null
+                    && mSecondaryTasksSurface.getTabGridDialogVisibilitySupplier() != null) {
+                if (mSecondaryTasksSurface.getTabGridDialogVisibilitySupplier().get()) return true;
+            }
+            return false;
+        };
     }
 
     @Override
