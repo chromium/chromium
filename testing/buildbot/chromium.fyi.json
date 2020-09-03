@@ -38820,6 +38820,26 @@
       }
     ]
   },
+  "linux-builderful-fast-fyi-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "linux-builderful-slow-fyi-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "linux-builderless-fast-fyi-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "linux-builderless-slow-fyi-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "linux-chromeos-code-coverage": {
     "additional_compile_targets": [
       "gn_all"

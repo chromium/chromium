@@ -2232,6 +2232,26 @@
           'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
       },
+      'linux-builderful-fast-fyi-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'linux-builderful-slow-fyi-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'linux-builderless-fast-fyi-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'linux-builderless-slow-fyi-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'linux-chromeos-code-coverage': {
         'mixins': [
           'isolate_profile_data',
