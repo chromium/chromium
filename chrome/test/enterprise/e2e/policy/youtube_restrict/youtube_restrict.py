@@ -14,7 +14,7 @@ class YouTubeRestrictTest(ChromeEnterpriseTestCase):
 
   See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ForceYouTubeRestrict"""
 
-  RestrictedText = "This video is restricted. "
+  RestrictedText = "Restricted Mode is enabled by your network administrator"
 
   @before_all
   def setup(self):
@@ -22,7 +22,7 @@ class YouTubeRestrictTest(ChromeEnterpriseTestCase):
     self.InstallWebDriver('client2019')
 
   def openRestrictedVideo(self):
-    url = "https://www.youtube.com/watch?v=JtvhQ6klunk"
+    url = "https://www.youtube.com/results?search_query=restricted"
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
     output = self.RunWebDriverTest('client2019',
