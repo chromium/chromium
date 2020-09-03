@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
@@ -103,10 +104,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            Supplier<ContextualSearchManager> contextualSearchManagerSupplier) {
+            Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, overviewModeBehaviorSupplier,
-                contextualSearchManagerSupplier);
+                contextualSearchManagerSupplier, tabModelSelectorSupplier);
         mIntentWithEffect = intentWithEffect;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls = () -> {

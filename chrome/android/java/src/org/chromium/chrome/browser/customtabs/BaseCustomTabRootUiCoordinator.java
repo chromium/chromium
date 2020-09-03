@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -38,10 +39,11 @@ public class BaseCustomTabRootUiCoordinator
             ActivityTabProvider tabProvider, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            Supplier<ContextualSearchManager> contextualSearchManagerSupplier) {
+            Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
                 bookmarkBridgeSupplier, overviewModeBehaviorSupplier,
-                contextualSearchManagerSupplier);
+                contextualSearchManagerSupplier, tabModelSelectorSupplier);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
     }

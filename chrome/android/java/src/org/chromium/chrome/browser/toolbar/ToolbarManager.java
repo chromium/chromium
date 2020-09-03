@@ -223,6 +223,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
      * @param overviewModeBehaviorSupplier Supplier of the overview mode manager for the current
      *                                     profile.
+     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      */
     public ToolbarManager(ChromeActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -238,7 +239,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
             ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
-            boolean shouldShowUpdateBadge) {
+            boolean shouldShowUpdateBadge,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mBrowserControlsSizer = controlsSizer;
@@ -332,7 +334,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mLocationBar.setDefaultTextEditActionModeCallback(
                 mActionModeController.getActionModeCallback());
         mLocationBar.initializeControls(new WindowDelegate(mActivity.getWindow()),
-                mActivity.getWindowAndroid(), mActivityTabProvider,
+                mActivity.getWindowAndroid(), mActivityTabProvider, tabModelSelectorSupplier,
                 mActivity::getModalDialogManager, mActivity.getShareDelegateSupplier(),
                 mIncognitoStateProvider);
         Runnable clickDelegate =

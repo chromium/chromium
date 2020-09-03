@@ -149,6 +149,8 @@ public class RootUiCoordinator
     @Nullable
     private BrowserControlsManager mBrowserControlsManager;
 
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
      * @param activity The containing {@link ChromeActivity}. TODO(https://crbug.com/931496):
@@ -162,6 +164,7 @@ public class RootUiCoordinator
      * @param overviewModeBehaviorSupplier Supplier of the overview mode manager for the current
      *                                     profile.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
+     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      */
     public RootUiCoordinator(ChromeActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -169,7 +172,8 @@ public class RootUiCoordinator
             ActivityTabProvider tabProvider, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            Supplier<ContextualSearchManager> contextualSearchManagerSupplier) {
+            Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
@@ -191,6 +195,8 @@ public class RootUiCoordinator
         mAppMenuSupplier = new ObservableSupplierImpl<>();
         mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
         mActionModeControllerCallback = new ToolbarActionModeCallback();
+
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         mOmniboxFocusStateSupplier.set(false);
 
@@ -309,8 +315,7 @@ public class RootUiCoordinator
         }
         mChromeActionModeHandler = new ChromeActionModeHandler(mActivity.getActivityTabProvider(),
                 mToolbarManager::onActionBarVisibilityChanged, (searchText) -> {
-                    TabModelSelector selector = mActivity.getTabModelSelector();
-                    if (selector == null) return;
+                    if (mTabModelSelectorSupplier.get() == null) return;
 
                     String query = ActionModeCallbackHelper.sanitizeQuery(
                             searchText, ActionModeCallbackHelper.MAX_SEARCH_QUERY_LENGTH);
@@ -321,7 +326,8 @@ public class RootUiCoordinator
                             .getTrackerForProfile(Profile.fromWebContents(tab.getWebContents()))
                             .notifyEvent(EventConstants.WEB_SEARCH_PERFORMED);
 
-                    selector.openNewTab(generateUrlParamsForSearch(tab, query),
+                    mTabModelSelectorSupplier.get().openNewTab(
+                            generateUrlParamsForSearch(tab, query),
                             TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, tab.isIncognito());
                 }, mShareDelegateSupplier);
         mVrModeObserver = new VrModeObserver() {
@@ -390,7 +396,7 @@ public class RootUiCoordinator
         } else if (id == R.id.share_menu_button_id || id == R.id.share_menu_id
                 || id == R.id.direct_share_menu_id) {
             onShareMenuItemSelected(id == R.id.direct_share_menu_id,
-                    mActivity.getTabModelSelector().isIncognitoSelected());
+                    mTabModelSelectorSupplier.get().isIncognitoSelected());
         } else if (id == R.id.paint_preview_show_id) {
             Tab tab = mActivityTabProvider.get();
             PaintPreviewTabHelper paintPreviewTabHelper = PaintPreviewTabHelper.get(tab);
@@ -512,7 +518,7 @@ public class RootUiCoordinator
                     mActivityTabProvider, mScrimCoordinator, mActionModeControllerCallback,
                     mFindToolbarManager, mProfileSupplier, mBookmarkBridgeSupplier,
                     mCanAnimateBrowserControls, mOverviewModeBehaviorSupplier, mAppMenuSupplier,
-                    shouldShowMenuUpdateBadge());
+                    shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier);
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
@@ -609,7 +615,7 @@ public class RootUiCoordinator
         }
         mFindToolbarManager = new FindToolbarManager(
                 new DeferredViewStubInflationProvider<FindToolbar>(mActivity.findViewById(stubId)),
-                mActivity.getTabModelSelector(), mActivity.getWindowAndroid(),
+                mTabModelSelectorSupplier.get(), mActivity.getWindowAndroid(),
                 mActionModeControllerCallback);
 
         mFindToolbarObserver = new FindToolbarObserver() {
@@ -729,9 +735,8 @@ public class RootUiCoordinator
     private void initDirectActionInitializer() {
         @ActivityType
         int activityType = mActivity.getActivityType();
-        TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
         mDirectActionInitializer = new DirectActionInitializer(mActivity, activityType, mActivity,
-                mActivity::onBackPressed, tabModelSelector, mFindToolbarManager,
+                mActivity::onBackPressed, mTabModelSelectorSupplier.get(), mFindToolbarManager,
                 getBottomSheetController(), mActivity.getBrowserControlsManager(),
                 mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider());
         mActivity.getLifecycleDispatcher().register(mDirectActionInitializer);
