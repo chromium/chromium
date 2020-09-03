@@ -313,6 +313,50 @@ TEST_F(CollectUserDataActionTest, SelectLogin) {
   action.ProcessAction(callback_.Get());
 }
 
+TEST_F(CollectUserDataActionTest, SelectLoginMissingUsername) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  auto* login_details = collect_user_data_proto->mutable_login_details();
+  auto* login_option = login_details->add_login_options();
+  login_option->mutable_password_manager();
+  login_option->set_payload("payload");
+
+  ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+      .WillByDefault(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
+          WebsiteLoginManager::Login(GURL(kFakeUrl), /*username=*/"")}));
+  // Action should fetch the logins, but not the passwords.
+  EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl(GURL(kFakeUrl), _))
+      .Times(1);
+  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+      .Times(0);
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([this](CollectUserDataOptions* collect_user_data_options) {
+            user_data_.succeed_ = true;
+            user_data_.login_choice_identifier_.assign(
+                collect_user_data_options->login_choices[0].identifier);
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::collect_user_data_result,
+              Property(&CollectUserDataResultProto::login_payload, "payload")),
+          Property(&ProcessedActionProto::collect_user_data_result,
+                   Property(&CollectUserDataResultProto::shown_to_user, true)),
+          Property(&ProcessedActionProto::collect_user_data_result,
+                   Property(&CollectUserDataResultProto::login_missing_username,
+                            true))))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
 TEST_F(CollectUserDataActionTest, LoginChoiceAutomaticIfNoOtherOptions) {
   ActionProto action_proto;
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();

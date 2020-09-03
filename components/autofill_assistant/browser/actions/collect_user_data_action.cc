@@ -1131,6 +1131,10 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
     if (login_details != login_details_map_.end()) {
       if (login_details->second->login.has_value()) {
         user_data->selected_login_ = *login_details->second->login;
+        if (login_details->second->login->username.empty()) {
+          processed_action_proto_->mutable_collect_user_data_result()
+              ->set_login_missing_username(true);
+        }
       }
 
       processed_action_proto_->mutable_collect_user_data_result()
