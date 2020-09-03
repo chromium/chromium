@@ -5,6 +5,7 @@
 #include "sanitizer.h"
 
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -20,9 +21,11 @@ Sanitizer::Sanitizer() = default;
 
 Sanitizer::~Sanitizer() = default;
 
-String Sanitizer::sanitizeToString(const String& input) {
-  String sanitizedString = input;
-  return sanitizedString;
+String Sanitizer::sanitizeToString(ScriptState* script_state,
+                                   const String& input,
+                                   ExceptionState& exception_state) {
+  return CreateMarkup(sanitize(script_state, input, exception_state),
+                      kChildrenOnly);
 }
 
 DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,

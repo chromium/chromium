@@ -9,6 +9,6 @@
   RuntimeEnabled=SanitizerAPI
 ] interface Sanitizer {
   [RaisesException] constructor();
-  DOMString sanitizeToString(DOMString input);
+  [CallWith=ScriptState, RaisesException] DOMString sanitizeToString(DOMString input);
   [CallWith=ScriptState, RaisesException] DocumentFragment sanitize(DOMString input);
 };
