@@ -78,10 +78,10 @@ class DISPLAY_EXPORT Screen {
   // the location of the view within that window won't influence the result).
   virtual Display GetDisplayNearestView(gfx::NativeView view) const;
 
-  // Returns the display nearest the specified point. |point| should be in DIPs.
+  // Returns the display nearest the specified DIP |point|.
   virtual Display GetDisplayNearestPoint(const gfx::Point& point) const = 0;
 
-  // Returns the display that most closely intersects the provided bounds.
+  // Returns the display that most closely intersects the DIP rect |match_rect|.
   virtual Display GetDisplayMatching(const gfx::Rect& match_rect) const = 0;
 
   // Returns the primary display. It is guaranteed that this will return a

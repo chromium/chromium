@@ -722,7 +722,8 @@ Display ScreenWin::GetDisplayNearestPoint(const gfx::Point& point) const {
 }
 
 Display ScreenWin::GetDisplayMatching(const gfx::Rect& match_rect) const {
-  return GetScreenWinDisplayNearestScreenRect(match_rect).display();
+  const gfx::Rect screen_rect = DIPToScreenRect(nullptr, match_rect);
+  return GetScreenWinDisplayNearestScreenRect(screen_rect).display();
 }
 
 Display ScreenWin::GetPrimaryDisplay() const {

@@ -542,7 +542,7 @@ TEST_F(ScreenWinTestSingleDisplay1_25x, GetDisplayMatching) {
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(display,
-            screen->GetDisplayMatching(gfx::Rect(1819, 1099, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(1435, 859, 100, 100)));
 }
 TEST_F(ScreenWinTestSingleDisplay1_25x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
@@ -698,7 +698,7 @@ TEST_F(ScreenWinTestSingleDisplay1_5x, GetDisplayMatching) {
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(display,
-            screen->GetDisplayMatching(gfx::Rect(1819, 1099, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(1179, 633, 100, 100)));
 }
 TEST_F(ScreenWinTestSingleDisplay1_5x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
@@ -853,8 +853,7 @@ TEST_F(ScreenWinTestSingleDisplay2x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
-  EXPECT_EQ(display,
-            screen->GetDisplayMatching(gfx::Rect(1819, 1099, 100, 100)));
+  EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(859, 499, 100, 100)));
 }
 
 namespace {
@@ -1395,12 +1394,12 @@ TEST_F(ScreenWinTestTwoDisplays2x, GetDisplayMatching) {
   EXPECT_EQ(left_display,
             screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(left_display,
-            screen->GetDisplayMatching(gfx::Rect(1819, 1099, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(859, 499, 100, 100)));
 
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(1920, 0, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(960, 0, 100, 100)));
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(2619, 499, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(1259, 199, 100, 100)));
 }
 
 TEST_F(ScreenWinTestTwoDisplays2x, GetPrimaryDisplay) {
@@ -1831,7 +1830,7 @@ TEST_F(ScreenWinTestManyDisplays1x, GetDisplayMatching) {
   EXPECT_EQ(displays[1],
             screen->GetDisplayMatching(gfx::Rect(640, 0, 100, 100)));
   EXPECT_EQ(displays[1],
-            screen->GetDisplayMatching(gfx::Rect(1563, 667, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(1563, 659, 100, 100)));
   EXPECT_EQ(displays[2],
             screen->GetDisplayMatching(gfx::Rect(0, 480, 100, 100)));
   EXPECT_EQ(displays[2],
@@ -2288,23 +2287,23 @@ TEST_F(ScreenWinTestManyDisplays2x, GetDisplayMatching) {
   ASSERT_EQ(5u, displays.size());
   EXPECT_EQ(displays[0], screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(displays[0],
-            screen->GetDisplayMatching(gfx::Rect(539, 379, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(219, 139, 100, 100)));
   EXPECT_EQ(displays[1],
-            screen->GetDisplayMatching(gfx::Rect(640, 0, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(320, 0, 100, 100)));
   EXPECT_EQ(displays[1],
-            screen->GetDisplayMatching(gfx::Rect(1563, 667, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(731, 279, 100, 100)));
   EXPECT_EQ(displays[2],
-            screen->GetDisplayMatching(gfx::Rect(0, 480, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(0, 240, 100, 100)));
   EXPECT_EQ(displays[2],
-            screen->GetDisplayMatching(gfx::Rect(539, 679, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(219, 289, 100, 100)));
   EXPECT_EQ(displays[3],
-            screen->GetDisplayMatching(gfx::Rect(1664, 768, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(832, 384, 100, 100)));
   EXPECT_EQ(displays[3],
-            screen->GetDisplayMatching(gfx::Rect(1963, 1067, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(931, 483, 100, 100)));
   EXPECT_EQ(displays[4],
-            screen->GetDisplayMatching(gfx::Rect(1864, 1168, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(932, 584, 100, 100)));
   EXPECT_EQ(displays[4],
-            screen->GetDisplayMatching(gfx::Rect(1963, 1267, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(931, 583, 100, 100)));
 }
 
 TEST_F(ScreenWinTestManyDisplays2x, GetPrimaryDisplay) {
@@ -2596,7 +2595,7 @@ TEST_F(ScreenWinTestTwoDisplays1x2x, GetDisplayMatching) {
   EXPECT_EQ(right_display,
             screen->GetDisplayMatching(gfx::Rect(1920, 0, 100, 100)));
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(2619, 499, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(2219, 199, 100, 100)));
 }
 
 TEST_F(ScreenWinTestTwoDisplays1x2x, GetPrimaryDisplay) {
@@ -2878,12 +2877,12 @@ TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetDisplayMatching) {
   EXPECT_EQ(left_display,
             screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(left_display,
-            screen->GetDisplayMatching(gfx::Rect(699, 499, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(433, 299, 100, 100)));
 
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(800, 120, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(534, -80, 100, 100)));
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(1339, 499, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(1073, 299, 100, 100)));
 }
 
 TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetPrimaryDisplay) {
@@ -3168,12 +3167,12 @@ TEST_F(ScreenWinTestTwoDisplays2x1x, GetDisplayMatching) {
   EXPECT_EQ(left_display,
             screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(left_display,
-            screen->GetDisplayMatching(gfx::Rect(1819, 1099, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(859, 499, 100, 100)));
 
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(1920, 0, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(960, 0, 100, 100)));
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(2619, 499, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(1559, 499, 100, 100)));
 }
 
 TEST_F(ScreenWinTestTwoDisplays2x1x, GetPrimaryDisplay) {
@@ -3460,12 +3459,12 @@ TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayMatching) {
   EXPECT_EQ(left_display,
             screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(left_display,
-            screen->GetDisplayMatching(gfx::Rect(1819, 1099, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(1499, 699, 100, 100)));
 
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(6400, 0, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(3200, 0, 100, 100)));
   EXPECT_EQ(right_display,
-            screen->GetDisplayMatching(gfx::Rect(10139, 2299, 100, 100)));
+            screen->GetDisplayMatching(gfx::Rect(5019, 1099, 100, 100)));
 }
 
 TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetPrimaryDisplay) {
