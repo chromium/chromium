@@ -167,6 +167,8 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
 
   // Dump statistics of the heap's spaces.
   v8::HeapStatistics heap_statistics;
+  // The total heap sizes should be sampled before the individual space sizes
+  // because of concurrent allocation. DCHECKs below rely on this order.
   isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
 
   IsolateHolder::IsolateType isolate_type = isolate_holder_->isolate_type();
@@ -210,10 +212,12 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
                           space_used_size);
   }
 
-  // Sanity checks.
-  DCHECK_EQ(heap_statistics.total_physical_size(), known_spaces_physical_size);
-  DCHECK_EQ(heap_statistics.used_heap_size(), known_spaces_used_size);
-  DCHECK_EQ(heap_statistics.total_heap_size(), known_spaces_size);
+  // Sanity checks that all spaces are accounted for in GetHeapSpaceStatistics.
+  // Background threads may be running and allocating concurrently, so the sum
+  // of space sizes may be exceed the total heap size that was sampled earlier.
+  DCHECK_LE(heap_statistics.total_physical_size(), known_spaces_physical_size);
+  DCHECK_LE(heap_statistics.used_heap_size(), known_spaces_used_size);
+  DCHECK_LE(heap_statistics.total_heap_size(), known_spaces_size);
 
   // If V8 zaps garbage, all the memory mapped regions become resident,
   // so we add an extra dump to avoid mismatches w.r.t. the total
@@ -223,8 +227,7 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
         dump_base_name + "/zapped_for_debug" + dump_name_suffix);
     zap_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                        heap_statistics.total_heap_size() -
-                            heap_statistics.total_physical_size());
+                        known_spaces_size - known_spaces_physical_size);
   }
 
   // Dump statistics about malloced memory.
