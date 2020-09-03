@@ -126,9 +126,8 @@ bool IsDrmAtomicAvailable() {
 // Server, public:
 
 Server::Server(Display* display)
-    : display_(display),
-      wl_display_(wl_display_create()),
-      serial_tracker_(std::make_unique<SerialTracker>(wl_display_.get())) {
+    : display_(display), wl_display_(wl_display_create()) {
+  serial_tracker_ = std::make_unique<SerialTracker>(wl_display_.get());
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);
   wl_global_create(wl_display_.get(), &wl_shm_interface, 1, display_, bind_shm);
@@ -232,6 +231,10 @@ Server::Server(Display* display)
 
 Server::~Server() {
   display::Screen::GetScreen()->RemoveObserver(this);
+  // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
+  // methods.
+  serial_tracker_->Shutdown();
+  display_->Shutdown();
 }
 
 // static

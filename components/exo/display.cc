@@ -72,7 +72,16 @@ Display::Display(
           gfx::CreateClientNativePixmapFactoryDmabuf()) {}
 #endif  // defined(OS_CHROMEOS)
 
-Display::~Display() {}
+Display::~Display() {
+  Shutdown();
+}
+
+void Display::Shutdown() {
+  if (shutdown_)
+    return;
+  shutdown_ = true;
+  seat_.Shutdown();
+}
 
 std::unique_ptr<Surface> Display::CreateSurface() {
   TRACE_EVENT0("exo", "Display::CreateSurface");
@@ -272,7 +281,7 @@ std::unique_ptr<SubSurface> Display::CreateSubSurface(Surface* surface,
 
 std::unique_ptr<DataDevice> Display::CreateDataDevice(
     DataDeviceDelegate* delegate) {
-  return std::make_unique<DataDevice>(delegate, &seat_, file_helper_.get());
+  return std::make_unique<DataDevice>(delegate, seat(), file_helper_.get());
 }
 
 }  // namespace exo

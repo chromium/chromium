@@ -21,7 +21,14 @@ SerialTracker::SerialTracker(struct wl_display* display)
 
 SerialTracker::~SerialTracker() {}
 
+void SerialTracker::Shutdown() {
+  display_ = nullptr;
+}
+
 uint32_t SerialTracker::GetNextSerial(EventType type) {
+  if (!display_)
+    return 0;
+
   uint32_t serial = wl_display_next_serial(display_);
   events_[serial % kMaxEventsTracked] = type;
   max_event_ = serial + 1;

@@ -49,6 +49,8 @@ class Seat : public aura::client::FocusChangeObserver,
   Seat();
   ~Seat() override;
 
+  void Shutdown();
+
   void AddObserver(SeatObserver* observer);
   void RemoveObserver(SeatObserver* observer);
 
@@ -162,6 +164,8 @@ class Seat : public aura::client::FocusChangeObserver,
   bool changing_clipboard_data_to_selection_source_;
 
   gfx::Point last_location_;
+
+  bool shutdown_ = false;
 
 #if defined(OS_CHROMEOS)
   std::unique_ptr<UILockController> ui_lock_controller_;

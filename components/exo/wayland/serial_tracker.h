@@ -34,6 +34,9 @@ class SerialTracker {
   explicit SerialTracker(struct wl_display* display);
   ~SerialTracker();
 
+  // After shutdown, |GetNextSerial| returns 0.
+  void Shutdown();
+
   uint32_t GetNextSerial(EventType type);
 
   // Get the serial number of the last {pointer,touch} pressed event, or nullopt
@@ -52,7 +55,7 @@ class SerialTracker {
  private:
   FRIEND_TEST_ALL_PREFIXES(SerialTrackerTest, WrapAroundWholeRange);
 
-  struct wl_display* const display_;
+  struct wl_display* display_;
 
   // EventTypes are stored in a circular buffer, because serial numbers are
   // issued sequentially and we only want to store the most recent events.

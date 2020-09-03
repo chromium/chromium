@@ -66,6 +66,8 @@ class Display {
 
   ~Display();
 
+  void Shutdown();
+
   // Creates a new surface.
   std::unique_ptr<Surface> CreateSurface();
 
@@ -141,6 +143,8 @@ class Display {
 
   std::unique_ptr<FileHelper> file_helper_;
   Seat seat_;
+
+  bool shutdown_ = false;
 
 #if defined(USE_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;

@@ -65,6 +65,13 @@ Seat::Seat() : changing_clipboard_data_to_selection_source_(false) {
 }
 
 Seat::~Seat() {
+  Shutdown();
+}
+
+void Seat::Shutdown() {
+  if (shutdown_)
+    return;
+  shutdown_ = true;
   DCHECK(!selection_source_) << "DataSource must be released before Seat";
   WMHelper::GetInstance()->RemoveFocusObserver(this);
   WMHelper::GetInstance()->RemovePreTargetHandler(this);
