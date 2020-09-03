@@ -2848,6 +2848,13 @@ const char kInterestFeedFeedbackDescription[] =
     "Allow the user to provide feedback from a feed card.";
 const char kInterestFeedFeedbackName[] = "Interest Feed Feedback";
 
+const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
+const char kMessagesForAndroidInfrastructureDescription[] =
+    "When enabled, will initialize Messages UI infrastructure";
+const char kMessagesForAndroidPasswordsName[] = "Passwords Messages UI";
+const char kMessagesForAndroidPasswordsDescription[] =
+    "When enabled, password infobars will use the new Messages UI.";
+
 const char kOfflineIndicatorAlwaysHttpProbeName[] = "Always http probe";
 const char kOfflineIndicatorAlwaysHttpProbeDescription[] =
     "Always do http probe to detect network connectivity for offline indicator "

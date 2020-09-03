@@ -1648,6 +1648,12 @@ extern const char kInterestFeedV2Description[];
 extern const char kInterestFeedFeedbackName[];
 extern const char kInterestFeedFeedbackDescription[];
 
+extern const char kMessagesForAndroidInfrastructureName[];
+extern const char kMessagesForAndroidInfrastructureDescription[];
+
+extern const char kMessagesForAndroidPasswordsName[];
+extern const char kMessagesForAndroidPasswordsDescription[];
+
 extern const char kOfflineIndicatorAlwaysHttpProbeName[];
 extern const char kOfflineIndicatorAlwaysHttpProbeDescription[];
 

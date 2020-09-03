@@ -90,6 +90,7 @@
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/lookalikes/core/features.h"
+#include "components/messages/android/messages_feature.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/network_session_configurator/common/network_features.h"
@@ -6417,6 +6418,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVideoToolboxVp9DecodingName,
      flag_descriptions::kVideoToolboxVp9DecodingDescription, kOsMac,
      FEATURE_VALUE_TYPE(media::kVideoToolboxVp9Decoding)},
+#endif
+
+#if defined(OS_ANDROID)
+    {"messages-for-android-infrastructure",
+     flag_descriptions::kMessagesForAndroidInfrastructureName,
+     flag_descriptions::kMessagesForAndroidInfrastructureDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(messages::kMessagesForAndroidInfrastructure)},
+    {"messages-for-android-passwords",
+     flag_descriptions::kMessagesForAndroidPasswordsName,
+     flag_descriptions::kMessagesForAndroidPasswordsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(messages::kMessagesForAndroidPasswords)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

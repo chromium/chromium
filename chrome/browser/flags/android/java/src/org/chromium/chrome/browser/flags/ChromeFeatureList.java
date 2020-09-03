@@ -315,10 +315,9 @@ public abstract class ChromeFeatureList {
     public static final String KITKAT_SUPPORTED = "KitKatSupported";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
-    public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE =
-            "SearchEnginePromo.ExistingDevice";
-    public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE = "SearchEnginePromo.NewDevice";
     public static final String MARK_HTTP_AS = "MarkHttpAs";
+    public static final String MESSAGES_FOR_ANDROID_INFRASTRUCTURE =
+            "MessagesForAndroidInfrastructure";
     public static final String MOBILE_IDENTITY_CONSISTENCY = "MobileIdentityConsistency";
     public static final String MODAL_PERMISSION_PROMPTS = "ModalPermissionPrompts";
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
@@ -366,6 +365,8 @@ public abstract class ChromeFeatureList {
     public static final String PORTALS_CROSS_ORIGIN = "PortalsCrossOrigin";
     public static final String PREDICTIVE_PREFETCHING_ALLOWED_ON_ALL_CONNECTION_TYPES =
             "PredictivePrefetchingAllowedOnAllConnectionTypes";
+    public static final String PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION =
+            "PrefetchNotificationSchedulingIntegration";
     public static final String PRIORITIZE_BOOTSTRAP_TASKS = "PrioritizeBootstrapTasks";
     public static final String PRIVACY_ELEVATED_ANDROID = "PrivacyElevatedAndroid";
     public static final String PRIVACY_REORDERED_ANDROID = "PrivacyReorderedAndroid";
@@ -390,13 +391,20 @@ public abstract class ChromeFeatureList {
     public static final String SAFE_BROWSING_SECURITY_SECTION_UI =
             "SafeBrowsingSecuritySectionUIAndroid";
     public static final String SAME_SITE_BY_DEFAULT_COOKIES = "SameSiteByDefaultCookies";
+    public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE =
+            "SearchEnginePromo.ExistingDevice";
+    public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE = "SearchEnginePromo.NewDevice";
     public static final String SEND_TAB_TO_SELF = "SyncSendTabToSelf";
+    public static final String SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH =
+            "ServiceManagerForBackgroundPrefetch";
     public static final String SERVICE_MANAGER_FOR_DOWNLOAD = "ServiceManagerForDownload";
     public static final String SHARE_BUTTON_IN_TOP_TOOLBAR = "ShareButtonInTopToolbar";
     public static final String SHARED_CLIPBOARD_UI = "SharedClipboardUI";
     public static final String SHARING_QR_CODE_ANDROID = "SharingQrCodeAndroid";
     public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SPANNABLE_INLINE_AUTOCOMPLETE = "SpannableInlineAutocomplete";
+    public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
+            "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
     public static final String SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT =
             "SwapPixelFormatToFixConvertFromTranslucent";
@@ -430,21 +438,15 @@ public abstract class ChromeFeatureList {
             "TrustedWebActivityQualityEnforcementForced";
     public static final String VIDEO_PERSISTENCE = "VideoPersistence";
     public static final String VIDEO_TUTORIALS = "VideoTutorials";
+    public static final String UPDATE_NOTIFICATION_SCHEDULING_INTEGRATION =
+            "UpdateNotificationSchedulingIntegration";
+    public static final String UPDATE_NOTIFICATION_IMMEDIATE_SHOW_OPTION =
+            "UpdateNotificationScheduleServiceImmediateShowOption";
     public static final String USAGE_STATS = "UsageStats";
     public static final String VR_BROWSING_FEEDBACK = "VrBrowsingFeedback";
     public static final String WEBAPK_ADAPTIVE_ICON = "WebApkAdaptiveIcon";
     public static final String WEB_AUTH = "WebAuthentication";
     public static final String WEB_AUTH_PHONE_SUPPORT = "WebAuthenticationPhoneSupport";
-    public static final String SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH =
-            "ServiceManagerForBackgroundPrefetch";
-    public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
-            "SplitCacheByNetworkIsolationKey";
-    public static final String UPDATE_NOTIFICATION_SCHEDULING_INTEGRATION =
-            "UpdateNotificationSchedulingIntegration";
-    public static final String UPDATE_NOTIFICATION_IMMEDIATE_SHOW_OPTION =
-            "UpdateNotificationScheduleServiceImmediateShowOption";
-    public static final String PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION =
-            "PrefetchNotificationSchedulingIntegration";
 
     @NativeMethods
     interface Natives {

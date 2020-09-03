@@ -34,6 +34,14 @@ android_resources("java_resources") {
   ]
 }
 
+static_library("feature_flags") {
+  sources = [
+    "messages_feature.cc",
+    "messages_feature.h",
+  ]
+  deps = [ "//base" ]
+}
+
 android_library("javatests") {
   testonly = true
   sources = [

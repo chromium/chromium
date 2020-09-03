@@ -3005,6 +3005,7 @@ static_library("browser") {
       "//components/javascript_dialogs/android:jni_headers",
       "//components/language/android:language_bridge",
       "//components/location/android:settings",
+      "//components/messages/android:feature_flags",
       "//components/module_installer/android:native",
       "//components/omnibox/browser",
       "//components/page_info/android",

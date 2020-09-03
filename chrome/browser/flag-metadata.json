@@ -3051,6 +3051,16 @@
     "expiry_milestone": 85
   },
   {
+    "name": "messages-for-android-infrastructure",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 95
+  },
+  {
+    "name": "messages-for-android-passwords",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "messages-save-card-infobar",
     "owners": [ "sczs", "thegreenfrog", "bling-flags" ],
     "expiry_milestone": 83
