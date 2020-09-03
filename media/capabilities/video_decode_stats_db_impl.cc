@@ -116,6 +116,17 @@ bool VideoDecodeStatsDBImpl::GetEnableUnweightedEntries() {
 }
 
 // static
+base::FieldTrialParams VideoDecodeStatsDBImpl::GetFieldTrialParams() {
+  base::FieldTrialParams actual_trial_params;
+
+  const bool result = base::GetFieldTrialParamsByFeature(
+      kMediaCapabilitiesWithParameters, &actual_trial_params);
+  DCHECK(result);
+
+  return actual_trial_params;
+}
+
+// static
 std::unique_ptr<VideoDecodeStatsDBImpl> VideoDecodeStatsDBImpl::Create(
     base::FilePath db_dir,
     leveldb_proto::ProtoDatabaseProvider* db_provider) {

@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
@@ -85,6 +86,9 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // When true, each playback entry in the DB should be given equal weight
   // regardless of how many frames were decoded.
   static bool GetEnableUnweightedEntries();
+
+  // Returns current feature params.
+  static base::FieldTrialParams GetFieldTrialParams();
 
   // Creates a PendingOperation using |uma_str| and adds it to |pending_ops_|
   // map. Returns PendingOpId for newly started operation. Callers must later

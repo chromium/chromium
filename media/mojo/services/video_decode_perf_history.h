@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "media/base/video_codecs.h"
@@ -99,6 +100,9 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   // Decode capabilities will be described as "smooth" whenever the percentage
   // of dropped frames is less-than-or-equal-to this value.
   static double GetMaxSmoothDroppedFramesPercent(bool is_eme);
+
+  // Returns current feature params.
+  static base::FieldTrialParams GetFieldTrialParams();
 
   // Track the status of database lazy initialization.
   enum InitStatus {
