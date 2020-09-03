@@ -50,6 +50,8 @@ element.style { ()
     font-variant-numeric: tabular-nums;
     text-transform: none;
     text-indent: 0px !important;
+    text-align: start !important;
+    text-align-last: start !important;
 
 
 Running: dumpBeforeStyles
@@ -75,6 +77,8 @@ Running: dumpMarkerStyles
     font-variant-numeric: tabular-nums;
     text-transform: none;
     text-indent: 0px !important;
+    text-align: start !important;
+    text-align-last: start !important;
 
 
 Running: removeAfter
