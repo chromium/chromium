@@ -63,6 +63,16 @@ struct SameSizeAsHarfBuzzRunGlyphData {
 
 ASSERT_SIZE(HarfBuzzRunGlyphData, SameSizeAsHarfBuzzRunGlyphData);
 
+struct SameSizeAsShapeResult : public RefCounted<SameSizeAsShapeResult> {
+  float floats[5];
+  Vector<int> vector;
+  void* pointers[2];
+  unsigned integers[2];
+  unsigned bitfields : 32;
+};
+
+ASSERT_SIZE(ShapeResult, SameSizeAsShapeResult);
+
 unsigned ShapeResult::RunInfo::NextSafeToBreakOffset(unsigned offset) const {
   DCHECK_LE(offset, num_characters_);
   if (!Rtl()) {
