@@ -256,7 +256,7 @@ js_type_check("closure_compile_module") {
 
     ":network_apnlist.m",
     #  ":network_choose_mobile.m",
-    #  ":network_config.m",
+    ":network_config.m",
     ":network_config_element_behavior.m",
     ":network_config_input.m",
     ":network_config_select.m",
@@ -336,7 +336,23 @@ js_library("network_choose_mobile.m") {
 js_library("network_config.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_config.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":mojo_interface_provider.m",
+    ":network_config_input.m",
+    ":network_config_select.m",
+    ":network_config_toggle.m",
+    ":network_listener_behavior.m",
+    ":network_password_input.m",
+    ":network_shared_css.m",
+    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":network_config_module" ]
 }
@@ -599,6 +615,8 @@ polymer_modulizer("network_config") {
   js_file = "network_config.js"
   html_file = "network_config.html"
   html_type = "dom-module"
+  auto_imports = cr_components_chromeos_auto_imports
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 
 polymer_modulizer("network_config_input") {

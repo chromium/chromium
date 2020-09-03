@@ -5,11 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 cr_components_chromeos_namespace_rewrites = [
-  "network_config.MojoInterfaceProvider|MojoInterfaceProvider",
-  "settings.receivedEventFromKeyboard|receivedEventFromKeyboard",
-  "settings.LockScreenProgress|LockScreenProgress",
-  "cellular_setup.MojoInterfaceProvider|MojoInterfaceProvider",
-  "webviewPost.util.postDeviceDataToWebview|postDeviceDataToWebview",
+  "action_link.m.js|action_link.js",
   "cellularSetup.ButtonState|ButtonState",
   "cellularSetup.Button|Button",
   "cellularSetup.ButtonBarState|ButtonBarState",
@@ -17,6 +13,11 @@ cr_components_chromeos_namespace_rewrites = [
   "cellularSetup.PSimPageName|PSimPageName",
   "cellularSetup.PSimUIState|PSimUIState",
   "cellularSetup.getTimeoutMsForPSimUIState|getTimeoutMsForPSimUIState",
+  "cellular_setup.MojoInterfaceProvider|MojoInterfaceProvider",
+  "network_config.MojoInterfaceProvider|MojoInterfaceProvider",
+  "settings.LockScreenProgress|LockScreenProgress",
+  "settings.receivedEventFromKeyboard|receivedEventFromKeyboard",
+  "webviewPost.util.postDeviceDataToWebview|postDeviceDataToWebview",
 ]
 
 cr_components_chromeos_auto_imports = [
@@ -32,4 +33,5 @@ cr_components_chromeos_auto_imports = [
   "ui/webui/resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html|recordLockScreenProgress,LockScreenProgress",
   "ui/webui/resources/cr_components/chromeos/cellular_setup/webview_post_util.html|postDeviceDataToWebview",
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
+  "ui/webui/resources/html/polymer.html|Polymer,flush,html",
 ]

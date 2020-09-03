@@ -6,9 +6,15 @@
  * @fileoverview Fake implementation of CrosNetworkConfig for testing.
  */
 
+ // clang-format off
+ // #import {assert} from 'chrome://resources/js/assert.m.js';
+ // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+ // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+ // clang-format on
+
 // TODO(stevenjb): Include cros_network_config.mojom.js and extend
 // CrosNetworkConfigInterface
-class FakeNetworkConfig {
+/* #export */ class FakeNetworkConfig {
   constructor() {
     /** @private {!Map<string, !PromiseResolver>} */
     this.resolverMap_ = new Map();

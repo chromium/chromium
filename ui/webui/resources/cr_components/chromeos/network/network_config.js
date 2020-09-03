@@ -1548,14 +1548,6 @@ Polymer({
   },
 
   /**
-   * @return {string}
-   * @private
-   */
-  getRuntimeError_() {
-    return (chrome.runtime.lastError && chrome.runtime.lastError.message) || '';
-  },
-
-  /**
    * @param {boolean} success
    * @param {string} errorMessage
    * @param {boolean} connect If true, connect after save.

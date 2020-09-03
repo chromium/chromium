@@ -243,6 +243,7 @@ if (include_js_tests) {
     ]
     if (is_chromeos) {
       data += [
+        "$root_gen_dir/chrome/test/data/webui/chromeos/fake_network_config_mojom.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/base_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/button_bar_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/cellular_setup_test.m.js",
@@ -258,6 +259,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_config_element_behavior_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_config_input_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_config_select_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_config_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_config_toggle_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_ip_config_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_list_item_test.m.js",
