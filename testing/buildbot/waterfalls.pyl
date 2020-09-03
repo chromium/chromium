@@ -1705,6 +1705,7 @@
         'mixins': [
           'linux-xenial',
         ],
+        'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'layout_ng_gtests',
           'isolated_scripts': 'devtools_webkit_isolated_scripts',
@@ -5140,6 +5141,7 @@
         'mixins': [
           'linux-xenial',
         ],
+        'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'devtools_gtests',
           'isolated_scripts': 'devtools_webkit_isolated_scripts',
