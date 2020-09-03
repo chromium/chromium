@@ -372,14 +372,24 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  // Hooks to set up feature flags.
+  // Hooks to set up feature flags. Defaults to setting the kPDFViewerUpdate
+  // flag based on the value returned by ShouldEnablePDFViewerUpdate().
   virtual const std::vector<base::Feature> GetEnabledFeatures() const {
+    if (ShouldEnablePDFViewerUpdate()) {
+      return {chrome_pdf::features::kPDFViewerUpdate};
+    }
     return {};
   }
 
   virtual const std::vector<base::Feature> GetDisabledFeatures() const {
-    return {};
+    if (ShouldEnablePDFViewerUpdate()) {
+      return {};
+    }
+    return {chrome_pdf::features::kPDFViewerUpdate};
   }
+
+  // Hook to set up whether the PDFViewerUpdate feature is enabled.
+  virtual bool ShouldEnablePDFViewerUpdate() const { return false; }
 
  private:
   WebContents* LoadPdfGetGuestContentsHelper(const GURL& url, bool new_tab) {
@@ -400,7 +410,17 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
+class PDFExtensionTestWithParam : public PDFExtensionTest,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  ~PDFExtensionTestWithParam() override = default;
+
+ protected:
+  bool ShouldEnablePDFViewerUpdate() const override { return GetParam(); }
+};
+
+class PDFExtensionTestWithTestGuestViewManager
+    : public PDFExtensionTestWithParam {
  public:
   PDFExtensionTestWithTestGuestViewManager() {
     GuestViewManager::set_factory_for_testing(&factory_);
@@ -436,7 +456,7 @@ class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
 // for https://crbug.com/536637. The original implementation checked that the
 // BrowserPlugin hosting the pdf extension was focused; in this re-write, we
 // make sure the guest view's WebContents has focus.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        PdfInMainFrameHasFocus) {
   // Load test HTML, and verify the text area has focus.
   GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -462,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // the extension's loaded html?
 // TODO(https://crbug.com/1034972): Re-enable. Flaky on all platforms.
 // Temporarily re-enabling on all platforms to collect diagnostic data.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        PdfExtensionLoadedInGuest) {
   // Load test HTML, and verify the text area has focus.
   GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -503,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that when a PDF is served with a restrictive
 // Content-Security-Policy, the embed tag is still sized correctly.
 // Regression test for https://crbug.com/271452.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        CSPDoesNotBlockEmbedStyles) {
   GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp.pdf"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -531,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that Content-Security-Policy's frame-ancestors 'none'
 // directive is effective on a PDF response.
 // Regression test for https://crbug.com/1107535.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        CSPFrameAncestorsCanBlockEmbedding) {
   WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
@@ -552,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that Content-Security-Policy's frame-ancestors directive
 // overrides an X-Frame-Options header on a PDF response.
 // Regression test for https://crbug.com/1107535.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        CSPFrameAncestorsOverridesXFrameOptions) {
   GURL main_url(
       embedded_test_server()->GetURL("/pdf/frame-test-csp-and-xfo.html"));
@@ -572,6 +592,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   EXPECT_EQ(extension_url, guest_web_contents->GetURL());
   EXPECT_EQ(main_url, embedder_web_contents->GetURL());
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PDFExtensionTestWithTestGuestViewManager,
+                         testing::Bool());
 
 class PDFExtensionLoadTest : public PDFExtensionTest,
                              public testing::WithParamInterface<int> {
@@ -841,19 +865,7 @@ class PDFExtensionJSTest : public PDFExtensionJSTestBase,
   ~PDFExtensionJSTest() override = default;
 
  protected:
-  const std::vector<base::Feature> GetEnabledFeatures() const override {
-    if (GetParam()) {
-      return {chrome_pdf::features::kPDFViewerUpdate};
-    }
-    return {};
-  }
-
-  const std::vector<base::Feature> GetDisabledFeatures() const override {
-    if (GetParam()) {
-      return {};
-    }
-    return {chrome_pdf::features::kPDFViewerUpdate};
-  }
+  bool ShouldEnablePDFViewerUpdate() const override { return GetParam(); }
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
@@ -1011,7 +1023,7 @@ class PDFExtensionContentSettingJSTest
     return features;
   }
 
-  bool ShouldEnablePDFViewerUpdate() const { return GetParam().first; }
+  bool ShouldEnablePDFViewerUpdate() const override { return GetParam().first; }
 
   bool ShouldHonorJsContentSettings() const { return GetParam().second; }
 
@@ -1122,7 +1134,8 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 // Ensure that the internal PDF plugin application/x-google-chrome-pdf won't be
 // loaded if it's not loaded in the chrome extension page.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsureInternalPluginDisabled) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       EnsureInternalPluginDisabled) {
   std::string url = embedded_test_server()->GetURL("/pdf/test.pdf").spec();
   std::string data_url =
       "data:text/html,"
@@ -1144,7 +1157,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsureInternalPluginDisabled) {
 }
 
 // Ensure cross-origin replies won't work for getSelectedText.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsureCrossOriginRepliesBlocked) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       EnsureCrossOriginRepliesBlocked) {
   std::string url = embedded_test_server()->GetURL("/pdf/test.pdf").spec();
   std::string data_url =
       "data:text/html,"
@@ -1157,19 +1171,21 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsureCrossOriginRepliesBlocked) {
 }
 
 // Ensure same-origin replies do work for getSelectedText.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsureSameOriginRepliesAllowed) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       EnsureSameOriginRepliesAllowed) {
   TestGetSelectedTextReply(embedded_test_server()->GetURL("/pdf/test.pdf"),
                            true);
 }
 
 // TODO(crbug.com/1004425): Should be allowed?
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsureOpaqueOriginRepliesBlocked) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       EnsureOpaqueOriginRepliesBlocked) {
   TestGetSelectedTextReply(
       embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"), false);
 }
 
 // Ensure that the PDF component extension cannot be loaded directly.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BlockDirectAccess) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, BlockDirectAccess) {
   WebContents* web_contents = GetActiveWebContents();
 
   content::WebContentsConsoleObserver console_observer(web_contents);
@@ -1187,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BlockDirectAccess) {
 }
 
 // This test ensures that PDF can be loaded from local file
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsurePDFFromLocalFileLoads) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, EnsurePDFFromLocalFileLoads) {
   GURL test_pdf_url;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1206,7 +1222,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, EnsurePDFFromLocalFileLoads) {
 }
 
 // Tests that PDF with no filename extension can be loaded from local file.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ExtensionlessPDFLocalFileLoads) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       ExtensionlessPDFLocalFileLoads) {
   GURL test_pdf_url;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1225,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ExtensionlessPDFLocalFileLoads) {
 }
 
 // This test ensures that link permissions are enforced properly in PDFs.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, LinkPermissions) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, LinkPermissions) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -1248,7 +1265,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, LinkPermissions) {
 }
 
 // This test ensures that titles are set properly for PDFs without /Title.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithNoTitle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, TabTitleWithNoTitle) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -1257,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithNoTitle) {
 }
 
 // This test ensures that titles are set properly for PDFs with /Title.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithTitle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, TabTitleWithTitle) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-title.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -1267,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithTitle) {
 }
 
 // This test ensures that titles are set properly for embedded PDFs with /Title.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, TabTitleWithEmbeddedPdf) {
   std::string url =
       embedded_test_server()->GetURL("/pdf/test-title.pdf").spec();
   std::string data_url =
@@ -1633,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityTextRunCrash) {
 
 // Test that even if a different tab is selected when a navigation occurs,
 // the correct tab still gets navigated (see crbug.com/672563).
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, NavigationOnCorrectTab) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, NavigationOnCorrectTab) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -1661,7 +1678,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, NavigationOnCorrectTab) {
   EXPECT_FALSE(active_web_contents->GetController().GetPendingEntry());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MultipleDomains) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, MultipleDomains) {
   for (const std::string& domain : {"a.com", "b.com"}) {
     const GURL url = embedded_test_server()->GetURL(domain, "/pdf/test.pdf");
     ASSERT_TRUE(LoadPdfInNewTab(url));
@@ -1669,27 +1686,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MultipleDomains) {
   EXPECT_EQ(2, CountPDFProcesses());
 }
 
-class PDFExtensionLinkClickTest : public PDFExtensionTest,
-                                  public testing::WithParamInterface<bool> {
+class PDFExtensionLinkClickTest : public PDFExtensionTestWithParam {
  public:
   PDFExtensionLinkClickTest() : guest_contents_(nullptr) {}
   ~PDFExtensionLinkClickTest() override {}
 
  protected:
-  const std::vector<base::Feature> GetEnabledFeatures() const override {
-    if (GetParam()) {
-      return {chrome_pdf::features::kPDFViewerUpdate};
-    }
-    return {};
-  }
-
-  const std::vector<base::Feature> GetDisabledFeatures() const override {
-    if (GetParam()) {
-      return {};
-    }
-    return {chrome_pdf::features::kPDFViewerUpdate};
-  }
-
   void LoadTestLinkPdfGetGuestContents() {
     GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-link.pdf"));
     guest_contents_ = LoadPdfGetGuestContents(test_pdf_url);
@@ -1892,7 +1894,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          PDFExtensionLinkClickTest,
                          testing::Bool());
 
-class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
+class PDFExtensionInternalLinkClickTest : public PDFExtensionTestWithParam {
  public:
   PDFExtensionInternalLinkClickTest() : guest_contents_(nullptr) {}
   ~PDFExtensionInternalLinkClickTest() override {}
@@ -1920,7 +1922,7 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
   WebContents* guest_contents_;
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, CtrlLeft) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, CtrlLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -1946,7 +1948,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, CtrlLeft) {
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, Middle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, Middle) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -1972,7 +1974,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, Middle) {
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, ShiftLeft) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
@@ -1995,7 +1997,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
 
-class PDFExtensionClipboardTest : public PDFExtensionTest,
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PDFExtensionInternalLinkClickTest,
+                         testing::Bool());
+
+class PDFExtensionClipboardTest : public PDFExtensionTestWithParam,
                                   public ui::ClipboardObserver {
  public:
   PDFExtensionClipboardTest() : guest_contents_(nullptr) {}
@@ -2143,7 +2149,7 @@ class PDFExtensionClipboardTest : public PDFExtensionTest,
   bool clipboard_changed_ = false;
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        IndividualShiftRightArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
@@ -2166,7 +2172,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
 }
 
 // TODO(crbug.com/897801): test is flaky.
-IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        DISABLED_IndividualShiftLeftArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
@@ -2196,7 +2202,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        CombinedShiftRightArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
@@ -2225,7 +2231,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest, CombinedShiftArrowPresses) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest, CombinedShiftArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
   // Give the editable combo box focus.
@@ -2273,7 +2279,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest, CombinedShiftArrowPresses) {
 // message to the <embed> is correctly forwarded to the extension. This is for
 // catching future regression in docs/ and slides/ pages (see
 // https://crbug.com/763812).
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PostMessageForZeroSizedEmbed) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       PostMessageForZeroSizedEmbed) {
   content::DOMMessageQueue queue;
   GURL url(embedded_test_server()->GetURL(
       "/pdf/post_message_zero_sized_embed.html"));
@@ -2551,7 +2558,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
 
 // The plugin document and the mime handler should both use the same background
 // color.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BackgroundColor) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, BackgroundColor) {
   // The background color for plugins is injected when the first response
   // is intercepted, at which point not all the plugins have loaded. This line
   // ensures that the PDF plugin has loaded and the right background color is
@@ -2573,7 +2580,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BackgroundColor) {
   EXPECT_EQ(inner, outer);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, DefaultFocusForEmbeddedPDF) {
   GURL url = embedded_test_server()->GetURL("/pdf/pdf_embed.html");
 
   // Load page with embedded PDF and make sure it succeeds.
@@ -2599,7 +2606,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
   ASSERT_TRUE(result);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       DefaultFocusForNonEmbeddedPDF) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -2668,7 +2676,7 @@ class RequestWaiter {
 // This is a regression test for a problem where DidStopLoading didn't get
 // propagated from a remote frame into the main frame.  See also
 // https://crbug.com/964364.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DidStopLoading) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, DidStopLoading) {
   // Prepare to wait for requests for the main page of the MimeHandlerView for
   // PDFs.
   RequestWaiter interceptor(
@@ -2708,7 +2716,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DidStopLoading) {
 // This test verifies that it is possible to add an <embed src=pdf> element into
 // a new popup window when using document.write.  See also
 // https://crbug.com/1041880.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DocumentWriteIntoNewPopup) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, DocumentWriteIntoNewPopup) {
   // Navigate to an empty/boring test page.
   GURL main_url(embedded_test_server()->GetURL("/title1.html"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -2739,7 +2747,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DocumentWriteIntoNewPopup) {
 // Tests that the PDF extension loads in the presence of an extension that, on
 // the completion of document loading, adds an <iframe> to the body element.
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1046795
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
                        PdfLoadsWithExtensionThatInjectsFrame) {
   // Load the test extension.
   const extensions::Extension* test_extension = LoadExtension(
@@ -2752,7 +2760,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   ASSERT_TRUE(LoadPdf(test_pdf_url));
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, Metrics) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, Metrics) {
   base::HistogramTester histograms;
   base::UserActionTester actions;
 
@@ -2777,6 +2785,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, Metrics) {
   // User actions.
   EXPECT_EQ(1, actions.GetActionCount("PDF.LoadSuccess"));
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PDFExtensionTestWithParam,
+                         testing::Bool());
 
 // Flaky. See https://crbug.com/1101514.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
