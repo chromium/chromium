@@ -2005,14 +2005,18 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
   return ret == 0;
 }
 
-std::unique_ptr<ScopedVABuffer> VaapiWrapper::CreateVABuffer(VABufferType type,
-                                                             size_t size) {
+bool VaapiWrapper::CreateVABuffer(size_t size, VABufferID* buffer_id) {
   TRACE_EVENT0("media,gpu", "VaapiWrapper::CreateVABuffer");
   base::AutoLock auto_lock(*va_lock_);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::CreateVABufferLocked");
+  VAStatus va_res =
+      vaCreateBuffer(va_display_, va_context_id_, VAEncCodedBufferType, size, 1,
+                     NULL, buffer_id);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
 
-  return ScopedVABuffer::Create(va_lock_, va_display_, va_context_id_, type,
-                                size);
+  const auto is_new_entry = va_buffers_.insert(*buffer_id).second;
+  DCHECK(is_new_entry);
+  return true;
 }
 
 uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
@@ -2100,6 +2104,27 @@ bool VaapiWrapper::GetVAEncMaxNumOfRefFrames(VideoCodecProfile profile,
   return true;
 }
 
+void VaapiWrapper::DestroyVABuffer(VABufferID buffer_id) {
+  base::AutoLock auto_lock(*va_lock_);
+  VAStatus va_res = vaDestroyBuffer(va_display_, buffer_id);
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyBuffer);
+  // If this |buffer_id| comes from CreateVABuffer() it'll be in |va_buffers_|,
+  // but otherwise (BlitSurface() - |va_buffer_for_vpp_|), it won't. This is
+  // needed temporarily while moving the VABufferID lifetime management to the
+  // clients, see crbug.com/1016219 and b/162962069.
+  va_buffers_.erase(buffer_id);
+}
+
+void VaapiWrapper::DestroyVABuffers() {
+  base::AutoLock auto_lock(*va_lock_);
+
+  for (const VABufferID va_buffer_id : va_buffers_) {
+    VAStatus va_res = vaDestroyBuffer(va_display_, va_buffer_id);
+    VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyBuffer);
+  }
+  va_buffers_.clear();
+}
+
 bool VaapiWrapper::IsRotationSupported() {
   base::AutoLock auto_lock(*va_lock_);
   VAProcPipelineCaps pipeline_caps;
@@ -2127,12 +2152,15 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
   // Create a buffer for VPP if it has not been created.
   if (!va_buffer_for_vpp_) {
     DCHECK_NE(VA_INVALID_ID, va_context_id_);
-    va_buffer_for_vpp_ =
-        ScopedVABuffer::Create(va_lock_, va_display_, va_context_id_,
-                               VAProcPipelineParameterBufferType,
-                               sizeof(VAProcPipelineParameterBuffer));
-    if (!va_buffer_for_vpp_)
-      return false;
+    VABufferID buffer_id = VA_INVALID_ID;
+    const VAStatus va_res = vaCreateBuffer(
+        va_display_, va_context_id_, VAProcPipelineParameterBufferType,
+        sizeof(VAProcPipelineParameterBuffer), 1, nullptr, &buffer_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
+    DCHECK_NE(buffer_id, VA_INVALID_ID);
+
+    va_buffer_for_vpp_ = std::make_unique<ScopedID<VABufferID>>(
+        buffer_id, base::BindOnce(&VaapiWrapper::DestroyVABuffer, this));
   }
 
   {
@@ -2248,10 +2276,8 @@ VaapiWrapper::VaapiWrapper(CodecMode mode)
       va_context_id_(VA_INVALID_ID) {}
 
 VaapiWrapper::~VaapiWrapper() {
-  // Destroy ScopedVABuffer before VaapiWrappers are destroyed to ensure
-  // VADisplay is valid on ScopedVABuffer's destruction.
-  va_buffer_for_vpp_.reset();
   DestroyPendingBuffers();
+  DestroyVABuffers();
   DestroyContext();
   Deinitialize();
 }

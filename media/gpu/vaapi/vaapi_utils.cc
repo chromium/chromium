@@ -4,11 +4,12 @@
 
 #include "media/gpu/vaapi/vaapi_utils.h"
 
+#include <va/va.h>
+
 #include <type_traits>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/numerics/ranges.h"
 #include "base/synchronization/lock.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -67,68 +68,6 @@ VAStatus ScopedVABufferMapping::Unmap() {
   else
     LOG(ERROR) << "vaUnmapBuffer failed: " << vaErrorStr(result);
   return result;
-}
-
-// static
-std::unique_ptr<ScopedVABuffer> ScopedVABuffer::Create(
-    base::Lock* lock,
-    VADisplay va_display,
-    VAContextID va_context_id,
-    VABufferType va_buffer_type,
-    size_t size) {
-  DCHECK(lock);
-  DCHECK(va_display);
-  DCHECK_NE(va_context_id, VA_INVALID_ID);
-  DCHECK_LT(va_buffer_type, VABufferTypeMax);
-  DCHECK_NE(size, 0u);
-  lock->AssertAcquired();
-  unsigned int va_buffer_size;
-  if (!base::CheckedNumeric<size_t>(size).AssignIfValid(&va_buffer_size)) {
-    LOG(ERROR) << "Invalid size, " << size;
-    return nullptr;
-  }
-  VABufferID buffer_id = VA_INVALID_ID;
-  const VAStatus va_res =
-      vaCreateBuffer(va_display, va_context_id, va_buffer_type, va_buffer_size,
-                     1, nullptr, &buffer_id);
-  if (va_res != VA_STATUS_SUCCESS) {
-    LOG(ERROR) << "Failed to create a VA buffer: " << vaErrorStr(va_res);
-    return nullptr;
-  }
-  DCHECK_NE(buffer_id, VA_INVALID_ID);
-  return base::WrapUnique(
-      new ScopedVABuffer(lock, va_display, buffer_id, va_buffer_type, size));
-}
-
-// static
-std::unique_ptr<ScopedVABuffer> ScopedVABuffer::CreateForTesting(
-    VABufferID va_buffer_id,
-    VABufferType va_buffer_type,
-    size_t size) {
-  return base::WrapUnique(
-      new ScopedVABuffer(nullptr, nullptr, va_buffer_id, va_buffer_type, size));
-}
-
-ScopedVABuffer::ScopedVABuffer(base::Lock* lock,
-                               VADisplay va_display,
-                               VABufferID va_buffer_id,
-                               VABufferType va_buffer_type,
-                               size_t size)
-    : lock_(lock),
-      va_display_(va_display),
-      va_buffer_id_(va_buffer_id),
-      va_buffer_type_(va_buffer_type),
-      size_(size) {}
-
-ScopedVABuffer::~ScopedVABuffer() {
-  DCHECK_NE(va_buffer_id_, VA_INVALID_ID);
-  if (!lock_)
-    return;  // Don't call VA-API function in test.
-
-  base::AutoLock auto_lock(*lock_);
-  VAStatus va_res = vaDestroyBuffer(va_display_, va_buffer_id_);
-  LOG_IF(ERROR, va_res != VA_STATUS_SUCCESS)
-      << "Failed to destroy a VA buffer: " << vaErrorStr(va_res);
 }
 
 ScopedVAImage::ScopedVAImage(base::Lock* lock,

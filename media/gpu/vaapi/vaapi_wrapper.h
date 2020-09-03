@@ -357,8 +357,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                                          const gfx::Size& va_surface_size);
 
   // Creates a buffer of |size| bytes to be used as encode output.
-  virtual std::unique_ptr<ScopedVABuffer> CreateVABuffer(VABufferType type,
-                                                         size_t size);
+  virtual bool CreateVABuffer(size_t size, VABufferID* buffer_id);
 
   // Gets the encoded frame linear size of the buffer with given |buffer_id|.
   // |sync_surface_id| will be used as a sync point, i.e. it will have to become
@@ -380,6 +379,12 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                                     uint8_t* target_ptr,
                                     size_t target_size,
                                     size_t* coded_data_size);
+
+  // Deletes the VA buffer identified by |buffer_id|.
+  virtual void DestroyVABuffer(VABufferID buffer_id);
+
+  // Destroy all previously-allocated (and not yet destroyed) buffers.
+  void DestroyVABuffers();
 
   // Get the max number of reference frames for encoding supported by the
   // driver.
@@ -459,12 +464,14 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   VAEntrypoint va_entrypoint_;
 
   // Data queued up for HW codec, to be committed on next execution.
-  // TODO(b/166646505): let callers manage the lifetime of these buffers.
   std::vector<VABufferID> pending_va_buffers_;
 
-  // VA buffer to be used for kVideoProcess. Allocated the first time around,
+  // VABufferIDs for kEncode*.
+  std::set<VABufferID> va_buffers_;
+
+  // VABufferID to be used for kVideoProcess. Allocated the first time around,
   // and reused afterwards.
-  std::unique_ptr<ScopedVABuffer> va_buffer_for_vpp_;
+  std::unique_ptr<ScopedID<VABufferID>> va_buffer_for_vpp_;
 
   // Called to report codec errors to UMA. Errors to clients are reported via
   // return values from public methods.

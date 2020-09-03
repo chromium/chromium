@@ -5,13 +5,19 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_UTILS_H_
 #define MEDIA_GPU_VAAPI_VAAPI_UTILS_H_
 
-#include <va/va.h>
-
 #include "base/bind_helpers.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/thread_annotations.h"
 #include "ui/gfx/geometry/size.h"
+
+// Forward declarations taken verbatim from <va/va.h>
+typedef unsigned int VABufferID;
+typedef void* VADisplay;
+typedef struct _VAImage VAImage;
+typedef struct _VAImageFormat VAImageFormat;
+typedef int VAStatus;
+typedef unsigned int VASurfaceID;
 
 namespace base {
 class Lock;
@@ -51,43 +57,6 @@ class ScopedVABufferMapping {
   void* va_buffer_data_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedVABufferMapping);
-};
-
-// This class tracks the VABuffer life cycle from vaCreateBuffer() to
-// vaDestroyBuffer(). Users of this class are responsible for mapping and
-// unmapping the buffer as needed. The destructor acquires |lock|, but the user
-// of this class must acquire the lock prior to construction.
-class ScopedVABuffer {
- public:
-  // Creates ScopedVABuffer. Returns nullptr if creating the va buffer fails.
-  static std::unique_ptr<ScopedVABuffer> Create(base::Lock* lock,
-                                                VADisplay va_display,
-                                                VAContextID va_context_id,
-                                                VABufferType va_buffer_type,
-                                                size_t size);
-  static std::unique_ptr<ScopedVABuffer>
-  CreateForTesting(VABufferID buffer_id, VABufferType buffer_type, size_t size);
-  ScopedVABuffer(const ScopedVABuffer&) = delete;
-  ScopedVABuffer& operator=(const ScopedVABuffer&) = delete;
-  ~ScopedVABuffer();
-
-  VABufferID id() const { return va_buffer_id_; }
-  VABufferType type() const { return va_buffer_type_; }
-  size_t size() const { return size_; }
-
- private:
-  ScopedVABuffer(base::Lock* lock,
-                 VADisplay va_display,
-                 VABufferID va_buffer_id,
-                 VABufferType va_buffer_type,
-                 size_t size);
-
-  base::Lock* const lock_;
-  const VADisplay va_display_ GUARDED_BY(lock_);
-
-  const VABufferID va_buffer_id_;
-  const VABufferType va_buffer_type_;
-  const size_t size_;
 };
 
 // This class tracks the VAImage life cycle from vaCreateImage() - vaGetImage()
