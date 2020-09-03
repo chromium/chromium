@@ -48,7 +48,7 @@ MixerInput::MixerInput(Source* source, FilterGroup* filter_group)
       primary_(source->primary()),
       device_id_(source->device_id()),
       content_type_(source->content_type()),
-      slew_volume_(kDefaultSlewTimeMs),
+      slew_volume_(kDefaultSlewTimeMs, true),
       volume_applied_(false),
       previous_ended_in_silence_(false),
       first_buffer_(true),
