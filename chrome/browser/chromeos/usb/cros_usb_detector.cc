@@ -240,7 +240,6 @@ void ShowNotificationForDevice(device::mojom::UsbDeviceInfoPtr device_info) {
       rich_notification_data,
       base::MakeRefCounted<CrosUsbNotificationDelegate>(
           notification_id, std::move(device_info)));
-  notification.SetSystemPriority();
   SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
