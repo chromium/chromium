@@ -5,23 +5,37 @@
 """Command-line tool for printing class-level dependencies."""
 
 import argparse
+from dataclasses import dataclass
 
+import class_dependency
 import graph
 import print_dependencies_helper
 import serialization
 
 
-def print_class_dependencies_for_key(class_graph, key):
+@dataclass
+class PrintMode:
+    """Options of how and which dependencies to output."""
+    inbound: bool
+    outbound: bool
+
+
+def print_class_dependencies_for_key(
+        class_graph: class_dependency.JavaClassDependencyGraph, key: str,
+        print_mode: PrintMode):
     """Prints dependencies for a valid key into the class graph."""
-    node = class_graph.get_node_by_key(key)
+    node: class_dependency.JavaClass = class_graph.get_node_by_key(key)
 
-    print(f'{len(node.inbound)} inbound dependency(ies) for {node.name}:')
-    for inbound_dep in graph.sorted_nodes_by_name(node.inbound):
-        print(f'\t{inbound_dep.name}')
+    if print_mode.inbound:
+        print(f'{len(node.inbound)} inbound dependency(ies) for {node.name}:')
+        for inbound_dep in graph.sorted_nodes_by_name(node.inbound):
+            print(f'\t{inbound_dep.name}')
 
-    print(f'{len(node.outbound)} outbound dependency(ies) for {node.name}:')
-    for outbound_dep in graph.sorted_nodes_by_name(node.outbound):
-        print(f'\t{outbound_dep.name}')
+    if print_mode.outbound:
+        print(
+            f'{len(node.outbound)} outbound dependency(ies) for {node.name}:')
+        for outbound_dep in graph.sorted_nodes_by_name(node.outbound):
+            print(f'\t{outbound_dep.name}')
 
 
 def main():
@@ -47,7 +61,19 @@ def main():
         '`org.chromium.browser.AppHooks`. Specify multiple classes with a '
         'comma-separated list, for example '
         '`ChromeActivity,ChromeTabbedActivity`')
+    direction_arg_group = arg_parser.add_mutually_exclusive_group()
+    direction_arg_group.add_argument('--inbound',
+                                     dest='inbound_only',
+                                     action='store_true',
+                                     help='Print inbound dependencies only.')
+    direction_arg_group.add_argument('--outbound',
+                                     dest='outbound_only',
+                                     action='store_true',
+                                     help='Print outbound dependencies only.')
     arguments = arg_parser.parse_args()
+
+    print_mode = PrintMode(inbound=not arguments.outbound_only,
+                           outbound=not arguments.inbound_only)
 
     class_graph = serialization.load_class_graph_from_file(arguments.file)
     class_graph_keys = [node.name for node in class_graph.nodes]
@@ -70,7 +96,8 @@ def main():
                 print(f'\t{valid_key}')
         else:
             print(f'Printing class dependencies for {valid_keys[0]}:')
-            print_class_dependencies_for_key(class_graph, valid_keys[0])
+            print_class_dependencies_for_key(class_graph, valid_keys[0],
+                                             print_mode)
 
 
 if __name__ == '__main__':
