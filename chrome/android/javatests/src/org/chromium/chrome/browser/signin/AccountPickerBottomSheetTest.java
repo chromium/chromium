@@ -283,14 +283,7 @@ public class AccountPickerBottomSheetTest {
                         any());
 
         buildAndShowCollapsedBottomSheet();
-        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        ThreadUtils.runOnUiThread(
-                bottomSheetView.findViewById(R.id.account_picker_continue_as_button)::performClick);
-        CriteriaHelper.pollUiThread(() -> {
-            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown()
-                    && bottomSheetView.findViewById(R.id.account_picker_bottom_sheet_subtitle)
-                               .isShown();
-        });
+        clickContinueButtonAndWaitForErrorSheet();
         onView(withText(R.string.signin_account_picker_bottom_sheet_error_title))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.signin_account_picker_general_error_subtitle))
@@ -318,14 +311,7 @@ public class AccountPickerBottomSheetTest {
                 .signIn(eq(coreAccountInfo), any());
 
         buildAndShowCollapsedBottomSheet();
-        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        ThreadUtils.runOnUiThread(
-                bottomSheetView.findViewById(R.id.account_picker_continue_as_button)::performClick);
-        CriteriaHelper.pollUiThread(() -> {
-            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown()
-                    && bottomSheetView.findViewById(R.id.account_picker_bottom_sheet_subtitle)
-                               .isShown();
-        });
+        clickContinueButtonAndWaitForErrorSheet();
         onView(withText(R.string.signin_account_picker_bottom_sheet_error_title))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.signin_account_picker_auth_error_subtitle))
@@ -351,14 +337,7 @@ public class AccountPickerBottomSheetTest {
                 .signIn(eq(coreAccountInfo), any());
 
         buildAndShowCollapsedBottomSheet();
-        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        ThreadUtils.runOnUiThread(
-                bottomSheetView.findViewById(R.id.account_picker_continue_as_button)::performClick);
-        CriteriaHelper.pollUiThread(() -> {
-            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown()
-                    && bottomSheetView.findViewById(R.id.account_picker_bottom_sheet_subtitle)
-                               .isShown();
-        });
+        clickContinueButtonAndWaitForErrorSheet();
         doNothing().when(mAccountPickerDelegateMock).signIn(eq(coreAccountInfo), any());
         // Clicking on the |Try again| button should perform the sign-in again and opens the sign-in
         // in progress page.
@@ -414,8 +393,19 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
-
         onView(withId(R.id.incognito_interstitial_bottom_sheet_view)).check(matches(isDisplayed()));
+    }
+
+    private void clickContinueButtonAndWaitForErrorSheet() {
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown()
+                    && bottomSheetView.findViewById(R.id.account_picker_bottom_sheet_subtitle)
+                               .isShown();
+        });
     }
 
     private void clickContinueButtonAndCheckSignInInProgressSheet() {
@@ -465,6 +455,9 @@ public class AccountPickerBottomSheetTest {
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);
         onView(withText(R.string.signin_account_picker_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_account_picker_bottom_sheet_subtitle))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.account_picker_horizontal_divider)).check(matches(isDisplayed()));
         onView(allOf(withText(profileData.getAccountName()), withEffectiveVisibility(VISIBLE)))
                 .check(matches(isDisplayed()));
         if (profileData.getFullName() != null) {
