@@ -10,6 +10,7 @@ namespace phonehub {
 
 class DoNotDisturbController;
 class FeatureStatusProvider;
+class FindMyDeviceController;
 class NotificationAccessManager;
 class NotificationManager;
 class PhoneModel;
@@ -27,6 +28,7 @@ class PhoneHubManager {
   // Getters for sub-elements.
   virtual DoNotDisturbController* GetDoNotDisturbController() = 0;
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
+  virtual FindMyDeviceController* GetFindMyDeviceController() = 0;
   virtual NotificationAccessManager* GetNotificationAccessManager() = 0;
   virtual NotificationManager* GetNotificationManager() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;

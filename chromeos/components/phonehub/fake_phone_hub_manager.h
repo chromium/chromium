@@ -9,6 +9,7 @@
 
 #include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
+#include "chromeos/components/phonehub/fake_find_my_device_controller.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 #include "chromeos/components/phonehub/fake_tether_controller.h"
@@ -32,6 +33,10 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_feature_status_provider_;
   }
 
+  FakeFindMyDeviceController* fake_find_my_device_controller() {
+    return &fake_find_my_device_controller_;
+  }
+
   FakeNotificationAccessManager* fake_notification_access_manager() {
     return &fake_notification_access_manager_;
   }
@@ -50,6 +55,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   // PhoneHubManager:
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
+  FindMyDeviceController* GetFindMyDeviceController() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
   NotificationManager* GetNotificationManager() override;
   PhoneModel* GetPhoneModel() override;
@@ -57,6 +63,7 @@ class FakePhoneHubManager : public PhoneHubManager {
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
+  FakeFindMyDeviceController fake_find_my_device_controller_;
   FakeNotificationAccessManager fake_notification_access_manager_;
   FakeNotificationManager fake_notification_manager_;
   MutablePhoneModel mutable_phone_model_;

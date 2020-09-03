@@ -19,6 +19,10 @@ FeatureStatusProvider* FakePhoneHubManager::GetFeatureStatusProvider() {
   return &fake_feature_status_provider_;
 }
 
+FindMyDeviceController* FakePhoneHubManager::GetFindMyDeviceController() {
+  return &fake_find_my_device_controller_;
+}
+
 NotificationAccessManager* FakePhoneHubManager::GetNotificationAccessManager() {
   return &fake_notification_access_manager_;
 }

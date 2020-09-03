@@ -6,6 +6,7 @@
 
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
+#include "chromeos/components/phonehub/find_my_device_controller_impl.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
 #include "chromeos/components/phonehub/notification_manager_impl.h"
@@ -23,6 +24,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
           multidevice_setup_client)),
+      find_my_device_controller_(
+          std::make_unique<FindMyDeviceControllerImpl>()),
       notification_access_manager_(
           std::make_unique<NotificationAccessManagerImpl>(pref_service)),
       notification_manager_(std::make_unique<NotificationManagerImpl>()),
@@ -38,6 +41,10 @@ DoNotDisturbController* PhoneHubManagerImpl::GetDoNotDisturbController() {
 
 FeatureStatusProvider* PhoneHubManagerImpl::GetFeatureStatusProvider() {
   return feature_status_provider_.get();
+}
+
+FindMyDeviceController* PhoneHubManagerImpl::GetFindMyDeviceController() {
+  return find_my_device_controller_.get();
 }
 
 NotificationAccessManager* PhoneHubManagerImpl::GetNotificationAccessManager() {
@@ -60,6 +67,7 @@ void PhoneHubManagerImpl::Shutdown() {
   tether_controller_.reset();
   phone_model_.reset();
   notification_access_manager_.reset();
+  find_my_device_controller_.reset();
   feature_status_provider_.reset();
   do_not_disturb_controller_.reset();
 }
