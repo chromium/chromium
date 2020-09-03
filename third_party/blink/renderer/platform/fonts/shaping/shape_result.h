@@ -185,6 +185,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // have vertical offsets.
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
 
+  // Note: We should not reuse |ShapeResult| if we call |ApplySpacing()|.
+  bool IsAppliedSpacing() const { return is_applied_spacing_; }
+
   // For memory reporting.
   size_t ByteSize() const;
 
@@ -490,7 +493,7 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
   unsigned start_index_;
   unsigned num_characters_;
-  unsigned num_glyphs_ : 30;
+  unsigned num_glyphs_ : 29;
 
   // Overall direction for the TextRun, dictates which order each individual
   // sub run (represented by RunInfo structs in the m_runs vector) can have a
@@ -499,6 +502,12 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
   // Tracks whether any runs contain glyphs with a y-offset != 0.
   unsigned has_vertical_offsets_ : 1;
+
+  // True once called |ApplySpacing()|.
+  unsigned is_applied_spacing_ : 1;
+
+  // Note: When you add more bit flags, please consider to reduce size of
+  // |num_glyphs_| or |num_characters_|.
 
  private:
   friend class HarfBuzzShaper;
