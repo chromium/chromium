@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_test_mixin.h"
+#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_test_helper.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,12 +17,14 @@
 #include "ui/views/window/non_client_view.h"
 #include "url/gurl.h"
 
-WebAppFrameToolbarTestMixin::WebAppFrameToolbarTestMixin() {
+WebAppFrameToolbarTestHelper::WebAppFrameToolbarTestHelper() {
   WebAppFrameToolbarView::DisableAnimationForTesting();
 }
 
-void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(Browser* browser,
-                                                         const GURL& app_url) {
+WebAppFrameToolbarTestHelper::~WebAppFrameToolbarTestHelper() = default;
+
+void WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(Browser* browser,
+                                                          const GURL& app_url) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->app_url = app_url;
   web_app_info->scope = app_url.GetWithoutFilename();

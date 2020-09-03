@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_TEST_MIXIN_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_TEST_MIXIN_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
 
 class Browser;
 class BrowserNonClientFrameView;
@@ -12,9 +12,13 @@ class GURL;
 class WebAppFrameToolbarView;
 
 // Mixin for setting up and launching a web app in a browser test.
-class WebAppFrameToolbarTestMixin {
+class WebAppFrameToolbarTestHelper {
  public:
-  WebAppFrameToolbarTestMixin();
+  WebAppFrameToolbarTestHelper();
+  WebAppFrameToolbarTestHelper(const WebAppFrameToolbarTestHelper&) = delete;
+  WebAppFrameToolbarTestHelper& operator=(const WebAppFrameToolbarTestHelper&) =
+      delete;
+  ~WebAppFrameToolbarTestHelper();
 
   void InstallAndLaunchWebApp(Browser* browser, const GURL& app_url);
 
@@ -32,4 +36,4 @@ class WebAppFrameToolbarTestMixin {
   WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_TEST_MIXIN_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
