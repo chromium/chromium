@@ -92,7 +92,7 @@ export function initMetrics() {
       i['GoogleAnalyticsObject'] = r;
       i[r] = i[r] || function(...args) {
         (i[r].q = i[r].q || []).push(args);
-      }, i[r].l = 1 * new Date();
+      }, i[r].l = new Date().getTime();
       const a = s.createElement(o);
       const m = s.getElementsByTagName(o)[0];
       a['async'] = 1;

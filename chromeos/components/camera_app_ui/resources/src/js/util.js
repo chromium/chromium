@@ -237,7 +237,7 @@ export function animateOnce(element, callback) {
 
 /**
  * Returns a shortcut string, such as Ctrl-Alt-A.
- * @param {!Event} event Keyboard event.
+ * @param {!KeyboardEvent} event Keyboard event.
  * @return {string} Shortcut identifier.
  */
 export function getShortcutIdentifier(event) {

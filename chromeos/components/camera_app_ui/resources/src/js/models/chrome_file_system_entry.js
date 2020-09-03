@@ -47,6 +47,12 @@ export class ChromeFileEntry extends ChromeFileSystemEntry {
     super(entry);
 
     /**
+     * @type {!FileEntry}
+     * @private
+     */
+    this.entry_;
+
+    /**
      * @type {{
      *   file: function(): !Promise,
      *   createWriter: function(): !Promise,
@@ -119,9 +125,10 @@ export class ChromeFileEntry extends ChromeFileSystemEntry {
 
   /**
    * @override
+   * @return {!FileEntry}
    */
   getRawEntry() {
-    return /** @type {!FileEntry} */ (this.entry_);
+    return this.entry_;
   }
 }
 
@@ -137,6 +144,12 @@ export class ChromeDirectoryEntry extends ChromeFileSystemEntry {
     super(entry);
 
     /**
+     * @type {!DirectoryEntry}
+     * @private
+     */
+    this.entry_;
+
+    /**
      * @type {{
      *   getFile: function(string, !Object): !Promise,
      *   getDirectory: function(string, !Object): !Promise,
@@ -144,9 +157,8 @@ export class ChromeDirectoryEntry extends ChromeFileSystemEntry {
      * @private
      */
     this.entry_ops_ = {
-      getFile: promisifyWithError(this.entry_.getFile.bind(this.entry_)),
-      getDirectory:
-          promisifyWithError(this.entry_.getDirectory.bind(this.entry_)),
+      getFile: promisifyWithError(entry.getFile.bind(entry)),
+      getDirectory: promisifyWithError(entry.getDirectory.bind(entry)),
     };
   }
 

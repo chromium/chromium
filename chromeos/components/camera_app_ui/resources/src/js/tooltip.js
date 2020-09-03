@@ -49,7 +49,7 @@ export function hide() {
 
 /**
  * Shows a tooltip over the hovered element.
- * @param {!HTMLElement} element Hovered element whose tooltip to be shown.
+ * @param {!HTMLInputElement} element Hovered element whose tooltip to be shown.
  */
 function show(element) {
   hide();

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {browserProxy} from './browser_proxy/browser_proxy.js';
+import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import * as state from './state.js';
@@ -35,7 +36,8 @@ export function setup(views) {
   // Manage all tabindex usages in for navigation.
   dom.getAll('[tabindex]', HTMLElement)
       .forEach((element) => util.makeUnfocusableByMouse(element));
-  document.body.addEventListener('keydown', (e) => {
+  document.body.addEventListener('keydown', (event) => {
+    const e = assertInstanceof(event, KeyboardEvent);
     if (e.key === 'Tab') {
       state.set(state.State.TAB_NAVIGATION, true);
     }
@@ -170,7 +172,7 @@ export function close(name, condition) {
 
 /**
  * Handles key pressed event.
- * @param {!Event} event Key press event.
+ * @param {!KeyboardEvent} event Key press event.
  */
 export function onKeyPressed(event) {
   const key = util.getShortcutIdentifier(event);

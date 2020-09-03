@@ -28,7 +28,6 @@ async function cropSquare(blob) {
   const croppedBlob = await new Promise((resolve) => {
     canvas.toBlob(resolve, 'image/jpeg');
   });
-  croppedBlob.resolution = blob.resolution;
   return croppedBlob;
 }
 

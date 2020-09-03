@@ -135,7 +135,7 @@ export class Video extends ModeBase {
 
     /**
      * Promise for play start sound delay.
-     * @type {?Promise}
+     * @type {?{promise: !Promise, cancel: function()}}
      * @private
      */
     this.startSound_ = null;
@@ -249,7 +249,7 @@ export class Video extends ModeBase {
     this.startSound_ = sound.play('#sound-rec-start');
     this.everPaused_ = false;
     try {
-      await this.startSound_;
+      await this.startSound_.promise;
     } finally {
       this.startSound_ = null;
     }
@@ -302,7 +302,7 @@ export class Video extends ModeBase {
    * @override
    */
   stop_() {
-    if (this.startSound_ && this.startSound_.cancel) {
+    if (this.startSound_ !== null) {
       this.startSound_.cancel();
     }
     if (this.mediaRecorder_ &&

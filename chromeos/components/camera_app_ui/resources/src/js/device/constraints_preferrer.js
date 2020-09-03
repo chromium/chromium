@@ -328,7 +328,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
       const /** !Object<(!Resolution|string), !Array<number>> */ fpsInfo = {};
       for (const [resolution, maxFps] of Object.entries(videoMaxFps)) {
         fpsInfo[/** @type {string} */ (resolution)] =
-            constFpses.filter((fps) => fps <= maxFps);
+            constFpses.filter((fps) => fps <= /** @type {number} */ (maxFps));
       }
       this.constFpsInfo_[deviceId] = fpsInfo;
     });

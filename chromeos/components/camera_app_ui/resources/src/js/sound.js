@@ -7,14 +7,15 @@ import * as dom from './dom.js';
 /**
  * Plays a sound.
  * @param {string} selector Selector of the sound.
- * @return {!Promise} Promise for waiting finishing playing or canceling wait.
+ * @return {{promise: !Promise, cancel: function()}} Promise for waiting
+ *     finishing playing and function for canceling wait.
  */
 export function play(selector) {
   // Use a timeout to wait for sound finishing playing instead of end-event
   // as it might not be played at all (crbug.com/135780).
   // TODO(yuli): Don't play sounds if the speaker settings is muted.
   let cancel;
-  const p = new Promise((resolve, reject) => {
+  const promise = new Promise((resolve, reject) => {
     const element = dom.get(selector, HTMLAudioElement);
     const timeout =
         setTimeout(resolve, Number(element.dataset['timeout'] || 0));
@@ -25,6 +26,5 @@ export function play(selector) {
     element.currentTime = 0;
     element.play();
   });
-  p.cancel = cancel;
-  return p;
+  return {promise, cancel};
 }
