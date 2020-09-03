@@ -151,7 +151,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool was_fetched_via_cache,
       bool is_signed_exchange_inner_response,
       net::HttpResponseInfo::ConnectionInfo connection_info,
-      base::Optional<net::SSLInfo> ssl_info);
+      base::Optional<net::SSLInfo> ssl_info,
+      scoped_refptr<net::HttpResponseHeaders> response_headers);
 
   // Used to simulate the commit of a navigation having been processed in the
   // renderer. If parameters required to commit are not provided, they will be
@@ -255,7 +256,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool was_fetched_via_cache,
       bool is_signed_exchange_inner_response,
       net::HttpResponseInfo::ConnectionInfo connection_info,
-      base::Optional<net::SSLInfo> ssl_info);
+      base::Optional<net::SSLInfo> ssl_info,
+      scoped_refptr<net::HttpResponseHeaders> response_headers);
 
   // Computes the page ID for a pending navigation in this RenderFrameHost;
   int32_t ComputeNextPageID();

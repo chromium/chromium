@@ -18,7 +18,6 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -401,18 +400,133 @@ TEST_F(AncestorThrottleNavigationTest,
     // RenderFrameHostImpl so that the next tests can rely on this.
     // TODO(antoniosartori): Update the NavigationSimulatorImpl so that this is
     // done automatically on commit.
-    TestNavigationURLLoader* url_loader =
-        static_cast<TestNavigationURLLoader*>(request->loader_for_testing());
-    auto response = network::mojom::URLResponseHead::New();
-    response->headers =
+    auto response_headers =
         base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-    response->parsed_headers = network::mojom::ParsedHeaders::New();
-    response->parsed_headers->allow_csp_from =
-        network::mojom::AllowCSPFromHeaderValue::NewAllowStar(true);
-    url_loader->CallOnResponseStarted(std::move(response));
+    response_headers->SetHeader("Allow-CSP-From", "*");
+    simulator->SetResponseHeaders(response_headers);
+    simulator->ReadyToCommit();
     auto* new_required_csp = request->required_csp();
     if (new_required_csp)
       test.frame->required_csp_ = new_required_csp->Clone();
+  }
+}
+
+TEST_F(AncestorThrottleNavigationTest, EvaluateCSPEmbeddedEnforcement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(network::features::kOutOfBlinkCSPEE);
+
+  // We need one initial navigation to set up everything.
+  NavigateAndCommit(GURL("https://www.example.org"));
+
+  auto* main_frame = static_cast<TestRenderFrameHost*>(main_rfh());
+
+  struct TestCase {
+    const char* name;
+    const char* required_csp;
+    const char* frame_url;
+    const char* allow_csp_from;
+    const char* returned_csp;
+    bool expect_allow;
+  } cases[] = {
+      {
+          "No required csp",
+          nullptr,
+          "https://www.not-example.org",
+          nullptr,
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Same origin",
+          "script-src 'none'",
+          "https://www.example.org",
+          nullptr,
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Cross origin",
+          "script-src 'none'",
+          "https://www.not-example.org",
+          nullptr,
+          nullptr,
+          false,
+      },
+      {
+          "Required csp - Cross origin with Allow-CSP-From",
+          "script-src 'none'",
+          "https://www.not-example.org",
+          "*",
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Cross origin with wrong Allow-CSP-From",
+          "script-src 'none'",
+          "https://www.not-example.org",
+          "https://www.another-example.org",
+          nullptr,
+          false,
+      },
+      {
+          "Required csp - Cross origin with non-subsuming CSPs",
+          "script-src 'none'",
+          "https://www.not-example.org",
+          nullptr,
+          "style-src 'none'",
+          false,
+      },
+      {
+          "Required csp - Cross origin with subsuming CSPs",
+          "script-src 'none'",
+          "https://www.not-example.org",
+          nullptr,
+          "script-src 'none'",
+          true,
+      },
+      {
+          "Required csp - Cross origin with wrong Allow-CSP-From but subsuming "
+          "CSPs",
+          "script-src 'none'",
+          "https://www.not-example.org",
+          "https://www.another-example.org",
+          "script-src 'none'",
+          true,
+      },
+  };
+
+  for (auto test : cases) {
+    SCOPED_TRACE(test.name);
+    auto* frame = static_cast<TestRenderFrameHost*>(
+        content::RenderFrameHostTester::For(main_frame)
+            ->AppendChild(test.name));
+
+    if (test.required_csp) {
+      frame->frame_tree_node()->set_csp_attribute(
+          ParsePolicy(test.required_csp));
+    }
+
+    std::unique_ptr<NavigationSimulator> simulator =
+        content::NavigationSimulator::CreateRendererInitiated(
+            GURL(test.frame_url), frame);
+
+    auto response_headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    if (test.allow_csp_from)
+      response_headers->SetHeader("Allow-CSP-From", test.allow_csp_from);
+    if (test.returned_csp)
+      response_headers->SetHeader("Content-Security-Policy", test.returned_csp);
+
+    simulator->SetResponseHeaders(response_headers);
+    simulator->ReadyToCommit();
+
+    if (test.expect_allow) {
+      EXPECT_EQ(NavigationThrottle::PROCEED,
+                simulator->GetLastThrottleCheckResult());
+    } else {
+      EXPECT_EQ(NavigationThrottle::BLOCK_RESPONSE,
+                simulator->GetLastThrottleCheckResult());
+    }
   }
 }
 

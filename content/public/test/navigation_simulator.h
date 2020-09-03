@@ -294,8 +294,15 @@ class NavigationSimulator {
           receiver) = 0;
 
   // Provides the contents mime type to be set at commit. It should be
-  // specified before calling |Commit|.
+  // specified before calling |ReadyToCommit| or |Commit|.
   virtual void SetContentsMimeType(const std::string& contents_mime_type) = 0;
+
+  // Provides the response headers received during |ReadyToCommit| specified
+  // before calling |ReadyToCommit| or |Commit|.
+  // Note that the mime type should be specified separately with
+  // |SectContentsMimeType|.
+  virtual void SetResponseHeaders(
+      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
 
   // Whether or not the NavigationSimulator automatically advances the
   // navigation past the stage requested (e.g. through asynchronous

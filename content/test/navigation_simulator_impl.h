@@ -97,6 +97,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
       override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
+  void SetResponseHeaders(
+      scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void SetAutoAdvance(bool auto_advance) override;
   void SetResolveErrorInfo(
       const net::ResolveErrorInfo& resolve_error_info) override;
@@ -303,6 +305,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;
+  scoped_refptr<net::HttpResponseHeaders> response_headers_;
   network::mojom::CSPDisposition should_check_main_world_csp_ =
       network::mojom::CSPDisposition::CHECK;
   net::HttpResponseInfo::ConnectionInfo http_connection_info_ =

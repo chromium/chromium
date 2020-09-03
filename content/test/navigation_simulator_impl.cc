@@ -530,7 +530,7 @@ void NavigationSimulatorImpl::ReadyToCommit() {
         ->PrepareForCommitDeprecatedForNavigationSimulator(
             remote_endpoint_, was_fetched_via_cache_,
             is_signed_exchange_inner_response_, http_connection_info_,
-            ssl_info_);
+            ssl_info_, response_headers_);
   }
 
   // Synchronous failure can cause the navigation to finish here.
@@ -930,6 +930,13 @@ void NavigationSimulatorImpl::SetContentsMimeType(
   CHECK_LE(state_, STARTED) << "The contents mime type cannot be set after the "
                                "navigation has committed or failed";
   contents_mime_type_ = contents_mime_type;
+}
+
+void NavigationSimulatorImpl::SetResponseHeaders(
+    scoped_refptr<net::HttpResponseHeaders> response_headers) {
+  CHECK_LE(state_, STARTED) << "The response headers cannot be set after the "
+                               "navigation has committed or failed";
+  response_headers_ = response_headers;
 }
 
 void NavigationSimulatorImpl::SetLoadURLParams(
