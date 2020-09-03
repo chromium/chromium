@@ -86,9 +86,9 @@ bool HttpsImageCompressionInfoBarDecider::CanShowInfoBar(
   if (!navigation_handle->GetURL().SchemeIs(url::kHttpsScheme))
     return false;
 #if defined(OS_ANDROID)
-  auto* delegate = static_cast<android::TabWebContentsDelegateAndroid*>(
-      navigation_handle->GetWebContents()->GetDelegate());
-  if (delegate->IsCustomTab())
+  auto* tab_android =
+      TabAndroid::FromWebContents(navigation_handle->GetWebContents());
+  if (!tab_android || tab_android->IsCustomTab())
     return false;
 #endif
   return true;
