@@ -563,9 +563,9 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::EvaluateModule(
   TRACE_EVENT0("v8,devtools.timeline", "v8.evaluateModule");
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
   v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
-  v8::MicrotasksScope microtasks_scope(isolate,
-                                       ToMicrotaskQueue(execution_context),
-                                       v8::MicrotasksScope::kRunMicrotasks);
+  // Do not perform a microtask checkpoint here. A checkpoint is performed
+  // only after module error handling to ensure proper timing with and without
+  // top-level await.
   return module->Evaluate(context);
 }
 

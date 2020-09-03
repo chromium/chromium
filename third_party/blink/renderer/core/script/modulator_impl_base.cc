@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
@@ -343,7 +344,11 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
 
   // <spec step="4">Prepare to run script given settings.</spec>
   //
-  // This is placed here to also cover ModuleRecord::ReportException().
+  // These are placed here to also cover ModuleRecord::ReportException().
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(isolate,
+                                       ToMicrotaskQueue(GetExecutionContext()),
+                                       v8::MicrotasksScope::kRunMicrotasks);
   ScriptState::EscapableScope scope(script_state_);
 
   // <spec step="5">Let evaluationStatus be null.</spec>
@@ -395,8 +400,8 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
   }
 
   // <spec step="9">Clean up after running script with settings.</spec>
-  //
-  // Implemented as the ScriptState::Scope destructor.
+  // - Partially implemented in MicrotaskScope destructor and the
+  // - ScriptState::EscapableScope destructor.
   if (base::FeatureList::IsEnabled(features::kTopLevelAwait))
     return result.Escape(&scope);
   else
