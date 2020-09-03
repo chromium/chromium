@@ -23,6 +23,24 @@ __wptrunner__ = {"product": "chrome",
                  "env_options": "env_options",
                  "timeout_multiplier": "get_timeout_multiplier",}
 
+# This is generated using:
+# ```
+# openssl x509 -noout -pubkey -in ./tools/certs/web-platform.test.pem |
+# openssl pkey -pubin -outform der |
+# openssl dgst -sha256 -binary |
+# base64
+# ```
+# TODO(https://github.com/web-platform-tests/wpt/issues/21968):
+# Automate the regeneration of this value.
+WPT_FINGERPRINT = 'VPzsk0tdACJMqhsnPpMDesIkQYZrI2RGR+UlPK4emE4='
+
+# And one for signed-exchange/resources/127.0.0.1.sxg.pem
+SXG_WPT_FINGERPRINT = '0Rt4mT6SJXojEMHTnKnlJ/hBKMBcI4kteBlhR1eTTdk='
+
+IGNORE_CERTIFICATE_ERRORS_SPKI_LIST = [
+    WPT_FINGERPRINT,
+    SXG_WPT_FINGERPRINT
+]
 
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
@@ -67,7 +85,12 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     # Here we set a few Chrome flags that are always passed.
     # ChromeDriver's "acceptInsecureCerts" capability only controls the current
     # browsing context, whereas the CLI flag works for workers, too.
-    chrome_options["args"] = ["--ignore-certificate-errors"]
+    chrome_options["args"] = []
+
+    chrome_options["args"].append("--ignore-certificate-errors")
+    chrome_options["args"].append("--ignore-certificate-errors-spki-list=%s" %
+                                  ','.join(IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
+
     # Allow audio autoplay without a user gesture.
     chrome_options["args"].append("--autoplay-policy=no-user-gesture-required")
     # Allow WebRTC tests to call getUserMedia.
