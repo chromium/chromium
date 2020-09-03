@@ -301,9 +301,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   bool IsNeverComposited() override;
   WebPreferences GetWebkitPreferencesForWidget() override;
 
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
-                       const ContextMenuParams& params) override;
-
   // IPC message handlers.
   void OnShowView(int route_id,
                   WindowOpenDisposition disposition,

@@ -2241,18 +2241,6 @@ void RenderWidgetHostViewAura::SetTooltipsEnabled(bool enable) {
   }
 }
 
-void RenderWidgetHostViewAura::ShowContextMenu(
-    const ContextMenuParams& params) {
-  // Use RenderViewHostDelegate to get to the WebContentsViewAura, which will
-  // actually show the disambiguation popup.
-  // NOTE: This only works for main frame widgets then, as child frame widgets
-  // don't have an owner delegate and won't get access to the RenderViewHost
-  // here.
-  RenderWidgetHostOwnerDelegate* owner_delegate = host()->owner_delegate();
-  if (owner_delegate)
-    owner_delegate->ShowContextMenu(GetFocusedFrame(), params);
-}
-
 void RenderWidgetHostViewAura::NotifyRendererOfCursorVisibilityState(
     bool is_visible) {
   if (host()->is_hidden() ||

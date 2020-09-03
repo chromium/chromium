@@ -341,7 +341,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   RenderFrameHostImpl* GetFocusedFrame() const;
   bool NeedsMouseCapture() override;
   void SetTooltipsEnabled(bool enable) override;
-  void ShowContextMenu(const ContextMenuParams& params) override;
   void Shutdown() override;
 
   bool ShouldVirtualKeyboardOverlayContent() const;

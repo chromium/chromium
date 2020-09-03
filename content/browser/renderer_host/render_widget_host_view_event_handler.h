@@ -80,7 +80,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
     // Returns whether the widget needs to grab mouse capture to work properly.
     virtual bool NeedsMouseCapture() = 0;
     virtual void SetTooltipsEnabled(bool enable) = 0;
-    virtual void ShowContextMenu(const ContextMenuParams& params) = 0;
     // Sends shutdown request.
     virtual void Shutdown() = 0;
 

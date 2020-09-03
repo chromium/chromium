@@ -538,11 +538,6 @@ WebPreferences RenderViewHostImpl::GetWebkitPreferencesForWidget() {
   return delegate_->GetOrCreateWebPreferences();
 }
 
-void RenderViewHostImpl::ShowContextMenu(RenderFrameHost* render_frame_host,
-                                         const ContextMenuParams& params) {
-  GetDelegate()->GetDelegateView()->ShowContextMenu(render_frame_host, params);
-}
-
 void RenderViewHostImpl::DispatchRenderViewCreated() {
   if (has_notified_about_creation_)
     return;

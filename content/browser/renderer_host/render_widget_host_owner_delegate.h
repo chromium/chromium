@@ -18,9 +18,7 @@ class Rect;
 }
 
 namespace content {
-struct ContextMenuParams;
 struct NativeWebKeyboardEvent;
-class RenderFrameHost;
 struct WebPreferences;
 
 //
@@ -78,11 +76,6 @@ class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
   // Returns the WebkitPreferences for the page. The preferences are shared
   // between all widgets for the page.
   virtual WebPreferences GetWebkitPreferencesForWidget() = 0;
-
-  // Shows a context menu that is built using the context information
-  // provided in |params|.
-  virtual void ShowContextMenu(RenderFrameHost* render_frame_host,
-                               const ContextMenuParams& params) = 0;
 
  protected:
   virtual ~RenderWidgetHostOwnerDelegate() {}

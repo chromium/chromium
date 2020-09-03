@@ -26,8 +26,6 @@ class StubRenderWidgetHostOwnerDelegate : public RenderWidgetHostOwnerDelegate {
   bool IsMainFrameActive() override;
   bool IsNeverComposited() override;
   WebPreferences GetWebkitPreferencesForWidget() override;
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
-                       const ContextMenuParams& params) override {}
 };
 
 }  // namespace content
