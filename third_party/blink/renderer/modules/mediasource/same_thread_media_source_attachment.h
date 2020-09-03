@@ -5,31 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SAME_THREAD_MEDIA_SOURCE_ATTACHMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SAME_THREAD_MEDIA_SOURCE_ATTACHMENT_H_
 
-#include <memory>
-#include "third_party/blink/public/platform/web_time_range.h"
-#include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
-#include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 
 namespace blink {
 
-class HTMLMediaElement;
-class TimeRanges;
-class TrackBase;
-class WebMediaSource;
-
 // Concrete attachment that supports operation only on the main thread.
-class SameThreadMediaSourceAttachment final : public MediaSourceAttachment {
+class SameThreadMediaSourceAttachment final
+    : public MediaSourceAttachmentSupplement {
  public:
   // The only intended caller of this constructor is
   // URLMediaSource::createObjectUrl. The raw pointer is then adopted into a
   // scoped_refptr in SameThreadMediaSourceRegistry::RegisterURL.
   explicit SameThreadMediaSourceAttachment(MediaSource* media_source);
 
-  void Unregister() override;
+  // MediaSourceAttachmentSupplement
+  void NotifyDurationChanged(MediaSourceTracer* tracer,
+                             double duration) override;
 
+  // MediaSourceAttachment
   MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*) override;
   void CompleteAttachingToMediaElement(
       MediaSourceTracer* tracer,
@@ -45,10 +39,6 @@ class SameThreadMediaSourceAttachment final : public MediaSourceAttachment {
 
  private:
   ~SameThreadMediaSourceAttachment() override;
-
-  // Cache of the registered MediaSource. Retains strong reference until
-  // Unregister() is called.
-  Persistent<MediaSource> registered_media_source_;
 
   DISALLOW_COPY_AND_ASSIGN(SameThreadMediaSourceAttachment);
 };

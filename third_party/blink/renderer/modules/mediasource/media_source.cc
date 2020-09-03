@@ -293,6 +293,8 @@ void MediaSource::OnReadyStateChange(const AtomicString& old_state,
   source_buffers_->Clear();
 
   attached_element_.Clear();
+  media_source_attachment_.reset();
+  attachment_tracer_ = nullptr;
 
   ScheduleEvent(event_type_names::kSourceclose);
 }
@@ -385,6 +387,7 @@ ExecutionContext* MediaSource::GetExecutionContext() const {
 
 void MediaSource::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
+  visitor->Trace(attachment_tracer_);
   visitor->Trace(attached_element_);
   visitor->Trace(source_buffers_);
   visitor->Trace(active_source_buffers_);
@@ -401,6 +404,9 @@ void MediaSource::CompleteAttachingToMediaElement(
   DCHECK(web_media_source);
   DCHECK(!web_media_source_);
   DCHECK(attached_element_);
+  DCHECK(media_source_attachment_);
+  DCHECK(attachment_tracer_);
+
   web_media_source_ = std::move(web_media_source);
   SetReadyState(OpenKeyword());
 }
@@ -467,7 +473,7 @@ TimeRanges* MediaSource::Buffered() const {
 }
 
 WebTimeRanges MediaSource::SeekableInternal() const {
-  DCHECK(attached_element_)
+  DCHECK(attached_element_ && media_source_attachment_ && attachment_tracer_)
       << "Seekable should only be used when attached to HTMLMediaElement";
 
   // Implements MediaSource algorithm for HTMLMediaElement.seekable.
@@ -617,7 +623,6 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
             std::isnan(old_duration) ? 0 : old_duration);
 
   // 4. Update duration to new duration.
-  bool request_seek = attached_element_->currentTime() > new_duration;
   web_media_source_->SetDuration(new_duration);
 
   if (!RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled() &&
@@ -640,7 +645,8 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
 
   // 6. Update the media controller duration to new duration and run the
   //    HTMLMediaElement duration change algorithm.
-  attached_element_->DurationChanged(new_duration, request_seek);
+  media_source_attachment_->NotifyDurationChanged(attachment_tracer_,
+                                                  new_duration);
 }
 
 void MediaSource::SetReadyState(const AtomicString& state) {
@@ -780,6 +786,9 @@ void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
   active_source_buffers_->insert(insert_position, source_buffer);
 }
 
+// TODO(https://crbug.com/878133): Remove this getter and instead rely on
+// |media_source_attachment_| and |attachment_tracer_| to communicate about
+// the media element.
 HTMLMediaElement* MediaSource::MediaElement() const {
   return attached_element_.Get();
 }
@@ -797,9 +806,10 @@ void MediaSource::EndOfStreamAlgorithm(
 
   if (eos_status == WebMediaSource::kEndOfStreamStatusNoError) {
     // The implementation may not have immediately informed the
-    // |attached_element_| of the potentially reduced duration. Prevent
-    // app-visible duration race by synchronously running the duration change
-    // algorithm. The MSE spec supports this:
+    // |attached_element_| (or the element known by the |attachment_tracer_|
+    // for the current |media_source_attachment_|) of the potentially reduced
+    // duration. Prevent app-visible duration race by synchronously running the
+    // duration change algorithm. The MSE spec supports this:
     // https://www.w3.org/TR/media-source/#end-of-stream-algorithm
     // 2.4.7.3 (If error is not set)
     // Run the duration change algorithm with new duration set to the largest
@@ -813,8 +823,8 @@ void MediaSource::EndOfStreamAlgorithm(
     // to just mark end of stream, and move the duration reduction logic to here
     // so we can just run DurationChangeAlgorithm(...) here.
     double new_duration = duration();
-    bool request_seek = attached_element_->currentTime() > new_duration;
-    attached_element_->DurationChanged(new_duration, request_seek);
+    media_source_attachment_->NotifyDurationChanged(attachment_tracer_,
+                                                    new_duration);
   }
 }
 
@@ -827,17 +837,26 @@ void MediaSource::Close() {
 }
 
 MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
+    scoped_refptr<MediaSourceAttachmentSupplement> attachment,
     HTMLMediaElement* element) {
-  if (attached_element_)
+  if (attached_element_) {
+    DCHECK(media_source_attachment_);
+    DCHECK(attachment_tracer_);
     return nullptr;
+  }
 
+  DCHECK(!media_source_attachment_);
+  DCHECK(!attachment_tracer_);
   DCHECK(IsClosed());
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media",
                                     "MediaSource::StartAttachingToMediaElement",
                                     TRACE_ID_LOCAL(this));
   attached_element_ = element;
-  return MakeGarbageCollected<MediaSourceTracerImpl>(element, this);
+  media_source_attachment_ = attachment;
+  attachment_tracer_ =
+      MakeGarbageCollected<MediaSourceTracerImpl>(element, this);
+  return attachment_tracer_;
 }
 
 void MediaSource::OpenIfInEndedState() {
