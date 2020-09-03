@@ -17,10 +17,13 @@
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -30,6 +33,7 @@
 namespace {
 
 const char kTestEmail[] = "email@example.com";
+const char kTestSecondaryEmail[] = "email2@example.com";
 
 // Notification ID corresponding to kProfileSigninNotificationId +
 // kTestAccountId.
@@ -233,6 +237,48 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
     }
     SetAuthError(account_id, GoogleServiceAuthError::AuthErrorNone());
   }
+}
+
+TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
+  CoreAccountId primary_account =
+      identity_test_env()->MakePrimaryAccountAvailable(kTestEmail).account_id;
+  CoreAccountId secondary_account =
+      identity_test_env()->MakeAccountAvailable(kTestSecondaryEmail).account_id;
+
+  // Mark the profile as a child user.
+  GetProfile()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  base::RunLoop().RunUntilIdle();
+
+  // Invalidate the secondary account.
+  SetAuthError(
+      secondary_account,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Expect that there is a notification, accounts didn't migrate yet.
+  base::Optional<message_center::Notification> notification =
+      display_service_->GetNotification(kSecondaryAccountErrorNotificationId);
+  ASSERT_TRUE(notification);
+  base::string16 message = notification->message();
+  EXPECT_FALSE(message.empty());
+
+  // Clear error.
+  SetAuthError(secondary_account, GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_FALSE(
+      display_service_->GetNotification(kSecondaryAccountErrorNotificationId));
+
+  // Mark secondary account as migrated, message should be different.
+  profile()->GetPrefs()->SetBoolean(prefs::kEduCoexistenceArcMigrationCompleted,
+                                    true);
+
+  // Invalidate the secondary account.
+  SetAuthError(
+      secondary_account,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  notification =
+      display_service_->GetNotification(kSecondaryAccountErrorNotificationId);
+  ASSERT_TRUE(notification);
+  base::string16 new_message = notification->message();
+  EXPECT_NE(new_message, message);
 }
 
 }  // namespace

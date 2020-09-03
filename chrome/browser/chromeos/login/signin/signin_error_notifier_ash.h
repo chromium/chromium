@@ -20,6 +20,7 @@
 #include "components/signin/core/browser/signin_error_controller.h"
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace signin {
 class IdentityManager;
@@ -33,6 +34,8 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   ~SigninErrorNotifier() override;
 
   static std::unique_ptr<base::AutoReset<bool>> IgnoreSyncErrorsForTesting();
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // KeyedService:
   void Shutdown() override;

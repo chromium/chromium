@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -22,8 +23,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "crypto/sha2.h"
@@ -214,6 +217,13 @@ class ChildSigninHelper : public SigninHelper {
     UMA_HISTOGRAM_ENUMERATION("Signin.SecondaryAccountConsentLog", result);
     secondary_account_consent_logger_.reset();
     if (result == SecondaryAccountConsentLogger::Result::kSuccess) {
+      // The EDU account has been added/reauthenticated. Mark migration to ARC++
+      // as completed.
+      if (arc::IsSecondaryAccountForChildEnabled()) {
+        pref_service_->SetBoolean(prefs::kEduCoexistenceArcMigrationCompleted,
+                                  true);
+      }
+
       UpsertAccount(refresh_token);
     } else {
       LOG(ERROR) << "Could not log parent consent, the result was: "

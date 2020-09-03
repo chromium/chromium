@@ -297,6 +297,7 @@
 #include "chrome/browser/chromeos/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/chromeos/login/screens/reset_screen.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
+#include "chrome/browser/chromeos/login/signin/signin_error_notifier_ash.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/chromeos/login/users/avatar/user_image_sync_observer.h"
@@ -1084,6 +1085,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::RegisterSamlProfilePrefs(registry);
   chromeos::ScreenTimeController::RegisterProfilePrefs(registry);
   SecondaryAccountConsentLogger::RegisterPrefs(registry);
+  SigninErrorNotifier::RegisterPrefs(registry);
   chromeos::ServicesCustomizationDocument::RegisterProfilePrefs(registry);
   chromeos::settings::OSSettingsUI::RegisterProfilePrefs(registry);
   chromeos::UserImageSyncObserver::RegisterProfilePrefs(registry);
