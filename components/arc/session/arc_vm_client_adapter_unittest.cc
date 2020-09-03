@@ -49,7 +49,6 @@ constexpr const char kArcVmMountMyFilesJobName[] = "arcvm_2dmount_2dmyfiles";
 constexpr const char kArcVmMountRemovableMediaJobName[] =
     "arcvm_2dmount_2dremovable_2dmedia";
 constexpr const char kArcVmServerProxyJobName[] = "arcvm_2dserver_2dproxy";
-constexpr const char kArcVmAdbdJobName[] = "arcvm_2dadbd";
 constexpr const char kArcVmPerBoardFeaturesJobName[] =
     "arcvm_2dper_2dboard_2dfeatures";
 constexpr const char kArcVmBootNotificationServerJobName[] =
@@ -282,10 +281,10 @@ class ArcVmClientAdapterTest : public testing::Test,
     SetArcVmBootNotificationServerAddressForTesting(
         std::string(kArcVmBootNotificationServerAddress,
                     sizeof(kArcVmBootNotificationServerAddress)),
-        // connect_timeout_limit
-        base::TimeDelta::FromMilliseconds(100),
-        // connect_sleep_duration_initial
-        base::TimeDelta::FromMilliseconds(20));
+        base::TimeDelta::FromMilliseconds(100) /* connect_timeout_limit */,
+        base::TimeDelta::FromMilliseconds(
+            20) /* connect_sleep_duration_initial */
+    );
   }
 
   void TearDown() override {
@@ -475,6 +474,7 @@ class ArcVmClientAdapterTest : public testing::Test,
   }
 
  private:
+
   void RewriteStatus(FileSystemStatus* status) {
     status->set_host_rootfs_writable_for_testing(host_rootfs_writable_);
     status->set_system_image_ext_format_for_testing(system_image_ext_format_);
@@ -730,47 +730,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmProxyFailure) {
   // Inject failure to FakeUpstartClient.
   InjectUpstartStartJobFailure(kArcVmServerProxyJobName);
 
-  UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-  EXPECT_FALSE(arc_instance_stopped_called());
-
-  // Try to stop the VM. StopVm will fail in this case because
-  // no VM is running.
-  vm_tools::concierge::StopVmResponse response;
-  response.set_success(false);
-  GetTestConciergeClient()->set_stop_vm_response(response);
-  adapter()->StopArcInstance(/*on_shutdown=*/false,
-                             /*should_backup_log=*/false);
-  run_loop()->Run();
-  EXPECT_TRUE(GetTestConciergeClient()->stop_vm_called());
-  EXPECT_TRUE(arc_instance_stopped_called());
-}
-
-// Tests that UpgradeArc() handles arcvm-adbd stop failures properly.
-TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopArcVmAdbdFailure) {
-  SetValidUserInfo();
-  StartMiniArc();
-
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStopJobFailure(kArcVmAdbdJobName);
-
-  // Upgrade should still succeed.
-  UpgradeArc(true);
-  EXPECT_TRUE(GetStartConciergeCalled());
-  EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
-  EXPECT_FALSE(arc_instance_stopped_called());
-}
-
-// Tests that UpgradeArc() handles arcvm-adbd startup failures properly.
-TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmAdbdFailure) {
-  SetValidUserInfo();
-  StartMiniArc();
-
-  // Inject failure to FakeUpstartClient.
-  InjectUpstartStartJobFailure(kArcVmAdbdJobName);
-
-  EnableAdbOverUsbForTesting();
   UpgradeArc(false);
   EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
