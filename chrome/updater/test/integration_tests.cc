@@ -19,7 +19,7 @@ namespace test {
 // the build directory. Therefore, installation of component builds is not
 // expected to work and these tests do not run on component builders.
 // See crbug.com/1112527.
-#if !defined(COMPONENT_BUILD)
+#if defined(OS_WIN) || !defined(COMPONENT_BUILD)
 
 namespace {
 
@@ -87,7 +87,7 @@ TEST_F(IntegrationTest, RegisterTestApp) {
 }
 #endif
 
-#endif  // !defined(COMPONENT_BUILD)
+#endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 
 }  // namespace test
 

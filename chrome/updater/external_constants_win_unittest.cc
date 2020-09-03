@@ -19,7 +19,7 @@ namespace updater {
 namespace {
 
 void ClearUserDefaults() {
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", KEY_SET_VALUE);
+  base::win::RegKey key(HKEY_CURRENT_USER, L"", KEY_SET_VALUE);
   key.DeleteKey(UPDATE_DEV_KEY);
 }
 
@@ -38,7 +38,7 @@ TEST_F(DevOverrideTest, TestDevOverrides) {
 
   base::win::RegKey key;
   const base::char16 val[] = L"http://localhost:8080";
-  ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, UPDATE_DEV_KEY, KEY_WRITE),
+  ASSERT_EQ(key.Create(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_WRITE),
             ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUrl).c_str(), val),
             ERROR_SUCCESS);

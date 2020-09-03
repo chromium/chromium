@@ -76,7 +76,7 @@ base::FilePath GetDataDirPath() {
 
 void Clean() {
   // TODO(crbug.com/1062288): Delete the Client / ClientState registry keys.
-  base::win::RegKey(HKEY_LOCAL_MACHINE, L"", KEY_SET_VALUE)
+  base::win::RegKey(HKEY_CURRENT_USER, L"", KEY_SET_VALUE)
       .DeleteKey(UPDATE_DEV_KEY);
   // TODO(crbug.com/1062288): Delete the COM server items.
   // TODO(crbug.com/1062288): Delete the COM service items.
@@ -102,8 +102,8 @@ void ExpectClean() {
 
 void EnterTestMode() {
   // TODO(crbug.com/1119857): Point this to an actual fake server.
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", KEY_SET_VALUE);
-  ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, UPDATE_DEV_KEY, KEY_WRITE),
+  base::win::RegKey key(HKEY_CURRENT_USER, L"", KEY_SET_VALUE);
+  ASSERT_EQ(key.Create(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_WRITE),
             ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUrl).c_str(),
                            L"http://localhost:8367"),

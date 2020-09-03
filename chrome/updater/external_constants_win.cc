@@ -15,7 +15,7 @@ namespace updater {
 
 std::vector<GURL> DevOverrideProvider::UpdateURL() const {
   base::win::RegKey key;
-  if (key.Open(HKEY_LOCAL_MACHINE, UPDATE_DEV_KEY, KEY_READ) == ERROR_SUCCESS) {
+  if (key.Open(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_READ) == ERROR_SUCCESS) {
     base::string16 url;
     if (key.ReadValue(base::UTF8ToUTF16(kDevOverrideKeyUrl).c_str(), &url) ==
         ERROR_SUCCESS)
@@ -26,7 +26,7 @@ std::vector<GURL> DevOverrideProvider::UpdateURL() const {
 
 bool DevOverrideProvider::UseCUP() const {
   base::win::RegKey key;
-  if (key.Open(HKEY_LOCAL_MACHINE, UPDATE_DEV_KEY, KEY_READ) == ERROR_SUCCESS) {
+  if (key.Open(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_READ) == ERROR_SUCCESS) {
     DWORD use_cup = 0;
     if (key.ReadValueDW(base::UTF8ToUTF16(kDevOverrideKeyUseCUP).c_str(),
                         &use_cup) == ERROR_SUCCESS) {
