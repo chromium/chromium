@@ -382,7 +382,6 @@ public class AccountPickerBottomSheetTest {
         buildAndShowExpandedBottomSheet();
         onView(withText(R.string.signin_incognito_mode_secondary)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_incognito_mode_primary)).perform(click());
-        verify(mAccountPickerDelegateMock).goIncognitoMode();
         checkIncognitoInterstitialSheet();
     }
 

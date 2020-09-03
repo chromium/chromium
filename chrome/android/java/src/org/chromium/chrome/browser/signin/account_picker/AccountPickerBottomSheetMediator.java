@@ -87,7 +87,6 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     @Override
     public void goIncognitoMode() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.INCOGNITO_INTERSTITIAL);
-        mAccountPickerDelegate.goIncognitoMode();
     }
 
     /**

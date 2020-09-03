@@ -113,11 +113,6 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
     }
 
     /**
-     * Notifies when the user clicked the "Go incognito mode" button.
-     */
-    public void goIncognitoMode() {}
-
-    /**
      * Sign-in completed successfully and the primary account is available in the cookie jar.
      */
     @MainThread
