@@ -172,8 +172,6 @@ crbug.com/772037 [ win amd d3d11 passthrough ] conformance/textures/misc/texture
 crbug.com/772037 [ win7 release amd d3d11 passthrough ] conformance/extensions/oes-texture-half-float.html [ RetryOnFailure ]
 
 # Vulkan / Passthrough command decoder
-crbug.com/angleproject/3930 [ vulkan passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
-crbug.com/angleproject/2914 [ vulkan passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 crbug.com/angleproject/4931 [ win nvidia vulkan passthrough ] conformance/textures/misc/texture-mips.html [ Failure ]
 
 # Win / Intel / Vulkan / Passthrough command decoder
@@ -364,7 +362,6 @@ crbug.com/angleproject/3469 [ win vulkan passthrough nvidia ] conformance/extens
 
 # Note: the following test crashes so it's skipped.  http://anglebug.com/3352
 crbug.com/angleproject/2921 [ win vulkan passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Skip ]
-crbug.com/angleproject/2899 [ win vulkan passthrough ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 crbug.com/angleproject/3111 [ win vulkan passthrough ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 crbug.com/angleproject/3741 [ win vulkan passthrough ] conformance/textures/misc/mipmap-fbo.html [ RetryOnFailure ]
 crbug.com/angleproject/4334 [ win vulkan passthrough ] conformance/textures/misc/canvas-teximage-after-multiple-drawimages.html [ Skip ]
