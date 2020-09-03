@@ -388,7 +388,8 @@ class StatusIndicatorMediator
 
         mModel.set(StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT, topControlsMinHeightOffset);
 
-        final boolean isCompletelyShown = topControlsMinHeightOffset == mIndicatorHeight;
+        final boolean isCompletelyShown =
+                indicatorVisible && topControlsMinHeightOffset == mIndicatorHeight;
         // If we're running the animations in native, the Android view should only be visible when
         // the indicator is fully shown. Otherwise, the Android view will be visible if it's within
         // screen boundaries.
