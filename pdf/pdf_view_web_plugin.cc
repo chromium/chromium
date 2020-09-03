@@ -141,7 +141,7 @@ void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
 void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {}
 
-void PdfViewWebPlugin::Invalidate(const pp::Rect& rect) {}
+void PdfViewWebPlugin::Invalidate(const gfx::Rect& rect) {}
 
 void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {}
 
@@ -245,8 +245,8 @@ uint32_t PdfViewWebPlugin::GetBackgroundColor() {
 
 void PdfViewWebPlugin::IsSelectingChanged(bool is_selecting) {}
 
-void PdfViewWebPlugin::SelectionChanged(const pp::Rect& left,
-                                        const pp::Rect& right) {}
+void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
+                                        const gfx::Rect& right) {}
 
 void PdfViewWebPlugin::EnteredEditMode() {}
 

@@ -23,7 +23,6 @@
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/private/pdf.h"
-#include "ppapi/cpp/size.h"
 #include "ppapi/cpp/url_loader.h"
 #include "ppapi/cpp/var_array.h"
 #include "ui/base/window_open_disposition.h"
@@ -52,7 +51,6 @@ class Vector2d;
 }  // namespace gfx
 
 namespace pp {
-class Rect;
 class VarDictionary;
 }  // namespace pp
 
@@ -134,7 +132,7 @@ class PDFEngine {
     virtual void ProposeDocumentLayout(const DocumentLayout& layout) = 0;
 
     // Informs the client that the given rect needs to be repainted.
-    virtual void Invalidate(const pp::Rect& rect) {}
+    virtual void Invalidate(const gfx::Rect& rect) {}
 
     // Informs the client to scroll the plugin area by the given offset.
     virtual void DidScroll(const gfx::Vector2d& offset) {}
@@ -262,8 +260,8 @@ class PDFEngine {
     // Sets selection status.
     virtual void IsSelectingChanged(bool is_selecting) {}
 
-    virtual void SelectionChanged(const pp::Rect& left, const pp::Rect& right) {
-    }
+    virtual void SelectionChanged(const gfx::Rect& left,
+                                  const gfx::Rect& right) {}
 
     // Notifies the client that the PDF has been edited.
     virtual void EnteredEditMode() {}
@@ -333,10 +331,10 @@ class PDFEngine {
   // Paint is called a series of times. Before these n calls are made, PrePaint
   // is called once. After Paint is called n times, PostPaint is called once.
   virtual void PrePaint() = 0;
-  virtual void Paint(const pp::Rect& rect,
+  virtual void Paint(const gfx::Rect& rect,
                      SkBitmap& image_data,
-                     std::vector<pp::Rect>& ready,
-                     std::vector<pp::Rect>& pending) = 0;
+                     std::vector<gfx::Rect>& ready,
+                     std::vector<gfx::Rect>& pending) = 0;
   virtual void PostPaint() = 0;
   virtual bool HandleDocumentLoad(scoped_refptr<UrlLoader> loader) = 0;
   virtual bool HandleEvent(const InputEvent& event) = 0;
@@ -411,7 +409,7 @@ class PDFEngine {
   virtual gfx::Rect GetPageContentsRect(int index) = 0;
   // Returns a page's rect in screen coordinates, as well as its surrounding
   // border areas and bottom separator.
-  virtual pp::Rect GetPageScreenRect(int page_index) const = 0;
+  virtual gfx::Rect GetPageScreenRect(int page_index) const = 0;
   // Gets the offset of the vertical scrollbar from the top in document
   // coordinates.
   virtual int GetVerticalScrollbarYPosition() = 0;

@@ -835,10 +835,10 @@ void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   pp::PDF::SetAccessibilityViewportInfo(GetPluginInstance(), &viewport_info);
 }
 
-void OutOfProcessInstance::SelectionChanged(const pp::Rect& left,
-                                            const pp::Rect& right) {
-  pp::Point l(left.point().x() + available_area_.x(), left.point().y());
-  pp::Point r(right.x() + available_area_.x(), right.point().y());
+void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
+                                            const gfx::Rect& right) {
+  pp::Point l(left.x() + available_area_.x(), left.y());
+  pp::Point r(right.x() + available_area_.x(), right.y());
 
   float inverse_scale = 1.0f / device_scale_;
   ScalePoint(inverse_scale, &l);
@@ -1033,16 +1033,18 @@ void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
     if (!pdf_rect.IsEmpty()) {
       pdf_rect.Offset(available_area_.x() * -1, 0);
 
-      std::vector<pp::Rect> pdf_ready;
-      std::vector<pp::Rect> pdf_pending;
-      engine()->Paint(pdf_rect, skia_image_data_, pdf_ready, pdf_pending);
+      std::vector<gfx::Rect> pdf_ready;
+      std::vector<gfx::Rect> pdf_pending;
+      engine()->Paint(RectFromPPRect(pdf_rect), skia_image_data_, pdf_ready,
+                      pdf_pending);
       for (auto& ready_rect : pdf_ready) {
-        ready_rect.Offset(available_area_.point());
-        ready->push_back(PaintReadyRect(ready_rect, image_data_));
+        ready_rect.Offset(VectorFromPPPoint(available_area_.point()));
+        ready->push_back(
+            PaintReadyRect(PPRectFromRect(ready_rect), image_data_));
       }
       for (auto& pending_rect : pdf_pending) {
-        pending_rect.Offset(available_area_.point());
-        pending->push_back(RectFromPPRect(pending_rect));
+        pending_rect.Offset(VectorFromPPPoint(available_area_.point()));
+        pending->push_back(pending_rect);
       }
     }
 
@@ -1185,15 +1187,15 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
   PostMessage(dimensions);
 }
 
-void OutOfProcessInstance::Invalidate(const pp::Rect& rect) {
+void OutOfProcessInstance::Invalidate(const gfx::Rect& rect) {
   if (in_paint_) {
     deferred_invalidates_.push_back(rect);
     return;
   }
 
-  pp::Rect offset_rect(rect);
-  offset_rect.Offset(available_area_.point());
-  paint_manager_.InvalidateRect(RectFromPPRect(offset_rect));
+  gfx::Rect offset_rect(rect);
+  offset_rect.Offset(VectorFromPPPoint(available_area_.point()));
+  paint_manager_.InvalidateRect(offset_rect);
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
@@ -2324,7 +2326,7 @@ void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
 void OutOfProcessInstance::InvalidateAfterPaintDone(
     int32_t /*unused_but_required*/) {
   DCHECK(!in_paint_);
-  for (const pp::Rect& rect : deferred_invalidates_)
+  for (const gfx::Rect& rect : deferred_invalidates_)
     Invalidate(rect);
   deferred_invalidates_.clear();
 }

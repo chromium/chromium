@@ -28,7 +28,6 @@
 #include "pdf/pdfium/pdfium_range.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/cpp/dev/buffer_dev.h"
-#include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/var_array.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -89,10 +88,10 @@ class PDFiumEngine : public PDFEngine,
   void ScrolledToXPosition(int position) override;
   void ScrolledToYPosition(int position) override;
   void PrePaint() override;
-  void Paint(const pp::Rect& rect,
+  void Paint(const gfx::Rect& rect,
              SkBitmap& image_data,
-             std::vector<pp::Rect>& ready,
-             std::vector<pp::Rect>& pending) override;
+             std::vector<gfx::Rect>& ready,
+             std::vector<gfx::Rect>& pending) override;
   void PostPaint() override;
   bool HandleDocumentLoad(scoped_refptr<UrlLoader> loader) override;
   bool HandleEvent(const InputEvent& event) override;
@@ -138,7 +137,7 @@ class PDFiumEngine : public PDFEngine,
   int GetMostVisiblePage() override;
   gfx::Rect GetPageBoundsRect(int index) override;
   gfx::Rect GetPageContentsRect(int index) override;
-  pp::Rect GetPageScreenRect(int page_index) const override;
+  gfx::Rect GetPageScreenRect(int page_index) const override;
   int GetVerticalScrollbarYPosition() override;
   void SetGrayscale(bool grayscale) override;
   int GetCharCount(int page_index) override;
@@ -349,7 +348,7 @@ class PDFiumEngine : public PDFEngine,
                  size_t page_index,
                  size_t num_of_pages,
                  double multiplier,
-                 pp::Rect* rect) const;
+                 gfx::Rect& rect) const;
 
   // If two-up view is enabled, returns the index of the page beside
   // |page_index| page. Returns base::nullopt if there is no adjacent page or
@@ -434,7 +433,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Starts a progressive paint operation given a rectangle in screen
   // coordinates. Returns the index in progressive_rects_.
-  int StartPaint(int page_index, const pp::Rect& dirty);
+  int StartPaint(int page_index, const gfx::Rect& dirty);
 
   // Continues a paint operation that was started earlier.  Returns true if the
   // paint is done, or false if it needs to be continued.
@@ -462,7 +461,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Paints an page that hasn't finished downloading.
   void PaintUnavailablePage(int page_index,
-                            const pp::Rect& dirty,
+                            const gfx::Rect& dirty,
                             SkBitmap& image_data);
 
   // Given a page index, returns the corresponding index in progressive_rects_,
@@ -470,13 +469,13 @@ class PDFiumEngine : public PDFEngine,
   int GetProgressiveIndex(int page_index) const;
 
   // Creates a FPDF_BITMAP from a rectangle in screen coordinates.
-  ScopedFPDFBitmap CreateBitmap(const pp::Rect& rect,
+  ScopedFPDFBitmap CreateBitmap(const gfx::Rect& rect,
                                 SkBitmap& image_data) const;
 
   // Given a rectangle in screen coordinates, returns the coordinates in the
   // units that PDFium rendering functions expect.
   void GetPDFiumRect(int page_index,
-                     const pp::Rect& rect,
+                     const gfx::Rect& rect,
                      int* start_x,
                      int* start_y,
                      int* size_x,
@@ -486,7 +485,7 @@ class PDFiumEngine : public PDFEngine,
   int GetRenderingFlags() const;
 
   // Returns the currently visible rectangle in document coordinates.
-  pp::Rect GetVisibleRect() const;
+  gfx::Rect GetVisibleRect() const;
 
   // Given |rect| in document coordinates, returns the rectangle in screen
   // coordinates. (i.e. 0,0 is top left corner of plugin area)
@@ -518,9 +517,9 @@ class PDFiumEngine : public PDFEngine,
   // triggers as necessary.
   void SetCurrentPage(int index);
 
-  void DrawPageShadow(const pp::Rect& page_rect,
-                      const pp::Rect& shadow_rect,
-                      const pp::Rect& clip_rect,
+  void DrawPageShadow(const gfx::Rect& page_rect,
+                      const gfx::Rect& shadow_rect,
+                      const gfx::Rect& clip_rect,
                       SkBitmap& image_data);
 
   void GetRegion(const gfx::Point& location,
@@ -568,13 +567,13 @@ class PDFiumEngine : public PDFEngine,
                                       unsigned int depth);
 
   void ScrollBasedOnScrollAlignment(
-      const pp::Rect& scroll_rect,
+      const gfx::Rect& scroll_rect,
       const PP_PdfAccessibilityScrollAlignment& horizontal_scroll_alignment,
       const PP_PdfAccessibilityScrollAlignment& vertical_scroll_alignment);
 
   // Scrolls top left of a rect in page |target_rect| to |global_point|.
   // Global point is point relative to viewport in screen.
-  void ScrollToGlobalPoint(const pp::Rect& target_rect,
+  void ScrollToGlobalPoint(const gfx::Rect& target_rect,
                            const gfx::Point& global_point);
 
   // Set if the document has any local edits.
@@ -779,13 +778,13 @@ class PDFiumEngine : public PDFEngine,
   // Pending progressive paints.
   class ProgressivePaint {
    public:
-    ProgressivePaint(int page_index, const pp::Rect& rect);
+    ProgressivePaint(int page_index, const gfx::Rect& rect);
     ProgressivePaint(ProgressivePaint&& that);
     ProgressivePaint& operator=(ProgressivePaint&& that);
     ~ProgressivePaint();
 
     int page_index() const { return page_index_; }
-    const pp::Rect& rect() const { return rect_; }
+    const gfx::Rect& rect() const { return rect_; }
     FPDF_BITMAP bitmap() const { return bitmap_.get(); }
     bool painted() const { return painted_; }
 
@@ -794,7 +793,7 @@ class PDFiumEngine : public PDFEngine,
 
    private:
     int page_index_;
-    pp::Rect rect_;             // In screen coordinates.
+    gfx::Rect rect_;            // In screen coordinates.
     SkBitmap image_data_;       // Maintains reference while |bitmap_| exists.
     ScopedFPDFBitmap bitmap_;   // Must come after |image_data_|.
     // Temporary used to figure out if in a series of Paint() calls whether this
