@@ -74,6 +74,9 @@ const char kExeSymlink[] = "/proc/self/exe";
 const char kLogFileTemplate[] =
     "/tmp/chrome_remote_desktop_%Y%m%d_%H%M%S_XXXXXX";
 
+// The filename for the latest log symlink.
+constexpr char kLatestLogSymlink[] = "/tmp/chrome_remote_desktop.latest";
+
 const char kUsageMessage[] =
     "This program is not intended to be run by end users. To configure Chrome\n"
     "Remote Desktop, please install the app from the Chrome Web Store:\n"
@@ -474,6 +477,9 @@ bool ExecuteSession(std::string user,
   if (chown_log) {
     int result = fchown(STDOUT_FILENO, pwinfo->pw_uid, pwinfo->pw_gid);
     PLOG_IF(WARNING, result != 0) << "Failed to change log file owner";
+    result = lchown(kLatestLogSymlink, pwinfo->pw_uid, pwinfo->pw_gid);
+    PLOG_IF(WARNING, result != 0)
+        << "Failed to change latest log symlink owner";
   }
 
   pid_t child_pid = fork();
@@ -546,6 +552,16 @@ LogFile OpenLogFile() {
   mode_t mode = umask(0177);
   int fd = mkstemp(logfile);
   PCHECK(fd != -1) << "Failed to open log file";
+
+  // Creates a symlink to make the logs easier to find.
+  int symlink_ret = symlink(logfile, kLatestLogSymlink);
+  if (symlink_ret != 0 && errno == EEXIST) {
+    unlink(kLatestLogSymlink);
+    symlink_ret = symlink(logfile, kLatestLogSymlink);
+  }
+  PLOG_IF(ERROR, symlink_ret != 0)
+      << "Failed to create log symlink to " << logfile;
+
   umask(mode);
 
   return {fd, logfile};
