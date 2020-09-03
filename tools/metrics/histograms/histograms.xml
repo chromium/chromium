@@ -206196,6 +206196,7 @@ regressions. -->
       label="Showing cache patterns only for AssistantDetails."/>
   <suffix name="ContextualSuggestions"
       label="Showing cache patterns only for ContextualSuggestions."/>
+  <suffix name="Cryptids" label="Asset fetcher for cryptid rendering."/>
   <suffix name="EduAccountLoginProfileImageFetcher"
       label="Profile image fetcher for EDU account login flow"/>
   <suffix name="EntitySuggestions"

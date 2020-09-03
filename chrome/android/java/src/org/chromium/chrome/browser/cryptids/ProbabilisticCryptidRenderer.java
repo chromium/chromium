@@ -13,6 +13,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,6 +33,10 @@ public class ProbabilisticCryptidRenderer {
     private static final String MORATORIUM_LENGTH_PARAM_NAME = "moratorium-length-millis";
     private static final String RAMP_UP_LENGTH_PARAM_NAME = "ramp-up-length-millis";
     private static final String MAX_PROBABILITY_PARAM_NAME = "max-probability-per-million";
+
+    private static final String URL_FORMAT = "https://www.gstatic.com/chrome/cryptids/%s.gif";
+    private static final String ASSET_KEY_PARAM_NAME = "asset-key";
+    private static final String EMPTY_ASSET_KEY = "empty";
 
     private static final long ONE_DAY = 24 * 60 * 60 * 1000;
     private static final long DEFAULT_MORATORIUM_LENGTH = 4 * ONE_DAY;
@@ -70,9 +77,11 @@ public class ProbabilisticCryptidRenderer {
     }
 
     /**
-     * Creates an ImageView which will render a cryptid, suitable for use in/around the space of the
+     * Creates an Drawable which will render a cryptid, suitable for use in/around the space of the
      * logo on the NTP.
-     * @param layout A callback which will insert this Drawable into an ImageView in the appropriate
+     * @param profile the current user profile. Should not be null, except in tests.
+     * @param callback A callback which will insert this Drawable into an ImageView in the
+     *         appropriate
      *     location. The callback should handle null Drawables, which will be passed if a cryptid is
      *     not available or shouldn't be used.
      */
@@ -82,13 +91,33 @@ public class ProbabilisticCryptidRenderer {
             return;
         }
 
-        // TODO(crbug.com/1061949): Fetch an actual image, and have its callback handle the rest of
-        // the work.
-        BaseGifImage image = new BaseGifImage("".getBytes(), 0);
-        BaseGifDrawable drawable = new BaseGifDrawable(image, Bitmap.Config.ARGB_8888);
-        drawable.setLoopCount(1); // Plays only once/does not loop.
-        drawable.setAnimateOnLoad(true);
-        callback.onResult(drawable);
+        ImageFetcher fetcher =
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY, profile);
+
+        // If no asset key is provided, an empty asset with key "empty" will be fetched; this allows
+        // end-to-end execution without any visible change. To test with visible changes, the asset
+        // key "test" should be provided.
+        fetcher.fetchGif(ImageFetcher.Params.create(
+                                 String.format(URL_FORMAT,
+                                         getParamValue(ASSET_KEY_PARAM_NAME, EMPTY_ASSET_KEY)),
+                                 ImageFetcher.CRYPTIDS_UMA_CLIENT_NAME),
+                new Callback<BaseGifImage>() {
+                    @Override
+                    public void onResult(BaseGifImage image) {
+                        fetcher.destroy();
+
+                        if (image == null) {
+                            callback.onResult(null);
+                            return;
+                        }
+
+                        BaseGifDrawable drawable =
+                                new BaseGifDrawable(image, Bitmap.Config.ARGB_8888);
+                        drawable.setLoopCount(1); // Plays only once/does not loop.
+                        drawable.setAnimateOnLoad(true);
+                        callback.onResult(drawable);
+                    }
+                });
     }
 
     // Protected for testing
@@ -178,6 +207,16 @@ public class ProbabilisticCryptidRenderer {
      */
     private boolean isBlocked(Profile profile) {
         return profile.isOffTheRecord() || ManagedBrowserUtils.hasBrowserPoliciesApplied(profile);
+    }
+
+    /**
+     * Helper method for getting a Feature param associated with this class's Feature, with type
+     * String. Returns the provided default if no such param value is set.
+     */
+    private String getParamValue(String name, String defaultValue) {
+        String paramVal = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER, name);
+        return paramVal.length() > 0 ? paramVal : defaultValue;
     }
 
     /**
