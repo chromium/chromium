@@ -208,6 +208,7 @@ public class AwImeTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/795423")
     public void testDpadDispatchKeyEventMovesFocusOutOfWebView() throws Throwable {
         loadContentEditableBody();
         focusOnEditTextAndShowKeyboard();
