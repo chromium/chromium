@@ -71,6 +71,7 @@ import org.chromium.components.payments.PaymentHandlerHost;
 import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
+import org.chromium.components.payments.PaymentUIsObserver;
 import org.chromium.components.payments.PaymentValidator;
 import org.chromium.components.payments.Section;
 import org.chromium.components.payments.UrlUtil;
@@ -114,7 +115,7 @@ public class PaymentRequestImpl
                    PaymentApp.AbortCallback, PaymentApp.InstrumentDetailsCallback,
                    PaymentResponseHelper.PaymentResponseRequesterDelegate,
                    NormalizedAddressRequestDelegate, PaymentDetailsConverter.MethodChecker,
-                   PaymentUIsManager.Delegate {
+                   PaymentUIsManager.Delegate, PaymentUIsObserver {
     /**
      * A delegate to ask questions about the system, that allows tests to inject behaviour without
      * having to modify the entire system. This partially mirrors a similar C++
@@ -349,7 +350,7 @@ public class PaymentRequestImpl
         mComponentPaymentRequestImpl = componentPaymentRequestImpl;
         mPaymentUIsManager = new PaymentUIsManager(/*delegate=*/this,
                 /*params=*/this, mWebContents, mIsOffTheRecord, mJourneyLogger, mTopLevelOrigin,
-                mComponentPaymentRequestImpl);
+                /*observer=*/this);
         mComponentPaymentRequestImpl.registerPaymentRequestLifecycleObserver(mPaymentUIsManager);
     }
 
@@ -2208,5 +2209,12 @@ public class PaymentRequestImpl
     @VisibleForTesting
     public static void setIsLocalCanMakePaymentQueryQuotaEnforcedForTest() {
         sIsLocalCanMakePaymentQueryQuotaEnforcedForTest = true;
+    }
+
+    // Implement PaymentUIsObserver:
+    @Override
+    public void onPaymentRequestUIFaviconNotAvailable() {
+        if (mComponentPaymentRequestImpl == null) return;
+        mComponentPaymentRequestImpl.warnNoFavicon();
     }
 }

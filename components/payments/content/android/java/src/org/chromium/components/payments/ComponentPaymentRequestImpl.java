@@ -40,7 +40,7 @@ import java.util.List;
  * PaymentRequestImpl. Note that the callers of the instances of this class need to close them with
  * {@link ComponentPaymentRequestImpl#close()}, after which no usage is allowed.
  */
-public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
+public class ComponentPaymentRequestImpl {
     private static final String TAG = "CompPaymentRequest";
     private static PaymentRequestServiceObserverForTest sObserverForTest;
     private static NativeObserverForTest sNativeObserverForTest;
@@ -487,7 +487,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mSkipUiForNonUrlPaymentMethodIdentifiers = true;
     }
 
-    /** Invokes {@link PaymentRequest.onPaymentMethodChange}. */
+    /** Invokes {@link PaymentRequestClient.onPaymentMethodChange}. */
     public void onPaymentMethodChange(String methodName, String stringifiedDetails) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -495,7 +495,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onPaymentMethodChange(methodName, stringifiedDetails);
     }
 
-    /** Invokes {@link PaymentRequest.onShippingAddressChange}. */
+    /** Invokes {@link PaymentRequestClient.onShippingAddressChange}. */
     public void onShippingAddressChange(PaymentAddress address) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -503,7 +503,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onShippingAddressChange(address);
     }
 
-    /** Invokes {@link PaymentRequest.onShippingOptionChange}. */
+    /** Invokes {@link PaymentRequestClient.onShippingOptionChange}. */
     public void onShippingOptionChange(String shippingOptionId) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -511,7 +511,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onShippingOptionChange(shippingOptionId);
     }
 
-    /** Invokes {@link PaymentRequest.onPayerDetailChange}. */
+    /** Invokes {@link PaymentRequestClient.onPayerDetailChange}. */
     public void onPayerDetailChange(PayerDetail detail) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -519,7 +519,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onPayerDetailChange(detail);
     }
 
-    /** Invokes {@link PaymentRequest.onPaymentResponse}. */
+    /** Invokes {@link PaymentRequestClient.onPaymentResponse}. */
     public void onPaymentResponse(PaymentResponse response) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -527,7 +527,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onPaymentResponse(response);
     }
 
-    /** Invokes {@link PaymentRequest.onError}. */
+    /** Invokes {@link PaymentRequestClient.onError}. */
     public void onError(int error, String errorMessage) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -535,7 +535,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onError(error, errorMessage);
     }
 
-    /** Invokes {@link PaymentRequest.onComplete}. */
+    /** Invokes {@link PaymentRequestClient.onComplete}. */
     public void onComplete() {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -543,7 +543,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onComplete();
     }
 
-    /** Invokes {@link PaymentRequest.onAbort}. */
+    /** Invokes {@link PaymentRequestClient.onAbort}. */
     public void onAbort(boolean abortedSuccessfully) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -551,7 +551,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onAbort(abortedSuccessfully);
     }
 
-    /** Invokes {@link PaymentRequest.onCanMakePayment}. */
+    /** Invokes {@link PaymentRequestClient.onCanMakePayment}. */
     public void onCanMakePayment(int result) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -559,7 +559,7 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onCanMakePayment(result);
     }
 
-    /** Invokes {@link PaymentRequest.onHasEnrolledInstrument}. */
+    /** Invokes {@link PaymentRequestClient.onHasEnrolledInstrument}. */
     public void onHasEnrolledInstrument(int result) {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
@@ -567,10 +567,8 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         mClient.onHasEnrolledInstrument(result);
     }
 
-    // PaymentUIsObserver implementation.
-    @Override
-    /** Invokes {@link PaymentRequest.warnNoFavicon}. */
-    public void onPaymentRequestUIFaviconNotAvailable() {
+    /** Invokes {@link PaymentRequestClient.warnNoFavicon}. */
+    public void warnNoFavicon() {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
 
