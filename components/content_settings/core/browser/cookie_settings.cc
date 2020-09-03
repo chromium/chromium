@@ -60,6 +60,9 @@ void CookieSettings::GetCookieSettings(
 
 void CookieSettings::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kBlockThirdPartyCookies, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kCookieControlsMode,
       static_cast<int>(CookieControlsMode::kIncognitoOnly),
@@ -237,9 +240,7 @@ void CookieSettings::GetCookieSettingInternal(
 
 CookieSettings::~CookieSettings() = default;
 
-bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
+bool CookieSettings::IsCookieControlsEnabled() {
 #if defined(OS_IOS)
   if (!base::FeatureList::IsEnabled(kImprovedCookieControls))
     return false;
@@ -273,7 +274,8 @@ void CookieSettings::OnContentSettingChanged(
 void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  bool new_block_third_party_cookies = ShouldBlockThirdPartyCookiesInternal();
+  bool new_block_third_party_cookies =
+      IsCookieControlsEnabled();
 
   // Safe to read |block_third_party_cookies_| without locking here because the
   // only place that writes to it is this method and it will always be run on

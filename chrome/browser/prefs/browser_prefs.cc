@@ -567,9 +567,6 @@ const char kHashedAvailablePages[] = "previews.offline_helper.available_pages";
 // Deprecated 7/2020
 const char kObservedSessionTime[] = "profile.observed_session_time";
 
-// Deprecated 9/2020
-const char kBlockThirdPartyCookies[] = "profile.block_third_party_cookies";
-
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -678,8 +675,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kHashedAvailablePages);
 
   registry->RegisterDictionaryPref(kObservedSessionTime);
-
-  registry->RegisterBooleanPref(kBlockThirdPartyCookies, false);
 }
 
 }  // namespace
@@ -1346,7 +1341,4 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 7/2020
   profile_prefs->ClearPref(kObservedSessionTime);
-
-  // Added 9/2020
-  profile_prefs->ClearPref(kBlockThirdPartyCookies);
 }
