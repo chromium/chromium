@@ -678,7 +678,7 @@
   },
   {
     "prefix": "trust-tokens",
-    "bases": [ "external/wpt/trust-tokens/end-to-end", "http/tests/loading/trust-tokens" ],
+    "bases": [ "external/wpt/trust-tokens/end-to-end", "http/tests/loading/trust-tokens", "http/tests/inspector-protocol/trust-tokens" ],
     "args": [ "--enable-features=TrustTokens" ]
   },
   {

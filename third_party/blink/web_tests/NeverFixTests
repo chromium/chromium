@@ -2032,8 +2032,10 @@ crbug.com/1047176 [ Mac ] fast/events/wheel/wheelevent-ctrl.html [ Skip ]
 
 # These tests will pass once the --enable-features=TrustTokens flag is on by
 # default. A virtual test suite runs the same tests with the flag enabled.
+crbug.com/1061765 http/tests/inspector-protocol/trust-tokens/* [ Skip ]
 crbug.com/1061765 http/tests/loading/trust-tokens/* [ Skip ]
 crbug.com/1061765 external/wpt/trust-tokens/end-to-end/* [ Skip ]
+virtual/trust-tokens/http/tests/inspector-protocol/trust-tokens/* [ Pass ]
 virtual/trust-tokens/http/tests/loading/trust-tokens/* [ Pass ]
 virtual/trust-tokens/external/wpt/trust-tokens/end-to-end/* [ Pass ]
 

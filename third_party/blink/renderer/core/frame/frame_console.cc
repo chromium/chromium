@@ -119,7 +119,7 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
                                   uint64_t request_identifier,
                                   const ResourceError& error) {
   // Report failures only.
-  if (error.IsCancellation() || error.IsTrustTokenCacheHit())
+  if (error.IsCancellation() || error.IsUnactionableTrustTokensStatus())
     return;
 
   StringBuilder message;
