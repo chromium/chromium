@@ -27,6 +27,7 @@ LocalDeviceInfoProviderImpl::LocalDeviceInfoProviderImpl(
   DCHECK(sync_client);
   if (sync_invalidations_service_) {
     sync_invalidations_service_->AddTokenObserver(this);
+    sync_invalidations_service_->AddSubscribedDataTypesObserver(this);
   }
 }
 
@@ -34,6 +35,7 @@ LocalDeviceInfoProviderImpl::~LocalDeviceInfoProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sync_invalidations_service_) {
     sync_invalidations_service_->RemoveTokenObserver(this);
+    sync_invalidations_service_->RemoveSubscribedDataTypesObserver(this);
   }
 }
 
@@ -75,6 +77,18 @@ void LocalDeviceInfoProviderImpl::OnFCMRegistrationTokenChanged() {
   // TODO(crbug.com/1102336): nudge device info update.
 }
 
+void LocalDeviceInfoProviderImpl::OnSubscribedDataTypesChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(
+      base::FeatureList::IsEnabled(switches::kSubscribeForSyncInvalidations));
+  DCHECK(sync_invalidations_service_);
+  if (local_device_info_) {
+    local_device_info_->set_interested_data_types(
+        sync_invalidations_service_->GetSubscribedDataTypes());
+  }
+  // TODO(crbug.com/1102336): nudge device info update.
+}
+
 void LocalDeviceInfoProviderImpl::Initialize(
     const std::string& cache_guid,
     const std::string& client_name,
@@ -92,7 +106,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       /*last_updated_timestamp=*/base::Time(),
       DeviceInfoUtil::GetPulseInterval(),
       sync_client_->GetSendTabToSelfReceivingEnabled(),
-      sync_client_->GetLocalSharingInfo(), GetFCMRegistrationToken());
+      sync_client_->GetLocalSharingInfo(), GetFCMRegistrationToken(),
+      GetInterestedDataTypes());
 
   // Notify observers.
   callback_list_.Notify();
@@ -114,6 +129,13 @@ std::string LocalDeviceInfoProviderImpl::GetFCMRegistrationToken() const {
     return sync_invalidations_service_->GetFCMRegistrationToken();
   }
   return std::string();
+}
+
+ModelTypeSet LocalDeviceInfoProviderImpl::GetInterestedDataTypes() const {
+  if (sync_invalidations_service_) {
+    return sync_invalidations_service_->GetSubscribedDataTypes();
+  }
+  return ModelTypeSet();
 }
 
 }  // namespace syncer

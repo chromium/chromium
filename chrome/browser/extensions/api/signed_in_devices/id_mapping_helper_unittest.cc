@@ -26,7 +26,8 @@ std::unique_ptr<DeviceInfo> CreateDevice(const std::string& guid,
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX, device_id, "manufacturer",
       "model", base::Time(), syncer::DeviceInfoUtil::GetPulseInterval(),
       /*send_tab_to_self_receiving_enabled=*/true,
-      /*sharing_info=*/base::nullopt, /*fcm_registration_token=*/std::string());
+      /*sharing_info=*/base::nullopt, /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::ModelTypeSet());
 }
 }  // namespace
 

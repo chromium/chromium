@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace base {
@@ -74,7 +75,8 @@ class DeviceInfo {
              base::TimeDelta pulse_interval,
              bool send_tab_to_self_receiving_enabled,
              const base::Optional<SharingInfo>& sharing_info,
-             const std::string& fcm_registration_token);
+             const std::string& fcm_registration_token,
+             const ModelTypeSet& interested_data_types);
   ~DeviceInfo();
 
   // Sync specific unique identifier for the device. Note if a device
@@ -127,6 +129,9 @@ class DeviceInfo {
   // Returns the FCM registration token for sync invalidations.
   const std::string& fcm_registration_token() const;
 
+  // Returns the data types for which this device receives invalidations.
+  const ModelTypeSet& interested_data_types() const;
+
   // Gets the OS in string form.
   std::string GetOSString() const;
 
@@ -149,6 +154,8 @@ class DeviceInfo {
   void set_client_name(const std::string& client_name);
 
   void set_fcm_registration_token(const std::string& fcm_token);
+
+  void set_interested_data_types(const ModelTypeSet& data_types);
 
   // Converts the |DeviceInfo| values to a JS friendly DictionaryValue,
   // which extension APIs can expose to third party apps.
@@ -187,6 +194,9 @@ class DeviceInfo {
 
   // An FCM registration token obtained by sync invalidations service.
   std::string fcm_registration_token_;
+
+  // Data types for which this device receives invalidations.
+  ModelTypeSet interested_data_types_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceInfo);
 };

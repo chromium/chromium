@@ -15,6 +15,7 @@
 #include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
@@ -87,6 +88,17 @@ base::Optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
 // Converts DeviceInfoSpecifics into a freshly allocated DeviceInfo.
 std::unique_ptr<DeviceInfo> SpecificsToModel(
     const DeviceInfoSpecifics& specifics) {
+  ModelTypeSet data_types;
+  for (const int field_number :
+       specifics.invalidation_fields().interested_data_type_ids()) {
+    ModelType data_type = GetModelTypeFromSpecificsFieldNumber(field_number);
+    if (!IsRealDataType(data_type)) {
+      DLOG(WARNING) << "Unknown field number " << field_number;
+      continue;
+    }
+    data_types.Put(data_type);
+  }
+
   return std::make_unique<DeviceInfo>(
       specifics.cache_guid(), specifics.client_name(),
       specifics.chrome_version(), specifics.sync_user_agent(),
@@ -96,7 +108,7 @@ std::unique_ptr<DeviceInfo> SpecificsToModel(
       GetPulseIntervalFromSpecifics(specifics),
       specifics.feature_fields().send_tab_to_self_receiving_enabled(),
       SpecificsToSharingInfo(specifics),
-      specifics.invalidation_fields().instance_id_token());
+      specifics.invalidation_fields().instance_id_token(), data_types);
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -151,10 +163,14 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
     }
   }
 
-  // Set sync invalidations FCM registration token.
+  // Set sync invalidations FCM registration token and interested data types.
   if (!info.fcm_registration_token().empty()) {
     specifics->mutable_invalidation_fields()->set_instance_id_token(
         info.fcm_registration_token());
+  }
+  for (const ModelType data_type : info.interested_data_types()) {
+    specifics->mutable_invalidation_fields()->add_interested_data_type_ids(
+        GetSpecificsFieldNumberFromModelType(data_type));
   }
 
   return specifics;

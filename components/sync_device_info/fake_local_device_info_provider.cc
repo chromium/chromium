@@ -5,6 +5,7 @@
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 
 #include "base/time/time.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync_device_info/device_info_util.h"
 
 namespace syncer {
@@ -22,7 +23,8 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    DeviceInfoUtil::GetPulseInterval(),
                    /*send_tab_to_self_receiving_enabled=*/false,
                    /*sharing_info=*/base::nullopt,
-                   /*fcm_registration_token=*/std::string()) {}
+                   /*fcm_registration_token=*/std::string(),
+                   /*interested_data_types=*/ModelTypeSet()) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 

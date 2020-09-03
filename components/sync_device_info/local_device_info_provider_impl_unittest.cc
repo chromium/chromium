@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/invalidations/mock_sync_invalidations_service.h"
 #include "components/sync/invalidations/switches.h"
@@ -90,6 +91,8 @@ class LocalDeviceInfoProviderImplWithSyncInvalidationsTest
         switches::kSubscribeForSyncInvalidations);
     ON_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken())
         .WillByDefault(ReturnRef(kEmptyToken));
+    ON_CALL(mock_sync_invalidations_service_, GetSubscribedDataTypes())
+        .WillByDefault(ReturnRef(kEmptyTypesSet));
   }
 
  protected:
@@ -98,6 +101,7 @@ class LocalDeviceInfoProviderImplWithSyncInvalidationsTest
   }
 
   const std::string kEmptyToken;
+  const ModelTypeSet kEmptyTypesSet;
 
   base::test::ScopedFeatureList override_features_;
   NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
@@ -208,6 +212,20 @@ TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
   provider_->OnFCMRegistrationTokenChanged();
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->fcm_registration_token(),
             kFCMRegistrationToken);
+}
+
+TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
+       ShouldPopulateSubscribedDataTypes) {
+  InitializeProvider();
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().Empty());
+
+  const ModelTypeSet kTypes = ModelTypeSet(BOOKMARKS);
+  EXPECT_CALL(mock_sync_invalidations_service_, GetSubscribedDataTypes())
+      .WillOnce(ReturnRef(kTypes));
+
+  provider_->OnSubscribedDataTypesChanged();
+  EXPECT_EQ(provider_->GetLocalDeviceInfo()->interested_data_types(), kTypes);
 }
 
 }  // namespace

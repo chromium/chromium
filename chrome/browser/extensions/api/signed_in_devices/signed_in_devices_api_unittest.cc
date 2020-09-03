@@ -37,7 +37,8 @@ std::unique_ptr<DeviceInfo> CreateDevice(const std::string& guid,
       "model", base::Time(), syncer::DeviceInfoUtil::GetPulseInterval(),
       /*send_tab_to_self_receiving_enabled=*/true,
       /*sharing_info=*/base::nullopt,
-      /*fcm_registration_token=*/std::string());
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::ModelTypeSet());
 }
 }  // namespace
 

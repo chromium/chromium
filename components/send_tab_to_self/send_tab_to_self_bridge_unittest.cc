@@ -78,7 +78,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       "model", last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
       send_tab_to_self_receiving_enabled, /*sharing_info=*/base::nullopt,
-      /*fcm_registration_token=*/std::string());
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::ModelTypeSet());
 }
 
 sync_pb::ModelTypeState StateWithEncryption(

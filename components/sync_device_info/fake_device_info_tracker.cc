@@ -20,7 +20,8 @@ std::unique_ptr<syncer::DeviceInfo> CloneDeviceInfo(
       device_info.manufacturer_name(), device_info.model_name(),
       device_info.last_updated_timestamp(), device_info.pulse_interval(),
       device_info.send_tab_to_self_receiving_enabled(),
-      device_info.sharing_info(), device_info.fcm_registration_token());
+      device_info.sharing_info(), device_info.fcm_registration_token(),
+      device_info.interested_data_types());
 }
 
 }  // namespace

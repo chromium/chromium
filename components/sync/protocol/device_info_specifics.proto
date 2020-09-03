@@ -148,5 +148,9 @@ message InvalidationSpecificFields {
   // FCM registration token of device (using Sync sender ID).
   optional string instance_id_token = 1;
 
-  // TODO(crbug.com/1082117): add data types list.
+  // This device wants to receive only invalidations which are related to these
+  // types. The legitimate values of this field correspond to the protobuf field
+  // numbers of all EntitySpecifics fields supported by the server (see
+  // components/sync/protocol/sync.proto).
+  repeated int32 interested_data_type_ids = 2;
 }

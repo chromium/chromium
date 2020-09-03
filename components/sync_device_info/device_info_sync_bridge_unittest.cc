@@ -16,6 +16,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/model/data_batch.h"
@@ -40,6 +41,7 @@ using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
 using testing::_;
+using testing::AllOf;
 using testing::IsEmpty;
 using testing::Matcher;
 using testing::NotNull;
@@ -93,6 +95,15 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
     }
   }
 
+  ModelTypeSet expected_data_types;
+  for (const int field_number :
+       expected_specifics.invalidation_fields().interested_data_type_ids()) {
+    expected_data_types.Put(GetModelTypeFromSpecificsFieldNumber(field_number));
+  }
+  if (expected_data_types != arg.interested_data_types()) {
+    return false;
+  }
+
   // Note that we ignore the device name here to avoid having to inject the
   // local device's.
   return expected_specifics.cache_guid() == arg.guid() &&
@@ -136,6 +147,15 @@ MATCHER(HasLastUpdatedAboutNow, "") {
 MATCHER(HasInstanceIdToken, "") {
   const sync_pb::DeviceInfoSpecifics& specifics = arg.device_info();
   if (specifics.invalidation_fields().instance_id_token().empty()) {
+    *result_listener << "which is empty";
+    return false;
+  }
+  return true;
+}
+
+MATCHER(HasAnyInterestedDataTypes, "") {
+  const sync_pb::DeviceInfoSpecifics& specifics = arg.device_info();
+  if (specifics.invalidation_fields().interested_data_type_ids().empty()) {
     *result_listener << "which is empty";
     return false;
   }
@@ -219,6 +239,13 @@ std::string SyncInvalidationsInstanceIdTokenForSuffix(int suffix) {
   return std::string();
 }
 
+ModelTypeSet SyncInvalidationsInterestedDataTypes() {
+  if (base::FeatureList::IsEnabled(switches::kSubscribeForSyncInvalidations)) {
+    return ModelTypeSet(BOOKMARKS);
+  }
+  return ModelTypeSet();
+}
+
 DataTypeActivationRequest TestDataTypeActivationRequest(SyncMode sync_mode) {
   DataTypeActivationRequest request;
   request.cache_guid = CacheGuidForSuffix(kLocalSuffix);
@@ -262,6 +289,11 @@ DeviceInfoSpecifics CreateSpecifics(
     specifics.mutable_invalidation_fields()->set_instance_id_token(
         sync_invalidations_instance_id_token);
   }
+  for (const ModelType type : SyncInvalidationsInterestedDataTypes()) {
+    specifics.mutable_invalidation_fields()->add_interested_data_type_ids(
+        GetSpecificsFieldNumberFromModelType(type));
+  }
+
   return specifics;
 }
 
@@ -334,7 +366,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
             sharing_enabled_features),
-        SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix));
+        SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix),
+        SyncInvalidationsInterestedDataTypes());
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -1266,7 +1299,11 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldSendInvalidationFields) {
   override_features.InitAndEnableFeature(
       switches::kSubscribeForSyncInvalidations);
 
-  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasInstanceIdToken()), _));
+  EXPECT_CALL(*processor(),
+              Put(_,
+                  HasSpecifics(
+                      AllOf(HasInstanceIdToken(), HasAnyInterestedDataTypes())),
+                  _));
   InitializeAndMergeInitialData(SyncMode::kFull);
 }
 
