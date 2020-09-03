@@ -12,7 +12,7 @@ enum ConnectionAttemptFailureReason {
   AUTHENTICATION_ERROR,
 
   // An advertisement could not be generated for this connection. This likely
-  // means that one (or both) devices have not synced ntheir BeaconSeeds
+  // means that one (or both) devices have not synced their BeaconSeeds
   // recently.
   COULD_NOT_GENERATE_ADVERTISEMENT,
 
@@ -27,11 +27,17 @@ enum ConnectionAttemptFailureReason {
   // The provided local device does not have a persistent symmetric key set.
   LOCAL_DEVICE_INVALID_PSK,
 
+  // The provided local device does not have a valid Bluetooth address.
+  LOCAL_DEVICE_INVALID_BLUETOOTH_ADDRESS,
+
   // The provided remote device does not have a public key set.
   REMOTE_DEVICE_INVALID_PUBLIC_KEY,
 
   // The provided remote device does not have a persistent symmetric key set.
   REMOTE_DEVICE_INVALID_PSK,
+
+  // The provided remote device does not have a valid Bluetooth address.
+  REMOTE_DEVICE_INVALID_BLUETOOTH_ADDRESS,
 
   // Timeouts occurred trying to contact the remote device.
   TIMEOUT_FINDING_DEVICE,
@@ -40,7 +46,12 @@ enum ConnectionAttemptFailureReason {
   ADAPTER_DISABLED,
 
   // The local Bluetooth adapter is not present.
-  ADAPTER_NOT_PRESENT
+  ADAPTER_NOT_PRESENT,
+
+  // Tried to connect using a role which is unsupported for the connection
+  // medium (e.g., Nearby Connections only supports the listener role, not the
+  // initiator role).
+  UNSUPPORTED_ROLE_FOR_MEDIUM
 };
 
 enum ConnectionCreationDetail {

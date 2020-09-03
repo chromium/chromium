@@ -183,22 +183,33 @@ void SecureChannelImpl::ProcessConnectionRequest(
 
   // Check 2: Is the provided device to connect valid? If not, notify client and
   // return early.
-  if (CheckForInvalidInputDevice(api_fn_name, device_to_connect,
-                                 client_connection_parameters.get(),
-                                 false /* is_local_device */)) {
+  if (CheckForInvalidInputDevice(
+          api_fn_name, device_to_connect, client_connection_parameters.get(),
+          connection_medium, false /* is_local_device */)) {
     return;
   }
 
   // Check 3: Is the provided local device valid? If not, notify client and
   // return early.
-  if (CheckForInvalidInputDevice(api_fn_name, local_device,
-                                 client_connection_parameters.get(),
-                                 true /* is_local_device */)) {
+  if (CheckForInvalidInputDevice(
+          api_fn_name, local_device, client_connection_parameters.get(),
+          connection_medium, true /* is_local_device */)) {
     return;
   }
 
   // Check 4: Medium-specific verification.
   switch (connection_medium) {
+    case ConnectionMedium::kNearbyConnections:
+      // Nearby Connections only supports certain roles.
+      if (CheckForInvalidNearbyRole(api_fn_name,
+                                    client_connection_parameters.get(),
+                                    connection_role)) {
+        return;
+      }
+
+      // Nearby Connections requires Bluetooth functionality, so fall through to
+      // the Bluetooth case below.
+      FALLTHROUGH;
     case ConnectionMedium::kBluetoothLowEnergy:
       // Is the local Bluetooth adapter disabled or not present? If either,
       // notify client and return early.
@@ -294,9 +305,10 @@ bool SecureChannelImpl::CheckForInvalidInputDevice(
     ApiFunctionName api_fn_name,
     const multidevice::RemoteDevice& device,
     ClientConnectionParameters* client_connection_parameters,
+    ConnectionMedium connection_medium,
     bool is_local_device) {
   base::Optional<InvalidRemoteDeviceReason> potential_invalid_reason =
-      AddDeviceToCacheIfPossible(api_fn_name, device);
+      AddDeviceToCacheIfPossible(api_fn_name, device, connection_medium);
   if (!potential_invalid_reason)
     return false;
 
@@ -319,9 +331,33 @@ bool SecureChannelImpl::CheckForInvalidInputDevice(
                     REMOTE_DEVICE_INVALID_PSK,
           client_connection_parameters);
       break;
+    case InvalidRemoteDeviceReason::kInvalidBluetoothAddress:
+      RejectRequestForReason(api_fn_name,
+                             is_local_device
+                                 ? mojom::ConnectionAttemptFailureReason::
+                                       LOCAL_DEVICE_INVALID_BLUETOOTH_ADDRESS
+                                 : mojom::ConnectionAttemptFailureReason::
+                                       REMOTE_DEVICE_INVALID_BLUETOOTH_ADDRESS,
+                             client_connection_parameters);
+      break;
   }
 
   return true;
+}
+
+bool SecureChannelImpl::CheckForInvalidNearbyRole(
+    ApiFunctionName api_fn_name,
+    ClientConnectionParameters* client_connection_parameters,
+    ConnectionRole connection_role) {
+  if (connection_role == ConnectionRole::kListenerRole) {
+    RejectRequestForReason(
+        api_fn_name,
+        mojom::ConnectionAttemptFailureReason::UNSUPPORTED_ROLE_FOR_MEDIUM,
+        client_connection_parameters);
+    return true;
+  }
+
+  return false;
 }
 
 bool SecureChannelImpl::CheckIfBluetoothAdapterDisabledOrNotPresent(
@@ -347,7 +383,8 @@ bool SecureChannelImpl::CheckIfBluetoothAdapterDisabledOrNotPresent(
 base::Optional<SecureChannelImpl::InvalidRemoteDeviceReason>
 SecureChannelImpl::AddDeviceToCacheIfPossible(
     ApiFunctionName api_fn_name,
-    const multidevice::RemoteDevice& device) {
+    const multidevice::RemoteDevice& device,
+    ConnectionMedium connection_medium) {
   if (device.public_key.empty()) {
     PA_LOG(WARNING) << "SecureChannelImpl::" << api_fn_name << "(): "
                     << "Provided device has an invalid public key. Cannot "
@@ -360,6 +397,15 @@ SecureChannelImpl::AddDeviceToCacheIfPossible(
                     << "Provided device has an invalid PSK. Cannot process "
                     << "request.";
     return InvalidRemoteDeviceReason::kInvalidPsk;
+  }
+
+  if (connection_medium == ConnectionMedium::kNearbyConnections &&
+      device.bluetooth_public_address.empty()) {
+    PA_LOG(WARNING) << "SecureChannelImpl::" << api_fn_name << "(): "
+                    << "Provided device does not have a valid Bluetooth "
+                    << "address, which is required to use Nearby Connections. "
+                    << "Cannot process request.";
+    return InvalidRemoteDeviceReason::kInvalidBluetoothAddress;
   }
 
   remote_device_cache_->SetRemoteDevices({device});

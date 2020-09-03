@@ -80,11 +80,20 @@ class PendingConnectionManagerImpl : public PendingConnectionManager,
   void OnConnectionAttemptFinishedWithoutConnection(
       const ConnectionAttemptDetails& connection_attempt_details) override;
 
+  void HandleBleRequest(
+      const ConnectionAttemptDetails& connection_attempt_details,
+      std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
+      ConnectionPriority connection_priority);
   void HandleBleInitiatorRequest(
       const ConnectionAttemptDetails& connection_attempt_details,
       std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
       ConnectionPriority connection_priority);
   void HandleBleListenerRequest(
+      const ConnectionAttemptDetails& connection_attempt_details,
+      std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
+      ConnectionPriority connection_priority);
+
+  void HandleNearbyRequest(
       const ConnectionAttemptDetails& connection_attempt_details,
       std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
       ConnectionPriority connection_priority);

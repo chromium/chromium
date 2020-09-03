@@ -11,8 +11,14 @@ namespace chromeos {
 namespace secure_channel {
 
 std::ostream& operator<<(std::ostream& stream, const ConnectionMedium& medium) {
-  DCHECK(medium == ConnectionMedium::kBluetoothLowEnergy);
-  stream << "[BLE]";
+  switch (medium) {
+    case ConnectionMedium::kBluetoothLowEnergy:
+      stream << "[BLE]";
+      break;
+    case ConnectionMedium::kNearbyConnections:
+      stream << "[Nearby Connections]";
+      break;
+  }
   return stream;
 }
 

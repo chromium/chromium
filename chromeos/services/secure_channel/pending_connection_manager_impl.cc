@@ -58,9 +58,6 @@ void PendingConnectionManagerImpl::HandleConnectionRequest(
     const ConnectionAttemptDetails& connection_attempt_details,
     std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
     ConnectionPriority connection_priority) {
-  DCHECK_EQ(ConnectionMedium::kBluetoothLowEnergy,
-            connection_attempt_details.connection_medium());
-
   // If the client has canceled the request, it does not need to be processed.
   if (!client_connection_parameters->IsClientWaitingForResponse()) {
     PA_LOG(VERBOSE)
@@ -81,16 +78,16 @@ void PendingConnectionManagerImpl::HandleConnectionRequest(
       connection_attempt_details);
 
   // Process the role-specific details.
-  switch (connection_attempt_details.connection_role()) {
-    case ConnectionRole::kInitiatorRole:
-      HandleBleInitiatorRequest(connection_attempt_details,
-                                std::move(client_connection_parameters),
-                                connection_priority);
+  switch (connection_attempt_details.connection_medium()) {
+    case ConnectionMedium::kBluetoothLowEnergy:
+      HandleBleRequest(connection_attempt_details,
+                       std::move(client_connection_parameters),
+                       connection_priority);
       break;
-    case ConnectionRole::kListenerRole:
-      HandleBleListenerRequest(connection_attempt_details,
-                               std::move(client_connection_parameters),
-                               connection_priority);
+    case ConnectionMedium::kNearbyConnections:
+      HandleNearbyRequest(connection_attempt_details,
+                          std::move(client_connection_parameters),
+                          connection_priority);
       break;
   }
 }
@@ -149,6 +146,24 @@ void PendingConnectionManagerImpl::OnConnectionAttemptSucceeded(
 void PendingConnectionManagerImpl::OnConnectionAttemptFinishedWithoutConnection(
     const ConnectionAttemptDetails& connection_attempt_details) {
   RemoveMapEntriesForFinishedConnectionAttempt(connection_attempt_details);
+}
+
+void PendingConnectionManagerImpl::HandleBleRequest(
+    const ConnectionAttemptDetails& connection_attempt_details,
+    std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
+    ConnectionPriority connection_priority) {
+  switch (connection_attempt_details.connection_role()) {
+    case ConnectionRole::kInitiatorRole:
+      HandleBleInitiatorRequest(connection_attempt_details,
+                                std::move(client_connection_parameters),
+                                connection_priority);
+      break;
+    case ConnectionRole::kListenerRole:
+      HandleBleListenerRequest(connection_attempt_details,
+                               std::move(client_connection_parameters),
+                               connection_priority);
+      break;
+  }
 }
 
 void PendingConnectionManagerImpl::HandleBleInitiatorRequest(
@@ -214,6 +229,22 @@ void PendingConnectionManagerImpl::HandleBleListenerRequest(
                   << "Details: " << connection_attempt_details
                   << ", Client parameters: " << *client_connection_parameters;
     NOTREACHED();
+  }
+}
+
+void PendingConnectionManagerImpl::HandleNearbyRequest(
+    const ConnectionAttemptDetails& connection_attempt_details,
+    std::unique_ptr<ClientConnectionParameters> client_connection_parameters,
+    ConnectionPriority connection_priority) {
+  switch (connection_attempt_details.connection_role()) {
+    case ConnectionRole::kInitiatorRole:
+      // TODO(khorimoto): Attempt Nearby Connection.
+      break;
+    case ConnectionRole::kListenerRole:
+      NOTREACHED()
+          << "PendingConnectionManagerImpl::HandleConnectionRequest(): "
+          << "Nearby Connections is not supported in the listener role.";
+      break;
   }
 }
 
