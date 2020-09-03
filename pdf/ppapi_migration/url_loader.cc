@@ -25,7 +25,6 @@
 #include "ppapi/cpp/var.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace chrome_pdf {
 
@@ -52,7 +51,8 @@ BlinkUrlLoader::BlinkUrlLoader(base::WeakPtr<Client> client)
 BlinkUrlLoader::~BlinkUrlLoader() = default;
 
 void BlinkUrlLoader::GrantUniversalAccess() {
-  NOTIMPLEMENTED();
+  DCHECK(!blink_loader_);
+  grant_universal_access_ = true;
 }
 
 // Modeled on `content::PepperURLLoaderHost::OnHostMsgOpen()`.
@@ -62,15 +62,13 @@ void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
     return;
   }
 
-  blink::WebLocalFrame* frame = client_->GetFrame();
-  if (!frame) {
+  blink::WebAssociatedURLLoaderOptions options;
+  options.grant_universal_access = grant_universal_access_;
+  blink_loader_ = client_->CreateAssociatedURLLoader(options);
+  if (!blink_loader_) {
     std::move(callback).Run(PP_ERROR_FAILED);
     return;
   }
-
-  blink::WebAssociatedURLLoaderOptions options;
-  blink_loader_.reset(frame->CreateAssociatedURLLoader(options));
-  DCHECK(blink_loader_);
 
   NOTIMPLEMENTED();
 }

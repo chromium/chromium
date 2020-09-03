@@ -21,7 +21,7 @@
 
 namespace blink {
 class WebAssociatedURLLoader;
-class WebLocalFrame;
+struct WebAssociatedURLLoaderOptions;
 }  // namespace blink
 
 namespace chrome_pdf {
@@ -117,9 +117,11 @@ class BlinkUrlLoader final : public UrlLoader,
   // client.
   class Client {
    public:
-    // Returns the current local frame. May return `nullptr` if the local frame
-    // no longer exists.
-    virtual blink::WebLocalFrame* GetFrame() = 0;
+    // Returns a new `blink::WebAssociatedURLLoader` from the current local
+    // frame. May return `nullptr` if the local frame no longer exists.
+    virtual std::unique_ptr<blink::WebAssociatedURLLoader>
+    CreateAssociatedURLLoader(
+        const blink::WebAssociatedURLLoaderOptions& options) = 0;
 
    protected:
     ~Client() = default;
@@ -156,6 +158,7 @@ class BlinkUrlLoader final : public UrlLoader,
   ~BlinkUrlLoader() override;
 
   base::WeakPtr<Client> client_;
+  bool grant_universal_access_ = false;
 
   std::unique_ptr<blink::WebAssociatedURLLoader> blink_loader_;
 };
