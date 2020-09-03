@@ -708,9 +708,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
             destinationData.zoom);
         return;
       case 'metadata':
-        const metadata = /** @type {!MetadataMessageData} */ (data);
-        this.setDocumentMetadata_(
-            metadata.title, metadata.bookmarks, metadata.canSerializeDocument);
+        this.setDocumentMetadata_(/** @type {!MetadataMessageData} */ (data));
         return;
       case 'setIsEditing':
         // Editing mode can only be entered once, and cannot be exited.
@@ -808,16 +806,14 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /**
    * Sets document metadata from the current controller.
-   * @param {string} title
-   * @param {!Array<!Bookmark>} bookmarks
-   * @param {boolean} canSerializeDocument
+   * @param {!MetadataMessageData} metadata
    * @private
    */
-  setDocumentMetadata_(title, bookmarks, canSerializeDocument) {
-    this.title_ = title ? title : getFilenameFromURL(this.originalUrl);
+  setDocumentMetadata_(metadata) {
+    this.title_ = metadata.title || getFilenameFromURL(this.originalUrl);
     document.title = this.title_;
-    this.bookmarks_ = bookmarks;
-    this.canSerializeDocument_ = canSerializeDocument;
+    this.bookmarks_ = metadata.bookmarks;
+    this.canSerializeDocument_ = metadata.canSerializeDocument;
   }
 
   /**
