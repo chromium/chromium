@@ -5243,7 +5243,6 @@
     "PreconnectToSearch": [
         {
             "platforms": [
-                "android",
                 "linux",
                 "windows",
                 "chromeos",

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,8 +21,15 @@
 
 namespace features {
 // Feature to control preconnect to search.
-const base::Feature kPreconnectToSearch{"PreconnectToSearch",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kPreconnectToSearch {
+  "PreconnectToSearch",
+
+#if defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Feature to limit experimentation to Google search only.
 const base::Feature kPreconnectToSearchNonGoogle{
