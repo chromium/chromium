@@ -25,14 +25,16 @@ class SharedImageRepresentationEglImageGLTexture
   SharedImageRepresentationEglImageGLTexture(SharedImageManager* manager,
                                              SharedImageBacking* backing,
                                              MemoryTypeTracker* tracker,
-                                             gles2::Texture* texture)
+                                             gles2::Texture* texture,
+                                             bool should_delete_texture)
       : SharedImageRepresentationGLTexture(manager, backing, tracker),
-        texture_(texture) {}
+        texture_(texture),
+        should_delete_texture_(should_delete_texture) {}
 
   ~SharedImageRepresentationEglImageGLTexture() override {
     EndAccess();
 
-    if (texture_)
+    if (texture_ && should_delete_texture_)
       texture_->RemoveLightweightRef(has_context());
   }
 
@@ -77,6 +79,7 @@ class SharedImageRepresentationEglImageGLTexture
   }
 
   gles2::Texture* texture_;
+  const bool should_delete_texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationEglImageGLTexture);
 };
@@ -107,9 +110,7 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
       gl_type_(gl_type),
       batch_access_manager_(batch_access_manager) {
   DCHECK(batch_access_manager_);
-#if DCHECK_IS_ON()
   created_on_context_ = gl::g_current_gl_context;
-#endif
   // On some GPUs (NVidia) keeping reference to egl image itself is not enough,
   // we must keep reference to at least one sibling.
   if (workarounds.dont_delete_source_texture_for_egl_image) {
@@ -137,11 +138,20 @@ bool SharedImageBackingEglImage::ProduceLegacyMailbox(
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageBackingEglImage::ProduceGLTexture(SharedImageManager* manager,
                                              MemoryTypeTracker* tracker) {
+  // On some GPUs (Mali, mostly Android 9, like J7) glTexSubImage fails on egl
+  // image sibling. So we use the original texture if we're on the same gl
+  // context. see https://crbug.com/1117370
+  if (source_texture_ && created_on_context_ == gl::g_current_gl_context) {
+    return std::make_unique<SharedImageRepresentationEglImageGLTexture>(
+        manager, this, tracker, source_texture_,
+        /*should_delete_texture=*/false);
+  }
+
   auto* texture = GenEGLImageSibling();
   if (!texture)
     return nullptr;
   return std::make_unique<SharedImageRepresentationEglImageGLTexture>(
-      manager, this, tracker, texture);
+      manager, this, tracker, texture, /*should_delete_texture=*/true);
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
@@ -149,13 +159,9 @@ SharedImageBackingEglImage::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  auto* texture = GenEGLImageSibling();
-  if (!texture)
+  auto gl_representation = ProduceGLTexture(manager, tracker);
+  if (!gl_representation)
     return nullptr;
-
-  auto gl_representation =
-      std::make_unique<SharedImageRepresentationEglImageGLTexture>(
-          manager, this, tracker, std::move(texture));
   return SharedImageRepresentationSkiaGL::Create(std::move(gl_representation),
                                                  std::move(context_state),
                                                  manager, this, tracker);
@@ -324,9 +330,8 @@ void SharedImageBackingEglImage::SetEndReadFence(
 
 void SharedImageBackingEglImage::MarkForDestruction() {
   AutoLock auto_lock(this);
-#if DCHECK_IS_ON()
   DCHECK(!have_context() || created_on_context_ == gl::g_current_gl_context);
-#endif
+
   if (source_texture_) {
     source_texture_->RemoveLightweightRef(have_context());
     source_texture_ = nullptr;
