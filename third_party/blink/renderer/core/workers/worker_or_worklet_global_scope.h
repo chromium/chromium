@@ -89,12 +89,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
 
   void SetModulator(Modulator*);
 
-  // Called from UseCounter to record API use in this execution context.
-  // TODO(yhirano): Unify this with CountUse.
-  void CountFeature(WebFeature);
-
   // UseCounter
-  void CountUse(WebFeature feature) final { CountFeature(feature); }
+  void CountUse(WebFeature feature) final;
 
   // May return nullptr if this global scope is not threaded (i.e.,
   // WorkletGlobalScope for the main thread) or after Dispose() is called.

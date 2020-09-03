@@ -136,7 +136,7 @@ class OutsideSettingsCSPDelegate final
 
   void Count(WebFeature feature) override {
     DCHECK(global_scope_for_logging_->IsContextThread());
-    global_scope_for_logging_->CountFeature(feature);
+    global_scope_for_logging_->CountUse(feature);
   }
 
   void AddConsoleMessage(ConsoleMessage* message) override {
@@ -168,8 +168,8 @@ class OutsideSettingsCSPDelegate final
  private:
   const Member<const FetchClientSettingsObject> outside_settings_object_;
 
-  // |global_scope_for_logging_| should be used only for CountFeature and
-  // console messages.
+  // |global_scope_for_logging_| should be used only for CountUse(),
+  // AddConsoleMessage(), and AddInspectorIssue().
   const Member<WorkerOrWorkletGlobalScope> global_scope_for_logging_;
 };
 
@@ -235,7 +235,7 @@ bool WorkerOrWorkletGlobalScope::HasPendingActivity() const {
   return !ExecutionContext::IsContextDestroyed();
 }
 
-void WorkerOrWorkletGlobalScope::CountFeature(WebFeature feature) {
+void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   DCHECK(IsContextThread());
   DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, feature);
   DCHECK_GT(WebFeature::kNumberOfFeatures, feature);

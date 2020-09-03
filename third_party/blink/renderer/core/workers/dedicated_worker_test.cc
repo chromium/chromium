@@ -55,7 +55,7 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
   // Emulates API use on DedicatedWorkerGlobalScope.
   void CountFeature(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
-    GlobalScope()->CountFeature(feature);
+    GlobalScope()->CountUse(feature);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
