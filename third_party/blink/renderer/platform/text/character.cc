@@ -224,6 +224,14 @@ bool Character::IsEmojiTagSequence(UChar32 c) {
          (c >= kTagLatinSmallLetterA && c <= kTagLatinSmallLetterZ);
 }
 
+bool Character::IsExtendedPictographic(UChar32 c) {
+  return u_hasBinaryProperty(c, UCHAR_EXTENDED_PICTOGRAPHIC);
+}
+
+bool Character::IsEmojiComponent(UChar32 c) {
+  return u_hasBinaryProperty(c, UCHAR_EMOJI_COMPONENT);
+}
+
 template <typename CharacterType>
 static inline String NormalizeSpacesInternal(const CharacterType* characters,
                                              unsigned length) {

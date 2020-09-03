@@ -443,4 +443,28 @@ TEST(CharacterTest, IsVerticalMathCharacter) {
   }
 }
 
+TEST(CharacterTest, ExtendedPictographic) {
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x00A8));
+  EXPECT_TRUE(Character::IsExtendedPictographic(0x00A9));
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x00AA));
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x3298));
+  EXPECT_TRUE(Character::IsExtendedPictographic(0x3299));
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x329A));
+}
+
+TEST(CharacterTest, EmojiComponents) {
+  UChar32 false_set[] = {0x22,    0x2B,    0x29,    0x40,    0x200C,  0x200E,
+                         0x20E2,  0x20E4,  0xFE0E,  0xFE1A,  0x1F1E5, 0x1f200,
+                         0x1f3fa, 0x1f400, 0x1f9Af, 0x1f9b4, 0xe001F, 0xe0080};
+  UChar32 true_set[] = {0x23,    0x2a,    0x30,    0x39,    0x200d,
+                        0x20e3,  0xfe0f,  0x1f1e6, 0x1f1ff, 0x1f3fb,
+                        0x1f3ff, 0x1f9b0, 0x1f9b3, 0xe0020, 0xe007f};
+
+  for (auto false_test : false_set)
+    EXPECT_FALSE(Character::IsEmojiComponent(false_test));
+
+  for (auto true_test : true_set)
+    EXPECT_TRUE(Character::IsEmojiComponent(true_test));
+}
+
 }  // namespace blink

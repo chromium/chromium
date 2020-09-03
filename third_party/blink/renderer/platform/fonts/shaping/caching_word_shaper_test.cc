@@ -213,82 +213,36 @@ TEST_F(CachingWordShaperTest, SegmentCJKAndNonCJKCommon) {
   ASSERT_FALSE(iterator.Next(&word_result));
 }
 
-TEST_F(CachingWordShaperTest, SegmentEmojiZWJCommon) {
-  // A family followed by a couple with heart emoji sequence,
-  // the latter including a variation selector.
-  const UChar kStr[] = {0xD83D, 0xDC68, 0x200D, 0xD83D, 0xDC69, 0x200D,
-                        0xD83D, 0xDC67, 0x200D, 0xD83D, 0xDC66, 0xD83D,
-                        0xDC69, 0x200D, 0x2764, 0xFE0F, 0x200D, 0xD83D,
-                        0xDC8B, 0x200D, 0xD83D, 0xDC68, 0x0};
-  TextRun text_run(kStr, 22);
+TEST_F(CachingWordShaperTest, SegmentEmojiSequences) {
+  std::vector<std::string> test_strings = {
+      // A family followed by a couple with heart emoji sequence,
+      // the latter including a variation selector.
+      u8"\U0001f468\u200D\U0001f469\u200D\U0001f467\u200D\U0001f466\U0001f469"
+      u8"\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
+      // Pirate flag
+      u8"\U0001F3F4\u200D\u2620\uFE0F",
+      // Pilot, judge sequence
+      u8"\U0001f468\U0001f3fb\u200D\u2696\uFE0F\U0001f468\U0001f3fb\u200D\u2708"
+      u8"\uFE0F",
+      // Woman, Kiss, Man sequence
+      u8"\U0001f469\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
+      // Signs of horns with skin tone modifier
+      u8"\U0001f918\U0001f3fb",
+      // Man, dark skin tone, red hair
+      u8"\U0001f468\U0001f3ff\u200D\U0001f9b0"};
 
-  scoped_refptr<const ShapeResult> word_result;
-  CachingWordShapeIterator iterator(cache.get(), text_run, &font);
+  for (auto test_string : test_strings) {
+    String emoji_string = String::FromUTF8(test_string);
+    TextRun text_run(emoji_string);
+    scoped_refptr<const ShapeResult> word_result;
+    CachingWordShapeIterator iterator(cache.get(), text_run, &font);
 
-  ASSERT_TRUE(iterator.Next(&word_result));
-  EXPECT_EQ(22u, word_result->NumCharacters());
+    ASSERT_TRUE(iterator.Next(&word_result));
+    EXPECT_EQ(emoji_string.length(), word_result->NumCharacters())
+        << " Length mismatch for sequence: " << test_string;
 
-  ASSERT_FALSE(iterator.Next(&word_result));
-}
-
-TEST_F(CachingWordShaperTest, SegmentEmojiZWJ) {
-  // ZWJ should include the next character in the "word", so  that they are
-  // shaped together.
-  String str(u"\U0001F3F4\u200D\u2620\uFE0F");
-  TextRun text_run(str);
-
-  scoped_refptr<const ShapeResult> word_result;
-  CachingWordShapeIterator iterator(cache.get(), text_run, &font);
-
-  ASSERT_TRUE(iterator.Next(&word_result));
-  EXPECT_EQ(str.length(), word_result->NumCharacters());
-
-  ASSERT_FALSE(iterator.Next(&word_result));
-}
-
-TEST_F(CachingWordShaperTest, SegmentEmojiPilotJudgeSequence) {
-  // A family followed by a couple with heart emoji sequence,
-  // the latter including a variation selector.
-  const UChar kStr[] = {0xD83D, 0xDC68, 0xD83C, 0xDFFB, 0x200D, 0x2696, 0xFE0F,
-                        0xD83D, 0xDC68, 0xD83C, 0xDFFB, 0x200D, 0x2708, 0xFE0F};
-  TextRun text_run(kStr, base::size(kStr));
-
-  scoped_refptr<const ShapeResult> word_result;
-  CachingWordShapeIterator iterator(cache.get(), text_run, &font);
-
-  ASSERT_TRUE(iterator.Next(&word_result));
-  EXPECT_EQ(base::size(kStr), word_result->NumCharacters());
-
-  ASSERT_FALSE(iterator.Next(&word_result));
-}
-
-TEST_F(CachingWordShaperTest, SegmentEmojiHeartZWJSequence) {
-  // A ZWJ, followed by two family ZWJ Sequences.
-  const UChar kStr[] = {0xD83D, 0xDC69, 0x200D, 0x2764, 0xFE0F, 0x200D,
-                        0xD83D, 0xDC8B, 0x200D, 0xD83D, 0xDC68, 0x0};
-  TextRun text_run(kStr, 11);
-
-  scoped_refptr<const ShapeResult> word_result;
-  CachingWordShapeIterator iterator(cache.get(), text_run, &font);
-
-  ASSERT_TRUE(iterator.Next(&word_result));
-  EXPECT_EQ(11u, word_result->NumCharacters());
-
-  ASSERT_FALSE(iterator.Next(&word_result));
-}
-
-TEST_F(CachingWordShaperTest, SegmentEmojiSignsOfHornsModifier) {
-  // A Sign of the Horns emoji, followed by a fitzpatrick modifer
-  const UChar kStr[] = {0xD83E, 0xDD18, 0xD83C, 0xDFFB, 0x0};
-  TextRun text_run(kStr, 4);
-
-  scoped_refptr<const ShapeResult> word_result;
-  CachingWordShapeIterator iterator(cache.get(), text_run, &font);
-
-  ASSERT_TRUE(iterator.Next(&word_result));
-  EXPECT_EQ(4u, word_result->NumCharacters());
-
-  ASSERT_FALSE(iterator.Next(&word_result));
+    ASSERT_FALSE(iterator.Next(&word_result));
+  }
 }
 
 TEST_F(CachingWordShaperTest, SegmentEmojiExtraZWJPrefix) {
