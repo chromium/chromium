@@ -47,6 +47,9 @@ class ArcAppIcon {
     // is loaded and added to |image|.
     virtual void OnIconUpdated(ArcAppIcon* icon) = 0;
 
+    // Invoked when failed to generate an icon.
+    virtual void OnIconFailed(ArcAppIcon* icon) {}
+
    protected:
     virtual ~Observer() {}
   };
@@ -213,7 +216,7 @@ class ArcAppIcon {
       gfx::ImageSkia& image_skia,
       std::map<ui::ScaleFactor, base::Time>& incomplete_scale_factors);
   void UpdateCompressed(ui::ScaleFactor scale_factor, std::string data);
-  void DiscardDecodeRequest(DecodeRequest* request);
+  void DiscardDecodeRequest(DecodeRequest* request, bool is_decode_success);
 
   content::BrowserContext* const context_;
   const std::string app_id_;

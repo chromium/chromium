@@ -212,13 +212,13 @@ void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
                           incomplete_scale_factors_);
   }
 
-  host_.DiscardDecodeRequest(this);
+  host_.DiscardDecodeRequest(this, true /* bool is_decode_success */);
 }
 
 void ArcAppIcon::DecodeRequest::OnDecodeImageFailed() {
   VLOG(2) << "Failed to decode ARC icon.";
   host_.MaybeRequestIcon(descriptor_.scale_factor);
-  host_.DiscardDecodeRequest(this);
+  host_.DiscardDecodeRequest(this, false /* bool is_decode_success*/);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -617,8 +617,10 @@ void ArcAppIcon::OnIconRead(
   if (read_result->request_to_install)
     MaybeRequestIcon(read_result->scale_factor);
 
-  if (read_result->unsafe_icon_data.empty())
+  if (read_result->unsafe_icon_data.empty()) {
+    observer_->OnIconFailed(this);
     return;
+  }
 
   switch (icon_type_) {
     case IconType::kUncompressed: {
@@ -741,7 +743,8 @@ void ArcAppIcon::UpdateCompressed(ui::ScaleFactor scale_factor,
   observer_->OnIconUpdated(this);
 }
 
-void ArcAppIcon::DiscardDecodeRequest(DecodeRequest* request) {
+void ArcAppIcon::DiscardDecodeRequest(DecodeRequest* request,
+                                      bool is_decode_success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto it = std::find_if(decode_requests_.begin(), decode_requests_.end(),
@@ -750,4 +753,7 @@ void ArcAppIcon::DiscardDecodeRequest(DecodeRequest* request) {
                          });
   DCHECK(it != decode_requests_.end());
   decode_requests_.erase(it);
+
+  if (!is_decode_success)
+    observer_->OnIconFailed(this);
 }

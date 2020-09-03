@@ -58,10 +58,35 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
 
   using SizeAndType = std::pair<int32_t, apps::mojom::IconType>;
 
+  // When loading many app icons, there could be many icon files opened at the
+  // same time, which might cause the system crash. So checking the current icon
+  // loading request number, and if there are too many requests, add the
+  // ArcAppIcon to |pending_requests_| to load the icon later, and return
+  // false. Otherwise add the ArcAppIcon to |in_flight_requests_| so that we
+  // can calculate how many in flight icon loading requests, and return true.
+  void MaybeStartIconRequest(ArcAppIcon* arc_app_icon,
+                             ui::ScaleFactor scale_factor);
+
+  // When get the reply from |arc_app_icon| or remove the app, remove
+  // |arc_app_icon| from |in_flight_requests_| and |pending_requests_|, and
+  // start loading icon requests from |pending_requests_|.
+  void RemoveArcAppIcon(ArcAppIcon* arc_app_icon);
+
+  // If there are loading icon requests saved in |pending_requests_|,
+  // and not too many requests, get ArcAppIcon from
+  // |pending_requests_| to load icons.
+  void MaybeLoadPendingIconRequest();
+
   Profile* const profile_;
   bool stop_observing_called_;
   std::map<SizeAndType, std::unique_ptr<SizeSpecificLoader>>
       size_specific_loaders_;
+
+  // The current icon loading requests.
+  std::set<ArcAppIcon*> in_flight_requests_;
+
+  // The ArcAppIcon map to record the pending icon loading requests.
+  std::map<ArcAppIcon*, std::set<ui::ScaleFactor>> pending_requests_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcIconOnceLoader);
 };
