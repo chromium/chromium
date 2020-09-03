@@ -701,6 +701,10 @@ class CONTENT_EXPORT NavigationRequest
   // tracing purposes.
   void AsValueInto(base::trace_event::TracedValue* traced_value);
 
+  mojo::ScopedDataPipeConsumerHandle& mutable_response_body_for_testing() {
+    return response_body_;
+  }
+
  private:
   friend class NavigationRequestTest;
 

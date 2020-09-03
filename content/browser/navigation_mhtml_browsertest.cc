@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind_test_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "content/browser/frame_host/navigation_request.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
@@ -18,6 +23,11 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/c/system/trap.h"
+#include "mojo/public/c/system/types.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/handle_signals_state.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -475,6 +485,89 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CspFrameAncestor) {
   // can't be used, because javascript is disabled. Instead, check it was able
   // to load an iframe.
   ASSERT_EQ(1u, sub_frame->child_count());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
+                       SameDocumentNavigationWhileLoading) {
+  // Load a MHTML archive normally so there's a renderer process for file://.
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(GURL("http://example.com/main"),
+                                "<p>Hello world!</p>");
+  const GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  const RenderProcessHost* const rph = main_frame_host()->GetProcess();
+
+  // Navigate to another MHTML archive which will reuse the same renderer.
+  MhtmlArchive mhtml_archive2;
+  mhtml_archive2.AddHtmlDocument(GURL("http://example.com/main2"),
+                                 "<p>Hello world again!</p>");
+  const GURL mhtml_url2 = mhtml_archive2.Write("index2.mhtml");
+
+  TestNavigationManager manager(web_contents(), mhtml_url2);
+  shell()->LoadURL(mhtml_url2);
+
+  EXPECT_TRUE(manager.WaitForResponse());
+  // The new navigation should not have committed yet.
+  EXPECT_EQ(mhtml_url, main_frame_host()->GetLastCommittedURL());
+
+  // Make sure it actually picked the same process.
+  NavigationRequest* request =
+      NavigationRequest::From(manager.GetNavigationHandle());
+  EXPECT_EQ(rph, request->GetRenderFrameHost()->GetProcess());
+
+  // Delay the response body from being received by the renderer.
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  mojo::ScopedDataPipeProducerHandle producer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(/* options */ nullptr, &producer, &consumer));
+  using std::swap;
+  swap(request->mutable_response_body_for_testing(), consumer);
+
+  // Resume the navigation, which should send a |CommitNavigation()| to the
+  // renderer.
+  manager.ResumeNavigation();
+
+  // Archive loading is split into two phases: first, the entire response body
+  // is read and parsed into an MHTML archive by |MHTMLBodyLoaderClient|, and
+  // then the renderer commits the response. Since the data pipe for the
+  // response body was swapped out above, the renderer should not have committed
+  // a navigation to |mhtml_url2|.
+  // Note: Ideally, this should resume the navigation and wait for a signal that
+  // the renderer is attempting to read the response body. Unfortunately, no
+  // such signal exsts. As-is, this check is imperfect.
+  EXPECT_EQ(mhtml_url, main_frame_host()->GetLastCommittedURL());
+  EXPECT_TRUE(web_contents()->IsLoading());
+
+  // While archive loading is still in progress and nothing has been committed,
+  // trigger a same-document navigation.
+  url::Replacements<char> replacements;
+  replacements.SetRef("fragment", url::Component(0, strlen("fragment")));
+  const GURL mhtml_url_with_fragment =
+      mhtml_url.ReplaceComponents(replacements);
+  // TODO(dcheng): Using NavigateToURL() here seems to cause the test to hang.
+  // Figure out why.
+  shell()->LoadURL(mhtml_url_with_fragment);
+
+  // The same-document navigation should cancel MHTML loading. On the browser
+  // side, this can be observed by waiting for the peer handle to be closed by
+  // the renderer.
+  base::RunLoop run_loop;
+  mojo::SimpleWatcher watcher(FROM_HERE,
+                              mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
+  watcher.Watch(
+      producer.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindLambdaForTesting(
+          [&](MojoResult result, const mojo::HandleSignalsState& state) {
+            EXPECT_EQ(MOJO_RESULT_OK, result);
+            EXPECT_TRUE(state.peer_closed());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  WaitForLoadStop(web_contents());
+  EXPECT_EQ(mhtml_url_with_fragment, main_frame_host()->GetLastCommittedURL());
 }
 
 }  // namespace content
