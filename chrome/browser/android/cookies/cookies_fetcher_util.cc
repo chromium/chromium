@@ -23,8 +23,9 @@ namespace {
 
 // Returns the cookie service at the client end of the mojo pipe.
 network::mojom::CookieManager* GetCookieServiceClient() {
+  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
   return content::BrowserContext::GetDefaultStoragePartition(
-             ProfileManager::GetPrimaryUserProfile()->GetOffTheRecordProfile())
+             ProfileManager::GetPrimaryUserProfile()->GetPrimaryOTRProfile())
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -60,7 +61,8 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 // no-op for the standard session. Typically associated with the #onPause of
 // Android's activty lifecycle.
 void JNI_CookiesFetcher_PersistCookies(JNIEnv* env) {
-  if (!ProfileManager::GetPrimaryUserProfile()->HasOffTheRecordProfile()) {
+  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
+  if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile()) {
     // There is no work to be done. We might consider calling
     // the Java callback if needed.
     return;
@@ -87,7 +89,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
     jint same_site,
     jint priority,
     jint source_scheme) {
-  if (!ProfileManager::GetPrimaryUserProfile()->HasOffTheRecordProfile())
+  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
+  if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
     return;  // Don't create it. There is nothing to do.
 
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));

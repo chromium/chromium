@@ -93,6 +93,8 @@ class ProfileImpl : public Profile {
       override;
   content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   content::BackgroundSyncController* GetBackgroundSyncController() override;
+  // TODO(https://crbug.com/1060940): Only supports primary OTR profile. Update
+  // to support all OTR profiles.
   void SetCorsOriginAccessListForOrigin(
       const url::Origin& source_origin,
       std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
@@ -118,14 +120,10 @@ class ProfileImpl : public Profile {
   bool IsOffTheRecord() const override;
   const OTRProfileID& GetOTRProfileID() const override;
   base::FilePath GetPath() const override;
-  // TODO(https://crbug.com/1033903): Remove the default value.
-  Profile* GetOffTheRecordProfile(
-      const OTRProfileID& otr_profile_id = OTRProfileID::PrimaryID()) override;
+  Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;
   std::vector<Profile*> GetAllOffTheRecordProfiles() override;
   void DestroyOffTheRecordProfile(Profile* otr_profile) override;
-  // TODO(https://crbug.com/1033903): Remove the default value.
-  bool HasOffTheRecordProfile(
-      const OTRProfileID& otr_profile_id = OTRProfileID::PrimaryID()) override;
+  bool HasOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;
   bool HasAnyOffTheRecordProfile() override;
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
@@ -139,6 +137,9 @@ class ProfileImpl : public Profile {
 #if !defined(OS_ANDROID)
   ChromeZoomLevelPrefs* GetZoomLevelPrefs() override;
 #endif
+  // TODO(https://crbug.com/1060940, https://crbug.com/1065444): Only supports
+  // primary OTR profile. Either update to support all OTR profiles or remove
+  // this function.
   PrefService* GetOffTheRecordPrefs() override;
   PrefService* GetReadOnlyOffTheRecordPrefs() override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;

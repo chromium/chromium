@@ -20,8 +20,9 @@ CookieControlsServiceBridge::CookieControlsServiceBridge(
     : jobject_(obj) {}
 
 void CookieControlsServiceBridge::UpdateServiceIfNecessary() {
+  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
   Profile* profile =
-      ProfileManager::GetLastUsedProfile()->GetOffTheRecordProfile();
+      ProfileManager::GetLastUsedProfile()->GetPrimaryOTRProfile();
   CookieControlsService* new_service =
       CookieControlsServiceFactory::GetForProfile(profile);
   // Update the service only if it is for a new profile

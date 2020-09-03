@@ -87,8 +87,9 @@ void ProfileDestroyer::DestroyRegularProfileNow(Profile* const profile) {
   // on later.
   HostSet profile_hosts = GetHostsForProfile(profile);
   void* profile_ptr = profile;
-  void* otr_profile_ptr = profile->HasOffTheRecordProfile()
-                              ? profile->GetOffTheRecordProfile()
+  // TODO(https://crbug.com/1033903): Updated to cover all OTR profiles.
+  void* otr_profile_ptr = profile->HasPrimaryOTRProfile()
+                              ? profile->GetPrimaryOTRProfile()
                               : nullptr;
 #endif  // DCHECK_IS_ON()
 

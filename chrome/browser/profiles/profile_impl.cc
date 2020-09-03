@@ -1131,8 +1131,8 @@ ChromeZoomLevelPrefs* ProfileImpl::GetZoomLevelPrefs() {
 #endif  // !defined(OS_ANDROID)
 
 PrefService* ProfileImpl::GetOffTheRecordPrefs() {
-  if (HasOffTheRecordProfile()) {
-    return GetOffTheRecordProfile()->GetPrefs();
+  if (HasPrimaryOTRProfile()) {
+    return GetPrimaryOTRProfile()->GetPrefs();
   } else {
     // The extensions preference API and many tests call this method even when
     // there's no OTR profile, in order to figure out what a pref value would
@@ -1288,13 +1288,13 @@ void ProfileImpl::SetCorsOriginAccessListForOrigin(
                                 base::RetainedRef(profile_setter.get())));
 
   // Keep incognito storage partitions' NetworkContexts synchronized.
-  if (HasOffTheRecordProfile()) {
+  if (HasPrimaryOTRProfile()) {
     auto off_the_record_setter = base::MakeRefCounted<CorsOriginPatternSetter>(
         source_origin, CorsOriginPatternSetter::ClonePatterns(allow_patterns),
         CorsOriginPatternSetter::ClonePatterns(block_patterns),
         barrier_closure);
     ForEachStoragePartition(
-        GetOffTheRecordProfile(),
+        GetPrimaryOTRProfile(),
         base::BindRepeating(&CorsOriginPatternSetter::SetLists,
                             base::RetainedRef(off_the_record_setter.get())));
   } else {

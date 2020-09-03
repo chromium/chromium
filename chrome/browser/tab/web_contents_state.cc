@@ -365,8 +365,9 @@ WebContents* RestoreContentsFromByteBuffer(void* data,
       sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
           navigations, profile);
 
+  // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
   if (is_off_the_record)
-    profile = profile->GetOffTheRecordProfile();
+    profile = profile->GetPrimaryOTRProfile();
   WebContents::CreateParams params(profile);
 
   params.initially_hidden = initially_hidden;

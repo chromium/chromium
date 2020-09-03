@@ -46,14 +46,10 @@ class OffTheRecordProfileImpl : public Profile {
 
   // Profile implementation.
   std::string GetProfileUserName() const override;
-  // TODO(https://crbug.com/1033903): Remove the default value.
-  Profile* GetOffTheRecordProfile(
-      const OTRProfileID& otr_profile_id = OTRProfileID::PrimaryID()) override;
+  Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;
   std::vector<Profile*> GetAllOffTheRecordProfiles() override;
   void DestroyOffTheRecordProfile(Profile* otr_profile) override;
-  // TODO(https://crbug.com/1033903): Remove the default value.
-  bool HasOffTheRecordProfile(
-      const OTRProfileID& otr_profile_id = OTRProfileID::PrimaryID()) override;
+  bool HasOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;
   bool HasAnyOffTheRecordProfile() override;
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
