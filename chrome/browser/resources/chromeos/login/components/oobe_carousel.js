@@ -195,9 +195,7 @@ Polymer({
    * @param {EventTarget|null} slide
    */
   cleanStyles(slide) {
-    slide.classList.remove('animated');
-    slide.classList.remove('forward');
-    slide.classList.remove('backward');
+    slide.classList.remove('animated', 'forward', 'backward', 'hide-slide');
   },
 
   /**
@@ -271,6 +269,7 @@ Polymer({
     fromElement.classList.add('animated');
     toElement.classList.remove(toStyle);
     fromElement.classList.add(fromStyle);
+    fromElement.classList.add('hide-slide');
 
     toElement.addEventListener('transitionend', this.removeAnimateToHandler);
     fromElement.addEventListener(

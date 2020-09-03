@@ -62,9 +62,9 @@
       }
 
       ::slotted(.animated) {
-        /* cubic-bezier(.51, .92, .24, 1) makes animation of transition similar
-           to basic slide rotation. */
-        transition: transform 1.0s cubic-bezier(.51, .92, .24, 1);
+        /* cubic-bezier(0.6, 0.0, 0.0, 1.0) makes animation of transition
+           similar to basic slide rotation. */
+        transition: transform 500ms cubic-bezier(0.6, 0, 0, 1.0);
       }
 
       ::slotted(.backward) {
@@ -73,6 +73,16 @@
 
       ::slotted(.forward) {
         transform: var(--oobe-forward-slide-animation);
+      }
+
+      ::slotted(.hide-slide) {
+        animation: 500ms ease 0s normal forwards 1 slide-fadeout;
+      }
+
+      @keyframes slide-fadeout {
+          0% { opacity: 1.0; }
+          60% { opacity: 1.0; } /* Starts animation at 0.6 * 0.5s = 0.3s. */
+          100% { opacity: 0; }
       }
 
       .buttons {
@@ -88,7 +98,8 @@
         height: 10px;
         margin: 5px;
         pointer-events: none;
-        transition: background 1s;
+        transition: background 200ms;
+        transition-delay: 100ms;
         width: 10px;
       }
       .slider-dot[active] {
