@@ -36,6 +36,9 @@ class AmbientAshTestBase : public AshTestBase {
   void SetUp() override;
   void TearDown() override;
 
+  // Enables/disables ambient mode.
+  void SetAmbientModeEnabled(bool enabled);
+
   // Creates ambient screen in its own widget.
   void ShowAmbientScreen();
 

@@ -54,6 +54,28 @@ TEST_F(AmbientControllerTest, ShowAmbientScreenUponLock) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
+TEST_F(AmbientControllerTest, NotShowAmbientWhenPrefNotEnabled) {
+  SetAmbientModeEnabled(false);
+
+  LockScreen();
+  // Lockscreen will not immediately show Ambient mode.
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  // Ambient mode will not show after inacivity and successfully loading first
+  // image.
+  FastForwardToInactivity();
+  FastForwardToNextImage();
+
+  EXPECT_FALSE(container_view());
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  // Clean up.
+  UnlockScreen();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
 TEST_F(AmbientControllerTest, HideAmbientScreen) {
   LockScreen();
   FastForwardToInactivity();
@@ -105,6 +127,18 @@ TEST_F(AmbientControllerTest, ShouldRequestAccessTokenWhenLockingScreen) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Should close ambient widget already when unlocking screen.
+  UnlockScreen();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+}
+
+TEST_F(AmbientControllerTest, ShouldNotRequestAccessTokenWhenPrefNotEnabled) {
+  SetAmbientModeEnabled(false);
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  // Lock the screen will not request a token.
+  LockScreen();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
   UnlockScreen();
   EXPECT_FALSE(IsAccessTokenRequestPending());
 }
