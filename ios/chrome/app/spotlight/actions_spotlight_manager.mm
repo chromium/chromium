@@ -130,8 +130,8 @@ BOOL SetStartupParametersForSpotlightAction(
 #pragma mark private methods
 
 - (void)clearAndAddSpotlightActions {
+  __weak ActionsSpotlightManager* weakSelf = self;
   [self clearAllSpotlightItems:^(NSError* error) {
-    __weak ActionsSpotlightManager* weakSelf = self;
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW,
                       static_cast<int64_t>(1 * NSEC_PER_SEC)),
