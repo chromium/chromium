@@ -49,8 +49,19 @@ public class ScrimTest extends DummyUiActivityTestCase {
     private View mAnchorView;
 
     private final CallbackHelper mStatusBarCallbackHelper = new CallbackHelper();
-    private final ScrimCoordinator.StatusBarScrimDelegate mScrimDelegate =
-            scrimFraction -> mStatusBarCallbackHelper.notifyCalled();
+    private final CallbackHelper mNavigationBarCallbackHelper = new CallbackHelper();
+    private final ScrimCoordinator.SystemUiScrimDelegate mScrimDelegate =
+            new ScrimCoordinator.SystemUiScrimDelegate() {
+                @Override
+                public void setStatusBarScrimFraction(float scrimFraction) {
+                    mStatusBarCallbackHelper.notifyCalled();
+                }
+
+                @Override
+                public void setNavigationBarScrimFraction(float scrimFraction) {
+                    mNavigationBarCallbackHelper.notifyCalled();
+                }
+            };
 
     private final CallbackHelper mScrimClickCallbackHelper = new CallbackHelper();
     private final CallbackHelper mVisibilityChangeCallbackHelper = new CallbackHelper();
@@ -233,6 +244,47 @@ public class ScrimTest extends DummyUiActivityTestCase {
 
         assertEquals("No events to the status bar delegate should have occurred", callCount,
                 mStatusBarCallbackHelper.getCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
+    public void testAffectsNavigationBar_enabled() throws TimeoutException {
+        int callCount = mNavigationBarCallbackHelper.getCallCount();
+        PropertyModel model =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.TOP_MARGIN, 0)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                        .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
+                        .build();
+        showScrim(model, false);
+
+        mNavigationBarCallbackHelper.waitForCallback(callCount, 1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
+    public void testAffectsNavigationBar_disabled() throws TimeoutException {
+        int callCount = mStatusBarCallbackHelper.getCallCount();
+        PropertyModel model =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.TOP_MARGIN, 0)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                        .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, false)
+                        .build();
+        showScrim(model, false);
+
+        assertEquals("No events to the navigation bar delegate should have occurred", callCount,
+                mNavigationBarCallbackHelper.getCallCount());
     }
 
     @Test

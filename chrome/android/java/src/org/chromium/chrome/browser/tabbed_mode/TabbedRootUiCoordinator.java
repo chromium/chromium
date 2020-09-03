@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.view.ViewGroup;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -52,6 +55,7 @@ import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundView
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -251,6 +255,32 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
     @Override
     protected boolean shouldShowMenuUpdateBadge() {
         return true;
+    }
+
+    @Override
+    protected ScrimCoordinator buildScrimWidget() {
+        ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
+        ScrimCoordinator.SystemUiScrimDelegate delegate =
+                new ScrimCoordinator.SystemUiScrimDelegate() {
+                    @Override
+                    public void setStatusBarScrimFraction(float scrimFraction) {
+                        mActivity.getStatusBarColorController().setStatusBarScrimFraction(
+                                scrimFraction);
+                    }
+
+                    @Override
+                    public void setNavigationBarScrimFraction(float scrimFraction) {
+                        TabbedNavigationBarColorController controller =
+                                mSystemUiCoordinator.getNavigationBarColorController();
+                        if (controller == null) {
+                            return;
+                        }
+                        controller.setNavigationBarScrimFraction(scrimFraction);
+                    }
+                };
+        return new ScrimCoordinator(mActivity, delegate, coordinator,
+                ApiCompatibilityUtils.getColor(coordinator.getResources(),
+                        R.color.omnibox_focused_fading_background_color));
     }
 
     // Private class methods
