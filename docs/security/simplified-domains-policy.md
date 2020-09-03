@@ -37,19 +37,17 @@ users to retrieve full URLs.
 
 ## How URLs are simplified
 
-Most of the time, Chrome simplifies URLs to their **full host, including
-subdomains and registered domain** (for example,
-`https://foo.example.com/bar#baz` will get simplified to `foo.example.com`).
+Most of the time, Chrome shows **full host, including subdomains and registered
+domain** in the address bar (for example, `https://foo.example.com/bar#baz` will
+be simplified to `foo.example.com`).
 
-However, in some cases, Chrome will further simplify the displayed URL to just
-the **registered domain name** (for example, `example.com` in
+However, in some cases, Chrome will further simplify to show just the
+**registered domain name** (for example, `example.com` in
 `https://foo.example.com`).
 
-Chrome will show just the registered domain when:
-
- * The full host (including dots) exceeds 25 characters \[[1](#fn1)\].
- * The full host includes a well known brand keyword, but is not that brand's
-   website. See below for more detail.
+Chrome will show just the registered domain when the full host (including dots)
+exceeds 25 characters. This limit is chosen so that >95% of Chrome page loads
+won’t be affected.
 
 These criteria may change as we observe user behavior and affected sites.
 
@@ -60,28 +58,3 @@ not take private registries from the [Public Suffix
 List](https://publicsuffix.org/) into account. This is to avoid creating an
 incentive for malicious sites to add themselves to the Public Suffix List.
 
-### Brand keywords
-Chrome looks for well known brands in subdomains and simplifies URLs to just
-their host when a brand is present. The well known brands list is computed as
-follows:
-
- * Chrome computes a list of well known brands using a well known domains
-   [list](https://source.chromium.org/chromium/chromium/src/+/master:components/url_formatter/spoof_checks/top_domains/domains.list)
-   with several filtering criteria applied, for example ignoring numbers and
-   [common English
-   words](https://ai.googleblog.com/2006/08/all-our-n-gram-are-belong-to-you.html) \[[2](#fn2)\].
- * When visiting a URL, Chrome splits the host into fragments on `.` and `-` and
-   checks whether any fragment matches a well known brand keyword. If so, the
-   URL will be simplified to just the domain, eliding subdomains.
-
-This strategy aims to elide the subdomains most likely to be deceptive and
-malicious, while minimizing impact on site owners who want their sites'
-subdomains to be visible.
-
----
-
-## Footnotes
- 1. {#fn1} This limit is chosen so that >95% of Chrome page loads won't be
-    affected.
- 2. {#fn2} This algorithm will be expanded to accommodate other languages if
-    experimental results are positive.
