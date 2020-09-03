@@ -7,9 +7,12 @@
 #include <fontconfig/fontconfig.h>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -103,6 +106,10 @@ void FontEnumerationCacheFontconfig::SchedulePrepareFontEnumerationCache() {
 
 void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
   DCHECK(!enumeration_cache_built_.IsSet());
+  // Metrics.
+  const base::ElapsedTimer start_timer;
+  int incomplete_count = 0;
+  int dupe_count = 0;
 
   auto font_enumeration_table = std::make_unique<blink::FontEnumerationTable>();
 
@@ -112,6 +119,10 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
 
   std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> fontset(
       ListFonts(object_set.get()), FcFontSetDestroy);
+
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Fonts.AccessAPI.EnumerationCache.Fontconfig.FontCount", fontset->nfont,
+      1, 5000, 50);
 
   // Used to filter duplicates.
   std::set<std::string> fonts_seen;
@@ -130,10 +141,12 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
                            reinterpret_cast<FcChar8**>(&family)) !=
             FcResultMatch) {
       // Skip incomplete or malformed fonts.
+      ++incomplete_count;
       continue;
     }
 
     if (fonts_seen.count(postscript_name) != 0) {
+      ++dupe_count;
       // Skip duplicates.
       continue;
     }
@@ -150,6 +163,13 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
     *added_font_meta = metadata;
   }
 
+  UMA_HISTOGRAM_COUNTS_100(
+      "Fonts.AccessAPI.EnumerationCache.Fontconfig.IncompleteFontCount",
+      incomplete_count);
+  UMA_HISTOGRAM_COUNTS_100(
+      "Fonts.AccessAPI.EnumerationCache.Fontconfig.DuplicateFontCount",
+      dupe_count);
+
   enumeration_cache_memory_ = base::ReadOnlySharedMemoryRegion::Create(
       font_enumeration_table->ByteSizeLong());
 
@@ -162,6 +182,8 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
 
   enumeration_cache_built_.Set();
 
+  UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
+                             start_timer.Elapsed());
   // Respond to pending and future requests.
   StartCallbacksTaskQueue();
 }
