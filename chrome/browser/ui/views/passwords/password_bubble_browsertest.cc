@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/ax_event_counter.h"
 
 using base::StartsWith;
 
@@ -129,4 +130,12 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
     return;  // No moving bubble available without the flag.
   }
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+  ShowUi("ManagePasswordBubble");
+  // TODO(crbug.com/1082217): This should only produce one event
+  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
 }

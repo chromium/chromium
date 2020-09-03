@@ -83,6 +83,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -992,6 +993,30 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                    "Signin_Impression_FromSaveCardBubble"));
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromSaveCardBubble"));
+}
+
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
+                       DiceBubbleSyncPromoViewAlertAccessibleEvent) {
+  FillForm();
+  SubmitFormAndWaitForCardLocalSaveBubble();
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Adding an event observer to the controller so we can wait for the bubble to
+  // show.
+  AddEventObserverToController();
+  ReduceAnimationTime();
+  ResetEventWaiterForSequence(
+      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+
+  // Click [Save] should close the offer-to-save bubble
+  // and pop up the sign-in promo.
+  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  WaitForObservedEvent();
+
+  // TODO(crbug.com/1082217): This should only produce one event
+  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
 }
 #endif
 

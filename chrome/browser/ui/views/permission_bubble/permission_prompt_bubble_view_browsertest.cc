@@ -10,6 +10,7 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/ax_event_counter.h"
 
 class PermissionPromptBubbleViewBrowserTest : public DialogBrowserTest {
  public:
@@ -36,4 +37,12 @@ class PermissionPromptBubbleViewBrowserTest : public DialogBrowserTest {
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleViewBrowserTest,
                        InvokeUi_geolocation) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleViewBrowserTest,
+                       AlertAccessibleEvent) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+  ShowUi("PermissionPromptBubble");
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }

@@ -16,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/buildflags.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view.h"
 
 class SessionCrashedBubbleViewTest : public DialogBrowserTest {
@@ -83,4 +84,12 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
   // deals with it, so a second call should have no effect.
   browser_view->RotatePaneFocus(true);
   EXPECT_TRUE(bubble_focused_view->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, AlertAccessibleEvent) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+  ShowUi("SessionCrashedBubble");
+  // TODO(crbug.com/1082217): This should only produce one event
+  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
 }
