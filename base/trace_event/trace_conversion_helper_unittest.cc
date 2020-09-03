@@ -15,12 +15,78 @@
 namespace base {
 namespace trace_event {
 
+TEST(TraceEventArgumentTest, SetTracedValueArgParameterPack) {
+  std::unique_ptr<TracedValue> value(new TracedValue());
+  TracedValue* raw_value = value.get();
+  SetTracedValueArg(raw_value, "not_traced");
+  SetTracedValueArg(raw_value, "single_value", 42);
+  SetTracedValueArg(raw_value, "pack", 42, false, 0.0, "hello");
+  std::string json;
+  value->AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{"
+      "\"single_value\":42,"
+      "\"pack\":42,"
+      "\"pack\":false,"
+      "\"pack\":0.0,"
+      "\"pack\":\"hello\""
+      "}",
+      json);
+}
+
+TEST(TraceEventArgumentTest, SetTracedValueArgCompatibleTypes) {
+  std::unique_ptr<TracedValue> value(new TracedValue());
+  TracedValue* raw_value = value.get();
+  SetTracedValueArg(raw_value, "float_literal", 0.0f);
+  float my_float = 0.0f;
+  SetTracedValueArg(raw_value, "my_float", my_float);
+  char my_char = 13;
+  SetTracedValueArg(raw_value, "my_char", my_char);
+  std::string json;
+  value->AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{"
+      "\"float_literal\":0.0,"
+      "\"my_float\":0.0,"
+      "\"my_char\":13"
+      "}",
+      json);
+}
+
+class UseFallback {};
+
+TEST(TraceEventArgumentTest, SetTracedValueArgBasicTypes) {
+  std::unique_ptr<TracedValue> value(new TracedValue());
+  TracedValue* raw_value = value.get();
+  SetTracedValueArg(raw_value, "my_int", 1);
+  SetTracedValueArg(raw_value, "my_double", 0.1);
+  SetTracedValueArg(raw_value, "my_bool", false);
+  SetTracedValueArg(raw_value, "my_literal", "hello");
+  SetTracedValueArg(raw_value, "my_string",
+                    std::string("wonderful_") + std::string("world"));
+  SetTracedValueArg(raw_value, "my_void_ptr", static_cast<void*>(nullptr));
+  SetTracedValueArg(raw_value, "use_fallback", UseFallback());
+  UseFallback usefallback_with_variable;
+  SetTracedValueArg(raw_value, "use_fallback", usefallback_with_variable);
+  std::string json;
+  value->AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{\"my_int\":1,"
+      "\"my_double\":0.1,"
+      "\"my_bool\":false,"
+      "\"my_literal\":\"hello\","
+      "\"my_string\":\"wonderful_world\","
+      "\"my_void_ptr\":\"0x0\","
+      "\"use_fallback\":\"\\u003Cvalue>\","
+      "\"use_fallback\":\"\\u003Cvalue>\""
+      "}",
+      json);
+}
+
 TEST(TraceEventConversionHelperTest, OstreamValueToString) {
   std::string zero = internal::OstreamValueToString(0);
   EXPECT_EQ("0", zero);
 }
-
-class UseFallback {};
 
 TEST(TraceEventConversionHelperTest, UseFallback) {
   std::string answer = ValueToString(UseFallback(), "fallback");
