@@ -299,12 +299,9 @@ public final class BrowserViewController
     private void onDialogVisibilityChanged(boolean showing) {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 82) return;
 
-        // ModalDialogManager.onLastDialogDismissed() may be called if |mTab| is currently null.
-        // This is because in some situations ModalDialogManager calls onLastDialogDismissed() even
-        // if there were no dialogs present and dismissDialog() is called. This matters as
-        // dismissDialog() may be called when |mTab| is null.
-        // TODO(sky): fix ModalDialogManager and remove mTab conditional.
-        if (mModalDialogManager.getCurrentType() == ModalDialogType.TAB && mTab != null) {
+        // This should never be called when |mTab| is null.
+        assert mTab != null;
+        if (mModalDialogManager.getCurrentType() == ModalDialogType.TAB) {
             try {
                 mTab.getClient().onTabModalStateChanged(showing);
             } catch (RemoteException e) {
