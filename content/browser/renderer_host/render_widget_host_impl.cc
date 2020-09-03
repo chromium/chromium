@@ -39,6 +39,7 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
@@ -3348,23 +3349,27 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation() {
   if (auto* touch_emulator = GetExistingTouchEmulator())
     touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized);
 
-  // The value |kNull| is only used to indicate an absence of vertical scroll
-  // direction and should therefore be ignored.
-  if (metadata.new_vertical_scroll_direction ==
-      viz::VerticalScrollDirection::kNull) {
-    return;
-  }
-
-  // Changes in vertical scroll direction are only propagated for main frames.
-  // If there is no |owner_delegate|, this is not a main frame.
-  if (!owner_delegate())
-    return;
-
+  // TODO(danakj): Can this method be called during WebContents destruction?
   if (!delegate())
     return;
 
-  delegate()->OnVerticalScrollDirectionChanged(
-      metadata.new_vertical_scroll_direction);
+  // The root BrowserAccessibilityManager only is reachable if there's a
+  // delegate() still, ie we're not in shutdown. This can be null in tests.
+  BrowserAccessibilityManager* accessibility_manager =
+      GetRootBrowserAccessibilityManager();
+  if (accessibility_manager)
+    accessibility_manager->SetPageScaleFactor(metadata.page_scale_factor);
+
+  // The value |kNull| is only used to indicate an absence of vertical scroll
+  // direction and should therefore be ignored.
+  // Also, changes in vertical scroll direction are only propagated for main
+  // frames. If there is no |owner_delegate|, this is not a main frame.
+  if (metadata.new_vertical_scroll_direction !=
+          viz::VerticalScrollDirection::kNull &&
+      owner_delegate()) {
+    delegate()->OnVerticalScrollDirectionChanged(
+        metadata.new_vertical_scroll_direction);
+  }
 }
 
 std::vector<viz::SurfaceId>

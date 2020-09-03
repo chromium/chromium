@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
@@ -120,11 +119,6 @@ void RenderWidgetHostViewBase::OnRenderFrameMetadataChangedBeforeActivation(
 void RenderWidgetHostViewBase::OnRenderFrameMetadataChangedAfterActivation() {
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
-
-  BrowserAccessibilityManager* manager =
-      host()->GetRootBrowserAccessibilityManager();
-  if (manager)
-    manager->SetPageScaleFactor(metadata.page_scale_factor);
 
   is_drawing_delegated_ink_trails_ = metadata.has_delegated_ink_metadata;
 }
