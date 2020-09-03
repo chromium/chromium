@@ -90741,11 +90741,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Android only.
 
     The number of times the tabbed mode of Chrome is launched within a given 24
-    hour window. A &quot;launch&quot; here is defined as anytime the tabbed mode
-    is made visible (foregrounded), but all Chrome activities must be completely
-    hidden before we'll count an additional launch. It includes all kinds of
-    intents, such as MAIN and VIEW. By ensuring all Chrome activities are
-    hidden, we avoid overcounting by going to Settings and returning to Chrome.
+    hour window. Recall that custom tabs is not considered tabbed mode. A
+    &quot;launch&quot; here is defined as anytime the tabbed mode is made
+    visible (foregrounded), but all Chrome activities must be completely hidden
+    before we'll count an additional launch. It includes all kinds of intents,
+    such as MAIN and VIEW. By ensuring all Chrome activities are hidden, we
+    avoid overcounting by going to Settings and returning to Chrome.
 
     This launch definition includes some items one might not expect: (i) click a
     link in Chrome that opens in another app, then click back. (ii) have Chrome
@@ -90783,6 +90784,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>twellington@chromium.org</owner>
   <summary>
     The type of launching Chrome mobile app, e.g launch by hitting icon.
+
+    Only recorded for tabbed mode launches of Chrome. Recall that custom tabs is
+    not considered tabbed mode.
   </summary>
 </histogram>
 
