@@ -830,8 +830,18 @@ class RTCPeerConnectionHandler::Observer
  public:
   Observer(const base::WeakPtr<RTCPeerConnectionHandler>& handler,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : handler_(handler), main_thread_(task_runner) {}
+      : handler_(handler),
+        main_thread_(task_runner),
+        native_peer_connection_(nullptr) {}
   ~Observer() override = default;
+
+  void Initialize() {
+    DCHECK(main_thread_->BelongsToCurrentThread());
+    DCHECK(!native_peer_connection_);
+    DCHECK(handler_);
+    native_peer_connection_ = handler_->native_peer_connection_;
+    DCHECK(native_peer_connection_);
+  }
 
   // When an RTC event log is sent back from PeerConnection, it arrives here.
   void OnWebRtcEventLogWrite(const WTF::Vector<uint8_t>& output) override {
@@ -918,11 +928,28 @@ class RTCPeerConnectionHandler::Observer
   }
 
   void OnIceCandidate(const IceCandidateInterface* candidate) override {
+    DCHECK(native_peer_connection_);
     std::string sdp;
     if (!candidate->ToString(&sdp)) {
       NOTREACHED() << "OnIceCandidate: Could not get SDP string.";
       return;
     }
+    // The generated candidate may have been added to the pending or current
+    // local description, take a snapshot and surface them to the main thread.
+    // Remote descriptions are also surfaced because
+    // OnSessionDescriptionsUpdated() requires all four as arguments.
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        pending_local_description = CopySessionDescription(
+            native_peer_connection_->pending_local_description());
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        current_local_description = CopySessionDescription(
+            native_peer_connection_->current_local_description());
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        pending_remote_description = CopySessionDescription(
+            native_peer_connection_->pending_remote_description());
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        current_remote_description = CopySessionDescription(
+            native_peer_connection_->current_remote_description());
 
     PostCrossThreadTask(
         *main_thread_.get(), FROM_HERE,
@@ -931,7 +958,11 @@ class RTCPeerConnectionHandler::Observer
             WrapCrossThreadPersistent(this), String::FromUTF8(sdp),
             String::FromUTF8(candidate->sdp_mid()),
             candidate->sdp_mline_index(), candidate->candidate().component(),
-            candidate->candidate().address().family()));
+            candidate->candidate().address().family(),
+            std::move(pending_local_description),
+            std::move(current_local_description),
+            std::move(pending_remote_description),
+            std::move(current_remote_description)));
   }
 
   void OnIceCandidateError(const std::string& address,
@@ -960,9 +991,22 @@ class RTCPeerConnectionHandler::Observer
                           const String& sdp_mid,
                           int sdp_mline_index,
                           int component,
-                          int address_family) {
+                          int address_family,
+                          std::unique_ptr<webrtc::SessionDescriptionInterface>
+                              pending_local_description,
+                          std::unique_ptr<webrtc::SessionDescriptionInterface>
+                              current_local_description,
+                          std::unique_ptr<webrtc::SessionDescriptionInterface>
+                              pending_remote_description,
+                          std::unique_ptr<webrtc::SessionDescriptionInterface>
+                              current_remote_description) {
     DCHECK(main_thread_->BelongsToCurrentThread());
     if (handler_) {
+      handler_->OnSessionDescriptionsUpdated(
+          std::move(pending_local_description),
+          std::move(current_local_description),
+          std::move(pending_remote_description),
+          std::move(current_remote_description));
       handler_->OnIceCandidate(sdp, sdp_mid, sdp_mline_index, component,
                                address_family);
     }
@@ -1002,6 +1046,9 @@ class RTCPeerConnectionHandler::Observer
  private:
   const base::WeakPtr<RTCPeerConnectionHandler> handler_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
+  // A copy of |handler_->native_peer_connection_| for use on the WebRTC
+  // signaling thread.
+  scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
 };
 
 RTCPeerConnectionHandler::RTCPeerConnectionHandler(
@@ -1094,11 +1141,11 @@ bool RTCPeerConnectionHandler::Initialize(
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
   native_peer_connection_ = dependency_factory_->CreatePeerConnection(
       configuration_, frame_, peer_connection_observer_);
-
   if (!native_peer_connection_.get()) {
     LOG(ERROR) << "Failed to initialize native PeerConnection.";
     return false;
   }
+  peer_connection_observer_->Initialize();
 
   if (peer_connection_tracker_) {
     peer_connection_tracker_->RegisterPeerConnection(this, configuration_,
@@ -1130,6 +1177,7 @@ bool RTCPeerConnectionHandler::InitializeForTest(
     LOG(ERROR) << "Failed to initialize native PeerConnection.";
     return false;
   }
+  peer_connection_observer_->Initialize();
   peer_connection_tracker_ = peer_connection_tracker;
   return true;
 }
