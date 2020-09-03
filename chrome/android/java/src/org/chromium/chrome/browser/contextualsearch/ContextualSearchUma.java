@@ -780,6 +780,26 @@ public class ContextualSearchUma {
     }
 
     /**
+     * Logs whether we have ever shown an In-Product Help for Translations suggesting that the user
+     * Opt-in.
+     * @param wasIPHShown Whether In-Product help was shown.
+     */
+    public static void logTranslationsOptInIPHShown(boolean wasIPHShown) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.TranslationsOptInIPHShown", wasIPHShown);
+    }
+
+    /**
+     * Logs whether the user actually did opt-in after seeing the In-Product Help for Translations
+     * suggesting that the user should Opt-in.
+     * @param didOptIn Whether the user did opt-in.
+     */
+    public static void logTranslationsOptInIPHWorked(boolean didOptIn) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.TranslationsOptInIPHWorked", didOptIn);
+    }
+
+    /**
      * Logs a user action for the duration of viewing the panel that describes the amount of time
      * the user viewed the bar and panel overall.
      * @param durationMs The duration to record.

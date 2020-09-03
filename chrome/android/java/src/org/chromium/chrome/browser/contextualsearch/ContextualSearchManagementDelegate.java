@@ -83,6 +83,11 @@ public interface ContextualSearchManagementDelegate {
     void onPanelResized();
 
     /**
+     * Called when the privacy Opt-in in the panel has been accepted.
+     */
+    void onPromoOptIn();
+
+    /**
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.
      */
     ScrimCoordinator getScrimCoordinator();
