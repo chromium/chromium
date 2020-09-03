@@ -43,6 +43,13 @@ const auto enabled_by_default_desktop_ios =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
+const auto enabled_by_default_android_ios =
+#if defined(OS_ANDROID) || defined(OS_IOS)
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#else
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#endif
+
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox an the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).
@@ -127,7 +134,7 @@ const base::Feature kAutocompleteTitles{"OmniboxAutocompleteTitles",
 // Returns whether IsInstantExtendedAPIEnabled should be ignored when deciding
 // the number of Google-provided search suggestions.
 const base::Feature kOmniboxDisableInstantExtendedLimit{
-    "OmniboxDisableInstantExtendedLimit", enabled_by_default_android_only};
+    "OmniboxDisableInstantExtendedLimit", enabled_by_default_android_ios};
 
 // Show the search engine logo in the omnibox on Android (desktop already does
 // this).

@@ -4616,7 +4616,6 @@
                         "ZeroSuggestVariant:8:*": "RemoteNoUrl"
                     },
                     "enable_features": [
-                        "OmniboxDisableInstantExtendedLimit",
                         "OmniboxOnFocusSuggestions"
                     ]
                 }
