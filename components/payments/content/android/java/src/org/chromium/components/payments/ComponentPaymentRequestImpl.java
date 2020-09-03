@@ -595,7 +595,8 @@ public class ComponentPaymentRequestImpl implements PaymentUIsObserver {
         return mIsOffTheRecord;
     }
 
-    /** @return The certificate chain from the merchant page's WebContents. */
+    /** @return The certificate chain from the merchant page's WebContents, can be null. */
+    @Nullable
     public byte[][] getCertificateChain() {
         return mCertificateChain;
     }
