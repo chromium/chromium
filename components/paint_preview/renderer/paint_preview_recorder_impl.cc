@@ -158,9 +158,6 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
     return;
   }
 
-  // Warm up paint for an out-of-lifecycle paint phase.
-  frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
-
   DCHECK_EQ(is_main_frame_, params->is_main_frame);
   // Default to using the clip rect.
   gfx::Rect bounds = gfx::Rect(params->clip_rect.size());
@@ -180,7 +177,6 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
       // immediately after a navigation finished.
       std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
                               std::move(response));
-      frame->DispatchAfterPrintEvent();
       return;
     }
   }
@@ -229,7 +225,6 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   }
 
   // Restore to before out-of-lifecycle paint phase.
-  frame->DispatchAfterPrintEvent();
   if (!success) {
     std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
                             std::move(response));
