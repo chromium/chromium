@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabModel.IncognitoTabModelDelegate;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelImpl.IncognitoTabModelDelegate;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
 /**
@@ -24,10 +23,10 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     private final TabModelDelegate mModelDelegate;
 
     /**
-     * Constructor for an IncognitoTabModelImplCreator, used by {@link IncognitoTabModel}.
+     * Constructor for an IncognitoTabModelImplCreator, used by {@link IncognitoTabModelImpl}.
      *
      * Creating an instance of this class does not create the Incognito TabModelImpl immediately.
-     * The {@link IncognitoTabModel} will use this class to create the real TabModelImpl when it
+     * The {@link IncognitoTabModelImpl} will use this class to create the real TabModelImpl when it
      * will actually be used.
      * @param regularTabCreator   Creates regular tabs.
      * @param incognitoTabCreator Creates incognito tabs.
@@ -60,11 +59,6 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
         return new TabModelImpl(true, false, mRegularTabCreator, mIncognitoTabCreator, mUma,
                 mOrderController, mTabContentManager, mTabSaver, mNextTabPolicySupplier,
                 mAsyncTabParamsManager, mModelDelegate, false);
-    }
-
-    @Override
-    public boolean doIncognitoTabsExist() {
-        return IncognitoUtils.doIncognitoTabsExist();
     }
 
     @Override

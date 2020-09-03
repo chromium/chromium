@@ -180,6 +180,14 @@ public interface TabModelSelector {
     boolean isReparentingInProgress();
 
     /**
+     * Subscribe an {@link IncognitoTabModelObserver} to events that the {@link IncognitoTabModel}
+     * in this selector emits.  The model could be observed directly, but observing the
+     * selector allows an observer to subscribe itself before the model is created.
+     * @param incognitoObserver The observer to subscribe.
+     */
+    void addIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver);
+
+    /**
      * Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector.
      */
     void destroy();

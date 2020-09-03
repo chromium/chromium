@@ -14,6 +14,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabModelSelectorObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHost.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHostRegistry.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModel.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManager.java",

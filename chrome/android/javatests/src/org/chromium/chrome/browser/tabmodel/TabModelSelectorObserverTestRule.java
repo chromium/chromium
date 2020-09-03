@@ -28,7 +28,7 @@ import java.util.Set;
 public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     private TabModelSelectorBase mSelector;
     private TabModelSelectorTestTabModel mNormalTabModel;
-    private TabModelSelectorTestTabModel mIncognitoTabModel;
+    private TabModelSelectorTestIncognitoTabModel mIncognitoTabModel;
 
     public TabModelSelectorBase getSelector() {
         return mSelector;
@@ -38,7 +38,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         return mNormalTabModel;
     }
 
-    public TabModelSelectorTestTabModel getIncognitoTabModel() {
+    public TabModelSelectorTestIncognitoTabModel getIncognitoTabModel() {
         return mIncognitoTabModel;
     }
 
@@ -121,7 +121,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager, delegate);
 
         mIncognitoTabModel =
-                new TabModelSelectorTestTabModel(true, orderController, tabContentManager,
+                new TabModelSelectorTestIncognitoTabModel(orderController, tabContentManager,
                         tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager, delegate);
 
         mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
@@ -157,5 +157,25 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         public Set<TabModelObserver> getObservers() {
             return mObserverSet;
         }
+    }
+
+    /**
+     * Test IncognitoTabModel that exposes the needed capabilities for testing.
+     */
+    public static class TabModelSelectorTestIncognitoTabModel
+            extends TabModelSelectorTestTabModel implements IncognitoTabModel {
+        public TabModelSelectorTestIncognitoTabModel(TabModelOrderController orderController,
+                TabContentManager tabContentManager, TabPersistentStore tabPersistentStore,
+                NextTabPolicySupplier nextTabPolicySupplier,
+                AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
+            super(true, orderController, tabContentManager, tabPersistentStore,
+                    nextTabPolicySupplier, asyncTabParamsManager, modelDelegate);
+        }
+
+        @Override
+        public void addIncognitoObserver(IncognitoTabModelObserver observer) {}
+
+        @Override
+        public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
     }
 }

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.incognito.IncognitoNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -27,14 +26,11 @@ import java.util.List;
  * no Tabs remain, the native model will be destroyed and only rebuilt when a new incognito Tab
  * is created.
  */
-public class IncognitoTabModel implements TabModel {
+public class IncognitoTabModelImpl implements IncognitoTabModel {
     /** Creates TabModels for use in IncognitoModel. */
     public interface IncognitoTabModelDelegate {
         /** Creates a fully working TabModel to delegate calls to. */
         TabModel createTabModel();
-
-        /** @return Whether Incognito Tabs exist. */
-        boolean doIncognitoTabsExist();
 
         /**
          * @param model {@link TabModel} to act on.
@@ -45,14 +41,16 @@ public class IncognitoTabModel implements TabModel {
     }
 
     private final IncognitoTabModelDelegate mDelegate;
-    private final ObserverList<TabModelObserver> mObservers = new ObserverList<TabModelObserver>();
+    private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
+    private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
+            new ObserverList<>();
     private TabModel mDelegateModel;
     private boolean mIsAddingTab;
 
     /**
      * Constructor for IncognitoTabModel.
      */
-    public IncognitoTabModel(IncognitoTabModelDelegate tabModelCreator) {
+    public IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
         mDelegate = tabModelCreator;
         mDelegateModel = EmptyTabModel.getInstance();
     }
@@ -64,23 +62,18 @@ public class IncognitoTabModel implements TabModel {
         ThreadUtils.assertOnUiThread();
         if (!(mDelegateModel instanceof EmptyTabModel)) return;
 
-        IncognitoNotificationManager.showIncognitoNotification();
         mDelegateModel = mDelegate.createTabModel();
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
         }
+        for (IncognitoTabModelObserver observer : mIncognitoObservers) {
+            observer.wasFirstTabCreated();
+        }
     }
 
     /**
-     * @return The TabModel that this {@link IncognitoTabModel} is delegating calls to.
-     */
-    protected TabModel getDelegateModel() {
-        return mDelegateModel;
-    }
-
-    /**
-     * Destroys the Incognito profile when all Incognito tabs have been closed.  Also resets the
-     * delegate TabModel to be a stub EmptyTabModel.
+     * Resets the delegate TabModel to be a stub EmptyTabModel and notifies
+     * {@link IncognitoTabModelObserver}s.
      */
     protected void destroyIncognitoIfNecessary() {
         ThreadUtils.assertOnUiThread();
@@ -88,16 +81,11 @@ public class IncognitoTabModel implements TabModel {
             return;
         }
 
-        Profile profile = getProfile();
-        mDelegateModel.destroy();
-
-        // Only delete the incognito profile if there are no incognito tabs open in any tab
-        // model selector as the profile is shared between them.
-        if (profile != null && !mDelegate.doIncognitoTabsExist()) {
-            IncognitoNotificationManager.dismissIncognitoNotification();
-
-            profile.destroyWhenAppropriate();
+        for (IncognitoTabModelObserver observer : mIncognitoObservers) {
+            observer.didBecomeEmpty();
         }
+
+        mDelegateModel.destroy();
 
         mDelegateModel = EmptyTabModel.getInstance();
     }
@@ -263,6 +251,16 @@ public class IncognitoTabModel implements TabModel {
     }
 
     @Override
+    public void addIncognitoObserver(IncognitoTabModelObserver observer) {
+        mIncognitoObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeIncognitoObserver(IncognitoTabModelObserver observer) {
+        mIncognitoObservers.removeObserver(observer);
+    }
+
+    @Override
     public void removeTab(Tab tab) {
         mDelegateModel.removeTab(tab);
         // Call destroyIncognitoIfNecessary() in case the last incognito tab in this model is
@@ -271,6 +269,5 @@ public class IncognitoTabModel implements TabModel {
     }
 
     @Override
-    public void openMostRecentlyClosedTab() {
-    }
+    public void openMostRecentlyClosedTab() {}
 }

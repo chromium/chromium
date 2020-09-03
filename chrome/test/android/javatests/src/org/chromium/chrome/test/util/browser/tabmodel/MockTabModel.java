@@ -11,6 +11,8 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Almost empty implementation to mock a TabModel. It only handles tab creation and queries.
  */
-public class MockTabModel extends EmptyTabModel {
+public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     /**
      * Used to create different kinds of Tabs.  If a MockTabModelDelegate is not provided, regular
      * Tabs are produced.
@@ -114,4 +116,10 @@ public class MockTabModel extends EmptyTabModel {
     public void removeObserver(TabModelObserver observer) {
         mObservers.removeObserver(observer);
     }
+
+    @Override
+    public void addIncognitoObserver(IncognitoTabModelObserver observer) {}
+
+    @Override
+    public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
 }

@@ -128,20 +128,21 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(false);
         ChromeTabCreator incognitoTabCreator =
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
-        TabModelImpl normalModel = new TabModelImpl(false, mIsTabbedActivityForSync,
-                regularTabCreator, incognitoTabCreator, mUma, mOrderController, mTabContentManager,
-                mTabSaver, mNextTabPolicySupplier, mAsyncTabParamsManager, this, mIsUndoSupported);
-        TabModel incognitoModel = new IncognitoTabModel(new IncognitoTabModelImplCreator(
-                regularTabCreator, incognitoTabCreator, mUma, mOrderController, mTabContentManager,
-                mTabSaver, mNextTabPolicySupplier, mAsyncTabParamsManager, this));
+        TabModel normalModel = new TabModelImpl(false, mIsTabbedActivityForSync, regularTabCreator,
+                incognitoTabCreator, mUma, mOrderController, mTabContentManager, mTabSaver,
+                mNextTabPolicySupplier, mAsyncTabParamsManager, this, mIsUndoSupported);
+        IncognitoTabModel incognitoModel =
+                new IncognitoTabModelImpl(new IncognitoTabModelImplCreator(regularTabCreator,
+                        incognitoTabCreator, mUma, mOrderController, mTabContentManager, mTabSaver,
+                        mNextTabPolicySupplier, mAsyncTabParamsManager, this));
         regularTabCreator.setTabModel(normalModel, mOrderController);
         incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }
 
     @VisibleForTesting
-    void onNativeLibraryReadyInternal(
-            TabContentManager tabContentProvider, TabModel normalModel, TabModel incognitoModel) {
+    void onNativeLibraryReadyInternal(TabContentManager tabContentProvider, TabModel normalModel,
+            IncognitoTabModel incognitoModel) {
         mTabContentManager = tabContentProvider;
         initialize(normalModel, incognitoModel);
         mTabSaver.setTabContentManager(mTabContentManager);
@@ -226,7 +227,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      * @param incognitoModel The incognito tab model.
      */
     @VisibleForTesting
-    public void initializeForTesting(TabModel normalModel, TabModel incognitoModel) {
+    public void initializeForTesting(TabModel normalModel, IncognitoTabModel incognitoModel) {
         initialize(normalModel, incognitoModel);
     }
 

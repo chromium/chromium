@@ -468,9 +468,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends ActivityTe
      *
      * TODO(yolandyan): split this into the seperate test rule, this only applies to tabbed mode
      */
-    public void newIncognitoTabFromMenu() {
-        Tab tab = null;
-
+    public Tab newIncognitoTabFromMenu() {
         final CallbackHelper createdCallback = new CallbackHelper();
         final CallbackHelper selectedCallback = new CallbackHelper();
 
@@ -504,12 +502,13 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends ActivityTe
         }
         incognitoTabModel.removeObserver(observer);
 
-        tab = getActivity().getActivityTab();
+        Tab tab = getActivity().getActivityTab();
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Log.d(TAG, "newIncognitoTabFromMenu <<");
+        return tab;
     }
 
     /**

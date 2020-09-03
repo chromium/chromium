@@ -101,6 +101,8 @@ import org.chromium.chrome.browser.gsa.GSAAccountChangeListener;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceController;
+import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
@@ -619,6 +621,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mIncognitoTabCreator = tabCreators.second;
 
         OfflinePageUtils.observeTabModelSelector(this, mTabModelSelector);
+        IncognitoProfileDestroyer.observeTabModelSelector(mTabModelSelector);
+        IncognitoNotificationPresenceController.observeTabModelSelector(mTabModelSelector);
 
         if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
 
