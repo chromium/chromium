@@ -97,7 +97,8 @@ void SocketFactory::CreateTCPBoundSocket(
     std::move(callback).Run(result, base::nullopt);
     return;
   }
-  socket->set_id(
+  TCPBoundSocket* socket_ptr = socket.get();
+  socket_ptr->set_id(
       tcp_bound_socket_receivers_.Add(std::move(socket), std::move(receiver)));
   std::move(callback).Run(result, local_addr_out);
 }
