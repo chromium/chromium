@@ -39,7 +39,9 @@ class ConnectionAttempt;
 //    |local_device| but different features, those clients will share the same
 //    underlying connection, but their messages will be routed to the correct
 //    clients based on the |feature| identifier of the message.
-// 4) |connection_priority|:
+// 4) |connection_medium|:
+//    The medium (e.g., BLE) to use.
+// 5) |connection_priority|:
 //    The priority of this connection request. Please make higher priority
 //    requests only when necessary.
 //
@@ -57,11 +59,13 @@ class SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) = 0;
   virtual std::unique_ptr<ConnectionAttempt> ListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) = 0;
 
  protected:
