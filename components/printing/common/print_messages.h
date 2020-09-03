@@ -42,14 +42,6 @@ struct PrintHostMsg_RequestPrintPreview_Params {
   bool has_selection;
   bool selection_only;
 };
-
-struct PrintHostMsg_PreviewIds {
-  PrintHostMsg_PreviewIds();
-  PrintHostMsg_PreviewIds(int request_id, int ui_id);
-  ~PrintHostMsg_PreviewIds();
-  int request_id;
-  int ui_id;
-};
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #endif  // INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_
@@ -164,7 +156,7 @@ IPC_STRUCT_TRAITS_BEGIN(PrintHostMsg_RequestPrintPreview_Params)
   IPC_STRUCT_TRAITS_MEMBER(selection_only)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(PrintHostMsg_PreviewIds)
+IPC_STRUCT_TRAITS_BEGIN(printing::mojom::PreviewIds)
   IPC_STRUCT_TRAITS_MEMBER(request_id)
   IPC_STRUCT_TRAITS_MEMBER(ui_id)
 IPC_STRUCT_TRAITS_END()
@@ -324,14 +316,14 @@ IPC_MESSAGE_ROUTED1(PrintHostMsg_RequestPrintPreview,
 // Notify the browser the about the to-be-rendered print preview document.
 IPC_MESSAGE_ROUTED2(PrintHostMsg_DidStartPreview,
                     printing::mojom::DidStartPreviewParams /* params */,
-                    PrintHostMsg_PreviewIds /* ids */)
+                    printing::mojom::PreviewIds /* ids */)
 
 // Notify the browser of preparing to print the document, for cases where
 // the document will be collected from the individual pages instead of being
 // provided by an extra metafile at end containing all pages.
 IPC_MESSAGE_ROUTED2(PrintHostMsg_DidPrepareDocumentForPreview,
                     int /* document_cookie */,
-                    PrintHostMsg_PreviewIds /* ids */)
+                    printing::mojom::PreviewIds /* ids */)
 
 // Notify the browser of the default page layout according to the currently
 // selected printer and page size.
@@ -343,16 +335,16 @@ IPC_MESSAGE_ROUTED4(
     printing::mojom::PageSizeMargins /* page layout in points */,
     gfx::Rect /* printable area in points */,
     bool /* has custom page size style */,
-    PrintHostMsg_PreviewIds /* ids */)
+    printing::mojom::PreviewIds /* ids */)
 
 // Notify the browser a print preview page has been rendered.
 IPC_MESSAGE_ROUTED2(PrintHostMsg_DidPreviewPage,
                     printing::mojom::DidPreviewPageParams /* params */,
-                    PrintHostMsg_PreviewIds /* ids */)
+                    printing::mojom::PreviewIds /* ids */)
 
 // Asks the browser whether the print preview has been cancelled.
 IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_CheckForCancel,
-                           PrintHostMsg_PreviewIds /* ids */,
+                           printing::mojom::PreviewIds /* ids */,
                            bool /* print preview cancelled */)
 
 // Sends back to the browser the complete rendered document (non-draft mode,
@@ -360,7 +352,7 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_CheckForCancel,
 // The memory handle in this message is already valid in the browser process.
 IPC_MESSAGE_ROUTED2(PrintHostMsg_MetafileReadyForPrinting,
                     printing::mojom::DidPreviewDocumentParams /* params */,
-                    PrintHostMsg_PreviewIds /* ids */)
+                    printing::mojom::PreviewIds /* ids */)
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 // This is sent when there are invalid printer settings.

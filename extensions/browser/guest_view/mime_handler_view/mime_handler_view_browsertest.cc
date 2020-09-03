@@ -196,7 +196,7 @@ class PrintPreviewWaiter : public content::BrowserMessageFilter {
   }
 
   void OnDidStartPreview(const printing::mojom::DidStartPreviewParams& params,
-                         const PrintHostMsg_PreviewIds& ids) {
+                         const printing::mojom::PreviewIds& ids) {
     // Expect that there is at least one page.
     did_load_ = true;
     run_loop_.Quit();

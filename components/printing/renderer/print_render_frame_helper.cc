@@ -1548,8 +1548,8 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
       ConvertUnit(print_params.printable_area.width(), dpi, kPointsPerInch),
       ConvertUnit(print_params.printable_area.height(), dpi, kPointsPerInch));
 
-  PrintHostMsg_PreviewIds ids(print_params.preview_request_id,
-                              print_params.preview_ui_id);
+  mojom::PreviewIds ids(print_params.preview_request_id,
+                        print_params.preview_ui_id);
 
   // Margins: Send default page layout to browser process.
   Send(new PrintHostMsg_DidGetDefaultPageLayout(
@@ -1697,8 +1697,8 @@ bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
   preview_params.expected_pages_count =
       print_preview_context_.pages_rendered_count();
 
-  PrintHostMsg_PreviewIds ids(print_pages_params_->params->preview_request_id,
-                              print_pages_params_->params->preview_ui_id);
+  mojom::PreviewIds ids(print_pages_params_->params->preview_request_id,
+                        print_pages_params_->params->preview_ui_id);
 
   is_print_ready_metafile_sent_ = true;
 
@@ -1909,7 +1909,7 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
   int cookie =
       print_pages_params_ ? print_pages_params_->params->document_cookie : 0;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  PrintHostMsg_PreviewIds ids;
+  mojom::PreviewIds ids;
   if (print_pages_params_) {
     ids.ui_id = print_pages_params_->params->preview_ui_id;
     ids.request_id = print_pages_params_->params->preview_request_id;
@@ -2494,8 +2494,8 @@ bool PrintRenderFrameHelper::CheckForCancel() {
   bool cancel = false;
   Send(new PrintHostMsg_CheckForCancel(
       routing_id(),
-      PrintHostMsg_PreviewIds(print_params.preview_request_id,
-                              print_params.preview_ui_id),
+      mojom::PreviewIds(print_params.preview_request_id,
+                        print_params.preview_ui_id),
       &cancel));
   if (cancel)
     notify_browser_of_print_failure_ = false;
@@ -2541,8 +2541,8 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   preview_page_params.document_cookie =
       print_pages_params_->params->document_cookie;
 
-  PrintHostMsg_PreviewIds ids(print_pages_params_->params->preview_request_id,
-                              print_pages_params_->params->preview_ui_id);
+  mojom::PreviewIds ids(print_pages_params_->params->preview_request_id,
+                        print_pages_params_->params->preview_ui_id);
 
   Send(new PrintHostMsg_DidPreviewPage(routing_id(), preview_page_params, ids));
   return true;

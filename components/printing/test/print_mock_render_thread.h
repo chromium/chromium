@@ -24,7 +24,6 @@ class DictionaryValue;
 }
 
 class MockPrinter;
-struct PrintHostMsg_PreviewIds;
 
 // Extends content::MockRenderThread to know about printing
 class PrintMockRenderThread : public content::MockRenderThread {
@@ -79,10 +78,10 @@ class PrintMockRenderThread : public content::MockRenderThread {
                           IPC::Message* reply_msg);
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void OnDidStartPreview(const printing::mojom::DidStartPreviewParams& params,
-                         const PrintHostMsg_PreviewIds& ids);
+                         const printing::mojom::PreviewIds& ids);
   void OnDidPreviewPage(const printing::mojom::DidPreviewPageParams& params,
-                        const PrintHostMsg_PreviewIds& ids);
-  void OnCheckForCancel(const PrintHostMsg_PreviewIds& ids, bool* cancel);
+                        const printing::mojom::PreviewIds& ids);
+  void OnCheckForCancel(const printing::mojom::PreviewIds& ids, bool* cancel);
 #endif
 
   // For print preview, PrintRenderFrameHelper will update settings.

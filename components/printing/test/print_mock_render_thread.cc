@@ -102,13 +102,13 @@ void PrintMockRenderThread::OnDidPrintDocument(
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintMockRenderThread::OnDidStartPreview(
     const printing::mojom::DidStartPreviewParams& params,
-    const PrintHostMsg_PreviewIds& ids) {
+    const printing::mojom::PreviewIds& ids) {
   print_preview_pages_remaining_ = params.page_count;
 }
 
 void PrintMockRenderThread::OnDidPreviewPage(
     const printing::mojom::DidPreviewPageParams& params,
-    const PrintHostMsg_PreviewIds& ids) {
+    const printing::mojom::PreviewIds& ids) {
   int page_number = params.page_number;
   DCHECK_GE(page_number, printing::FIRST_PAGE_INDEX);
   print_preview_pages_remaining_--;
@@ -116,8 +116,9 @@ void PrintMockRenderThread::OnDidPreviewPage(
       params.page_number, params.content->metafile_data_region.GetSize());
 }
 
-void PrintMockRenderThread::OnCheckForCancel(const PrintHostMsg_PreviewIds& ids,
-                                             bool* cancel) {
+void PrintMockRenderThread::OnCheckForCancel(
+    const printing::mojom::PreviewIds& ids,
+    bool* cancel) {
   *cancel =
       (print_preview_pages_remaining_ == print_preview_cancel_page_number_);
 }

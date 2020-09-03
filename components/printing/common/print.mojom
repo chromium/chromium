@@ -11,6 +11,14 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "printing/mojom/print.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Preview Ids, the id of the preview request and the print preview ui
+// associated with this request.
+[EnableIf=enable_print_preview]
+struct PreviewIds {
+  int32 request_id = -1;
+  int32 ui_id = -1;
+};
+
 // Parameters required to print the content of an out-of-process subframe.
 struct PrintFrameContentParams {
   // Physical printable area of the page in pixels according to dpi.

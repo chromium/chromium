@@ -648,7 +648,7 @@ void PrintPreviewUI::SetInitialParams(
 }
 
 // static
-bool PrintPreviewUI::ShouldCancelRequest(const PrintHostMsg_PreviewIds& ids) {
+bool PrintPreviewUI::ShouldCancelRequest(const mojom::PreviewIds& ids) {
   int current_id = -1;
   if (!g_print_preview_request_id_map.Get().Get(ids.ui_id, &current_id))
     return true;

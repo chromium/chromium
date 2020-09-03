@@ -273,7 +273,7 @@ class PrintPreviewObserver : public WebContentsObserver {
   // Called when the observer gets the IPC message with the preview document's
   // properties.
   void OnDidStartPreview(const mojom::DidStartPreviewParams& params,
-                         const PrintHostMsg_PreviewIds& ids) {
+                         const printing::mojom::PreviewIds& ids) {
     WebContents* web_contents = GetDialog();
     ASSERT_TRUE(web_contents);
     Observe(web_contents);

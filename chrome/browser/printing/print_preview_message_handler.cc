@@ -111,7 +111,7 @@ void PrintPreviewMessageHandler::OnRequestPrintPreview(
 
 void PrintPreviewMessageHandler::OnDidStartPreview(
     const mojom::DidStartPreviewParams& params,
-    const PrintHostMsg_PreviewIds& ids) {
+    const mojom::PreviewIds& ids) {
   if (params.page_count <= 0 || params.pages_to_render.empty()) {
     NOTREACHED();
     return;
@@ -144,7 +144,7 @@ void PrintPreviewMessageHandler::OnDidStartPreview(
 void PrintPreviewMessageHandler::OnDidPrepareForDocumentToPdf(
     content::RenderFrameHost* render_frame_host,
     int document_cookie,
-    const PrintHostMsg_PreviewIds& ids) {
+    const mojom::PreviewIds& ids) {
   PrintPreviewUI* print_preview_ui = GetPrintPreviewUI(ids.ui_id);
   if (!print_preview_ui)
     return;
@@ -175,7 +175,7 @@ void PrintPreviewMessageHandler::OnDidPrepareForDocumentToPdf(
 void PrintPreviewMessageHandler::OnDidPreviewPage(
     content::RenderFrameHost* render_frame_host,
     const mojom::DidPreviewPageParams& params,
-    const PrintHostMsg_PreviewIds& ids) {
+    const mojom::PreviewIds& ids) {
   int page_number = params.page_number;
   const mojom::DidPrintContentParams& content = *params.content;
   if (page_number < FIRST_PAGE_INDEX || !content.metafile_data_region.IsValid())
@@ -218,7 +218,7 @@ void PrintPreviewMessageHandler::OnDidPreviewPage(
 void PrintPreviewMessageHandler::OnMetafileReadyForPrinting(
     content::RenderFrameHost* render_frame_host,
     const mojom::DidPreviewDocumentParams& params,
-    const PrintHostMsg_PreviewIds& ids) {
+    const mojom::PreviewIds& ids) {
   // Always try to stop the worker.
   StopWorker(params.document_cookie);
 
@@ -273,7 +273,7 @@ void PrintPreviewMessageHandler::OnDidGetDefaultPageLayout(
     const mojom::PageSizeMargins& page_layout_in_points,
     const gfx::Rect& printable_area_in_points,
     bool has_custom_page_size_style,
-    const PrintHostMsg_PreviewIds& ids) {
+    const mojom::PreviewIds& ids) {
   PrintPreviewUI* print_preview_ui = GetPrintPreviewUI(ids.ui_id);
   if (!print_preview_ui)
     return;
@@ -286,7 +286,7 @@ void PrintPreviewMessageHandler::OnDidGetDefaultPageLayout(
 void PrintPreviewMessageHandler::NotifyUIPreviewPageReady(
     PrintPreviewUI* print_preview_ui,
     int page_number,
-    const PrintHostMsg_PreviewIds& ids,
+    const mojom::PreviewIds& ids,
     scoped_refptr<base::RefCountedMemory> data_bytes) {
   if (!data_bytes || !data_bytes->size())
     return;
@@ -301,7 +301,7 @@ void PrintPreviewMessageHandler::NotifyUIPreviewPageReady(
 
 void PrintPreviewMessageHandler::NotifyUIPreviewDocumentReady(
     PrintPreviewUI* print_preview_ui,
-    const PrintHostMsg_PreviewIds& ids,
+    const mojom::PreviewIds& ids,
     scoped_refptr<base::RefCountedMemory> data_bytes) {
   if (!data_bytes || !data_bytes->size())
     return;
@@ -317,7 +317,7 @@ void PrintPreviewMessageHandler::NotifyUIPreviewDocumentReady(
 void PrintPreviewMessageHandler::OnCompositePdfPageDone(
     int page_number,
     int document_cookie,
-    const PrintHostMsg_PreviewIds& ids,
+    const mojom::PreviewIds& ids,
     mojom::PrintCompositor::Status status,
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -377,7 +377,7 @@ void PrintPreviewMessageHandler::OnCompositePdfPageDone(
 
 void PrintPreviewMessageHandler::OnNupPdfConvertDone(
     int page_number,
-    const PrintHostMsg_PreviewIds& ids,
+    const mojom::PreviewIds& ids,
     mojom::PdfNupConverter::Status status,
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -399,7 +399,7 @@ void PrintPreviewMessageHandler::OnNupPdfConvertDone(
 
 void PrintPreviewMessageHandler::OnCompositeToPdfDone(
     int document_cookie,
-    const PrintHostMsg_PreviewIds& ids,
+    const mojom::PreviewIds& ids,
     mojom::PrintCompositor::Status status,
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -444,7 +444,7 @@ void PrintPreviewMessageHandler::OnCompositeToPdfDone(
 }
 
 void PrintPreviewMessageHandler::OnPrepareForDocumentToPdfDone(
-    const PrintHostMsg_PreviewIds& ids,
+    const mojom::PreviewIds& ids,
     mojom::PrintCompositor::Status status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -459,7 +459,7 @@ void PrintPreviewMessageHandler::OnPrepareForDocumentToPdfDone(
 }
 
 void PrintPreviewMessageHandler::OnNupPdfDocumentConvertDone(
-    const PrintHostMsg_PreviewIds& ids,
+    const mojom::PreviewIds& ids,
     mojom::PdfNupConverter::Status status,
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
