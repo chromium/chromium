@@ -4,6 +4,7 @@
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
@@ -19,7 +20,8 @@
           id="disconnectGoogleDriveAccount"
           class="hr"
           pref="{{prefs.gdata.disabled}}"
-          label="$i18n{disconnectGoogleDriveAccount}">
+          label="$i18n{disconnectGoogleDriveAccount}"
+          deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
       </settings-toggle-button>
       <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
           label="$i18n{smbSharesTitle}"

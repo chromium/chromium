@@ -1370,7 +1370,10 @@ var OSSettingsFilesPageTest = class extends OSSettingsBrowserTest {
 
   /** @override */
   get extraLibraries() {
-    return super.extraLibraries.concat(['os_files_page_test.js']);
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'os_files_page_test.js',
+    ]);
   }
 };
 

@@ -23,6 +23,7 @@ js_library("smb_shares_page") {
 
 js_library("os_files_page") {
   deps = [
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
   ]
@@ -39,6 +40,7 @@ js_type_check("closure_compile_module") {
 js_library("os_files_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_files_page/os_files_page.m.js" ]
   deps = [
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
   ]

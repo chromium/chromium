@@ -9,6 +9,8 @@
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 
@@ -47,5 +49,24 @@ suite('FilesPageTests', function() {
     assertEquals(
         settings.Router.getInstance().getCurrentRoute(),
         settings.routes.SMB_SHARES);
+  });
+
+  test('Deep link to disconnect Google Drive', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+
+    const params = new URLSearchParams;
+    params.append('settingId', '1300');
+    settings.Router.getInstance().navigateTo(settings.routes.FILES, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        filesPage.$$('#disconnectGoogleDriveAccount').$$('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Disconnect Drive toggle should be focused for settingId=1300.');
   });
 });
