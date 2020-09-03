@@ -50,7 +50,7 @@ import org.chromium.mojo_base.mojom.File;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public final class AndroidFontLookupImplTest {
-    private static final String FULL_FONT_NAME = "Foo";
+    private static final String FULL_FONT_NAME = "foo";
     private static final String FONT_QUERY = "name=Foo&weight=400";
     private static final String AUTHORITY = "com.google.android.gms.fonts";
     private static final Uri URI = Uri.parse("content://com.google.android.gms.fonts/123");
