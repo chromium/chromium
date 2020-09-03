@@ -33,11 +33,13 @@ void WebTestStorageAccessManager::SetStorageAccess(
   auto primary_pattern = ContentSettingsPattern::FromString(origin);
   if (!primary_pattern.IsValid()) {
     std::move(callback).Run(false);
+    return;
   }
 
   auto secondary_pattern = ContentSettingsPattern::FromString(embedding_origin);
   if (!secondary_pattern.IsValid()) {
     std::move(callback).Run(false);
+    return;
   }
 
   content_settings_for_automation_.push_back(
