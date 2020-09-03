@@ -66,6 +66,7 @@ class LocalNTPRenderTest : public InProcessBrowserTest {
                                                           /*delay=*/1000);
     content::WebContents* active_tab =
         browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameSubmissionObserver render_frame_observer(active_tab);
 
     content::RenderWidgetHost* render_widget_host =
         active_tab->GetRenderViewHost()->GetWidget();
@@ -77,7 +78,9 @@ class LocalNTPRenderTest : public InProcessBrowserTest {
 
     gfx::Rect copy_rect = gfx::Rect(view->GetViewBounds().size());
     ASSERT_TRUE(!copy_rect.IsEmpty());
-    ASSERT_TRUE(view->IsScrollOffsetAtTop());
+    const cc::RenderFrameMetadata& last_metadata =
+        render_frame_observer.LastRenderFrameMetadata();
+    ASSERT_TRUE(last_metadata.is_scroll_offset_at_top);
 
     run_loop_ = std::make_unique<base::RunLoop>();
     view->CopyFromSurface(copy_rect, copy_rect.size(),

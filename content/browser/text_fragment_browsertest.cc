@@ -626,7 +626,9 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
   run_loop.Run();
   RunUntilInputProcessed(RenderWidgetHostImpl::From(
       main_contents->GetRenderViewHost()->GetWidget()));
-  EXPECT_TRUE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_metadata =
+      RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+  EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
 }
 
 // Test that element fragment anchor scrolling is disabled with ForceLoadAtTop
@@ -645,7 +647,9 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, FragmentAnchorDisabled) {
   run_loop.Run();
   RunUntilInputProcessed(RenderWidgetHostImpl::From(
       main_contents->GetRenderViewHost()->GetWidget()));
-  EXPECT_TRUE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_metadata =
+      RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+  EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
 }
 
 IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, SameDocumentNavigation) {
@@ -655,12 +659,20 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, SameDocumentNavigation) {
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
-  EXPECT_TRUE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  {
+    const cc::RenderFrameMetadata& last_metadata =
+        RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+    EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
+  }
 
   ClickElementWithId(main_contents, "link");
 
   RunUntilInputProcessed(GetWidgetHost());
-  EXPECT_FALSE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  {
+    const cc::RenderFrameMetadata& last_metadata =
+        RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+    EXPECT_FALSE(last_metadata.is_scroll_offset_at_top);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, TextFragmentAnchorDisabled) {
@@ -679,7 +691,9 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, TextFragmentAnchorDisabled) {
   run_loop.Run();
   RunUntilInputProcessed(RenderWidgetHostImpl::From(
       main_contents->GetRenderViewHost()->GetWidget()));
-  EXPECT_TRUE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_metadata =
+      RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+  EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
 }
 
 // Test that Tab key press puts focus from the start of selection.

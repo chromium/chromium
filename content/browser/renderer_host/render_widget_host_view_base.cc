@@ -120,7 +120,6 @@ void RenderWidgetHostViewBase::OnRenderFrameMetadataChangedBeforeActivation(
 void RenderWidgetHostViewBase::OnRenderFrameMetadataChangedAfterActivation() {
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
-  is_scroll_offset_at_top_ = metadata.is_scroll_offset_at_top;
 
   BrowserAccessibilityManager* manager =
       host()->GetRootBrowserAccessibilityManager();
@@ -530,10 +529,6 @@ void RenderWidgetHostViewBase::DisableAutoResize(const gfx::Size& new_size) {
     SetSize(new_size);
   host()->SetAutoResize(false, gfx::Size(), gfx::Size());
   host()->SynchronizeVisualProperties();
-}
-
-bool RenderWidgetHostViewBase::IsScrollOffsetAtTop() {
-  return is_scroll_offset_at_top_;
 }
 
 viz::ScopedSurfaceIdAllocator

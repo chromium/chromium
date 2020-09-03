@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_P(ScrollToTextFragmentPolicyTest, RunPolicyTest) {
         contents->GetMainFrame()->GetView()->GetRenderWidgetHost());
   }
   EXPECT_EQ(IsScrollToTextFragmentEnabled(),
-            !contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+            !frame_observer.LastRenderFrameMetadata().is_scroll_offset_at_top);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

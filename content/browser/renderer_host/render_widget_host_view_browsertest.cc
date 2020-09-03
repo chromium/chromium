@@ -812,74 +812,6 @@ IN_PROC_BROWSER_TEST_P(
   PerformTestWithLeftRightRects(html_rect_size, copy_rect, output_size);
 }
 
-class CompositingRenderWidgetHostViewBrowserTestHiDPI
-    : public CompositingRenderWidgetHostViewBrowserTest {
- public:
-  CompositingRenderWidgetHostViewBrowserTestHiDPI() {}
-
- protected:
-  GURL TestUrl() override { return GURL(test_url_); }
-
-  void SetTestUrl(const std::string& url) { test_url_ = url; }
-
-  bool ShouldContinueAfterTestURLLoad() {
-    // Short-circuit a pass for platforms where setting up high-DPI fails.
-    const float actual_scale_factor =
-        GetScaleFactorForView(GetRenderWidgetHostView());
-    if (actual_scale_factor != scale()) {
-      LOG(WARNING) << "Blindly passing this test; unable to force device scale "
-                   << "factor: seems to be " << actual_scale_factor
-                   << " but expected " << scale();
-      return false;
-    }
-    VLOG(1)
-        << ("Successfully forced device scale factor.  Moving forward with "
-            "this test!  :-)");
-    return true;
-  }
-
-  float scale() const override { return 2.0f; }
-
- private:
-  std::string test_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositingRenderWidgetHostViewBrowserTestHiDPI);
-};
-
-IN_PROC_BROWSER_TEST_P(CompositingRenderWidgetHostViewBrowserTestHiDPI,
-                       ScrollOffset) {
-  const int kContentHeight = 2000;
-  const int kScrollAmount = 100;
-
-  SetTestUrl(
-      base::StringPrintf("data:text/html,<!doctype html>"
-                         "<div class='box'></div>"
-                         "<style>"
-                         "body { padding: 0; margin: 0; }"
-                         ".box { position: absolute;"
-                         "        background: %%230ff;"
-                         "        width: 100%%;"
-                         "        height: %dpx;"
-                         "}"
-                         "</style>"
-                         "<script>"
-                         "  addEventListener(\"scroll\", function() {"
-                         "      domAutomationController.send(\"DONE\"); });"
-                         "  window.scrollTo(0, %d);"
-                         "</script>",
-                         kContentHeight, kScrollAmount));
-
-  SET_UP_SURFACE_OR_PASS_TEST("\"DONE\"");
-  RenderFrameSubmissionObserver observer_(
-      GetRenderWidgetHost()->render_frame_metadata_provider());
-  observer_.WaitForScrollOffsetAtTop(false);
-
-  if (!ShouldContinueAfterTestURLLoad())
-    return;
-
-  EXPECT_FALSE(GetRenderWidgetHostView()->IsScrollOffsetAtTop());
-}
-
 #if defined(OS_CHROMEOS)
 // On ChromeOS there is no software compositing.
 static const auto kTestCompositingModes = testing::Values(GL_COMPOSITING);
@@ -898,9 +830,6 @@ INSTANTIATE_TEST_SUITE_P(
     GLAndSoftwareCompositing,
     CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI,
     kTestCompositingModes);
-INSTANTIATE_TEST_SUITE_P(GLAndSoftwareCompositing,
-                         CompositingRenderWidgetHostViewBrowserTestHiDPI,
-                         kTestCompositingModes);
 
 #endif  // !defined(OS_ANDROID)
 

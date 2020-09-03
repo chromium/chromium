@@ -2174,11 +2174,18 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostViewChildFrame* rwhv_child =
       static_cast<RenderWidgetHostViewChildFrame*>(
           child_node->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderFrameSubmissionObserver child_render_frame_submission_observer(
+      child_node);
 
   WaitForHitTestData(child_node->current_frame_host());
 
-  ASSERT_TRUE(rwhv_root->IsScrollOffsetAtTop());
-  ASSERT_TRUE(rwhv_child->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_root_metadata =
+      render_frame_submission_observer.LastRenderFrameMetadata();
+  const cc::RenderFrameMetadata& last_child_metadata =
+      child_render_frame_submission_observer.LastRenderFrameMetadata();
+
+  ASSERT_TRUE(last_root_metadata.is_scroll_offset_at_top);
+  ASSERT_TRUE(last_child_metadata.is_scroll_offset_at_top);
 
   RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())

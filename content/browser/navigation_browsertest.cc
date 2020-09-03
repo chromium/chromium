@@ -3459,7 +3459,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   run_loop.Run();
   RunUntilInputProcessed(RenderWidgetHostImpl::From(
       main_contents->GetRenderViewHost()->GetWidget()));
-  EXPECT_TRUE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_metadata =
+      RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+  EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
 }
 
 // Test that scroll restoration works as expected with
@@ -3509,7 +3511,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
 
   // Ensure scroll restoration activated
   frame_observer.WaitForScrollOffsetAtTop(false);
-  EXPECT_FALSE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_metadata =
+      RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+  EXPECT_FALSE(last_metadata.is_scroll_offset_at_top);
 }
 
 // Test that element fragment anchor scrolling can be disabled with
@@ -3554,7 +3558,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   run_loop.Run();
   RunUntilInputProcessed(RenderWidgetHostImpl::From(
       main_contents->GetRenderViewHost()->GetWidget()));
-  EXPECT_TRUE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_metadata =
+      RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+  EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
 }
 
 // Test that element fragment anchor scrolling works as expected with
@@ -3595,7 +3601,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
   frame_observer.WaitForScrollOffsetAtTop(
       /*expected_scroll_offset_at_top=*/false);
-  EXPECT_FALSE(main_contents->GetMainFrame()->GetView()->IsScrollOffsetAtTop());
+  const cc::RenderFrameMetadata& last_metadata =
+      RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
+  EXPECT_FALSE(last_metadata.is_scroll_offset_at_top);
 }
 
 }  // namespace content
