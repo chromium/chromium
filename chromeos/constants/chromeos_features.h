@@ -160,6 +160,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPrintSaveToDrive;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPrinterStatus;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kPrinterStatusDialog;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kQuickAnswers;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kQuickAnswersDogfood;

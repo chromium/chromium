@@ -1998,6 +1998,12 @@ const char kPrinterStatusName[] = "Show printer Status";
 const char kPrinterStatusDescription[] =
     "Enables printer status icons and labels for saved and nearby printers";
 
+const char kPrinterStatusDialogName[] =
+    "Show printer status on destination dialog";
+const char kPrinterStatusDialogDescription[] =
+    "Enables printer status icons and labels for saved printers on the Print "
+    "Preview destination dialog";
+
 const char kSafetyTipName[] =
     "Show Safety Tip UI when visiting low-reputation websites";
 const char kSafetyTipDescription[] =
