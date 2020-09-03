@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Document blocked by embedded enforcement and its parent are cross-origin
-FAIL Two same-origin iframes must appear as cross-origin when one is blocked assert_equals: expected (number) 18 but got (string) "Error: The error page appears same-origin"
-Harness: the test ran to completion.
-

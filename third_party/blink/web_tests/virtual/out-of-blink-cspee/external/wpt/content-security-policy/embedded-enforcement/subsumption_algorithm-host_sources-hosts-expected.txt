@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Host must match. assert_equals: expected (undefined) undefined but got (boolean) true
-FAIL Hosts without wildcards must match. assert_equals: expected (undefined) undefined but got (boolean) true
-FAIL More specific subdomain should not match. assert_equals: expected (undefined) undefined but got (boolean) true
-FAIL Specified host should not match a wildcard host. assert_unreached: No message should be sent from the frame. Reached unreachable code
-PASS A wildcard host should match a more specific host.
-Harness: the test ran to completion.
-

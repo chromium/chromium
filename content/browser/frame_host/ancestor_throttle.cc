@@ -471,11 +471,10 @@ AncestorThrottle::EvaluateCSPEmbeddedEnforcement() {
                            sanitized_blocked_url.c_str(),
                            allow_csp_from->get_error_message().c_str()));
   }
-
-  // TODO(antoniosartori): This is temporary, since the check in this function
-  // is incomplete and will require iterations in several CLs. For now, let's
-  // allow anything that has no "allow-csp-from" header.
-  if (!allow_csp_from) {
+  if (network::Subsumes(
+          *request->required_csp(),
+          request->response()->parsed_headers->content_security_policy,
+          url::Origin::Create(navigation_handle()->GetURL()))) {
     return CheckResult::PROCEED;
   }
 
