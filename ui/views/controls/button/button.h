@@ -289,9 +289,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
   FocusRing* focus_ring() { return focus_ring_; }
 
-  // The button's listener. Notified when clicked.
-  ButtonListener* listener_;
-
  private:
   friend class test::ButtonTestApi;
   FRIEND_TEST_ALL_PREFIXES(BlueButtonTest, Border);
@@ -303,6 +300,9 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
   // Accessibility data.
   base::string16 accessible_name_;
+
+  // The button's listener. Notified when clicked.
+  ButtonListener* listener_;
 
   // The id tag associated with this button. Used to disambiguate buttons in
   // the ButtonListener implementation.

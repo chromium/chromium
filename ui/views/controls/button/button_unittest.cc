@@ -107,7 +107,6 @@ class TestButton : public Button, public ButtonListener {
   bool canceled() { return canceled_; }
   int ink_drop_layer_add_count() { return ink_drop_layer_add_count_; }
   int ink_drop_layer_remove_count() { return ink_drop_layer_remove_count_; }
-  ButtonListener* listener() const { return listener_; }
 
   void set_custom_key_click_action(KeyClickAction custom_key_click_action) {
     custom_key_click_action_ = custom_key_click_action;
@@ -755,13 +754,10 @@ TEST_F(ButtonTest, InkDropStaysHiddenWhileDragging) {
 
 // Ensure ButtonListener is dynamically settable.
 TEST_F(ButtonTest, SetListener) {
-  gfx::Point center(10, 10);
-  ButtonListener* old_listener = button()->listener();
-  auto listener = std::make_unique<TestButtonListener>();
+  TestButtonListener listener;
+  button()->set_listener(&listener);
 
-  button()->set_listener(listener.get());
-  EXPECT_EQ(listener.get(), button()->listener());
-
+  const gfx::Point center(10, 10);
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
@@ -769,10 +765,8 @@ TEST_F(ButtonTest, SetListener) {
   button()->OnMouseReleased(ui::MouseEvent(
       ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(listener->pressed());
-  EXPECT_EQ(button(), listener->sender());
-
-  button()->set_listener(old_listener);
+  EXPECT_TRUE(listener.pressed());
+  EXPECT_EQ(button(), listener.sender());
 }
 
 // VisibilityTestButton tests to see if an ink drop or a layer has been added to

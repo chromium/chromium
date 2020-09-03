@@ -134,7 +134,7 @@ class OverviewCloseButton : public views::ImageButton {
   ~OverviewCloseButton() override = default;
 
   // Resets the listener so that the listener can go out of scope.
-  void ResetListener() { listener_ = nullptr; }
+  void ResetListener() { set_listener(nullptr); }
 
  protected:
   // views::Button:
