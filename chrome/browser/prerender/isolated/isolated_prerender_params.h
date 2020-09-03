@@ -54,19 +54,16 @@ bool IsolatedPrerenderProbingEnabled();
 // Whether an ISP filtering canary check should be made on browser startup.
 bool IsolatedPrerenderCanaryCheckEnabled();
 
-// The URL to use for the canary check.
-GURL IsolatedPrerenderCanaryCheckURL();
+// The URL to use for the TLS canary check.
+GURL IsolatedPrerenderTLSCanaryCheckURL();
+
+// The URL to use for the DNS canary check.
+GURL IsolatedPrerenderDNSCanaryCheckURL();
 
 // How long a canary check can be cached for the same network.
 base::TimeDelta IsolatedPrerenderCanaryCheckCacheLifetime();
 
-// The type of probe that needs to be done before prefetched resources can be
-// used.
-enum class IsolatedPrerenderOriginProbeType {
-  kDns,
-  kHttpHead,
-  kTls,
-};
-IsolatedPrerenderOriginProbeType IsolatedPrerenderOriginProbeMechanism();
+// Experimental control to replace TLS probing with HTTP.
+bool IsolatedPrerenderMustHTTPProbeInsteadOfTLS();
 
 #endif  // CHROME_BROWSER_PRERENDER_ISOLATED_ISOLATED_PRERENDER_PARAMS_H_

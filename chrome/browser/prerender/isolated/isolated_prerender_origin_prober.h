@@ -36,9 +36,14 @@ class IsolatedPrerenderOriginProber {
   void SetProbeURLOverrideDelegateOverrideForTesting(
       ProbeURLOverrideDelegate* delegate);
 
-  // Tells whether a canary check has completed, either in success or failure.
+  // Tells whether a TLS canary check has completed, either in success or
+  // failure. Used for testing.
+  bool IsTLSCanaryCheckCompleteForTesting() const;
+
+  // Tells whether a DNS canary check has completed, either in success or
+  // failure.
   // Used for testing.
-  bool IsCanaryCheckCompleteForTesting() const;
+  bool IsDNSCanaryCheckCompleteForTesting() const;
 
   // Starts a probe to |url| and calls |callback| with a bool to indicate
   // success (when true) or failure (when false).
@@ -46,6 +51,8 @@ class IsolatedPrerenderOriginProber {
   void Probe(const GURL& url, OnProbeResultCallback callback);
 
  private:
+  void OnTLSCanaryCheckComplete(bool success);
+
   void DNSProbe(const GURL& url, OnProbeResultCallback callback);
   void HTTPProbe(const GURL& url, OnProbeResultCallback callback);
   void TLSProbe(const GURL& url, OnProbeResultCallback callback);
@@ -79,8 +86,11 @@ class IsolatedPrerenderOriginProber {
   // Used for testing to change the url passed to |Probe|. Must outlive |this|.
   ProbeURLOverrideDelegate* override_delegate_ = nullptr;
 
-  // The canary url checker.
-  std::unique_ptr<AvailabilityProber> canary_check_;
+  // The TLS canary url checker.
+  std::unique_ptr<AvailabilityProber> tls_canary_check_;
+
+  // The DNS canary url checker.
+  std::unique_ptr<AvailabilityProber> dns_canary_check_;
 
   base::WeakPtrFactory<IsolatedPrerenderOriginProber> weak_factory_{this};
 };

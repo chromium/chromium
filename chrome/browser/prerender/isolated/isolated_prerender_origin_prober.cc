@@ -267,16 +267,30 @@ IsolatedPrerenderOriginProber::IsolatedPrerenderOriginProber(Profile* profile)
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 0;
 
-  canary_check_ = std::make_unique<AvailabilityProber>(
+  tls_canary_check_ = std::make_unique<AvailabilityProber>(
       GetCanaryCheckDelegate(),
       content::BrowserContext::GetDefaultStoragePartition(profile_)
           ->GetURLLoaderFactoryForBrowserProcess(),
       profile_->GetPrefs(),
-      AvailabilityProber::ClientName::kIsolatedPrerenderCanaryCheck,
-      IsolatedPrerenderCanaryCheckURL(), AvailabilityProber::HttpMethod::kGet,
-      net::HttpRequestHeaders(), retry_policy, timeout_policy,
-      traffic_annotation, 10 /* max_cache_entries */,
-      IsolatedPrerenderCanaryCheckCacheLifetime());
+      AvailabilityProber::ClientName::kIsolatedPrerenderTLSCanaryCheck,
+      IsolatedPrerenderTLSCanaryCheckURL(),
+      AvailabilityProber::HttpMethod::kGet, net::HttpRequestHeaders(),
+      retry_policy, timeout_policy, traffic_annotation,
+      10 /* max_cache_entries */, IsolatedPrerenderCanaryCheckCacheLifetime());
+  tls_canary_check_->SetOnCompleteCallback(
+      base::BindOnce(&IsolatedPrerenderOriginProber::OnTLSCanaryCheckComplete,
+                     weak_factory_.GetWeakPtr()));
+
+  dns_canary_check_ = std::make_unique<AvailabilityProber>(
+      GetCanaryCheckDelegate(),
+      content::BrowserContext::GetDefaultStoragePartition(profile_)
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      profile_->GetPrefs(),
+      AvailabilityProber::ClientName::kIsolatedPrerenderTLSCanaryCheck,
+      IsolatedPrerenderDNSCanaryCheckURL(),
+      AvailabilityProber::HttpMethod::kGet, net::HttpRequestHeaders(),
+      retry_policy, timeout_policy, traffic_annotation,
+      10 /* max_cache_entries */, IsolatedPrerenderCanaryCheckCacheLifetime());
 
   // This code is running at browser startup. Start the canary check when we get
   // the chance, but there's no point in it being ready for the first navigation
@@ -284,11 +298,19 @@ IsolatedPrerenderOriginProber::IsolatedPrerenderOriginProber(Profile* profile)
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&StartCanaryCheck, canary_check_->AsWeakPtr()),
+          base::BindOnce(&StartCanaryCheck, tls_canary_check_->AsWeakPtr()),
           base::TimeDelta::FromSeconds(1));
 }
 
 IsolatedPrerenderOriginProber::~IsolatedPrerenderOriginProber() = default;
+
+void IsolatedPrerenderOriginProber::OnTLSCanaryCheckComplete(bool success) {
+  // If the TLS check was not successful, don't bother with the DNS check.
+  if (!success)
+    return;
+
+  StartCanaryCheck(dns_canary_check_->AsWeakPtr());
+}
 
 bool IsolatedPrerenderOriginProber::ShouldProbeOrigins() {
   if (!IsolatedPrerenderProbingEnabled()) {
@@ -297,16 +319,17 @@ bool IsolatedPrerenderOriginProber::ShouldProbeOrigins() {
   if (!IsolatedPrerenderCanaryCheckEnabled()) {
     return true;
   }
-  DCHECK(canary_check_);
+  DCHECK(tls_canary_check_);
+  DCHECK(dns_canary_check_);
 
-  base::Optional<bool> result = canary_check_->LastProbeWasSuccessful();
-  if (!result.has_value()) {
-    // The canary check hasn't completed yet, so this request must probe.
-    return true;
-  }
+  bool tls_success =
+      tls_canary_check_->LastProbeWasSuccessful().value_or(false);
+  bool dns_success =
+      dns_canary_check_->LastProbeWasSuccessful().value_or(false);
 
-  // If the canary check was successful, no probing is needed.
-  return !result.value();
+  // If both checks have completed and succeeded, then no probing is needed. In
+  // every other case, probe.
+  return !(tls_success && dns_success);
 }
 
 void IsolatedPrerenderOriginProber::
@@ -315,8 +338,14 @@ void IsolatedPrerenderOriginProber::
   override_delegate_ = delegate;
 }
 
-bool IsolatedPrerenderOriginProber::IsCanaryCheckCompleteForTesting() const {
-  return canary_check_ && canary_check_->LastProbeWasSuccessful().has_value();
+bool IsolatedPrerenderOriginProber::IsTLSCanaryCheckCompleteForTesting() const {
+  return tls_canary_check_ &&
+         tls_canary_check_->LastProbeWasSuccessful().has_value();
+}
+
+bool IsolatedPrerenderOriginProber::IsDNSCanaryCheckCompleteForTesting() const {
+  return dns_canary_check_ &&
+         dns_canary_check_->LastProbeWasSuccessful().has_value();
 }
 
 void IsolatedPrerenderOriginProber::Probe(const GURL& url,
@@ -328,17 +357,21 @@ void IsolatedPrerenderOriginProber::Probe(const GURL& url,
     probe_url = override_delegate_->OverrideProbeURL(probe_url);
   }
 
-  switch (IsolatedPrerenderOriginProbeMechanism()) {
-    case IsolatedPrerenderOriginProbeType::kDns:
-      DNSProbe(probe_url, std::move(callback));
-      return;
-    case IsolatedPrerenderOriginProbeType::kHttpHead:
+  bool tls_canary_check_success =
+      tls_canary_check_
+          ? tls_canary_check_->LastProbeWasSuccessful().value_or(false)
+          : false;
+
+  if (!tls_canary_check_success) {
+    if (IsolatedPrerenderMustHTTPProbeInsteadOfTLS()) {
       HTTPProbe(probe_url, std::move(callback));
       return;
-    case IsolatedPrerenderOriginProbeType::kTls:
-      TLSProbe(probe_url, std::move(callback));
-      return;
+    }
+    TLSProbe(probe_url, std::move(callback));
+    return;
   }
+
+  DNSProbe(probe_url, std::move(callback));
 }
 
 void IsolatedPrerenderOriginProber::DNSProbe(const GURL& url,

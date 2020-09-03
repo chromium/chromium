@@ -110,13 +110,22 @@ bool IsolatedPrerenderCanaryCheckEnabled() {
       features::kIsolatePrerendersMustProbeOrigin, "do_canary", true);
 }
 
-GURL IsolatedPrerenderCanaryCheckURL() {
+GURL IsolatedPrerenderTLSCanaryCheckURL() {
   GURL url(base::GetFieldTrialParamValueByFeature(
-      features::kIsolatePrerendersMustProbeOrigin, "canary_url"));
+      features::kIsolatePrerendersMustProbeOrigin, "tls_canary_url"));
   if (url.is_valid()) {
     return url;
   }
-  return GURL("http://check.googlezip.net/connect");
+  return GURL("http://tls.tunnel.check.googlezip.net/connect");
+}
+
+GURL IsolatedPrerenderDNSCanaryCheckURL() {
+  GURL url(base::GetFieldTrialParamValueByFeature(
+      features::kIsolatePrerendersMustProbeOrigin, "dns_canary_url"));
+  if (url.is_valid()) {
+    return url;
+  }
+  return GURL("http://dns.tunnel.check.googlezip.net/connect");
 }
 
 base::TimeDelta IsolatedPrerenderCanaryCheckCacheLifetime() {
@@ -124,16 +133,8 @@ base::TimeDelta IsolatedPrerenderCanaryCheckCacheLifetime() {
       features::kIsolatePrerendersMustProbeOrigin, "canary_cache_hours", 24));
 }
 
-IsolatedPrerenderOriginProbeType IsolatedPrerenderOriginProbeMechanism() {
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      features::kIsolatePrerendersMustProbeOrigin, "probe_type");
-  if (param == "dns")
-    return IsolatedPrerenderOriginProbeType::kDns;
-  if (param == "http_head")
-    return IsolatedPrerenderOriginProbeType::kHttpHead;
-  if (param == "tls")
-    return IsolatedPrerenderOriginProbeType::kTls;
-
-  // Most restrictive by default.
-  return IsolatedPrerenderOriginProbeType::kHttpHead;
+bool IsolatedPrerenderMustHTTPProbeInsteadOfTLS() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kIsolatePrerendersMustProbeOrigin, "replace_tls_with_http",
+      false);
 }
