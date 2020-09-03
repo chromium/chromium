@@ -251,6 +251,7 @@ public class ContextualSearchManagerTest {
 
         mPanel.setOverlayPanelContentFactory(mFakeServer);
         mManager.setNetworkCommunicator(mFakeServer);
+        mPolicy.setNetworkCommunicator(mFakeServer);
 
         registerFakeSearches();
 
@@ -574,12 +575,32 @@ public class ContextualSearchManagerTest {
      */
     private void simulateResolveSearch(String nodeId)
             throws InterruptedException, TimeoutException {
+        simulateResolvableSearchAndAssertResolveAndPreload(nodeId, true);
+    }
+
+    /**
+     * Simulates a resolve-triggering gesture that may or may not actually resolve.
+     * If the gesture should Resolve, the resolve and preload are asserted, and vice versa.
+     *
+     * @param nodeId The id of the node to be tapped.
+     * @param isResolveExpected Whether a resolve is expected or not. Enforce by asserting.
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
+    private void simulateResolvableSearchAndAssertResolveAndPreload(String nodeId,
+            boolean isResolveExpected) throws InterruptedException, TimeoutException {
         ContextualSearchFakeServer.FakeResolveSearch search =
                 mFakeServer.getFakeResolveSearch(nodeId);
         assertNotNull("Could not find FakeResolveSearch for node ID:" + nodeId, search);
         search.simulate();
-        assertLoadedSearchTermMatches(search.getSearchTerm());
         waitForPanelToPeek();
+        if (isResolveExpected) {
+            assertLoadedSearchTermMatches(search.getSearchTerm());
+        } else {
+            assertSearchTermNotRequested();
+            assertNoSearchesLoaded();
+            assertNoWebContents();
+        }
     }
 
     /**
@@ -2013,59 +2034,60 @@ public class ContextualSearchManagerTest {
     //============================================================================================
 
     /**
-     * Tests that HTTPS does not resolve in the opt-out model before the user accepts.
+     * Tests that HTTPS does not resolve or preload when the privacy Opt-in has not been accepted.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testHttpsBeforeAcceptForOptOut(@EnabledFeature int enabledFeature)
+    public void testHttpsWithUnacceptedPrivacy(@EnabledFeature int enabledFeature)
             throws Exception {
         mPolicy.overrideDecidedStateForTesting(false);
         mFakeServer.setShouldUseHttps(true);
 
-        simulateResolveSearch("states");
-        assertSearchTermNotRequested();
+        simulateResolvableSearchAndAssertResolveAndPreload("states", false);
     }
 
     /**
-     * Tests that HTTPS does resolve in the opt-out model after the user accepts.
+     * Tests that HTTPS does resolve and preload when the privacy Opt-in has been accepted.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testHttpsAfterAcceptForOptOut(@EnabledFeature int enabledFeature) throws Exception {
+    public void testHttpsWithAcceptedPrivacy(@EnabledFeature int enabledFeature) throws Exception {
         mPolicy.overrideDecidedStateForTesting(true);
         mFakeServer.setShouldUseHttps(true);
 
-        triggerToResolveAndAssertPrefetch();
+        simulateResolvableSearchAndAssertResolveAndPreload("states", true);
     }
 
     /**
-     * Tests that HTTP does resolve in the opt-out model before the user accepts.
+     * Tests that plain HTTP does resolve and preload when the privacy Opt-in has not been accepted.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testHttpBeforeAcceptForOptOut(@EnabledFeature int enabledFeature) throws Exception {
+    public void testHttpWithUnacceptedPrivacy(@EnabledFeature int enabledFeature) throws Exception {
         mPolicy.overrideDecidedStateForTesting(false);
+        mFakeServer.setShouldUseHttps(false);
 
-        triggerToResolveAndAssertPrefetch();
+        simulateResolvableSearchAndAssertResolveAndPreload("states", true);
     }
 
     /**
-     * Tests that HTTP does resolve in the opt-out model after the user accepts.
+     * Tests that plain HTTP does resolve and preload when the privacy Opt-in has been accepted.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testHttpAfterAcceptForOptOut(@EnabledFeature int enabledFeature) throws Exception {
+    public void testHttpWithAcceptedPrivacy(@EnabledFeature int enabledFeature) throws Exception {
         mPolicy.overrideDecidedStateForTesting(true);
+        mFakeServer.setShouldUseHttps(false);
 
-        triggerToResolveAndAssertPrefetch();
+        simulateResolvableSearchAndAssertResolveAndPreload("states", true);
     }
 
     //============================================================================================
@@ -2930,7 +2952,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testTapWithLanguageDLD(@EnabledFeature int enabledFeature) throws Exception {
+    public void testTapWithLanguage(@EnabledFeature int enabledFeature) throws Exception {
         // Resolving a German word should trigger translation.
         simulateResolveSearch("german");
 
@@ -3617,7 +3639,7 @@ public class ContextualSearchManagerTest {
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P,
             message = "Flaky < P, https://crbug.com/1048827")
     public void
-    testLongpressExtendingSelectionExactResolveDLD() throws Exception {
+    testLongpressExtendingSelectionExactResolve() throws Exception {
         FeatureList.setTestFeatures(ENABLE_LONGPRESS);
 
         // Set up UserAction monitoring.
