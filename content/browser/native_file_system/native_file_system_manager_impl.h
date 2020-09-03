@@ -266,6 +266,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
 
   void CreateTransferTokenImpl(
       const storage::FileSystemURL& url,
+      const url::Origin& origin,
       const SharedHandleState& handle_state,
       NativeFileSystemPermissionContext::HandleType handle_type,
       mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>

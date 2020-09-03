@@ -28,6 +28,7 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
  public:
   NativeFileSystemTransferTokenImpl(
       const storage::FileSystemURL& url,
+      const url::Origin& origin,
       const NativeFileSystemManagerImpl::SharedHandleState& handle_state,
       NativeFileSystemPermissionContext::HandleType handle_type,
       NativeFileSystemManagerImpl* manager,
@@ -40,6 +41,7 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
     return handle_type_;
   }
   const storage::FileSystemURL& url() const { return url_; }
+  const url::Origin& origin() const { return origin_; }
 
   // Returns permission grants associated with this token. These can
   // return nullptr if this token does not have associated permission grants.
@@ -68,6 +70,7 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
   // Raw pointer since NativeFileSystemManagerImpl owns `this`.
   NativeFileSystemManagerImpl* const manager_;
   const storage::FileSystemURL url_;
+  const url::Origin origin_;
   const NativeFileSystemManagerImpl::SharedHandleState handle_state_;
   mojo::ReceiverSet<blink::mojom::NativeFileSystemTransferToken> receivers_;
 

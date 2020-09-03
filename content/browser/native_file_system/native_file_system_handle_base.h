@@ -52,6 +52,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
   const storage::IsolatedContext::ScopedFSHandle& file_system() const {
     return handle_state_.file_system;
   }
+  const BindingContext& context() const { return context_; }
 
   PermissionStatus GetReadPermissionStatus();
   PermissionStatus GetWritePermissionStatus();
@@ -80,7 +81,6 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
 
  protected:
   NativeFileSystemManagerImpl* manager() { return manager_; }
-  const BindingContext& context() { return context_; }
   storage::FileSystemContext* file_system_context() {
     return manager()->context();
   }

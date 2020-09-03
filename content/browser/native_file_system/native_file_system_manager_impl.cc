@@ -134,7 +134,7 @@ bool IsValidTransferToken(NativeFileSystemTransferTokenImpl* token,
     return false;
   }
 
-  if (token->url().origin() != expected_origin) {
+  if (token->origin() != expected_origin) {
     return false;
   }
 
@@ -514,7 +514,8 @@ void NativeFileSystemManagerImpl::DeserializeHandle(
           base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
               PermissionStatus::GRANTED);
       CreateTransferTokenImpl(
-          url, SharedHandleState(permission_grant, permission_grant, {}),
+          url, origin,
+          SharedHandleState(permission_grant, permission_grant, {}),
           data.handle_type() == NativeFileSystemHandleData::kDirectory
               ? HandleType::kDirectory
               : HandleType::kFile,
@@ -545,7 +546,7 @@ void NativeFileSystemManagerImpl::DeserializeHandle(
           NativeFileSystemPermissionContext::UserAction::kLoadFromStorage);
 
       CreateTransferTokenImpl(
-          child, handle_state,
+          child, origin, handle_state,
           is_directory ? HandleType::kDirectory : HandleType::kFile,
           std::move(token));
       break;
@@ -653,15 +654,17 @@ void NativeFileSystemManagerImpl::CreateTransferToken(
     const NativeFileSystemFileHandleImpl& file,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
         receiver) {
-  return CreateTransferTokenImpl(file.url(), file.handle_state(),
-                                 HandleType::kFile, std::move(receiver));
+  return CreateTransferTokenImpl(file.url(), file.context().origin,
+                                 file.handle_state(), HandleType::kFile,
+                                 std::move(receiver));
 }
 
 void NativeFileSystemManagerImpl::CreateTransferToken(
     const NativeFileSystemDirectoryHandleImpl& directory,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
         receiver) {
-  return CreateTransferTokenImpl(directory.url(), directory.handle_state(),
+  return CreateTransferTokenImpl(directory.url(), directory.context().origin,
+                                 directory.handle_state(),
                                  HandleType::kDirectory, std::move(receiver));
 }
 
@@ -912,6 +915,7 @@ void NativeFileSystemManagerImpl::DidChooseDirectory(
 
 void NativeFileSystemManagerImpl::CreateTransferTokenImpl(
     const storage::FileSystemURL& url,
+    const url::Origin& origin,
     const SharedHandleState& handle_state,
     HandleType handle_type,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
@@ -919,7 +923,7 @@ void NativeFileSystemManagerImpl::CreateTransferTokenImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto token_impl = std::make_unique<NativeFileSystemTransferTokenImpl>(
-      url, handle_state, handle_type, this, std::move(receiver));
+      url, origin, handle_state, handle_type, this, std::move(receiver));
   auto token = token_impl->token();
   transfer_tokens_.emplace(token, std::move(token_impl));
 }

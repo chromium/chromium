@@ -15,6 +15,7 @@ using SharedHandleState = NativeFileSystemManagerImpl::SharedHandleState;
 
 NativeFileSystemTransferTokenImpl::NativeFileSystemTransferTokenImpl(
     const storage::FileSystemURL& url,
+    const url::Origin& origin,
     const NativeFileSystemManagerImpl::SharedHandleState& handle_state,
     HandleType handle_type,
     NativeFileSystemManagerImpl* manager,
@@ -23,8 +24,10 @@ NativeFileSystemTransferTokenImpl::NativeFileSystemTransferTokenImpl(
       handle_type_(handle_type),
       manager_(manager),
       url_(url),
+      origin_(origin),
       handle_state_(handle_state) {
   DCHECK(manager_);
+  DCHECK(url.origin().opaque() || url.origin() == origin);
 
   receivers_.set_disconnect_handler(
       base::BindRepeating(&NativeFileSystemTransferTokenImpl::OnMojoDisconnect,
