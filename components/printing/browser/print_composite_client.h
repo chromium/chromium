@@ -133,6 +133,9 @@ class PrintCompositeClient
   // Remove the existing composite request.
   void RemoveCompositeRequest(int cookie);
 
+  // Checks if the |document_cookie| is not 0 and matches |document_cookie_|.
+  bool IsDocumentCookieValid(int document_cookie) const;
+
   // Get the composite request of a document. |cookie| must be valid and equal
   // to |document_cookie_|.
   mojom::PrintCompositor* GetCompositeRequest(int cookie) const;
