@@ -286,15 +286,22 @@ enum AuthenticationButtonType {
     [NSLayoutConstraint deactivateConstraints:self.compactSizeClassConstraints];
     [NSLayoutConstraint activateConstraints:self.regularSizeClassConstraints];
     fontStyle = UIFontTextStyleTitle2;
-    self.actionButtonsView.axis = UILayoutConstraintAxisHorizontal;
   } else {
     [NSLayoutConstraint deactivateConstraints:self.regularSizeClassConstraints];
     [NSLayoutConstraint activateConstraints:self.compactSizeClassConstraints];
     fontStyle = UIFontTextStyleSubheadline;
-    self.actionButtonsView.axis = UILayoutConstraintAxisVertical;
   }
   [self applyDefaultSizeWithButton:self.confirmationButton fontStyle:fontStyle];
   [self applyDefaultSizeWithButton:self.skipSigninButton fontStyle:fontStyle];
+
+  // For larger texts update the layout to display buttons centered on the
+  // vertical axis.
+  if (UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory)) {
+    self.actionButtonsView.axis = UILayoutConstraintAxisVertical;
+  } else {
+    self.actionButtonsView.axis = UILayoutConstraintAxisHorizontal;
+  }
 }
 
 #pragma mark - Properties
