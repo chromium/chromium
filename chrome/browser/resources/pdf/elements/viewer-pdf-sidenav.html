@@ -27,18 +27,32 @@
   }
 
   .button-wrapper {
-    --highlight-border-width: 4px;
     align-items: center;
-    border-inline-start: var(--highlight-border-width) solid transparent;
     display: flex;
     height: var(--cr-icon-button-size);
-    justify-content: center;
     margin: 6px 0;
-    width: calc(100% - var(--highlight-border-width));
+    width: 100%;
   }
 
-  .button-wrapper.selected {
-    border-color: var(--sidenav-selected-tab-color);
+  .button-wrapper::before {
+    border-radius: 0 3px 3px 0;
+    content: '';
+    display: block;
+    height: 100%;
+    width: 4px;
+  }
+
+  .button-wrapper.selected::before {
+    background: var(--sidenav-selected-tab-color);
+  }
+
+  :host-context([dir=rtl]) .button-wrapper::before {
+    /* Border-radius based on block/inline is not yet supported. */
+    transform: scaleX(-1);
+  }
+
+  cr-icon-button {
+    margin: 0 auto;
   }
 </style>
 <div id="icons" hidden$="[[!bookmarks.length]]">
