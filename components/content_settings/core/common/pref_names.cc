@@ -6,10 +6,6 @@
 
 namespace prefs {
 
-// Boolean that is true if we should unconditionally block third-party cookies,
-// regardless of other content settings.
-const char kBlockThirdPartyCookies[] = "profile.block_third_party_cookies";
-
 // CookieControlsMode enum value that decides when the cookie controls UI is
 // enabled. This will block third-party cookies similar to
 // kBlockThirdPartyCookies but with a new UI.
