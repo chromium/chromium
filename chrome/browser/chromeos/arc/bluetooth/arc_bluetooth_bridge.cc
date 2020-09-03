@@ -2923,8 +2923,9 @@ ArcBluetoothBridge::GattConnection::GattConnection()
 ArcBluetoothBridge::GattConnection::~GattConnection() = default;
 ArcBluetoothBridge::GattConnection::GattConnection(
     ArcBluetoothBridge::GattConnection&&) = default;
-ArcBluetoothBridge::GattConnection& ArcBluetoothBridge::GattConnection::
-operator=(ArcBluetoothBridge::GattConnection&&) = default;
+ArcBluetoothBridge::GattConnection&
+ArcBluetoothBridge::GattConnection::operator=(
+    ArcBluetoothBridge::GattConnection&&) = default;
 
 namespace {
 
