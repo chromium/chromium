@@ -1196,7 +1196,6 @@ ci.chromiumos_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = settings.main_console_name,
-    execution_timeout = 4 * time.hour,
 )
 
 ci.chromiumos_builder(
