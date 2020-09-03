@@ -8,9 +8,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
@@ -245,13 +247,16 @@ class PlatformNotificationContextTest : public ::testing::Test {
   // Returns the notification id of the notification last written.
   const std::string& notification_id() const { return notification_id_; }
 
+  BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
-  BrowserTaskEnvironment task_environment_;  // Must be first member
   TestBrowserContext browser_context_;
   MockPermissionManager* permission_manager_ = nullptr;
 
   bool success_ = false;
-  size_t deleted_count_;
+  size_t deleted_count_ = 0;
   NotificationDatabaseData database_data_;
   std::string notification_id_;
   int64_t next_persistent_notification_id_ = 1;
@@ -752,6 +757,10 @@ TEST_F(PlatformNotificationContextTest, SynchronizeNotifications) {
 
   ASSERT_EQ(1u, GetStoredNotificationsSync(context.get(), origin).size());
 
+  // Let some time pass so the stored notification is not considered new anymore
+  // and gets deleted in the next synchronize pass.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
   // Delete the notification from the display service without removing it from
   // the database. It should automatically synchronize on the next read.
   PlatformNotificationService* service =
@@ -987,6 +996,85 @@ TEST_F(PlatformNotificationContextTest, DeleteNotificationsWithTag) {
       GetDisplayedNotificationsSync(service);
   EXPECT_EQ(3u, displayed_notifications.size());
   EXPECT_EQ(0u, displayed_notifications.count(notification_id));
+}
+
+TEST_F(PlatformNotificationContextTest, GetOldestNotificationTime) {
+  base::HistogramTester histogram_tester;
+  NotificationBrowserClient notification_browser_client(browser_context());
+  SetBrowserClientForTesting(&notification_browser_client);
+
+  scoped_refptr<PlatformNotificationContextImpl> context =
+      CreatePlatformNotificationContext();
+  PlatformNotificationService* service =
+      notification_browser_client.GetPlatformNotificationService(
+          browser_context());
+
+  GURL origin("https://example.com");
+
+  base::Time oldest_notification_time = base::Time::Now();
+
+  // Store 5 notifications with |origin|.
+  for (size_t i = 0; i < 5; ++i) {
+    NotificationDatabaseData notification_database_data;
+    notification_database_data.service_worker_registration_id =
+        kFakeServiceWorkerRegistrationId;
+
+    notification_database_data.origin = origin;
+    std::string notification_id = WriteNotificationDataSync(
+        context.get(), origin, notification_database_data);
+
+    // This is done to simulate a change in time to have notifications from
+    // different times and days.
+    task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  }
+
+  // Verify that the 5 notifications are present.
+  EXPECT_EQ(5u, GetStoredNotificationsSync(context.get(), origin).size());
+  EXPECT_EQ(5u, GetDisplayedNotificationsSync(service).size());
+
+  base::RunLoop run_loop;
+  context->CountVisibleNotificationsForServiceWorkerRegistration(
+      origin, kFakeServiceWorkerRegistrationId,
+      base::BindLambdaForTesting([&](bool success, int count) {
+        EXPECT_TRUE(success);
+        EXPECT_EQ(5, count);
+        base::TimeDelta delta = base::Time::Now() - oldest_notification_time;
+        histogram_tester.ExpectUniqueSample(
+            "Notifications.Database.OldestNotificationTimeInMinutes",
+            delta.InMinutes(), 1);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(PlatformNotificationContextTest,
+       GetOldestNotificationTimeForEmptyOrigin) {
+  base::HistogramTester histogram_tester;
+  NotificationBrowserClient notification_browser_client(browser_context());
+  SetBrowserClientForTesting(&notification_browser_client);
+
+  scoped_refptr<PlatformNotificationContextImpl> context =
+      CreatePlatformNotificationContext();
+  PlatformNotificationService* service =
+      notification_browser_client.GetPlatformNotificationService(
+          browser_context());
+
+  GURL origin("https://example.com");
+
+  // Verify that no notifications are present.
+  EXPECT_EQ(0u, GetDisplayedNotificationsSync(service).size());
+
+  base::RunLoop run_loop;
+  context->CountVisibleNotificationsForServiceWorkerRegistration(
+      origin, kFakeServiceWorkerRegistrationId,
+      base::BindLambdaForTesting([&](bool success, int count) {
+        EXPECT_TRUE(success);
+        EXPECT_EQ(0, count);
+        histogram_tester.ExpectTotalCount(
+            "Notifications.Database.OldestNotificationTimeInMinutes", 0);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace content

@@ -10,6 +10,7 @@
 #include "base/bind_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
@@ -60,6 +61,14 @@ void LogNotificationTriggerUMA(const NotificationDatabaseData& data) {
                               show_trigger_delay.InDays(), 1, 365, 50);
 }
 
+void RecordOldestNotificationTimeUMA(base::Time oldest_notification_time) {
+  base::TimeDelta delta = base::Time::Now() - oldest_notification_time;
+
+  base::UmaHistogramCustomCounts(
+      "Notifications.Database.OldestNotificationTimeInMinutes",
+      delta.InMinutes(), 0, base::TimeDelta::FromDays(150).InMinutes(), 50);
+}
+
 // Returns if the notification described by |data| is currently visible.
 bool IsVisibleNotification(base::Time start_time,
                            const std::set<std::string>& displayed_notifications,
@@ -79,16 +88,24 @@ bool IsVisibleNotification(base::Time start_time,
 }
 
 // Checks if the notification described by |data| is currently visible and
-// increments |count| by one if so.
+// increments |count| by one if so. Then it checks if the creation date of
+// the notification is older than the current oldest one. If that is the
+// case, |oldest_notification_time| is updated with the date of this
+// notification.
 void CountVisibleNotifications(
     base::Time start_time,
     const std::set<std::string>& displayed_notifications,
     bool supports_synchronization,
     int* count,
+    base::Time* oldest_notification_time,
     const NotificationDatabaseData& data) {
   if (IsVisibleNotification(start_time, displayed_notifications,
                             supports_synchronization, data)) {
     *count = *count + 1;
+  }
+  if (oldest_notification_time->is_null() ||
+      data.creation_time_millis <= *oldest_notification_time) {
+    *oldest_notification_time = data.creation_time_millis;
   }
 }
 
@@ -814,12 +831,16 @@ void PlatformNotificationContextImpl::
   }
 
   int notification_count = 0;
+  base::Time oldest_notification_time;
   NotificationDatabase::Status status =
       database_->ForEachNotificationDataForServiceWorkerRegistration(
           origin, service_worker_registration_id,
           base::BindRepeating(&CountVisibleNotifications, start_time,
                               displayed_notifications, supports_synchronization,
-                              &notification_count));
+                              &notification_count, &oldest_notification_time));
+
+  if (!oldest_notification_time.is_null())
+    RecordOldestNotificationTimeUMA(oldest_notification_time);
 
   // Blow away the database if reading data failed due to corruption.
   if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED)

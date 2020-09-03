@@ -113822,6 +113822,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Database.OldestNotificationTimeInMinutes"
+    units="minutes" expires_after="M90">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>adelm@google.com</owner>
+  <summary>
+    Records the age of the oldest notification for an origin. Logged after
+    handling a push event for that origin.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Database.OpenAfterCorruptionResult"
     enum="NotificationDatabaseStatus" expires_after="M88">
   <owner>knollr@chromium.org</owner>
