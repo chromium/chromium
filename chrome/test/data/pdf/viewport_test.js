@@ -620,6 +620,56 @@ const tests = [
     chrome.test.succeed();
   },
 
+  // Regression test for https://crbug.com/1123976
+  function testPinchZoomingUnsetsPageFitting() {
+    const mockWindow = new MockElement(100, 100, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1, 0);
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(50, 100);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    viewport.fitToWidth();
+    chrome.test.assertEq(FittingType.FIT_TO_WIDTH, viewport.fittingType);
+    chrome.test.assertEq(2, viewport.getZoom());
+
+    // Change the zoom using the viewer's pinch zooming mechanism.
+    const gestureEventTarget =
+        viewport.getGestureDetectorForTesting().getEventTarget();
+    const pinchCenter = {x: 25, y: 25};
+    const scaleChange = 0.5;
+    gestureEventTarget.dispatchEvent(
+        new CustomEvent('pinchstart', {detail: {center: pinchCenter}}));
+    gestureEventTarget.dispatchEvent(new CustomEvent('pinchupdate', {
+      detail: {
+        scaleRatio: scaleChange,
+        direction: 'out',
+        startScaleRatio: scaleChange,
+        center: pinchCenter,
+      }
+    }));
+    gestureEventTarget.dispatchEvent(new CustomEvent('pinchend', {
+      detail: {
+        startScaleRatio: scaleChange,
+        center: pinchCenter,
+      }
+    }));
+
+    // Pinch updates are throttled by rAF, so we schedule the rest of the test
+    // after the pinch takes effect.
+    window.requestAnimationFrame(() => {
+      chrome.test.assertEq(1, viewport.getZoom());
+
+      // Changing the zoom using a pinch should unset the page fitting as it
+      // would with other zooming mechanisms.
+      chrome.test.assertEq(FittingType.NONE, viewport.fittingType);
+      // A subsequent window resize should not cause a zoom change.
+      mockWindow.setSize(101, 100);
+      chrome.test.assertEq(1, viewport.getZoom());
+
+      chrome.test.succeed();
+    });
+  },
+
   function testGoToNextPage() {
     const mockWindow = new MockElement(100, 100, null);
     const mockSizer = new MockSizer();

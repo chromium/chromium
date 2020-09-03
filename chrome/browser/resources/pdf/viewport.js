@@ -1428,6 +1428,8 @@ export class Viewport {
           this.keepContentCentered_ = false;
         }
 
+        this.fittingType_ = FittingType.NONE;
+
         this.setPinchZoomInternal_(
             scaleDelta, this.frameToPluginCoordinate_(center));
         this.updateViewport_();
@@ -1483,6 +1485,11 @@ export class Viewport {
       // By doing so we will be able to compute the pan distance.
       this.firstPinchCenterInFrame_ = e.detail.center;
     });
+  }
+
+  /** @return {!GestureDetector} */
+  getGestureDetectorForTesting() {
+    return this.gestureDetector_;
   }
 }
 
