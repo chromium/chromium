@@ -16,6 +16,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/mac/scoped_ioplugininterface.h"
 #include "base/macros.h"
@@ -252,18 +254,16 @@ static void SetAntiFlickerInUsbDevice(const int vendor_id,
            << " Hz, device " << std::hex << vendor_id << "-" << product_id;
 
   // Compose a search dictionary with vendor and product ID.
-  CFMutableDictionaryRef query_dictionary =
-      IOServiceMatching(kIOUSBDeviceClassName);
-  CFDictionarySetValue(
-      query_dictionary, CFSTR(kUSBVendorName),
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &vendor_id));
-  CFDictionarySetValue(
-      query_dictionary, CFSTR(kUSBProductName),
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &product_id));
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> query_dictionary(
+      IOServiceMatching(kIOUSBDeviceClassName));
+  CFDictionarySetValue(query_dictionary, CFSTR(kUSBVendorName),
+                       base::mac::NSToCFCast(@(vendor_id)));
+  CFDictionarySetValue(query_dictionary, CFSTR(kUSBProductName),
+                       base::mac::NSToCFCast(@(product_id)));
 
   io_iterator_t usb_iterator;
   kern_return_t kr = IOServiceGetMatchingServices(
-      kIOMasterPortDefault, query_dictionary, &usb_iterator);
+      kIOMasterPortDefault, query_dictionary.release(), &usb_iterator);
   if (kr != kIOReturnSuccess) {
     DLOG(ERROR) << "No devices found with specified Vendor and Product ID.";
     return;
