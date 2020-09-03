@@ -6289,7 +6289,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-bluetooth-spp-in-serial-api",
      flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiName,
      flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiDescription,
-     kOsAll,
+     kOsMac,
      SINGLE_VALUE_TYPE(switches::kEnableBluetoothSerialPortProfileInSerialApi)},
 
     {"enable-lite-video", flag_descriptions::kLiteVideoName,
