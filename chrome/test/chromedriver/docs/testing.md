@@ -81,6 +81,25 @@ the `run_py_tests.py` command line. This has the following effects:
   then all failed tests are retried at the end.
   This is to prevent flaky tests from causing CQ failures.
 
+### Testing on Android
+
+The Python integration tests can be used to verify ChromeDriver interaction
+with Chrome running on Android devices. This requires the following equipment:
+* A Linux machine to run the Python script and ChromeDriver.
+  (While ChromeDriver can also control Android Chrome from Windows and Mac, the
+  Python integration tests only support controlling Android Chrome from Linux.)
+* An Android device attached to the Linux machine. This device must have
+  [USB debugging enabled](https://developer.android.com/studio/debug/dev-options#enable).
+
+To run the tests, invoke `run_py_tests.py` with `--android-package=package_name`
+option, where `package_name` can be one of the following values:
+* `chrome_stable`: normal in-box Chrome that is installed by the system.
+* `chrome_beta`: Beta build of Chrome.
+* `chromium`: [Open source Chromium build](https://chromium.googlesource.com/chromium/src/+/master/docs/android_build_instructions.md).
+
+There is future plan to [run these tests in the Chromium Commit
+Queue](https://crbug.com/813466).
+
 ## WebDriver Java acceptance tests (`test/run_java_tests.py`)
 
 These are integration tests from the Selenium WebDriver open source project.
