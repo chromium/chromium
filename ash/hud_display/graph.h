@@ -55,6 +55,8 @@ class Graph {
 
   size_t GetDataBufferSize() const { return data_.BufferSize(); }
 
+  SkColor color() const { return color_; }
+
 #if !defined(NDEBUG)
   // Returns string representation os this object for debug.
   std::string DebugDump(const std::string& name) const;

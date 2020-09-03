@@ -17,6 +17,7 @@ constexpr SkColor kHUDDefaultColor =
     SkColorSetARGB(kHUDAlpha, 0xFF, 0xB2, 0x66);
 
 constexpr SkColor kHUDBackground = SkColorSetARGB(kHUDAlpha, 17, 17, 17);
+constexpr SkColor kHUDLegendBackground = kHUDBackground;
 
 // Radius of rounded corners for tabs.
 // Must be be divisible by 3 to make kTabOverlayWidth integer.

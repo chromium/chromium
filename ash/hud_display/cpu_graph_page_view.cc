@@ -6,10 +6,8 @@
 
 #include <numeric>
 
-#include "ash/hud_display/grid.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ui/gfx/canvas.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 namespace hud_display {
@@ -33,18 +31,30 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
       cpu_idle_(Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
                 SkColorSetA(SK_ColorDKGRAY, kHUDAlpha)) {
-  // There is only one child which shoule be overlayed.
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
   const int data_width = cpu_other_.GetDataBufferSize();
   // -XX seconds on the left, 100% top, 0 seconds on the right, 0% on the
   // bottom. Seconds and Gigabytes are dimentions. Number of data points is
   // cpu_other_.GetDataBufferSize(), horizontal grid ticks are drawn every 10
   // seconds.
-  grid_ = AddChildView(std::make_unique<Grid>(
+  CreateGrid(
       /*left=*/static_cast<int>(-data_width * refresh_interval.InSecondsF()),
       /*top=*/100, /*right=*/0, /*bottom=*/0, base::ASCIIToUTF16("s"),
-      base::ASCIIToUTF16("%"), data_width, 10 / refresh_interval.InSecondsF()));
+      base::ASCIIToUTF16("%"), data_width, 10 / refresh_interval.InSecondsF());
+
+  const std::vector<Legend::Entry> legend(
+      {{cpu_idle_.color(), base::ASCIIToUTF16("Idle"),
+        base::ASCIIToUTF16("Total amount of CPU time spent\nin idle mode.")},
+       {cpu_user_.color(), base::ASCIIToUTF16("User"),
+        base::ASCIIToUTF16(
+            "Total amount of CPU time spent\n running user processes.")},
+       {cpu_system_.color(), base::ASCIIToUTF16("System"),
+        base::ASCIIToUTF16(
+            "Total amount of CPU time spent\nrunning system processes.")},
+       {cpu_other_.color(), base::ASCIIToUTF16("Other"),
+        base::ASCIIToUTF16(
+            "Total amount of CPU time spent\nrunning other tasks.\nThis "
+            "includes IO wait, IRQ, guest OS, etc.")}});
+  CreateLegend(legend);
 }
 
 CpuGraphPageView::~CpuGraphPageView() = default;

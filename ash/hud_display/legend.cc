@@ -1,0 +1,126 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/hud_display/legend.h"
+
+#include "ash/hud_display/hud_constants.h"
+#include "ash/hud_display/solid_source_background.h"
+#include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
+
+namespace ash {
+namespace hud_display {
+
+namespace {
+
+class LegendEntry : public views::View {
+ public:
+  METADATA_HEADER(LegendEntry);
+
+  explicit LegendEntry(const Legend::Entry& data);
+
+  LegendEntry(const LegendEntry&) = delete;
+  LegendEntry& operator=(const LegendEntry&) = delete;
+
+  ~LegendEntry() override;
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
+
+ private:
+  const SkColor color_;
+};
+
+BEGIN_METADATA(LegendEntry, View)
+END_METADATA
+
+LegendEntry::LegendEntry(const Legend::Entry& data) : color_(data.color) {
+  views::BoxLayout* layout_manager =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  // We need to allocate space for the colorpicker. It should be square with
+  // edge size matching default views::Label height.  This is not known until
+  // layout runs, so just hard code it.
+  constexpr int kColorpickerAreaWidth = 20;
+  SetBorder(views::CreateEmptyBorder(0, kColorpickerAreaWidth, 0, 0));
+
+  views::Label* label = AddChildView(
+      std::make_unique<views::Label>(data.label, views::style::CONTEXT_LABEL));
+  label->SetEnabledColor(kHUDDefaultColor);
+  if (!data.tooltip.empty())
+    label->SetTooltipText(data.tooltip);
+}
+
+LegendEntry::~LegendEntry() = default;
+
+void LegendEntry::OnPaint(gfx::Canvas* canvas) {
+  // Draw 10x10 sold color rectangle in the middle of the left border.
+  // (We used border to allocate space for the colorpicker above.)
+  constexpr int kBoxSize = 10;
+  const gfx::Rect bounds(border()->GetInsets().left(), height());
+
+  constexpr int kBoxBorderWidth = 1;
+
+  gfx::Rect box = bounds;
+  box.ClampToCenteredSize(gfx::Size(kBoxSize, kBoxSize));
+
+  const SkRect border =
+      SkRect::MakeXYWH(box.x(), box.y(), box.width(), box.height());
+
+  SkPath box_border;
+  box_border.addRect(border);
+
+  SkPath box_filled;
+  box_filled.addRect(border.makeInset(kBoxBorderWidth, kBoxBorderWidth));
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setBlendMode(SkBlendMode::kSrc);
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setColor(color_);
+  canvas->DrawPath(box_filled, flags);
+
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(kBoxBorderWidth);
+  flags.setColor(kHUDDefaultColor);
+  canvas->DrawPath(box_border, flags);
+
+  views::View::OnPaint(canvas);
+}
+
+}  // namespace
+
+BEGIN_METADATA(Legend, View)
+END_METADATA
+
+Legend::Legend(const std::vector<Legend::Entry>& contents) {
+  views::BoxLayout* layout_manager =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+
+  SetBackground(std::make_unique<SolidSourceBackground>(kHUDLegendBackground,
+                                                        /*radius=*/0));
+
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(kHUDInset)));
+
+  for (const auto& entry : contents)
+    AddChildView(std::make_unique<LegendEntry>(entry));
+}
+
+Legend::~Legend() = default;
+
+}  // namespace hud_display
+}  // namespace ash

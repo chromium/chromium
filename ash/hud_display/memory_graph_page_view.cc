@@ -11,7 +11,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 namespace hud_display {
@@ -47,21 +46,40 @@ MemoryGraphPageView::MemoryGraphPageView(const base::TimeDelta refresh_interval)
       graph_chrome_rss_shared_(Graph::Baseline::BASELINE_BOTTOM,
                                Graph::Fill::NONE,
                                SkColorSetA(SK_ColorBLUE, kHUDAlpha)) {
-  // There is only one child which shoule be overlayed.
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
   const int data_width = graph_arc_rss_private_.GetDataBufferSize();
   // -XX seconds on the left, 0Gb top (will be updated later), 0 seconds on the
   // right, 0 Gb on the bottom. Seconds and Gigabytes are dimentions. Number of
   // data points is data_width. horizontal grid ticks are drawn every 10
   // seconds.
-  grid_ = AddChildView(std::make_unique<Grid>(
+  grid_ = CreateGrid(
       static_cast<int>(/*left=*/-data_width * refresh_interval.InSecondsF()),
       /*top=*/0, /*right=*/0, /*bottom=*/0, base::ASCIIToUTF16("s"),
-      base::ASCIIToUTF16("Gb"), data_width,
-      10 / refresh_interval.InSecondsF()));
+      base::ASCIIToUTF16("Gb"), data_width, 10 / refresh_interval.InSecondsF());
   // Hide grid until we know total memory size.
   grid_->SetVisible(false);
+
+  const std::vector<Legend::Entry> legend({
+      {graph_gpu_kernel_.color(), base::ASCIIToUTF16("GPU Driver"),
+       base::ASCIIToUTF16("Kernel GPU buffers as reported\nby "
+                          "base::SystemMemoryInfo::gem_size.")},
+      {graph_gpu_rss_private_.color(), base::ASCIIToUTF16("Chrome GPU"),
+       base::ASCIIToUTF16(
+           "RSS private memory of\n --type=gpu-process Chrome process.")},
+      // ARC memory is not usually visible (skipped)
+      {graph_renderers_rss_private_.color(),
+       base::ASCIIToUTF16("Chrome Renderer"),
+       base::ASCIIToUTF16(
+           "Sum of RSS private memory of\n--type=renderer Chrome process.")},
+      {graph_mem_used_unknown_.color(), base::ASCIIToUTF16("Other"),
+       base::ASCIIToUTF16(
+           "Amount of other used memory.\nEquals to total used minus known.")},
+      {graph_mem_free_.color(), base::ASCIIToUTF16("Free"),
+       base::ASCIIToUTF16("Free memory as reported by kernel.")},
+      {graph_chrome_rss_private_.color(), base::ASCIIToUTF16("Browser"),
+       base::ASCIIToUTF16("RSS private memory of the\nmain Chrome process.")}
+      // Browser RSS hairline skipped.
+  });
+  CreateLegend(legend);
 }
 
 MemoryGraphPageView::~MemoryGraphPageView() = default;

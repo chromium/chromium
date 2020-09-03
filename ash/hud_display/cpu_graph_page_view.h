@@ -11,8 +11,6 @@
 namespace ash {
 namespace hud_display {
 
-class Grid;
-
 // Draws CPU graphs;
 class CpuGraphPageView : public GraphPageViewBase {
  public:
@@ -23,7 +21,7 @@ class CpuGraphPageView : public GraphPageViewBase {
   CpuGraphPageView& operator=(const CpuGraphPageView&) = delete;
   ~CpuGraphPageView() override;
 
-  // view::
+  // views::View
   void OnPaint(gfx::Canvas* canvas) override;
 
   // Update page data from the new snapshot.
@@ -35,8 +33,6 @@ class CpuGraphPageView : public GraphPageViewBase {
   Graph cpu_system_;
   Graph cpu_user_;
   Graph cpu_idle_;
-
-  Grid* grid_ = nullptr;  // not owned.
 };
 
 }  // namespace hud_display

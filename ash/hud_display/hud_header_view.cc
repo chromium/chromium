@@ -7,6 +7,7 @@
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/hud_display/hud_properties.h"
+#include "ash/hud_display/solid_source_background.h"
 #include "ash/hud_display/tab_strip.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/canvas.h"
@@ -21,52 +22,6 @@
 namespace ash {
 namespace hud_display {
 namespace {
-
-// Basically views::SolidBackground with SkBlendMode::kSrc paint mode.
-class SolidSourceBackground : public views::Background {
- public:
-  // Background will have top rounded corners with |top_rounding_radius|.
-  SolidSourceBackground(SkColor color, SkScalar top_rounding_radius)
-      : top_rounding_radius_(top_rounding_radius) {
-    SetNativeControlColor(color);
-  }
-
-  SolidSourceBackground(const SolidSourceBackground&) = delete;
-  SolidSourceBackground& operator=(const SolidSourceBackground&) = delete;
-
-  ~SolidSourceBackground() override = default;
-
-  // views::Background
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    if (top_rounding_radius_ == 0) {
-      // Fill the background. Note that we don't constrain to the bounds as
-      // canvas is already clipped for us.
-      canvas->DrawColor(get_color(), SkBlendMode::kSrc);
-    } else {
-      const SkScalar circle_size = top_rounding_radius_ * 2;
-      const int right_edge = view->width();
-      const int bottom_edge = view->height();
-
-      SkPath path;
-      path.moveTo(0, bottom_edge);
-      /* |false| will draw straight line to the start of the arc */
-      path.arcTo({0, 0, circle_size, circle_size}, -180, 90, false);
-      path.arcTo({right_edge - circle_size, 0, right_edge, circle_size}, -90,
-                 90, false);
-      path.lineTo(right_edge, bottom_edge);
-
-      cc::PaintFlags flags;
-      flags.setAntiAlias(true);
-      flags.setBlendMode(SkBlendMode::kSrc);
-      flags.setStyle(cc::PaintFlags::kFill_Style);
-      flags.setColor(get_color());
-      canvas->DrawPath(path, flags);
-    }
-  }
-
- private:
-  SkScalar top_rounding_radius_;
-};
 
 // Draws bottom left rounded background triangle.
 class BottomLeftOuterBackground : public views::Background {
