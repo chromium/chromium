@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -67,7 +68,14 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(AudibleContentsTrackerTest);
 };
 
-IN_PROC_BROWSER_TEST_F(AudibleContentsTrackerTest, TestAudioNotifications) {
+// TODO(crbug.com/1124845): Flaky on Win7 32-bit.
+#if defined(OS_WIN) && defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_TestAudioNotifications DISABLED_TestAudioNotifications
+#else
+#define MAYBE_TestAudioNotifications TestAudioNotifications
+#endif
+IN_PROC_BROWSER_TEST_F(AudibleContentsTrackerTest,
+                       MAYBE_TestAudioNotifications) {
   MockAudibleContentsObserver* audio_observer = observer();
   EXPECT_FALSE(audio_observer->is_audio_playing());
 
