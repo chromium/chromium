@@ -111,14 +111,15 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     private PaymentRequestUI mPaymentRequestUI;
 
     private ShoppingCart mUiShoppingCart;
-    private Boolean mMerchantSupportsAutofillCards;
+    private boolean mMerchantSupportsAutofillCards;
+    private boolean mIsPaymentRequestParamsInitiated;
     private SectionInformation mPaymentMethodsSection;
     private SectionInformation mShippingAddressesSection;
     private ContactDetailsSection mContactSection;
     private AutofillPaymentAppCreator mAutofillPaymentAppCreator;
     private boolean mHaveRequestedAutofillData = true;
     private List<AutofillProfile> mAutofillProfiles;
-    private Boolean mCanUserAddCreditCard;
+    private boolean mCanUserAddCreditCard;
     private final JourneyLogger mJourneyLogger;
     private PaymentUIsObserver mObserver;
 
@@ -255,11 +256,12 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         return mCardEditor;
     }
 
-    /** @return Whether the merchant supports autofill cards. */
-    @Nullable
-    public Boolean merchantSupportsAutofillCards() {
-        // TODO(crbug.com/1107039): this value should be asserted not null to avoid being used
-        // before defined, after this bug is fixed.
+    /**
+     * @return Whether the merchant supports autofill cards. It can be used only after
+     *         onPaymentRequestParamsInitiated() is invoked.
+     */
+    public boolean merchantSupportsAutofillCards() {
+        assert mIsPaymentRequestParamsInitiated;
         return mMerchantSupportsAutofillCards;
     }
 
@@ -293,9 +295,12 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         mAutofillPaymentAppCreator = autofillPaymentAppCreator;
     }
 
-    /** @return Whether user can add credit card. */
+    /**
+     * @return Whether user can add credit card. It can be used only after
+     *         onPaymentRequestParamsInitiated() is invoked.
+     */
     public boolean canUserAddCreditCard() {
-        assert mCanUserAddCreditCard != null;
+        assert mIsPaymentRequestParamsInitiated;
         return mCanUserAddCreditCard;
     }
 
@@ -379,7 +384,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     // Implement SettingsAutofillAndPaymentsObserver.Observer:
     @Override
     public void onCreditCardUpdated(CreditCard card) {
-        assert mMerchantSupportsAutofillCards != null;
+        assert mIsPaymentRequestParamsInitiated;
         if (!mMerchantSupportsAutofillCards || mPaymentMethodsSection == null
                 || mAutofillPaymentAppCreator == null) {
             return;
@@ -405,7 +410,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     // Implement SettingsAutofillAndPaymentsObserver.Observer:
     @Override
     public void onCreditCardDeleted(String guid) {
-        assert mMerchantSupportsAutofillCards != null;
+        assert mIsPaymentRequestParamsInitiated;
         if (!mMerchantSupportsAutofillCards || mPaymentMethodsSection == null) return;
 
         mPaymentMethodsSection.removeAndUnselectItem(guid);
@@ -469,6 +474,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
             }
             mHaveRequestedAutofillData &= haveCompleteContactInfo;
         }
+        mIsPaymentRequestParamsInitiated = true;
     }
 
     // Implement PaymentRequestLifecycleObserver:
@@ -944,8 +950,9 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      * @param activity The ChromeActivity for the payment request.
      */
     public void buildPaymentRequestUI(ChromeActivity activity) {
+        assert mIsPaymentRequestParamsInitiated;
         mPaymentRequestUI = new PaymentRequestUI(activity, mDelegate.getPaymentRequestUIClient(),
-                merchantSupportsAutofillCards(), !PaymentPreferencesUtil.isPaymentCompleteOnce(),
+                mMerchantSupportsAutofillCards, !PaymentPreferencesUtil.isPaymentCompleteOnce(),
                 mMerchantName, mTopLevelOriginFormattedForDisplay,
                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents),
                 new ShippingStrings(
