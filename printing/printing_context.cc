@@ -96,10 +96,14 @@ PrintingContext::Result PrintingContext::UsePdfSettings() {
 PrintingContext::Result PrintingContext::UpdatePrintSettings(
     base::Value job_settings) {
   ResetSettings();
-
-  if (!PrintSettingsFromJobSettings(job_settings, settings_.get())) {
-    NOTREACHED();
-    return OnError();
+  {
+    std::unique_ptr<PrintSettings> settings =
+        PrintSettingsFromJobSettings(job_settings);
+    if (!settings) {
+      NOTREACHED();
+      return OnError();
+    }
+    settings_ = std::move(settings);
   }
 
   PrinterType printer_type = static_cast<PrinterType>(

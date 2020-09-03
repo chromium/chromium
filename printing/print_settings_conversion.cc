@@ -96,12 +96,13 @@ PageRanges GetPageRangesFromJobSettings(const base::Value& job_settings) {
   return page_ranges;
 }
 
-bool PrintSettingsFromJobSettings(const base::Value& job_settings,
-                                  PrintSettings* settings) {
+std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
+    const base::Value& job_settings) {
+  auto settings = std::make_unique<PrintSettings>();
   base::Optional<bool> display_header_footer =
       job_settings.FindBoolKey(kSettingHeaderFooterEnabled);
   if (!display_header_footer.has_value())
-    return false;
+    return nullptr;
 
   settings->set_display_header_footer(display_header_footer.value());
   if (settings->display_header_footer()) {
@@ -110,7 +111,7 @@ bool PrintSettingsFromJobSettings(const base::Value& job_settings,
     const std::string* url =
         job_settings.FindStringKey(kSettingHeaderFooterURL);
     if (!title || !url)
-      return false;
+      return nullptr;
 
     settings->set_title(base::UTF8ToUTF16(*title));
     settings->set_url(base::UTF8ToUTF16(*url));
@@ -121,7 +122,7 @@ bool PrintSettingsFromJobSettings(const base::Value& job_settings,
   base::Optional<bool> selection_only =
       job_settings.FindBoolKey(kSettingShouldPrintSelectionOnly);
   if (!backgrounds.has_value() || !selection_only.has_value())
-    return false;
+    return nullptr;
 
   settings->set_should_print_backgrounds(backgrounds.value());
   settings->set_selection_only(selection_only.value());
@@ -178,16 +179,16 @@ bool PrintSettingsFromJobSettings(const base::Value& job_settings,
       !duplex_mode.has_value() || !landscape.has_value() ||
       !scale_factor.has_value() || !rasterize_pdf.has_value() ||
       !pages_per_sheet.has_value()) {
-    return false;
+    return nullptr;
   }
+
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::Optional<int> dpi_horizontal =
       job_settings.FindIntKey(kSettingDpiHorizontal);
   base::Optional<int> dpi_vertical =
       job_settings.FindIntKey(kSettingDpiVertical);
   if (!dpi_horizontal.has_value() || !dpi_vertical.has_value())
-    return false;
-
+    return nullptr;
   settings->set_dpi_xy(dpi_horizontal.value(), dpi_vertical.value());
 #endif
 
@@ -235,7 +236,7 @@ bool PrintSettingsFromJobSettings(const base::Value& job_settings,
     settings->set_pin_value(*pin_value);
 #endif
 
-  return true;
+  return settings;
 }
 
 void PrintSettingsToJobSettingsDebug(const PrintSettings& settings,

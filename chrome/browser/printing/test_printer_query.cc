@@ -52,11 +52,13 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
 #if defined(OS_WIN)
   DCHECK(printer_type_);
 #endif
-  auto settings = std::make_unique<PrintSettings>();
-  PrintingContext::Result result =
-      PrintSettingsFromJobSettings(new_settings, settings.get())
-          ? PrintingContext::OK
-          : PrintingContext::FAILED;
+  std::unique_ptr<PrintSettings> settings =
+      PrintSettingsFromJobSettings(new_settings);
+  PrintingContext::Result result = PrintingContext::OK;
+  if (!settings) {
+    settings = std::make_unique<PrintSettings>();
+    result = PrintingContext::FAILED;
+  }
 
   float device_microns_per_device_unit =
       static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
