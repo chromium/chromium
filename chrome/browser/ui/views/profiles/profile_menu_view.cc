@@ -171,11 +171,12 @@ ProfileMenuView::~ProfileMenuView() = default;
 
 void ProfileMenuView::BuildMenu() {
   Profile* profile = browser()->profile();
+  const bool is_guest = profile->IsGuestSession();
   if (profile->IsRegularProfile()) {
     BuildIdentity();
     BuildSyncInfo();
     BuildAutofillButtons();
-  } else if (profile->IsGuestSession()) {
+  } else if (is_guest) {
     BuildGuestIdentity();
   } else {
     NOTREACHED();
@@ -185,9 +186,12 @@ void ProfileMenuView::BuildMenu() {
 
 //  ChromeOS doesn't support multi-profile.
 #if !defined(OS_CHROMEOS)
-  BuildProfileManagementHeading();
-  BuildSelectableProfiles();
-  BuildProfileManagementFeatureButtons();
+  if (!(is_guest &&
+        base::FeatureList::IsEnabled(features::kNewProfilePicker))) {
+    BuildProfileManagementHeading();
+    BuildSelectableProfiles();
+    BuildProfileManagementFeatureButtons();
+  }
 #endif
 }
 
@@ -589,14 +593,22 @@ void ProfileMenuView::BuildFeatureButtons() {
 #endif
   }
 
-  int window_count = CountBrowsersFor(profile);
-  if (window_count > 1) {
+  if (base::FeatureList::IsEnabled(features::kNewProfilePicker) && is_guest) {
     AddFeatureButton(
-        l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
-                                         window_count),
+        l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON),
         base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
                             base::Unretained(this)),
         vector_icons::kCloseIcon);
+  } else {
+    int window_count = CountBrowsersFor(profile);
+    if (window_count > 1) {
+      AddFeatureButton(
+          l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
+                                           window_count),
+          base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
+                              base::Unretained(this)),
+          vector_icons::kCloseIcon);
+    }
   }
 
 #if !defined(OS_CHROMEOS)
