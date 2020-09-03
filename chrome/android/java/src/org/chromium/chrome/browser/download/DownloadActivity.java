@@ -118,6 +118,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     }
 
     @Override
+    @SuppressWarnings("MissingSuperCall")
     public void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {
         mPermissionDelegate.handlePermissionResult(requestCode, permissions, grantResults);
