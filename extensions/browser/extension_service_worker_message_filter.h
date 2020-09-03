@@ -45,6 +45,7 @@ class ExtensionServiceWorkerMessageFilter
 
   // Message handlers.
   void OnRequestWorker(const ExtensionHostMsg_Request_Params& params);
+  void OnResponseWorker(int request_id, int64_t service_worker_version_id);
   void OnIncrementServiceWorkerActivity(int64_t service_worker_version_id,
                                         const std::string& request_uuid);
   void OnDecrementServiceWorkerActivity(int64_t service_worker_version_id,

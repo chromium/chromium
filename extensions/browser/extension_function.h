@@ -349,6 +349,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Same as above, but global. Yuck. Do not add any more uses of this.
   static bool ignore_all_did_respond_for_testing_do_not_use;
 
+  // Called when the service worker in the renderer ACKS the function's
+  // response.
+  virtual void OnServiceWorkerAck();
+
  protected:
   // ResponseValues.
   //
@@ -435,6 +439,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // More specifically: call this iff Run() has already executed, it returned
   // RespondLater(), and Respond(...) hasn't already been called.
   void Respond(ResponseValue result);
+
+  // Adds this instance to the set of targets waiting for an ACK from the
+  // renderer.
+  void AddWorkerResponseTarget();
 
   virtual ~ExtensionFunction();
 

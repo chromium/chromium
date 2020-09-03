@@ -450,6 +450,29 @@ ExtensionFunctionDispatcher::GetVisibleWebContents() const {
       GetAssociatedWebContents();
 }
 
+void ExtensionFunctionDispatcher::AddWorkerResponseTarget(
+    ExtensionFunction* func) {
+  DCHECK(func->is_from_service_worker());
+  worker_response_targets_.insert(func);
+}
+
+void ExtensionFunctionDispatcher::ProcessServiceWorkerResponse(
+    int request_id,
+    int64_t service_worker_version_id) {
+  for (auto it = worker_response_targets_.begin();
+       it != worker_response_targets_.end(); ++it) {
+    ExtensionFunction* func = *it;
+    if (func->request_id() == request_id &&
+        func->service_worker_version_id() == service_worker_version_id) {
+      // Calling this may cause the instance to delete itself, so no
+      // referencing it after this!
+      func->OnServiceWorkerAck();
+      worker_response_targets_.erase(it);
+      break;
+    }
+  }
+}
+
 // static
 scoped_refptr<ExtensionFunction>
 ExtensionFunctionDispatcher::CreateExtensionFunction(

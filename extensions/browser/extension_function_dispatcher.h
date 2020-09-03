@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_FUNCTION_DISPATCHER_H_
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -97,6 +98,14 @@ class ExtensionFunctionDispatcher
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
+  // Adds a function object to the set of objects waiting for
+  // responses from the renderer.
+  void AddWorkerResponseTarget(ExtensionFunction* func);
+
+  // Processes a Service Worker response from a renderer.
+  void ProcessServiceWorkerResponse(int request_id,
+                                    int64_t service_worker_version_id);
+
  private:
   // For a given RenderFrameHost instance, ResponseCallbackWrapper
   // creates ExtensionFunction::ResponseCallback instances which send responses
@@ -152,6 +161,11 @@ class ExtensionFunctionDispatcher
   // TODO(lazyboy): The map entries are cleared upon RenderProcessHost shutown,
   // we should really be clearing it on service worker shutdown.
   WorkerResponseCallbackWrapperMap response_callback_wrappers_for_worker_;
+
+  // The set of ExtensionFunction instances waiting for responses from
+  // the renderer. These are removed once the response is processed.
+  // The lifetimes of the instances are managed by the instances themselves.
+  std::set<ExtensionFunction*> worker_response_targets_;
 };
 
 }  // namespace extensions

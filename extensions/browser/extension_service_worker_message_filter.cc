@@ -40,7 +40,8 @@ void ExtensionServiceWorkerMessageFilter::OverrideThreadForMessage(
       message.type() ==
           ExtensionHostMsg_DidInitializeServiceWorkerContext::ID ||
       message.type() == ExtensionHostMsg_DidStartServiceWorkerContext::ID ||
-      message.type() == ExtensionHostMsg_DidStopServiceWorkerContext::ID) {
+      message.type() == ExtensionHostMsg_DidStopServiceWorkerContext::ID ||
+      message.type() == ExtensionHostMsg_WorkerResponseAck::ID) {
     *thread = content::BrowserThread::UI;
   }
 
@@ -67,6 +68,7 @@ bool ExtensionServiceWorkerMessageFilter::OnMessageReceived(
                         OnDidStartServiceWorkerContext)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_DidStopServiceWorkerContext,
                         OnDidStopServiceWorkerContext)
+    IPC_MESSAGE_HANDLER(ExtensionHostMsg_WorkerResponseAck, OnResponseWorker)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -76,6 +78,13 @@ void ExtensionServiceWorkerMessageFilter::OnRequestWorker(
     const ExtensionHostMsg_Request_Params& params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dispatcher_->Dispatch(params, nullptr, render_process_id_);
+}
+
+void ExtensionServiceWorkerMessageFilter::OnResponseWorker(
+    int request_id,
+    int64_t service_worker_version_id) {
+  dispatcher_->ProcessServiceWorkerResponse(request_id,
+                                            service_worker_version_id);
 }
 
 void ExtensionServiceWorkerMessageFilter::OnIncrementServiceWorkerActivity(

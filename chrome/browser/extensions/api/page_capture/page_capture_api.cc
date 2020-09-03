@@ -98,14 +98,16 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   // renderer has it's reference, so we can release ours.
   // TODO(crbug.com/1050887): Potential memory leak here.
   AddRef();  // Balanced in OnMessageReceived()
+  if (is_from_service_worker())
+    AddWorkerResponseTarget();
 
+#if defined(OS_CHROMEOS)
   // In Public Sessions, extensions (and apps) are force-installed by admin
   // policy so the user does not get a chance to review the permissions for
   // these extensions. This is not acceptable from a security/privacy
   // standpoint, so when an extension uses the PageCapture API for the first
-  // time, we show the user a dialog where they can choose whether to allow the
-  // extension access to the API.
-#if defined(OS_CHROMEOS)
+  // time, we show the user a dialog where they can choose whether to allow
+  // the extension access to the API.
   if (profiles::ArePublicSessionRestrictionsEnabled()) {
     WebContents* web_contents = GetWebContents();
     if (!web_contents) {
@@ -182,6 +184,15 @@ bool PageCaptureSaveAsMHTMLFunction::OnMessageReceived(
   Release();  // Balanced in Run()
 
   return true;
+}
+
+void PageCaptureSaveAsMHTMLFunction::OnServiceWorkerAck() {
+  DCHECK(is_from_service_worker());
+  // The extension process has processed the response and has created a
+  // reference to the blob, it is safe for us to go away.
+  // This instance may be deleted after this call, so no code goes after
+  // this!!!
+  Release();  // Balanced in Run()
 }
 
 #if defined(OS_CHROMEOS)
@@ -281,7 +292,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContents* web_contents = GetWebContents();
-  if (!web_contents || !render_frame_host()) {
+  if (!web_contents) {
     ReturnFailure(kTabClosedError);
     return;
   }

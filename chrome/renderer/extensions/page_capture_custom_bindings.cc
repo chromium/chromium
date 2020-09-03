@@ -9,6 +9,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/worker_thread_dispatcher.h"
 #include "third_party/blink/public/web/web_blob.h"
 #include "v8/include/v8.h"
 
@@ -51,6 +52,10 @@ void PageCaptureCustomBindings::SendResponseAck(
   if (render_frame) {
     render_frame->Send(new ExtensionHostMsg_ResponseAck(
         render_frame->GetRoutingID(), args[0].As<v8::Int32>()->Value()));
+  } else if (context()->IsForServiceWorker()) {
+    WorkerThreadDispatcher::Get()->Send(new ExtensionHostMsg_WorkerResponseAck(
+        args[0].As<v8::Int32>()->Value(),
+        context()->service_worker_version_id()));
   }
 }
 

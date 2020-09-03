@@ -42,6 +42,9 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   };
   static void SetTestDelegate(TestDelegate* delegate);
 
+  // ExtensionFunction:
+  void OnServiceWorkerAck() override;
+
  private:
   ~PageCaptureSaveAsMHTMLFunction() override;
   ResponseAction Run() override;

@@ -19,10 +19,13 @@ function testPageCapture(data, isFile) {
   var reader = new FileReader();
   // Let's make sure it contains some well known strings.
   reader.onload = function(e) {
+    var text = e.target.result;
     if (!isFile) {
-      var text = e.target.result;
       assertTrue(text.indexOf(testUrl) != -1);
       assertTrue(text.indexOf('logo.png') != -1);
+    } else {
+      assertTrue(text.indexOf('app_background_page') != -1);
+      assertTrue(text.indexOf('service_worker') != -1);
     }
     // Run the GC so the blob is deleted.
     setTimeout(function() {
@@ -59,9 +62,10 @@ chrome.test.getConfig(function(config) {
     },
 
     function saveFileUrlAsMHTML() {
+      var captureUrl = config.testDataDirectory + '/';
       chrome.tabs.onUpdated.addListener(function listener(
           tabId, changeInfo, tab) {
-        if (tab.status == 'complete') {
+        if (tab.status == 'complete' && tab.url == captureUrl) {
           chrome.tabs.onUpdated.removeListener(listener);
           chrome.pageCapture.saveAsMHTML(
               {tabId: tab.id}, function(data) {
@@ -79,7 +83,7 @@ chrome.test.getConfig(function(config) {
           });
         }
       });
-      chrome.tabs.create({url: config.testDataDirectory});
+      chrome.tabs.create({url: captureUrl});
     }
   ]);
 });

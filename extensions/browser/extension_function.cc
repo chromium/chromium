@@ -321,7 +321,6 @@ void UserGestureForTests::DecrementCount() {
   --count_;
 }
 
-
 }  // namespace
 
 void ExtensionFunction::ResponseValueObject::SetFunctionResults(
@@ -397,6 +396,13 @@ ExtensionFunction::~ExtensionFunction() {
   DCHECK(!browser_client || browser_client->IsShuttingDown() || did_respond() ||
          ignore_all_did_respond_for_testing_do_not_use)
       << name();
+}
+
+void ExtensionFunction::AddWorkerResponseTarget() {
+  DCHECK(is_from_service_worker());
+
+  if (dispatcher())
+    dispatcher()->AddWorkerResponseTarget(this);
 }
 
 bool ExtensionFunction::HasPermission() const {
@@ -509,6 +515,12 @@ content::WebContents* ExtensionFunction::GetSenderWebContents() {
   return render_frame_host_
              ? content::WebContents::FromRenderFrameHost(render_frame_host_)
              : nullptr;
+}
+
+void ExtensionFunction::OnServiceWorkerAck() {
+  // Derived classes must override this if they require and implement an
+  // ACK from the Service Worker.
+  NOTREACHED();
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {

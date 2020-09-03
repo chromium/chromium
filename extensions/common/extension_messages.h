@@ -1088,6 +1088,12 @@ IPC_MESSAGE_CONTROL5(ExtensionHostMsg_DidStopServiceWorkerContext,
                      int64_t /* service_worker_version_id */,
                      int /* worker_thread_id */)
 
+// Optional Ack message sent to the browser to notify that the response to a
+// function has been processed.
+IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WorkerResponseAck,
+                     int /* request_id */,
+                     int64_t /* service_worker_version_id */)
+
 IPC_STRUCT_BEGIN(ExtensionMsg_AccessibilityEventBundleParams)
   // ID of the accessibility tree that this event applies to.
   IPC_STRUCT_MEMBER(ui::AXTreeID, tree_id)
