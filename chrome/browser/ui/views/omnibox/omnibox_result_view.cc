@@ -413,9 +413,10 @@ void OmniboxResultView::Layout() {
     // TODO(orinj): Determine and use the best way to set bounds; probably
     // GetPreferredSize() with a layout manager.
     // Put it below the suggestion view.
-    button_row_->SetBounds(0, suggestion_height,
+    button_row_->SetBounds(0, button_row_->height(),
                            suggestion_width - suggestion_indent,
-                           button_row_->height());
+                           suggestion_height);
+    button_row_->Layout();
   }
 }
 
