@@ -242,7 +242,9 @@ constexpr int kHoldingSpaceChipCornerRadius = 8;
 constexpr int kHoldingSpaceContainerSeparation = 8;
 constexpr int kHoldingSpaceColumnWidth = 160;
 constexpr int kHoldingSpaceColumnPadding = 8;
+constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
 constexpr int kHoldingSpaceRowPadding = 8;
+
 // Constants used for media tray.
 constexpr int kMediaTrayPadding = 8;
 

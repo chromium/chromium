@@ -921,6 +921,8 @@ component("ash") {
     "system/holding_space/holding_space_item_chip_view.h",
     "system/holding_space/holding_space_item_chips_container.cc",
     "system/holding_space/holding_space_item_chips_container.h",
+    "system/holding_space/holding_space_screenshot_view.cc",
+    "system/holding_space/holding_space_screenshot_view.h",
     "system/holding_space/holding_space_tray.cc",
     "system/holding_space/holding_space_tray.h",
     "system/holding_space/pinned_files_container.cc",

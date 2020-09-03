@@ -19,6 +19,9 @@ class RecentFilesContainer : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+
+ private:
+  views::View* screenshots_container_ = nullptr;
 };
 
 }  // namespace ash
