@@ -51,7 +51,10 @@ The current status of existing standards and Abseil features is:
 <li><b>C++14:</b> <i>Default allowed; see banned features below</i></li>
 <li><b>C++17:</b> <i>Not yet supported in Chromium, unlikely before mid-2021; <a href="http://crbug.com/752720">tracking bug</a></i></li>
 <li><b>C++20:</b> <i>Not yet standardized</i></li>
-<li><b>Abseil:</b> Initially supported July 31, 2020; see allowed/banned/TBD features below</li>
+<li><b>Abseil:</b> Initially supported July 31, 2020; see allowed/banned/TBD features below
+<ul>
+<li>absl::StatusOr: Initially supported September 3, 2020</li>
+</ul></li>
 </ul></p>
 
 
@@ -438,6 +441,14 @@ size_t index = absl::Uniform(bitgen, 0u, elems.size());</code></td>
 <td><code>absl::Status</code></td>
 <td>Type for returning detailed errors.</td>
 <td><a href="https://source.chromium.org/chromium/chromium/src/+/master:third_party/abseil-cpp/absl/status/status.h">status.h</a></td>
+<td></td>
+</tr>
+
+<tr>
+<td>StatusOr</td>
+<td><code>absl::StatusOr&lt;T&gt;</td>
+<td>An object that is either a usable value, or an error Status explaining why such a value is not present.</td>
+<td><a href="https://source.chromium.org/chromium/chromium/src/+/master:third_party/abseil-cpp/absl/status/statusor.h">statusor.h</a></td>
 <td></td>
 </tr>
 
