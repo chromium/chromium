@@ -831,10 +831,10 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
   if (obj->IsDetached())
     return;
 
-  Document& tree_update_document = *obj->GetDocument();
+  Document* tree_update_document = obj->GetDocument();
 
   // Ensure the tree update document is in a good state.
-  if (!IsActive(tree_update_document))
+  if (!tree_update_document || !IsActive(*tree_update_document))
     return;
 
   if (tree_update_callback_queue_.size() >= max_pending_updates_) {
@@ -845,10 +845,10 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
     return;
   }
 
-  DCHECK(!tree_update_document.GetPage()->Animator().IsServicingAnimations() ||
-         (tree_update_document.Lifecycle().GetState() <
+  DCHECK(!tree_update_document->GetPage()->Animator().IsServicingAnimations() ||
+         (tree_update_document->Lifecycle().GetState() <
               DocumentLifecycle::kInAccessibility ||
-          tree_update_document.Lifecycle().StateAllowsDetach()))
+          tree_update_document->Lifecycle().StateAllowsDetach()))
       << "DeferTreeUpdateInternal should only be outside of the lifecycle or "
          "before the accessibility state.";
   tree_update_callback_queue_.push_back(MakeGarbageCollected<TreeUpdateParams>(
