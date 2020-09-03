@@ -171,6 +171,9 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
         l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_BUTTON, names.short_name));
   }
 
+  SetPillButtonVisibility(tab_switch_button_,
+                          OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
+
   SetPillButtonVisibility(pedal_button_,
                           OmniboxPopupModel::FOCUSED_BUTTON_PEDAL);
   if (pedal_button_->GetVisible()) {
@@ -179,9 +182,6 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     pedal_button_->SetTooltipText(pedal_strings.suggestion_contents);
     pedal_button_->SetAccessibleName(pedal_strings.accessibility_hint);
   }
-
-  SetPillButtonVisibility(tab_switch_button_,
-                          OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
 
   bool is_any_button_visible = keyword_button_->GetVisible() ||
                                pedal_button_->GetVisible() ||
