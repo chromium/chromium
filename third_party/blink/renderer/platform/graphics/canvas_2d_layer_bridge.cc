@@ -97,10 +97,6 @@ Canvas2DLayerBridge::~Canvas2DLayerBridge() {
 
 void Canvas2DLayerBridge::SetCanvasResourceHost(CanvasResourceHost* host) {
   resource_host_ = host;
-
-  if (resource_host_ && GetOrCreateResourceProvider()) {
-    EnsureCleared();
-  }
 }
 
 void Canvas2DLayerBridge::ResetResourceProvider() {
@@ -259,7 +255,10 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   if (!resource_provider || !resource_provider->IsValid())
     return nullptr;
 
-  EnsureCleared();
+  // Calling to DidDraw because GetOrCreateResourceProvider created a new
+  // provider and cleared it
+  // TODO crbug/1090081: Check possibility to move DidDraw inside Clear.
+  DidDraw(FloatRect(0.f, 0.f, size_.Width(), size_.Height()));
 
   if (IsAccelerated() && !layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
@@ -392,14 +391,6 @@ void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
 
   if (rate_limiter_)
     rate_limiter_->Reset();
-}
-
-void Canvas2DLayerBridge::EnsureCleared() {
-  if (cleared_)
-    return;
-  cleared_ = true;
-  ResourceProvider()->Clear();
-  DidDraw(FloatRect(0.f, 0.f, size_.Width(), size_.Height()));
 }
 
 void Canvas2DLayerBridge::ClearPendingRasterTimers() {

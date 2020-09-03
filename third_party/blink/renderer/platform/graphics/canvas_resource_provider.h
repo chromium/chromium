@@ -198,7 +198,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
     return nullptr;
   }
-  void Clear();
+
   ~CanvasResourceProvider() override;
 
   base::WeakPtr<CanvasResourceProvider> CreateWeakPtr() {
@@ -291,6 +291,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   cc::ImageDecodeCache* ImageDecodeCacheF16();
   void EnsureSkiaCanvas();
   void SetNeedsFlush() { needs_flush_ = true; }
+
+  void Clear();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;

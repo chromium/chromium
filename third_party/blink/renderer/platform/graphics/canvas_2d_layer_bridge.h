@@ -177,7 +177,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   void ResetResourceProvider();
 
   void SkipQueuedDrawCommands();
-  void EnsureCleared();
 
   // Check if the Raster Mode is GPU and if the GPU context is not lost
   bool ShouldAccelerate() const;
@@ -231,10 +230,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   Deque<RasterTimer> pending_raster_timers_;
 
   sk_sp<cc::PaintRecord> last_recording_;
-
-  // This tracks whether the canvas has been cleared once after
-  // this bridge was created.
-  bool cleared_ = false;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 
