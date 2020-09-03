@@ -8,6 +8,7 @@
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
@@ -78,7 +79,8 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
   PhoneHubManagerImpl* phone_hub_manager = new PhoneHubManagerImpl(
       profile->GetPrefs(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
-      multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile));
+      multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile),
+      secure_channel::SecureChannelClientProvider::GetInstance()->GetClient());
 
   // Provide |phone_hub_manager| to the system tray so that it can be used by
   // the UI.

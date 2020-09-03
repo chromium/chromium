@@ -10,6 +10,10 @@ static_library("phonehub") {
   sources = [
     "browser_tabs_model.cc",
     "browser_tabs_model.h",
+    "connection_manager.cc",
+    "connection_manager.h",
+    "connection_manager_impl.cc",
+    "connection_manager_impl.h",
     "do_not_disturb_controller.cc",
     "do_not_disturb_controller.h",
     "do_not_disturb_controller_impl.cc",
@@ -59,6 +63,8 @@ static_library("phonehub") {
     "//chromeos/components/multidevice/logging",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/multidevice_setup/public/cpp",
+    "//chromeos/services/secure_channel/public/cpp/client",
+    "//chromeos/services/secure_channel/public/mojom",
     "//components/keyed_service/core",
     "//components/prefs",
     "//device/bluetooth",
@@ -67,6 +73,7 @@ static_library("phonehub") {
   ]
 }
 
+# Sources only include files used in the debug UI.
 static_library("debug") {
   sources = [
     "fake_do_not_disturb_controller.cc",
@@ -94,6 +101,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_connection_manager.cc",
+    "fake_connection_manager.h",
     "phone_model_test_util.cc",
     "phone_model_test_util.h",
   ]
@@ -111,6 +120,7 @@ source_set("unit_tests") {
 
   sources = [
     "browser_tabs_model_unittest.cc",
+    "connection_manager_impl_unittest.cc",
     "do_not_disturb_controller_impl_unittest.cc",
     "feature_status_provider_impl_unittest.cc",
     "find_my_device_controller_impl_unittest.cc",
@@ -133,6 +143,7 @@ source_set("unit_tests") {
     "//chromeos/services/device_sync/public/cpp:test_support",
     "//chromeos/services/multidevice_setup/public/cpp",
     "//chromeos/services/multidevice_setup/public/cpp:test_support",
+    "//chromeos/services/secure_channel/public/cpp/client:test_support",
     "//components/prefs:test_support",
     "//device/bluetooth:mocks",
     "//testing/gtest",
