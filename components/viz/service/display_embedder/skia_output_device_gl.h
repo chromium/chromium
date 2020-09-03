@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
-#include "gpu/command_buffer/common/mailbox.h"
 
 namespace gl {
 class GLImage;
@@ -22,6 +21,7 @@ class GLSurface;
 namespace gpu {
 class MailboxManager;
 class SharedContextState;
+class SharedImageRepresentationFactory;
 
 namespace gles2 {
 class FeatureInfo;
@@ -34,6 +34,8 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
  public:
   SkiaOutputDeviceGL(
       gpu::MailboxManager* mailbox_manager,
+      gpu::SharedImageRepresentationFactory*
+          shared_image_representation_factory,
       gpu::SharedContextState* context_state,
       scoped_refptr<gl::GLSurface> gl_surface,
       scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
@@ -74,6 +76,9 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   scoped_refptr<gl::GLImage> GetGLImageForMailbox(const gpu::Mailbox& mailbox);
 
   gpu::MailboxManager* const mailbox_manager_;
+
+  gpu::SharedImageRepresentationFactory* const
+      shared_image_representation_factory_;
 
   gpu::SharedContextState* const context_state_;
   scoped_refptr<gl::GLSurface> gl_surface_;

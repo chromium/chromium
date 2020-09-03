@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -34,6 +35,7 @@ namespace viz {
 
 SkiaOutputDeviceGL::SkiaOutputDeviceGL(
     gpu::MailboxManager* mailbox_manager,
+    gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
     gpu::SharedContextState* context_state,
     scoped_refptr<gl::GLSurface> gl_surface,
     scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
@@ -43,6 +45,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
                        memory_tracker,
                        std::move(did_swap_buffer_complete_callback)),
       mailbox_manager_(mailbox_manager),
+      shared_image_representation_factory_(shared_image_representation_factory),
       context_state_(context_state),
       gl_surface_(std::move(gl_surface)),
       supports_async_swap_(gl_surface_->SupportsAsyncSwap()) {
@@ -344,11 +347,23 @@ void SkiaOutputDeviceGL::EndPaint() {}
 
 scoped_refptr<gl::GLImage> SkiaOutputDeviceGL::GetGLImageForMailbox(
     const gpu::Mailbox& mailbox) {
-  // TODO(crbug.com/1005306): Use SharedImageManager to get textures here once
-  // all clients are using SharedImageInterface to create textures.
+  // TODO(crbug.com/1005306): Stop using MailboxManager for lookup once all
+  // clients are using SharedImageInterface to create textures.
   auto* texture_base = mailbox_manager_->ConsumeTexture(mailbox);
-  if (!texture_base)
+  if (!texture_base) {
+    // Newer video paths use shared images to store textures.
+    std::unique_ptr<gpu::SharedImageRepresentationGLTexturePassthrough>
+        shared_image =
+            shared_image_representation_factory_->ProduceGLTexturePassthrough(
+                mailbox);
+
+    if (shared_image) {
+      gpu::gles2::TexturePassthrough* texture =
+          shared_image->GetTexturePassthrough().get();
+      return texture->GetLevelImage(texture->target(), 0);
+    }
     return nullptr;
+  }
 
   if (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough) {
     gpu::gles2::TexturePassthrough* texture =
