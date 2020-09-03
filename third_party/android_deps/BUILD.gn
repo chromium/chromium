@@ -554,6 +554,15 @@ android_aar_prebuilt("androidx_preference_preference_java") {
     ":androidx_recyclerview_recyclerview_java",
   ]
   resource_overlay = true
+  deps += [ "//third_party/android_deps/local_modifications/androidx_preference_preference:androidx_preference_preference_prebuilt_java" ]
+
+  # Omit these files since we use our own copy from AndroidX master, included above.
+  # We can remove this once we migrate to AndroidX master for all libraries.
+  jar_excluded_patterns = [
+    "androidx/preference/PreferenceDialogFragmentCompat*",
+    "androidx/preference/PreferenceFragmentCompat*",
+  ]
+
   ignore_proguard_configs = true
 }
 
