@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/stl_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -475,6 +476,26 @@ TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
     EXPECT_EQ(321, webkit_event.PositionInWidget().y());
   }
 }
+
+#if !defined(OS_MAC)
+TEST(WebInputEventTest, TestPercentMouseWheelScroll) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPercentBasedScrolling);
+
+  base::TimeTicks timestamp = EventTimeForNow();
+  MouseWheelEvent ui_event(gfx::Vector2d(0, -MouseWheelEvent::kWheelDelta),
+                           gfx::Point(123, 321), gfx::Point(123, 321),
+                           timestamp, 0, 0);
+  blink::WebMouseWheelEvent webkit_event = MakeWebMouseWheelEvent(ui_event);
+
+  EXPECT_EQ(ui::ScrollGranularity::kScrollByPercentage,
+            webkit_event.delta_units);
+  EXPECT_FLOAT_EQ(0.f, webkit_event.delta_x);
+  EXPECT_FLOAT_EQ(-0.05, webkit_event.delta_y);
+  EXPECT_FLOAT_EQ(0.f, webkit_event.wheel_ticks_x);
+  EXPECT_FLOAT_EQ(-1.f, webkit_event.wheel_ticks_y);
+}
+#endif
 
 TEST(WebInputEventTest, KeyEvent) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);

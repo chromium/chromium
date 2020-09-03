@@ -4,6 +4,7 @@
 
 #include "ui/events/blink/web_input_event.h"
 
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/blink_features.h"
@@ -23,6 +24,10 @@
 namespace ui {
 
 namespace {
+
+// The scroll percentage per mousewheel tick. Used to determine scroll delta
+// if percent based scrolling is enabled.
+const float kScrollPercentPerLineOrChar = 0.05;
 
 gfx::PointF GetScreenLocationFromEvent(const LocatedEvent& event) {
   return event.target() ? event.target()->GetScreenLocationF(event)
@@ -463,6 +468,19 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       webkit_event.delta_x / MouseWheelEvent::kWheelDelta;
   webkit_event.wheel_ticks_y =
       webkit_event.delta_y / MouseWheelEvent::kWheelDelta;
+
+  // Set deltas to be percent based if percent based scrolling is enabled.
+  // If percent based scrolling is enabled on Windows, percent based
+  // mousewheel events are built in the Windows web input event builder.
+  // Percent based scrolling is not supported on Mac because the current
+  // roadmap for scroll personality work is reserved for Windows and Linux.
+  if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling)) {
+    webkit_event.delta_units = ui::ScrollGranularity::kScrollByPercentage;
+    webkit_event.delta_y *=
+        (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);
+    webkit_event.delta_x *=
+        (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);
+  }
 
   webkit_event.tilt_x = roundf(event.pointer_details().tilt_x);
   webkit_event.tilt_y = roundf(event.pointer_details().tilt_y);
