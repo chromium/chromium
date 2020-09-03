@@ -29,6 +29,7 @@ enum DiagnosticRoutineEnum {
   kDiskRead = 10,
   kPrimeSearch = 11,
   kBatteryDischarge = 12,
+  kBatteryCharge = 13,
 };
 
 // Enumeration of the possible DiskRead routine's command type

@@ -280,6 +280,23 @@ interface CrosHealthdDiagnosticsService {
   RunBatteryDischargeRoutine(uint32 length_seconds,
                              uint32 maximum_discharge_percent_allowed)
       => (RunRoutineResponse response);
+
+  // Requests that the BatteryCharge routine is created and started on the
+  // platform. This routine checks the battery's charge rate over a period of
+  // time. This routine is only available if GetAvailableRoutines returned
+  // kBatteryCharge.
+  //
+  // The request:
+  // * |length_seconds| - length of time to run the routine for.
+  // * |minimum_charge_percent_required| - the routine will fail if the battery
+  //                                       charges by less than this percentage.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunBatteryChargeRoutine(uint32 length_seconds,
+                          uint32 minimum_charge_percent_required)
+      => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

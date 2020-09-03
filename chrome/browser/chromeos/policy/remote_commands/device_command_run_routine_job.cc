@@ -456,6 +456,36 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge: {
+      constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
+      constexpr char kMinimumChargePercentRequiredFieldName[] =
+          "minimumChargePercentRequired";
+      base::Optional<int> length_seconds =
+          params_dict_.FindIntKey(kLengthSecondsFieldName);
+      base::Optional<int> minimum_charge_percent_required =
+          params_dict_.FindIntKey(kMinimumChargePercentRequiredFieldName);
+      // The battery charge routine expects two integers >= 0.
+      if (!length_seconds.has_value() ||
+          !minimum_charge_percent_required.has_value() ||
+          length_seconds.value() < 0 ||
+          minimum_charge_percent_required.value() < 0) {
+        SYSLOG(ERROR) << "Invalid parameters for BatteryCharge routine.";
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(failed_callback),
+                                      std::make_unique<Payload>(
+                                          MakeInvalidParametersResponse())));
+        break;
+      }
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunBatteryChargeRoutine(
+              base::TimeDelta::FromSeconds(length_seconds.value()),
+              minimum_charge_percent_required.value(),
+              base::BindOnce(
+                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+                  std::move(failed_callback)));
+      break;
+    }
   }
 }
 

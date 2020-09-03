@@ -93,6 +93,10 @@ class FakeCrosHealthdService final
       uint32_t length_seconds,
       uint32_t maximum_discharge_percent_allowed,
       RunBatteryDischargeRoutineCallback callback) override;
+  void RunBatteryChargeRoutine(
+      uint32_t length_seconds,
+      uint32_t minimum_charge_percent_required,
+      RunBatteryChargeRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(

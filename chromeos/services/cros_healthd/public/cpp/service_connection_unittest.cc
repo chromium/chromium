@@ -487,6 +487,21 @@ TEST_F(CrosHealthdServiceConnectionTest, RunBatteryDischargeRoutine) {
   run_loop.Run();
 }
 
+// Test that we can run the battery charge routine.
+TEST_F(CrosHealthdServiceConnectionTest, RunBatteryChargeRoutine) {
+  auto response = MakeRunRoutineResponse();
+  FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
+  base::RunLoop run_loop;
+  ServiceConnection::GetInstance()->RunBatteryChargeRoutine(
+      /*exec_duration=*/base::TimeDelta::FromSeconds(30),
+      /*minimum_charge_percent_required=*/10,
+      base::BindLambdaForTesting([&](mojom::RunRoutineResponsePtr response) {
+        EXPECT_EQ(response, MakeRunRoutineResponse());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 // Test that we can add a Bluetooth observer.
 TEST_F(CrosHealthdServiceConnectionTest, AddBluetoothObserver) {
   MockCrosHealthdBluetoothObserver observer;

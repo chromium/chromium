@@ -76,6 +76,11 @@ constexpr char kMaxNumFieldName[] = "maxNum";
 constexpr char kMaximumDischargePercentAllowedFieldName[] =
     "maximumDischargePercentAllowed";
 
+// String constants identifying the parameter field for the battery charge
+// routine.
+constexpr char kMinimumChargePercentRequiredFieldName[] =
+    "minimumChargePercentRequired";
+
 // Dummy values to populate cros_healthd's RunRoutineResponse.
 constexpr uint32_t kId = 11;
 constexpr auto kStatus =
@@ -1170,6 +1175,96 @@ TEST_F(DeviceCommandRunRoutineJobTest,
   params_dict.SetIntKey(kMaximumDischargePercentAllowedFieldName, kNegativeInt);
   EXPECT_TRUE(RunJob(
       chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+      })));
+}
+
+// Test that the battery charge routine can be run.
+TEST_F(DeviceCommandRunRoutineJobTest, RunBatteryChargeRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetIntKey(kLengthSecondsFieldName, kPositiveInt);
+  params_dict.SetIntKey(kMinimumChargePercentRequiredFieldName, kPositiveInt);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        ASSERT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
+// Test that leaving out the lengthSeconds parameter causes the battery charge
+// routine to fail.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunBatteryChargeRoutineMissingLengthSeconds) {
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetIntKey(kMinimumChargePercentRequiredFieldName, kPositiveInt);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+      })));
+}
+
+// Test that leaving out the minimumChargePercentRequired parameter causes the
+// battery charge routine to fail.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunBatteryChargeRoutineMissingMinimumChargePercentRequired) {
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetIntKey(kLengthSecondsFieldName, kPositiveInt);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+      })));
+}
+
+// Test that a negative lengthSeconds parameter causes the battery charge
+// routine to fail.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunBatteryChargeRoutineInvalidLengthSeconds) {
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetIntKey(kLengthSecondsFieldName, kNegativeInt);
+  params_dict.SetIntKey(kMinimumChargePercentRequiredFieldName, kPositiveInt);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+      })));
+}
+
+// Test that a negative minimumChargePercentRequired parameter causes the
+// battery charge routine to fail.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunBatteryChargeRoutineInvalidMinimumChargePercentRequired) {
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetIntKey(kLengthSecondsFieldName, kPositiveInt);
+  params_dict.SetIntKey(kMinimumChargePercentRequiredFieldName, kNegativeInt);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
       std::move(params_dict),
       base::BindLambdaForTesting([](RemoteCommandJob* job) {
         EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
