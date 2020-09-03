@@ -85,9 +85,23 @@ bool NavigateToURLInSameBrowsingInstance(Shell* window, const GURL& url) {
                           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK));
   observer.Wait();
 
-  if (!IsLastCommittedEntryOfPageType(window->web_contents(), PAGE_TYPE_NORMAL))
+  if (!IsLastCommittedEntryOfPageType(window->web_contents(),
+                                      PAGE_TYPE_NORMAL)) {
+    NavigationEntry* last_entry =
+        window->web_contents()->GetController().GetLastCommittedEntry();
+    DLOG(WARNING) << "last_entry->GetPageType() = "
+                  << (last_entry ? last_entry->GetPageType() : -1);
     return false;
-  return window->web_contents()->GetLastCommittedURL() == url;
+  }
+
+  if (window->web_contents()->GetLastCommittedURL() != url) {
+    DLOG(WARNING) << "window->web_contents()->GetLastCommittedURL() = "
+                  << window->web_contents()->GetLastCommittedURL()
+                  << "; url = " << url;
+    return false;
+  }
+
+  return true;
 }
 
 FrameTreeVisualizer::FrameTreeVisualizer() {

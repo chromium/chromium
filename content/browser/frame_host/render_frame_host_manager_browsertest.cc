@@ -750,10 +750,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
 // Test for crbug.com/116192.  Targeted links should still work after the
 // named target window has swapped processes.
-// Disabled Flaky test - crbug.com/859487
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
-                       DISABLED_AllowTargetedNavigationsAfterSwap) {
+                       AllowTargetedNavigationsAfterSwap) {
   StartEmbeddedServer();
+
+  // Ensure that the first and second page are isolated from each other (even on
+  // Android, where site-per-process is not the default).
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"foo.com"});
 
   // Load a page with links that open in a new window.
   NavigateToPageWithLinks(shell());
@@ -765,12 +769,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Test clicking a target=foo link.
   ShellAddedObserver new_shell_observer;
-  bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      shell(),
-      "window.domAutomationController.send(clickSameSiteTargetedLink());",
-      &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(shell(), "clickSameSiteTargetedLink()"));
   Shell* new_shell = new_shell_observer.GetShell();
 
   // Wait for the navigation in the new tab to finish, if it hasn't.
@@ -792,13 +791,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_NE(orig_site_instance, new_site_instance);
 
   // Clicking the original link in the first tab should cause us to swap back.
-  TestNavigationObserver navigation_observer(new_shell->web_contents());
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      shell(),
-      "window.domAutomationController.send(clickSameSiteTargetedLink());",
-      &success));
-  EXPECT_TRUE(success);
-  navigation_observer.Wait();
+  {
+    TestNavigationObserver navigation_observer(new_shell->web_contents());
+    EXPECT_EQ(true, EvalJs(shell(), "clickSameSiteTargetedLink()"));
+    navigation_observer.Wait();
+  }
 
   // Should have swapped back and shown the new window again.
   scoped_refptr<SiteInstance> revisit_site_instance(
@@ -811,10 +808,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ(new_site_instance.get(),
             new_shell->web_contents()->GetSiteInstance());
   WebContentsDestroyedWatcher close_watcher(new_shell->web_contents());
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      shell(), "window.domAutomationController.send(testCloseWindow());",
-      &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(shell(), "testCloseWindow()"));
   close_watcher.Wait();
 }
 
