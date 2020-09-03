@@ -94,7 +94,8 @@ void SecureChannelClientImpl::PerformInitiateConnectionToDevice(
     mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote) {
   secure_channel_remote_->InitiateConnectionToDevice(
       device_to_connect.GetRemoteDevice(), local_device.GetRemoteDevice(),
-      feature, connection_priority, std::move(connection_delegate_remote));
+      feature, ConnectionMedium::kBluetoothLowEnergy, connection_priority,
+      std::move(connection_delegate_remote));
 }
 
 void SecureChannelClientImpl::PerformListenForConnectionFromDevice(
@@ -105,7 +106,8 @@ void SecureChannelClientImpl::PerformListenForConnectionFromDevice(
     mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote) {
   secure_channel_remote_->ListenForConnectionFromDevice(
       device_to_connect.GetRemoteDevice(), local_device.GetRemoteDevice(),
-      feature, connection_priority, std::move(connection_delegate_remote));
+      feature, ConnectionMedium::kBluetoothLowEnergy, connection_priority,
+      std::move(connection_delegate_remote));
 }
 
 void SecureChannelClientImpl::FlushForTesting() {

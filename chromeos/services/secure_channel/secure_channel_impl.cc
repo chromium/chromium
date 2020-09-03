@@ -85,28 +85,28 @@ void SecureChannelImpl::ListenForConnectionFromDevice(
     const multidevice::RemoteDevice& device_to_connect,
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
-  ProcessConnectionRequest(ApiFunctionName::kListenForConnection,
-                           device_to_connect, local_device,
-                           ClientConnectionParametersImpl::Factory::Create(
-                               feature, std::move(delegate)),
-                           ConnectionRole::kListenerRole, connection_priority,
-                           ConnectionMedium::kBluetoothLowEnergy);
+  ProcessConnectionRequest(
+      ApiFunctionName::kListenForConnection, device_to_connect, local_device,
+      ClientConnectionParametersImpl::Factory::Create(feature,
+                                                      std::move(delegate)),
+      ConnectionRole::kListenerRole, connection_priority, connection_medium);
 }
 
 void SecureChannelImpl::InitiateConnectionToDevice(
     const multidevice::RemoteDevice& device_to_connect,
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
-  ProcessConnectionRequest(ApiFunctionName::kInitiateConnection,
-                           device_to_connect, local_device,
-                           ClientConnectionParametersImpl::Factory::Create(
-                               feature, std::move(delegate)),
-                           ConnectionRole::kInitiatorRole, connection_priority,
-                           ConnectionMedium::kBluetoothLowEnergy);
+  ProcessConnectionRequest(
+      ApiFunctionName::kInitiateConnection, device_to_connect, local_device,
+      ClientConnectionParametersImpl::Factory::Create(feature,
+                                                      std::move(delegate)),
+      ConnectionRole::kInitiatorRole, connection_priority, connection_medium);
 }
 
 void SecureChannelImpl::OnDisconnected(

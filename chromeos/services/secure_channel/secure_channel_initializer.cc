@@ -39,12 +39,14 @@ SecureChannelInitializer::ConnectionRequestArgs::ConnectionRequestArgs(
     const multidevice::RemoteDevice& device_to_connect,
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
     bool is_listen_request)
     : device_to_connect(device_to_connect),
       local_device(local_device),
       feature(feature),
+      connection_medium(connection_medium),
       connection_priority(connection_priority),
       delegate(std::move(delegate)),
       is_listen_request(is_listen_request) {}
@@ -77,36 +79,38 @@ void SecureChannelInitializer::ListenForConnectionFromDevice(
     const multidevice::RemoteDevice& device_to_connect,
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   if (secure_channel_impl_) {
     secure_channel_impl_->ListenForConnectionFromDevice(
-        device_to_connect, local_device, feature, connection_priority,
-        std::move(delegate));
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, std::move(delegate));
     return;
   }
 
   pending_args_.push(std::make_unique<ConnectionRequestArgs>(
-      device_to_connect, local_device, feature, connection_priority,
-      std::move(delegate), true /* is_listen_request */));
+      device_to_connect, local_device, feature, connection_medium,
+      connection_priority, std::move(delegate), true /* is_listen_request */));
 }
 
 void SecureChannelInitializer::InitiateConnectionToDevice(
     const multidevice::RemoteDevice& device_to_connect,
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   if (secure_channel_impl_) {
     secure_channel_impl_->InitiateConnectionToDevice(
-        device_to_connect, local_device, feature, connection_priority,
-        std::move(delegate));
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority, std::move(delegate));
     return;
   }
 
   pending_args_.push(std::make_unique<ConnectionRequestArgs>(
-      device_to_connect, local_device, feature, connection_priority,
-      std::move(delegate), false /* is_listen_request */));
+      device_to_connect, local_device, feature, connection_medium,
+      connection_priority, std::move(delegate), false /* is_listen_request */));
 }
 
 void SecureChannelInitializer::OnBluetoothAdapterReceived(
@@ -125,15 +129,15 @@ void SecureChannelInitializer::OnBluetoothAdapterReceived(
     if (args_to_pass->is_listen_request) {
       secure_channel_impl_->ListenForConnectionFromDevice(
           args_to_pass->device_to_connect, args_to_pass->local_device,
-          args_to_pass->feature, args_to_pass->connection_priority,
-          std::move(args_to_pass->delegate));
+          args_to_pass->feature, args_to_pass->connection_medium,
+          args_to_pass->connection_priority, std::move(args_to_pass->delegate));
       continue;
     }
 
     secure_channel_impl_->InitiateConnectionToDevice(
         args_to_pass->device_to_connect, args_to_pass->local_device,
-        args_to_pass->feature, args_to_pass->connection_priority,
-        std::move(args_to_pass->delegate));
+        args_to_pass->feature, args_to_pass->connection_medium,
+        args_to_pass->connection_priority, std::move(args_to_pass->delegate));
   }
 }
 

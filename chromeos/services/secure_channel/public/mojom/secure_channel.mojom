@@ -82,6 +82,16 @@ enum ConnectionPriority {
   HIGH
 };
 
+enum ConnectionMedium {
+  // Connection occurs using GATT over Bluetooth Low Energy (BLE).
+  kBluetoothLowEnergy,
+
+  // Connection occurs using the Nearby Connections library, which bootstraps
+  // a connection via Bluetooth Classic, then "upgrades" bandwidth to a WebRTC
+  // connection.
+  kNearbyConnections
+};
+
 struct BluetoothConnectionMetadata {
   // RSSI at the exact time that this metadata was requested. Note that RSSI
   // may change drastically in a short period; this is only a snapshot.
@@ -184,6 +194,7 @@ interface SecureChannel {
       chromeos.multidevice.mojom.RemoteDevice device_to_connect,
       chromeos.multidevice.mojom.RemoteDevice local_device,
       string feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       pending_remote<ConnectionDelegate> delegate);
 
@@ -198,6 +209,7 @@ interface SecureChannel {
       chromeos.multidevice.mojom.RemoteDevice device_to_connect,
       chromeos.multidevice.mojom.RemoteDevice local_device,
       string feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       pending_remote<ConnectionDelegate> delegate);
 };

@@ -60,6 +60,7 @@ class SecureChannelInitializer : public SecureChannelBase {
         const multidevice::RemoteDevice& device_to_connect,
         const multidevice::RemoteDevice& local_device,
         const std::string& feature,
+        ConnectionMedium connection_medium,
         ConnectionPriority connection_priority,
         mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
         bool is_listen_request);
@@ -68,6 +69,7 @@ class SecureChannelInitializer : public SecureChannelBase {
     multidevice::RemoteDevice device_to_connect;
     multidevice::RemoteDevice local_device;
     std::string feature;
+    ConnectionMedium connection_medium;
     ConnectionPriority connection_priority;
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate;
     bool is_listen_request;
@@ -78,12 +80,14 @@ class SecureChannelInitializer : public SecureChannelBase {
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
 

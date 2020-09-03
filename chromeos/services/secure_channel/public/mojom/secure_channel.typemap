@@ -5,6 +5,7 @@
 mojom = "//chromeos/services/secure_channel/public/mojom/secure_channel.mojom"
 
 public_headers = [
+  "//chromeos/services/secure_channel/public/cpp/shared/connection_medium.h",
   "//chromeos/services/secure_channel/public/cpp/shared/connection_priority.h",
 ]
 
@@ -15,8 +16,9 @@ sources = [
   "//chromeos/services/secure_channel/public/mojom/secure_channel_mojom_traits.h",
 ]
 
-public_deps = [
-  "//chromeos/services/secure_channel/public/cpp/shared",
-]
+public_deps = [ "//chromeos/services/secure_channel/public/cpp/shared" ]
 
-type_mappings = [ "chromeos.secure_channel.mojom.ConnectionPriority=::chromeos::secure_channel::ConnectionPriority" ]
+type_mappings = [
+  "chromeos.secure_channel.mojom.ConnectionMedium=::chromeos::secure_channel::ConnectionMedium",
+  "chromeos.secure_channel.mojom.ConnectionPriority=::chromeos::secure_channel::ConnectionPriority",
+]
