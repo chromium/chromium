@@ -36,9 +36,9 @@
 <translation id="6562820390860419811">Tabblad naar links verplaatsen</translation>
 <translation id="6615455863669487791">Weergeven</translation>
 <translation id="6840760312327750441">Als je tabbladen wilt groeperen, tik je op een tabblad en houd je dit vast. Sleep het vervolgens op een ander tabblad.</translation>
-<translation id="6856809498882026482">Modus voor meerdere selecties verbergen</translation>
+<translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
 <translation id="7151209024774799310">Tabbladen uit groep verwijderen</translation>
-<translation id="7204204600596740190">Modus voor meerdere selecties</translation>
+<translation id="7204204600596740190">Optie om meerdere tabbladen te selecteren</translation>
 <translation id="753732157349120914">Tabbladschakelaar</translation>
 <translation id="7559245342362162951">Tabbladen van groep weergeven in raster op volledig scherm</translation>
 <translation id="7792771145871471484">Bekijk de suggesties.</translation>
@@ -49,7 +49,7 @@
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="8304833501377495048">Tabbladstrook niet meer weergeven?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen sluiten}}</translation>
-<translation id="8557923272772633250">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen uitvouwen.</translation>
+<translation id="8557923272772633250">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen uitvouwen</translation>
 <translation id="8749939518995770034">Tabbladstrook gesloten</translation>
 <translation id="9150694013019234766">Je kunt onderaan het scherm schakelen tussen tabbladen in je tabbladgroep</translation>
 <translation id="9169594135889675189">Nieuw tabblad aan groep toevoegen</translation>

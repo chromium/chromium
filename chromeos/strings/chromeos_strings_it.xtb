@@ -34,7 +34,7 @@
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="3838338534323494292">Nuova password</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
-<translation id="4003384961948020559">Operazione non riuscita - Scomparto di uscita pieno</translation>
+<translation id="4003384961948020559">Operazione non riuscita - Vassoio di uscita pieno</translation>
 <translation id="4027485274696301677">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="ENROLLMENT_DOMAIN" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="4034824040120875894">Stampante</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
