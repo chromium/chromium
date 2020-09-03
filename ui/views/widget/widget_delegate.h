@@ -242,6 +242,21 @@ class VIEWS_EXPORT WidgetDelegate {
   // replace it.
   virtual View* GetContentsView();
 
+  // Returns ownership of the contents view, which means something similar to
+  // but not the same as C++ ownership in the unique_ptr sense. The caller
+  // takes on responsibility for either destroying the returned View (if it
+  // is !owned_by_client()) or not (if it is owned_by_client()). Since this
+  // returns a raw pointer, this method serves only as a declaration of intent
+  // by the caller.
+  //
+  // It is only legal to call this method one time on a given WidgetDelegate
+  // instance.
+  //
+  // In future, this method will begin returning a unique_ptr<View> instead,
+  // and will eventually be renamed to TakeContentsView() once WidgetDelegate
+  // no longer retains any reference to the contents view internally.
+  View* TransferOwnershipOfContentsView();
+
   // Called by the Widget to create the Client View used to host the contents
   // of the widget.
   virtual ClientView* CreateClientView(Widget* widget);
@@ -322,6 +337,7 @@ class VIEWS_EXPORT WidgetDelegate {
   Params params_;
 
   View* default_contents_view_ = nullptr;
+  bool contents_view_taken_ = false;
   bool can_activate_ = true;
 
   // Managed by Widget. Ensures |this| outlives its Widget.

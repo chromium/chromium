@@ -364,7 +364,7 @@ void Widget::Init(InitParams params) {
       saved_show_state_ = ui::SHOW_STATE_MINIMIZED;
     }
   } else if (delegate) {
-    SetContentsView(delegate->GetContentsView());
+    SetContentsView(delegate->TransferOwnershipOfContentsView());
     SetInitialBoundsForFramelessWindow(bounds);
   }
 

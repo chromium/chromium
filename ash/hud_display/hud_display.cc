@@ -173,7 +173,7 @@ void HUDDisplayView::SetDisplayMode(DisplayMode display_mode) {
 }
 
 views::ClientView* HUDDisplayView::CreateClientView(views::Widget* widget) {
-  return new HTClientView(this, widget, GetContentsView());
+  return new HTClientView(this, widget, TransferOwnershipOfContentsView());
 }
 
 void HUDDisplayView::OnWidgetInitialized() {

@@ -192,7 +192,7 @@ DialogDelegate* DialogDelegate::AsDialogDelegate() {
 }
 
 ClientView* DialogDelegate::CreateClientView(Widget* widget) {
-  return new DialogClientView(widget, GetContentsView());
+  return new DialogClientView(widget, TransferOwnershipOfContentsView());
 }
 
 std::unique_ptr<NonClientFrameView> DialogDelegate::CreateNonClientFrameView(

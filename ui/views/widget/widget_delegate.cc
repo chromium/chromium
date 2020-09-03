@@ -200,8 +200,14 @@ View* WidgetDelegate::GetContentsView() {
   return default_contents_view_;
 }
 
+View* WidgetDelegate::TransferOwnershipOfContentsView() {
+  DCHECK(!contents_view_taken_);
+  contents_view_taken_ = true;
+  return GetContentsView();
+}
+
 ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
-  return new ClientView(widget, GetContentsView());
+  return new ClientView(widget, TransferOwnershipOfContentsView());
 }
 
 std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
