@@ -86,6 +86,9 @@ const uint32_t V4L2SliceVideoDecodeAccelerator::supported_input_fourccs_[] = {
     V4L2_PIX_FMT_H264_SLICE, V4L2_PIX_FMT_VP8_FRAME, V4L2_PIX_FMT_VP9_FRAME,
 };
 
+// static
+base::AtomicRefCount V4L2SliceVideoDecodeAccelerator::num_instances_(0);
+
 V4L2SliceVideoDecodeAccelerator::OutputRecord::OutputRecord()
     : picture_id(-1),
       texture_id(0),
@@ -146,7 +149,8 @@ V4L2SliceVideoDecodeAccelerator::V4L2SliceVideoDecodeAccelerator(
     EGLDisplay egl_display,
     const BindGLImageCallback& bind_image_cb,
     const MakeGLContextCurrentCallback& make_context_current_cb)
-    : output_planes_count_(0),
+    : can_use_decoder_(num_instances_.Increment() < kMaxNumOfInstances),
+      output_planes_count_(0),
       child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       device_(std::move(device)),
       decoder_thread_("V4L2SliceVideoDecodeAcceleratorThread"),
@@ -174,6 +178,8 @@ V4L2SliceVideoDecodeAccelerator::~V4L2SliceVideoDecodeAccelerator() {
 
   DCHECK(requests_.empty());
   DCHECK(output_buffer_map_.empty());
+
+  num_instances_.Decrement();
 }
 
 void V4L2SliceVideoDecodeAccelerator::NotifyError(Error error) {
@@ -197,6 +203,11 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   VLOGF(2) << "profile: " << config.profile;
   DCHECK(child_task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(state_, kUninitialized);
+
+  if (!can_use_decoder_) {
+    VLOGF(1) << "Reached the maximum number of decoder instances";
+    return false;
+  }
 
   if (config.is_encrypted()) {
     NOTREACHED() << "Encrypted streams are not supported for this VDA";
