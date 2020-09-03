@@ -480,9 +480,13 @@ void Button::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
 
-Button::Button(ButtonListener* listener)
+Button::Button(ButtonListener* listener) : Button(PressedCallback()) {
+  set_listener(listener);
+}
+
+Button::Button(PressedCallback callback)
     : AnimationDelegateViews(this),
-      listener_(listener),
+      callback_(std::move(callback)),
       ink_drop_base_color_(gfx::kPlaceholderColor) {
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetProperty(kIsButtonProperty, true);
@@ -505,8 +509,7 @@ void Button::NotifyClick(const ui::Event& event) {
 
   // We can be called when there is no listener, in cases like double clicks on
   // menu buttons etc.
-  if (listener_)
-    listener_->ButtonPressed(this, event);
+  callback_.Run(event);
 }
 
 void Button::OnClickCanceled(const ui::Event& event) {

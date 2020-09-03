@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_BUTTON_BUTTON_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -31,6 +32,8 @@ class Event;
 
 // An interface implemented by an object to let it know that a button was
 // pressed.
+// Deprecated, please use callback versions instead.
+// TODO(pbos): Replace ButtonListener with ClickedCallback methods below.
 class VIEWS_EXPORT ButtonListener {
  public:
   virtual void ButtonPressed(Button* sender, const ui::Event& event) = 0;
@@ -97,6 +100,8 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
+  using PressedCallback = base::RepeatingCallback<void(const ui::Event& event)>;
+
   // Make the button focusable as per the platform.
   void SetFocusForPlatform();
 
@@ -105,7 +110,23 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   int tag() const { return tag_; }
   void set_tag(int tag) { tag_ = tag; }
 
-  void set_listener(ButtonListener* listener) { listener_ = listener; }
+  // TODO(pbos): Replace uses of this with set_callback().
+  void set_listener(ButtonListener* listener) {
+    if (!listener) {
+      set_callback(base::DoNothing());
+      return;
+    }
+
+    set_callback(base::BindRepeating(
+        [](ButtonListener* listener, Button* button, const ui::Event& event) {
+          listener->ButtonPressed(button, event);
+        },
+        listener, this));
+  }
+
+  void set_callback(PressedCallback callback) {
+    callback_ = std::move(callback);
+  }
 
   void SetAccessibleName(const base::string16& name);
   const base::string16& GetAccessibleName() const;
@@ -233,6 +254,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   // true of buttons that don't have a listener - e.g. menubuttons where there's
   // no default action and checkboxes.
   explicit Button(ButtonListener* listener = nullptr);
+  explicit Button(PressedCallback callback);
 
   // Called when the button has been clicked or tapped and should request focus
   // if necessary.
@@ -302,10 +324,12 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   base::string16 accessible_name_;
 
   // The button's listener. Notified when clicked.
-  ButtonListener* listener_;
+  PressedCallback callback_;
 
   // The id tag associated with this button. Used to disambiguate buttons in
   // the ButtonListener implementation.
+  // TODO(pbos): Remove this after ButtonListener is gone since disambiguation
+  // shouldn't be needed.
   int tag_ = -1;
 
   ButtonState state_ = STATE_NORMAL;
