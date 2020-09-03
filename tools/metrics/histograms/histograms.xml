@@ -64862,6 +64862,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GCM.SendWebPushMessageForbiddenBody"
     enum="ForbiddenResponseBody" expires_after="2020-08-30">
+  <obsolete>
+    Removed Sep 2020. No longer used.
+  </obsolete>
   <owner>alexchau@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

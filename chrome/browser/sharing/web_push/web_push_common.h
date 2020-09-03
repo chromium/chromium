@@ -71,7 +71,4 @@ void LogSendWebPushMessagePayloadSize(int size);
 // Logs the network error or status code after a web push message is sent.
 void LogSendWebPushMessageStatusCode(int status_code);
 
-// Categorize response body when 403: Forbidden is received and log as enum.
-void LogSendWebPushMessageForbiddenBody(const std::string* response_body);
-
 #endif  // CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_

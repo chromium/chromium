@@ -30764,6 +30764,9 @@ Called by update_feature_policy_enum.py.-->
 </enum>
 
 <enum name="ForbiddenResponseBody">
+  <obsolete>
+    Removed Sep 2020. No longer used.
+  </obsolete>
   <int value="0" label="Body missing"/>
   <int value="1" label="Unknown body"/>
   <int value="2" label="Sender not authenticated"/>
