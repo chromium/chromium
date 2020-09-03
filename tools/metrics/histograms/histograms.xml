@@ -159162,7 +159162,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SearchAnswer.AnswerVisibleTime" units="ms"
-    expires_after="2020-09-01">
+    expires_after="2021-09-01">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>Time between showing and hiding the answer card.</summary>
