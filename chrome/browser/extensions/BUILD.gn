@@ -1083,8 +1083,6 @@ static_library("extensions") {
       "api/enterprise_reporting_private/enterprise_reporting_private_api.h",
       "api/enterprise_reporting_private/keychain_data_helper_mac.h",
       "api/enterprise_reporting_private/keychain_data_helper_mac.mm",
-      "api/enterprise_reporting_private/prefs.cc",
-      "api/enterprise_reporting_private/prefs.h",
       "api/image_writer_private/operation_nonchromeos.cc",
       "api/messaging/native_message_process_host.cc",
       "api/messaging/native_message_process_host.h",

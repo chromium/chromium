@@ -7300,65 +7300,15 @@
     ]
   },
 
-  "ReportVersionData": {
-    "os": ["win", "linux", "mac"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "ReportVersionData": false
-        },
-        "prefs": { "enterprise_reporting.report_version_data": {} }
-      }
-    ]
-  },
+  "ReportVersionData": {},
 
-  "ReportPolicyData": {
-    "os": ["win", "linux", "mac"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "ReportPolicyData": false
-        },
-        "prefs": { "enterprise_reporting.report_policy_data": {} }
-      }
-    ]
-  },
+  "ReportPolicyData": {},
 
-  "ReportMachineIDData": {
-    "os": ["win", "linux", "mac"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "ReportMachineIDData": false
-        },
-        "prefs": { "enterprise_reporting.report_machine_id_data": {} }
-      }
-    ]
-  },
+  "ReportMachineIDData": {},
 
-  "ReportUserIDData": {
-    "os": ["win", "linux", "mac"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "ReportUserIDData": false
-        },
-        "prefs": { "enterprise_reporting.report_user_id_data": {} }
-      }
-    ]
-  },
+  "ReportUserIDData": {},
 
-  "ReportExtensionsAndPluginsData": {
-    "os": ["win", "linux", "mac"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "ReportExtensionsAndPluginsData": false
-        },
-        "prefs": { "enterprise_reporting.report_extensions_and_plugins_data": {} }
-      }
-    ]
-  },
+  "ReportExtensionsAndPluginsData": {},
 
   "ReportSafeBrowsingData": {
     "note": "This policy has been removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=1083085"

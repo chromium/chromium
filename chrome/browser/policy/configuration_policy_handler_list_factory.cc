@@ -146,10 +146,6 @@
 #include "extensions/common/manifest.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && !defined(OS_CHROMEOS)
-#include "chrome/browser/extensions/api/enterprise_reporting_private/prefs.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !defined(OS_CHROMEOS)
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_policy_handler.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -1270,24 +1266,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !defined(OS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
-  { key::kReportVersionData,
-    extensions::enterprise_reporting::kReportVersionData,
-    base::Value::Type::BOOLEAN },
-  { key::kReportPolicyData,
-    extensions::enterprise_reporting::kReportPolicyData,
-    base::Value::Type::BOOLEAN },
-  { key::kReportMachineIDData,
-    extensions::enterprise_reporting::kReportMachineIDData,
-    base::Value::Type::BOOLEAN },
-  { key::kReportUserIDData,
-    extensions::enterprise_reporting::kReportUserIDData,
-    base::Value::Type::BOOLEAN },
-  { key::kReportExtensionsAndPluginsData,
-    extensions::enterprise_reporting::kReportExtensionsAndPluginsData,
-    base::Value::Type::BOOLEAN },
-  { key::kReportSafeBrowsingData,
-    extensions::enterprise_reporting::kReportSafeBrowsingData,
-    base::Value::Type::BOOLEAN },
   { key::kBlockExternalExtensions,
     extensions::pref_names::kBlockExternalExtensions,
     base::Value::Type::BOOLEAN },
