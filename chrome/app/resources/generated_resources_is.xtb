@@ -278,7 +278,7 @@
 <translation id="1313705515580255288">Bókamerkin þín, ferillinn og aðrar stillingar verða samstilltar við Google reikninginn þinn.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Heimanet, ekki í reiki</translation>
-<translation id="1315144594965013365">Gakktu úr skugga um að hvorugt tækið sé læst, settu þau nálægt hvort öðru og hafðu kveikt á Bluetooth. Ef þú deilir með Chromebook tölvu skaltu tryggja að kveikt sé á nærdeilingu í henni (opnaðu stöðusvæðið með því að velja tíma og síðan nærdeilingu).</translation>
+<translation id="1315144594965013365">Gakktu úr skugga um að hvorugt tækið sé læst, settu þau nálægt hvort öðru og hafðu kveikt á Bluetooth. Ef þú deilir með Chromebook skaltu tryggja að kveikt sé á nærdeilingu í henni (opnaðu stöðusvæðið með því að velja tíma og síðan nærdeilingu).</translation>
 <translation id="1316136264406804862">Leitar...</translation>
 <translation id="1316495628809031177">Hlé er á samstillingu</translation>
 <translation id="1317637799698924700">Tengd dokka virkar í samhæfisstillingu USB (C-gerð).</translation>
@@ -894,6 +894,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2046702855113914483">Ramen-núðlur</translation>
 <translation id="204706822916043810">Athugar sýndarvélina</translation>
 <translation id="2048182445208425546">Fá aðgang að netumferð</translation>
+<translation id="2048243703055695889">Stillingar nærdeilingar fyrir tækið sem <ph name="USER_EMAIL" /> á, „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="2048653237708779538">Aðgerð ekki tiltæk</translation>
 <translation id="204914487372604757">Búa til flýtileið</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
@@ -1180,6 +1181,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2384436799579181135">Villa kom upp. Athugaðu prentarann og reyndu aftur.</translation>
 <translation id="2387052489799050037">Fara á heimaskjá</translation>
 <translation id="2387458720915042159">Gerð tengingar staðgengilsþjóns</translation>
+<translation id="2390347491606624519">Ekki næst tenging við staðgengilsþjón, skráðu þig inn aftur</translation>
 <translation id="2391082728065870591">Senda ábendingaskýrslu</translation>
 <translation id="2391419135980381625">Venjulegt letur</translation>
 <translation id="2392163307141705938">Þú hefur náð tímamörkum sem foreldri þitt stillti fyrir <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3325,6 +3327,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5017643436812738274">Þú getur skoðað síður með textabendli. Ýttu á Ctrl+leitarhnapp+7 til að slökkva.</translation>
 <translation id="5018207570537526145">Opna vefsvæði viðbótar</translation>
 <translation id="5018526990965779848">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir þig með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum.</translation>
+<translation id="5019392775062123007">Sýnilegt nálægum tækjum sem <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Ekki uppfært enn</translation>
 <translation id="5026806129670917316">Kveikja á Wi-Fi</translation>
 <translation id="5026874946691314267">Ekki sýna þetta aftur</translation>
@@ -3414,6 +3417,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5133483819862530305">Sólsetur til sólarupprásar</translation>
 <translation id="5135085122826131075">Opnaðu hjálparann með því að segja „Ok Google“.</translation>
 <translation id="5135533361271311778">Ekki var hægt að búa til bókamerkjaatriði.</translation>
+<translation id="5136343472380336530">Gakktu úr skugga um að hvorugt tækið sé læst, settu þau nálægt hvort öðru og hafðu kveikt á Bluetooth. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Eyða þessu atriði</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> leit</translation>
 <translation id="5139823398361067371">Sláðu inn PIN-númer fyrir öryggislykilinn. Ef þú veist ekki hvert PIN-númerið er þarftu að endurstilla öryggislykilinn.</translation>
@@ -4233,7 +4237,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6122081475643980456">Tengingunni þinni við internetið er stýrt</translation>
 <translation id="6122095009389448667">Koma alltaf í veg fyrir að þetta vefsvæði sjái klippiborðið</translation>
 <translation id="6122191549521593678">Á netinu</translation>
-<translation id="6122600716821516697">Viltu deila með þessu tæki?</translation>
+<translation id="6122600716821516697">Deila með þessu tæki?</translation>
 <translation id="6122831415929794347">Viltu slökkva á öruggri vefnotkun?</translation>
 <translation id="6122875415561139701">Skrifaðgerð er ekki leyft í: „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="6124213551517593835">Þetta hreinsar öll gögn og fótspor sem vefsvæðið <ph name="SITE_GROUP_NAME" /> og undirsíður þess geyma</translation>
@@ -4421,6 +4425,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6342069812937806050">Rétt í þessu</translation>
 <translation id="6344170822609224263">Fá aðgang að lista yfir nettengingar</translation>
 <translation id="6344576354370880196">Vistaðir prentarar</translation>
+<translation id="6345418402353744910">Staðgengilsþjónninn <ph name="PROXY" /> þarf notandanafnið þitt og aðgangsorð til að stjórnandinn geti stillt netkerfið þitt</translation>
 <translation id="6349101878882523185">Setja upp <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Samstilling virkar ekki. Prófaðu að skrá þig út og inn aftur.</translation>
 <translation id="6351063337294363751">Þú getur hreinsað vefskoðunargögn í þessari valmynd</translation>
@@ -4778,6 +4783,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6810613314571580006">Skrá þig sjálfkrafa inn á vefsvæði með vistuðum skilríkjum. Þegar slökkt er á þessum eiginleika biðjum við þig um staðfestingu í hvert sinn sem þú skráir þig inn á vefsvæði.</translation>
 <translation id="6810768462515084623">Úbbs! Aðgangsorðið þitt virðist vera útrunnið. Endurnýjaðu það í öðru tæki og reyndu aftur.</translation>
 <translation id="6811034713472274749">Hægt er að skoða síðuna</translation>
+<translation id="6811332638216701903">DHCP-hýsilheiti</translation>
 <translation id="6812349420832218321">Ekki er hægt að keyra <ph name="PRODUCT_NAME" /> með rótaraðgang.</translation>
 <translation id="6812841287760418429">Halda breytingum</translation>
 <translation id="6817174620439930047">Spyrja þegar vefsvæði vill nota frátekin kerfisskilaboð til að fá aðgang að MIDI-tækjum (ráðlagt)</translation>
@@ -4855,6 +4861,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
 <translation id="6904344821472985372">Afturkalla skráaaðgang</translation>
 <translation id="6904655473976120856">Ýttu á forritahnappinn til að loka</translation>
+<translation id="6909422577741440844">Taka við úr þessu tæki?</translation>
 <translation id="6910211073230771657">Eytt</translation>
 <translation id="691024665142758461">Sækja margar skrár</translation>
 <translation id="691106080621596509">Þetta hreinsar öll gögn og fótspor sem <ph name="SITE_GROUP_NAME" />, undirvefsvæði og uppsett forrit þess nota</translation>

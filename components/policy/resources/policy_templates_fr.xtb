@@ -2940,12 +2940,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur est initialement désactivée, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="5277806246014825877">Autoriser cet utilisateur à utiliser Crostini.
-
-      Lorsque cette règle est définie sur False, l'utilisateur n'est pas autorisé à utiliser Crostini.
-      Lorsque cette règle n'est pas définie ou est définie sur True, l'utilisateur est autorisé à utiliser Crostini tant que les autres paramètres le permettent.
-      Les trois règles, VirtualMachinesAllowed, CrostiniAllowed et DeviceUnaffiliatedCrostiniAllowed doivent être définies sur True lorsqu'elles s'appliquent pour que Crostini puisse être exécuté.
-      Si vous modifiez cette règle en la définissant sur False, elle est appliquée aux conteneurs Crostini qui vont être lancés, mais elle n'arrête pas ceux qui le sont déjà.</translation>
 <translation id="5283457834853986457">Désactiver l'outil de recherche de plug-ins (obsolète)</translation>
 <translation id="5285315763984334157">Bloquer les téléchargements malveillants</translation>
 <translation id="5288772341821359899">Si cette règle est définie, la portée du port UDP utilisé par WebRTC est restreinte à l'intervalle de port spécifié (points de terminaison inclus).
@@ -3279,13 +3273,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle est définie sur "False", le client DNS intégré n'est jamais utilisé.
 
       Si cette règle n'est pas configurée, le client DNS intégré est activé par défaut sur macOS, Android (lorsque ni le DNS privé, ni le VPN ne sont activés) et Chrome OS, et l'utilisateur peut choisir si le client DNS intégré doit être utilisé ou non, soit en modifiant chrome://flags, soit à l'aide d'un indicateur de ligne de commande.</translation>
-<translation id="5624946025057772960">Lorsque cette règle est définie, l'accès aux URL répertoriées comme exceptions à <ph name="URL_BLOCKLIST_POLICY_NAME" /> est autorisé. Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, le caractère "*" peut être empêché de bloquer toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à un nombre limité d'URL. Cela vous permet d'ouvrir des exceptions pour certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines. Le filtre le plus spécifique détermine si une URL est bloquée ou non. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
-
-      Elle permet également d'autoriser ou non le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
-
-      Si cette règle n'est pas configurée, aucune exception n'est autorisée pour <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="5628811596950455942">Permet d'établir la liste des modes de déverrouillage rapide que les utilisateurs peuvent configurer et utiliser pour désactiver l'écran de verrouillage.
 
           Cette règle propose une liste de chaînes dont les entrées valides sont "all", "PIN" et "FINGERPRINT". Si l'option "all" est définie, chaque mode de déverrouillage rapide est mis à disposition des utilisateurs, y compris ceux ajoutés par la suite. Sinon, seuls les modes de déverrouillage rapide figurant dans la liste sont disponibles.
@@ -3636,15 +3623,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6190022522129724693">Paramètre de fenêtres pop-up par défaut</translation>
 <translation id="6190367314942602985">Enregistrer les informations d'identification de l'utilisateur</translation>
 <translation id="6195802366906945965">Déterminer si l'outil de vérification des certificats intégré sera utilisé pour vérifier les certificats des serveurs</translation>
-<translation id="6199780467005360782">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place).
-
-      Définir cette règle permet d'autoriser l'accès aux URL répertoriées comme exceptions à la liste des URL bloquées. Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, le caractère "*" peut être empêché de bloquer toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à un nombre limité d'URL. Cela vous permet d'ouvrir des exceptions pour certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines. Le filtre le plus spécifique détermine si une URL est bloquée ou non. Sachez également que la liste d'autorisation prévaut sur la liste de blocage. Cette règle est limitée à 1 000 entrées.
-
-      Elle permet également d'autoriser ou non le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
-
-      Si cette règle n'est pas configurée, aucune exception n'est autorisée.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="6205094657236844092">Permet d'établir la liste des applications Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de spécifier les utilisateurs qui ne peuvent pas les désinstaller ni les désactiver.
 
       Chaque élément de la liste de cette règle est un objet constitué d'un membre obligatoire tel que <ph name="URL_LABEL" /> (qui correspond à l'URL de l'application Web à installer) et de deux membres facultatifs tels que <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (qui indique où s'ouvre l'application Web ; par défaut, elle s'ouvre dans un nouvel onglet) et <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> ("True" si vous voulez créer des raccourcis sur le bureau <ph name="LINUX_OS_NAME" /> ou Windows®).
@@ -3657,7 +3635,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle est désactivée ou qu'elle n'est pas configurée, le service de protection par mot de passe n'enregistre que les copies hachées et après salage sur https://accounts.google.com.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
-<translation id="6210610748361191729">Si la règle est définie sur "False", les utilisateurs n'auront pas accès à l'UI d'importation/exportation. Toutefois, il restera possible d'exécuter des commandes "lxc" directement dans la machine virtuelle pour exporter et importer des images de conteneur.</translation>
 <translation id="6211428344788340116">Indiquer les périodes d'activité de l'appareil.
 
       Si ce paramètre n'est pas défini, ou s'il est défini sur "True", les périodes durant lesquelles l'appareil inscrit est utilisé sont régulièrement communiquées par celui-ci. Si ce paramètre est défini sur "False", les périodes d'activité ne sont ni enregistrées, ni communiquées.</translation>
@@ -4427,11 +4404,6 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Si cette règle est laissée vide ou n'est pas configurée, l'utilisateur peut utiliser n'importe quel compte Google comme compte de navigation principal sur <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Définir le nombre minimal de caractères pour le code de l'écran de verrouillage</translation>
-<translation id="7232816984286843471">Si cette règle est définie sur False, les utilisateurs non affiliés n'ont pas accès à Crostini.
-
-      Lorsque cette règle n'est pas définie ou est définie sur True, tous les utilisateurs sont autorisés à utiliser Crostini tant que les autres paramètres le permettent.
-      Les trois règles, VirtualMachinesAllowed, CrostiniAllowed et DeviceUnaffiliatedCrostiniAllowed doivent être définies sur True lorsqu'elles s'appliquent pour que Crostini puisse être exécuté.
-      Si vous modifiez cette règle en la définissant sur False, elle est appliquée aux conteneurs Crostini qui vont être lancés, mais elle n'arrête pas ceux qui le sont déjà.</translation>
 <translation id="7234280155140786597">Noms des hôtes de messagerie native non autorisés (ou "*" pour tous)</translation>
 <translation id="7249828445670652637">Activer les certificats CA <ph name="PRODUCT_OS_NAME" /> pour les applications ARC</translation>
 <translation id="7252681704926980614">Le nom d'utilisateur et le nom de fichier sont envoyés au serveur des imprimantes en mode natif à chaque tâche d'impression. Le paramètre par défaut est de ne pas les envoyer.
@@ -4944,14 +4916,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.</translation>
-<translation id="7992136759457836904">Permet de définir si votre appareil Chrome OS peut exécuter ou non des machines virtuelles.
-
-      Si cette règle est définie sur True, l'appareil est autorisé à exécuter des machines virtuelles.
-      Si cette règle est définie sur False, l'appareil n'est pas autorisé à exécuter de machines virtuelles.
-      Les trois règles, VirtualMachinesAllowed, CrostiniAllowed et DeviceUnaffiliatedCrostiniAllowed doivent être définies sur True lorsqu'elles s'appliquent pour que Crostini puisse être exécuté.
-      Si vous modifiez cette règle en la définissant sur False, elle est appliquée aux machines virtuelles qui vont être lancées, mais elle n'arrête pas celles qui le sont déjà.
-      Si cette règle n'est pas définie sur un appareil géré, l'appareil n'est pas autorisé à exécuter de machines virtuelles.
-      Les appareils non gérés sont autorisés à exécuter des machines virtuelles.</translation>
 <translation id="8001701200415781021">Restreindre les comptes Google autorisés à être définis comme comptes de navigation principaux dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Envoyer des fichiers pour l'analyse du respect des règles de protection des données sensibles</translation>
 <translation id="8006219716745491366">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> vous permet d'établir la liste des URL alternatives pour extraire des termes de recherche du moteur de recherche. Ces URL doivent inclure la chaîne <ph name="SEARCH_TERM_MARKER" />.

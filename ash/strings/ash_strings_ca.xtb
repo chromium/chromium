@@ -146,6 +146,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2429753432712299108">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Abans d'acceptar, comproveu que aquesta clau d'accés es mostri al dispositiu: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="2473177541599297363">Confirma la resolució</translation>
+<translation id="2475982808118771221">S'ha produït un error</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar la disposició del teclat.</translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
@@ -528,6 +529,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6857811139397017780">Activa <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6910714959251846841">Aquesta actualització requereix executar la funció Powerwash al dispositiu. Obtén més informació sobre l'última actualització de <ph name="SYSTEM_APP_NAME" />.</translation>

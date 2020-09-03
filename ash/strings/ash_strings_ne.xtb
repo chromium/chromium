@@ -146,6 +146,7 @@
 <translation id="2429753432712299108">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" ले मेल गर्न अनुमति चाहन्छ। स्वीकार गर्नु अघि, कृपया पक्का गर्नुहोस् की यो पासकुञ्जी त्यो यन्त्रमा देखाइएको छ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2473177541599297363">रिजोल्युसन पुष्टि गर्नुहोस्</translation>
+<translation id="2475982808118771221">त्रुटि भयो</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2484513351006226581">किबोर्डको लेआउट स्विच गर्न <ph name="KEYBOARD_SHORTCUT" /> मा थिच्नुहोस्।</translation>
 <translation id="2501920221385095727">स्टिकी कुञ्जीहरू</translation>

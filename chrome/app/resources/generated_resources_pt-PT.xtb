@@ -278,7 +278,7 @@
 <translation id="1313705515580255288">Os seus marcadores, o seu histórico e outras definições estão a ser sincronizados com a sua Conta Google.</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rede doméstica, sem roaming</translation>
-<translation id="1315144594965013365">Certifique-se de que ambos os dispositivos estão desbloqueados, estão próximos um do outro e têm o Bluetooth ativado. Se estiver a partilhar com um Chromebook, certifique-se de que tem a funcionalidade Partilhar com Nearby ativada (abra a área de estado ao selecionar a hora e, em seguida, selecione Partilhar com Nearby).</translation>
+<translation id="1315144594965013365">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. Se estiver a partilhar com um Chromebook, certifique-se de que tem a funcionalidade Partilhar com Nearby ativada (selecione a hora para abrir a barra de estado e, em seguida, selecione Partilhar com Nearby).</translation>
 <translation id="1316136264406804862">A pesquisar...</translation>
 <translation id="1316495628809031177">A sincronização está em pausa.</translation>
 <translation id="1317637799698924700">A estação de ancoragem vai funcionar no modo compatível com USB tipo C.</translation>
@@ -894,6 +894,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">A verificar a máquina virtual…</translation>
 <translation id="2048182445208425546">Aceder ao tráfego da sua rede</translation>
+<translation id="2048243703055695889">Definições da funcionalidade Partilhar com Nearby para o dispositivo de <ph name="USER_EMAIL" />, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">Ação não disponível</translation>
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -1180,6 +1181,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2384436799579181135">Ocorreu um erro. Verifique a impressora e tente novamente.</translation>
 <translation id="2387052489799050037">Aceda à Página inicial</translation>
 <translation id="2387458720915042159">Tipo de ligação proxy</translation>
+<translation id="2390347491606624519">Não é possível estabelecer ligação ao proxy, inicie sessão novamente</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2391419135980381625">Tipo de letra padrão</translation>
 <translation id="2392163307141705938">Atingiste o limite de tempo que o teu Pai ou Mãe definiu para o <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3325,6 +3327,7 @@ Pretende pará-lo?</translation>
 <translation id="5017643436812738274">Pode navegar pelas páginas com um cursor de texto. Prima Ctrl + Pesquisa + 7 para desativar esta opção.</translation>
 <translation id="5018207570537526145">Abrir o Website da extensão</translation>
 <translation id="5018526990965779848">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android ao enviar automaticamente dados de diagnóstico, de utilização do dispositivo e das apps para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
+<translation id="5019392775062123007">Visível para dispositivos próximos como <ph name="DEVICE_NAME" />.</translation>
 <translation id="5021750053540820849">Ainda por atualizar</translation>
 <translation id="5026806129670917316">Ativar Wi-Fi</translation>
 <translation id="5026874946691314267">Não voltar a mostrar</translation>
@@ -3414,6 +3417,7 @@ Pretende pará-lo?</translation>
 <translation id="5133483819862530305">Do pôr do sol ao nascer do sol</translation>
 <translation id="5135085122826131075">Aceda ao Assistente ao dizer "Ok Google".</translation>
 <translation id="5135533361271311778">Não foi possível criar item de marcador.</translation>
+<translation id="5136343472380336530">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Eliminar este item</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, pesquisa no <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Introduza o PIN da sua chave de segurança. Se não souber o PIN, terá de repor a chave de segurança.</translation>
@@ -4422,6 +4426,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6342069812937806050">Mesmo agora</translation>
 <translation id="6344170822609224263">Lista de acesso de ligações de rede</translation>
 <translation id="6344576354370880196">Impressoras guardadas</translation>
+<translation id="6345418402353744910">O seu nome de utilizador e palavra-passe são necessários para o proxy <ph name="PROXY" /> para que o administrador possa configurar a sua rede.</translation>
 <translation id="6349101878882523185">Instale a aplicação <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">A sincronização não está a funcionar. Experimente terminar e iniciar sessão novamente.</translation>
 <translation id="6351063337294363751">Pode limpar os dados de navegação a partir deste menu</translation>
@@ -4779,6 +4784,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6810613314571580006">Iniciar sessão automaticamente nos Sites com as credenciais armazenadas. Quando a funcionalidade está desativada, é-lhe pedida sempre uma confirmação antes de iniciar sessão num Website.</translation>
 <translation id="6810768462515084623">Ups! Parece que a sua palavra-passe expirou. Renove-a a partir de outro dispositivo e tente novamente.</translation>
 <translation id="6811034713472274749">A página está preparada para ser visualizada</translation>
+<translation id="6811332638216701903">Nome do anfitrião DHCP</translation>
 <translation id="6812349420832218321">O <ph name="PRODUCT_NAME" /> não pode ser executado como raiz.</translation>
 <translation id="6812841287760418429">Manter alterações</translation>
 <translation id="6817174620439930047">Perguntar sempre que um site pretender utilizar mensagens exclusivas do sistema para aceder a dispositivos MIDI (recomendado)</translation>
@@ -4856,6 +4862,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6903907808598579934">Ativar sincronização</translation>
 <translation id="6904344821472985372">Revogar acesso a ficheiros</translation>
 <translation id="6904655473976120856">Premir o botão Aplicação para sair</translation>
+<translation id="6909422577741440844">Pretende receber conteúdos deste dispositivo?</translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="691024665142758461">Transferir vários ficheiros</translation>
 <translation id="691106080621596509">Esta ação irá limpar todos os dados e cookies armazenados pelo grupo de sites <ph name="SITE_GROUP_NAME" />, por quaisquer sites associados a este e pela respetiva app instalada.</translation>

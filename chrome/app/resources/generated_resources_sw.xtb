@@ -278,7 +278,7 @@
 <translation id="1313705515580255288">Alamisho, historia, na mipangilio yako mingine itasawazishwa na Akaunti yako ya Google.</translation>
 <translation id="1314565355471455267">VPN ya Android</translation>
 <translation id="131461803491198646">Uko katika mtandao wako wa kawaida</translation>
-<translation id="1315144594965013365">Hakikisha kuwa vifaa vyote viwili vimefunguliwa, vinakaribiana na Bluetooth imewashwa. Iwapo unashiriki na kifaa cha Chromebook, hakikisha kwamba kipengele cha Uhamishaji wa Karibu kimewashwa kwenye kifaa hicho (fungua eneo la hali kwa kuchagua saa, kisha uchague Uhamishaji wa Karibu).</translation>
+<translation id="1315144594965013365">Hakikisha kuwa vifaa vyote viwili vimefunguliwa, vinakaribiana na Bluetooth imewashwa. Iwapo unashiriki na kifaa cha Chromebook, hakikisha kwamba kipengele cha Uhamishaji wa Karibu kimewashwa (fungua eneo la hali kwa kuchagua saa, kisha uchague Uhamishaji wa Karibu).</translation>
 <translation id="1316136264406804862">Inatafuta...</translation>
 <translation id="1316495628809031177">Imesitisha Usawazishaji</translation>
 <translation id="1317637799698924700">Sehemu ya kituo chako itatumia hali inayooana na USB Aina ya C.</translation>
@@ -3974,7 +3974,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5826993284769733527">Ng'aavu kiasi</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Inachapisha...</translation>
-<translation id="5830659417568730973">Anwani zilizo karibu nawe ulizozichagua, ukiwa umefungua skrini yako</translation>
+<translation id="5830659417568730973">Anwani zilizo karibu nawe ulizozichagua, ukiwa umefungua skrini</translation>
 <translation id="5830720307094128296">Hifadhi Ukurasa K&amp;ama...</translation>
 <translation id="5832805196449965646">Ongeza Mtumiaji Mwingine</translation>
 <translation id="583281660410589416">Haijulikani</translation>
@@ -4785,7 +4785,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6824584962142919697">&amp;Kagua vipengee</translation>
 <translation id="6825184156888454064">Panga kulingana na jina</translation>
 <translation id="6826872289184051766">Thibitisha kupitia USB</translation>
-<translation id="6827487342470222762">Hakuna anwani zinazopatikana. Ili uweze kutumia kipengele cha Uhamishaji wa Karibu kwenye anwani zako, weka anwani ya barua pepe inayohusishwa na Akaunti zao za Google kwenye anwani zako.</translation>
+<translation id="6827487342470222762">Hakuna anwani zinazopatikana. Ili utumie kipengele cha Uhamishaji wa Karibu kwenye anwani zako, weka anwani za barua pepe zinazohusishwa na Akaunti zao za Google kwenye anwani zako.</translation>
 <translation id="6827623133556594466">Google Cloud Print itaacha kutumika baada ya tarehe 31 Desemba. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Zuia kuingia kwa watumiaji wafuatao:</translation>
 <translation id="6828182567531805778">Andika kauli yako ya siri ili usawazishe data yako</translation>

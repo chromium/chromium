@@ -388,6 +388,7 @@
 <translation id="5433691172869980887">Το όνομα χρήστη αντιγράφηκε</translation>
 <translation id="54401264925851789">Πληροφορίες ασφάλειας σελίδας</translation>
 <translation id="5443952882982198570">Πιστωτικές κάρτες</translation>
+<translation id="5457226814769348910">Άνοιγμα εκτός σύνδεσης</translation>
 <translation id="5457907402803865181">Σφάλμα κατά τον συγχρονισμό των κωδικών πρόσβασης.</translation>
 <translation id="5489208564673669003">Για να διαχειριστείτε τα cookie για όλους τους ιστοτόπους, ανατρέξτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Αποκλεισμός όλων των cookie (δεν συνιστάται)</translation>
@@ -458,6 +459,7 @@
 <translation id="6187302354554850004">Τελευτ. συγχρ.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Μη αναγνωσμένα</translation>
 <translation id="6196207969502475924">Φωνητική αναζήτηση</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{Κλείσιμο {COUNT} καρτέλας}other{Κλείσιμο {COUNT} καρτελών}}</translation>
 <translation id="6219688215832490856">Να μην γίνεται ποτέ μετάφραση</translation>
 <translation id="6254066287920239840">Άνοιγμα συνδέσμων στην εφαρμογή αντί για το πρόγραμμα περιήγησης.</translation>
 <translation id="6255097610484507482">Επεξεργασία πιστωτικής κάρτας</translation>

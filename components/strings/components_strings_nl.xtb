@@ -227,7 +227,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Naam kaarthouder</translation>
 <translation id="1807528111851433570">Startblad</translation>
-<translation id="1811804136210993241">Annotaties weergeven</translation>
 <translation id="1821930232296380041">Ongeldige aanvraag of aanvraagparameters</translation>
 <translation id="1822540298136254167">Websites die je bezoekt en waarop je tijd doorbrengt</translation>
 <translation id="1826516787628120939">Controleren</translation>
@@ -1679,7 +1678,7 @@ Aanvullende informatie:
 <translation id="7887683347370398519">Controleer je CVC-code en probeer het opnieuw</translation>
 <translation id="7887885240995164102">Scherm-in-scherm openen</translation>
 <translation id="7888575728750733395">Weergave-intentie voor afdrukken</translation>
-<translation id="7894280532028510793">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een netwerkdiagnose uit<ph name="END_LINK" />.</translation>
+<translation id="7894280532028510793">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (envelop)</translation>
 <translation id="7932579305932748336">Coaten</translation>
 <translation id="79338296614623784">Geef een geldig telefoonnummer op</translation>
@@ -1886,7 +1885,7 @@ Aanvullende informatie:
 <translation id="884923133447025588">Geen intrekkingsmechanisme gevonden.</translation>
 <translation id="885730110891505394">Delen met Google</translation>
 <translation id="8858065207712248076">Chrome raadt je aan het wachtwoord voor <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
-<translation id="885906927438988819">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een Windows-netwerkdiagnose uit<ph name="END_LINK" />.</translation>
+<translation id="885906927438988819">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een Windows-netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Fout bij het parseren van beleidsinstellingen</translation>
 <translation id="8866928039507595380">Vouwen</translation>
 <translation id="886872106311861689">B3</translation>

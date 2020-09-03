@@ -2902,12 +2902,6 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o destaque de cursor ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="5277806246014825877">Permitir que este usuário execute o Crostini.
-
-      Se a política estiver definida como falsa, o Crostini não será ativado para o usuário.
-      Se estiver definida como verdadeira ou não estiver definida, o Crostini será ativado para o usuário, desde que outras configurações também o permitam.
-      Todas as três políticas, VirtualMachinesAllowed, CrostiniAllowed e DeviceUnaffiliatedCrostiniAllowed precisam ser verdadeiras quando se aplicarem ao Crostini para que ele possa ser executado.
-      Quando esta política é alterada para falsa, ela se aplica à criação de novos contêineres do Crostini, mas ela não encerra os contêineres que já estão em execução.</translation>
 <translation id="5283457834853986457">Desativar o localizador de plug-ins (uso suspenso)</translation>
 <translation id="5285315763984334157">Bloqueia downloads maliciosos</translation>
 <translation id="5288772341821359899">Se a política for configurada, o alcance da porta UDP usado por WebRTC será restrito ao intervalo de porta especificado (endpoints inclusos).
@@ -3234,13 +3228,6 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
       Se ela for definida como falsa, o cliente DNS integrado nunca será usado.
 
       Se esta política não for definida, o cliente DNS integrado será ativado por padrão no macOS, no Android (quando nem o DNS particular nem a VPN estiverem ativados) e no ChromeOS. Os usuários poderão decidir se o cliente DNS integrado será usado editando chrome://flags ou especificando a sinalização de uma linha de comando.</translation>
-<translation id="5624946025057772960">A definição da política concede acesso aos URLs listados, como exceções à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para ver o formato das entradas dessa lista. Por exemplo, "*" pode ser proibido para bloquear todas as solicitações, e esta política pode ser usada para permitir o acesso a uma lista limitada de URLs. Use-a para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos. O filtro mais específico determinará se um URL será bloqueado ou permitido. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
-
-      Ela também permite que o navegador invoque automaticamente aplicativos externos registrados como gerenciadores de protocolo para os protocolos listados, como "tel:" ou "ssh:".
-
-      Se a política não for definida, nenhuma exceção a <ph name="URL_BLOCKLIST_POLICY_NAME" /> será permitida.
-
-      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" /> executado no Windows 10 Pro ou registradas em <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="5628811596950455942">A política controla uma lista de modos de desbloqueio rápido que podem ser configurados e usados para desbloquear a tela de bloqueio.
 
           Esse valor é uma lista de strings, e as entradas válidas da lista precisam ser de um dos seguintes tipos: "all", "PIN", "FINGERPRINT". Se a opção "all" for adicionada à lista, todos os modos de desbloqueio rápido estarão disponíveis, incluindo os implementados no futuro. Caso contrário, somente os modos presentes na lista serão disponibilizados.
@@ -3590,15 +3577,6 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
 <translation id="6190022522129724693">Configuração padrão de pop-ups</translation>
 <translation id="6190367314942602985">Reportar informações de identificação do usuário</translation>
 <translation id="6195802366906945965">Determina se o verificador integrado de certificados será usado para verificar os certificados do servidor</translation>
-<translation id="6199780467005360782">Esta política está obsoleta. Use a <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      A definição da política concede acesso aos URLs listados, como exceções à lista de bloqueio de URLs. Consulte a descrição da política para ver o formato das entradas dessa lista. Por exemplo, "*" pode ser proibido para bloquear todas as solicitações, e esta política pode ser usada para permitir o acesso a uma lista limitada de URLs. Use-a para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos. O filtro mais específico determinará se um URL será bloqueado ou permitido. A lista de permissões tem precedência sobre a lista de bloqueio. Esta política tem um limite de 1.000 entradas.
-
-      Ela também permite que o navegador invoque automaticamente aplicativos externos registrados como gerenciadores de protocolo para os protocolos listados, como "tel:" ou "ssh:".
-
-      Se ela não for definida, nenhuma exceção será permitida.
-
-      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" /> executado no Windows 10 Pro ou registradas em <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="6205094657236844092">A definição da política especifica uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados ou desativados.
 
       Cada item da lista da política é um objeto com um elemento obrigatório: <ph name="URL_LABEL" />, o URL do app da Web que será instalado. Além disso, há dois elementos opcionais:<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />, para a forma como o app da Web é aberto, em que uma nova guia é o padrão; e <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />, com valor verdadeiro se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do Windows®.
@@ -3611,7 +3589,6 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
       Se a configuração for desativada ou não for definida, o serviço de proteção de senha capturará apenas hashes com sal de senhas em https://accounts.google.com.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas em <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
-<translation id="6210610748361191729">Se a política for definida como falsa, a IU de exportação/importação ficará indisponível para o usuário. No entanto, ainda será possível usar comandos "lxc" diretamente na máquina virtual para exportar e importar imagens de contêiner.</translation>
 <translation id="6211428344788340116">Informa o horário das atividades do dispositivo.
 
       Se essa configuração não for definida ou for definida como "True", os dispositivos inscritos informarão os períodos de tempo em que um usuário estiver ativo no dispositivo. Se essa configuração for definida como "False", os horários das atividades do dispositivo não serão gravados ou informados.</translation>
@@ -4181,6 +4158,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Essas políticas permitem configurar a forma como o <ph name="PRODUCT_OS_NAME" /> se comporta quando o usuário permanece inativo por um período de tempo específico.</translation>
 <translation id="7032813174556919004">Desativar DNS sobre HTTPS</translation>
+<translation id="7033778618670823541">Se a política for definida, será possível especificar uma lista de origens (URLs) ou padrões de nome de host (como *.example.com) aos quais as restrições de segurança de origens inseguras não serão aplicadas. As organizações podem especificar origens para aplicativos legados que não possam implantar TLS ou configurar um servidor de preparo para desenvolvimento da Web interno. Dessa forma, os desenvolvedores podem testar recursos que necessitam de contextos seguros sem precisar implantar o TLS no servidor de preparo. Essa política também impede que origens sejam marcadas como "Não seguras" na barra de endereço.
+
+      A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a sinalização de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a sinalização de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
+
+      Para ver mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="7037812781389976160">Controlar a posição da estante <ph name="PRODUCT_OS_NAME" />.
 
       Se esta política estiver definida como "Parte inferior", a estante será colocada na parte inferior da tela.
@@ -4385,11 +4367,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Se esta política for deixada sem definição ou em branco, o usuário poderá configurar qualquer Conta do Google como uma conta principal do navegador no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Definir o tamanho mínimo do PIN da tela de bloqueio</translation>
-<translation id="7232816984286843471">Se a política for definida como falsa, os usuários sem afiliação não poderão usar o Crostini.
-
-      Se a política não for definida ou estiver definida como verdadeira, todos os usuários terão permissão para usar o Crostini, desde que outras configurações também o permitam.
-      Todas as três políticas, VirtualMachinesAllowed, CrostiniAllowed e DeviceUnaffiliatedCrostiniAllowed precisam ser verdadeiras quando se aplicarem ao Crostini para que ele possa ser executado.
-      Quando esta política é alterada para falsa, ela se aplica à criação de novos contêineres do Crostini, mas não encerra contêineres que já estão em execução.</translation>
 <translation id="7234280155140786597">Nomes dos hosts de mensagens nativas proibidos (ou "*" para todos)</translation>
 <translation id="7249828445670652637">Ativar certificados de CA (Autoridade de certificação) do <ph name="PRODUCT_OS_NAME" /> para apps ARC</translation>
 <translation id="7252681704926980614">Envia o nome de usuário e de arquivo para o servidor de impressoras nativas com cada trabalho de impressão. O padrão é não enviar.
@@ -4893,14 +4870,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de inatividade.</translation>
-<translation id="7992136759457836904">Permite controlar se máquinas virtuais têm permissão para serem executadas no Chrome OS.
-
-      Se a política for definida como verdadeira, o dispositivo terá permissão para executar máquinas virtuais.
-      Se a política for definida como falsa, o dispositivo não terá permissão para executar máquinas virtuais.
-      Todas as três políticas, VirtualMachinesAllowed, CrostiniAllowed e DeviceUnaffiliatedCrostiniAllowed precisam ser verdadeiras quando se aplicarem ao Crostini para que ele possa ser executado.
-      Quando esta política é alterada para falsa, ela se aplica à criação de novas máquinas virtuais, mas ela não encerra as máquinas virtuais que já estão em execução.
-      Quando esta política não for definida em um dispositivo gerenciado, ele não poderá executar máquinas virtuais.
-      Dispositivos não gerenciados podem executar máquinas virtuais.</translation>
 <translation id="8001701200415781021">Restringir quais Contas do Google são permitidas como principais do navegador no <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Envia arquivos para verificar se há violações da regra de proteção de dados confidenciais</translation>
 <translation id="8006219716745491366">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> especificará uma lista de URLs alternativos para extrair termos de pesquisa do mecanismo. Os URLs precisam incluir a string <ph name="SEARCH_TERM_MARKER" />.

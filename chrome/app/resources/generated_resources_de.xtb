@@ -302,7 +302,7 @@
 <translation id="13392265090583506">Barrierefreiheit</translation>
 <translation id="1340527397989195812">Sichern Sie Medien von diesem Gerät mit der App "Dateien".</translation>
 <translation id="1341988552785875222">Der aktuelle Hintergrund wurde von <ph name="APP_NAME" /> festgelegt. Sie müssen <ph name="APP_NAME" /> möglicherweise deinstallieren, bevor Sie einen anderen Hintergrund auswählen.</translation>
-<translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux speichert keine USB-Geräte, nachdem diese entfernt wurden.</translation>
+<translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
 <translation id="1347256498747320987">Updates und Apps installieren: Wenn du fortfährst, stimmst du zu, dass dieses Gerät automatisch Updates und Apps von Google, deinem Mobilfunkanbieter und dem Hersteller deines Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
@@ -313,7 +313,7 @@
 <translation id="1359923111303110318">Ihr Gerät kann mit Smart Lock entsperrt werden. Drücken Sie zum Entsperren die Eingabetaste.</translation>
 <translation id="1361164813881551742">Manuell hinzufügen</translation>
 <translation id="1361655923249334273">Nicht verwendet</translation>
-<translation id="1361707011052629095">Geräte in der Nähe, wenn Nearby Share geöffnet ist</translation>
+<translation id="1361707011052629095">Geräte in der Nähe, wenn Nearby Share aktiviert ist</translation>
 <translation id="1361872463926621533">Ton beim Start abspielen</translation>
 <translation id="1362865166188278099">Mechanischer Fehler. Drucker prüfen.</translation>
 <translation id="1363585519747660921">USB-Drucker muss konfiguriert werden</translation>
@@ -1105,7 +1105,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
 <translation id="230927227160767054">Diese Seite möchte einen Service-Handler installieren.</translation>
 <translation id="2309620859903500144">Diese Website darf nicht auf meine Bewegungs- oder Lichtsensoren zugreifen.</translation>
-<translation id="2314165183524574721">Die aktuelle Sichtbarkeitseinstellung ist "Ausgeblendet"</translation>
+<translation id="2314165183524574721">Die aktuelle Sichtbarkeitseinstellung ist "Verborgen"</translation>
 <translation id="2314873619957287124">Grundregeln für den Umgang mit digitalen Medien aufstellen, um deinem Kind zu helfen, sich beim Lernen, Spielen und Surfen in der Onlinewelt zurechtzufinden</translation>
 <translation id="2315414688463285945">Fehler beim Konfigurieren von Linux-Dateien. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="2315587498123194634">Link an <ph name="DEVICE_NAME" /> senden</translation>
@@ -1208,7 +1208,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
 <translation id="2434449159125086437">Der Drucker kann nicht eingerichtet werden. Prüfen Sie die Konfiguration und probieren Sie es dann noch einmal.</translation>
-<translation id="2434758125294431199">Hier wählen Sie aus, wer Inhalte mit Ihnen teilen kann</translation>
+<translation id="2434758125294431199">Wählen Sie aus, wer Inhalte mit Ihnen teilen kann</translation>
 <translation id="2435248616906486374">Netzwerkverbindung getrennt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2436186046335138073">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> zulassen?</translation>
@@ -1693,7 +1693,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3004391367407090544">Bitte versuchen Sie es später erneut.</translation>
 <translation id="3006881078666935414">Keine Nutzungsdaten</translation>
 <translation id="3007771295016901659">Tab duplizieren</translation>
-<translation id="3008232374986381779">Führen Sie Linux-Tools, -Editoren und -IDEs auf Ihrem <ph name="DEVICE_TYPE" /> aus. <ph name="LINK_BEGIN" />Weitere Informationen.<ph name="LINK_END" /></translation>
+<translation id="3008232374986381779">Linux-Tools, ‑Editoren und ‑IDEs auf <ph name="DEVICE_TYPE" /> ausführen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
 <translation id="3009300415590184725">Möchten Sie die Einrichtung des mobilen Datendiensts wirklich abbrechen?</translation>
 <translation id="3009779501245596802">Indexierte Datenbanken</translation>
@@ -1986,7 +1986,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3388788256054548012">Diese Datei ist verschlüsselt. Bitten Sie den Inhaber, sie zu entschlüsseln.</translation>
 <translation id="3390013585654699824">App-Details</translation>
 <translation id="3390741581549395454">Linux-Apps und -Dateien wurden gesichert. Das Upgrade beginnt demnächst.</translation>
-<translation id="339507021360520688">Nutzer, die festgelegt haben, dass sie für Sie sichtbar sind, während ihr Display entsperrt ist</translation>
+<translation id="339507021360520688">Personen, die festgelegt haben, dass sie für Sie sichtbar sind, während ihr Display entsperrt ist</translation>
 <translation id="3396800784455899911">Wenn Sie auf die Schaltfläche "Akzeptieren und fortfahren" klicken, willigen Sie damit in die oben für diese Google-Dienste beschriebene Verarbeitung Ihrer Daten ein.</translation>
 <translation id="3399432415385675819">Benachrichtigungen werden deaktiviert</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – Zeilensprung</translation>
@@ -2672,7 +2672,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4159681666905192102">Dies ist ein Konto für Kinder, das von <ph name="CUSTODIAN_EMAIL" /> und <ph name="SECOND_CUSTODIAN_EMAIL" /> verwaltet wird.</translation>
 <translation id="4163560723127662357">Unbekannte Tastatur</translation>
 <translation id="4168015872538332605">Einige Einstellungen, die <ph name="PRIMARY_EMAIL" /> gehören, werden mit Ihnen geteilt. Diese Einstellungen wirken sich nur dann auf Ihr Konto aus, wenn die Mehrfachanmeldung verwendet wird.</translation>
-<translation id="4170256733935344210">Scannen Sie den QR-Code mit der Kamera Ihres Geräts oder geben Sie den von Ihrem Mobilfunkanbieter bereitgestellten Aktivierungscode ein</translation>
+<translation id="4170256733935344210">Scannen Sie den QR-Code mit der Kamera Ihres Geräts oder geben Sie den von Ihrem Mobilfunkanbieter angegebenen Aktivierungscode ein</translation>
 <translation id="4170314459383239649">Beim Beenden löschen</translation>
 <translation id="4175137578744761569">Hellviolett und Weiß</translation>
 <translation id="4175737294868205930">Permanentspeicher</translation>
@@ -3378,7 +3378,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
-<translation id="5094721898978802975">Mit zusammenarbeitenden systemeigenen Anwendungen kommunizieren</translation>
+<translation id="5094721898978802975">Mit zusammenarbeitenden nativen Anwendungen kommunizieren</translation>
 <translation id="5097002363526479830">Verbinden mit dem Netzwerk "<ph name="NAME" />" fehlgeschlagen: <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatisch klicken, wenn der Cursor stoppt</translation>
@@ -4032,7 +4032,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Bevorzugte WLANs</translation>
-<translation id="5893589697005440881">Mit dieser Funktion können Sie Dateien mit Menschen in der Nähe teilen</translation>
+<translation id="5893589697005440881">Teilen Sie Dateien ganz einfach mit Menschen in der Nähe</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
 <translation id="5900358982890952556">Linux (Beta) aktualisieren</translation>
@@ -4618,7 +4618,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> wird schon von <ph name="DOMAIN" /> verwaltet. Wenn du die Jugendschutzeinstellungen auf ein anderes Google-Konto anwenden möchtest, melde dich nach der Einrichtung ab und wähle auf dem Anmeldebildschirm "Person hinzufügen" aus.</translation>
 <translation id="6611972847767394631">Hier finden Sie Ihre Tabs</translation>
 <translation id="6612358246767739896">Geschützte Inhalte</translation>
-<translation id="6615455863669487791">Anzeigen</translation>
+<translation id="6615455863669487791">Zeigen</translation>
 <translation id="6618097958368085618">Trotzdem beibehalten</translation>
 <translation id="6618744767048954150">Läuft</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -4934,7 +4934,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6998793565256476099">Gerät für Videokonferenzen registrieren</translation>
 <translation id="6999956497249459195">Neue Gruppe</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> ist verbunden, muss aber konfiguriert werden</translation>
-<translation id="7000347579424117903">Strg, Alt oder Suchtaste integrieren</translation>
+<translation id="7000347579424117903">Muss mit Strg, Alt oder Suchtaste beginnen</translation>
 <translation id="7001036685275644873">Linux-Apps und -Dateien werden gesichert</translation>
 <translation id="7002055706763150362">Zum Einrichten von Smart Lock für Chromebooks müssen wir Sie authentifizieren. Geben Sie bitte Ihr Passwort ein.</translation>
 <translation id="7003339318920871147">Web-Datenbanken</translation>
@@ -5689,7 +5689,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7918257978052780342">Anmelden</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> darf <ph name="FILENAME" /> aufrufen</translation>
-<translation id="7924080089023843180">Niemand, solange Nearby Share nicht geöffnet wurde</translation>
+<translation id="7924080089023843180">Niemand, solange ich Nearby Share nicht selbst öffne</translation>
 <translation id="7924358170328001543">Fehler bei der Portweiterleitung</translation>
 <translation id="792514962475806987">Zoomstufe für angedockte Lupe:</translation>
 <translation id="7925247922861151263">AAA-Prüfung fehlgeschlagen</translation>
@@ -5722,7 +5722,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7952904276017482715">Erwartete ID: "<ph name="EXPECTED_ID" />", tatsächliche ID: "<ph name="NEW_ID" />"</translation>
 <translation id="7953955868932471628">Verknüpfungen verwalten</translation>
 <translation id="7956373551960864128">Ihre gespeicherten Drucker</translation>
-<translation id="7957074856830851026">Geräteinformationen wie die Seriennummer oder die Asset-ID anzeigen</translation>
+<translation id="7957074856830851026">Geräteinformationen wie Seriennummer oder Geräte-ID abrufen</translation>
 <translation id="7957615753207896812">Tastatureinstellungen öffnen</translation>
 <translation id="7959074893852789871">Die Datei enthielt mehrere Zertifikate, von denen einige nicht importiert wurden:</translation>
 <translation id="7961015016161918242">Nie</translation>
@@ -5737,7 +5737,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7970673414865679092">Ethernet-Details</translation>
 <translation id="7970882136539140748">Karte kann momentan nicht gespeichert werden</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
-<translation id="797394244396603170">Hier wählen Sie das Gerät aus, mit dem Sie Dateien teilen möchten</translation>
+<translation id="797394244396603170">Wählen Sie das Gerät aus, mit dem Sie Dateien teilen möchten</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7974566588408714340">Über <ph name="EXTENSIONNAME" /> erneut versuchen</translation>
 <translation id="7974936243149753750">Overscan</translation>

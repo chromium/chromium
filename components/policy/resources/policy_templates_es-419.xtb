@@ -2926,12 +2926,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de resaltar el cursor estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
-<translation id="5277806246014825877">Permite que este usuario ejecute Crostini.
-
-      Si se establece la política como falsa, el usuario no podrá utilizar Crostini.
-      Si se establece como verdadera, o no se establece, el usuario podrá utilizar Crostini, siempre que otras opciones de configuración también lo permitan.
-      Para que pueda ejecutarse Crostini, deben establecerse las tres políticas (VirtualMachinesAllowed, CrostiniAllowed y DeviceUnaffiliatedCrostiniAllowed) como verdaderas.
-      Si se cambia esta política a falsa, se aplicará a contenedores nuevos de Crostini, pero no se apagarán los que ya estén en ejecución.</translation>
 <translation id="5283457834853986457">Inhabilitar el buscador de complementos (obsoleto)</translation>
 <translation id="5285315763984334157">Bloquear descargas con contenido malicioso</translation>
 <translation id="5288772341821359899">Si se establece la política, el intervalo de puertos UDP que usa WebRTC está restringido al intervalo de puertos especificado (extremos incluidos).
@@ -3258,13 +3252,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si la estableces como falsa, no se utilizará el cliente DNS integrado.
 
       Si no la estableces, se habilitará el cliente DNS integrado de forma predeterminada en macOS, el Sistema operativo Chrome y Android (cuando no están habilitados el DNS privado ni la VPN). Además, los usuarios podrán editar chrome://flags o especificar una marca de línea de comandos para decidir si se utiliza el cliente DNS integrado.</translation>
-<translation id="5624946025057772960">Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, puedes prohibir las entradas con "*" para bloquear todas las solicitudes. Además, esta política puede permitir el acceso a una lista limitada de URL y abrir las excepciones a determinados esquemas, subdominios de otros dominios, puertos o rutas específicas. El filtro más específico determinará si una URL está en la lista de elementos bloqueados o permitidos. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre la política <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política se limitará a 1,000 entradas.
-
-      Esta política también puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista de elementos permitidos, p. ej., "tel:" o "ssh:".
-
-      Si no estableces la política, no se permitirán excepciones a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="5628811596950455942">La política controla una lista de métodos de desbloqueo rápido que los usuarios pueden configurar y usar para desbloquear la pantalla de bloqueo.
 
           Este valor es una lista de strings; las entradas válidas para la lista son las siguientes: "all", "PIN", "FINGERPRINT". Si se agrega "all" a la lista, el usuario podrá usar todos los métodos de desbloqueo rápido, entre los que se incluyen aquellos que se implementen en el futuro. De lo contrario, solo estarán disponibles los métodos de desbloqueo rápido que se enumeran en la lista.
@@ -3615,15 +3602,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6190022522129724693">Configuración predeterminada de ventanas emergentes</translation>
 <translation id="6190367314942602985">Enviar la información de identificación del usuario</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de servidores</translation>
-<translation id="6199780467005360782">Esta política dejó de estar disponible. Usa la política "<ph name="URL_ALLOWLIST_POLICY_NAME" />" en su lugar.
-
-      Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de URL bloqueadas. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, puedes prohibir las entradas con "*" para bloquear todas las solicitudes. Además, esta política puede permitir el acceso a una lista limitada de URL y abrir las excepciones a determinados esquemas, subdominios de otros dominios, puertos o rutas específicas. El filtro más específico determinará si una URL está en la lista de elementos bloqueados o permitidos. La lista de elementos permitidos tiene prioridad sobre la de elementos bloqueados. Esta política se limitará a 1,000 entradas.
-
-      Esta política también puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista de elementos permitidos, p. ej., "tel:" o "ssh:".
-
-      Si no estableces la política, no se permitirán excepciones.
-
-      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="6205094657236844092">Si estableces la política, se especificará una lista de aplicaciones web que se instalan de manera discreta, sin la interacción del usuario y que este no puede desinstalar ni desactivar.
 
       Cada elemento de la lista de la política es un objeto con un miembro obligatorio: <ph name="URL_LABEL" /> (la URL de la aplicación web que se instalará) y 2 miembros opcionales: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (establece la manera en la que se abrirá la aplicación web; la opción predeterminada es una nueva pestaña) y <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (verdadero, si se crean accesos directos de escritorio para <ph name="LINUX_OS_NAME" /> y Windows®).
@@ -3636,7 +3614,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 Si desactivas esta configuración o no la estableces, el servicio de protección de contraseñas solo capturará los hash con sal de las contraseñas que se encuentren en https://accounts.google.com.
 
 En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o inscritas en la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
-<translation id="6210610748361191729">Si la política se configura como falsa, la IU de importación y exportación no estará disponible para los usuarios. Sin embargo, será posible usar los comandos "lxc" directamente en la máquina virtual para importar y exportar imágenes de contenedores.</translation>
 <translation id="6211428344788340116">Indica el tiempo de actividad del dispositivo.
 
       Si esta política no se establece o se establece en "True", los dispositivos registrados notificarán los períodos durante los que se utilice activamente el dispositivo. Si esta política se establece en "False", no se registrará ni se informará sobre el tiempo de actividad del dispositivo.</translation>
@@ -4414,11 +4391,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si no se establece esta política o se deja en blanco, el usuario podrá establecer cualquier Cuenta de Google como la principal del navegador en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Establecer la longitud mínima del PIN de la pantalla bloqueada</translation>
-<translation id="7232816984286843471">Si se establece la política como falsa, los usuarios no afiliados no podrán usar Crostini.
-
-      Si se establece como verdadera, o no se establece, todos los usuarios podrán usar Crostini, siempre que otras opciones de configuración también lo permitan.
-      Para que pueda ejecutarse Crostini, deben establecerse las tres políticas (VirtualMachinesAllowed, CrostiniAllowed y DeviceUnaffiliatedCrostiniAllowed) como verdaderas.
-      Si se cambia esta política a falsa, se aplicará a contenedores nuevos de Crostini, pero no se apagarán los que ya estén en ejecución.</translation>
 <translation id="7234280155140786597">Nombres de los hosts de mensajería nativa prohibidos (o * para todos)</translation>
 <translation id="7249828445670652637">Habilitar certificados de CA de <ph name="PRODUCT_OS_NAME" /> para apps de ARC</translation>
 <translation id="7252681704926980614">Envía los nombres de usuario y de archivo al servidor de impresoras nativas en cada trabajo de impresión. La acción predeterminada es no enviarlos.
@@ -4921,14 +4893,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
           Si no se establece, se utilizará un período predeterminado.
 
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de inactividad.</translation>
-<translation id="7992136759457836904">Te permite controlar si pueden ejecutarse las máquinas virtuales en el Sistema operativo Chrome.
-
-      Si la política se establece como verdadera, el dispositivo podrá ejecutar máquinas virtuales.
-      Si se establece como falsa, el dispositivo no podrá hacerlo.
-      Para que pueda ejecutarse Crostini, deben establecerse las tres políticas (VirtualMachinesAllowed, CrostiniAllowed y DeviceUnaffiliatedCrostiniAllowed) como verdaderas.
-      Si se cambia esta política a falsa, se aplicará a contenedores nuevos de Crostini, pero no se apagarán los que ya estén en ejecución.
-      Si no se establece esta política en un dispositivo administrado, el dispositivo no podrá ejecutar máquinas virtuales.
-      Los dispositivos no administrados pueden ejecutar máquinas virtuales.</translation>
 <translation id="8001701200415781021">Determinar qué Cuentas de Google se pueden establecer como las principales del navegador en <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Envía archivos para analizar si se infringen las normas relacionadas con la protección de datos sensibles</translation>
 <translation id="8006219716745491366">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> especificará una lista de URL alternativas para extraer términos de búsqueda del motor de búsqueda. Las URL deben incluir la string <ph name="SEARCH_TERM_MARKER" />.

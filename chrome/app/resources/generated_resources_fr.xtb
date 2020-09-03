@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">Vos favoris, votre historique et d'autres paramètres seront synchronisés avec votre compte Google.</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
+<translation id="1315144594965013365">Assurez-vous que les deux appareils sont déverrouillés, à proximité l'un de l'autre, et que le Bluetooth est activé sur chacun d'eux. Si vous partagez des fichiers à l'aide d'un Chromebook, assurez-vous que la fonctionnalité Partage à proximité est activée sur celui-ci. Pour cela, ouvrez la zone d'état en sélectionnant l'heure, puis sélectionnez "Partage à proximité".</translation>
 <translation id="1316136264406804862">Recherche en cours…</translation>
 <translation id="1316495628809031177">Synchronisation en pause</translation>
 <translation id="1317637799698924700">Votre station d'accueil fonctionnera dans le mode compatible USB Type-C.</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Votre appareil peut être déverrouillé avec Smart Lock. Appuyez sur Entrée pour le déverrouiller.</translation>
 <translation id="1361164813881551742">Ajouter manuellement</translation>
 <translation id="1361655923249334273">Non utilisé</translation>
+<translation id="1361707011052629095">Appareils à proximité lorsque la fonctionnalité Partage à proximité est ouverte</translation>
 <translation id="1361872463926621533">Jouer un son au démarrage</translation>
 <translation id="1362865166188278099">Problème mécanique. Vérifiez l'imprimante</translation>
 <translation id="1363585519747660921">L'imprimante USB n'est pas configurée</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1556537182262721003">Impossible de déplacer le répertoire d'extensions dans le profil.</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
+<translation id="1562119309884184621">L'ajout de ce contact sera mémorisé pour leur prochain partage</translation>
 <translation id="1563702743503072935">Les mots de passe enregistrés dans votre compte Google seront également disponibles sur cet appareil lorsque vous serez connecté</translation>
 <translation id="1566049601598938765">Site Web</translation>
 <translation id="15662109988763471">L'imprimante sélectionnée n'est pas disponible ou n'est pas installée correctement. Vérifiez votre imprimante ou sélectionnez-en une autre.</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">Fermer la barre de téléchargements</translation>
 <translation id="1744060673522309905">Impossible d'associer l'appareil au domaine. Vérifiez que vous n'avez pas dépassé le nombre d'appareils pouvant être ajoutés.</translation>
 <translation id="1744108098763830590">page en arrière-plan</translation>
+<translation id="1745732479023874451">Gérer les contacts</translation>
 <translation id="1748563609363301860">Vous pouvez enregistrer ce mot de passe dans votre compte Google ou uniquement sur cet appareil</translation>
 <translation id="1750172676754093297">Impossible de stocker des empreintes digitales dans votre clé de sécurité</translation>
 <translation id="1751249301761991853">Personnalisés</translation>
@@ -1208,6 +1212,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2433836460518180625">Déverrouiller l'appareil uniquement</translation>
 <translation id="2434449159125086437">Échec de la configuration de l'imprimante. Veuillez vérifier la configuration, puis réessayer.</translation>
+<translation id="2434758125294431199">Sélectionnez qui peut partager des fichiers avec vous</translation>
 <translation id="2435248616906486374">Réseau déconnecté.</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2436186046335138073">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" /> ?</translation>
@@ -1365,6 +1370,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2612676031748830579">Numéro de carte</translation>
 <translation id="2616366145935564096">Accéder aux données du site <ph name="WEBSITE_1" /> et les modifier</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
+<translation id="2618797463720777311">Configurer la fonctionnalité Partage à proximité</translation>
 <translation id="2619761439309613843">Actualisation quotidienne</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="262154978979441594">Entraîner l'empreinte vocale de l'Assistant Google</translation>
@@ -1719,6 +1725,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3029466929721441205">Afficher les outils de stylet sur l'étagère</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
+<translation id="3036041939445522540">Aucun contact disponible</translation>
 <translation id="3036327949511794916">Le délai de retour de ce <ph name="DEVICE_TYPE" /> a expiré.</translation>
 <translation id="3036546437875325427">Activer Flash</translation>
 <translation id="3037754279345160234">Impossible d'analyser la configuration d'association de l'appareil au domaine. Veuillez contacter votre administrateur.</translation>
@@ -1983,6 +1990,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3388788256054548012">Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.</translation>
 <translation id="3390013585654699824">Informations sur l'application</translation>
 <translation id="3390741581549395454">Les applications et fichiers Linux ont bien été sauvegardés. La mise à niveau va bientôt commencer.</translation>
+<translation id="339507021360520688">Personnes qui ont choisi d'être visibles pour vous lorsque leur écran est déverrouillé</translation>
 <translation id="3396800784455899911">En cliquant sur le bouton "Accepter et continuer", vous acceptez le processus décrit ci-dessus pour ces services Google.</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – entrelacé</translation>
@@ -3955,6 +3963,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5799508265798272974">Machine virtuelle Linux : <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Le fichier de destination a été tronqué ou supprimé depuis le dernier téléchargement.</translation>
 <translation id="5801568494490449797">Préférences</translation>
+<translation id="580297286642726158">Appareils avec lesquels vous pouvez partager des fichiers</translation>
 <translation id="5804175651771201311">Itinérance désactivée</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5805697420284793859">Gestionnaire de fenêtres</translation>
@@ -3971,6 +3980,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5826993284769733527">Semi-transparent</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Impression...</translation>
+<translation id="5830659417568730973">Contacts sélectionnés à proximité lorsque l'écran est déverrouillé</translation>
 <translation id="5830720307094128296">Enregistrer la p&amp;age sous...</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
@@ -4027,6 +4037,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5886009770935151472">Doigt 1</translation>
 <translation id="5889282057229379085">Le nombre maximal d'autorités de certification intermédiaires a été dépassé : <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Réseaux Wi-Fi favoris</translation>
+<translation id="5893589697005440881">Partagez des fichiers avec des personnes à proximité</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5900302528761731119">Photo du profil Google</translation>
 <translation id="5900358982890952556">Mettre à niveau Linux (version bêta)</translation>
@@ -4140,6 +4151,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6031600495088157824">Options de saisie dans la barre d'outils</translation>
 <translation id="6032715498678347852">Pour autoriser l'accès à ce site pour une extension, cliquez sur celle-ci.</translation>
 <translation id="6032912588568283682">Système de fichiers</translation>
+<translation id="6035517790085323771">Qui peut partager des fichiers avec votre appareil</translation>
 <translation id="6038929619733116134">Bloquer si le site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="6039651071822577588">Dictionnaire des propriétés du réseau non conforme.</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -4222,6 +4234,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6122081475643980456">Une extension a pris le contrôle de votre connexion Internet</translation>
 <translation id="6122095009389448667">Continuer à empêcher ce site de voir le contenu du presse-papiers</translation>
 <translation id="6122191549521593678">En ligne</translation>
+<translation id="6122600716821516697">Partager des fichiers avec cet appareil ?</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée ?</translation>
 <translation id="6122875415561139701">L'opération d'écriture n'est pas autorisée sur l'appareil <ph name="DEVICE_NAME" />.</translation>
 <translation id="6124213551517593835">L'ensemble des données et des cookies stockés par <ph name="SITE_GROUP_NAME" />, ainsi que les sites lui appartenant, seront effacés</translation>
@@ -4778,6 +4791,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6824584962142919697">&amp;Examiner les éléments</translation>
 <translation id="6825184156888454064">Trier par nom</translation>
 <translation id="6826872289184051766">Valider via USB</translation>
+<translation id="6827487342470222762">Aucun contact n'est disponible. Pour utiliser le Partage à proximité avec vos contacts, ajoutez à ceux-ci l'adresse e-mail associée à leur compte Google.</translation>
 <translation id="6827623133556594466">Google Cloud Print ne sera plus disponible après le 31 décembre. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Saisissez votre phrase secrète pour synchroniser vos données.</translation>
@@ -5582,6 +5596,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7819992334107904369">Synchronisation Chrome</translation>
 <translation id="782057141565633384">C&amp;opier l'adresse vidéo</translation>
 <translation id="7824864914877854148">Échec de la sauvegarde en raison d'une erreur</translation>
+<translation id="7825666486843191125">Tous les contacts à proximité lorsque l'écran est déverrouillé</translation>
 <translation id="782590969421016895">Utiliser les pages actuelles</translation>
 <translation id="7826249772873145665">Débogage ADB désactivé</translation>
 <translation id="7826254698725248775">Identifiant de l'appareil en conflit.</translation>
@@ -5679,6 +5694,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7918257978052780342">Enregistrer</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> peut accéder à <ph name="FILENAME" /></translation>
+<translation id="7924080089023843180">Personne, sauf si vous ouvrez Partage à proximité</translation>
 <translation id="7924358170328001543">Erreur lors du transfert du port.</translation>
 <translation id="792514962475806987">Niveau de zoom ancré :</translation>
 <translation id="7925247922861151263">Échec de la vérification AAA</translation>
@@ -5726,6 +5742,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7970673414865679092">Informations sur le réseau Ethernet</translation>
 <translation id="7970882136539140748">Impossible d'enregistrer la carte pour le moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
+<translation id="797394244396603170">Sélectionnez l'appareil avec lequel vous souhaitez partager des fichiers</translation>
 <translation id="7973962044839454485">Échec de l'authentification PPP en raison de la saisie d'un nom d'utilisateur ou d'un mot de passe erronés.</translation>
 <translation id="7974566588408714340">Réessayer avec "<ph name="EXTENSIONNAME" />"</translation>
 <translation id="7974936243149753750">Surbalayage</translation>
@@ -6238,6 +6255,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8613164732773110792">Caractères minuscules, chiffres, traits de soulignement ou tirets uniquement</translation>
 <translation id="8613786722548417558">Impossible de vérifier si le fichier "<ph name="FILE_NAME" />" est sûr, car il est trop volumineux. Vous ne pouvez pas ouvrir de fichiers de plus de 50 Mo.</translation>
 <translation id="8615618338313291042">Application en mode navigation privée : <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662">Ajouter <ph name="CONTACT_NAME" /> à vos contacts</translation>
 <translation id="8619803522055190423">Ombre projetée</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" /> : <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Tes parents ne l'ont pas encore autorisé</translation>
@@ -6467,6 +6485,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8859402192569844210">Impossible de charger les conditions d'utilisation</translation>
 <translation id="8859662783913000679">Compte parental</translation>
 <translation id="8862003515646449717">Passez à un navigateur rapide</translation>
+<translation id="8863140399813345099">Le paramètre de visibilité permet de sélectionner les personnes qui peuvent partager des fichiers avec vous lorsque l'écran est déverrouillé</translation>
 <translation id="8863753581171631212">Ouvrir le lien dans une nouvelle fenêtre <ph name="APP" /></translation>
 <translation id="8864055848767439877">Partage de <ph name="TAB_NAME" /> avec <ph name="APP_NAME" />…</translation>
 <translation id="8864458770072227512">Le compte <ph name="EMAIL" /> a été supprimé de cet appareil</translation>

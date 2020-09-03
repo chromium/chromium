@@ -278,6 +278,7 @@
 <translation id="1313705515580255288">আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস আপনার Google অ্যাকাউন্টে সিঙ্ক হবে৷</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">হোম নেটওয়ার্ক, রোমিং নয়</translation>
+<translation id="1315144594965013365">এটি নিশ্চিত করুন যেন উভয় ডিভাইস আনলক থাকে ও পরস্পরের কাছাকাছি থাকে, তার সাথে যেন ব্লুটুথও চালু করা থাকে। যদি আপনি কোনও Chromebook-এর সাথে শেয়ার করেন, তাহলে নিশ্চিত করে নিন সেই ডিভাইসে 'নিয়ারবাই শেয়ার' ফিচার যেন চালু করা থাকে (সময় বেছে নিয়ে 'স্ট্যাটাস এরিয়া' বিকল্প খুলুন, তারপরে 'নিয়ারবাই শেয়ার' ফিচার বেছে নিন)।</translation>
 <translation id="1316136264406804862">সার্চ করা হচ্ছে...</translation>
 <translation id="1316495628809031177">সিঙ্ক থামানো হয়েছে</translation>
 <translation id="1317637799698924700">ইউএসবি টাইপ-সির সাথে মানানসই মোডে আপনার ডকিং স্টেশন কাজ করবে।</translation>
@@ -312,6 +313,7 @@
 <translation id="1359923111303110318">Smart Lock দিয়ে আপনার ডিভাইস আনলক করা যাবে। আনলক করতে 'Enter' বোতাম প্রেস করুন।</translation>
 <translation id="1361164813881551742">নিজে যোগ করুন</translation>
 <translation id="1361655923249334273">অব্যবহৃত</translation>
+<translation id="1361707011052629095">'নিয়ারবাই শেয়ার' ফিচার চালু হওয়ার পরে, আপনার আশেপাশে উপলভ্য ডিভাইস</translation>
 <translation id="1361872463926621533">চালু করার সময় সাউন্ড চালান</translation>
 <translation id="1362865166188278099">যান্ত্রিক সমস্যা হয়েছে। প্রিন্টারটি চেক করুন</translation>
 <translation id="1363585519747660921">ইউএসবি প্রিন্টার কনফিগার করা প্রয়োজন</translation>
@@ -482,6 +484,7 @@
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1556537182262721003">প্রোফাইলে এক্সটেনশন ডিরেক্টরি সরানো যায়নি৷</translation>
 <translation id="155865706765934889">টাচপ্যাড</translation>
+<translation id="1562119309884184621">এই ব্যক্তিকে পরিচিতিতে যোগ করলে, পরের বার শেয়ার করা সময় একে মনে রাখা হবে</translation>
 <translation id="1563702743503072935">সাইন-ইন করে থাকা অবস্থায় এই ডিভাইসে আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ডও উপলভ্য থাকবে</translation>
 <translation id="1566049601598938765">ওয়েবসাইট</translation>
 <translation id="15662109988763471">বেছে নেওয়া প্রিন্টারটি উপলভ্য নয় অথবা সেটি ঠিকভাবে ইনস্টল করা নেই। আপনার প্রিন্টার পরীক্ষা করুন অথবা অন্য একটি প্রিন্টার বেছে নিন।</translation>
@@ -643,6 +646,7 @@
 <translation id="1743970419083351269">ডাউনলোড বার বন্ধ করুন</translation>
 <translation id="1744060673522309905">ডোমেনে ডিভাইসটি যোগ করা যাবে না। ভাল করে দেখে নিন যে আপনার ডিভাইস যোগ করার সর্বাধিক সংখ্যা যেন অতিক্রম না করে।</translation>
 <translation id="1744108098763830590">পৃষ্ঠভূমি পৃষ্ঠা</translation>
+<translation id="1745732479023874451">পরিচিতি ম্যানেজ করুন</translation>
 <translation id="1748563609363301860">আপনার Google অ্যাকাউন্ট অথবা শুধুমাত্র এই ডিভাইসে আপনি পাসওয়ার্ড সেভ করতে পারবেন</translation>
 <translation id="1750172676754093297">আপনার নিরাপত্তা কী-তে ফিঙ্গারপ্রিন্ট স্টোর করা যায় না</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
@@ -1207,6 +1211,7 @@
 <translation id="2433507940547922241">উপস্থিতি</translation>
 <translation id="2433836460518180625">শুধুমাত্র ডিভাইস আনলক করুন</translation>
 <translation id="2434449159125086437">প্রিন্টার সেট-আপ করা যাচ্ছে না। কনফিগারেশন চেক করে আবার চেষ্টা করুন।</translation>
+<translation id="2434758125294431199">বেছে নিন আপনার ডিভাইসের সাথে কারা শেয়ার করতে পারবে</translation>
 <translation id="2435248616906486374">নেটওয়ার্ক সংযোগ বিচ্ছিন্ন হয়েছে</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2436186046335138073">সমস্ত <ph name="PROTOCOL" /> লিঙ্কগুলিকে খুলতে <ph name="HANDLER_HOSTNAME" />কে সক্ষম করবেন?</translation>
@@ -1364,6 +1369,7 @@
 <translation id="2612676031748830579">কার্ড নম্বর</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> এ আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="2617342710774726426">সিম কার্ড লক করা আছে</translation>
+<translation id="2618797463720777311">'নিয়ারবাই শেয়ার' ফিচার সেট আপ করুন</translation>
 <translation id="2619761439309613843">প্রতিদিন রিফ্রেশ করা হবে</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="262154978979441594">Google Assistant-এর ভয়েস মডেলকে প্রশিক্ষণ দিন</translation>
@@ -1718,6 +1724,7 @@
 <translation id="3029466929721441205">শেল্ফে স্টাইলাস টুল দেখুন</translation>
 <translation id="3031417829280473749">এজেন্ট X</translation>
 <translation id="3031557471081358569">আমদানির জন্য আইটেম বেছে নিন:</translation>
+<translation id="3036041939445522540">কোনও পরিচিতি উপলভ্য নেই</translation>
 <translation id="3036327949511794916">এই <ph name="DEVICE_TYPE" /> ফেরত দেওয়ার সময়সীমা পেরিয়ে গেছে।</translation>
 <translation id="3036546437875325427">Flash সক্ষম করুন</translation>
 <translation id="3037754279345160234">ডোমেনে যোগ করার জন্য প্রয়োজনীয় কনফিগারেশন পার্স করা যাচ্ছে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
@@ -1982,6 +1989,7 @@
 <translation id="3388788256054548012">এই ফাইল এনক্রিপ্ট করা আছে। ফাইলের মালিককে সেটি ডিক্রিপ্ট করতে বলুন।</translation>
 <translation id="3390013585654699824">অ্যাপের বিবরণ</translation>
 <translation id="3390741581549395454">Linux অ্যাপ ও ফাইলের ব্যাক-আপ নেওয়া হয়ে গেছে। শীঘ্রই আপগ্রেড করা শুরু হবে।</translation>
+<translation id="339507021360520688">যেসব ব্যক্তি এমন বিকল্প বেছে নিয়েছেন যে তাদের স্ক্রিন আনলক হলে, আপনি তাদের দেখতে পাবেন</translation>
 <translation id="3396800784455899911">'স্বীকার করে চালিয়ে যান' বোতামে ক্লিক করার অর্থ এই Google পরিষেবাগুলির জন্য উপরোক্ত বর্ণিত প্রক্রিয়াগুলিতে আপনি সম্মতি দেন।</translation>
 <translation id="3399432415385675819">বিজ্ঞপ্তি অক্ষম করা হবে</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> হার্জ) - একত্রে</translation>
@@ -3953,6 +3961,7 @@
 <translation id="5799508265798272974">Linux ভার্চুয়াল মেশিন: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">শেষ ডাউনলোড থেকে গন্তব্য ফাইল হয় ছাঁটকাট অথবা সরানো হয়েছে৷</translation>
 <translation id="5801568494490449797">অভিরুচিসমূহ</translation>
+<translation id="580297286642726158">আপনি যেসব ডিভাইসে শেয়ার করতে পারবেন</translation>
 <translation id="5804175651771201311">রোমিং বন্ধ আছে</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5805697420284793859">উইন্ডো ম্যানেজার</translation>
@@ -3969,6 +3978,7 @@
 <translation id="5826993284769733527">অর্ধ-স্বচ্ছ</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">মুদ্রন হচ্ছে...</translation>
+<translation id="5830659417568730973">আপনার স্ক্রিন আনলক করা থাকলে শুধু আশেপাশের কিছু নির্বাচিত পরিচিতি আপনার ডিভাইস দেখতে পাবে</translation>
 <translation id="5830720307094128296">&amp;পৃষ্ঠা সেভ করুন...</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
 <translation id="583281660410589416">অজানা</translation>
@@ -4025,6 +4035,7 @@
 <translation id="5886009770935151472">আঙ্গুল ১</translation>
 <translation id="5889282057229379085">ইন্টারমিডিয়েট CAগুলির সর্বাধিক সংখ্যা: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">পছন্দের ওয়াই-ফাই নেটওয়ার্ক</translation>
+<translation id="5893589697005440881">আপনার আশেপাশের লোকজনের সাথে ফাইল শেয়ার করুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5900302528761731119">Google প্রোফাইল ফটো </translation>
 <translation id="5900358982890952556">Linux আপগ্রেড করুন (বিটা)</translation>
@@ -4138,6 +4149,7 @@
 <translation id="6031600495088157824">টুলবারে ইনপুটের বিকল্প</translation>
 <translation id="6032715498678347852">এই সাইটে এক্সটেনশন অ্যাক্সেস দিতে এটি ক্লিক করুন।</translation>
 <translation id="6032912588568283682">ফাইল সিস্টেম</translation>
+<translation id="6035517790085323771">আপনার ডিভাইসের সাথে কারা শেয়ার করতে পারবেন</translation>
 <translation id="6038929619733116134">সাইটে থাকা ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন ব্লক করুন</translation>
 <translation id="6039651071822577588">নেটওয়ার্ক সম্পত্তি অভিধান বিকৃত</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -4220,6 +4232,7 @@
 <translation id="6122081475643980456">আপনার ইন্টারনেট সংযোগ নিয়ন্ত্রিত হচ্ছে</translation>
 <translation id="6122095009389448667">ক্লিপবোর্ড দেখা থেকে সাইটটিকে ব্লক করে রাখুন</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
+<translation id="6122600716821516697">এই ডিভাইসের সাথে শেয়ার করতে চান?</translation>
 <translation id="6122831415929794347">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="6122875415561139701">"<ph name="DEVICE_NAME" />" এ লেখার ক্রিয়াকলাপ অনুমোদিত নয়।</translation>
 <translation id="6124213551517593835">এর ফলে <ph name="SITE_GROUP_NAME" /> ও এর অধীনস্থ যেকোনও সাইটের স্টোর করা সমস্ত ডেটা ও কুকি মুছে যাবে</translation>
@@ -4777,6 +4790,7 @@
 <translation id="6824584962142919697">&amp;এলিমেন্ট ইন্সপেক্ট করুন</translation>
 <translation id="6825184156888454064">নাম অনুসারে সাজান</translation>
 <translation id="6826872289184051766">USB এর মাধ্যমে যাচাই করুন</translation>
+<translation id="6827487342470222762">কোনও পরিচিতি উপলভ্য নেই। আপনার পরিচিতির সাথে 'নিয়ারবাই শেয়ার' ফিচারের সুবিধা ব্যবহার করার জন্য, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডি আপনার পরিচিতিতে যোগ করুন।</translation>
 <translation id="6827623133556594466">Google Cloud Print, ৩১ ডিসেম্বরের পরে আর কাজ করবে না। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">সাইন-ইনকে নিম্নলিখিত ব্যবহারকারীদের মধ্যে সীমাবদ্ধ রাখুন:</translation>
 <translation id="6828182567531805778">আপনার ডেটা সিঙ্ক করতে পাসফ্রেজ লিখুন</translation>
@@ -5580,6 +5594,7 @@
 <translation id="7819992334107904369">Chrome সিঙ্ক</translation>
 <translation id="782057141565633384">ভি&amp;ডিও ঠিকানা কপি করুন</translation>
 <translation id="7824864914877854148">কোনও সমস্যার জন্য সম্পূর্ণ ব্যাক-আপ নেওয়া যায়নি</translation>
+<translation id="7825666486843191125">আপনার স্ক্রিন আনলক করা থাকলে আশেপাশের সমস্ত পরিচিতি আপনার ডিভাইস দেখতে পাবে</translation>
 <translation id="782590969421016895">বর্তমান পৃষ্ঠাগুলি ব্যবহার করুন</translation>
 <translation id="7826249772873145665">ADB ডিবাগিং বন্ধ করা আছে</translation>
 <translation id="7826254698725248775">পরস্পর বিরোধী ডিভাইস শনাক্তকারী।</translation>
@@ -5677,6 +5692,7 @@
 <translation id="7918257978052780342">নথিভুক্ত করুন</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> সেকেন্ড</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> নামের ফাইলটি দেখতে পারবে</translation>
+<translation id="7924080089023843180">আপনি 'নিয়ারবাই শেয়ার' ফিচার চালু না করা পর্যন্ত কেউ আপনার ডিভাইস দেখতে পাবেন না</translation>
 <translation id="7924358170328001543">পোর্ট ফরওয়ার্ড করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="792514962475806987">ডক করা জুম লেভেল:</translation>
 <translation id="7925247922861151263">AAA চেক করা যায়নি</translation>
@@ -5724,6 +5740,7 @@
 <translation id="7970673414865679092">ইথারনেট নেটওয়ার্কের বিবরণ</translation>
 <translation id="7970882136539140748">এই মুহূর্তে কার্ডটি সেভ করা যাবে না</translation>
 <translation id="7972714317346275248">RSA এনক্রিপশানের সাথে PKCS #1 SHA-384</translation>
+<translation id="797394244396603170">কোন ডিভাইসে ফাইল শেয়ার করবেন তা বেছে নিন</translation>
 <translation id="7973962044839454485">একটি ভুল ইউজারনেম বা পাসওয়ার্ডের কারণে PPP যাচাই করা যায়নি৷</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> ব্যবহার করার জন্য আবার চেষ্টা করুন</translation>
 <translation id="7974936243149753750">ওভারস্ক্যান</translation>
@@ -6235,6 +6252,7 @@
 <translation id="8613164732773110792">শুধুমাত্র ছোট হাতের অক্ষর, সংখ্যা, আন্ডারস্কোর বা ড্যাশ</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> নিরাপত্তা পরীক্ষা করার পক্ষে খুব বড়। আপনি সর্বাধিক ৫০ এমবি সাইজের ফাইল খুলতে পারবেন।</translation>
 <translation id="8615618338313291042">ছদ্মবেশী অ্যাপ্লিকেশান: <ph name="APP_NAME" /></translation>
+<translation id="8616441548384109662"><ph name="CONTACT_NAME" />-কে আপনার পরিচিতিতে যোগ করুন</translation>
 <translation id="8619803522055190423">ড্রপ শ্যাডো</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">আপনার পিতামাতা এখনও এটি অনুমোদন করেন নি</translation>
@@ -6464,6 +6482,7 @@
 <translation id="8859402192569844210">পরিষেবার শর্তাবলী লোড করা যায়নি</translation>
 <translation id="8859662783913000679">অভিভাবকের অ্যাকাউন্ট</translation>
 <translation id="8862003515646449717">একটি দ্রুত ব্রাউজারে স্যুইচ করুন</translation>
+<translation id="8863140399813345099">'ডিভাইসের দৃশ্যমানতা' ফিচার ব্যবহার করে আপনার স্ক্রিন আনলক থাকাকালীন কারা আপনার সাথে ফাইল শেয়ার করতে পারবেন তা নিয়ন্ত্রণ করা যায়</translation>
 <translation id="8863753581171631212">নতুন <ph name="APP" />-এ লিঙ্ক খুলুন</translation>
 <translation id="8864055848767439877"><ph name="APP_NAME" />-এর সাথে <ph name="TAB_NAME" /> শেয়ার করা হচ্ছে</translation>
 <translation id="8864458770072227512">এই ডিভাইস থেকে <ph name="EMAIL" /> সরিয়ে দেওয়া হয়েছে</translation>

@@ -2911,12 +2911,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.
 
           Als je dit beleid niet instelt, is cursormarkering in eerste instantie uitgeschakeld op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment inschakelen.</translation>
-<translation id="5277806246014825877">Deze gebruiker toestaan om Crostini uit te voeren.
-
-      Als dit beleid is ingesteld op 'False', is Crostini niet ingeschakeld voor de gebruiker.
-      Als het beleid is ingesteld op 'True' of niet is ingesteld, is Crostini ingeschakeld voor de gebruiker, op voorwaarde dat de andere instellingen dit ook toestaan.
-      Alle drie beleidsregels (VirtualMachinesAllowed, CrostiniAllowed en DeviceUnaffiliatedCrostiniAllowed) moeten voor Crostini zijn ingesteld op 'True' om Crostini te kunnen uitvoeren.
-      Wanneer dit beleid wordt gewijzigd in 'False', is het beleid van toepassing op nieuwe Crostini-containers die worden gestart. Containers die al worden uitgevoerd, worden niet uitgeschakeld.</translation>
 <translation id="5283457834853986457">Plug-inzoeker uitschakelen (beëindigd)</translation>
 <translation id="5285315763984334157">Schadelijke downloads blokkeren</translation>
 <translation id="5288772341821359899">Als het beleid is ingesteld, wordt het door WebRTC gebruikte UDP-poortbereik beperkt tot het opgegeven poortinterval (inclusief eindpunten).
@@ -3250,13 +3244,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als dit beleid is ingesteld op False, wordt de ingebouwde DNS-client nooit gebruikt.
 
       Als dit beleid niet wordt ingesteld, wordt de ingebouwde DNS-client standaard ingeschakeld op macOS, Android (als Privé-DNS en VPN niet zijn ingeschakeld) en Chrome OS en kunnen de gebruikers bepalen of de ingebouwde DNS-client wordt gebruikt door chrome://flags te bewerken of door een opdrachtregelmarkering op te geven.</translation>
-<translation id="5624946025057772960">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Bekijk de beschrijving van dit beleid voor de indeling van items in deze lijst. '*' kan bijvoorbeeld worden gebruikt om alle verzoeken te blokkeren en je kunt dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen op te geven voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden. Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
-
-      Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden ingeschakeld die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals 'tel:' of 'ssh:'.
-
-      Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="5628811596950455942">Het beleid beheert een lijst met modi voor snel ontgrendelen die gebruikers kunnen configureren en gebruiken om het vergrendelscherm te ontgrendelen.
 
           Deze waarde bestaat uit een lijst met tekenreeksen. Geldige lijstitems zijn: "all", "PIN", "FINGERPRINT". Als je "all" toevoegt aan de lijst, zijn alle modi voor snel ontgrendelen beschikbaar voor gebruikers, waaronder modi die in de toekomst worden geïmplementeerd. Doe je dit niet, dan zijn alleen de modi voor snel ontgrendelen in de lijst beschikbaar.
@@ -3606,15 +3593,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6190022522129724693">Standaardinstelling voor pop-ups</translation>
 <translation id="6190367314942602985">Gegevens over de identiteit van gebruikers rapporteren</translation>
 <translation id="6195802366906945965">Bepaalt of de ingebouwde certificaatverificatie wordt gebruikt om servercertificaten te verifiëren</translation>
-<translation id="6199780467005360782">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Als je het beleid instelt, wordt toegang tot de vermelde URL's toegestaan, als uitzonderingen op de blokkeringslijst voor URL's. Bekijk de beschrijving van dit beleid voor de indeling van items in deze lijst. '*' kan bijvoorbeeld worden gebruikt om alle verzoeken te blokkeren en je kunt dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen op te geven voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden. Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. De toelatingslijst krijgt voorrang boven de blokkeringslijst. Dit beleid is beperkt tot 1000 items.
-
-      Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden ingeschakeld die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals 'tel:' of 'ssh:'.
-
-      Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="6205094657236844092">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgeschakeld door gebruikers.
 
       Elk lijstitem van het beleid is een object met een verplicht lid: <ph name="URL_LABEL" /> (de URL van de web-app die moet worden geïnstalleerd) en twee optionele leden: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (voor hoe de web-app wordt geopend, een nieuw tabblad is de standaardinstelling) en <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> ('True' als je <ph name="LINUX_OS_NAME" />- en Windows®-snelkoppelingen wilt maken).
@@ -3627,7 +3605,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als je deze instelling uitschakelt of niet instelt, legt de service voor wachtwoordbeveiliging 'salted hashes' van wachtwoorden alleen vast op https://accounts.google.com.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
-<translation id="6210610748361191729">Als het beleid is ingesteld op False , is de optie om containerafbeeldingen te exporteren/importeren via de gebruikersinterface niet beschikbaar voor gebruikers. Het is nog wel steeds mogelijk om rechtstreeks in de virtuele machine 'lxc'-opdrachten te gebruiken voor het exporteren/importeren van containerafbeeldingen.</translation>
 <translation id="6211428344788340116">Perioden van apparaatgebruik melden.
 
       Als dit beleid niet is ingesteld of is ingesteld op 'True', melden aangemelde apparaten perioden waarin een gebruiker het apparaat gebruikt. Als deze instelling is ingesteld op 'False', worden perioden van apparaatgebruik niet geregistreerd of gemeld.</translation>
@@ -4197,6 +4174,11 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Met dit beleid kun je configureren hoe <ph name="PRODUCT_OS_NAME" /> zich gedraagt wanneer de gebruiker enige tijd inactief is.</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS uitschakelen</translation>
+<translation id="7033778618670823541">Als je dit beleid instelt, wordt een lijst met herkomsten (URL's) of hostnaampatronen (zoals '*.example.com') gedefinieerd waarop beveiligingsbeperkingen voor onveilige beginpunten niet van toepassing zijn. Organisaties kunnen herkomsten specificeren voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen instellen, zodat de ontwikkelaars functies die een veilige context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als 'Niet veilig' in de adresbalk.
+
+      Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
+
+      Voor meer informatie over een veilige context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="7037812781389976160">De positie van de plank van <ph name="PRODUCT_OS_NAME" /> bepalen.
 
       Als dit beleid is ingesteld op Onderaan, wordt de plank onderaan het scherm geplaatst.
@@ -4402,11 +4384,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als dit beleid niet wordt ingesteld of leeg is, kan de gebruiker elk willekeurig Google-account instellen als primair browseraccount in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">De minimumlengte van de pincode voor het vergrendelscherm instellen</translation>
-<translation id="7232816984286843471">Als het beleid is ingesteld op 'False', mogen niet-gelieerde gebruikers Crostini niet gebruiken.
-
-      Als het beleid niet is ingesteld of op 'True' is ingesteld, mogen alle gebruikers Crostini gebruiken, op voorwaarde dat de andere instellingen dit ook toestaan.
-      Alle drie beleidsregels (VirtualMachinesAllowed, CrostiniAllowed en DeviceUnaffiliatedCrostiniAllowed) moeten voor Crostini zijn ingesteld op 'True' om Crostini te kunnen uitvoeren.
-      Wanneer dit beleid wordt gewijzigd in 'False', is het beleid van toepassing op nieuwe Crostini-containers die worden gestart. Containers die al worden uitgevoerd, worden niet uitgeschakeld.</translation>
 <translation id="7234280155140786597">Namen van de verboden hosts voor systeemeigen berichten (of * voor alle)</translation>
 <translation id="7249828445670652637">CA-certificaten van <ph name="PRODUCT_OS_NAME" /> voor ARC-apps inschakelen</translation>
 <translation id="7252681704926980614">Gebruikersnaam en bestandsnaam bij elke afdruktaak naar systeemeigen printerserver verzenden. De standaardinstelling is om deze gegevens niet te verzenden.
@@ -4917,14 +4894,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           Als dit beleid niet is ingesteld, wordt er een standaard tijdsduur gebruikt.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de inactieve vertraging.</translation>
-<translation id="7992136759457836904">Hiermee kun je aangeven of er virtuele machines mogen worden uitgevoerd met Chrome OS.
-
-      Als het beleid is ingesteld op 'True, mogen virtuele machines worden uitgevoerd op het apparaat.
-      Als het beleid is ingesteld op 'False', mogen er geen virtuele machines worden uitgevoerd op het apparaat.
-      Alle drie beleidsregels (VirtualMachinesAllowed, CrostiniAllowed en DeviceUnaffiliatedCrostiniAllowed) moeten voor Crostini zijn ingesteld op 'True' om Crostini te kunnen uitvoeren.
-      Wanneer dit beleid wordt gewijzigd in 'False', wordt dit toegepast op nieuwe virtuele machines die worden gestart. Virtuele machines die al worden uitgevoerd, worden niet uitgeschakeld.
-      Wanneer dit beleid niet is ingesteld op een beheerd apparaat, mogen er geen virtuele machines worden uitgevoerd op het apparaat.
-      Virtuele machines mogen worden uitgevoerd op onbeheerde apparaten.</translation>
 <translation id="8001701200415781021">Beperken welke Google-accounts mogen worden ingesteld als primaire browseraccounts in <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Bestanden sturen voor controle op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="8006219716745491366">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is ingeschakeld en je <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> instelt, wordt er een lijst met alternatieve URL's gespecificeerd om zoektermen uit de zoekmachine te extraheren. De URL's moeten de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten.

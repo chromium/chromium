@@ -230,7 +230,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">কার্ড হোল্ডারের নাম</translation>
 <translation id="1807528111851433570">শুরুর শিট</translation>
-<translation id="1811804136210993241">টীকা দেখান</translation>
 <translation id="1821930232296380041">ভুল অনুরোধ বা অনুরোধ মাপকাঠিগুলি</translation>
 <translation id="1822540298136254167">আপনি যে ওয়েবসাইটগুলি দেখেন এবং দেখার জন্য সময় খরচ করেন</translation>
 <translation id="1826516787628120939">চেক করা হচ্ছে</translation>
@@ -884,7 +883,7 @@
 <translation id="4552089082226364758">ফ্ল্যাশ</translation>
 <translation id="4558551763791394412">আপনার এক্সটেনশানগুলি অক্ষম করে দেখুন।</translation>
 <translation id="4559332380232738994">10x11</translation>
-<translation id="457875822857220463">পৌঁছে দেওয়া</translation>
+<translation id="457875822857220463">ডেলিভারি</translation>
 <translation id="4579056131138995126">Personal (Envelope)</translation>
 <translation id="4582204425268416675">কার্ডটি সরিয়ে দিন</translation>
 <translation id="4587425331216688090">Chrome থেকে ঠিকানা সরাবেন?</translation>
@@ -1112,6 +1111,7 @@
 <translation id="5509780412636533143">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="5510481203689988000">কুকি সেটিংস থেকে এই সেটিংস নিয়ন্ত্রণ করা যায়।</translation>
 <translation id="5510766032865166053">এটি হয়ত সরানো বা মুছে ফেলা হয়েছে।</translation>
+<translation id="5519516356611866228">আপনার করা এডিট সমেত</translation>
 <translation id="5523118979700054094">নীতি নাম</translation>
 <translation id="55293785478302737">ধারের দিকে সেলাই</translation>
 <translation id="553484882784876924">Prc6 (Envelope)</translation>
@@ -1350,6 +1350,7 @@
 <translation id="6476284679642588870">পেমেন্টের পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="6489534406876378309">ক্র্যাশগুলি আপলোড করা শুরু করুন</translation>
 <translation id="6499038740797743453">পাসওয়ার্ড রিসেট করবেন?</translation>
+<translation id="6502991525169604759">আপনার করা এডিট ছাড়া</translation>
 <translation id="6508722015517270189">Chrome পুনরায় চালু করুন</translation>
 <translation id="6517596291481585650">সতর্কতা: এই নীতি কোনও তালিকা নয় বলে সেটি নীতি অনুযায়ী তালিকা হিসেবে মার্জ করা হয়নি।</translation>
 <translation id="6518133107902771759">যাচাই করুন</translation>

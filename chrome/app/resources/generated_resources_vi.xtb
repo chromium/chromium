@@ -278,7 +278,7 @@
 <translation id="1313705515580255288">Dấu trang, lịch sử và các cài đặt khác sẽ được đồng bộ hóa với tài khoản Google của bạn.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Mạng chủ, không chuyển vùng</translation>
-<translation id="1315144594965013365">Hãy đảm bảo cả hai thiết bị đã mở khóa, ở gần nhau và bật Bluetooth. Nếu bạn đang chia sẻ với Chromebook, hãy đảm bảo thiết bị này đã bật tính năng Chia sẻ lân cận (mở khu vực trạng thái bằng cách chọn thời gian, sau đó chọn tính năng Chia sẻ lân cận).</translation>
+<translation id="1315144594965013365">Hãy đảm bảo cả hai thiết bị đã mở khóa, ở gần nhau và đã bật Bluetooth. Nếu bạn đang chia sẻ với Chromebook, hãy đảm bảo thiết bị này đã bật tính năng Chia sẻ lân cận (mở khu vực trạng thái bằng cách chọn giờ, sau đó chọn tính năng Chia sẻ lân cận).</translation>
 <translation id="1316136264406804862">Đang tìm kiếm...</translation>
 <translation id="1316495628809031177">Quá trình đồng bộ hóa hiện tạm dừng</translation>
 <translation id="1317637799698924700">Đế sạc sẽ hoạt động ở chế độ tương thích với USB Type-C.</translation>
@@ -3962,7 +3962,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5799508265798272974">Máy ảo Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Tệp đích đã bị cắt bớt hoặc xóa kể từ lần tải xuống cuối cùng.</translation>
 <translation id="5801568494490449797">Tùy chọn</translation>
-<translation id="580297286642726158">Thiết bị mà bạn chia sẻ</translation>
+<translation id="580297286642726158">Thiết bị bạn có thể chia sẻ</translation>
 <translation id="5804175651771201311">Chế độ chuyển vùng đang tắt</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5805697420284793859">Trình quản lý cửa sổ</translation>
@@ -5693,7 +5693,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7918257978052780342">Đăng ký</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> giây</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> có thể xem <ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">Không người nào cả, trừ khi bạn mở tính năng Chia sẻ lân cận</translation>
+<translation id="7924080089023843180">Không người nào cả, trừ phi bạn mở tính năng Chia sẻ lân cận</translation>
 <translation id="7924358170328001543">Lỗi khi chuyển tiếp cổng</translation>
 <translation id="792514962475806987">Mức thu phóng ở vị trí cố định:</translation>
 <translation id="7925247922861151263">Không thể kiểm tra AAA</translation>
@@ -6484,7 +6484,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8859402192569844210">Không thể tải Điều khoản dịch vụ</translation>
 <translation id="8859662783913000679">Tài khoản của cha mẹ</translation>
 <translation id="8862003515646449717">Chuyển sang một trình duyệt nhanh</translation>
-<translation id="8863140399813345099">Tùy chọn hiển thị thiết bị sẽ quyết định người có thể chia sẻ với bạn khi màn hình của bạn đang mở khóa</translation>
+<translation id="8863140399813345099">Chế độ hiển thị thiết bị của bạn sẽ quyết định người có thể chia sẻ với bạn khi màn hình của bạn đang mở khóa</translation>
 <translation id="8863753581171631212">Mở liên kết trong <ph name="APP" /> mới</translation>
 <translation id="8864055848767439877">Đang chia sẻ <ph name="TAB_NAME" /> với <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">Đã xóa <ph name="EMAIL" /> khỏi thiết bị này</translation>

@@ -1964,9 +1964,9 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
       Ist die Richtlinie auf 2 gesetzt, wird Werbung auf Websites mit aufdringlichen Werbeanzeigen blockiert.</translation>
 <translation id="387226665655554104">Mit dieser Richtlinie wird eine Liste von Modi für das schnelle Entsperren des Sperrbildschirms festgelegt, die von Nutzern konfiguriert und verwendet werden können.
 
-          Dieser Wert besteht aus einer Liste von Strings; gültige Listeneinträge sind: "alle", "PIN", "FINGERABDRUCK". Durch das Hinzufügen von "alle" zur Liste stehen dem Nutzer alle Modi für das schnelle Entsperren zur Verfügung, einschließlich von Modi, die erst in der Zukunft implementiert werden. Wird "alle" nicht ausgewählt, stehen für das schnelle Entsperren nur die in der Liste enthaltenen Modi zur Verfügung.
+          Dieser Wert besteht aus einer Liste von Strings; gültige Listeneinträge sind: "all", "PIN", "FINGERPRINT". Durch das Hinzufügen von "all" zur Liste stehen dem Nutzer alle Modi für das schnelle Entsperren zur Verfügung, einschließlich von Modi, die erst in der Zukunft implementiert werden. Wird "all" nicht ausgewählt, stehen für das schnelle Entsperren nur die in der Liste enthaltenen Modi zur Verfügung.
 
-          Beispiel: Wenn Sie alle Modi für das schnelle Entsperren erlauben möchten, verwenden Sie ["alle"]. Soll nur mit der PIN entsperrt werden können, legen Sie ["PIN"] fest. Wenn PIN und Fingerabdruck erlaubt sein sollen, legen Sie ["PIN", "FINGERABDRUCK"] fest.
+          Beispiel: Wenn Sie alle Modi für das schnelle Entsperren erlauben möchten, verwenden Sie ["all"]. Soll nur mit der PIN entsperrt werden können, legen Sie ["PIN"] fest. Wenn PIN und Fingerabdruck erlaubt sein sollen, legen Sie ["PIN", "FINGERPRINT"] fest.
 
           Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine Modi für das schnelle Entsperren zur Verfügung.</translation>
 <translation id="3877517141460819966">Integrierter Zwei-Faktor-Authentifizierungsmodus</translation>
@@ -2908,12 +2908,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="5277806246014825877">Zulassen, dass dieser Nutzer Crostini verwendet.
-
-Ist die Richtlinie auf "false" gesetzt, wird Crostini nicht für den Nutzer aktiviert.
-Ist die Richtlinie auf "true" gesetzt oder nicht festgelegt, ist Crostini für den Nutzer aktiviert, sofern dies nicht durch andere Einstellungen verhindert wird.
-Alle drei Richtlinien (VirtualMachinesAllowed, CrostiniAllowed und DeviceUnaffiliatedCrostiniAllowed) müssen auf "true" gesetzt sein, wenn sie angewendet werden, damit Crostini ausgeführt werden darf.
-Wenn diese Richtlinie zu "false" geändert wird, wirkt sich dies auf den Start neuer Crostini-Container aus. Container, die bereits laufen, werden aber nicht beendet.</translation>
 <translation id="5283457834853986457">Plug-in-Suchfunktion deaktivieren (eingestellt)</translation>
 <translation id="5285315763984334157">Schädliche Downloads blockieren</translation>
 <translation id="5288772341821359899">Wenn die Richtlinie konfiguriert ist, wird der von WebRTC verwendete UDP-Port-Bereich auf den festgelegten Portintervall, einschließlich der Endpunkte, beschränkt.
@@ -3245,22 +3239,15 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
       Wenn diese Richtlinie auf "False" gesetzt wurde, wird der integrierte DNS-Client nie verwendet.
 
       Wenn diese Richtlinie nicht konfiguriert ist, ist der integrierte DNS-Client unter macOS, Android – sofern weder ein privates DNS noch ein VPN aktiviert ist – und Chrome OS standardmäßig aktiviert. Der Nutzer kann dann über die Bearbeitung von chrome://flags oder die Festlegung eines Befehlszeilen-Flag entscheiden, ob der integrierte DNS-Client verwendet wird oder nicht.</translation>
-<translation id="5624946025057772960">Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von <ph name="URL_BLOCKLIST_POLICY_NAME" />). Informationen zum Format der Einträge in der Liste finden Sie in der Beschreibung der Richtlinie. So kann beispielsweise verhindert werden, dass * alle Anfragen blockiert. Sie können diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich Ausnahmen für bestimmte Schemata, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie <ph name="URL_ALLOWLIST_POLICY_NAME" /> hat Vorrang vor <ph name="URL_BLOCKLIST_POLICY_NAME" />. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
-
-      Mit ihr lässt sich außerdem das automatische Aufrufen durch Browser externer Anwendungen aktivieren, die als Handler für die aufgeführten Protokolle registriert sind, z. B. "tel:" oder "ssh:".
-
-      Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen zu <ph name="URL_BLOCKLIST_POLICY_NAME" /> möglich.
-
-      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="5628811596950455942">Mit dieser Richtlinie wird eine Liste von Modi für das schnelle Entsperren des Sperrbildschirms festgelegt, die von Nutzern konfiguriert und verwendet werden können.
 
-          Dieser Wert besteht aus einer Liste von Strings; gültige Listeneinträge sind: "alle", "PIN", "FINGERABDRUCK". Durch das Hinzufügen von "alle" zur Liste stehen dem Nutzer alle Modi für das schnelle Entsperren zur Verfügung, einschließlich von Modi, die erst in der Zukunft implementiert werden. Wird "alle" nicht ausgewählt, stehen für das schnelle Entsperren nur die in der Liste enthaltenen Modi zur Verfügung.
+          Dieser Wert besteht aus einer Liste von Strings; gültige Listeneinträge sind: "all", "PIN", "FINGERPRINT". Durch das Hinzufügen von "all" zur Liste stehen dem Nutzer alle Modi für das schnelle Entsperren zur Verfügung, einschließlich von Modi, die erst in der Zukunft implementiert werden. Wird "all" nicht ausgewählt, stehen für das schnelle Entsperren nur die in der Liste enthaltenen Modi zur Verfügung.
 
-          Beispiel: Wenn Sie alle Modi für das schnelle Entsperren erlauben möchten, verwenden Sie ["alle"]. Soll nur mit der PIN entsperrt werden können, legen Sie ["PIN"] fest. Wenn PIN und Fingerabdruck erlaubt sein sollen, legen Sie ["PIN", "FINGERABDRUCK"] fest.
+          Beispiel: Wenn Sie alle Modi für das schnelle Entsperren erlauben möchten, verwenden Sie ["all"]. Soll nur mit der PIN entsperrt werden können, legen Sie ["PIN"] fest. Wenn PIN und Fingerabdruck erlaubt sein sollen, legen Sie ["PIN", "FINGERPRINT"] fest.
 
           Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine Modi für das schnelle Entsperren zur Verfügung.
 
-          Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen "<ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />".</translation>
+          Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen "<ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />".</translation>
 <translation id="5630352020869108293">Letzte Sitzung wiederherstellen</translation>
 <translation id="5633871703004128675">Bedienungshilfe "Textcursor hervorheben" aktivieren</translation>
 <translation id="5641279111657132737">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />.
@@ -3602,15 +3589,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="6190022522129724693">Standardeinstellung für Pop-ups</translation>
 <translation id="6190367314942602985">Personenbezogene Daten erfassen</translation>
 <translation id="6195802366906945965">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung zum Verifizieren von Serverzertifikaten verwendet wird</translation>
-<translation id="6199780467005360782">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen zur URL-Sperrliste). Informationen zum Format der Einträge in der Liste finden Sie in der Beschreibung der Richtlinie. So kann beispielsweise verhindert werden, dass * alle Anfragen blockiert. Sie können diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich Ausnahmen für bestimmte Schemata, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Zulassungsliste hat Vorrang vor der Sperrliste. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
-
-      Mit ihr lässt sich außerdem das automatische Aufrufen durch Browser externer Anwendungen aktivieren, die als Handler für die aufgeführten Protokolle registriert sind, z. B. "tel:" oder "ssh:".
-
-      Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen möglich.
-
-      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="6205094657236844092">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch installiert werden, also ohne Interaktion des Nutzers, und die vom Nutzer weder deinstalliert noch deaktiviert werden können.
 
 Jedes Listenelement der Richtlinie ist ein Objekt, das aus der obligatorischen Komponente "<ph name="URL_LABEL" />" (die URL der Web-App, die installiert werden soll) und den beiden optionalen Komponenten "<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />" (legt fest, wie die Web-App geöffnet wird – standardmäßig in einem neuen Tab) sowie "<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />" (ist auf "True" gesetzt, wenn Sie Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und Windows® erstellen möchten) besteht.
@@ -3623,7 +3601,6 @@ Jedes Listenelement der Richtlinie ist ein Objekt, das aus der obligatorischen K
 Ist diese Einstellung deaktiviert oder nicht konfiguriert, erfasst der Passwortschutzdienst die Salted-Hash-Werte von Passwörtern nur unter https://accounts.google.com.
 
 Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die durch <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
-<translation id="6210610748361191729">Wenn die Richtlinie auf "false" gesetzt ist, steht die Benutzeroberfläche zum Exportieren/Importieren nicht für Nutzer zur Verfügung. Es ist jedoch möglich, lXC-Befehle direkt in der virtuellen Maschine zum Exportieren und Importieren von Container-Images zu verwenden.</translation>
 <translation id="6211428344788340116">Meldet die Aktivitätszeiten des Geräts
 
       Wird diese Einstellung nicht konfiguriert oder auf "True" gesetzt, melden registrierte Geräte die Zeiträume, in denen ein Nutzer auf dem Gerät aktiv ist. Wird für diese Einstellung "False" festgelegt, werden die Geräteaktivitätszeiten weder aufgezeichnet noch gemeldet.</translation>
@@ -4403,11 +4380,6 @@ Wenn ein Nutzer ein primäres Browserkonto mit einem Nutzernamen einrichten will
 
 Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, kann der Nutzer in <ph name="PRODUCT_NAME" /> jedes Google-Konto als primäres Browserkonto festlegen.</translation>
 <translation id="723103540848640830">Minimale Länge der Sperrbildschirm-PIN festlegen</translation>
-<translation id="7232816984286843471">Wenn die Richtlinie auf "false" gesetzt ist, dürfen nicht verknüpfte Nutzer Crostini nicht verwenden.
-
-Ist die Richtlinie auf "true" gesetzt oder nicht festgelegt, dürfen alle Nutzer Crostini verwenden, sofern dies nicht durch andere Einstellungen verhindert wird.
-Alle drei Richtlinien (VirtualMachinesAllowed, CrostiniAllowed und DeviceUnaffiliatedCrostiniAllowed) müssen auf "true" gesetzt sein, wenn sie angewendet werden, damit Crostini ausgeführt werden darf.
-Wenn diese Richtlinie zu "false" geändert wird, wirkt sich dies auf den Start neuer Crostini-Container aus. Container, die bereits laufen, werden aber nicht beendet.</translation>
 <translation id="7234280155140786597">Namen der unzulässigen Hosts für natives Messaging (oder "*" für alle)</translation>
 <translation id="7249828445670652637"><ph name="PRODUCT_OS_NAME" />-CA-Zertifikate für ARC-Apps aktivieren</translation>
 <translation id="7252681704926980614">Damit werden Nutzer- und Dateiname bei jedem Druckauftrag an den nativen Druckerserver gesendet. Standardmäßig werden die Namen nicht gesendet.
@@ -4909,14 +4881,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
           Wenn die Richtlinie nicht konfiguriert ist, wird ein Standardwert verwendet.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.</translation>
-<translation id="7992136759457836904">Mit dieser Richtlinie können Sie festlegen, ob virtuelle Maschinen unter Chrome OS ausgeführt werden dürfen.
-
-Wenn die Richtlinie auf "true" gesetzt ist, dürfen virtuelle Maschinen auf dem Gerät ausgeführt werden.
-Wenn die Richtlinie auf "false" gesetzt ist, dürfen keine virtuellen Maschinen auf dem Gerät ausgeführt werden.
-Alle drei Richtlinien (VirtualMachinesAllowed, CrostiniAllowed und DeviceUnaffiliatedCrostiniAllowed) müssen auf "true" gesetzt sein, wenn sie angewendet werden, damit Crostini ausgeführt werden darf.
-Wird diese Richtlinie zu "false" geändert, wirkt sich dies nur auf den Start neuer virtueller Maschinen aus. Virtuelle Maschinen, die bereits laufen, werden dadurch nicht beendet.
-Ist diese Richtlinie auf einem verwalteten Gerät nicht festgelegt, dürfen keine virtuellen Maschinen auf dem Gerät ausgeführt werden.
-Auf nicht verwalteten Geräten dürfen virtuelle Maschinen ausgeführt werden.</translation>
 <translation id="8001701200415781021">Einschränken, welche Google-Konten als primäre Browserkonten in <ph name="PRODUCT_NAME" /> festgelegt werden können</translation>
 <translation id="8003853057959146975">Dateien zur Überprüfung auf Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten senden</translation>
 <translation id="8006219716745491366">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />" eine Liste alternativer URLs an, die verwendet werden, um Suchbegriffe aus der Suchmaschine zu extrahieren. Die URLs sollten den String <ph name="SEARCH_TERM_MARKER" /> enthalten.

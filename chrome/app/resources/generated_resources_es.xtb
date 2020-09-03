@@ -484,7 +484,7 @@
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556537182262721003">No se ha podido mover el directorio de la extensión al perfil.</translation>
 <translation id="155865706765934889">Panel táctil</translation>
-<translation id="1562119309884184621">Si añades este contacto, se recordará la próxima vez que comparta datos</translation>
+<translation id="1562119309884184621">Si añades este contacto, se recordará la próxima vez que comparta archivos</translation>
 <translation id="1563702743503072935">Las contraseñas de tu cuenta de Google también estarán disponibles en este dispositivo cuando hayas iniciado sesión</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">La impresora seleccionada no se encuentra disponible o no se ha instalado correctamente. Comprueba tu impresora o prueba a seleccionar otra.</translation>
@@ -894,6 +894,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2046702855113914483">Fideos</translation>
 <translation id="204706822916043810">Comprobando la máquina virtual</translation>
 <translation id="2048182445208425546">Acceder a tu tráfico de red</translation>
+<translation id="2048243703055695889">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_EMAIL" />, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">Acción no disponible</translation>
 <translation id="204914487372604757">Crear acceso directo</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -1180,6 +1181,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2384436799579181135">Se ha producido un error. Comprueba tu impresora y vuelve a intentarlo.</translation>
 <translation id="2387052489799050037">Ir a la pantalla de inicio</translation>
 <translation id="2387458720915042159">Tipo de conexión con proxy</translation>
+<translation id="2390347491606624519">No se ha podido conectar al proxy, vuelve a iniciar sesión</translation>
 <translation id="2391082728065870591">Enviar informe de opinión</translation>
 <translation id="2391419135980381625">Fuente estándar</translation>
 <translation id="2392163307141705938">Has llegado al límite de tiempo de uso de <ph name="IDS_SHORT_PRODUCT_NAME" /> establecido por tu padre o madre.</translation>
@@ -1212,7 +1214,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2433507940547922241">Aspecto</translation>
 <translation id="2433836460518180625">Solo bloquear dispositivo</translation>
 <translation id="2434449159125086437">No se ha podido configurar la impresora. Comprueba la configuración e inténtalo de nuevo.</translation>
-<translation id="2434758125294431199">Selecciona quién puede compartir datos contigo</translation>
+<translation id="2434758125294431199">Selecciona quién puede compartir archivos contigo</translation>
 <translation id="2435248616906486374">Red desconectada</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2436186046335138073">¿Quieres permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los enlaces de <ph name="PROTOCOL" />?</translation>
@@ -3324,6 +3326,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5017643436812738274">Puedes desplazarte por las páginas con un cursor de texto. Pulsa Ctrl + tecla de búsqueda + 7 para desactivar esta función.</translation>
 <translation id="5018207570537526145">Abrir sitio web de la extensión</translation>
 <translation id="5018526990965779848">Envía datos de uso y diagnóstico. Contribuye a mejorar tu experiencia de Android enviando automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
+<translation id="5019392775062123007">Los dispositivos cercanos pueden verlo como <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Aún no se ha actualizado</translation>
 <translation id="5026806129670917316">Activar Wi‑Fi</translation>
 <translation id="5026874946691314267">No volver a mostrar esta notificación</translation>
@@ -3413,6 +3416,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5133483819862530305">Del anochecer al amanecer</translation>
 <translation id="5135085122826131075">Accede al Asistente cuando digas "Ok Google".</translation>
 <translation id="5135533361271311778">No se ha podido crear un elemento de marcador.</translation>
+<translation id="5136343472380336530">Asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Eliminar este elemento</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, búsqueda de <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Introduce el PIN de tu llave de seguridad. Si no sabes cuál es el PIN, tendrás que restablecer la llave de seguridad.</translation>
@@ -3961,7 +3965,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5799508265798272974">Máquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">El archivo de destino está truncado o se ha eliminado desde la última descarga.</translation>
 <translation id="5801568494490449797">Preferencias</translation>
-<translation id="580297286642726158">Dispositivos con los que puedes compartir datos</translation>
+<translation id="580297286642726158">Dispositivos con los que puedes compartir archivos</translation>
 <translation id="5804175651771201311">Itinerancia desactivada</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5805697420284793859">Administrador de ventanas</translation>
@@ -4149,7 +4153,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6031600495088157824">Opciones de entrada en la barra de herramientas</translation>
 <translation id="6032715498678347852">Para permitir que una extensión acceda a este sitio web, haz clic en ella.</translation>
 <translation id="6032912588568283682">Sistema de archivos</translation>
-<translation id="6035517790085323771">Quién puede compartir datos con tu dispositivo</translation>
+<translation id="6035517790085323771">Quién puede compartir archivos con tu dispositivo</translation>
 <translation id="6038929619733116134">Bloquear si el sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="6039651071822577588">El formato del diccionario de propiedades de la red es incorrecto.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -4232,7 +4236,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6122081475643980456">Tu conexión a Internet está siendo controlada</translation>
 <translation id="6122095009389448667">Seguir impidiendo que este sitio web vea el portapapeles</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6122600716821516697">¿Compartir datos con este dispositivo?</translation>
+<translation id="6122600716821516697">¿Compartir con este dispositivo?</translation>
 <translation id="6122831415929794347">¿Desactivar Navegación Segura?</translation>
 <translation id="6122875415561139701">No se permite la operación de escritura en "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6124213551517593835">Esta acción borrará todos los datos y las cookies guardados por <ph name="SITE_GROUP_NAME" /> y por los sitios web que incluya</translation>
@@ -4420,6 +4424,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6342069812937806050">Justo ahora</translation>
 <translation id="6344170822609224263">Accede a la lista de conexiones de red</translation>
 <translation id="6344576354370880196">Impresoras guardadas</translation>
+<translation id="6345418402353744910">El proxy <ph name="PROXY" /> necesita tu nombre de usuario y tu contraseña para que el administrador pueda configurar tu red</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">La sincronización no funciona. Prueba a cerrar sesión y volver a iniciarla.</translation>
 <translation id="6351063337294363751">En este menú puedes borrar los datos de navegación</translation>
@@ -4777,6 +4782,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6810613314571580006">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está inhabilitada, se solicitará la confirmación cada vez que se intente iniciar sesión en un sitio web.</translation>
 <translation id="6810768462515084623">¡Vaya! Parece que la contraseña ha caducado. Renuévala en otro dispositivo e inténtalo de nuevo.</translation>
 <translation id="6811034713472274749">Ya se puede ver la página</translation>
+<translation id="6811332638216701903">Nombre de host de DHCP</translation>
 <translation id="6812349420832218321">No se puede ejecutar <ph name="PRODUCT_NAME" /> como raíz.</translation>
 <translation id="6812841287760418429">Mantener cambios</translation>
 <translation id="6817174620439930047">Preguntar cuando un sitio web quiera utilizar mensajes exclusivos del sistema para acceder a los dispositivos MIDI (recomendado)</translation>
@@ -4854,6 +4860,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6904344821472985372">Revocar acceso a archivo</translation>
 <translation id="6904655473976120856">Pulsa el botón de la aplicación para salir.</translation>
+<translation id="6909422577741440844">¿Recibir lo que este dispositivo está compartiendo?</translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="691024665142758461">Descargar varios archivos</translation>
 <translation id="691106080621596509">Esta acción borrará todos los datos y las cookies guardados por <ph name="SITE_GROUP_NAME" />, por los sitios web que contenga y por su aplicación instalada</translation>
@@ -6483,7 +6490,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8859402192569844210">No se han podido cargar los Términos del Servicio</translation>
 <translation id="8859662783913000679">Cuenta parental</translation>
 <translation id="8862003515646449717">Cambia a un navegador rápido</translation>
-<translation id="8863140399813345099">La visibilidad de tu dispositivo determina quién puede compartir datos contigo mientras tu pantalla está desbloqueada</translation>
+<translation id="8863140399813345099">La visibilidad de tu dispositivo determina quién puede compartir archivos contigo mientras tu pantalla está desbloqueada</translation>
 <translation id="8863753581171631212">Abrir enlace en una ventana nueva de <ph name="APP" /></translation>
 <translation id="8864055848767439877">Compartiendo <ph name="TAB_NAME" /> con <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">Se ha eliminado <ph name="EMAIL" /> del dispositivo</translation>

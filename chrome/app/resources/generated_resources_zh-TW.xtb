@@ -278,7 +278,7 @@
 <translation id="1313705515580255288">系統會將你的書籤、歷史記錄和其他設定與你的 Google 帳戶同步處理。</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網路，非漫遊狀態</translation>
-<translation id="1315144594965013365">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果你要與 Chromebook 分享內容，請確認該 Chromebook 已開啟鄰近分享功能 (請透過選取時間開啟狀態區，然後選取鄰近分享)。</translation>
+<translation id="1315144594965013365">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與 Chromebook 分享內容，請確認該 Chromebook 已開啟鄰近分享功能 (按一下電腦右下角顯示的時間欄位就能開啟狀態區，接著可以從中選取鄰近分享)。</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
 <translation id="1317637799698924700">你的座架將以 USB Type-C 相容模式執行。</translation>
@@ -1989,7 +1989,7 @@
 <translation id="3388788256054548012">這個檔案已加密。請要求檔案擁有者解密。</translation>
 <translation id="3390013585654699824">應用程式詳細資料</translation>
 <translation id="3390741581549395454">已成功備份 Linux 應用程式和檔案，即將開始升級。</translation>
-<translation id="339507021360520688">已選擇向你顯示裝置且已解鎖螢幕的使用者</translation>
+<translation id="339507021360520688">在自己螢幕解鎖時，選擇向你顯示裝置的使用者</translation>
 <translation id="3396800784455899911">點選 [接受並繼續] 按鈕即表示您同意上述的 Google 服務處理程序。</translation>
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> 赫茲) - 交錯顯示</translation>
@@ -3977,7 +3977,7 @@
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">列印中...</translation>
-<translation id="5830659417568730973">當你的螢幕處於解鎖狀態時，位於附近且你已選取的聯絡人皆可與你分享內容</translation>
+<translation id="5830659417568730973">螢幕處於解鎖狀態時，位於附近且所選取的聯絡人可與你分享內容</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)...</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">未知</translation>
@@ -4788,7 +4788,7 @@
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
 <translation id="6825184156888454064">依名稱排序</translation>
 <translation id="6826872289184051766">透過 USB 進行驗證</translation>
-<translation id="6827487342470222762">沒有可選取的聯絡人。如要與聯絡人使用鄰近分享功能，請將他們與 Google 帳戶連結的電子郵件地址加入聯絡人。</translation>
+<translation id="6827487342470222762">沒有可選取的聯絡人。如要與聯絡人使用鄰近分享功能，請把對方用來連結 Google 帳戶的電子郵件地址，加到聯絡人清單。</translation>
 <translation id="6827623133556594466">12 月 31 日之後，系統將不再支援 Google 雲端列印服務。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">只允許下列使用者登入：</translation>
 <translation id="6828182567531805778">如果要同步處理資料，請輸入你的通關密語</translation>
@@ -5593,7 +5593,7 @@
 <translation id="7819992334107904369">Chrome 同步</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
-<translation id="7825666486843191125">當你的螢幕處於解鎖狀態時，位於附近的所有聯絡人皆可與你分享內容</translation>
+<translation id="7825666486843191125">螢幕處於解鎖狀態時，位於附近的所有聯絡人皆可與你分享內容</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7826249772873145665">已停用 ADB 偵錯</translation>
 <translation id="7826254698725248775">裝置識別碼發生衝突。</translation>
@@ -6251,7 +6251,7 @@
 <translation id="8613164732773110792">僅限小寫字元、數字、底線或破折號</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 大小過大，無法進行安全性檢查。可開啟的檔案大小上限為 50 MB。</translation>
 <translation id="8615618338313291042">無痕模式應用程式：<ph name="APP_NAME" /></translation>
-<translation id="8616441548384109662">將「<ph name="CONTACT_NAME" />」加入聯絡人</translation>
+<translation id="8616441548384109662">將「<ph name="CONTACT_NAME" />」加為聯絡人</translation>
 <translation id="8619803522055190423">投射陰影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
 <translation id="8620436878122366504">你的家長尚未核准這個網站</translation>
@@ -6481,7 +6481,7 @@
 <translation id="8859402192569844210">無法載入《服務條款》</translation>
 <translation id="8859662783913000679">家長帳戶</translation>
 <translation id="8862003515646449717">改用速度飛快的瀏覽器</translation>
-<translation id="8863140399813345099">你可以透過裝置瀏覽權限，控管當你的螢幕處於解鎖狀態時，哪些人可與你分享內容</translation>
+<translation id="8863140399813345099">螢幕處於解鎖狀態時，利用裝置瀏覽權限可以控管哪些人可與你分享內容</translation>
 <translation id="8863753581171631212">另外在「<ph name="APP" />」中開啟連結</translation>
 <translation id="8864055848767439877">正在與 <ph name="APP_NAME" /> 共用 <ph name="TAB_NAME" /></translation>
 <translation id="8864458770072227512">已將 <ph name="EMAIL" /> 從這個裝置中移除</translation>

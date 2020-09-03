@@ -2914,12 +2914,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
-<translation id="5277806246014825877">Questa norma consente all'utente di eseguire Crostini.
-
-      Se la norma viene impostata su False, Crostini non è abilitato per l'utente.
-      Se la norma viene impostata su True o non viene impostata, Crostini è abilitato per l'utente, a patto che anche le altre impostazioni lo permettano.
-      Le tre norme, VirtualMachinesAllowed, CrostiniAllowed e DeviceUnaffiliatedCrostiniAllowed devono essere impostate su True affinché Crostini possa essere eseguito.
-      Quando l'impostazione di questa norma viene modificata in False, la norma viene applicata all'avvio di nuovi contenitori Crostini, ma non determina l'arresto dei contenitori già in esecuzione.</translation>
 <translation id="5283457834853986457">Disattiva la ricerca dei plug-in (ritirata)</translation>
 <translation id="5285315763984334157">Blocca download dannosi</translation>
 <translation id="5288772341821359899">Se la norma viene impostata, l'intervallo di porte UDP utilizzato da WebRTC viene limitato all'intervallo di porte specificato (endpoint inclusi).
@@ -3250,13 +3244,6 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Se il criterio è impostato su false, il client DNS integrato non verrà mai utilizzato.
 
       Se il criterio non viene impostato, per impostazione predefinita il client DNS integrato verrà attivato su macOS, Android (nel caso in cui non siano attivi il DNS privato né la VPN) e ChromeOS. Gli utenti potranno scegliere se utilizzare o meno il client DNS integrato modificando chrome://flags o specificando un flag della riga di comando.</translation>
-<translation id="5624946025057772960">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descrizione del criterio per il formato delle voci di questo elenco. Ad esempio, * può essere proibito per bloccare tutte le richieste ed è possibile utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
-
-      Questo criterio consente anche di abilitare il richiamo automatico da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
-
-      Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="5628811596950455942">Il criterio controlla un elenco di modalità di sblocco rapido che gli utenti possono configurare e utilizzare per sbloccare la schermata di blocco.
 
           Questo valore è un elenco di stringhe; voci di elenco valide sono "tutte", "PIN" "IMPRONTA". Aggiungendo "tutte" all'elenco, ogni modalità di sblocco rapido è disponibile per l'utente, comprese quelle che verranno implementate in futuro. In caso contrario, solo le modalità di sblocco rapido presenti nell'elenco saranno disponibili.
@@ -3607,15 +3594,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6190022522129724693">Impostazione popup predefiniti</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
 <translation id="6195802366906945965">Consente di stabilire se verrà utilizzato lo strumento di verifica dei certificati integrato per verificare i certificati dei server</translation>
-<translation id="6199780467005360782">Questo criterio è deprecato. Usa il criterio "<ph name="URL_ALLOWLIST_POLICY_NAME" />".
-
-      La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni alla lista bloccata di URL. Consulta la descrizione del criterio per il formato delle voci di questo elenco. Ad esempio, * può essere proibito per bloccare tutte le richieste ed è possibile utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. La lista consentita ha la precedenza sulla lista bloccata. Per questo criterio è possibile definire al massimo 1000 voci.
-
-      Questo criterio consente anche di abilitare il richiamo automatico da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
-
-      Se il criterio non viene configurato, non sono consentite eccezioni.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="6205094657236844092">Questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente e che non possono essere disinstallate o disattivate dagli utenti.
 
       Ogni voce del criterio è un oggetto con un componente obbligatorio: <ph name="URL_LABEL" /> (l'URL dell'app web da installare) e due componenti facoltativi: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (che indica la modalità di apertura dell'app web, ovvero una nuova scheda per impostazione predefinita) e <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True, se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e Windows®).
@@ -3628,7 +3606,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Se l'impostazione viene disattivata o se non viene configurata, il servizio di protezione tramite password acquisisce solo gli hash con salt della password all'indirizzo https://accounts.google.com.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
-<translation id="6210610748361191729">Se la norma viene impostata su False, l'interfaccia utente di esportazione/importazione non sarà disponibile agli utenti; è comunque possibile usare i comandi "lxc" direttamente nella macchina virtuale per esportare e importare le immagini del contenitore.</translation>
 <translation id="6211428344788340116">Consente di indicare i tempi di attività del dispositivo. Se questa impostazione viene impostata su True, i dispositivi registrati indicheranno i periodi di tempo di attività di un utente sul dispositivo. Se l'impostazione viene impostata su False, i tempi di attività del dispositivo non verranno registrati o indicati.</translation>
 <translation id="6212868225782276239">Vengono mostrate tutte le stampanti, tranne quelle indicate nella lista nera.</translation>
 <translation id="6220835555850906733">Se il criterio viene attivato o se non viene configurato, tutti gli output audio supportati sono consentiti sui dispositivi degli utenti.
@@ -4199,6 +4176,11 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 
       Queste norme consentono di configurare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando l'utente rimane inattivo per un determinato periodo di tempo.</translation>
 <translation id="7032813174556919004">Disattiva DNS over HTTPS</translation>
+<translation id="7033778618670823541">Questo criterio consente di specificare un elenco di origini (URL) o modelli di nomi host (ad esempio *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. Le organizzazioni possono specificare le origini delle applicazioni precedenti che non possono implementare TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover implementare TLS sul server temporaneo. Inoltre questo criterio impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
+
+      La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
+
+      Per ulteriori informazioni sui contesti sicuri, visita la pagina https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="7037812781389976160">Consente di controllare la posizione della shelf di <ph name="PRODUCT_OS_NAME" />.
 
       Se per questo criterio viene impostato il valore "In basso", la shelf viene posizionata nella parte inferiore dello schermo.
@@ -4404,11 +4386,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se questa norma non viene impostata o viene lasciata vuota, l'utente potrà impostare qualsiasi Account Google come account principale del browser in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Imposta la lunghezza minima del PIN per la schermata di blocco</translation>
-<translation id="7232816984286843471">Se la norma viene impostata su False, gli utenti non affiliati non potranno usare Crostini.
-
-      Se la norma non viene impostata o viene impostata su True, tutti gli utenti potranno utilizzare Crostini, a patto che anche le altre impostazioni lo permettano.
-      Le tre norme, VirtualMachinesAllowed, CrostiniAllowed e DeviceUnaffiliatedCrostiniAllowed devono essere impostate su True affinché Crostini possa essere eseguito.
-      Quando l'impostazione di questa norma viene modificata in False, la norma viene applicata all'avvio di nuovi contenitori Crostini, ma non determina l'arresto dei contenitori già in esecuzione.</translation>
 <translation id="7234280155140786597">Nomi degli host di messaggi nativi vietati (o * per indicarli tutti)</translation>
 <translation id="7249828445670652637">Attiva i certificati CA <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
 <translation id="7252681704926980614">Invia nome utente e nome file al server delle stampanti native per ogni processo di stampa. L'impostazione predefinita non prevede l'invio.
@@ -4910,14 +4887,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
-<translation id="7992136759457836904">Questa norma consente di controllare se le macchine virtuali possono essere eseguite su Chrome OS.
-
-      Se la norma viene impostata su True, al dispositivo è consentito eseguire le macchine virtuali.
-      Se la norma viene impostata su False, al dispositivo non è consentito eseguire le macchine virtuali.
-      Le tre norme, VirtualMachinesAllowed, CrostiniAllowed e DeviceUnaffiliatedCrostiniAllowed devono essere impostate su True affinché Crostini possa essere eseguito.
-      Quando l'impostazione di questa norma viene modificata in False, la norma viene applicata all'avvio di nuove macchine virtuali, ma non determina l'arresto delle macchine virtuali già in esecuzione.
-      Quando questa norma non è impostata su un dispositivo gestito, il dispositivo non può eseguire macchine virtuali.
-       I dispositivi non gestiti sono autorizzati a eseguire macchine virtuali.</translation>
 <translation id="8001701200415781021">Limita gli Account Google che è possibile impostare come account principali del browser in <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Invia file per l'ispezione di eventuali violazioni delle regole relative alla protezione dei dati sensibili</translation>
 <translation id="8006219716745491366">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> consente di specificare un elenco di URL alternativi per l'estrazione dei termini di ricerca dal motore di ricerca. Gli URL devono includere la stringa <ph name="SEARCH_TERM_MARKER" />.

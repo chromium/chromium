@@ -2886,12 +2886,6 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果此政策未设置，“光标突出显示”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
-<translation id="5277806246014825877">允许此用户运行 Crostini。
-
-      如果此政策设为 false，系统不会为此用户启用 Crostini。
-      如果此政策设为 true 或未设置，系统会为此用户启用 Crostini，前提是其他设置也允许此用户运行 Crostini。
-      若想通过应用 VirtualMachinesAllowed、CrostiniAllowed 和 DeviceUnaffiliatedCrostiniAllowed 这三项政策以允许 Crostini 运行，则这三项政策都需设为 true。
-      如果此政策改设为 false，则只会导致无法启动新的 Crostini 容器，而不会关闭已在运行的容器。</translation>
 <translation id="5283457834853986457">停用插件查找器（已弃用）</translation>
 <translation id="5285315763984334157">拦截恶意下载内容</translation>
 <translation id="5288772341821359899">如果此政策已设置，则 WebRTC 使用的 UDP 端口范围将仅限于指定的端口区间（包括端点）。
@@ -3221,13 +3215,6 @@
       如果此政策设为 False，系统将一律不会使用内置 DNS 客户端。
 
       如果此政策未设置，那么在 macOS、Android（当专用 DNS 和 VPN 均未启用时）和 ChromeOS 中，内置 DNS 客户端将会默认处于启用状态，而且用户将能够通过修改 chrome://flags 或指定命令行标记来更改是否使用内置 DNS 客户端。</translation>
-<translation id="5624946025057772960">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，您可以利用 * 来屏蔽所有请求，并且通过此政策允许访问您所列出的少量网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况。某个网址是否会遭到屏蔽取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1000 个条目。
-
-      通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
-
-      如果您未设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="5628811596950455942">此政策旨在以列表形式控制用户可配置和使用哪些快速解锁模式来解锁屏幕。
 
           此政策的值是一个字符串列表；有效的列表项包括“all”、“PIN”和“FINGERPRINT”。如果您向该列表中添加“all”，用户将能够使用所有快速解锁模式（包括日后会实施的那些模式）。如果您未向该列表中添加“all”，用户将仅能使用该列表中指定的快速解锁模式。
@@ -3576,15 +3563,6 @@
 <translation id="6190022522129724693">默认弹出式窗口设置</translation>
 <translation id="6190367314942602985">报告用户标识信息</translation>
 <translation id="6195802366906945965">确定是否会使用内置的证书验证程序来验证服务器证书</translation>
-<translation id="6199780467005360782">此政策已被弃用，请改用“<ph name="URL_ALLOWLIST_POLICY_NAME" />”政策。
-
-      通过设置此政策，您可列出允许访问的网址，以便将这些网址作为网址屏蔽名单的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，您可以利用 * 来屏蔽所有请求，并且通过此政策允许访问您所列出的少量网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况。某个网址是否会遭到屏蔽取决于最具体的过滤条件。许可名单的优先级高于屏蔽名单。此政策最多只能包含 1000 个条目。
-
-      通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
-
-      如果您未设置此政策，网址屏蔽名单将不会有任何例外情况。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="6205094657236844092">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
 
       此政策的每个列表项都是一个包含以下成员的对象：1 个必要成员“<ph name="URL_LABEL" />”（要安装的 Web 应用的网址）及 2 个可选成员“<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />”（用于指明 Web 应用的打开方式，默认为在新标签页中打开）和“<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />”（如果您想创建 <ph name="LINUX_OS_NAME" /> 和 Windows® 桌面快捷方式，请设为 True）。
@@ -3597,7 +3575,6 @@
       如果您停用了或未配置此设置，密码保护服务将仅在 https://accounts.google.com 上捕获密码的加盐哈希值。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
-<translation id="6210610748361191729">如果此政策设为 false，用户将无法使用导出/导入界面，但仍可以在虚拟机中直接使用“lxc”命令来导出和导入容器图片。</translation>
 <translation id="6211428344788340116">报告设备活动时间。
 
       如果此政策未设置或设为True，已注册的设备将报告用户在设备上处于活跃状态的时间段。如果此政策设为False，则不记录或报告设备活动时间。</translation>
@@ -4372,11 +4349,6 @@
 
       如果此政策未设置或为空，则用户可以将任何 Google 帐号设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号。</translation>
 <translation id="723103540848640830">设置锁定屏幕 PIN 码的长度下限</translation>
-<translation id="7232816984286843471">如果此政策设为 false，独立用户将无法使用 Crostini。
-
-      如果此政策设为 true 或未设置，系统将允许所有用户使用 Crostini，前提是其他设置也允许所有用户运行 Crostini。
-      若想通过应用 VirtualMachinesAllowed、CrostiniAllowed 和 DeviceUnaffiliatedCrostiniAllowed 这三项政策以允许 Crostini 运行，则这三项政策都需设为 true。
-      如果此政策改设为 false，则只会导致无法启动新的 Crostini 容器，而不会关闭已在运行的容器。</translation>
 <translation id="7234280155140786597">被禁的本地消息传递主机的名称（用“*”则表示全部禁止）</translation>
 <translation id="7249828445670652637">允许 ARC 应用使用 <ph name="PRODUCT_OS_NAME" /> CA 证书</translation>
 <translation id="7252681704926980614">每次执行打印任务时都向原生打印机服务器发送用户名和文件名。默认设置是不发送。
@@ -4878,14 +4850,6 @@
           如果您未设置此政策，系统将使用默认时长。
 
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。</translation>
-<translation id="7992136759457836904">让您能够控制是否允许在 Chrome 操作系统上运行虚拟机。
-
-      如果此政策设为 True，相应设备将能够运行虚拟机。
-      如果此政策设为 False，相应设备将无法运行虚拟机。
-      若想通过应用 VirtualMachinesAllowed、CrostiniAllowed 和 DeviceUnaffiliatedCrostiniAllowed 这三项政策以允许 Crostini 运行，则这三项政策都需设为 True。
-      如果此政策改设为 False，则只会导致无法启动新的虚拟机，而不会关闭已在运行的虚拟机。
-      如果未在某部受管理设备上设置此政策，该设备将无法运行虚拟机。
-      未受管理的设备可以运行虚拟机。</translation>
 <translation id="8001701200415781021">限制哪些 Google 帐号可以设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号</translation>
 <translation id="8003853057959146975">发送文件以检查是否违反敏感数据保护规则</translation>
 <translation id="8006219716745491366">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> 来指定用于从搜索引擎提取搜索字词的备用网址列表。网址应包含字符串<ph name="SEARCH_TERM_MARKER" />。

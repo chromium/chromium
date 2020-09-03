@@ -388,6 +388,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5433691172869980887">Foydalanuvchi nomi nusxalandi</translation>
 <translation id="54401264925851789">Sahifa xavfsizligi haqida ma’lumot</translation>
 <translation id="5443952882982198570">Bank kartalari</translation>
+<translation id="5457226814769348910">Oflayn versiyasini ochish</translation>
 <translation id="5457907402803865181">Parollar sinxronlanmadi</translation>
 <translation id="5489208564673669003">Barcha saytlar uchun cookie fayllarni boshqarish uchun <ph name="BEGIN_LINK" />Cookie sozlamalari<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="5490005495580364134">Barcha cookie fayllarni taqiqlash (tavsiya etilmaydi)</translation>
@@ -458,6 +459,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6187302354554850004">Oxirgi sinxronizatsiya: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">O‘qilmagan</translation>
 <translation id="6196207969502475924">Ovozli qidiruv</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ta sahifani yopish}other{{COUNT} ta sahifani yopish}}</translation>
 <translation id="6219688215832490856">Hech qachon tarjima qilinmasin</translation>
 <translation id="6254066287920239840">Havolalarni brauzerning o‘rniga boshqa ilovada oching.</translation>
 <translation id="6255097610484507482">Kartani tahrirlash</translation>

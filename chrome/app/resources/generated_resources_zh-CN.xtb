@@ -481,7 +481,7 @@
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="155865706765934889">触控板</translation>
-<translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享文件时，系统会提醒您</translation>
+<translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享内容时，系统会识别出此联系人</translation>
 <translation id="1563702743503072935">登录后，您在此设备上也能获取您 Google 帐号中保存的密码</translation>
 <translation id="1566049601598938765">网站</translation>
 <translation id="15662109988763471">所选打印机无法使用或未正确安装。请检查打印机，或尝试选择其他打印机。</translation>
@@ -4031,7 +4031,7 @@
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
-<translation id="5893589697005440881">与您附近的人员分享文件</translation>
+<translation id="5893589697005440881">与附近的人分享文件</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5900302528761731119">Google 个人资料照片</translation>
 <translation id="5900358982890952556">升级 Linux（测试版）</translation>
@@ -4785,7 +4785,7 @@
 <translation id="6824584962142919697">检查元素(&amp;I)</translation>
 <translation id="6825184156888454064">按名称排序</translation>
 <translation id="6826872289184051766">通过 USB 进行验证</translation>
-<translation id="6827487342470222762">没有任何可供选择的联系人。如果想与您的联系人进行“附近分享”，请将其 Google 帐号所关联的电子邮件地址添加到您的通讯录中。</translation>
+<translation id="6827487342470222762">没有可供选择的联系人。如需与您的联系人使用“附近分享”功能分享内容，请将其 Google 帐号所关联的电子邮件地址添加到您的通讯录中。</translation>
 <translation id="6827623133556594466">12 月 31 日之后，Google 云打印将不再受支持。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">只允许以下用户登录：</translation>
 <translation id="6828182567531805778">输入密码以同步您的数据</translation>
@@ -6248,7 +6248,7 @@
 <translation id="8613164732773110792">只能包含小写字符、数字、下划线或连字符</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 太大，无法进行安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="8615618338313291042">隐身模式下使用的应用...<ph name="APP_NAME" /></translation>
-<translation id="8616441548384109662">将<ph name="CONTACT_NAME" />添加到您的通讯录</translation>
+<translation id="8616441548384109662">将“<ph name="CONTACT_NAME" />”添加到您的通讯录</translation>
 <translation id="8619803522055190423">阴影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
 <translation id="8620436878122366504">您的父母尚未批准此请求</translation>
@@ -6478,7 +6478,7 @@
 <translation id="8859402192569844210">无法加载《服务条款》</translation>
 <translation id="8859662783913000679">家长帐号</translation>
 <translation id="8862003515646449717">改用极速浏览器</translation>
-<translation id="8863140399813345099">您可指定自己的设备公开范围，从而控制哪些人员能在您的屏幕处于解锁状态时与您分享文件</translation>
+<translation id="8863140399813345099">您可指定设备的公开范围，从而控制哪些人员能在您的屏幕处于解锁状态时与您分享内容</translation>
 <translation id="8863753581171631212">在<ph name="APP" />的新窗口中打开链接</translation>
 <translation id="8864055848767439877">正在将“<ph name="TAB_NAME" />”分享到 <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> 已从此设备中移除</translation>

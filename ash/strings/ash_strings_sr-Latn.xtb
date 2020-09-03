@@ -146,6 +146,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2429753432712299108">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Pre nego što mu je date, uverite se da je ova šifra prikazana na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="2473177541599297363">Potvrdite rezoluciju</translation>
+<translation id="2475982808118771221">Došlo je do greške</translation>
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promenili raspored tastature.</translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
@@ -528,6 +529,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6818242057446442178">Reč unazad</translation>
 <translation id="6820676911989879663">Napravite pauzu!</translation>
 <translation id="6857811139397017780">Aktiviraj <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala je jedna cifra}one{Preostala je # cifra}few{Preostale su # cifre}other{Preostalo je # cifara}}</translation>
 <translation id="6878400149835617132">Prečica je isključena</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6910714959251846841">Ovo ažuriranje zahteva da obavite powerwash na uređaju. Saznajte više o najnovijem ažuriranju za: <ph name="SYSTEM_APP_NAME" />.</translation>

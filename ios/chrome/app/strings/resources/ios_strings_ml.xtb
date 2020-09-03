@@ -388,6 +388,7 @@
 <translation id="5433691172869980887">ഉപയോക്തൃനാമം പകർത്തി</translation>
 <translation id="54401264925851789">പേജ് സുരക്ഷാ വിവരങ്ങൾ</translation>
 <translation id="5443952882982198570">ക്രെഡിറ്റ് കാർഡുകൾ</translation>
+<translation id="5457226814769348910">ഓഫ്‌ലെെൻ പതിപ്പ് തുറക്കുക</translation>
 <translation id="5457907402803865181">പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കുന്നതിൽ പിശക്.</translation>
 <translation id="5489208564673669003">എല്ലാ സൈറ്റുകൾക്കുമുള്ള കുക്കികൾ മാനേജ് ചെയ്യാൻ, <ph name="BEGIN_LINK" />കുക്കി ക്രമീകരണം<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="5490005495580364134">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
@@ -458,6 +459,7 @@
 <translation id="6187302354554850004">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">വായിക്കാത്തവ</translation>
 <translation id="6196207969502475924">ശബ്ദ തിരയൽ</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ടാബ് അടയ്‌ക്കുക}other{{COUNT} ടാബുകൾ അടയ്‌ക്കുക}}</translation>
 <translation id="6219688215832490856">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="6254066287920239840">ബ്രൗസറിന് പകരം ആപ്പിൽ ലിങ്കുകൾ തുറക്കുക.</translation>
 <translation id="6255097610484507482">ക്രെഡിറ്റ് കാര്‍ഡ് എഡിറ്റ് ചെയ്യുക</translation>

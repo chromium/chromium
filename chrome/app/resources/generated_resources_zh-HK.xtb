@@ -278,7 +278,7 @@
 <translation id="1313705515580255288">系統會將您的書籤、記錄和其他設定與您的 Google 帳戶同步處理。</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網絡，非漫遊狀態</translation>
-<translation id="1315144594965013365">請確保兩部裝置都已解鎖並放在一起，並且已開啟藍牙功能。如果您要 Chromebook 分享檔案，請確認該 Chromebook 已開啟「咫尺共享」 (請透過選取時間開啟狀態區，然後選取「咫尺共享」)。</translation>
+<translation id="1315144594965013365">請確保兩部裝置都已解鎖並放在一起，且已開啟藍牙功能。如果您要 Chromebook 分享檔案，請確認該 Chromebook 已開啟「咫尺共享」 (請透過選取時間開啟狀態區，然後選取「咫尺共享」)。</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
 <translation id="1317637799698924700">您的插座將以 USB-C 兼容模式執行。</translation>
@@ -484,7 +484,7 @@
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="155865706765934889">觸控板</translation>
-<translation id="1562119309884184621">新增此聯絡人後，下次該聯絡人分享檔案時，系統將可辨識出該聯絡人</translation>
+<translation id="1562119309884184621">新增此聯絡人後，下次該聯絡人分享檔案時，系統將可辨識該聯絡人</translation>
 <translation id="1563702743503072935">登入後，您亦可在此裝置上查看儲存在 Google 帳戶中的密碼</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">所選打印機無法使用或尚未正確安裝。請檢查打印機，或嘗試選取其他打印機。</translation>
@@ -3961,7 +3961,7 @@
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已被截斷或移除。</translation>
 <translation id="5801568494490449797">偏好設定</translation>
-<translation id="580297286642726158">您可分享的裝置</translation>
+<translation id="580297286642726158">可與您分享內容的裝置</translation>
 <translation id="5804175651771201311">已關閉漫遊服務</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5805697420284793859">視窗管理員</translation>

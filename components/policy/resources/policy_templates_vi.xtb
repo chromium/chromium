@@ -2949,12 +2949,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật con trỏ sẽ tắt trên màn hình đăng nhập nhưng người dùng có thể bật bất cứ lúc nào.</translation>
-<translation id="5277806246014825877">Cho phép người dùng này chạy Crostini.
-
-      Nếu đặt chính sách này thành false, thì người dùng không được phép sử dụng Crostini.
-      Nếu đặt thành true hoặc không đặt, thì người dùng được phép sử dụng Crostini miễn là các tùy chọn cài đặt khác cũng cho phép sử dụng Crostini.
-      Để cho phép chạy Crostini, bạn Cần đặt tất cả ba chính sách, VirtualMachinesAllowed, CrostiniAllowed và DeviceUnaffiliatedCrostiniAllowed thành true.
-      Khi đổi chính sách này thành false, chính sách sẽ áp dụng cho quá trình khởi động các vùng chứa Crostini mới nhưng không tắt các vùng chứa đang chạy.</translation>
 <translation id="5283457834853986457">Tắt trình tìm kiếm plugin (không được dùng nữa)</translation>
 <translation id="5285315763984334157">Chặn tệp độc hại đã tải xuống</translation>
 <translation id="5288772341821359899">Nếu đã đặt chính sách, phạm vi cổng UDP mà WebRTC sử dụng sẽ được hạn chế đến phạm vi cổng được chỉ định (đã bao gồm cả điểm cuối).
@@ -3287,13 +3281,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành false, thì ứng dụng DNS tích hợp sẽ không bao giờ được dùng.
 
       Nếu bạn không đặt chính sách này, thì ứng dụng DNS tích hợp sẽ bật theo mặc định trên macOS, Android (khi cả VPN lẫn DNS riêng đều không được bật) và ChromeOS, đồng thời người dùng có thể thay đổi tùy chọn có dùng ứng dụng DNS tích hợp hay không bằng cách chỉnh sửa chrome://flags hoặc chỉ định một cờ dòng lệnh.</translation>
-<translation id="5624946025057772960">Việc đặt chính sách này sẽ cho phép truy cập vào các URL có trong danh sách, ngoại trừ <ph name="URL_BLOCKLIST_POLICY_NAME" />. Hãy xem thông tin mô tả của chính sách đó để biết định dạng của các mục trong danh sách này. Ví dụ: có thể cấm * để chặn tất cả yêu cầu, và bạn có thể dùng chính sách này để cho phép truy cập vào danh sách các URL hạn chế. Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số lược đồ, miền con của các miền khác, cổng hoặc đường dẫn cụ thể. Bộ lọc cụ thể nhất sẽ quyết định liệu một URL bị chặn hay được cho phép. Chính sách <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được ưu tiên hơn chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />. Chính sách này chỉ áp dụng cho 1.000 mục.
-
-      Chính sách này cũng cho phép trình duyệt tự động gọi ứng dụng bên ngoài được đăng ký ở dạng trình xử lý giao thức cho các giao thức có trong danh sách, chẳng hạn như "tel:" hoặc "ssh:".
-
-      Việc không đặt chính sách này sẽ không cho phép trường hợp ngoại lệ đối với <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
 <translation id="5628811596950455942">Chính sách này kiểm soát danh sách chế độ mở khóa nhanh mà người dùng có thể định cấu hình và áp dụng để mở màn hình khóa.
 
           Giá trị này là một danh sách chuỗi; các mục hợp lệ trong danh sách này là: "all", "PIN", "FINGERPRINT". Khi bạn thêm "all" vào danh sách này, người dùng có thể áp dụng mọi chế độ mở khóa nhanh, bao gồm cả những chế độ được triển khai trong tương lai. Nếu không, người dùng sẽ chỉ sử dụng được các chế độ có trong danh sách này.
@@ -3645,15 +3632,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="6190022522129724693">Cài đặt cửa sổ bật lên</translation>
 <translation id="6190367314942602985">Báo cáo thông tin nhận dạng người dùng</translation>
 <translation id="6195802366906945965">Xác định xem trình xác minh chứng chỉ tích hợp sẵn có được dùng để xác minh chứng chỉ máy chủ hay không</translation>
-<translation id="6199780467005360782">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="URL_ALLOWLIST_POLICY_NAME" />".
-
-      Việc đặt chính sách này sẽ cho phép truy cập vào các URL có trong danh sách, ngoại trừ các URL trong danh sách chặn. Hãy xem thông tin mô tả của chính sách đó để biết định dạng của các mục trong danh sách này. Ví dụ: có thể cấm * để chặn tất cả yêu cầu, và bạn có thể dùng chính sách này để cho phép truy cập vào danh sách các URL hạn chế. Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số lược đồ, miền con của các miền khác, cổng hoặc đường dẫn cụ thể. Bộ lọc cụ thể nhất sẽ quyết định liệu một URL bị chặn hay được cho phép. Danh sách cho phép sẽ được ưu tiên hơn danh sách chặn. Chính sách này chỉ áp dụng cho 1.000 mục.
-
-      Chính sách này cũng cho phép trình duyệt tự động gọi ứng dụng bên ngoài được đăng ký ở dạng trình xử lý giao thức cho các giao thức có trong danh sách, chẳng hạn như "tel:" hoặc "ssh:".
-
-      Việc không đặt chính sách này sẽ không cho phép trường hợp ngoại lệ.
-
-      Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
 <translation id="6205094657236844092">Việc đặt chính sách này sẽ chỉ định danh sách các ứng dụng web được cài đặt tự động mà không cần sự can thiệp của người dùng, và các trang web mà người dùng không thể gỡ cài đặt hay tắt đi.
 
       Mỗi mục trong danh sách của chính sách này là một đối tượng chứa một thành phần bắt buộc: <ph name="URL_LABEL" /> (URL của ứng dụng web sẽ cài đặt) và 2 thành phần không bắt buộc: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (về cách mở ứng dụng web – mặc định là một thẻ mới) và <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (là True nếu bạn muốn tạo lối tắt trên màn hình <ph name="LINUX_OS_NAME" /> và Windows®).
@@ -3666,7 +3644,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn tắt hoặc không đặt tùy chọn cài đặt này, dịch vụ bảo vệ mật khẩu sẽ chỉ ghi lại hàm băm được thêm dữ liệu ngẫu nhiên của mật khẩu trên https://accounts.google.com.
 
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
-<translation id="6210610748361191729">Nếu bạn đặt chính sách này thành false, thì người dùng sẽ không sử dụng được giao diện người dùng xuất/nhập. Tuy nhiên, họ vẫn có thể dùng lệnh 'lxc' ngay trong máy ảo để xuất và nhập hình ảnh của vùng chứa.</translation>
 <translation id="6211428344788340116">Báo cáo số lần hoạt động của thiết bị.
 
       Nếu cài đặt này không được đặt hoặc được đặt thành Đúng, các thiết bị được đăng ký sẽ báo cáo các khoảng thời gian khi có người dùng sử dụng thiết bị. Nếu cài đặt này được đặt giá trị thành Sai, số lần thiết bị hoạt động sẽ không được ghi lại hay báo cáo.</translation>
@@ -4446,11 +4423,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn để trống hoặc không đặt chính sách này, thì người dùng có thể đặt một Tài khoản Google bất kỳ làm tài khoản chính của trình duyệt trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Đặt độ dài tối thiểu của mã PIN màn hình khóa</translation>
-<translation id="7232816984286843471">Nếu đặt chính sách thành false, thì người dùng chưa liên kết sẽ không được phép sử dụng Crostini.
-
-      Nếu chưa đặt hoặc đặt chính sách thành true, thì tất cả người dùng đều được phép sử dụng Crostini miễn là các tùy chọn cài đặt khác cũng cho phép sử dụng Crostini.
-      Để cho phép chạy Crostini, bạn cần đặt cả ba chính sách, VirtualMachinesAllowed, CrostiniAllowed và DeviceUnaffiliatedCrostiniAllowed thành true.
-      Khi đổi chính sách này thành false, chính sách sẽ áp dụng cho quá trình khởi động các vùng chứa Crostini mới nhưng không tắt các vùng chứa đang sử dụng.</translation>
 <translation id="7234280155140786597">Tên của các máy chủ nhắn tin gốc bị cấm (hoặc * cho tất cả)</translation>
 <translation id="7249828445670652637">Bật chứng chỉ CA <ph name="PRODUCT_OS_NAME" /> đối với ứng dụng ARC</translation>
 <translation id="7252681704926980614">Gửi tên người dùng và tên tệp tới máy chủ của máy in gốc cùng với mỗi lệnh in. Tùy chọn mặc định là không gửi.
@@ -4958,14 +4930,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Khi bạn không đặt chính sách này, khoảng thời gian mặc định sẽ được sử dụng.
 
           Bạn phải chỉ định giá trị của chính sách bằng mili giây. Các giá trị được giới hạn ở mức nhỏ hơn hoặc bằng thời gian chờ khi ở chế độ tạm vắng.</translation>
-<translation id="7992136759457836904">Cho phép bạn kiểm soát xem có được phép chạy máy ảo trên Chrome OS hay không.
-
-      Nếu đặt chính sách thành True, thì thiết bị này được phép chạy máy ảo.
-      Nếu đặt chính sách thành False, thì thiết bị này sẽ không được phép chạy máy ảo.
-      Để cho phép chạy Crostini, cần đặt cả ba chính sách, VirtualMachinesAllowed, CrostiniAllowed và DeviceUnaffiliatedCrostiniAllowed thành true.
-      Khi đổi chính sách này thành False, chính sách sẽ áp dụng cho quá trình khởi động các máy ảo mới mà không tắt các máy ảo đang hoạt động.
-      Khi không đặt chính sách này trên thiết bị được quản lý, thiết bị sẽ không được phép sử dụng máy ảo.
-      Các thiết bị chưa được quản lý được phép sử dụng máy ảo.</translation>
 <translation id="8001701200415781021">Hạn chế Tài khoản Google nào được phép đặt làm tài khoản chính của trình duyệt trong <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Gửi tệp để kiểm tra xem có vi phạm quy tắc bảo vệ dữ liệu nhạy cảm hay không</translation>
 <translation id="8006219716745491366">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> sẽ chỉ định danh sách các URL thay thế để trích xuất cụm từ tìm kiếm từ công cụ tìm kiếm. Các URL này phải chứa chuỗi <ph name="SEARCH_TERM_MARKER" />.

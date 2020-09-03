@@ -146,6 +146,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
+<translation id="2475982808118771221">Det uppstod ett fel</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2484513351006226581">Tryck på <ph name="KEYBOARD_SHORTCUT" /> om du vill byta tangentbordslayout.</translation>
 <translation id="2501920221385095727">Tröga tangenter</translation>
@@ -528,6 +529,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6818242057446442178">Bakåt ord för ord</translation>
 <translation id="6820676911989879663">Ta en paus!</translation>
 <translation id="6857811139397017780">Aktivera <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6910714959251846841">Den här uppdateringen kräver att en Powerwash görs av enheten. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>

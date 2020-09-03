@@ -146,6 +146,7 @@
 <translation id="2429753432712299108">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Перш ніж надати його, підтвердьте, що на пристрої відображається цей ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2473177541599297363">Підтвердьте роздільну здатність</translation>
+<translation id="2475982808118771221">Сталася помилка</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
@@ -528,6 +529,7 @@
 <translation id="6818242057446442178">Назад на одне слово</translation>
 <translation id="6820676911989879663">Зробіть перерву!</translation>
 <translation id="6857811139397017780">Активувати <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилися # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>
 <translation id="6878400149835617132">Комбінацію клавіш вимкнено</translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6910714959251846841">Для цього оновлення потрібно виконати Powerwash на пристрої. Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" />.</translation>

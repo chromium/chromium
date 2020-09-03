@@ -2936,12 +2936,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, sorotan kursor mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="5277806246014825877">Aktifkan pengguna ini untuk menjalankan Crostini.
-
-      Jika kebijakan ini ditetapkan ke false, Crostini tidak diaktifkan untuk pengguna.
-      Jika ditetapkan ke true atau tidak ditetapkan, Crostini diaktifkan untuk pengguna asalkan setelan lainnya mengizinkannya.
-      Ketiga kebijakan ini, VirtualMachinesAllowed, CrostiniAllowed, dan DeviceUnaffiliatedCrostiniAllowed harus ditetapkan ke true jika ketiganya berlaku agar Crostini diizinkan berjalan.
-      Jika diubah ke false, kebijakan ini berlaku untuk memulai container Crostini baru, namun tidak mematikan container yang sedang berjalan.</translation>
 <translation id="5283457834853986457">Nonaktifkan pencari plugin (tidak digunakan lagi)</translation>
 <translation id="5285315763984334157">Memblokir download berbahaya</translation>
 <translation id="5288772341821359899">Jika kebijakan disetel, rentang port UDP yang digunakan oleh WebRTC dibatasi ke interval port yang ditentukan (termasuk titik akhir).
@@ -3273,13 +3267,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan ini disetel ke salah (false), klien DNS built-in tidak akan pernah digunakan.
 
       Jika kebijakan ini tidak disetel, klien DNS built-in akan diaktifkan secara default di macOS, Android (saat DNS Pribadi atau VPN tidak diaktifkan), dan ChromeOS, serta pengguna akan dapat mengubah apakah klien DNS built-in digunakan atau tidak dengan mengedit chrome://flags atau menentukan tanda command line.</translation>
-<translation id="5624946025057772960">Jika kebijakan disetel, URL yang tercantum akan diberikan akses sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, * dapat dilarang untuk memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian pada skema tertentu, subdomain dari domain lain, port, atau jalur khusus. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
-
-      Dengan kebijakan ini, panggilan otomatis dapat dilakukan oleh browser aplikasi eksternal yang terdaftar sebagai pengendali protokol untuk protokol yang tercantum, seperti "tel:" atau "ssh:".
-
-      Jika kebijakan tidak disetel, tidak akan ada pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="5628811596950455942">Kebijakan ini mengontrol daftar mode buka kunci cepat yang dapat dikonfigurasi dan digunakan pengguna untuk membuka layar kunci.
 
           Nilai ini berupa daftar string; entri daftar yang valid adalah: "all", "PIN", "FINGERPRINT". Menambahkan "all" ke daftar berarti setiap mode buka kunci cepat akan tersedia bagi pengguna, termasuk yang akan diimplementasikan di waktu mendatang. Jika tidak, hanya mode buka kunci cepat yang tercantum dalam daftar yang akan tersedia.
@@ -3631,15 +3618,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="6190022522129724693">Setelan pop-up default</translation>
 <translation id="6190367314942602985">Laporkan informasi Identifikasi Pengguna</translation>
 <translation id="6195802366906945965">Menentukan apakah pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
-<translation id="6199780467005360782">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="URL_ALLOWLIST_POLICY_NAME" />'.
-
-      Menyetel kebijakan akan mengizinkan akses ke URL yang tercantum, sebagai pengecualian untuk daftar URL yang tidak diizinkan. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, * dapat dilarang untuk memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian pada skema tertentu, subdomain dari domain lain, port, atau jalur khusus. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Daftar yang diizinkan akan lebih diprioritaskan daripada daftar yang tidak diizinkan. Kebijakan ini terbatas untuk 1.000 entri.
-
-      Dengan kebijakan ini, panggilan otomatis dapat dilakukan oleh browser aplikasi eksternal yang terdaftar sebagai pengendali protokol untuk protokol yang tercantum, seperti "tel:" atau "ssh:".
-
-      Jika kebijakan tidak disetel, tidak akan ada pengecualian.
-
-      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="6205094657236844092">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
 
       Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib: <ph name="URL_LABEL" /> (URL aplikasi web yang akan diinstal) dan 2 elemen opsional: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (untuk cara aplikasi web terbuka—tab baru adalah default) dan <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (Berlaku jika Anda ingin membuat pintasan desktop <ph name="LINUX_OS_NAME" /> dan Windows®).
@@ -3652,7 +3630,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika setelan ini dinonaktifkan atau tidak disetel, layanan perlindungan sandi hanya merekam hash sandi yang dilengkapi salt di https://accounts.google.com.
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
-<translation id="6210610748361191729">Jika kebijakan disetel ke SALAH, UI ekspor/impor tidak akan tersedia untuk pengguna, namun masih mungkin untuk menggunakan perintah 'lxc' langsung di mesin virtual untuk mengekspor dan mengimpor gambar container.</translation>
 <translation id="6211428344788340116">Laporkan waktu aktivitas perangkat.
 
       Jika pengaturan ini tidak disetel atau disetel ke True, perangkat yang terdaftar akan melaporkan periode waktu saat pengguna aktif di perangkat. Jika setelan disetel ke False, waktu akvititas perangkat tidak akan dicatat atau dilaporkan.</translation>
@@ -4430,11 +4407,6 @@ Error yang sesuai ditampilkan jika pengguna mencoba untuk menyetel akun utama br
 
 Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Google apa pun sebagai akun utama browser di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Setel panjang minimum PIN layar kunci.</translation>
-<translation id="7232816984286843471">Jika kebijakan ini ditetapkan ke false, pengguna tak terafiliasi tidak akan diizinkan menggunakan Crostini.
-
-      Jika kebijakan ini tidak ditetapkan atau ditetapkan ke true, semua pengguna diizinkan menggunakan Crostini asalkan setelan lainnya mengizinkannya.
-      Ketiga kebijakan ini, VirtualMachinesAllowed, CrostiniAllowed, dan DeviceUnaffiliatedCrostiniAllowed harus ditetapkan ke true jika ketiganya berlaku agar Crostini diizinkan berjalan.
-      Jika diubah ke false, kebijakan ini berlaku untuk memulai container Crostini baru, namun tidak mematikan container yang sedang berjalan.</translation>
 <translation id="7234280155140786597">Nama hosting perpesanan asli yang dilarang (atau * untuk semua)</translation>
 <translation id="7249828445670652637">Mengaktifkan sertifikat CA <ph name="PRODUCT_OS_NAME" /> untuk aplikasi ARC</translation>
 <translation id="7252681704926980614">Kirimkan nama pengguna dan nama file ke server printer native beserta setiap pekerjaan cetak. Setelan defaultnya bukan untuk mengirim.
@@ -4937,14 +4909,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci ke kurang dari atau sama dengan penundaan waktu tidak ada aktivitas.</translation>
-<translation id="7992136759457836904">Memungkinkan Anda untuk mengontrol apakah mesin virtual diizinkan berjalan di Chrome OS atau tidak.
-
-      Jika kebijakan ini ditetapkan ke True, perangkat diizinkan untuk menjalankan mesin virtual.
-      Jika kebijakan ini ditetapkan ke False, perangkat tidak diizinkan untuk menjalankan mesin virtual.
-      Ketiga kebijakan ini, VirtualMachinesAllowed, CrostiniAllowed, dan DeviceUnaffiliatedCrostiniAllowed harus ditetapkan ke true jika ketiganya berlaku agar Crostini diizinkan berjalan.
-      Jika diubah ke False, kebijakan ini berlaku untuk memulai mesin virtual baru, namun tidak mematikan mesin virtual yang sedang berjalan.
-      Jika kebijakan ini tidak ditetapkan pada perangkat terkelola, perangkat tidak diizinkan untuk menjalankan mesin virtual.
-      Perangkat tidak terkelola diizinkan untuk menjalankan mesin virtual.</translation>
 <translation id="8001701200415781021">Batasi akun Google mana yang diizinkan untuk disetel sebagai akun utama browser di <ph name="PRODUCT_NAME" /></translation>
 <translation id="8003853057959146975">Mengirimkan file untuk pemeriksaan pelanggaran aturan perlindungan data sensitif</translation>
 <translation id="8006219716745491366">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> akan menentukan daftar URL alternatif untuk mengekstrak istilah penelusuran dari mesin telusur. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />.

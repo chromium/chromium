@@ -484,7 +484,7 @@
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1556537182262721003">Kon nie uitbreidinggids na profiel skuif nie.</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
-<translation id="1562119309884184621">As hierdie kontak bygevoeg word, sal hulle onthou word wanneer hulle weer deel</translation>
+<translation id="1562119309884184621">As hierdie kontak bygevoeg word, sal dit onthou word wanneer dit weer deel</translation>
 <translation id="1563702743503072935">Wagwoorde vanuit jou Google-rekening sal ook op hierdie toestel beskikbaar wees terwyl jy aangemeld is</translation>
 <translation id="1566049601598938765">Webwerf</translation>
 <translation id="15662109988763471">Die gekose drukker is nie beskikbaar of reg geïnstalleer nie. Gaan jou drukker na of probeer om 'n ander drukker te kies.</translation>
@@ -894,6 +894,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Gaan tans die virtuele masjien na</translation>
 <translation id="2048182445208425546">Kry toegang tot jou netwerkverkeer</translation>
+<translation id="2048243703055695889">Naby-instellings vir <ph name="USER_EMAIL" /> se "<ph name="DEVICE_NAME" />"-toestel.</translation>
 <translation id="2048653237708779538">Handeling is nie beskikbaar nie</translation>
 <translation id="204914487372604757">Skep kortpad</translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -1180,6 +1181,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2384436799579181135">'n Fout het voorgekom. Gaan asseblief jou drukker na en probeer weer.</translation>
 <translation id="2387052489799050037">Gaan na tuisskerm</translation>
 <translation id="2387458720915042159">Soort instaanbedienerverbinding</translation>
+<translation id="2390347491606624519">Kan nie aan instaanbediener koppel nie; meld asseblief weer aan</translation>
 <translation id="2391082728065870591">Stuur terugvoerverslag</translation>
 <translation id="2391419135980381625">Standaardlettertipe</translation>
 <translation id="2392163307141705938">Jy het die tydlimiet wat jou ouer vir <ph name="IDS_SHORT_PRODUCT_NAME" /> gestel het, bereik.</translation>
@@ -3325,6 +3327,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5017643436812738274">Jy kan met 'n tekspyltjie deur bladsye navigeer. Druk Ctrl+Search+7 om dit af te skakel.</translation>
 <translation id="5018207570537526145">Maak uitbreidingwebwerf oop</translation>
 <translation id="5018526990965779848">Stuur gebruik- en diagnostiese data. Help om jou Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As jou bykomende Web- en Programaktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
+<translation id="5019392775062123007">Sigbaar as <ph name="DEVICE_NAME" /> vir toestelle naby aan jou</translation>
 <translation id="5021750053540820849">Nog nie opgedateer nie</translation>
 <translation id="5026806129670917316">Skakel Wi-Fi aan</translation>
 <translation id="5026874946691314267">Moet dit nie weer wys nie</translation>
@@ -3414,6 +3417,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5133483819862530305">Sonsondergang tot sonsopkoms</translation>
 <translation id="5135085122826131075">Gaan na jou Assistent toe wanneer jy "Ok Google" sê.</translation>
 <translation id="5135533361271311778">Kon nie boekmerkitem skep nie.</translation>
+<translation id="5136343472380336530">Maak seker dat albei toestelle ontsluit is, naby mekaar is, en dat Bluetooth aangeskakel is. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Vee hierdie item uit</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, soek met <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Voer die PIN vir jou sekuriteitsleutel in. As jy nie die PIN ken nie, sal jy die sekuriteitsleutel moet terugstel.</translation>
@@ -4422,6 +4426,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6342069812937806050">Nou net</translation>
 <translation id="6344170822609224263">Gaan by lys netwerkverbindings in</translation>
 <translation id="6344576354370880196">Gestoorde drukkers</translation>
+<translation id="6345418402353744910">Jou gebruikernaam en wagwoord word vir die instaanbediener <ph name="PROXY" /> vereis sodat die admin jou netwerk kan opstel</translation>
 <translation id="6349101878882523185">Installeer <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinkronisering werk tans nie. Probeer afmeld en weer aanmeld.</translation>
 <translation id="6351063337294363751">Jy kan jou blaaidata van hierdie kieslys af uitvee</translation>
@@ -4779,6 +4784,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6810613314571580006">Meld outomaties met gebergde eiebewyse by webwerwe aan. Wanneer die kenmerk gedeaktiveer is, sal jy elke keer om bevestiging gevra word voordat jy by 'n webwerf aanmeld.</translation>
 <translation id="6810768462515084623">Oeps! Dit lyk of jou wagwoord verval het. Hernu dit op 'n ander toestel en probeer weer.</translation>
 <translation id="6811034713472274749">Bladsy is gereed om bekyk te word</translation>
+<translation id="6811332638216701903">DHCP-gasheernaam</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan nie as wortel gebruik word nie.</translation>
 <translation id="6812841287760418429">Hou veranderings</translation>
 <translation id="6817174620439930047">Vra wanneer 'n werf stelseleksklusiewe boodskappe wil gebruik om toegang tot MIDI-toestelle te kry (aanbeveel)</translation>
@@ -4856,6 +4862,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6903907808598579934">Skakel sinkronisering aan</translation>
 <translation id="6904344821472985372">Trek lêertoegang terug</translation>
 <translation id="6904655473976120856">Druk Program-knoppie om uit te gaan</translation>
+<translation id="6909422577741440844">Van hierdie toestel af ontvang?</translation>
 <translation id="6910211073230771657">Uitgevee</translation>
 <translation id="691024665142758461">Veelvuldige lêers aflaai</translation>
 <translation id="691106080621596509">Dit sal alle data en webkoekies uitvee wat deur <ph name="SITE_GROUP_NAME" />, enige werwe daaronder en die geïnstalleerde program daarvan geberg word</translation>

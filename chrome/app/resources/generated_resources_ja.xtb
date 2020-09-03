@@ -5693,7 +5693,7 @@
 <translation id="7918257978052780342">登録</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
-<translation id="7924080089023843180">ニアバイシェアを開かない場合、誰とも共有しません</translation>
+<translation id="7924080089023843180">自分以外がニアバイシェアを開くことはありません</translation>
 <translation id="7924358170328001543">ポート転送エラー</translation>
 <translation id="792514962475806987">ドッキング画面のズームレベル:</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>

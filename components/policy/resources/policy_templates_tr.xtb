@@ -2923,12 +2923,6 @@ politikayı geçersiz kılamaz.
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında imleci vurgulama başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
-<translation id="5277806246014825877">Bu kullanıcının Crostini'yi çalıştırabilmesini sağlar.
-
-      Bu politika false (yanlış) değerine ayarlanırsa kullanıcı Crostini'yi kullanamaz.
-      Bu politika true (doğru) değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcı, diğer ayarlar da izin verdiği sürece Crostini'yi kullanabilir.
-      Crostini'nin çalıştırılmasına izin verilmesi için üç politikanın da (VirtualMachinesAllowed, CrostiniAllowed ve DeviceUnaffiliatedCrostiniAllowed) true (doğru) değerine ayarlanması gerekir.
-     Bu politika false (yanlış) olarak değiştirildiğinde, ayar yeni Crostini kapsayıcıların başlatılmasında geçerli olur, ancak halihazırda çalıştırılmakta olan kapsayıcıları kapatmaz.</translation>
 <translation id="5283457834853986457">Eklenti bulucuyu devre dışı bırak (kullanımdan kaldırıldı)</translation>
 <translation id="5285315763984334157">Kötü amaçlı indirmeleri engelle</translation>
 <translation id="5288772341821359899">Politika ayarlanırsa, WebRTC tarafından kullanılan UDP bağlantı noktası aralığı, belirtilen bağlantı noktası aralığı (başlangıç ve bitiş noktaları dahil) kullanılacak şekilde kısıtlanır.
@@ -3259,13 +3253,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politika false (yanlış) değerine ayarlanırsa dahili DNS istemcisi hiçbir zaman kullanılmaz.
 
       Bu politika ayarlanmadan bırakılırsa dahili DNS istemcisi; macOS, Android (Gizli DNS veya VPN etkinleştirilmediğinde) ve ChromeOS'ta varsayılan olarak etkinleştirilir ve kullanıcılar, dahili DNS istemcisini chrome://flags sayfasını düzenleyerek mi yoksa bir komut satırı işareti belirterek mi kullanacaklarını değiştirebilirler.</translation>
-<translation id="5624946025057772960">Politikanın ayarlanması <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, * yasaklanarak tüm istekler engellenebilir ve bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları ve belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
-
-      Bu politika ayrıca "tel:" veya "ssh:" gibi listelenmiş protokoller için protokol işleyici olarak kayıtlı harici uygulamanın tarayıcısı üzerinden otomatik çağrının etkinleştirilmesine izin verir.
-
-      Politika ayarlanmadan bırakılırsa <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.
-
-      <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="5628811596950455942">Politika, kullanıcılar tarafından yapılandırılabilen ve kilit ekranının kilidini açmak için kullanılabilen hızlı kilit açma modlarının bir listesini kontrol eder.
 
           Bu değer, dizelerden oluşan bir liste olup geçerli liste girişleri şunlardır: "all", "PIN", "FINGERPRINT". Listeye "all" değeri eklenirse kullanıcı, gelecekte eklenecek olanlar da dahil olmak üzere tüm hızlı kilit açma modlarını kullanabilir. Aksi halde yalnızca listede bulunan hızlı kilit açma modları kullanılabilir.
@@ -3613,15 +3600,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="6190022522129724693">Varsayılan pop-up'lar ayarı</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
 <translation id="6195802366906945965">Yerleşik sertifika doğrulayıcının sunucu sertifikalarını doğrulamak için kullanılıp kullanılmayacağını belirler.</translation>
-<translation id="6199780467005360782">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen '<ph name="URL_ALLOWLIST_POLICY_NAME" />' politikasını kullanın.
-
-      Politikanın ayarlanması engellenen URL'ler listesine istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, * yasaklanarak tüm istekler engellenebilir ve bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları ve belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler. İzin verilenler listesi, engellenenler listesine göre önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
-
-      Bu politika ayrıca "tel:" veya "ssh:" gibi listelenmiş protokoller için protokol işleyici olarak kayıtlı harici uygulamanın tarayıcısı üzerinden otomatik çağrının etkinleştirilmesine izin verir.
-
-      Politika ayarlanmadan bırakılırsa hiçbir istisnaya izin verilmez.
-
-      <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="6205094657236844092">Politikayı ayarlamak, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcıların kaldıramadığı veya kapatamadığı web uygulamalarının listesini belirtir.
 
       Politikanın her liste öğesi, zorunlu üyeye sahip bir nesnedir: <ph name="URL_LABEL" /> (yüklenecek web uygulamasının URL'si) ve 2 isteğe bağlı üye: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (web uygulamasının açılma yöntemini belirlemek için — varsayılan yeni sekmedir) ve <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (<ph name="LINUX_OS_NAME" /> ve Windows® masaüstü kısayolları oluşturulmak istenirse doğru değerine ayarlanmalıdır).
@@ -3634,7 +3612,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu ayar devre dışı bırakılır veya ayarlanmazsa şifre koruma hizmeti yalnızca https://accounts.google.com adresindeki şifrelerin rastgele oluşturulmuş karma değerlerini yakalar.
 
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM üzerinden yönetilen veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
-<translation id="6210610748361191729">Bu politika false (yanlış) değerine ayarlanırsa, dışa/içe aktarılan kullanıcı arayüzü kullanıcılar tarafından kullanılamaz. Ancak kapsayıcı görsellerini dışa ve içe aktarmak için "lxc" komutları doğrudan sanal makinede kullanılabilir.</translation>
 <translation id="6211428344788340116">Cihaz etkinlik zamanlarını bildirin.
 
       Bu ayar ayarlanmazsa veya Doğru (True) değerine ayarlanırsa kayıtlı cihazlar bir kullanıcının cihaz üzerinde etkin olduğu zamanları rapor eder. Bu ayar Yanlış (False) değerine ayarlanırsa cihaz etkinliği zamanları kaydedilmez veya rapor edilmez.</translation>
@@ -4411,11 +4388,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bu politika ayarlanmamış olarak veya boş bırakılırsa, kullanıcı <ph name="PRODUCT_NAME" /> dahilinde herhangi bir Google hesabını tarayıcı birincil hesabı olarak ayarlayabilir.</translation>
 <translation id="723103540848640830">Kilit ekranı PIN'inin minimum uzunluğunu ayarla</translation>
-<translation id="7232816984286843471">Politika false (yanlış) değerine ayarlanırsa bağlı olmayan kullanıcıların Crostini'yi kullanmasına izin verilmez.
-
-      Politika ayarlanmazsa veya true (doğru) değerine ayarlanırsa diğer ayarlar da izin verdiği sürece tüm kullanıcılar Crostini'yi kullanabilir.
-      Crostini'nin çalıştırılmasına izin verilmesi için üç politikanın da (VirtualMachinesAllowed, CrostiniAllowed ve DeviceUnaffiliatedCrostiniAllowed) true (doğru) değerine ayarlanması gerekir.
-      Bu politika false (yanlış) olarak değiştirildiğinde, ayar yeni Crostini kapsayıcıların başlatılmasında geçerli olur, ancak halihazırda çalıştırılmakta olan kapsayıcıları kapatmaz.</translation>
 <translation id="7234280155140786597">Yasak yerel mesajlaşma ana makinelerinin adları (veya hepsi için *)</translation>
 <translation id="7249828445670652637">ARC uygulamalarına ilişkin <ph name="PRODUCT_OS_NAME" /> CA sertifikalarını etkinleştir</translation>
 <translation id="7252681704926980614">Her yazdırma işinde kullanıcı adını ve dosya adını yerel yazıcı sunucusuna gönderir. Varsayılan ayar göndermemektir.
@@ -4926,14 +4898,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
           Bu politika ayarlanmadan bırakılırsa varsayılan süre kullanılır.
 
           Politika değeri milisaniye olarak belirtilmelidir. Değerler boşta kalma gecikmesinin altında veya o gecikmeye eşit olacak şekilde ayarlanır.</translation>
-<translation id="7992136759457836904">Chrome OS'te sanal makinelerin çalıştırılmasına izin verilip verilmeyeceğini kontrol etmenize olanak tanır.
-
-      Politika True (Doğru) değerine ayarlanırsa cihazın sanal makine çalıştırmasına izin verilir.
-      Politika False (Yanlış) değerine ayarlanırsa cihazın sanal makine çalıştırmasına izin verilmez.
-      Crostini'nin çalıştırılmasına izin verilmesi için üç politikanın da (VirtualMachinesAllowed, CrostiniAllowed ve DeviceUnaffiliatedCrostiniAllowed) true (doğru) değerine ayarlanması gerekir.
-      Bu politika Yanlış (False) olarak değiştirildiğinde, ayar yeni sanal makinelerin başlatılmasında geçerli olur, ancak halihazırda çalıştırılmakta olan sanal makineleri kapatmaz.
-      Bu politika yönetilen bir cihazda ayarlanmadığında cihazın sanal makine çalıştırmasına izin verilmez.
-      Yönetilmeyen cihazların sanal makine çalıştırmasına izin verilir.</translation>
 <translation id="8001701200415781021"><ph name="PRODUCT_NAME" /> dahilinde hangi Google hesaplarının tarayıcı birincil hesapları olarak ayarlanmasına izin verileceğini kısıtlama</translation>
 <translation id="8003853057959146975">Hassas verileri koruma kuralı ihlali incelemesi için dosyaları gönder</translation>
 <translation id="8006219716745491366"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> protokolünün ayarlanması, arama motorundan arama terimlerini çıkartmak için alternatif URL'lerin bir listesini belirtir. Bu URL'ler, <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir.

@@ -894,6 +894,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Provjeravanje virtualnog računala</translation>
 <translation id="2048182445208425546">pristupiti vašem mrežnom prometu</translation>
+<translation id="2048243703055695889">Postavke dijeljenja Android uređajima za uređaj "<ph name="DEVICE_NAME" />" korisnika <ph name="USER_EMAIL" /></translation>
 <translation id="2048653237708779538">Radnja nije dostupna</translation>
 <translation id="204914487372604757">Stvori prečac</translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -1180,6 +1181,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2384436799579181135">Došlo je do pogreške. Provjerite pisač i pokušajte opet.</translation>
 <translation id="2387052489799050037">Otvaranje početnog zaslona</translation>
 <translation id="2387458720915042159">Vrsta proxy veze</translation>
+<translation id="2390347491606624519">Nije uspjelo povezivanje s proxyjem, ponovno se prijavite</translation>
 <translation id="2391082728065870591">Slanje izvješća s povratnim informacijama</translation>
 <translation id="2391419135980381625">Standardni font</translation>
 <translation id="2392163307141705938">Dosegnuto je vremensko ograničenje koje je tvoj roditelj postavio za <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3325,6 +3327,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5017643436812738274">Stranicama se možete kretati pomoću pokazivača za tekst. Pritisnite Ctrl + Search + 7 da biste isključili tu postavku.</translation>
 <translation id="5018207570537526145">Otvori web-lokaciju proširenja</translation>
 <translation id="5018526990965779848">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati Android automatskim slanjem dijagnostičkih podataka te podataka o upotrebi uređaja i aplikacija Googleu. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun.</translation>
+<translation id="5019392775062123007">Vidljivo obližnjim uređajima kao <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Još nije ažurirano</translation>
 <translation id="5026806129670917316">Uključite Wi-Fi</translation>
 <translation id="5026874946691314267">Ne prikazuj to ponovo</translation>
@@ -3414,6 +3417,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5133483819862530305">Od zalaska do izlaska Sunca</translation>
 <translation id="5135085122826131075">Pristupajte svojem Asistentu tako što ćete izgovoriti "Ok Google".</translation>
 <translation id="5135533361271311778">Nije bilo moguće stvoriti oznaku.</translation>
+<translation id="5136343472380336530">Provjerite jesu li oba uređaja otključana, blizu jedan drugome te imaju li uključen Bluetooth. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Izbriši stavku</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> pretraživanje</translation>
 <translation id="5139823398361067371">Unesite PIN za sigurnosni ključ. Ako ne znate PIN, morat ćete vratiti sigurnosni ključ na zadano.</translation>
@@ -4421,6 +4425,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6342069812937806050">Samo sad</translation>
 <translation id="6344170822609224263">pristupiti popisu mrežnih veza</translation>
 <translation id="6344576354370880196">Spremljeni pisači</translation>
+<translation id="6345418402353744910">Vaše korisničko ime i zaporka potrebni su za proxy <ph name="PROXY" /> kako bi administrator mogao konfigurirati vašu mrežu</translation>
 <translation id="6349101878882523185">Instalirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinkronizacija ne funkcionira. Odjavite se, pa se ponovo prijavite.</translation>
 <translation id="6351063337294363751">Podatke o pregledavanju možete izbrisati putem ovog izbornika</translation>
@@ -4778,6 +4783,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6810613314571580006">Automatski se prijavite na web-lokacije pomoću spremljenih vjerodajnica. Kada je ta značajka onemogućena, tražit će se potvrda prije svakog prijavljivanja na web-lokaciju.</translation>
 <translation id="6810768462515084623">Ups! Izgleda da je zaporka istekla. Obnovite je na nekom drugom uređaju i pokušajte ponovo.</translation>
 <translation id="6811034713472274749">Stranica je spremna za prikaz</translation>
+<translation id="6811332638216701903">Naziv DHCP hosta</translation>
 <translation id="6812349420832218321">Proizvod <ph name="PRODUCT_NAME" /> ne može se izvoditi kao korijenski direktorij.</translation>
 <translation id="6812841287760418429">Zadrži promjene</translation>
 <translation id="6817174620439930047">Pitaj kada web-lokacija želi upotrijebiti posebne sistemske poruke za pristup MIDI uređajima (preporučeno)</translation>
@@ -4855,6 +4861,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6903907808598579934">Uključi sinkronizaciju</translation>
 <translation id="6904344821472985372">Opozovi pristup datoteci</translation>
 <translation id="6904655473976120856">Pritisnite gumb aplikacije za izlazak</translation>
+<translation id="6909422577741440844">Primati s ovog uređaja?</translation>
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="691024665142758461">preuzeti više datoteka</translation>
 <translation id="691106080621596509">Izbrisat će se svi podaci i kolačići koje je spremila web-lokacija <ph name="SITE_GROUP_NAME" /> te sve njezine pripadajuće web-lokacije i instalirana aplikacija</translation>

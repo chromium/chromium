@@ -217,7 +217,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2709516037105925701">Automatisches Ausfüllen</translation>
 <translation id="2728754400939377704">Nach Website sortieren</translation>
 <translation id="2744248271121720757">Tippen Sie auf ein Wort, um eine Sofortsuche zu starten oder weitere Aktionen anzuzeigen</translation>
-<translation id="2760989362628427051">Dunkles Design verwenden, wenn beim Gerät der Energiesparmodus oder das dunkle Design aktiviert ist</translation>
+<translation id="2760989362628427051">Dunkles Design verwenden, wenn beim Gerät das dunkle Design oder der Energiesparmodus aktiviert ist</translation>
 <translation id="2762000892062317888">gerade eben</translation>
 <translation id="2771869497727323769">Link zu Text kann nicht erstellt werden. Teilen Sie den Link zur Seite in einer App.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> Sekunden übrig</translation>
@@ -984,7 +984,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="854522910157234410">Diese Seite öffnen</translation>
 <translation id="8555836665334561807">Über WLAN</translation>
 <translation id="8558485628462305855">ARCore aktualisieren, um Augmented-Reality-Inhalte zu sehen</translation>
-<translation id="8559990750235505898">Übersetzung für Seiten in andere Sprachen anbieten</translation>
+<translation id="8559990750235505898">Übersetzung von fremdsprachigen Seiten anbieten</translation>
 <translation id="8561196567344536112">1. Gehen Sie zu den Einstellungen\n2. Tippen Sie auf "Browser-App"\n3. Wählen Sie <ph name="APP_NAME" /> aus</translation>
 <translation id="8562452229998620586">Gespeicherte Passwörter erscheinen hier.</translation>
 <translation id="8569404424186215731">seit <ph name="DATE" /></translation>

@@ -894,6 +894,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Controllo della macchina virtuale</translation>
 <translation id="2048182445208425546">Accesso al traffico di rete</translation>
+<translation id="2048243703055695889">Impostazioni Condivisione nelle vicinanze del dispositivo "<ph name="DEVICE_NAME" />" dell'utente <ph name="USER_EMAIL" /></translation>
 <translation id="2048653237708779538">Azione non disponibile</translation>
 <translation id="204914487372604757">Crea scorciatoia</translation>
 <translation id="2050339315714019657">Verticale</translation>
@@ -1180,6 +1181,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2384436799579181135">Si è verificato un errore. Controlla la tua stampante e riprova.</translation>
 <translation id="2387052489799050037">Vai alla schermata Home</translation>
 <translation id="2387458720915042159">Tipo di connessione proxy</translation>
+<translation id="2390347491606624519">Impossibile connettersi al proxy, accedi di nuovo</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
 <translation id="2391419135980381625">Carattere standard</translation>
 <translation id="2392163307141705938">Hai raggiunto il tempo massimo impostato dal genitore per <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3324,6 +3326,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5017643436812738274">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi Ctrl + Cerca + 7 per disattivare l'opzione.</translation>
 <translation id="5018207570537526145">Apri sito web dell'estensione</translation>
 <translation id="5018526990965779848">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
+<translation id="5019392775062123007">Visibile ai dispositivi nelle vicinanze come <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Non ancora aggiornato</translation>
 <translation id="5026806129670917316">Attiva Wi-Fi</translation>
 <translation id="5026874946691314267">Non visualizzare più</translation>
@@ -3413,6 +3416,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5133483819862530305">Dal tramonto all'alba</translation>
 <translation id="5135085122826131075">Accedi all'assistente quando dici "Ok Google".</translation>
 <translation id="5135533361271311778">Impossibile creare l'elemento nei Preferiti.</translation>
+<translation id="5136343472380336530">Assicurati che entrambi i dispositivi siano sbloccati e vicini, nonché che il Bluetooth sia attivo. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Elimina questa voce</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, ricerca in <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Inserisci il PIN del token di sicurezza. Se non conosci il PIN, devi reimpostare il token di sicurezza.</translation>
@@ -3978,7 +3982,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5826993284769733527">Semitrasparente</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Stampa in corso...</translation>
-<translation id="5830659417568730973">I contatti selezionati nelle vicinanze quando il tuo schermo è sbloccato</translation>
+<translation id="5830659417568730973">Contatti selezionati nelle vicinanze quando il tuo schermo è sbloccato</translation>
 <translation id="5830720307094128296">S&amp;alva pagina con nome...</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
@@ -4420,6 +4424,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6342069812937806050">In questo momento</translation>
 <translation id="6344170822609224263">Accesso all'elenco di connessioni di rete</translation>
 <translation id="6344576354370880196">Stampanti salvate</translation>
+<translation id="6345418402353744910">Sono necessari nome utente e password che usi per il proxy <ph name="PROXY" /> affinché l'amministratore possa configurare la tua rete</translation>
 <translation id="6349101878882523185">Installa <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">La sincronizzazione non funziona. Prova a uscire e ad accedere di nuovo.</translation>
 <translation id="6351063337294363751">Puoi cancellare i tuoi dati di navigazione da questo menu</translation>
@@ -4777,6 +4782,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6810613314571580006">Accedi automaticamente ai siti web utilizzando credenziali memorizzate. Quando la funzione non è attiva, ti viene chiesta la conferma prima di ogni accesso ai siti web.</translation>
 <translation id="6810768462515084623">Spiacenti. Sembra che la password sia scaduta. Rinnovala su un altro dispositivo e riprova.</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>
+<translation id="6811332638216701903">Nome host DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non può essere eseguito come root.</translation>
 <translation id="6812841287760418429">Mantieni le modifiche</translation>
 <translation id="6817174620439930047">Chiedi conferma quando un sito vuole utilizzare messaggi esclusivi di sistema per accedere a dispositivi MIDI (consigliata)</translation>
@@ -4854,6 +4860,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6903907808598579934">Attiva la sincronizzazione</translation>
 <translation id="6904344821472985372">Revoca accesso a file</translation>
 <translation id="6904655473976120856">Premi il pulsante App per uscire</translation>
+<translation id="6909422577741440844">Vuoi attivare la ricezione da questo dispositivo?</translation>
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="691024665142758461">Scaricare più file</translation>
 <translation id="691106080621596509">Verranno cancellati tutti i dati e i cookie memorizzati da <ph name="SITE_GROUP_NAME" />, dai siti al suo interno e dalla relativa app installata</translation>

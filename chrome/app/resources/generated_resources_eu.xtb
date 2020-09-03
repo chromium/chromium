@@ -894,6 +894,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2046702855113914483">Ramena</translation>
 <translation id="204706822916043810">Makina birtuala egiaztatzen</translation>
 <translation id="2048182445208425546">Atzitu sareko trafikoa</translation>
+<translation id="2048243703055695889">Nearby Share-ren ezarpenak <ph name="USER_EMAIL" /> erabiltzailearen gailurako ("<ph name="DEVICE_NAME" />").</translation>
 <translation id="2048653237708779538">Ekintza ez dago erabilgarri</translation>
 <translation id="204914487372604757">Sortu lasterbidea</translation>
 <translation id="2050339315714019657">Bertikala</translation>
@@ -1180,6 +1181,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2384436799579181135">Errore bat gertatu da. Egiaztatu inprimagailuaren egoera eta saiatu berriro.</translation>
 <translation id="2387052489799050037">Joan hasierako pantailara</translation>
 <translation id="2387458720915042159">Proxy konexio mota</translation>
+<translation id="2390347491606624519">Ezin da konektatu proxyra. Hasi saioa berriro.</translation>
 <translation id="2391082728065870591">Bidali zerbitzuari buruzko iritzien txostena</translation>
 <translation id="2391419135980381625">Letra estandarra</translation>
 <translation id="2392163307141705938">Iritsi zara gurasoak <ph name="IDS_SHORT_PRODUCT_NAME" /> erabiltzeko ezarritako denbora-mugara.</translation>
@@ -3325,6 +3327,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5017643436812738274">Nabigatu orrietatik testu-kurtsorea erabilita. Eginbidea desaktibatzeko, sakatu Ktrl + Bilatu + 7.</translation>
 <translation id="5018207570537526145">Ireki luzapenaren webgunea</translation>
 <translation id="5018526990965779848">Bidali erabilera- eta diagnostiko-datuak. Bidali diagnostikoak eta gailu zein aplikazioen erabilera-datuak Google-ri automatikoki darabiltzazun Android-en zerbitzuak hobetzeko. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea.</translation>
+<translation id="5019392775062123007"><ph name="DEVICE_NAME" /> gisa dago ikusgai inguruko gailuetarako</translation>
 <translation id="5021750053540820849">Oraindik ez da eguneratu</translation>
 <translation id="5026806129670917316">Aktibatu wifia</translation>
 <translation id="5026874946691314267">Ez erakutsi berriro</translation>
@@ -3414,6 +3417,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5133483819862530305">Iluntzetik egunsentira</translation>
 <translation id="5135085122826131075">Laguntzailea atzitzeko, esan "Ok Google".</translation>
 <translation id="5135533361271311778">Ezin izan da sortu laster-markaren elementua.</translation>
+<translation id="5136343472380336530">Egiaztatu bi gailuak desblokeatuta daudela, elkarrengandik hurbil daudela eta Bluetooth-a aktibatuta daukatela. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Ezabatu elementua</translation>
 <translation id="5139112070765735680">Bilatu "<ph name="QUERY_NAME" />" <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> erabilita</translation>
 <translation id="5139823398361067371">Idatzi segurtasun-giltzaren PIN kodea. PIN kodea ez badakizu, segurtasun-giltza berrezarri egin beharko duzu.</translation>
@@ -4421,6 +4425,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6342069812937806050">Oraintxe</translation>
 <translation id="6344170822609224263">Atzitu sareko konexioen zerrenda</translation>
 <translation id="6344576354370880196">Gordetako inprimagailuak</translation>
+<translation id="6345418402353744910">Zure erabiltzaile-izena eta pasahitza <ph name="PROXY" /> proxyrako behar dira, administratzaileak zure sarea konfiguratu ahal izateko</translation>
 <translation id="6349101878882523185">Instalatu <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinkronizazioa ez dabil. Amaitu eta hasi berriro saioa.</translation>
 <translation id="6351063337294363751">Menu honetan, arakatze-datuak garbi ditzakezu</translation>
@@ -4778,6 +4783,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6810613314571580006">Hasi saioa automatikoki webguneetan gordetako kredentzialekin. Eginbidea desgaituta badago, zeu zarela berresteko eskatuko dizu webguneak saioa hasten duzun bakoitzean.</translation>
 <translation id="6810768462515084623">Pasahitza iraungi egin da. Berri ezazu beste gailu batean eta saiatu berriro.</translation>
 <translation id="6811034713472274749">Orria ikusteko prest dago</translation>
+<translation id="6811332638216701903">DHCP ostalari-izena</translation>
 <translation id="6812349420832218321">Ezin da <ph name="PRODUCT_NAME" /> erro gisa exekutatu.</translation>
 <translation id="6812841287760418429">Mantendu aldaketak</translation>
 <translation id="6817174620439930047">Eskatu nire baimena webgune batek sistemaren mezu esklusiboak erabili nahi dituenean MIDI gailuak atzitzeko (gomendatua)</translation>
@@ -4855,6 +4861,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
 <translation id="6904344821472985372">Baliogabetu fitxategirako sarbidea</translation>
 <translation id="6904655473976120856">Irteteko, sakatu aplikazioaren botoia</translation>
+<translation id="6909422577741440844">Gailu honetatik jaso nahi duzu fitxategia?</translation>
 <translation id="6910211073230771657">Ezabatu egin da</translation>
 <translation id="691024665142758461">Deskargatu hainbat fitxategi</translation>
 <translation id="691106080621596509"><ph name="SITE_GROUP_NAME" /> webguneak, haren barneko webguneek eta hark instalatutako aplikazioak gorde dituzten datu eta cookie guztiak garbituko dira</translation>

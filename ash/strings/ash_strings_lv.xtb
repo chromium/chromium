@@ -146,6 +146,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2429753432712299108">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Pirms piekrītat, lūdzu, pārliecinieties, vai ierīcē tiek parādīta šī ieejas atslēga: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="2473177541599297363">Apstipriniet izšķirtspēju</translation>
+<translation id="2475982808118771221">Radās kļūda</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2484513351006226581">Nospiediet īsinājumtaustiņu <ph name="KEYBOARD_SHORTCUT" />, lai pārslēgtu tastatūras izkārtojumu.</translation>
 <translation id="2501920221385095727">Taustiņu ķēde</translation>
@@ -528,6 +529,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6818242057446442178">Pāriet atpakaļ pa vārdam</translation>
 <translation id="6820676911989879663">Laiks pārtraukumam</translation>
 <translation id="6857811139397017780">Aktivizēt <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vēl viens cipars}zero{Vēl # ciparu}one{Vēl # cipars}other{Vēl # cipari}}</translation>
 <translation id="6878400149835617132">Īsinājumtaustiņš izslēgts</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6910714959251846841">Lai atjauninātu sistēmu, ierīcē jāizmanto funkcija Powerwash. Uzziniet vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu.</translation>

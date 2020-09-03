@@ -3980,7 +3980,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5826993284769733527">Semi-transparent</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Impression...</translation>
-<translation id="5830659417568730973">Contacts sélectionnés à proximité lorsque votre écran est verrouillé</translation>
+<translation id="5830659417568730973">Contacts sélectionnés à proximité lorsque votre écran est déverrouillé</translation>
 <translation id="5830720307094128296">Enregistrer la p&amp;age sous…</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
@@ -4791,7 +4791,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6824584962142919697">&amp;Inspecter des éléments</translation>
 <translation id="6825184156888454064">Trier par nom</translation>
 <translation id="6826872289184051766">Vérifier par l'intermédiaire de la technologie USB</translation>
-<translation id="6827487342470222762">Aucun contrat n'est proposé. Pour utiliser la fonctionnalité Partage à proximité avec vos contacts, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.</translation>
+<translation id="6827487342470222762">Aucun contact n'est disponible. Pour utiliser la fonctionnalité Partage à proximité avec vos contacts, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.</translation>
 <translation id="6827623133556594466">Google Cloud Print ne sera plus pris en charge après le 31 décembre. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Entrez votre phrase de passe pour synchroniser vos données</translation>

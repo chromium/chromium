@@ -146,6 +146,7 @@
 <translation id="2429753432712299108">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Пред да прифатите, потврдете дека оваа шифра се покажува на уредот: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2473177541599297363">Потврдете ја резолуцијата</translation>
+<translation id="2475982808118771221">Настана грешка</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2484513351006226581">Притиснете <ph name="KEYBOARD_SHORTCUT" /> за да го префрлите распоредот на тастатурата.</translation>
 <translation id="2501920221385095727">Лепливи копчиња</translation>
@@ -377,7 +378,7 @@
 <translation id="495046168593986294">Оди нагоре</translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> м. <ph name="SECONDS" /> с.</translation>
-<translation id="4975771730019223894">Додајте ставање значки</translation>
+<translation id="4975771730019223894">Значки за апликации</translation>
 <translation id="5030687792513154421">Времето истече</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> е поврзан со нов телефон</translation>
 <translation id="5035389544768382859">Потврдете ја конфигурацијата на екранот</translation>
@@ -529,6 +530,7 @@
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6857811139397017780">Активирај <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6910714959251846841">За ажурирањево потребно е фабричко ресетирање на уредот. Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" />.</translation>

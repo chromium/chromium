@@ -388,6 +388,7 @@
 <translation id="5433691172869980887">Имя пользователя скопировано</translation>
 <translation id="54401264925851789">Сведения о надежности страницы</translation>
 <translation id="5443952882982198570">Кредитные карты</translation>
+<translation id="5457226814769348910">Открыть офлайн-версию</translation>
 <translation id="5457907402803865181">Ошибка при синхронизации паролей.</translation>
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
@@ -458,6 +459,7 @@
 <translation id="6187302354554850004">Послед. синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Непрочитанные</translation>
 <translation id="6196207969502475924">Голосовой поиск</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{Закрыть {COUNT} вкладку}one{Закрыть {COUNT} вкладку}few{Закрыть {COUNT} вкладки}many{Закрыть {COUNT} вкладок}other{Закрыть {COUNT} вкладки}}</translation>
 <translation id="6219688215832490856">Никогда не переводить</translation>
 <translation id="6254066287920239840">Открывать ссылки в приложении, а не в браузере.</translation>
 <translation id="6255097610484507482">Изменение данных кредитной карты</translation>

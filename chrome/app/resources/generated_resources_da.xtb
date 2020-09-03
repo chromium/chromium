@@ -313,7 +313,7 @@
 <translation id="1359923111303110318">Din enhed kan låses op ved hjælp af Smart Lock. Tryk på Enter for at låse op.</translation>
 <translation id="1361164813881551742">Tilføj manuelt</translation>
 <translation id="1361655923249334273">Ikke brugt</translation>
-<translation id="1361707011052629095">Enheder i nærheden, når "Deling tæt på" er aktiveret</translation>
+<translation id="1361707011052629095">Enheder i nærheden, når "Deling tæt på" er åben</translation>
 <translation id="1361872463926621533">Afspil lyd ved opstart</translation>
 <translation id="1362865166188278099">Der er et teknisk problem med printeren. Tjek printeren</translation>
 <translation id="1363585519747660921">USB-printeren skal konfigureres</translation>
@@ -3979,7 +3979,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5826993284769733527">Halvtransparent</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Udskriver...</translation>
-<translation id="5830659417568730973">Udvalgte kontakter, der er i nærheden, når din skærm er låst op</translation>
+<translation id="5830659417568730973">Udvalgte kontakter i nærheden, når din skærm er låst op</translation>
 <translation id="5830720307094128296">Gem side &amp;som...</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="583281660410589416">Ukendt</translation>
@@ -5595,7 +5595,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7819992334107904369">Chrome-synkronisering</translation>
 <translation id="782057141565633384">K&amp;opiér webadressen til videoen</translation>
 <translation id="7824864914877854148">Sikkerhedskopieringen kunne ikke fuldføres på grund af en fejl</translation>
-<translation id="7825666486843191125">Alle kontakter, der er i nærheden, når din skærm er låst op</translation>
+<translation id="7825666486843191125">Alle kontakter i nærheden, når din skærm er låst op</translation>
 <translation id="782590969421016895">Brug aktuelle sider</translation>
 <translation id="7826249772873145665">ADB-fejlretning er deaktiveret</translation>
 <translation id="7826254698725248775">Modstridende enheds-id.</translation>

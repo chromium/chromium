@@ -146,6 +146,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2429753432712299108">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer avec votre appareil. Avant d'accepter, veuillez confirmer que le code d'authentification suivant s'affiche sur l'appareil : <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2473177541599297363">Confirmer la résolution</translation>
+<translation id="2475982808118771221">Une erreur s'est produite</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
