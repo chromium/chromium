@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "mojolpm.pb.h"
+#include "mojo/public/tools/fuzzers/mojolpm.pb.h"
 
 #define MOJOLPM_DBG 0
 #if MOJOLPM_DBG

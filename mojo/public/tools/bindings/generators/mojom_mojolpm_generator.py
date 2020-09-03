@@ -165,7 +165,7 @@ class Generator(CppGenerator):
     import_files = list(
         map(lambda x: '{}.mojolpm.proto'.format(x.path), seen_imports))
     if self.needs_mojolpm_proto:
-      import_files.append('mojolpm.proto')
+      import_files.append('mojo/public/tools/fuzzers/mojolpm.proto')
     import_files.sort()
 
     return import_files

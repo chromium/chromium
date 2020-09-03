@@ -961,11 +961,10 @@ template("mojom") {
         sources = process_file_template(
                 invoker.sources,
                 [ "{{source_gen_dir}}/{{source_file_part}}.mojolpm.proto" ])
-        import_dirs = [ "${root_gen_dir}" ]
+        import_dirs = [ "//" ]
         proto_in_dir = "${root_gen_dir}"
         proto_out_dir = "."
-        proto_deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto_copy" ]
-        proto_deps += [ ":$generator_mojolpm_proto_target_name" ]
+        proto_deps = [ ":$generator_mojolpm_proto_target_name" ]
         link_deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto" ]
 
         foreach(d, all_deps) {

@@ -62,20 +62,13 @@ proto_library("mojo_fuzzer_proto") {
   sources = [ "mojo_fuzzer.proto" ]
 }
 
-copy("mojolpm_proto_copy") {
-  sources = [ "mojolpm.proto" ]
-  outputs = [ "$root_gen_dir/mojolpm.proto" ]
-  testonly = true
-}
-
 proto_library("mojolpm_proto") {
+  # Work relative to src (//) instead of (by default) the BUILD file.
+  proto_in_dir = "//"
+
   sources = [ "mojolpm.proto" ]
   generate_python = false
 
-  # TODO(markbrand): this is kind of a hack, but it works. not sure if it's
-  # the best way to get this generated in the right place though.
-  proto_out_dir = "mojo/public/tools/fuzzers/../../../../"
-  proto_deps = [ ":mojolpm_proto_copy" ]
   testonly = true
 }
 

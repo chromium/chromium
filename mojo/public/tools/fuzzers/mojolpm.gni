@@ -74,10 +74,13 @@ template("mojolpm_fuzzer_test") {
     proto_target_name = "${target_name}_proto"
 
     proto_library(proto_target_name) {
+      # Work relative to src (//) instead of (by default) the BUILD file.
+      proto_in_dir = "//"
+
       sources = [ invoker.proto_source ]
       generate_python = false
 
-      proto_deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto_copy" ]
+      proto_deps = []
 
       import_dirs = [ root_gen_dir ]
 
@@ -107,7 +110,7 @@ template("mojolpm_fuzzer_test") {
           "-I",
           rebase_path(root_gen_dir),
           "-I",
-          get_path_info(rebase_path(inputs[0]), "dir"),
+          rebase_path("//"),
           rebase_path(inputs[0]),
         ]
 
