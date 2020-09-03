@@ -2537,10 +2537,9 @@ void LocalFrame::OnPortalActivated(
 
 void LocalFrame::ForwardMessageFromHost(
     BlinkTransferableMessage message,
-    const scoped_refptr<const SecurityOrigin>& source_origin,
-    const scoped_refptr<const SecurityOrigin>& target_origin) {
+    const scoped_refptr<const SecurityOrigin>& source_origin) {
   PortalHost::From(*DomWindow())
-      .ReceiveMessage(std::move(message), source_origin, target_origin);
+      .ReceiveMessage(std::move(message), source_origin);
 }
 
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(

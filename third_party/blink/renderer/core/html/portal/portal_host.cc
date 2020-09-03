@@ -81,20 +81,13 @@ void PortalHost::postMessage(ScriptState* script_state,
     return;
   }
 
-  scoped_refptr<const SecurityOrigin> target_origin =
-      PostMessageHelper::GetTargetOrigin(options, *GetSupplementable(),
-                                         exception_state);
-  if (exception_state.HadException())
-    return;
-
   BlinkTransferableMessage transferable_message =
       PortalPostMessageHelper::CreateMessage(script_state, message, options,
                                              exception_state);
   if (exception_state.HadException())
     return;
 
-  GetPortalHostInterface().PostMessageToHost(std::move(transferable_message),
-                                             target_origin);
+  GetPortalHostInterface().PostMessageToHost(std::move(transferable_message));
 }
 
 EventListener* PortalHost::onmessage() {
@@ -115,11 +108,10 @@ void PortalHost::setOnmessageerror(EventListener* listener) {
 
 void PortalHost::ReceiveMessage(
     BlinkTransferableMessage message,
-    scoped_refptr<const SecurityOrigin> source_origin,
-    scoped_refptr<const SecurityOrigin> target_origin) {
+    scoped_refptr<const SecurityOrigin> source_origin) {
   DCHECK(GetSupplementable()->GetFrame()->GetPage()->InsidePortal());
   PortalPostMessageHelper::CreateAndDispatchMessageEvent(
-      this, std::move(message), source_origin, target_origin);
+      this, std::move(message), source_origin);
 }
 
 mojom::blink::PortalHost& PortalHost::GetPortalHostInterface() {

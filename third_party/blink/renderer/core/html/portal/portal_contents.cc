@@ -119,10 +119,8 @@ void PortalContents::OnActivateResponse(
     Destroy();
 }
 
-void PortalContents::PostMessageToGuest(
-    BlinkTransferableMessage message,
-    const scoped_refptr<const SecurityOrigin>& target_origin) {
-  remote_portal_->PostMessageToGuest(std::move(message), target_origin);
+void PortalContents::PostMessageToGuest(BlinkTransferableMessage message) {
+  remote_portal_->PostMessageToGuest(std::move(message));
 }
 
 void PortalContents::Navigate(
@@ -183,13 +181,12 @@ void PortalContents::DisconnectHandler() {
 
 void PortalContents::ForwardMessageFromGuest(
     BlinkTransferableMessage message,
-    const scoped_refptr<const SecurityOrigin>& source_origin,
-    const scoped_refptr<const SecurityOrigin>& target_origin) {
+    const scoped_refptr<const SecurityOrigin>& source_origin) {
   if (!IsValid() || !portal_element_)
     return;
 
   PortalPostMessageHelper::CreateAndDispatchMessageEvent(
-      portal_element_, std::move(message), source_origin, target_origin);
+      portal_element_, std::move(message), source_origin);
 }
 
 void PortalContents::DispatchLoadEvent() {

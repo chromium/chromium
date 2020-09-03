@@ -917,8 +917,7 @@ interface LocalMainFrame {
   // Forwards a message from a portal's host to the main frame in the portal's
   // guest contents.
   ForwardMessageFromHost(blink.mojom.TransferableMessage message,
-                         url.mojom.Origin source_origin,
-                         url.mojom.Origin? target_origin);
+                         url.mojom.Origin source_origin);
 };
 
 // Implemented in Blink, this interface defines remote main-frame-specific

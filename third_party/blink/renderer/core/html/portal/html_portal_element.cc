@@ -359,19 +359,13 @@ void HTMLPortalElement::postMessage(ScriptState* script_state,
     return;
   }
 
-  scoped_refptr<const SecurityOrigin> target_origin =
-      PostMessageHelper::GetTargetOrigin(options, *GetExecutionContext(),
-                                         exception_state);
-  if (exception_state.HadException())
-    return;
-
   BlinkTransferableMessage transferable_message =
       PortalPostMessageHelper::CreateMessage(script_state, message, options,
                                              exception_state);
   if (exception_state.HadException())
     return;
 
-  portal_->PostMessageToGuest(std::move(transferable_message), target_origin);
+  portal_->PostMessageToGuest(std::move(transferable_message));
 }
 
 EventListener* HTMLPortalElement::onmessage() {

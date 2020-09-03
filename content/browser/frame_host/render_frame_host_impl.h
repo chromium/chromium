@@ -1211,8 +1211,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Called on the main frame of a page embedded in a Portal to forward a
   // message from the host of a portal.
   void ForwardMessageFromHost(blink::TransferableMessage message,
-                              const url::Origin& source_origin,
-                              const base::Optional<url::Origin>& target_origin);
+                              const url::Origin& source_origin);
 
   // Returns true if the frame is embedded in a Portal.
   bool InsidePortal();

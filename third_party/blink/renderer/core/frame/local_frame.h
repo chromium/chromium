@@ -657,8 +657,7 @@ class CORE_EXPORT LocalFrame final
       OnPortalActivatedCallback callback) final;
   void ForwardMessageFromHost(
       BlinkTransferableMessage message,
-      const scoped_refptr<const SecurityOrigin>& source_origin,
-      const scoped_refptr<const SecurityOrigin>& target_origin) final;
+      const scoped_refptr<const SecurityOrigin>& source_origin) final;
 
   SystemClipboard* GetSystemClipboard();
   RawSystemClipboard* GetRawSystemClipboard();

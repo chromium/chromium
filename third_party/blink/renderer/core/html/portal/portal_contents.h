@@ -65,9 +65,7 @@ class PortalContents : public GarbageCollected<PortalContents>,
 
   // Posts a message which will be delivered in the guest contents via the
   // PortalHost object.
-  void PostMessageToGuest(
-      BlinkTransferableMessage message,
-      const scoped_refptr<const SecurityOrigin>& target_origin);
+  void PostMessageToGuest(BlinkTransferableMessage message);
 
   // Request navigation to the specified URL. May be a no-op if navigation to
   // this URL is not permitted.
@@ -85,8 +83,7 @@ class PortalContents : public GarbageCollected<PortalContents>,
   // blink::mojom::PortalClient implementation
   void ForwardMessageFromGuest(
       BlinkTransferableMessage message,
-      const scoped_refptr<const SecurityOrigin>& source_origin,
-      const scoped_refptr<const SecurityOrigin>& target_origin) override;
+      const scoped_refptr<const SecurityOrigin>& source_origin) override;
   void DispatchLoadEvent() override;
 
   void Trace(Visitor* visitor) const;

@@ -1,4 +1,4 @@
-const STASH_RESPONDER = "ws://{{host}}:{{ports[ws][0]}}/stash_responder_blocking";
+const STASH_RESPONDER = "wss://{{host}}:{{ports[wss][0]}}/stash_responder_blocking";
 
 class StashUtils {
   /**

@@ -1372,17 +1372,10 @@ void RenderFrameHostImpl::DestroyPortal(Portal* portal) {
 
 void RenderFrameHostImpl::ForwardMessageFromHost(
     blink::TransferableMessage message,
-    const url::Origin& source_origin,
-    const base::Optional<url::Origin>& target_origin) {
-  // The target origin check needs to be done here in case the frame has
-  // navigated after the postMessage call, or if the renderer is compromised and
-  // the check done in PortalHost::ReceiveMessage is bypassed.
-  if (target_origin) {
-    if (target_origin != GetLastCommittedOrigin())
-      return;
-  }
-  GetAssociatedLocalMainFrame()->ForwardMessageFromHost(
-      std::move(message), source_origin, target_origin);
+    const url::Origin& source_origin) {
+  DCHECK_EQ(source_origin, GetLastCommittedOrigin());
+  GetAssociatedLocalMainFrame()->ForwardMessageFromHost(std::move(message),
+                                                        source_origin);
 }
 
 SiteInstanceImpl* RenderFrameHostImpl::GetSiteInstance() {

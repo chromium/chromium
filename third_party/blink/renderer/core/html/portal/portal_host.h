@@ -56,8 +56,7 @@ class CORE_EXPORT PortalHost : public EventTargetWithInlineData,
   void setOnmessageerror(EventListener* listener);
 
   void ReceiveMessage(BlinkTransferableMessage message,
-                      scoped_refptr<const SecurityOrigin> source_origin,
-                      scoped_refptr<const SecurityOrigin> target_origin);
+                      scoped_refptr<const SecurityOrigin> source_origin);
 
  private:
   mojom::blink::PortalHost& GetPortalHostInterface();

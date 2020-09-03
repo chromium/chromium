@@ -81,14 +81,10 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   void Activate(blink::TransferableMessage data,
                 base::TimeTicks activation_time,
                 ActivateCallback callback) override;
-  void PostMessageToGuest(
-      const blink::TransferableMessage message,
-      const base::Optional<url::Origin>& target_origin) override;
+  void PostMessageToGuest(const blink::TransferableMessage message) override;
 
   // blink::mojom::PortalHost implementation
-  void PostMessageToHost(
-      blink::TransferableMessage message,
-      const base::Optional<url::Origin>& target_origin) override;
+  void PostMessageToHost(blink::TransferableMessage message) override;
 
   // FrameTreeNode::Observer overrides.
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
@@ -136,6 +132,9 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   }
 
   blink::mojom::PortalClient& client() { return *(client_.get()); }
+
+  // Returns true if the portal is same-origin with its host.
+  bool IsSameOrigin() const;
 
  private:
   // Manages the relationship between the Portal and its guest WebContents.

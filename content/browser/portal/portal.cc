@@ -338,26 +338,20 @@ void Portal::Activate(blink::TransferableMessage data,
                      std::move(data), activation_time, std::move(callback)));
 }
 
-void Portal::PostMessageToGuest(
-    blink::TransferableMessage message,
-    const base::Optional<url::Origin>& target_origin) {
+void Portal::PostMessageToGuest(blink::TransferableMessage message) {
+  if (!IsSameOrigin())
+    return;
   portal_contents_->GetMainFrame()->ForwardMessageFromHost(
-      std::move(message), owner_render_frame_host_->GetLastCommittedOrigin(),
-      target_origin);
+      std::move(message), owner_render_frame_host_->GetLastCommittedOrigin());
 }
 
-void Portal::PostMessageToHost(
-    blink::TransferableMessage message,
-    const base::Optional<url::Origin>& target_origin) {
+void Portal::PostMessageToHost(blink::TransferableMessage message) {
   DCHECK(GetPortalContents());
-  if (target_origin) {
-    if (target_origin != owner_render_frame_host_->GetLastCommittedOrigin())
-      return;
-  }
+  if (!IsSameOrigin())
+    return;
   client().ForwardMessageFromGuest(
       std::move(message),
-      GetPortalContents()->GetMainFrame()->GetLastCommittedOrigin(),
-      target_origin);
+      GetPortalContents()->GetMainFrame()->GetLastCommittedOrigin());
 }
 
 void Portal::OnFrameTreeNodeDestroyed(FrameTreeNode* frame_tree_node) {
@@ -446,6 +440,11 @@ WebContentsImpl* Portal::GetPortalContents() {
 WebContentsImpl* Portal::GetPortalHostContents() {
   return static_cast<WebContentsImpl*>(
       WebContents::FromRenderFrameHost(owner_render_frame_host_));
+}
+
+bool Portal::IsSameOrigin() const {
+  return owner_render_frame_host_->GetLastCommittedOrigin().IsSameOriginWith(
+      portal_contents_->GetMainFrame()->GetLastCommittedOrigin());
 }
 
 std::pair<bool, blink::mojom::PortalActivateResult> Portal::CanActivate() {
