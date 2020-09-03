@@ -29,7 +29,12 @@ namespace android_webview {
 namespace {
 
 void OnContextLost(bool synthetic_loss) {
-  NOTREACHED() << "Non owned context lost!";
+  // TODO(https://crbug.com/1112841): Debugging contexts losts. WebView will
+  // intentionally crash in HardwareRendererViz::OnViz::DisplayOutputSurface
+  // that will happen after this callback. That crash happens on viz thread and
+  // doesn't have any useful information. Crash here on RenderThread to
+  // understand the reason of context losts.
+  LOG(FATAL) << "Non owned context lost!";
 }
 
 }  // namespace
