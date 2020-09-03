@@ -6,6 +6,7 @@
 
 import argparse
 from dataclasses import dataclass
+from typing import List
 
 import class_dependency
 import graph
@@ -18,6 +19,16 @@ class PrintMode:
     """Options of how and which dependencies to output."""
     inbound: bool
     outbound: bool
+    build_targets: bool
+
+
+def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
+                      print_mode: PrintMode):
+    for class_node in class_nodes:
+        output = f'\t{class_node.name}'
+        if print_mode.build_targets:
+            output += f' [{", ".join(class_node.build_targets)}]'
+        print(output)
 
 
 def print_class_dependencies_for_key(
@@ -28,14 +39,13 @@ def print_class_dependencies_for_key(
 
     if print_mode.inbound:
         print(f'{len(node.inbound)} inbound dependency(ies) for {node.name}:')
-        for inbound_dep in graph.sorted_nodes_by_name(node.inbound):
-            print(f'\t{inbound_dep.name}')
+        print_class_nodes(graph.sorted_nodes_by_name(node.inbound), print_mode)
 
     if print_mode.outbound:
         print(
             f'{len(node.outbound)} outbound dependency(ies) for {node.name}:')
-        for outbound_dep in graph.sorted_nodes_by_name(node.outbound):
-            print(f'\t{outbound_dep.name}')
+        print_class_nodes(graph.sorted_nodes_by_name(node.outbound),
+                          print_mode)
 
 
 def main():
@@ -70,10 +80,14 @@ def main():
                                      dest='outbound_only',
                                      action='store_true',
                                      help='Print outbound dependencies only.')
+    arg_parser.add_argument('--no-build-target',
+                            action='store_true',
+                            help='Do not print build target (cleaner output).')
     arguments = arg_parser.parse_args()
 
     print_mode = PrintMode(inbound=not arguments.outbound_only,
-                           outbound=not arguments.inbound_only)
+                           outbound=not arguments.inbound_only,
+                           build_targets=not arguments.no_build_target)
 
     class_graph = serialization.load_class_graph_from_file(arguments.file)
     class_graph_keys = [node.name for node in class_graph.nodes]

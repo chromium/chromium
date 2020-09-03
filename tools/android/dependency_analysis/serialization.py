@@ -78,8 +78,11 @@ def create_class_graph_from_json_obj(
         name = node_json_obj[json_consts.NAME]
         nested = node_json_obj[json_consts.META][
             class_json_consts.NESTED_CLASSES]
+        build_targets = node_json_obj[json_consts.META][
+            class_json_consts.BUILD_TARGETS]
         added_node = class_graph.add_node_if_new(name)
         added_node.nested_classes = set(nested)
+        added_node.build_targets = set(build_targets)
 
     for edge_json_obj in json_obj[json_consts.EDGES]:
         begin_key = edge_json_obj[json_consts.BEGIN]

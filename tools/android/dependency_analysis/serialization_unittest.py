@@ -180,6 +180,11 @@ class TestSerialization(unittest.TestCase):
         self.assertEqual(node_1.nested_classes,
                          {self.CLASS_1_NESTED_1, self.CLASS_1_NESTED_2})
         self.assertEqual(node_2.nested_classes, {self.CLASS_2_NESTED_1})
+        self.assertEqual(node_3.nested_classes, set())
+        self.assertEqual(node_1.build_targets, {self.BUILD_TARGET_1})
+        self.assertEqual(node_2.build_targets, set())
+        self.assertEqual(node_3.build_targets,
+                         {self.BUILD_TARGET_1, self.BUILD_TARGET_2})
         self.assertEqual(
             graph.sorted_edges_by_name(test_graph.edges),
             graph.sorted_edges_by_name([(node_1, node_2), (node_1, node_3),

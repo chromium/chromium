@@ -5,7 +5,7 @@
 """Implementation of the graph module for a [Java class] dependency graph."""
 
 import re
-from typing import List, Tuple
+from typing import Set, Tuple
 
 import graph
 import class_json_consts
@@ -72,14 +72,18 @@ class JavaClass(graph.Node):
         """A set of nested classes contained within this class."""
         return self._nested_classes
 
-    @property
-    def build_targets(self) -> List[str]:
-        """Which build target(s) contain the class."""
-        return self._build_targets
-
     @nested_classes.setter
     def nested_classes(self, other):
         self._nested_classes = other
+
+    @property
+    def build_targets(self) -> Set[str]:
+        """Which build target(s) contain the class."""
+        return self._build_targets
+
+    @build_targets.setter
+    def build_targets(self, other):
+        self._build_targets = other
 
     def add_nested_class(self, nested: str):
         self._nested_classes.add(nested)
