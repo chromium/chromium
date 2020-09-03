@@ -8,7 +8,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/surfaces/aggregated_frame.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"

@@ -14,6 +14,8 @@ config("viz_service_implementation") {
 
 viz_component("service") {
   sources = [
+    "display/aggregated_frame.cc",
+    "display/aggregated_frame.h",
     "display/bsp_tree.cc",
     "display/bsp_tree.h",
     "display/bsp_walk_action.cc",

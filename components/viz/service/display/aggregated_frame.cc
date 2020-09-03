@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/surfaces/aggregated_frame.h"
+#include "components/viz/service/display/aggregated_frame.h"
 
 namespace viz {
 

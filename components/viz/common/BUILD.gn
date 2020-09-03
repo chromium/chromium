@@ -252,8 +252,6 @@ viz_component("common") {
     "resources/transferable_resource.h",
     "skia_helper.cc",
     "skia_helper.h",
-    "surfaces/aggregated_frame.cc",
-    "surfaces/aggregated_frame.h",
     "surfaces/child_local_surface_id_allocator.cc",
     "surfaces/child_local_surface_id_allocator.h",
     "surfaces/frame_sink_id.cc",
