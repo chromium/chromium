@@ -65,6 +65,22 @@ gen-signedexchange \
   -o test.example.org_test.sxg \
   -miRecordSize 100
 
+# Generate the signed exchange file for google-com.example.org. This is used
+# for lookalike URL testing.
+gen-signedexchange \
+  -version 1b3 \
+  -uri https://google-com.example.org/test/ \
+  -status 200 \
+  -content test.html \
+  -certificate prime256v1-sha256.public.pem \
+  -certUrl https://cert.example.org/cert.msg \
+  -validityUrl https://google-com.example.org/resource.validity.msg \
+  -privateKey prime256v1.key \
+  -date $signature_date \
+  -expire 168h \
+  -o google-com.example.org_test.sxg \
+  -miRecordSize 100
+
 # Generate the signed exchange for the missing nosniff header test case.
 cp test.example.org_test.sxg test.example.org_test_missing_nosniff.sxg
 

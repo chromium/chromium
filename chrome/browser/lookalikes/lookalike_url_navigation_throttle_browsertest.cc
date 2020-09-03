@@ -32,7 +32,9 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/signed_exchange_browser_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -194,6 +196,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
       base::FieldTrialParams params;
       enabled_features.emplace_back(
           lookalikes::features::kDetectTargetEmbeddingLookalikes, params);
+      enabled_features.emplace_back(features::kSignedHTTPExchange, params);
     } else {
       disabled_features.push_back(
           lookalikes::features::kDetectTargetEmbeddingLookalikes);
@@ -1221,4 +1224,102 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   // interstitial.
   TestInterstitialNotShown(browser(),
                            embedded_test_server()->GetURL("example.net", "/"));
+}
+
+// Tests for Signed Exchanges.
+class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
+    : public LookalikeUrlNavigationThrottleBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    sxg_test_helper_.SetUp();
+
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &LookalikeUrlNavigationThrottleSignedExchangeBrowserTest::
+            MonitorRequest,
+        base::Unretained(this)));
+    LookalikeUrlNavigationThrottleBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    sxg_test_helper_.TearDownOnMainThread();
+  }
+
+  bool HadSignedExchangeInAcceptHeader(const GURL& url) const {
+    const auto it = url_accept_header_map_.find(url);
+    if (it == url_accept_header_map_.end())
+      return false;
+    return it->second.find("application/signed-exchange") != std::string::npos;
+  }
+
+ protected:
+  content::SignedExchangeBrowserTestHelper sxg_test_helper_;
+
+ private:
+  void MonitorRequest(const net::test_server::HttpRequest& request) {
+    const auto it = request.headers.find("Accept");
+    if (it == request.headers.end())
+      return;
+    url_accept_header_map_[request.base_url.Resolve(request.relative_url)] =
+        it->second;
+  }
+
+  std::map<GURL, std::string> url_accept_header_map_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+// Navigates to a 127.0.0.1 URL that serves a signed exchange for
+// google-com.example.org. This navigation should be blocked by the target
+// embedding interstitial. We only test target embedding here because we can
+// test it with a subdomain of example.org (which is the domain used by SGX test
+// code). Testing an ETLD+1 such as googlé.com would require generating a custom
+// cert.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
+                       SignedExchange_ShouldBlockTarget) {
+  if (!target_embedding_enabled()) {
+    return;
+  }
+  sxg_test_helper_.InstallUrlInterceptor(
+      GURL("https://google-com.example.org/test/"),
+      "content/test/data/sxg/fallback.html");
+  const GURL kNavigatedUrl =
+      embedded_test_server()->GetURL("/sxg/google-com.example.org_test.sxg");
+  const GURL kExpectedSuggestedUrl("https://google.com");
+
+  TestMetricsRecordedAndInterstitialShown(
+      browser(), kNavigatedUrl, kExpectedSuggestedUrl,
+      NavigationSuggestionEvent::kMatchTargetEmbedding);
+
+  // Check that the SXG file was handled as a Signed Exchange.
+  ASSERT_TRUE(HadSignedExchangeInAcceptHeader(kNavigatedUrl));
+}
+
+// Navigates to a lookalike URL that serves a signed exchange for
+// test.example.org. This should also be blocked by the lookalike interstitial,
+// even though the URL that serves the signed exchange is never visible to
+// the user.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
+                       SignedExchange_ShouldBlockCacheUrl) {
+  if (!target_embedding_enabled()) {
+    return;
+  }
+  const GURL kSgxTargetUrl("https://test.example.org/test/");
+  sxg_test_helper_.InstallUrlInterceptor(kSgxTargetUrl,
+                                         "content/test/data/sxg/fallback.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL(
+      "google-com.test.com", "/sxg/test.example.org_test.sxg");
+  const GURL kExpectedSuggestedUrl =
+      embedded_test_server()->GetURL("google.com", "/");
+
+  TestMetricsRecordedAndInterstitialShown(
+      browser(), kNavigatedUrl, kExpectedSuggestedUrl,
+      NavigationSuggestionEvent::kMatchTargetEmbedding);
+
+  // Check that no SXG response was handled.
+  ASSERT_FALSE(HadSignedExchangeInAcceptHeader(kNavigatedUrl));
+  ASSERT_FALSE(HadSignedExchangeInAcceptHeader(kSgxTargetUrl));
 }
