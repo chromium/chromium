@@ -48,7 +48,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/service_names.mojom.h"
@@ -708,7 +707,7 @@ SystemNetworkContextManager::CreateNetworkContextParams() {
   // These are needed for PAC scripts that use FTP URLs.
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
   network_context_params->enable_ftp_url_support =
-      base::FeatureList::IsEnabled(features::kFtpProtocol);
+      base::FeatureList::IsEnabled(blink::features::kFtpProtocol);
 #endif
 
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params.get());

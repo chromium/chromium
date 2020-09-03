@@ -258,11 +258,6 @@ const base::Feature kForwardMemoryPressureEventsToGpuProcess {
 const base::Feature kFractionalScrollOffsets{"FractionalScrollOffsets",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables support for FTP URLs. When disabled FTP URLs will behave the same as
-// any other URL scheme that's unknown to the UA. See https://crbug.com/333943
-const base::Feature kFtpProtocol{"FtpProtocol",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Puts network quality estimate related Web APIs in the holdback mode. When the
 // holdback is enabled the related Web APIs return network quality estimate
 // set by the experiment (regardless of the actual quality).

@@ -53,7 +53,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -70,6 +69,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -1987,7 +1987,7 @@ class DownloadExtensionTestWithFtp : public DownloadExtensionTest {
   DownloadExtensionTestWithFtp() {
     // DownloadExtensionTest_Download_InvalidURLs2 requires FTP support.
     // TODO(https://crbug.com/333943): Remove FTP tests and FTP feature flags.
-    scoped_feature_list_.InitAndEnableFeature(features::kFtpProtocol);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFtpProtocol);
   }
 
  private:

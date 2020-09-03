@@ -26,10 +26,10 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 // This file tests that net::LoadTimingInfo is correctly hooked up to the
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, MAYBE_Proxy) {
 class LoadTimingBrowserTestWithFtp : public LoadTimingBrowserTest {
  public:
   LoadTimingBrowserTestWithFtp() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFtpProtocol);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFtpProtocol);
   }
 
  private:

@@ -12,11 +12,9 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
-#include "build/build_config.h"
 #include "content/common/url_schemes.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
-#include "net/net_buildflags.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -63,17 +61,6 @@ bool IsURLHandledByNetworkStack(const GURL& url) {
   // - the ones that target the top-level frame on Android.
 
   return true;
-}
-
-bool IsURLHandledByNetworkService(const GURL& url) {
-  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS())
-    return true;
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  if (url.SchemeIs(url::kFtpScheme) &&
-      base::FeatureList::IsEnabled(features::kFtpProtocol))
-    return true;
-#endif
-  return false;
 }
 
 bool IsRendererDebugURL(const GURL& url) {

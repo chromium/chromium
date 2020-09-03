@@ -54,7 +54,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/url_constants.h"
@@ -98,6 +97,7 @@
 #include "services/network/test/test_dns_util.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if defined(OS_MAC)
@@ -1873,7 +1873,7 @@ class NetworkContextConfigurationFtpPacBrowserTest
  public:
   NetworkContextConfigurationFtpPacBrowserTest()
       : ftp_server_(net::SpawnedTestServer::TYPE_FTP, GetChromeTestDataDir()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kFtpProtocol);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFtpProtocol);
     EXPECT_TRUE(ftp_server_.Start());
   }
   ~NetworkContextConfigurationFtpPacBrowserTest() override {}

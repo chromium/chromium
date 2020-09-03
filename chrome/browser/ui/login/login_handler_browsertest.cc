@@ -36,7 +36,6 @@
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -47,6 +46,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -246,14 +246,14 @@ class LoginPromptBrowserTest
     if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
       scoped_feature_list_.InitWithFeatures(
           // enabled_features
-          {features::kFtpProtocol},
+          {blink::features::kFtpProtocol},
           // disabled_features
           {network::features::kSplitAuthCacheByNetworkIsolationKey});
     } else {
       scoped_feature_list_.InitWithFeatures(
           // enabled_features
           {network::features::kSplitAuthCacheByNetworkIsolationKey,
-           features::kFtpProtocol},
+           blink::features::kFtpProtocol},
           // disabled_features
           {});
     }

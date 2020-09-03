@@ -47,7 +47,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -734,7 +733,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // TODO(mmenke): Find a better way of handling tracking supported schemes.
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
   network_context_params->enable_ftp_url_support =
-      base::FeatureList::IsEnabled(features::kFtpProtocol);
+      base::FeatureList::IsEnabled(blink::features::kFtpProtocol);
 #endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params);

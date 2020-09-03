@@ -24,7 +24,6 @@
 #include "content/common/inter_process_time_ticks_converter.h"
 #include "content/common/navigation_params.h"
 #include "content/public/common/origin_util.h"
-#include "content/public/common/url_utils.h"
 #include "content/public/renderer/request_peer.h"
 #include "content/public/renderer/resource_dispatcher_delegate.h"
 #include "content/renderer/loader/request_extra_data.h"
@@ -45,6 +44,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -100,8 +100,8 @@ int GetInitialRequestID() {
 bool RedirectRequiresLoaderRestart(const GURL& original_url,
                                    const GURL& redirect_url) {
   // Restart is needed if the URL is no longer handled by network service.
-  if (IsURLHandledByNetworkService(original_url))
-    return !IsURLHandledByNetworkService(redirect_url);
+  if (blink::IsURLHandledByNetworkService(original_url))
+    return !blink::IsURLHandledByNetworkService(redirect_url);
 
   // If URL wasn't originally handled by network service, restart is needed if
   // schemes are different.

@@ -5878,7 +5878,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
     {"enable-ftp", flag_descriptions::kEnableFtpName,
      flag_descriptions::kEnableFtpDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFtpProtocol)},
+     FEATURE_VALUE_TYPE(blink::features::kFtpProtocol)},
 #endif
 
 #if defined(OS_CHROMEOS)

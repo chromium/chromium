@@ -1248,7 +1248,7 @@ class SecurityStateTabHelperTestWithFtpEnabled
     : public SecurityStateTabHelperTest {
  public:
   SecurityStateTabHelperTestWithFtpEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFtpProtocol);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFtpProtocol);
   }
   ~SecurityStateTabHelperTestWithFtpEnabled() override = default;
 

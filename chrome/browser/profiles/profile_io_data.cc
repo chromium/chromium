@@ -58,11 +58,11 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/resource_context.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/public_buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -320,7 +320,7 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
   }
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
   if (scheme == url::kFtpScheme &&
-      base::FeatureList::IsEnabled(features::kFtpProtocol)) {
+      base::FeatureList::IsEnabled(blink::features::kFtpProtocol)) {
     return true;
   }
 #endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)

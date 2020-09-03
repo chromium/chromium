@@ -88,6 +88,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -480,8 +481,9 @@ void NavigationURLLoaderImpl::Restart() {
   // their use or disuse of the network service loader.
   if (!default_loader_used_ ||
       (url_chain_.size() > 1 &&
-       IsURLHandledByNetworkService(url_chain_[url_chain_.size() - 1]) !=
-           IsURLHandledByNetworkService(url_chain_[url_chain_.size() - 2]))) {
+       blink::IsURLHandledByNetworkService(url_chain_[url_chain_.size() - 1]) !=
+           blink::IsURLHandledByNetworkService(
+               url_chain_[url_chain_.size() - 2]))) {
     if (url_loader_)
       url_loader_->ResetForFollowRedirect();
     url_loader_.reset();
@@ -619,7 +621,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
   // further refactor the factory getters to avoid this.
   scoped_refptr<network::SharedURLLoaderFactory> factory;
 
-  if (!IsURLHandledByNetworkService(resource_request_->url)) {
+  if (!blink::IsURLHandledByNetworkService(resource_request_->url)) {
     if (known_schemes_.find(resource_request_->url.scheme()) ==
         known_schemes_.end()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
