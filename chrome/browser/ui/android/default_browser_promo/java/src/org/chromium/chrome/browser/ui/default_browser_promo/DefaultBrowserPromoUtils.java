@@ -4,25 +4,17 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
-import static org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoManager.P_NO_DEFAULT_PROMO_STRATEGY;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.Settings;
-import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -30,7 +22,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A utility class providing information regarding states of default browser.
@@ -50,11 +41,16 @@ public class DefaultBrowserPromoUtils {
         int NUM_ENTRIES = 3;
     }
 
-    private static final int MIN_TRIGGER_SESSION_COUNT = 3;
-    private static final int MAX_PROMO_COUNT = 1;
-    private static final String SESSION_COUNT_PARAM = "min_trigger_session_count";
-    private static final String PROMO_COUNT_PARAM = "max_promo_count";
-    private static final String PROMO_INTERVAL_PARAM = "promo_interval";
+    @IntDef({DefaultBrowserPromoAction.SYSTEM_SETTINGS,
+            DefaultBrowserPromoAction.DISAMBIGUATION_SHEET, DefaultBrowserPromoAction.ROLE_MANAGER,
+            DefaultBrowserPromoAction.NO_ACTION})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DefaultBrowserPromoAction {
+        int SYSTEM_SETTINGS = 0;
+        int DISAMBIGUATION_SHEET = 1;
+        int ROLE_MANAGER = 2;
+        int NO_ACTION = 3;
+    }
 
     private static final String DISAMBIGUATION_SHEET_PROMOED_KEY_PREFIX =
             "disambiguation_sheet_promoed.";
@@ -67,15 +63,6 @@ public class DefaultBrowserPromoUtils {
     /**
      * Determine whether a promo dialog should be displayed or not. And prepare related logic to
      * launch promo if a promo dialog has been decided to display.
-     * Return false if any of following criteria is met:
-     *      1. A promo dialog has been displayed before.
-     *      2. Not enough sessions have been started before.
-     *      3. Any chrome, including pre-stable, has been set as default.
-     *      4. On Chrome stable while no default browser is set and multiple chrome channels
-     *         are installed.
-     *      5. Less than the promo interval if re-promoing.
-     *      6. A browser other than chrome channel is default and default app setting is not
-     *         available in the current system.
      *
      * @param activity The context.
      * @param dispatcher The {@link ActivityLifecycleDispatcher} of the current activity.
@@ -84,89 +71,86 @@ public class DefaultBrowserPromoUtils {
      */
     public static boolean prepareLaunchPromoIfNeeded(Activity activity,
             ActivityLifecycleDispatcher dispatcher, WindowAndroid windowAndroid) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO)) {
-            return false;
+        DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
+        int action = decideNextAction(deps, activity);
+        if (action == DefaultBrowserPromoAction.NO_ACTION) return false;
+        deps.incrementPromoCount();
+        deps.recordPromoTime();
+        DefaultBrowserPromoManager manager = new DefaultBrowserPromoManager(
+                activity, dispatcher, windowAndroid, deps.getCurrentDefaultBrowserState());
+        if (action == DefaultBrowserPromoAction.ROLE_MANAGER) {
+            manager.promoByRoleManager();
+        } else if (action == DefaultBrowserPromoAction.SYSTEM_SETTINGS) {
+            manager.promoBySystemSettings();
+        } else if (action == DefaultBrowserPromoAction.DISAMBIGUATION_SHEET) {
+            manager.promoByDisambiguationSheet();
         }
+        return true;
+    }
 
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_DEFAULT_BROWSER_PROMO)) {
-            return false;
+    /**
+     * This decides in which way and style the dialog should be promoed.
+     * Returns No Action if any of following criteria is met:
+     *      1. A promo dialog has been displayed before.
+     *      2. Not enough sessions have been started before.
+     *      3. Any chrome, including pre-stable, has been set as default.
+     *      4. On Chrome stable while no default browser is set and multiple chrome channels
+     *         are installed.
+     *      5. Less than the promo interval if re-promoing.
+     *      6. A browser other than chrome channel is default and default app setting is not
+     *         available in the current system.
+     */
+    @DefaultBrowserPromoAction
+    static int decideNextAction(DefaultBrowserPromoDeps deps, Activity activity) {
+        if (!deps.isFeatureEnabled()) {
+            return DefaultBrowserPromoAction.NO_ACTION;
         }
-
         // Criteria 1
-        int maxPromoCount = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, PROMO_COUNT_PARAM,
-                MAX_PROMO_COUNT);
-
-        if (SharedPreferencesManager.getInstance().readInt(
-                    ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT, 0)
-                >= maxPromoCount) {
-            return false;
+        if (deps.getPromoCount() >= deps.getMaxPromoCount()) {
+            return DefaultBrowserPromoAction.NO_ACTION;
         }
-
         // Criteria 2
-        int minSessionCount = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, SESSION_COUNT_PARAM,
-                MIN_TRIGGER_SESSION_COUNT);
-
-        if (SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT, 0)
-                < minSessionCount) {
-            return false;
+        if (deps.getSessionCount() < deps.getMinSessionCount()) {
+            return DefaultBrowserPromoAction.NO_ACTION;
         }
-
         // Criteria 5
-        int lastPromoTime = SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME, -1);
-        if (lastPromoTime != -1) {
-            int promoInterval = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, PROMO_INTERVAL_PARAM, 0);
-            if (TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()) - lastPromoTime
-                    < promoInterval) {
-                return false;
-            }
+        if (deps.getLastPromoInterval() < deps.getMinPromoInterval()) {
+            return DefaultBrowserPromoAction.NO_ACTION;
         }
 
         ResolveInfo info = PackageManagerUtils.resolveDefaultWebBrowserActivity();
-        int state = getCurrentDefaultBrowserState(info);
-
-        // Already default
-        if (state == DefaultBrowserState.CHROME_DEFAULT) return false;
-
-        // Criteria 3 & Criteria 6
-        if (state == DefaultBrowserState.OTHER_DEFAULT
-                && (isCurrentDefaultBrowserChrome(info)
-                        || !doesManageDefaultAppsSettingsActivityExist())) {
-            // Default apps setting activity does not exist on L and M.  Early return
-            // before we write prefs and record metrics to skip the call to promo.
-            return false;
-        }
-
-        // Criteria 4
-        if (ContextUtils.getApplicationContext().getPackageName().equals(CHROME_STABLE_PACKAGE_NAME)
-                && isChromePreStableInstalled()
-                && state == DefaultBrowserState.NO_DEFAULT) {
-            return false;
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                && state == DefaultBrowserState.NO_DEFAULT) {
-            String promoOnP = ChromeFeatureList.getFieldTrialParamByFeature(
-                    ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, P_NO_DEFAULT_PROMO_STRATEGY);
-            if (TextUtils.equals(promoOnP, "disabled")) {
-                return false;
-            } else if (TextUtils.equals(promoOnP, "system_settings")
-                    && !doesManageDefaultAppsSettingsActivityExist()) {
-                return false;
+        int state = deps.getCurrentDefaultBrowserState(info);
+        int action = DefaultBrowserPromoAction.NO_ACTION;
+        if (state == DefaultBrowserState.CHROME_DEFAULT) {
+            action = DefaultBrowserPromoAction.NO_ACTION;
+        } else if (state == DefaultBrowserState.NO_DEFAULT) {
+            // Criteria 4
+            if (deps.isChromeStable() && deps.isChromePreStableInstalled()) {
+                action = DefaultBrowserPromoAction.NO_ACTION;
+            } else if (deps.getSDKInt() >= Build.VERSION_CODES.Q) {
+                action = DefaultBrowserPromoAction.ROLE_MANAGER;
+            } else {
+                action = deps.promoActionOnP();
+            }
+        } else { // other default
+            // Criteria 3
+            if (deps.isCurrentDefaultBrowserChrome(info)) {
+                action = DefaultBrowserPromoAction.NO_ACTION;
+            } else {
+                action = deps.getSDKInt() >= Build.VERSION_CODES.Q
+                        ? DefaultBrowserPromoAction.ROLE_MANAGER
+                        : DefaultBrowserPromoAction.SYSTEM_SETTINGS;
             }
         }
-
-        SharedPreferencesManager.getInstance().incrementInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT);
-        SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
-                (int) TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()));
-        DefaultBrowserPromoManager.create(activity, dispatcher, windowAndroid).promo(state);
-        return true;
+        // Criteria 6
+        if (action == DefaultBrowserPromoAction.SYSTEM_SETTINGS
+                && !deps.doesManageDefaultAppsSettingsActivityExist()) {
+            action = DefaultBrowserPromoAction.NO_ACTION;
+        } else if (action == DefaultBrowserPromoAction.ROLE_MANAGER
+                && !deps.isRoleAvailable(activity)) {
+            action = DefaultBrowserPromoAction.NO_ACTION;
+        }
+        return action;
     }
 
     /**
@@ -176,15 +160,6 @@ public class DefaultBrowserPromoUtils {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO)) return;
         SharedPreferencesManager.getInstance().incrementInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
-    }
-
-    /**
-     * The current {@link DefaultBrowserState} in the system.
-     */
-    @DefaultBrowserState
-    public static int getCurrentDefaultBrowserState() {
-        ResolveInfo info = PackageManagerUtils.resolveDefaultWebBrowserActivity();
-        return getCurrentDefaultBrowserState(info);
     }
 
     /**
@@ -199,7 +174,8 @@ public class DefaultBrowserPromoUtils {
         }
         int previousState = SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_DEFAULT_STATE);
-        DefaultBrowserPromoMetrics.recordOutcome(previousState, getCurrentDefaultBrowserState());
+        DefaultBrowserPromoMetrics.recordOutcome(previousState,
+                DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState());
         // reset
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS, false);
@@ -212,7 +188,7 @@ public class DefaultBrowserPromoUtils {
         boolean promoed = intent.getBooleanExtra(getDisambiguationSheetPromoedKey(), false);
         if (promoed) {
             DefaultBrowserPromoMetrics.recordLaunchedByDisambiguationSheet(
-                    getCurrentDefaultBrowserState());
+                    DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState());
         }
     }
 
@@ -230,43 +206,5 @@ public class DefaultBrowserPromoUtils {
             // Intent with Uri.EMPTY as data will be ignored by the IntentHandler.
             intent.setData(Uri.EMPTY);
         }
-    }
-
-    @VisibleForTesting
-    static boolean isChromePreStableInstalled() {
-        for (ResolveInfo info : PackageManagerUtils.queryAllWebBrowsersInfo()) {
-            for (String name : CHROME_PACKAGE_NAMES) {
-                if (name.equals(CHROME_STABLE_PACKAGE_NAME)) continue;
-                if (name.equals(info.activityInfo.packageName)) return true;
-            }
-        }
-        return false;
-    }
-
-    @VisibleForTesting
-    static boolean isCurrentDefaultBrowserChrome(ResolveInfo info) {
-        String packageName = info.activityInfo.packageName;
-        for (String name : CHROME_PACKAGE_NAMES) {
-            if (name.equals(packageName)) return true;
-        }
-        return false;
-    }
-
-    @VisibleForTesting
-    @DefaultBrowserState
-    static int getCurrentDefaultBrowserState(@NonNull ResolveInfo info) {
-        if (info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
-        if (TextUtils.equals(ContextUtils.getApplicationContext().getPackageName(),
-                    info.activityInfo.packageName)) {
-            return DefaultBrowserState.CHROME_DEFAULT; // Already default
-        }
-        return DefaultBrowserState.OTHER_DEFAULT;
-    }
-
-    private static boolean doesManageDefaultAppsSettingsActivityExist() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false;
-        ResolveInfo info = PackageManagerUtils.resolveActivity(
-                new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS), 0);
-        return info != null && info.match != 0;
     }
 }

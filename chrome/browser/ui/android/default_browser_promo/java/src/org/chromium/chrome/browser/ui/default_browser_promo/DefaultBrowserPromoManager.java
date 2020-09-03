@@ -10,9 +10,7 @@ import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
-import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -47,62 +45,24 @@ public class DefaultBrowserPromoManager implements PauseResumeWithNativeObserver
      * @param activity Activity to show promo dialogs.
      * @param dispatcher The {@link ActivityLifecycleDispatcher} of the current activity.
      * @param windowAndroid The {@link WindowAndroid} for sending an intent.
-     * @return A {@link DefaultBrowserPromoManager} displaying dialogs based on android version and
-     *         current default browser state in system.
+     * @param currentState The current {@link DefaultBrowserState} in the system.
      */
-    public static DefaultBrowserPromoManager create(Activity activity,
-            ActivityLifecycleDispatcher dispatcher, WindowAndroid windowAndroid) {
-        return new DefaultBrowserPromoManager(activity, dispatcher, windowAndroid);
-    }
-
-    private DefaultBrowserPromoManager(Activity activity, ActivityLifecycleDispatcher dispatcher,
-            WindowAndroid windowAndroid) {
+    public DefaultBrowserPromoManager(Activity activity, ActivityLifecycleDispatcher dispatcher,
+            WindowAndroid windowAndroid, @DefaultBrowserState int currentState) {
         mActivity = activity;
         mDispatcher = dispatcher;
         mWindowAndroid = windowAndroid;
-    }
-
-    /**
-     * @param state The current {@link DefaultBrowserPromoUtils.DefaultBrowserState} in system.
-     */
-    public void promo(@DefaultBrowserPromoUtils.DefaultBrowserState int state) {
-        promoInternal(state, Build.VERSION.SDK_INT);
-    }
-
-    private void promoInternal(
-            @DefaultBrowserPromoUtils.DefaultBrowserState int state, int sdkInt) {
-        mCurrentState = state;
-        if (sdkInt >= Build.VERSION_CODES.Q) {
-            promoByRoleManager();
-        } else if (state == DefaultBrowserPromoUtils.DefaultBrowserState.NO_DEFAULT) {
-            String promoOnP = ChromeFeatureList.getFieldTrialParamByFeature(
-                    ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, P_NO_DEFAULT_PROMO_STRATEGY);
-            if (TextUtils.equals(promoOnP, "system_settings")) {
-                promoBySystemSettings();
-            } else {
-                promoByDisambiguationSheet();
-            }
-        } else if (sdkInt >= Build.VERSION_CODES.N) {
-            promoBySystemSettings();
-        } else {
-            destroy();
-        }
+        mCurrentState = currentState;
     }
 
     @SuppressLint({"WrongConstant", "NewApi"})
-    private void promoByRoleManager() {
+    void promoByRoleManager() {
         mPromoStyle = DialogStyle.ROLE_MANAGER;
         boolean shouldSkipPrimer = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, SKIP_PRIMER_PARAM, false);
         Runnable onOK = () -> {
             RoleManager roleManager =
                     (RoleManager) mActivity.getSystemService(Context.ROLE_SERVICE);
-            boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
-            boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
-
-            // TODO(crbug.com/1090103): check the condition before deciding
-            // to show promo and remove the assertion.
-            assert isRoleAvailable && !isRoleHeld;
 
             DefaultBrowserPromoMetrics.recordRoleManagerShow(mCurrentState);
             if (!shouldSkipPrimer) {
@@ -112,8 +72,8 @@ public class DefaultBrowserPromoManager implements PauseResumeWithNativeObserver
 
             Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER);
             mWindowAndroid.showCancelableIntent(intent, (window, resultCode, data) -> {
-                DefaultBrowserPromoMetrics.recordOutcome(
-                        mCurrentState, DefaultBrowserPromoUtils.getCurrentDefaultBrowserState());
+                DefaultBrowserPromoMetrics.recordOutcome(mCurrentState,
+                        DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState());
             }, null);
             destroy();
         };
@@ -124,7 +84,7 @@ public class DefaultBrowserPromoManager implements PauseResumeWithNativeObserver
         }
     }
 
-    private void promoBySystemSettings() {
+    void promoBySystemSettings() {
         mPromoStyle = DialogStyle.SYSTEM_SETTINGS;
         showDialog(DefaultBrowserPromoDialog.DialogStyle.SYSTEM_SETTINGS, () -> {
             // Users are leaving Chrome, so the app may be shut down or killed in the background.
@@ -141,7 +101,7 @@ public class DefaultBrowserPromoManager implements PauseResumeWithNativeObserver
         });
     }
 
-    private void promoByDisambiguationSheet() {
+    void promoByDisambiguationSheet() {
         mPromoStyle = DialogStyle.DISAMBIGUATION_SHEET;
         showDialog(DialogStyle.DISAMBIGUATION_SHEET, () -> {
             DefaultBrowserPromoMetrics.recordUiDismissalReason(
@@ -181,8 +141,8 @@ public class DefaultBrowserPromoManager implements PauseResumeWithNativeObserver
         // or role manager dialog is shown, leading to no metrics recording.
         if (mPromoStyle == null) return;
         if (mPromoStyle == DialogStyle.DISAMBIGUATION_SHEET) {
-            DefaultBrowserPromoMetrics.recordOutcome(
-                    mCurrentState, DefaultBrowserPromoUtils.getCurrentDefaultBrowserState());
+            DefaultBrowserPromoMetrics.recordOutcome(mCurrentState,
+                    DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState());
             destroy();
         } else if (mPromoStyle == DialogStyle.SYSTEM_SETTINGS) {
             // Result may also be confirmed on start up of chrome tabbed activity.
@@ -203,10 +163,5 @@ public class DefaultBrowserPromoManager implements PauseResumeWithNativeObserver
     @VisibleForTesting
     DefaultBrowserPromoDialog getDialogForTesting() {
         return mDialog;
-    }
-
-    @VisibleForTesting
-    void promoForTesting(@DefaultBrowserPromoUtils.DefaultBrowserState int state, int sdkInt) {
-        promoInternal(state, sdkInt);
     }
 }

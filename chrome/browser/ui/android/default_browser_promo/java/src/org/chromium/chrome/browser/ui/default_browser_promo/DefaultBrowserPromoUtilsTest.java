@@ -40,7 +40,7 @@ public class DefaultBrowserPromoUtilsTest {
     public void testGetCurrentDefaultStateForNoDefault() {
         Assert.assertEquals("Should be no default when resolve info matches no browser.",
                 DefaultBrowserState.NO_DEFAULT,
-                DefaultBrowserPromoUtils.getCurrentDefaultBrowserState(
+                DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState(
                         createResolveInfo("android", 0)));
     }
 
@@ -48,7 +48,7 @@ public class DefaultBrowserPromoUtilsTest {
     public void testGetCurrentDefaultStateForOtherDefault() {
         Assert.assertEquals("Should be other default when resolve info matches another browser.",
                 DefaultBrowserPromoUtils.DefaultBrowserState.OTHER_DEFAULT,
-                DefaultBrowserPromoUtils.getCurrentDefaultBrowserState(
+                DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState(
                         createResolveInfo("android", 1)));
     }
 
@@ -57,8 +57,9 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertEquals(
                 "Should be chrome default when resolve info matches current package name.",
                 DefaultBrowserPromoUtils.DefaultBrowserState.CHROME_DEFAULT,
-                DefaultBrowserPromoUtils.getCurrentDefaultBrowserState(createResolveInfo(
-                        ContextUtils.getApplicationContext().getPackageName(), 1)));
+                DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState(
+                        createResolveInfo(
+                                ContextUtils.getApplicationContext().getPackageName(), 1)));
     }
 
     @Test
@@ -67,17 +68,18 @@ public class DefaultBrowserPromoUtilsTest {
         ShadowPackageManager packageManager =
                 Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
 
+        DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
         infoList.add(createResolveInfo(DefaultBrowserPromoUtils.CHROME_STABLE_PACKAGE_NAME, 1));
         packageManager.addResolveInfoForIntent(
                 PackageManagerUtils.getQueryInstalledBrowsersIntent(), infoList);
         Assert.assertFalse("Chrome stable should not be counted as a pre-stable channel",
-                DefaultBrowserPromoUtils.isChromePreStableInstalled());
+                deps.isChromePreStableInstalled());
 
         infoList.add(createResolveInfo("com.android.chrome.123", 1));
         packageManager.addResolveInfoForIntent(
                 PackageManagerUtils.getQueryInstalledBrowsersIntent(), infoList);
         Assert.assertFalse("A random package should not be counted as a pre-stable channel",
-                DefaultBrowserPromoUtils.isChromePreStableInstalled());
+                deps.isChromePreStableInstalled());
 
         for (String name : DefaultBrowserPromoUtils.CHROME_PACKAGE_NAMES) {
             if (name.equals(DefaultBrowserPromoUtils.CHROME_STABLE_PACKAGE_NAME)) continue;
@@ -86,20 +88,20 @@ public class DefaultBrowserPromoUtilsTest {
             packageManager.addResolveInfoForIntent(
                     PackageManagerUtils.getQueryInstalledBrowsersIntent(), list);
             Assert.assertTrue(name + " should be considered as a pre-stable channel",
-                    DefaultBrowserPromoUtils.isChromePreStableInstalled());
+                    deps.isChromePreStableInstalled());
         }
     }
 
     @Test
     public void testIsCurrentDefaultBrowserChrome() {
+        DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
         for (String name : DefaultBrowserPromoUtils.CHROME_PACKAGE_NAMES) {
             Assert.assertTrue(name + " should be considered as a chrome channel",
-                    DefaultBrowserPromoUtils.isCurrentDefaultBrowserChrome(
-                            createResolveInfo(name, 1)));
+                    deps.isCurrentDefaultBrowserChrome(createResolveInfo(name, 1)));
         }
 
         Assert.assertFalse("A random string should not be considered as a chrome channel",
-                DefaultBrowserPromoUtils.isCurrentDefaultBrowserChrome(
+                deps.isCurrentDefaultBrowserChrome(
                         createResolveInfo("com.android.chrome.random.string", 1)));
     }
 

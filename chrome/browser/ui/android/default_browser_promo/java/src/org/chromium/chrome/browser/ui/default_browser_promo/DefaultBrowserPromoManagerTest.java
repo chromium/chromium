@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.app.Activity;
-import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
@@ -26,6 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.PromoDialog;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -50,7 +50,7 @@ public class DefaultBrowserPromoManagerTest extends DummyUiActivityTestCase {
         super.setUpTest();
         mActivity = getActivity();
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(() -> new WindowAndroid(mActivity));
-        mManager = DefaultBrowserPromoManager.create(mActivity, new ActivityLifecycleDispatcher() {
+        mManager = new DefaultBrowserPromoManager(mActivity, new ActivityLifecycleDispatcher() {
             @Override
             public void register(LifecycleObserver observer) {}
 
@@ -66,7 +66,7 @@ public class DefaultBrowserPromoManagerTest extends DummyUiActivityTestCase {
             public boolean isNativeInitializationFinished() {
                 return false;
             }
-        }, mWindowAndroid);
+        }, mWindowAndroid, DefaultBrowserState.NO_DEFAULT);
         mAppName = BuildInfo.getInstance().hostPackageLabel;
         // Enabling feature can assign a default value to the fieldtrial param.
         FeatureList.setTestFeatures(Collections.EMPTY_MAP);
@@ -81,10 +81,7 @@ public class DefaultBrowserPromoManagerTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     public void testPromoByRoleManager() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.promoForTesting(
-                    DefaultBrowserPromoUtils.DefaultBrowserState.NO_DEFAULT, Build.VERSION_CODES.Q);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mManager.promoByRoleManager(); });
         DefaultBrowserPromoDialog dialog = mManager.getDialogForTesting();
         Assert.assertEquals("Dialog should be of role manager style on Q+",
                 dialog.getDialogStyleForTesting(),
@@ -112,23 +109,8 @@ public class DefaultBrowserPromoManagerTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    public void testPromoBySystemSettingsOnL() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.promoForTesting(DefaultBrowserPromoUtils.DefaultBrowserState.OTHER_DEFAULT,
-                    Build.VERSION_CODES.LOLLIPOP);
-        });
-        DefaultBrowserPromoDialog dialog = mManager.getDialogForTesting();
-
-        Assert.assertNull("Dialog of system settings style should not be displayed on L", dialog);
-    }
-
-    @Test
-    @MediumTest
     public void testPromoBySystemSettingsOnP() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.promoForTesting(DefaultBrowserPromoUtils.DefaultBrowserState.OTHER_DEFAULT,
-                    Build.VERSION_CODES.P);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mManager.promoBySystemSettings(); });
         DefaultBrowserPromoDialog dialog = mManager.getDialogForTesting();
         Assert.assertEquals(
                 "Dialog should be of system settings style on P-, when there is another default in system",
@@ -158,10 +140,7 @@ public class DefaultBrowserPromoManagerTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     public void testPromoByDisambiguationSheet() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.promoForTesting(
-                    DefaultBrowserPromoUtils.DefaultBrowserState.NO_DEFAULT, Build.VERSION_CODES.P);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mManager.promoByDisambiguationSheet(); });
         DefaultBrowserPromoDialog dialog = mManager.getDialogForTesting();
         Assert.assertEquals(
                 "Dialog should be of disambiguation sheet style on P-, when there is no default in system",
