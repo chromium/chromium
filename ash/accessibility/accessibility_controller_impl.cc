@@ -1073,8 +1073,8 @@ bool AccessibilityControllerImpl::IsSwitchAccessRunning() const {
 }
 
 bool AccessibilityControllerImpl::IsSwitchAccessSettingVisibleInTray() {
-  // Switch Access cannot be enabled on the sign-in page until crbug/1108808 has
-  // been fully resolved.
+  // Switch Access cannot be enabled on the sign-in page because there is no way
+  // to configure switches while the device is locked.
   if (!switch_access().enabled() &&
       Shell::Get()->session_controller()->login_status() ==
           ash::LoginStatus::NOT_LOGGED_IN) {
