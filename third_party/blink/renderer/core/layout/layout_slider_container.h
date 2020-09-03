@@ -40,11 +40,7 @@ class SliderContainerElement;
 
 class LayoutSliderContainer final : public LayoutFlexibleBox {
  public:
-  static const int kDefaultTrackLength;
-
   explicit LayoutSliderContainer(SliderContainerElement*);
-
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
 
  private:
   void UpdateLayout() override;

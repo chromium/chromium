@@ -39,8 +39,6 @@
 
 namespace blink {
 
-const int LayoutSliderContainer::kDefaultTrackLength = 129;
-
 LayoutSliderContainer::LayoutSliderContainer(SliderContainerElement* element)
     : LayoutFlexibleBox(element) {}
 
@@ -49,13 +47,6 @@ inline static Decimal SliderPosition(HTMLInputElement* element) {
   const Decimal old_value =
       ParseToDecimalForNumberType(element->value(), step_range.DefaultValue());
   return step_range.ProportionFromValue(step_range.ClampValue(old_value));
-}
-
-MinMaxSizes LayoutSliderContainer::ComputeIntrinsicLogicalWidths() const {
-  MinMaxSizes sizes;
-  sizes += LayoutUnit(kDefaultTrackLength * StyleRef().EffectiveZoom()) +
-           BorderAndPaddingLogicalWidth();
-  return sizes;
 }
 
 void LayoutSliderContainer::UpdateLayout() {

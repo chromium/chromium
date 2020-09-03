@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
@@ -66,7 +67,6 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
-#include "third_party/blink/renderer/core/layout/layout_slider_container.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
@@ -158,10 +158,9 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
       ceilf(std::max(min_default_label_width, default_label_width)));
 }
 
-LayoutUnit SliderIntrinsicInlineSize(const HTMLInputElement& input,
-                                     const LayoutBox& box) {
-  return LayoutUnit(LayoutSliderContainer::kDefaultTrackLength *
-                    box.StyleRef().EffectiveZoom());
+LayoutUnit SliderIntrinsicInlineSize(const LayoutBox& box) {
+  constexpr int kDefaultTrackLength = 129;
+  return LayoutUnit(kDefaultTrackLength * box.StyleRef().EffectiveZoom());
 }
 
 LayoutUnit ListBoxDefaultItemHeight(const LayoutBox& box) {
@@ -1007,18 +1006,25 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
   // get here.
   DCHECK(!HasOverrideIntrinsicContentLogicalWidth());
 
-  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (!IsA<Element>(GetNode()))
+    return kIndefiniteSize;
+  const Element& element = *To<Element>(GetNode());
+
+  auto* select = DynamicTo<HTMLSelectElement>(element);
   if (UNLIKELY(select && select->UsesMenuList())) {
     return MenuListIntrinsicInlineSize(*select, *this);
   }
-  auto* input = DynamicTo<HTMLInputElement>(GetNode());
+  auto* input = DynamicTo<HTMLInputElement>(element);
   if (UNLIKELY(input)) {
     const AtomicString& type = input->type();
     if (type == input_type_names::kFile)
       return FileUploadControlIntrinsicInlineSize(*input, *this);
     else if (type == input_type_names::kRange)
-      return SliderIntrinsicInlineSize(*input, *this);
+      return SliderIntrinsicInlineSize(*this);
+    return kIndefiniteSize;
   }
+  if (IsSliderContainer(element))
+    return SliderIntrinsicInlineSize(*this);
   return kIndefiniteSize;
 }
 
