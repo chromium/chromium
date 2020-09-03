@@ -986,12 +986,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled8_v4",
+                    "name": "Enabled6_v7",
                     "params": {
-                        "max_shared_ops": "8"
+                        "min": "6"
                     },
                     "enable_features": [
-                        "CacheStorageParallelOps",
+                        "BrowserThreadPoolAdjustment",
                         "CacheStorageSequence"
                     ]
                 }
