@@ -43,7 +43,6 @@ tab_management_test_java_sources = [
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogViewTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridIphTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinderTest.java",
-  "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupPopupUiTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupPopupUiViewBinderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinderTest.java",

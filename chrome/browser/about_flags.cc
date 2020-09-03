@@ -1603,24 +1603,6 @@ const FeatureEntry::FeatureVariation kTabSwitcherOnReturnVariations[] = {
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kChromeDuet_HomeSearchTabSwitcher[] = {
-    {"chrome_duet_variation", "HomeSearchTabSwitcher"}};
-
-const FeatureEntry::FeatureParam kChromeDuet_HomeSearchShare[] = {
-    {"chrome_duet_variation", "HomeSearchShare"}};
-
-const FeatureEntry::FeatureParam kChromeDuet_NewTabSearchShare[] = {
-    {"chrome_duet_variation", "NewTabSearchShare"}};
-
-const FeatureEntry::FeatureVariation kChromeDuetVariations[] = {
-    {"Home-Search-TabSwitcher Variation", kChromeDuet_HomeSearchTabSwitcher,
-     base::size(kChromeDuet_HomeSearchTabSwitcher), nullptr},
-    {"Home-Search-Share Variation", kChromeDuet_HomeSearchShare,
-     base::size(kChromeDuet_HomeSearchShare), nullptr},
-    {"NewTab-Search-Share Variation", kChromeDuet_NewTabSearchShare,
-     base::size(kChromeDuet_NewTabSearchShare), nullptr},
-};
-
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_NewTabVariation[] = {
     {"tab_grid_layout_android_new_tab", "NewTabVariation"},
     {"allow_to_refetch", "true"}};
@@ -2900,14 +2882,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
 #endif  // OS_ANDROID
 #if defined(OS_ANDROID)
-    {"enable-chrome-duet", flag_descriptions::kChromeDuetName,
-     flag_descriptions::kChromeDuetDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kChromeDuetFeature,
-                                    kChromeDuetVariations,
-                                    "ChromeDuet")},
-    {"enable-chrome-duet-labels", flag_descriptions::kChromeDuetLabelsName,
-     flag_descriptions::kChromeDuetLabelsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kChromeDuetLabeled)},
     {"share-button-in-top-toolbar",
      flag_descriptions::kShareButtonInTopToolbarName,
      flag_descriptions::kShareButtonInTopToolbarDescription, kOsAndroid,

@@ -380,12 +380,6 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_DOWNLOAD_AUTO_RESUMPTION_IN_NATIVE =
             "download_auto_resumption_in_native";
     /**
-     * Whether or not the Duet-TabStrip integration is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_DUET_TABSTRIP_INTEGRATION_ANDROID_ENABLED =
-            "Chrome.Flags.DuetTabstripIntegrationEnabled";
-    /**
      * Whether or not the grid tab switcher is enabled.
      * Default value is false.
      */
@@ -817,7 +811,6 @@ public final class ChromePreferenceKeys {
                 FEED_ARTICLES_LIST_VISIBLE,
                 FEED_PLACEHOLDER_DENSE,
                 FLAGS_CACHED.pattern(),
-                FLAGS_CACHED_DUET_TABSTRIP_INTEGRATION_ANDROID_ENABLED,
                 FLAGS_FIELD_TRIAL_PARAM_CACHED.pattern(),
                 HOMEPAGE_LOCATION_POLICY,
                 HOMEPAGE_USE_CHROME_NTP,

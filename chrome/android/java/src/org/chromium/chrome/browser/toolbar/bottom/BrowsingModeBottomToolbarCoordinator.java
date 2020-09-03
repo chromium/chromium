@@ -12,11 +12,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.HintlessActivityTabObserver;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
@@ -26,8 +23,6 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonView;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -101,7 +96,6 @@ public class BrowsingModeBottomToolbarCoordinator {
         mHomeButton = mToolbarRoot.findViewById(R.id.bottom_home_button);
         mHomeButton.setOnClickListener(homeButtonListener);
         mHomeButton.setActivityTabProvider(mTabProvider);
-        setupIPH(FeatureConstants.CHROME_DUET_HOME_BUTTON_FEATURE, mHomeButton);
 
         mNewTabButton = mToolbarRoot.findViewById(R.id.bottom_new_tab_button);
 
@@ -109,7 +103,6 @@ public class BrowsingModeBottomToolbarCoordinator {
 
         mSearchAccelerator = mToolbarRoot.findViewById(R.id.search_accelerator);
         mSearchAccelerator.setOnClickListener(searchAcceleratorListener);
-        setupIPH(FeatureConstants.CHROME_DUET_SEARCH_FEATURE, mSearchAccelerator);
 
         // TODO(amaralp): Make this adhere to MVC framework.
         mTabSwitcherButtonView = mToolbarRoot.findViewById(R.id.bottom_tab_switcher_button);
@@ -139,26 +132,6 @@ public class BrowsingModeBottomToolbarCoordinator {
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mOverviewModeBehaviorSupplierObserver = this::setOverviewModeBehavior;
         mOverviewModeBehaviorSupplier.addObserver(mOverviewModeBehaviorSupplierObserver);
-    }
-
-    /**
-     * Setup and show the IPH bubble for Chrome Duet if needed.
-     * @param feature A String identifying the feature.
-     * @param anchor The view to anchor the IPH to.
-     */
-    void setupIPH(@FeatureConstants String feature, View anchor) {
-        mTabProvider.addObserverAndTrigger(new HintlessActivityTabObserver() {
-            @Override
-            public void onActivityTabChanged(Tab tab) {
-                if (tab == null) return;
-                Profile profile = Profile.fromWebContents(tab.getWebContents());
-                final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-                tracker.addOnInitializedCallback((ready) -> {
-                    mMediator.showIPH(feature, TabUtils.getActivity(tab), anchor, tracker);
-                });
-                mTabProvider.removeObserver(this);
-            }
-        });
     }
 
     /**
@@ -207,7 +180,6 @@ public class BrowsingModeBottomToolbarCoordinator {
             mTabSwitcherButtonCoordinator.setTabSwitcherListener(tabSwitcherListener);
             mTabSwitcherButtonCoordinator.setThemeColorProvider(themeColorProvider);
             mTabSwitcherButtonCoordinator.setTabCountProvider(tabCountProvider);
-            setupIPH(FeatureConstants.CHROME_DUET_TAB_SWITCHER_FEATURE, mTabSwitcherButtonView);
         }
     }
 

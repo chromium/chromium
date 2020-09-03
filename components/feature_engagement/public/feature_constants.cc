@@ -42,12 +42,6 @@ const base::Feature kIPHDownloadPageFeature{"IPH_DownloadPage",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHDownloadPageScreenshotFeature{
     "IPH_DownloadPageScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kIPHChromeDuetHomeButtonFeature{
-    "IPH_ChromeDuetHomeButton", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kIPHChromeDuetSearchFeature{
-    "IPH_ChromeDuet", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kIPHChromeDuetTabSwitcherFeature{
-    "IPH_ChromeDuetTabSwitcherButton", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHChromeHomeExpandFeature{
     "IPH_ChromeHomeExpand", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHChromeHomePullToRefreshFeature{

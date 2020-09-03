@@ -95,9 +95,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kShowTrustedPublisherURL,
     &features::kWebAuth,
     &features::kWebNfc,
-    &feature_engagement::kIPHChromeDuetHomeButtonFeature,
-    &feature_engagement::kIPHChromeDuetSearchFeature,
-    &feature_engagement::kIPHChromeDuetTabSwitcherFeature,
     &feature_engagement::kIPHHomepagePromoCardFeature,
     &feed::kInterestFeedContentSuggestions,
     &feed::kInterestFeedFeedback,
@@ -126,11 +123,8 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kCCTReportParallelRequestStatus,
     &kCCTResourcePrefetch,
     &kCCTTargetTranslateLanguage,
-    &kChromeDuetFeature,
-    &kChromeDuetAdaptive,
     &kDarkenWebsitesCheckboxInThemesSetting,
     &kDontAutoHideBrowserControls,
-    &kChromeDuetLabeled,
     &kChromeShareHighlightsAndroid,
     &kChromeShareQRCode,
     &kChromeShareScreenshot,
@@ -368,17 +362,8 @@ const base::Feature kCCTResourcePrefetch{"CCTResourcePrefetch",
 const base::Feature kCCTTargetTranslateLanguage{
     "CCTTargetTranslateLanguage", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kChromeDuetFeature{"ChromeDuet",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kChromeDuetAdaptive{"ChromeDuetAdaptive",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDontAutoHideBrowserControls{
     "DontAutoHideBrowserControls", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kChromeDuetLabeled{"ChromeDuetLabeled",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kChromeShareHighlightsAndroid{
     "ChromeShareHighlightsAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

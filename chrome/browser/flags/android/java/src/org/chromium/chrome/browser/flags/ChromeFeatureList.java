@@ -237,10 +237,7 @@ public abstract class ChromeFeatureList {
             "CCTReportParallelRequestStatus";
     public static final String CCT_TARGET_TRANSLATE_LANGUAGE = "CCTTargetTranslateLanguage";
     public static final String CLOSE_TAB_SUGGESTIONS = "CloseTabSuggestions";
-    public static final String CHROME_DUET = "ChromeDuet";
-    public static final String CHROME_DUET_ADAPTIVE = "ChromeDuetAdaptive";
     public static final String DONT_AUTO_HIDE_BROWSER_CONTROLS = "DontAutoHideBrowserControls";
-    public static final String CHROME_DUET_LABELED = "ChromeDuetLabeled";
     public static final String CHROME_SHARE_HIGHLIGHTS_ANDROID = "ChromeShareHighlightsAndroid";
     public static final String CHROME_SHARE_QRCODE = "ChromeShareQRCode";
     public static final String CHROME_SHARE_SCREENSHOT = "ChromeShareScreenshot";
@@ -292,7 +289,6 @@ public abstract class ChromeFeatureList {
             "UseDownloadOfflineContentProvider";
     public static final String DOWNLOADS_LOCATION_CHANGE = "DownloadsLocationChange";
     public static final String DOWNLOAD_LATER = "DownloadLater";
-    public static final String DUET_TABSTRIP_INTEGRATION_ANDROID = "DuetTabStripIntegrationAndroid";
     public static final String EPHEMERAL_TAB_USING_BOTTOM_SHEET = "EphemeralTabUsingBottomSheet";
     public static final String EXPLICIT_LANGUAGE_ASK = "ExplicitLanguageAsk";
     public static final String EXPLORE_SITES = "ExploreSites";

@@ -1523,12 +1523,6 @@ extern const char kCCTIncognitoDescription[];
 extern const char kCCTTargetTranslateLanguageName[];
 extern const char kCCTTargetTranslateLanguageDescription[];
 
-extern const char kChromeDuetName[];
-extern const char kChromeDuetDescription[];
-
-extern const char kChromeDuetLabelsName[];
-extern const char kChromeDuetLabelsDescription[];
-
 extern const char kShareButtonInTopToolbarName[];
 extern const char kShareButtonInTopToolbarDescription[];
 

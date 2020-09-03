@@ -3665,26 +3665,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Send text to Your Devices
       </message>
 
-      <!-- Chrome Duet -->
-      <message name="IDS_IPH_DUET_HOME_BUTTON_TITLE" desc="This string appears in an overlay that explains a new UI to users. The title of the feature highlight bubble that explains what is home button in bottom toolbar for.">
-        Get back home easily
-      </message>
-      <message name="IDS_IPH_DUET_HOME_BUTTON_DESCRIPTION" desc="This string appears in an overlay that explains a new UI to users. The text in the feature highlight bubble that explains what is home button in bottom toolbar for.">
-        Tap here to quickly access your homepage from anywhere
-      </message>
-      <message name="IDS_IPH_DUET_SEARCH_TITLE" desc="This string appears in an overlay that explains a new UI to users. 'Search' refers to searching the web, and 'explore' refers to Chrome's suggested content.">
-        Search &amp; explore
-      </message>
-      <message name="IDS_IPH_DUET_SEARCH_DESCRIPTION" desc="This string appears in an overlay that explains a new UI to users. 'From here' is a generic directional cue: don't worry about the direction, as it is clarified by the way the overlay is shown.">
-        From here, you can search the web, share with friends, and see open pages
-      </message>
-      <message name="IDS_IPH_DUET_TAB_SWITCHER_TITLE" desc="This string appears in an overlay that explains a new UI to users. The title of the feature highlight bubble that explains what is tab switcher in bottom toolbar for.">
-        See all your open tabs
-      </message>
-      <message name="IDS_IPH_DUET_TAB_SWITCHER_DESCRIPTION" desc="This string appears in an overlay that explains a new UI to users. The text in the feature highlight bubble that explains what is tab switcher in bottom toolbar for.">
-        Tap here to create new tabs and go back to previous ones
-      </message>
-
       <!-- Interventions -->
       <message name="IDS_REDIRECT_BLOCKED_MESSAGE" desc="The message stating that a redirect (noun) was blocked on this page. This will be followed on a separate line with the address the user was being redirected to.">
          Redirect blocked:

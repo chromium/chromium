@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarVariationManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
@@ -51,15 +50,11 @@ public class ChromeCachedFlags {
         List<String> featuresToCache = Arrays.asList(
                 ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM,
                 ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE,
-                ChromeFeatureList.CHROME_DUET,
-                ChromeFeatureList.CHROME_DUET_ADAPTIVE,
-                ChromeFeatureList.CHROME_DUET_LABELED,
                 ChromeFeatureList.CLOSE_TAB_SUGGESTIONS,
                 ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA,
                 ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,
                 ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID,
                 ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE,
-                ChromeFeatureList.DUET_TABSTRIP_INTEGRATION_ANDROID,
                 ChromeFeatureList.HOMEPAGE_LOCATION_POLICY,
                 ChromeFeatureList.IMMERSIVE_UI_MODE,
                 ChromeFeatureList.INSTANT_START,
@@ -85,7 +80,6 @@ public class ChromeCachedFlags {
         // clang-format off
         List<CachedFieldTrialParameter> fieldTrialsToCache = Arrays.asList(
                 AppMenuPropertiesDelegateImpl.ACTION_BAR_VARIATION,
-                BottomToolbarVariationManager.BOTTOM_TOOLBAR_VARIATION,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS,

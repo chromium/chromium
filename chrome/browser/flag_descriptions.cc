@@ -2631,14 +2631,6 @@ const char kCCTTargetTranslateLanguageDescription[] =
     "Enables specify target language the page should be translated to "
     "in Chrome Custom Tabs.";
 
-const char kChromeDuetName[] = "Chrome Duet";
-const char kChromeDuetDescription[] =
-    "Enables Chrome Duet, split toolbar Chrome Home, on Android.";
-
-const char kChromeDuetLabelsName[] = "Chrome Duet Labels";
-const char kChromeDuetLabelsDescription[] =
-    "Enables Chrome Duet (split toolbar) labels.";
-
 const char kChromeShareHighlightsAndroidName[] =
     "Chrome Share text highlights on Android";
 const char kChromeShareHighlightsAndroidDescription[] =

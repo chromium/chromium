@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @Features.DisableFeatures({
-    ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION, ChromeFeatureList.CHROME_DUET})
+    ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION})
 public class HomepageSettingsFragmentWithEditorTest {
     // clang-format on
     private static final String ASSERT_HOMEPAGE_MISMATCH =

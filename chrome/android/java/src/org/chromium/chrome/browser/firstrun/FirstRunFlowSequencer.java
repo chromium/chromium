@@ -21,8 +21,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
@@ -31,13 +29,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.services.AndroidChildAccountHelper;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarVariationManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -202,14 +198,6 @@ public abstract class FirstRunFlowSequencer  {
                 FirstRunActivity.SHOW_DATA_REDUCTION_PAGE, shouldShowDataReductionPage());
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
-
-        // Cache the flag for the bottom toolbar. If the flag is not cached here, Users, who are in
-        // bottom toolbar experiment group, will see toolbar on the top in first run, and then
-        // toolbar will appear to the bottom on the second run.
-        CachedFeatureFlags.cacheNativeFlags(
-                Collections.singletonList(ChromeFeatureList.CHROME_DUET));
-        CachedFeatureFlags.cacheFieldTrialParameters(
-                Collections.singletonList(BottomToolbarVariationManager.BOTTOM_TOOLBAR_VARIATION));
     }
 
     /**

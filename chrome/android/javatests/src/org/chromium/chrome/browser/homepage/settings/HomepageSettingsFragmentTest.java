@@ -49,7 +49,6 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @Features.EnableFeatures(ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION)
-@Features.DisableFeatures(ChromeFeatureList.CHROME_DUET)
 public class HomepageSettingsFragmentTest {
     // clang-format on
     private static final String ASSERT_MESSAGE_SWITCH_ENABLE = "Switch should be enabled.";

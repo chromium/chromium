@@ -130,9 +130,7 @@ public class TabUiFeatureUtilities {
      * @return Whether the tab strip and duet integration feature is enabled and available for use.
      */
     public static boolean isDuetTabStripIntegrationAndroidEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.DUET_TABSTRIP_INTEGRATION_ANDROID)
-                && isTabManagementModuleSupported();
+        return false;
     }
 
     /**
