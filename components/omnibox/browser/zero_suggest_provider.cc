@@ -69,24 +69,6 @@ enum class ZeroSuggestEligibility {
   ELIGIBLE_MAX_VALUE
 };
 
-// Histogram values describing client eligibility to receive RemoteNoURL
-// suggestions on NTP.
-// These values are persisted to logs. New values can be added, but existing
-// enums must never be renumbered or deleted and reused.
-enum class ZeroSuggestEligibilityForRemoteNoURL {
-  kEligible = 0,
-  kIneligibleUserOffTheRecord = 1,
-  kIneligibleSuggestionsDisabled = 2,
-  kIneligibleUserNotAuthenticated = 3,
-  // Used to report users ineligible for RemoteNoURL suggestions when the
-  // search and suggest server of their choice cannot be used to offer the
-  // RemoteNoURL suggestions.
-  kIneligibleWithUserSelectedServer = 4,
-  kIneligibleUserNotParticipating = 5,
-
-  kMaxValue = kIneligibleUserNotParticipating
-};
-
 // TODO(hfung): The histogram code was copied and modified from
 // search_provider.cc.  Refactor and consolidate the code.
 // We keep track in a histogram how many suggest requests we send, how
@@ -105,49 +87,6 @@ void LogOmniboxZeroSuggestRequest(
     ZeroSuggestRequestsHistogramValue request_value) {
   UMA_HISTOGRAM_ENUMERATION("Omnibox.ZeroSuggestRequests", request_value,
                             ZERO_SUGGEST_MAX_REQUEST_HISTOGRAM_VALUE);
-}
-
-// Record user eligibility for RemoteNoUrl suggestions for supplied page class.
-// The |histogram_variant| is used to specify particular variant of the
-// Omnibox.ZeroSuggest.Eligible.RemoteNoUrl histogram that should be updated.
-void LogOmniboxRemoteNoUrlEligibilityOnNTP(
-    OmniboxEventProto::PageClassification page_class,
-    bool log_for_profile_open,
-    bool check_authentication_state,
-    AutocompleteProviderClient* client) {
-  ZeroSuggestEligibilityForRemoteNoURL value =
-      ZeroSuggestEligibilityForRemoteNoURL::kEligible;
-
-  auto* service = client->GetTemplateURLService();
-  auto* provider = service ? service->GetDefaultSearchProvider() : nullptr;
-  auto engine = provider ? provider->GetEngineType(service->search_terms_data())
-                         : SEARCH_ENGINE_UNKNOWN;
-  const auto variants = OmniboxFieldTrial::GetZeroSuggestVariants(page_class);
-
-  if (!base::Contains(variants, ZeroSuggestProvider::kRemoteNoUrlVariant)) {
-    value =
-        ZeroSuggestEligibilityForRemoteNoURL::kIneligibleUserNotParticipating;
-  } else if (client->IsOffTheRecord()) {
-    value = ZeroSuggestEligibilityForRemoteNoURL::kIneligibleUserOffTheRecord;
-  } else if (!client->SearchSuggestEnabled()) {
-    value =
-        ZeroSuggestEligibilityForRemoteNoURL::kIneligibleSuggestionsDisabled;
-  } else if (check_authentication_state && !client->IsAuthenticated()) {
-    value =
-        ZeroSuggestEligibilityForRemoteNoURL::kIneligibleUserNotAuthenticated;
-  } else if (service == nullptr || provider == nullptr ||
-             engine != SEARCH_ENGINE_GOOGLE) {
-    value =
-        ZeroSuggestEligibilityForRemoteNoURL::kIneligibleWithUserSelectedServer;
-  }
-
-  if (log_for_profile_open) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Omnibox.ZeroSuggest.Eligible.RemoteNoUrl.OnNTP.OnProfileOpen", value);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Omnibox.ZeroSuggest.Eligible.RemoteNoUrl.OnNTP.OnFocus", value);
-  }
 }
 
 // Relevance value to use if it was not set explicitly by the server.
@@ -215,16 +154,6 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   matches_.clear();
   Stop(true, false);
 
-  current_page_classification_ = input.current_page_classification();
-
-  if (input.focus_type() != OmniboxFocusType::DEFAULT &&
-      IsNTPPage(current_page_classification_)) {
-    bool check_authentication_state = !base::FeatureList::IsEnabled(
-        omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP);
-    LogOmniboxRemoteNoUrlEligibilityOnNTP(current_page_classification_, false,
-                                          check_authentication_state, client());
-  }
-
   if (!AllowZeroSuggestSuggestions(input)) {
     UMA_HISTOGRAM_ENUMERATION(kOmniboxZeroSuggestEligibleHistogramName,
                               ZeroSuggestEligibility::GENERALLY_INELIGIBLE,
@@ -238,6 +167,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   permanent_text_ = input.text();
   current_query_ = input.current_url().spec();
   current_title_ = input.current_title();
+  current_page_classification_ = input.current_page_classification();
   current_text_match_ = MatchForCurrentText();
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
@@ -365,12 +295,6 @@ ZeroSuggestProvider::ZeroSuggestProvider(
                        metrics::OmniboxEventProto::OTHER,
                        template_url_service->search_terms_data(), client,
                        false));
-
-    bool check_authentication_state = !base::FeatureList::IsEnabled(
-        omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP);
-    LogOmniboxRemoteNoUrlEligibilityOnNTP(
-        OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS, true,
-        check_authentication_state, client);
   }
 }
 

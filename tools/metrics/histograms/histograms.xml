@@ -119790,7 +119790,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Omnibox.ZeroSuggest.Eligible.RemoteNoUrl.OnNTP.OnFocus"
     enum="ZeroSuggestEligibleOnFocusForRemoteNoUrlOnNTP"
-    expires_after="2020-12-01">
+    expires_after="2020-09-01">
+  <obsolete>
+    Removed from code as of M87 / September 2020. This is no longer useful.
+  </obsolete>
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -119809,7 +119812,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Omnibox.ZeroSuggest.Eligible.RemoteNoUrl.OnNTP.OnProfileOpen"
     enum="ZeroSuggestEligibleOnFocusForRemoteNoUrlOnNTP"
-    expires_after="2020-12-01">
+    expires_after="2020-09-01">
+  <obsolete>
+    Removed from code as of M87 / September 2020. This is no longer useful.
+  </obsolete>
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>

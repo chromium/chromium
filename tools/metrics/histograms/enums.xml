@@ -77613,6 +77613,9 @@ Called by update_scheduler_enums.py.-->
 </enum>
 
 <enum name="ZeroSuggestEligibleOnFocusForRemoteNoUrlOnNTP">
+  <obsolete>
+    Removed from code as of M87 / September 2020. This is no longer useful.
+  </obsolete>
   <int value="0" label="Eligible"/>
   <int value="1" label="Ineligible: Off the Record">
     The user is in incognito mode.
