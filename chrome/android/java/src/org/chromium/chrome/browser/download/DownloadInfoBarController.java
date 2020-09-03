@@ -174,6 +174,9 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         @ResultState
         public int resultState;
 
+        // Contains the information to change the download schedule for download later feature.
+        public OfflineItemSchedule schedule;
+
         @Override
         public int hashCode() {
             int result = (id == null ? 0 : id.hashCode());
@@ -247,6 +250,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
             result = 31 * result + pending;
             result = 31 * result + failed;
             result = 31 * result + completed;
+            result = 31 * result + scheduled;
             return result;
         }
 
@@ -257,7 +261,8 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
 
             DownloadCount other = (DownloadCount) obj;
             return inProgress == other.inProgress && pending == other.pending
-                    && failed == other.failed && completed == other.completed;
+                    && failed == other.failed && completed == other.completed
+                    && scheduled == other.scheduled;
         }
     }
 
@@ -693,6 +698,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
                 info.message = getMessageForDownloadScheduled(itemToShow);
                 info.link = getContext().getString(R.string.change_link);
                 info.id = itemToShow.id;
+                info.schedule = itemToShow.schedule.clone();
             } else {
                 // TODO(shaktisahu): Incorporate various types of failure messages.
                 // TODO(shaktisahu, xingliu): Consult UX to handle multiple schedule variations.
@@ -1028,13 +1034,12 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
 
     private class DownloadProgressInfoBarClient implements DownloadProgressInfoBar.Client {
         @Override
-        public void onLinkClicked(ContentId itemId) {
-            final OfflineItem item = mTrackedItems.get(itemId);
+        public void onLinkClicked(ContentId itemId, final OfflineItemSchedule schedule) {
             mTrackedItems.remove(itemId);
             removeNotification(itemId);
 
-            if (item != null && item.schedule != null) {
-                onChangeScheduleClicked(itemId, item.schedule);
+            if (itemId != null && schedule != null) {
+                onChangeScheduleClicked(itemId, schedule);
             } else if (itemId != null) {
                 DownloadUtils.openItem(
                         itemId, mIsIncognito, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
