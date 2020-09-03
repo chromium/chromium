@@ -311,6 +311,7 @@ void CastMessageHandler::SendSetVolumeRequest(int channel_id,
   if (!socket) {
     DVLOG(2) << __func__ << ": socket not found: " << channel_id;
     std::move(callback).Run(Result::kFailed);
+    return;
   }
 
   auto* requests = GetOrCreatePendingRequests(channel_id);
