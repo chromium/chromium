@@ -2231,6 +2231,38 @@ This file contains the strings for ash.
         This device may contain apps that haven't been verified by Google.
       </message>
 
+      <!-- In-session auth dialog strings -->
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_AVAILABLE" desc="Text shown in the auth dialog to remind user that fingerprint auth is supported">
+        Authenticate with fingerprint
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_TOUCH_SENSOR" desc="Text shown in the auth dialog to warn the user they should touch the fingerprint sensor instead of the fingerprint icon">
+        Please touch the sensor
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_SUCCESS" desc="Text shown in the auth dialog that fingerprint unlock succeeded">
+        Success
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_FAILED" desc="Text shown in the auth dialog to tell user that couldn't unlock because finger is not recognized">
+        Not recognized
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PASSWORD_REQUIRED" desc="Text shown when fingerprint has been disabled because it has been too long since the user last used the device">
+        Password required for more security
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PIN_OR_PASSWORD_REQUIRED" desc="Text shown when fingerprint has been disabled because it has been too long since the user last used the device">
+        PIN or password required for more security
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_DISABLED_FROM_ATTEMPTS" desc="Text shown in the auth dialog to tell user that fingerprint unlock has reached maximum attempt">
+        Too many attempts
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_SUCCESS" desc="Accessibility text read by chromevox when the user successfully authenticated with fingerprint in in-session auth dialog">
+        Fingerprint recognized
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_FAILED" desc="Accessibility text read by chromevox that the user's fingerprint authentication attempt was not successful">
+        Fingerprint not recognized
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS" desc="Accessibility text read by chromevox when the user has made too many unsuccessful fingerprint unlock attempts; fingerprint is now disabled until the user authenticates with a different authentication method">
+        Too many fingerprint attempts
+      </message>
+
       <!-- Multi-profiles intro dialog -->
       <message name="IDS_ASH_MULTIPROFILES_INTRO_HEADLINE" desc="Describes which feature multi-profiles intro dialog presents.">
         Multiple sign-in

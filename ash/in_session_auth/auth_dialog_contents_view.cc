@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/login/resources/grit/login_resources.h"
+#include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_pin_view.h"
 #include "ash/login/ui/non_accessible_view.h"
@@ -16,7 +18,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/timer.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -34,7 +40,6 @@ enum class ButtonId {
 
 // TODO(b/164195709): Move these strings to a grd file.
 const char kTitle[] = "Verify it's you";
-const char kFingerprintPrompt[] = "Authenticate with fingerprint";
 // If fingerprint option is available, password input field will be hidden
 // until the user taps the MoreOptions button.
 const char kMoreOptionsButtonText[] = "More options";
@@ -48,18 +53,48 @@ const int kBottomVerticalSpacing = 20;
 const int kButtonSpacing = 8;
 
 const int kTitleFontSize = 14;
-const int kPromptFontSize = 12;
 
 constexpr int kFingerprintIconSizeDp = 28;
 constexpr int kFingerprintIconTopSpacingDp = 20;
 constexpr int kSpacingBetweenFingerprintIconAndLabelDp = 15;
 constexpr int kFingerprintViewWidthDp = 204;
+constexpr int kFingerprintFailedAnimationNumFrames = 45;
+constexpr base::TimeDelta kResetToDefaultIconDelay =
+    base::TimeDelta::FromMilliseconds(1300);
+constexpr base::TimeDelta kResetToDefaultMessageDelay =
+    base::TimeDelta::FromMilliseconds(3000);
+constexpr base::TimeDelta kFingerprintFailedAnimationDuration =
+    base::TimeDelta::FromMilliseconds(700);
+
+// 38% opacity.
+constexpr SkColor kDisabledFingerprintIconColor =
+    SkColorSetA(SK_ColorDKGRAY, 97);
 
 }  // namespace
 
 // Consists of fingerprint icon view and a label.
 class AuthDialogContentsView::FingerprintView : public views::View {
  public:
+  // Use a subclass that inherit views::Label so that GetAccessibleNodeData
+  // override is respected.
+  class FingerprintLabel : public views::Label {
+   public:
+    // views::View
+    void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+      node_data->role = ax::mojom::Role::kStaticText;
+      node_data->SetName(accessible_name_);
+    }
+
+    void SetAccessibleName(const base::string16& name) {
+      accessible_name_ = name;
+      NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
+                               true /*send_native_event*/);
+    }
+
+   private:
+    base::string16 accessible_name_;
+  };
+
   FingerprintView() {
     SetBorder(views::CreateEmptyBorder(kFingerprintIconTopSpacingDp, 0, 0, 0));
 
@@ -72,21 +107,69 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     icon_ = AddChildView(std::make_unique<AnimatedRoundedImageView>(
         gfx::Size(kFingerprintIconSizeDp, kFingerprintIconSizeDp),
         0 /*corner_radius*/));
-    icon_->SetImage(gfx::CreateVectorIcon(
-        kLockScreenFingerprintIcon, kFingerprintIconSizeDp, SK_ColorDKGRAY));
 
-    label_ = AddChildView(std::make_unique<views::Label>());
+    label_ = AddChildView(std::make_unique<FingerprintLabel>());
     label_->SetSubpixelRenderingEnabled(false);
     label_->SetAutoColorReadabilityEnabled(false);
     label_->SetEnabledColor(SK_ColorDKGRAY);
     label_->SetMultiLine(true);
-    label_->SetText(base::UTF8ToUTF16(kFingerprintPrompt));
 
-    SetVisible(true);
+    DisplayCurrentState();
   }
   FingerprintView(const FingerprintView&) = delete;
   FingerprintView& operator=(const FingerprintView&) = delete;
   ~FingerprintView() override = default;
+
+  void SetState(FingerprintState state) {
+    if (state_ == state)
+      return;
+
+    state_ = state;
+    DisplayCurrentState();
+  }
+
+  void SetCanUsePin(bool can_use_pin) {
+    if (can_use_pin_ == can_use_pin)
+      return;
+
+    can_use_pin_ = can_use_pin;
+    DisplayCurrentState();
+  }
+
+  // Notify the user of the fingerprint auth result. Should be called after
+  // SetState. If fingerprint auth failed and retry is allowed, reset to
+  // default state after animation.
+  void NotifyFingerprintAuthResult(bool success) {
+    reset_state_.Stop();
+    if (state_ == FingerprintState::DISABLED_FROM_ATTEMPTS) {
+      label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_DISABLED_FROM_ATTEMPTS));
+      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS));
+    } else if (success) {
+      label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_SUCCESS));
+      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_SUCCESS));
+    } else {
+      label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_FAILED));
+      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_FAILED));
+    }
+
+    if (!success) {
+      // This is just to display the "fingerprint auth failure" animation. It
+      // does not necessarily mean |state_| is DISABLED_FROM_ATTEMPTS.
+      SetIcon(FingerprintState::DISABLED_FROM_ATTEMPTS);
+      // base::Unretained is safe because reset_state_ is owned by |this|.
+      reset_state_.Start(FROM_HERE, kResetToDefaultIconDelay,
+                         base::BindOnce(&FingerprintView::DisplayCurrentState,
+                                        base::Unretained(this)));
+      label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                       true /*send_native_event*/);
+    }
+  }
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override {
@@ -95,9 +178,77 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     return size;
   }
 
+  // views::View:
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    if (event->type() != ui::ET_GESTURE_TAP)
+      return;
+    if (state_ == FingerprintState::AVAILABLE_DEFAULT ||
+        state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING) {
+      SetState(FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING);
+      reset_state_.Start(
+          FROM_HERE, kResetToDefaultMessageDelay,
+          base::BindOnce(&FingerprintView::SetState, base::Unretained(this),
+                         FingerprintState::AVAILABLE_DEFAULT));
+    }
+  }
+
  private:
-  views::Label* label_ = nullptr;
+  void DisplayCurrentState() {
+    SetVisible(state_ != FingerprintState::UNAVAILABLE);
+    SetIcon(state_);
+    if (state_ != FingerprintState::UNAVAILABLE)
+      label_->SetText(l10n_util::GetStringUTF16(GetTextIdFromState()));
+  }
+
+  void SetIcon(FingerprintState state) {
+    const SkColor color =
+        (state == FingerprintState::AVAILABLE_DEFAULT ||
+                 state == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
+             ? SK_ColorDKGRAY
+             : kDisabledFingerprintIconColor);
+    switch (state) {
+      case FingerprintState::UNAVAILABLE:
+      case FingerprintState::AVAILABLE_DEFAULT:
+      case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
+      case FingerprintState::DISABLED_FROM_TIMEOUT:
+        icon_->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintIcon,
+                                              kFingerprintIconSizeDp, color));
+        break;
+      case FingerprintState::DISABLED_FROM_ATTEMPTS:
+        icon_->SetAnimationDecoder(
+            std::make_unique<HorizontalImageSequenceAnimationDecoder>(
+                *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                    IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
+                kFingerprintFailedAnimationDuration,
+                kFingerprintFailedAnimationNumFrames),
+            AnimatedRoundedImageView::Playback::kSingle);
+        break;
+    }
+  }
+
+  int GetTextIdFromState() const {
+    switch (state_) {
+      case FingerprintState::AVAILABLE_DEFAULT:
+        return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_AVAILABLE;
+      case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
+        return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_TOUCH_SENSOR;
+      case FingerprintState::DISABLED_FROM_ATTEMPTS:
+        return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_DISABLED_FROM_ATTEMPTS;
+      case FingerprintState::DISABLED_FROM_TIMEOUT:
+        if (can_use_pin_)
+          return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PIN_OR_PASSWORD_REQUIRED;
+        return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PASSWORD_REQUIRED;
+      case FingerprintState::UNAVAILABLE:
+        NOTREACHED();
+        return 0;
+    }
+  }
+
+  FingerprintLabel* label_ = nullptr;
   AnimatedRoundedImageView* icon_ = nullptr;
+  FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
+  bool can_use_pin_ = false;
+  base::OneShotTimer reset_state_;
 };
 
 AuthDialogContentsView::AuthDialogContentsView(uint32_t auth_methods)
@@ -127,6 +278,7 @@ AuthDialogContentsView::AuthDialogContentsView(uint32_t auth_methods)
   if (auth_methods_ & kAuthFingerprint) {
     fingerprint_view_ =
         container_->AddChildView(std::make_unique<FingerprintView>());
+    fingerprint_view_->SetCanUsePin(auth_methods_ & kAuthPin);
   }
 
   AddActionButtonsView();
@@ -161,24 +313,6 @@ void AuthDialogContentsView::AddTitleView() {
   title_->SetText(base::UTF8ToUTF16(kTitle));
   title_->SetMaximumWidth(kContainerPreferredWidth);
   title_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
-}
-
-void AuthDialogContentsView::AddPromptView() {
-  prompt_ = container_->AddChildView(std::make_unique<views::Label>());
-  prompt_->SetEnabledColor(SK_ColorBLACK);
-  prompt_->SetSubpixelRenderingEnabled(false);
-  prompt_->SetAutoColorReadabilityEnabled(false);
-
-  const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-
-  prompt_->SetFontList(base_font_list.Derive(kPromptFontSize,
-                                             gfx::Font::FontStyle::NORMAL,
-                                             gfx::Font::Weight::NORMAL));
-  // TODO(b/156258540): Use a different prompt if the board has no fingerprint
-  // sensor.
-  prompt_->SetText(base::UTF8ToUTF16(kFingerprintPrompt));
-  prompt_->SetMaximumWidth(kContainerPreferredWidth);
-  prompt_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 }
 
 void AuthDialogContentsView::AddPasswordView() {
@@ -282,17 +416,14 @@ void AuthDialogContentsView::OnPasswordOrPinAuthComplete(
 void AuthDialogContentsView::OnFingerprintAuthComplete(
     bool success,
     FingerprintState fingerprint_state) {
-  if (!success) {
-    if (fingerprint_state == FingerprintState::AVAILABLE_DEFAULT) {
-      // TODO(b/156258540): Show animation and prompt in fingerprint_view_.
-      InSessionAuthDialogController::Get()->AuthenticateUserWithFingerprint(
-          base::BindOnce(&AuthDialogContentsView::OnFingerprintAuthComplete,
-                         weak_factory_.GetWeakPtr()));
-    } else {
-      fingerprint_view_->SetVisible(false);
-    }
+  fingerprint_view_->SetState(fingerprint_state);
+  // Prepare for the next fingerprint scan.
+  if (!success && fingerprint_state == FingerprintState::AVAILABLE_DEFAULT) {
+    InSessionAuthDialogController::Get()->AuthenticateUserWithFingerprint(
+        base::BindOnce(&AuthDialogContentsView::OnFingerprintAuthComplete,
+                       weak_factory_.GetWeakPtr()));
   }
-  // TODO(b/156258540): Show success animation before the dialog closes.
+  fingerprint_view_->NotifyFingerprintAuthResult(success);
 }
 
 }  // namespace ash
