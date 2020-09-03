@@ -1371,13 +1371,6 @@ class RenderProcessHostImpl::IOThreadHostImpl
       return;
     }
 
-#if defined(OS_ANDROID)
-    if (auto r = receiver.As<blink::mojom::AndroidFontLookup>()) {
-      content::GetGlobalJavaInterfaces()->GetInterface(std::move(r));
-      return;
-    }
-#endif
-
     std::string interface_name = *receiver.interface_name();
     mojo::ScopedMessagePipeHandle pipe = receiver.PassPipe();
     if (binders_->TryBindInterface(interface_name, &pipe))
@@ -5193,6 +5186,14 @@ void RenderProcessHostImpl::BindTracedProcess(
 
 void RenderProcessHostImpl::OnBindHostReceiver(
     mojo::GenericPendingReceiver receiver) {
+#if defined(OS_ANDROID)
+  // content::GetGlobalJavaInterfaces() works only on the UI Thread.
+  if (auto r = receiver.As<blink::mojom::AndroidFontLookup>()) {
+    content::GetGlobalJavaInterfaces()->GetInterface(std::move(r));
+    return;
+  }
+#endif
+
   GetContentClient()->browser()->BindHostReceiverForRenderer(
       this, std::move(receiver));
 }
