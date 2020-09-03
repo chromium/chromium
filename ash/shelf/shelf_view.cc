@@ -19,6 +19,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
@@ -51,6 +52,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -251,6 +255,15 @@ bool ShouldIncludeMenuItem(aura::Window* window) {
   if (!features::IsPerDeskShelfEnabled())
     return true;
   return desks_util::BelongsToActiveDesk(window);
+}
+
+// Returns true if the app associated with |app_id| is a Remote App.
+bool IsRemoteApp(const std::string& app_id) {
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  return cache && cache->GetAppType(app_id) == apps::mojom::AppType::kRemote;
 }
 
 }  // namespace
@@ -1111,6 +1124,10 @@ ShelfView::RetrieveDragIconProxyAndClearDragProxyState() {
 bool ShelfView::ShouldStartDrag(
     const std::string& app_id,
     const gfx::Point& location_in_screen_coordinates) const {
+  // Remote Apps are not pinnable.
+  if (IsRemoteApp(app_id))
+    return false;
+
   // Do not start drag if an operation is already going on - or the cursor is
   // not inside. This could happen if mouse / touch operations overlap.
   return (drag_and_drop_shelf_id_.IsNull() && !app_id.empty() &&
