@@ -5,10 +5,12 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -214,11 +216,13 @@ class ForceInstalledMetricsTest : public testing::Test,
         ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST);
   }
 
-  void ReportInstallationStarted() {
+  void ReportInstallationStarted(base::Optional<base::TimeDelta> install_time) {
     install_stage_tracker_->ReportDownloadingStage(
         kExtensionId1, ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED);
     install_stage_tracker_->ReportDownloadingStage(
         kExtensionId1, ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX);
+    if (install_time)
+      task_environment_.FastForwardBy(install_time.value());
     install_stage_tracker_->ReportDownloadingStage(
         kExtensionId1, ExtensionDownloaderDelegate::Stage::FINISHED);
     install_stage_tracker_->ReportInstallationStage(
@@ -230,7 +234,8 @@ class ForceInstalledMetricsTest : public testing::Test,
   void OnForceInstalledExtensionsReady() override { ready_call_count_++; }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   policy::MockConfigurationPolicyProvider policy_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
@@ -339,9 +344,14 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstallationTimedOut) {
       prefs_->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
 }
 
+// Reporting the time for downloading the manifest of an extension and verifying
+// that it is correctly recorded in the histogram.
 TEST_F(ForceInstalledMetricsTest, ExtensionsManifestDownloadTime) {
   SetupForceList();
   ReportDownloadingManifestStage();
+  const base::TimeDelta manifest_download_time =
+      base::TimeDelta::FromMilliseconds(200);
+  task_environment_.FastForwardBy(manifest_download_time);
   install_stage_tracker_->ReportDownloadingStage(
       kExtensionId1, ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED);
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
@@ -352,14 +362,17 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsManifestDownloadTime) {
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
   histogram_tester_.ExpectTotalCount(kManifestDownloadTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kManifestDownloadTimeStats,
+                                          manifest_download_time, 1);
 }
 
-// TODO(crbug/1108765): Add fame timer to verify that the times are recorded
-// correctly.
+// Reporting the time for downloading the CRX file of an extension and verifying
+// that it is correctly recorded in the histogram.
 TEST_F(ForceInstalledMetricsTest, ExtensionsCrxDownloadTime) {
   SetupForceList();
   ReportDownloadingManifestStage();
-  ReportInstallationStarted();
+  const base::TimeDelta install_time = base::TimeDelta::FromMilliseconds(200);
+  ReportInstallationStarted(install_time);
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
   tracker_->OnExtensionLoaded(profile_, ext1.get());
   install_stage_tracker_->ReportFailure(
@@ -368,6 +381,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxDownloadTime) {
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
   histogram_tester_.ExpectTotalCount(kCRXDownloadTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kCRXDownloadTimeStats, install_time,
+                                          1);
 }
 
 TEST_F(ForceInstalledMetricsTest,
@@ -391,24 +406,38 @@ TEST_F(ForceInstalledMetricsTest,
   histogram_tester_.ExpectTotalCount(kCRXDownloadTimeStats, 0);
 }
 
-// TODO(crbug/1108765): Add fake timer to verify that the times are recorded
-// correctly.
+// Reporting the times for various stages in the extension installation process
+// and verifying that the time consumed at each stage is correctly recorded in
+// the histogram.
 TEST_F(ForceInstalledMetricsTest, ExtensionsReportInstallationStageTimes) {
   SetupForceList();
   ReportDownloadingManifestStage();
-  ReportInstallationStarted();
+  ReportInstallationStarted(base::nullopt);
   install_stage_tracker_->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kVerification);
+
+  const base::TimeDelta installation_stage_time =
+      base::TimeDelta::FromMilliseconds(200);
+  task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker_->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kCopying);
+
+  task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker_->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kUnpacking);
+
+  task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker_->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kCheckingExpectations);
+
+  task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker_->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kFinalizing);
+
+  task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker_->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kComplete);
+
   auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
   tracker_->OnExtensionLoaded(profile_, ext1.get());
   install_stage_tracker_->ReportFailure(
@@ -417,10 +446,20 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsReportInstallationStageTimes) {
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
   histogram_tester_.ExpectTotalCount(kVerificationTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kVerificationTimeStats,
+                                          installation_stage_time, 1);
   histogram_tester_.ExpectTotalCount(kCopyingTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kCopyingTimeStats,
+                                          installation_stage_time, 1);
   histogram_tester_.ExpectTotalCount(kUnpackingTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kUnpackingTimeStats,
+                                          installation_stage_time, 1);
   histogram_tester_.ExpectTotalCount(kCheckingExpectationsTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kCheckingExpectationsTimeStats,
+                                          installation_stage_time, 1);
   histogram_tester_.ExpectTotalCount(kFinalizingTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kFinalizingTimeStats,
+                                          installation_stage_time, 1);
 }
 
 // Reporting disable reason for the force installed extensions which are
