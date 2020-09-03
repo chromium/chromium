@@ -92,16 +92,14 @@ DragWindowResizer::DragWindowResizer(
       next_window_resizer_(std::move(next_window_resizer)) {
   // The pointer should be confined in one display during resizing a window
   // because the window cannot span two displays at the same time anyway. The
-  // exception is window/tab dragging operation. During that operation,
-  // |mouse_warp_mode_| should be set to WARP_DRAG so that the user could move a
-  // window/tab to another display.
+  // exception is window/tab dragging operation. During that operation, mouse
+  // warp is set so that the user can move a window/tab to another display.
   MouseCursorEventFilter* mouse_cursor_filter =
       Shell::Get()->mouse_cursor_filter();
   mouse_cursor_filter->set_mouse_warp_enabled(ShouldAllowMouseWarp());
   if (ShouldAllowMouseWarp())
     mouse_cursor_filter->ShowSharedEdgeIndicator(GetTarget()->GetRootWindow());
-  Shell::Get()->shadow_controller()->UpdateShadowForWindow(
-      window_state->window());
+  Shell::Get()->shadow_controller()->UpdateShadowForWindow(GetTarget());
   instance_ = this;
 }
 
