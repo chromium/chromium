@@ -96,10 +96,10 @@ void ImpressionHistoryTrackerImpl::AddImpression(
   Impression impression(type, guid, clock_->Now());
   impression.impression_mapping = impression_mapping;
   impression.custom_data = custom_data;
+  impression.ignore_timeout_duration = ignore_timeout_duration;
   it->second->impressions.emplace_back(std::move(impression));
   it->second->last_shown_ts = clock_->Now();
   impression_map_.emplace(guid, &it->second->impressions.back());
-  impression.ignore_timeout_duration = ignore_timeout_duration;
   SetNeedsUpdate(type, true /*needs_update*/);
   MaybeUpdateDb(type);
 }
