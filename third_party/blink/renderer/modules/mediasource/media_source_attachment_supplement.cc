@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
-#include "third_party/blink/renderer/modules/mediasource/media_source_tracer_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
 
 namespace blink {
 

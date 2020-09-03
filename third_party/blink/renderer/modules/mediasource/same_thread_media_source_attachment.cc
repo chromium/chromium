@@ -7,15 +7,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
-#include "third_party/blink/renderer/modules/mediasource/media_source_tracer_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
 
 namespace {
 // Downcasts |tracer| to the expected same-thread attachment's tracer type.
 // Includes a debug-mode check that the tracer matches the expected attachment
 // semantic.
-blink::MediaSourceTracerImpl* GetTracerImpl(blink::MediaSourceTracer* tracer) {
+blink::SameThreadMediaSourceTracer* GetTracerImpl(
+    blink::MediaSourceTracer* tracer) {
   DCHECK(!tracer || !tracer->IsCrossThreadForDebugging());
-  return static_cast<blink::MediaSourceTracerImpl*>(tracer);
+  return static_cast<blink::SameThreadMediaSourceTracer*>(tracer);
 }
 
 blink::MediaSource* GetMediaSource(blink::MediaSourceTracer* tracer) {

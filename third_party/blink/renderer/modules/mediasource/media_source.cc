@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
-#include "third_party/blink/renderer/modules/mediasource/media_source_tracer_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -855,7 +855,7 @@ MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
   attached_element_ = element;
   media_source_attachment_ = attachment;
   attachment_tracer_ =
-      MakeGarbageCollected<MediaSourceTracerImpl>(element, this);
+      MakeGarbageCollected<SameThreadMediaSourceTracer>(element, this);
   return attachment_tracer_;
 }
 

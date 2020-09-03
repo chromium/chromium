@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_TRACER_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_TRACER_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SAME_THREAD_MEDIA_SOURCE_TRACER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SAME_THREAD_MEDIA_SOURCE_TRACER_H_
 
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -17,13 +17,13 @@ class MediaSource;
 // MediaSource on the same (main) thread to trace into each other. This enables
 // garbage collection to automatically detect and collect idle attachments of
 // these objects that have no other strong references. Concrete
-// MediaSourceAttachments use MediaSourceTracerImpls as the authoritative
+// MediaSourceAttachments use SameThreadMediaSourceTracers as the authoritative
 // reference holders for each side of the attachments.
-class MediaSourceTracerImpl final : public MediaSourceTracer {
+class SameThreadMediaSourceTracer final : public MediaSourceTracer {
  public:
-  MediaSourceTracerImpl(HTMLMediaElement* media_element,
-                        MediaSource* media_source);
-  ~MediaSourceTracerImpl() override = default;
+  SameThreadMediaSourceTracer(HTMLMediaElement* media_element,
+                              MediaSource* media_source);
+  ~SameThreadMediaSourceTracer() override = default;
 
   void Trace(Visitor* visitor) const override;
 
@@ -40,4 +40,4 @@ class MediaSourceTracerImpl final : public MediaSourceTracer {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_TRACER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SAME_THREAD_MEDIA_SOURCE_TRACER_H_
