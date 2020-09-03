@@ -139,6 +139,12 @@ base::Optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
   if (restrictions_value) {
     leaf.restrictions = ParseRestrictionsFromValue(*restrictions_value);
   }
+
+  const std::string* const ppd_license = value.FindStringKey("license");
+  if (ppd_license && !ppd_license->empty()) {
+    leaf.license = *ppd_license;
+  }
+
   return leaf;
 }
 

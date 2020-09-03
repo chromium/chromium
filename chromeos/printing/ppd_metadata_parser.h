@@ -55,6 +55,7 @@ struct CHROMEOS_EXPORT ParsedIndexLeaf {
 
   std::string ppd_basename;
   base::Optional<PpdProvider::Restrictions> restrictions;
+  std::string license;
 };
 
 // A collection of values parsed from a forward index.

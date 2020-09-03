@@ -533,6 +533,44 @@ TEST(PpdMetadataParserTest, CanParseForwardIndexWithMalformedRestrictions) {
                   Field(&ParsedIndexLeaf::restrictions, Eq(base::nullopt)))))));
 }
 
+// Verifies that ParseForwardIndex() can parse forward index metadata
+// specifying PPD licenses.
+TEST(PpdMetadataParserTest, CanParseForwardIndexWithLicenses) {
+  // Specifies two PPDs, each with a license associated.
+  constexpr base::StringPiece kJsonForwardIndex = R"({
+  "ppdIndex": {
+    "der fischer": {
+      "ppdMetadata": [ {
+        "name": "d-225.ppd.gz",
+        "license": "two two five license"
+      } ]
+    },
+    "erster verlust": {
+      "ppdMetadata": [ {
+        "name": "d-226.ppd.gz",
+        "license": "two two six license"
+      } ]
+    }
+  }
+})";
+  const auto parsed = ParseForwardIndex(kJsonForwardIndex);
+  ASSERT_TRUE(parsed.has_value());
+  EXPECT_THAT(
+      parsed.value(),
+      UnorderedElementsAre(
+          ParsedIndexEntryLike(
+              "der fischer", UnorderedElementsAre(AllOf(
+                                 ParsedIndexLeafWithPpdBasename("d-225.ppd.gz"),
+                                 Field(&ParsedIndexLeaf::license,
+                                       StrEq("two two five license"))))),
+          ParsedIndexEntryLike(
+              "erster verlust",
+              UnorderedElementsAre(
+                  AllOf(ParsedIndexLeafWithPpdBasename("d-226.ppd.gz"),
+                        Field(&ParsedIndexLeaf::license,
+                              StrEq("two two six license")))))));
+}
+
 // Verifies that ParseForwardIndex() returns base::nullopt rather than
 // an empty container.
 TEST(PpdMetadataParserTest, ParseForwardIndexDoesNotReturnEmptyContainer) {
