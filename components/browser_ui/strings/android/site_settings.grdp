@@ -164,7 +164,7 @@
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_ADD_BUTTON" desc="The label for the button to add a website to a list.">
     Add
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_TOAST" desc="The toast shown when a new site has been added to the whitelist.">
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_TOAST" desc="The toast shown when a new site has been added to the exception list.">
     Site <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph> added
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_SITE_URL" desc="The label for the input field where the user can type a website URL.">
