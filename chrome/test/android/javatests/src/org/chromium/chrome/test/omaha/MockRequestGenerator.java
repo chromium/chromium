@@ -14,8 +14,6 @@ public class MockRequestGenerator extends RequestGenerator {
         HANDSET, TABLET
     }
 
-    public enum SignedInStatus { TRUE, FALSE }
-
     public static final String UUID_PHONE = "uuid_phone";
     public static final String UUID_TABLET = "uuid_tablet";
     public static final String SERVER_URL = "http://totallylegitserver.com";
@@ -29,13 +27,9 @@ public class MockRequestGenerator extends RequestGenerator {
 
     private final boolean mIsOnTablet;
 
-    private final boolean mIsSignedIn;
-
-    public MockRequestGenerator(
-            Context context, DeviceType deviceType, SignedInStatus signInStatus) {
+    public MockRequestGenerator(Context context, DeviceType deviceType) {
         super(context);
         mIsOnTablet = deviceType == DeviceType.TABLET;
-        mIsSignedIn = signInStatus == SignedInStatus.TRUE;
     }
 
     @Override
@@ -76,11 +70,6 @@ public class MockRequestGenerator extends RequestGenerator {
     @Override
     public String getLanguage() {
         return LANGUAGE;
-    }
-
-    @Override
-    public int getNumSignedIn() {
-        return mIsSignedIn ? 1 : 0;
     }
 
     @Override

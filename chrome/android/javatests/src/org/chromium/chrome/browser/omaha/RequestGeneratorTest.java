@@ -29,7 +29,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.omaha.AttributeFinder;
 import org.chromium.chrome.test.omaha.MockRequestGenerator;
 import org.chromium.chrome.test.omaha.MockRequestGenerator.DeviceType;
-import org.chromium.chrome.test.omaha.MockRequestGenerator.SignedInStatus;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -86,7 +85,7 @@ public class RequestGeneratorTest {
         UniqueIdentificationGeneratorFactory.clearGeneratorMapForTest();
 
         // Creating a RequestGenerator should register the identification generator.
-        new MockRequestGenerator(context, DeviceType.HANDSET, SignedInStatus.FALSE);
+        new MockRequestGenerator(context, DeviceType.HANDSET);
 
         // Verify the identification generator exists and is of the correct type.
         UniqueIdentificationGenerator instance = UniqueIdentificationGeneratorFactory.getInstance(
@@ -98,88 +97,35 @@ public class RequestGeneratorTest {
     @SmallTest
     @Feature({"Omaha"})
     public void testHandsetXMLCreationWithInstall() {
-        createAndCheckXML(DeviceType.HANDSET, SignedInStatus.FALSE, true);
+        createAndCheckXML(DeviceType.HANDSET, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Omaha"})
     public void testHandsetXMLCreationWithoutInstall() {
-        createAndCheckXML(DeviceType.HANDSET, SignedInStatus.FALSE, false);
+        createAndCheckXML(DeviceType.HANDSET, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Omaha"})
     public void testTabletXMLCreationWithInstall() {
-        createAndCheckXML(DeviceType.TABLET, SignedInStatus.FALSE, true);
+        createAndCheckXML(DeviceType.TABLET, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Omaha"})
     public void testTabletXMLCreationWithoutInstall() {
-        createAndCheckXML(DeviceType.TABLET, SignedInStatus.FALSE, false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Omaha"})
-    public void testIsSignedIn() {
-        createAndCheckXML(DeviceType.HANDSET, SignedInStatus.TRUE, false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Omaha"})
-    public void testIsNotSignedIn() {
-        createAndCheckXML(DeviceType.HANDSET, SignedInStatus.FALSE, false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Omaha"})
-    public void testNoGoogleAccountsRetrieved() {
-        RequestGenerator generator =
-                createAndCheckXML(DeviceType.HANDSET, SignedInStatus.TRUE, false);
-        Assert.assertEquals(0, generator.getNumGoogleAccountsOnDevice());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Omaha"})
-    public void testOneGoogleAccountRetrieved() {
-        RequestGenerator generator = createAndCheckXML(DeviceType.HANDSET, SignedInStatus.TRUE,
-                false, new Account("clanktester@this.com", "com.google"));
-        Assert.assertEquals(1, generator.getNumGoogleAccountsOnDevice());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Omaha"})
-    public void testTwoGoogleAccountsRetrieved() {
-        RequestGenerator generator = createAndCheckXML(DeviceType.HANDSET, SignedInStatus.TRUE,
-                false, new Account("clanktester@gmail.com", "com.google"),
-                new Account("googleguy@elsewhere.com", "com.google"));
-        Assert.assertEquals(2, generator.getNumGoogleAccountsOnDevice());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Omaha"})
-    public void testThreeGoogleAccountsExist() {
-        RequestGenerator generator = createAndCheckXML(DeviceType.HANDSET, SignedInStatus.TRUE,
-                false, new Account("clanktester@gmail.com", "com.google"),
-                new Account("googleguy@elsewhere.com", "com.google"),
-                new Account("ImInATest@gmail.com", "com.google"));
-        Assert.assertEquals(2, generator.getNumGoogleAccountsOnDevice());
+        createAndCheckXML(DeviceType.TABLET, false);
     }
 
     /**
      * Checks that the XML is being created properly.
      */
-    private RequestGenerator createAndCheckXML(DeviceType deviceType, SignedInStatus signInStatus,
-            boolean sendInstallEvent, Account... accounts) {
+    private RequestGenerator createAndCheckXML(
+            DeviceType deviceType, boolean sendInstallEvent, Account... accounts) {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         AdvancedMockContext context = new AdvancedMockContext(targetContext);
 
@@ -199,8 +145,7 @@ public class RequestGeneratorTest {
         long installAge = 42;
         int dateLastActive = 4088;
 
-        MockRequestGenerator generator =
-                new MockRequestGenerator(context, deviceType, signInStatus);
+        MockRequestGenerator generator = new MockRequestGenerator(context, deviceType);
 
         String xml = null;
         try {
@@ -240,12 +185,6 @@ public class RequestGeneratorTest {
         }
 
         checkForAttributeAndValue(xml, "request", "userid", "{" + generator.getDeviceID() + "}");
-
-        checkForAttributeAndValue(xml, "app", "_numaccounts", "1");
-        checkForAttributeAndValue(xml, "app", "_numgoogleaccountsondevice",
-                String.valueOf(generator.getNumGoogleAccountsOnDevice()));
-        checkForAttributeAndValue(
-                xml, "app", "_numsignedin", String.valueOf(generator.getNumSignedIn()));
 
         return generator;
     }
