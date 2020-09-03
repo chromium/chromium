@@ -64,6 +64,10 @@ public class ShareServiceImpl implements ShareService {
     private static final int MAX_SHARED_FILE_COUNT = 10;
     private static final int MAX_SHARED_FILE_BYTES = 50 * 1024 * 1024;
 
+    // PERMITTED_EXTENSIONS and PERMITTED_MIME_TYPES should be kept in sync with
+    // - //third_party/blink/renderer/modules/webshare/FILE_TYPES.md
+    // - //chrome/browser/webshare/share_service_impl.cc
+
     // clang-format off
     private static final Set<String> PERMITTED_EXTENSIONS =
             Collections.unmodifiableSet(CollectionUtil.newHashSet(

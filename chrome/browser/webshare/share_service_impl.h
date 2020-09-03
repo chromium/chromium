@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
@@ -31,6 +32,9 @@ class ShareServiceImpl : public blink::mojom::ShareService,
   static void Create(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ShareService> receiver);
+
+  static bool IsDangerousFilename(base::StringPiece);
+  static bool IsDangerousMimeType(base::StringPiece);
 
   // blink::mojom::ShareService:
   void Share(const std::string& title,

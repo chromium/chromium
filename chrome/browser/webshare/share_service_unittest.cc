@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -30,7 +31,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 
   ShareError ShareGeneratedFileData(const std::string& extension,
                                     const std::string& mime_type,
-                                    unsigned file_length,
+                                    unsigned file_length = 100,
                                     unsigned file_count = 1) {
     const std::string kTitle;
     const std::string kText;
@@ -91,3 +92,66 @@ TEST_F(ShareServiceUnitTest, FileBytes) {
       ShareError::PERMISSION_DENIED,
       ShareGeneratedFileData(".txt", "text/plain", kMaxSharedFileBytes + 1));
 }
+
+TEST_F(ShareServiceUnitTest, DangerousFilename) {
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename(""));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("."));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("./"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename(".\\"));
+
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("a.a"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("zzz.zzz"));
+
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("a/a"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("zzz/zzz"));
+}
+
+TEST_F(ShareServiceUnitTest, DangerousMimeType) {
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType(""));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("/"));
+
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("a/a"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("zzz/zzz"));
+}
+
+TEST_F(ShareServiceUnitTest, Multimedia) {
+  EXPECT_EQ(ShareError::CANCELED, ShareGeneratedFileData(".bmp", "image/bmp"));
+  EXPECT_EQ(ShareError::CANCELED,
+            ShareGeneratedFileData(".xbm", "image/x-xbitmap"));
+  EXPECT_EQ(ShareError::CANCELED,
+            ShareGeneratedFileData(".flac", "audio/flac"));
+  EXPECT_EQ(ShareError::CANCELED,
+            ShareGeneratedFileData(".webm", "video/webm"));
+}
+
+TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
+  // TODO(crbug.com/1006055): Support sharing of pdf files.
+  // The URL will be checked using Safe Browsing.
+  EXPECT_EQ(ShareError::PERMISSION_DENIED,
+            ShareGeneratedFileData(".pdf", "application/pdf"));
+}
+
+#if defined(OS_WIN)
+TEST_F(ShareServiceUnitTest, ReservedNames) {
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("CON"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("PRN"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("AUX"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("NUL"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("COM1"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("COM9"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("LPT1"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("LPT9"));
+}
+#endif
+
+#if defined(OS_CHROMEOS)
+// On Chrome OS, like Android, we prevent sharing of Android applications.
+TEST_F(ShareServiceUnitTest, AndroidPackage) {
+  EXPECT_EQ(ShareError::PERMISSION_DENIED,
+            ShareGeneratedFileData(".apk", "text/plain"));
+  EXPECT_EQ(ShareError::PERMISSION_DENIED,
+            ShareGeneratedFileData(".dex", "text/plain"));
+  EXPECT_EQ(ShareError::PERMISSION_DENIED,
+            ShareGeneratedFileData(".txt", "vnd.android.package-archive"));
+}
+#endif
