@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.toolbar.menu_button;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -65,13 +67,12 @@ public class MenuButtonCoordinator implements AppMenuObserver {
      * @param shouldShowAppUpdateBadge Whether the app menu update badge should be shown if there is
      *         a pending update.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
-     * @param menuButton View that presents the MenuButton.
      */
     public MenuButtonCoordinator(ObservableSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             Activity activity, SetFocusFunction setUrlBarFocusFunction,
             Runnable requestRenderRunnable, boolean shouldShowAppUpdateBadge,
-            Supplier<Boolean> isInOverviewModeSupplier, MenuButton menuButton) {
+            Supplier<Boolean> isInOverviewModeSupplier) {
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
         mActivity = activity;
         mSetUrlBarFocusFunction = setUrlBarFocusFunction;
@@ -81,7 +82,7 @@ public class MenuButtonCoordinator implements AppMenuObserver {
         mRequestRenderRunnable = requestRenderRunnable;
         mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mMenuButton = menuButton;
+        mMenuButton = mActivity.findViewById(R.id.menu_button_wrapper);
         mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
     }
 
@@ -106,6 +107,24 @@ public class MenuButtonCoordinator implements AppMenuObserver {
             UiUtils.removeViewFromParent(mMenuButton);
             destroy();
         }
+    }
+
+    /**
+     * Get the underlying MenuButton view. Present for legacy reasons only; don't add new usages.
+     */
+    @Deprecated
+    public MenuButton getMenuButton() {
+        return mMenuButton;
+    }
+
+    /**
+     * Set the tint list on the underlying MenuButton view. Present for legacy reasons only; don't
+     * add new usages.
+     */
+    @Deprecated
+    public void setImageTintList(ColorStateList colorStateList) {
+        if (mMenuButton == null) return;
+        ApiCompatibilityUtils.setImageTintList(mMenuButton.getImageButton(), colorStateList);
     }
 
     public void destroy() {
@@ -148,6 +167,23 @@ public class MenuButtonCoordinator implements AppMenuObserver {
     public void setAppMenuUpdateBadgeSuppressed(boolean isSuppressed) {
         if (mMenuButton == null) return;
         mMenuButton.setAppMenuUpdateBadgeSuppressed(isSuppressed);
+    }
+
+    /**
+     * Set the visibility of the MenuButton controlled by this coordinator.
+     * @param visibility Visibility state flag, e.g. GONE or VISIBLE.
+     */
+    public void setVisibility(int visibility) {
+        if (mMenuButton == null) return;
+        mMenuButton.setVisibility(visibility);
+    }
+
+    /**
+     * @see MenuButton#setMenuButtonHighlightDrawable().
+     */
+    public void setMenuButtonHighlightDrawable() {
+        if (mMenuButton == null) return;
+        mMenuButton.setMenuButtonHighlightDrawable();
     }
 
     @Override
