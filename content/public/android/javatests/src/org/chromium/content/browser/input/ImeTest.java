@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.WebContents;
@@ -1223,6 +1224,7 @@ public class ImeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Disabling to land release blocking bug fix crbug.com/1121179")
     @Feature({"TextInput", "Main"})
     public void testDpadKeyCodesWhileSwipingText() throws Throwable {
         int showCount = mRule.getInputMethodManagerWrapper().getShowSoftInputCounter();

@@ -78,6 +78,10 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
     handling_input_event_ = handling_input_event;
   }
 
+  // Whether the event is protected by an IME guard to prevent intermediate
+  // IPC messages from being dispatched.
+  bool ProtectedByIMEGuard();
+
   // Process the touch action, returning whether the action should be relayed
   // to the browser.
   bool ProcessTouchAction(WebTouchAction touch_action);

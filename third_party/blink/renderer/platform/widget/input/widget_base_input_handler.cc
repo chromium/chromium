@@ -688,4 +688,12 @@ void WidgetBaseInputHandler::UpdateTextInputState() {
   widget_->UpdateTextInputState();
 }
 
+bool WidgetBaseInputHandler::ProtectedByIMEGuard() {
+#if defined(OS_ANDROID)
+  return handling_input_state_;
+#else
+  return false;
+#endif
+}
+
 }  // namespace blink

@@ -336,7 +336,8 @@ bool WidgetBase::CanComposeInline() {
 void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
                                               bool reply_to_request) {
   TRACE_EVENT0("renderer", "WidgetBase::UpdateTextInputStateInternal");
-  if (client_->HasCurrentImeGuard(show_virtual_keyboard)) {
+  if (client_->HasCurrentImeGuard(show_virtual_keyboard) ||
+      input_handler_.ProtectedByIMEGuard()) {
     DCHECK(!reply_to_request);
     return;
   }
@@ -571,8 +572,10 @@ ui::TextInputType WidgetBase::GetTextInputType() {
 
 void WidgetBase::UpdateSelectionBounds() {
   TRACE_EVENT0("renderer", "WidgetBase::UpdateSelectionBounds");
-  if (client_->HasCurrentImeGuard(false))
+  if (client_->HasCurrentImeGuard(false) ||
+      input_handler_.ProtectedByIMEGuard()) {
     return;
+  }
 #if defined(USE_AURA)
   // TODO(mohsen): For now, always send explicit selection IPC notifications for
   // Aura beucause composited selection updates are not working for webview tags
