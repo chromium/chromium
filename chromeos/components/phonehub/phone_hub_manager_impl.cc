@@ -29,7 +29,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
                                                   secure_channel_client)),
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
-          multidevice_setup_client)),
+          multidevice_setup_client,
+          connection_manager_.get())),
       find_my_device_controller_(
           std::make_unique<FindMyDeviceControllerImpl>()),
       notification_access_manager_(

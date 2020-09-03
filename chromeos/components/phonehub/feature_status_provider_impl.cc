@@ -113,11 +113,14 @@ bool IsFeatureDisabledByUser(FeatureState feature_state) {
 
 FeatureStatusProviderImpl::FeatureStatusProviderImpl(
     device_sync::DeviceSyncClient* device_sync_client,
-    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+    ConnectionManager* connection_manager)
     : device_sync_client_(device_sync_client),
-      multidevice_setup_client_(multidevice_setup_client) {
+      multidevice_setup_client_(multidevice_setup_client),
+      connection_manager_(connection_manager) {
   device_sync_client_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
+  connection_manager_->AddObserver(this);
 
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&FeatureStatusProviderImpl::OnBluetoothAdapterReceived,
@@ -129,6 +132,7 @@ FeatureStatusProviderImpl::FeatureStatusProviderImpl(
 FeatureStatusProviderImpl::~FeatureStatusProviderImpl() {
   device_sync_client_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
+  connection_manager_->RemoveObserver(this);
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
 }
@@ -180,6 +184,10 @@ void FeatureStatusProviderImpl::OnBluetoothAdapterReceived(
     UpdateStatus();
 }
 
+void FeatureStatusProviderImpl::OnStatusChanged() {
+  UpdateStatus();
+}
+
 void FeatureStatusProviderImpl::UpdateStatus() {
   DCHECK(status_.has_value());
 
@@ -217,8 +225,15 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
   if (!IsBluetoothOn())
     return FeatureStatus::kUnavailableBluetoothOff;
 
-  // TODO(khorimoto): Return different statuses based on whether we have an
-  // active connection.
+  switch (connection_manager_->GetStatus()) {
+    case ConnectionManager::Status::kDisconnected:
+      return FeatureStatus::kEnabledButDisconnected;
+    case ConnectionManager::Status::kConnecting:
+      return FeatureStatus::kEnabledAndConnecting;
+    case ConnectionManager::Status::kConnected:
+      return FeatureStatus::kEnabledAndConnected;
+  }
+
   return FeatureStatus::kEnabledButDisconnected;
 }
 

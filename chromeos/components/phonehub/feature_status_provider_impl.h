@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/phonehub/connection_manager.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -23,11 +24,13 @@ class FeatureStatusProviderImpl
     : public FeatureStatusProvider,
       public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
-      public device::BluetoothAdapter::Observer {
+      public device::BluetoothAdapter::Observer,
+      public ConnectionManager::Observer {
  public:
   FeatureStatusProviderImpl(
       device_sync::DeviceSyncClient* device_sync_client,
-      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      ConnectionManager* connection_manager);
   ~FeatureStatusProviderImpl() override;
 
  private:
@@ -60,8 +63,12 @@ class FeatureStatusProviderImpl
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
 
+  // ConnectionManager::Observer:
+  void OnStatusChanged() override;
+
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  ConnectionManager* connection_manager_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::Optional<FeatureStatus> status_;

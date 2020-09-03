@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
+#include "chromeos/components/phonehub/fake_connection_manager.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -101,7 +102,8 @@ class FeatureStatusProviderImplTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
     provider_ = std::make_unique<FeatureStatusProviderImpl>(
-        &fake_device_sync_client_, &fake_multidevice_setup_client_);
+        &fake_device_sync_client_, &fake_multidevice_setup_client_,
+        &fake_connection_manager_);
     provider_->AddObserver(&fake_observer_);
   }
 
@@ -159,6 +161,10 @@ class FeatureStatusProviderImplTest : public testing::Test {
     impl->AdapterPoweredChanged(mock_adapter_.get(), powered);
   }
 
+  void SetConnectionStatus(ConnectionManager::Status status) {
+    fake_connection_manager_.SetStatus(status);
+  }
+
   FeatureStatus GetStatus() const { return provider_->GetStatus(); }
 
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
@@ -171,6 +177,7 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
+  FakeConnectionManager fake_connection_manager_;
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
@@ -324,7 +331,7 @@ TEST_F(FeatureStatusProviderImplTest, UnavailableBluetoothOff) {
   EXPECT_EQ(FeatureStatus::kUnavailableBluetoothOff, GetStatus());
 }
 
-TEST_F(FeatureStatusProviderImplTest, TransitionBetweenStatuses) {
+TEST_F(FeatureStatusProviderImplTest, TransitionBetweenAllStatuses) {
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
@@ -350,6 +357,59 @@ TEST_F(FeatureStatusProviderImplTest, TransitionBetweenStatuses) {
   SetAdapterPoweredState(true);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(5u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kConnecting);
+  EXPECT_EQ(FeatureStatus::kEnabledAndConnecting, GetStatus());
+  EXPECT_EQ(6u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kConnected);
+  EXPECT_EQ(FeatureStatus::kEnabledAndConnected, GetStatus());
+  EXPECT_EQ(7u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kDisconnected);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(8u, GetNumObserverCalls());
+}
+
+TEST_F(FeatureStatusProviderImplTest, AttemptingConnection) {
+  SetEligibleSyncedDevices();
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kConnecting);
+  EXPECT_EQ(FeatureStatus::kEnabledAndConnecting, GetStatus());
+  EXPECT_EQ(2u, GetNumObserverCalls());
+}
+
+TEST_F(FeatureStatusProviderImplTest, AttemptedConnectionSuccessful) {
+  SetEligibleSyncedDevices();
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kConnecting);
+  EXPECT_EQ(FeatureStatus::kEnabledAndConnecting, GetStatus());
+  EXPECT_EQ(2u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kConnected);
+  EXPECT_EQ(FeatureStatus::kEnabledAndConnected, GetStatus());
+  EXPECT_EQ(3u, GetNumObserverCalls());
+}
+
+TEST_F(FeatureStatusProviderImplTest, AttemptedConnectionFailed) {
+  SetEligibleSyncedDevices();
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kConnecting);
+  EXPECT_EQ(FeatureStatus::kEnabledAndConnecting, GetStatus());
+  EXPECT_EQ(2u, GetNumObserverCalls());
+
+  SetConnectionStatus(ConnectionManager::Status::kDisconnected);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(3u, GetNumObserverCalls());
 }
 
 }  // namespace phonehub
