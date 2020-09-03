@@ -303,6 +303,32 @@ class RTCStatsCollectorCallback : public webrtc::RTCStatsCollectorCallback {
   DISALLOW_COPY_AND_ASSIGN(RTCStatsCollectorCallback);
 };
 
+class RtcEventLogOutput : public webrtc::RtcEventLogOutput {
+ public:
+  // |event_log_data| will be populated with the RTC event data during logging.
+  // The caller owns |event_log_data| and must keep it alive as long as
+  // WebRTC provides event logging to this instance (that is, until
+  // PeerConnection::StopEventLog() is called, or the PeerConnection is
+  // destroyed).
+  explicit RtcEventLogOutput(WebrtcEventLogData& event_log_data)
+      : event_log_data_(event_log_data) {}
+  ~RtcEventLogOutput() override = default;
+
+  RtcEventLogOutput(const RtcEventLogOutput&) = delete;
+  RtcEventLogOutput& operator=(const RtcEventLogOutput&) = delete;
+
+  // webrtc::RtcEventLogOutput interface
+  bool IsActive() const override { return true; }
+  bool Write(const std::string& output) override {
+    event_log_data_.Write(output);
+    return true;
+  }
+
+ private:
+  // Holds the recorded event log data. This buffer is owned by the caller.
+  WebrtcEventLogData& event_log_data_;
+};
+
 }  // namespace
 
 class WebrtcTransport::PeerConnectionWrapper
@@ -453,6 +479,8 @@ WebrtcTransport::WebrtcTransport(
   peer_connection_wrapper_.reset(new PeerConnectionWrapper(
       worker_thread, base::WrapUnique(video_encoder_factory_),
       std::move(port_allocator), weak_factory_.GetWeakPtr()));
+
+  StartRtcEventLogging();
 }
 
 WebrtcTransport::~WebrtcTransport() {
@@ -744,6 +772,10 @@ void WebrtcTransport::Close(ErrorCode error) {
 
   weak_factory_.InvalidateWeakPtrs();
 
+  // Stop recording into the buffer, otherwise WebRTC might try to record
+  // events into the buffer while closing the connection, after |this| has been
+  // destroyed.
+  StopRtcEventLogging();
   ClosePeerConnection(std::move(control_data_channel_),
                       std::move(event_data_channel_),
                       std::move(peer_connection_wrapper_));
@@ -1221,6 +1253,25 @@ void WebrtcTransport::AddPendingCandidatesIfPossible() {
 rtc::scoped_refptr<webrtc::RtpSenderInterface>
 WebrtcTransport::GetVideoSender() {
   return video_transceiver_ ? video_transceiver_->sender() : nullptr;
+}
+
+void WebrtcTransport::StartRtcEventLogging() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!peer_connection())
+    return;
+
+  // Start recording into |rtc_event_log_|. This is safe because, when |this| is
+  // destroyed, it calls Close() which stops recording the RTC event log.
+  rtc_event_log_.Clear();
+  peer_connection()->StartRtcEventLog(
+      std::make_unique<RtcEventLogOutput>(rtc_event_log_));
+}
+
+void WebrtcTransport::StopRtcEventLogging() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (peer_connection()) {
+    peer_connection()->StopRtcEventLog();
+  }
 }
 
 }  // namespace protocol

@@ -203,6 +203,8 @@ static_library("protocol") {
     "webrtc_data_stream_adapter.h",
     "webrtc_dummy_video_encoder.cc",
     "webrtc_dummy_video_encoder.h",
+    "webrtc_event_log_data.cc",
+    "webrtc_event_log_data.h",
     "webrtc_transport.cc",
     "webrtc_transport.h",
     "webrtc_video_renderer_adapter.cc",
@@ -356,6 +358,7 @@ source_set("unit_tests") {
     "third_party_authenticator_unittest.cc",
     "v2_authenticator_unittest.cc",
     "validating_authenticator_unittest.cc",
+    "webrtc_event_log_data_unittest.cc",
     "webrtc_transport_unittest.cc",
   ]
 
