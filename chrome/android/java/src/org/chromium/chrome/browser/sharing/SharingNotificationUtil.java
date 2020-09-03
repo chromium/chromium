@@ -31,9 +31,6 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
  * Provides common functionality for handling sharing notifications.
  */
 public final class SharingNotificationUtil {
-    // TODO(himanshujaju) - We have only two small icons, one for error and one for non error. We
-    // could avoid passing them around.
-
     /**
      * Shows a notification with a configuration common to all sharing notifications.
      *

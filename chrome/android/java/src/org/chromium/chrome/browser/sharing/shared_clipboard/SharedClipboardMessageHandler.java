@@ -124,8 +124,6 @@ public class SharedClipboardMessageHandler {
 
     /**
      * Return the title of error notification shown based on result of send message to other device.
-     * TODO(himanshujaju) - All text except PAYLOAD_TOO_LARGE are common across features. Extract
-     * them out when next feature is added.
      *
      * @param result The result of sending message to other device.
      * @return the title for error notification.
@@ -160,8 +158,6 @@ public class SharedClipboardMessageHandler {
     /**
      * Returns the text of the error notification shown based on the result of sending a message to
      * another device.
-     * TODO(himanshujaju) - All text except PAYLOAD_TOO_LARGE are common across features. Extract
-     * them out when next feature is added.
      *
      * @param result The result of sending a message to another device.
      * @param name The name of the receiver device.

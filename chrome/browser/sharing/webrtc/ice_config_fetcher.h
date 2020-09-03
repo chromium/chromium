@@ -30,7 +30,7 @@ class IceConfigFetcher : public sharing::mojom::IceConfigFetcher {
   IceConfigFetcher(const IceConfigFetcher& other) = delete;
   IceConfigFetcher& operator=(const IceConfigFetcher& other) = delete;
 
-  // TODO(himanshujaju) - Cache configs fetched from server.
+  // TODO(crbug.com/1124392) - Cache configs fetched from server.
   void GetIceServers(GetIceServersCallback callback) override;
 
  private:
