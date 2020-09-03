@@ -23,10 +23,9 @@ message EstimatedWebViewAppPowerUsage {
   // Includes renderer processes.
   double webview_power_mas = 3;
 
-  // TODO(b/159154263): make this required.
-  optional double webview_power_little_cores_mas = 4;
-  optional double webview_power_big_cores_mas = 5;
-  optional double webview_power_bigger_cores_mas = 6;
+  double webview_power_little_cores_mas = 4;
+  double webview_power_big_cores_mas = 5;
+  double webview_power_bigger_cores_mas = 6;
 }
 
 message WebViewPowerUsageMetric {

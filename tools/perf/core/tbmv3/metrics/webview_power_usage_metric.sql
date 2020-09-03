@@ -15,7 +15,10 @@ SELECT WebViewPowerUsageMetric(
       EstimatedWebViewAppPowerUsage(
         'app_name', app_name,
         'webview_power_mas', webview_power_mas,
-        'total_app_power_mas', total_app_power_mas
+        'total_app_power_mas', total_app_power_mas,
+        'webview_power_little_cores_mas', webview_power_little_cores_mas,
+        'webview_power_big_cores_mas', webview_power_big_cores_mas,
+        'webview_power_bigger_cores_mas', webview_power_bigger_cores_mas
        )
    )
    FROM webview_power_summary
