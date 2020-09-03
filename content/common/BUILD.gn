@@ -224,7 +224,7 @@ source_set("common") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
     "//build/util:webkit_version",
     "//components/discardable_memory/common",
     "//components/services/filesystem/public/mojom",

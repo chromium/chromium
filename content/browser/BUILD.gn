@@ -50,7 +50,7 @@ source_set("browser") {
     "//base/third_party/dynamic_annotations",
     "//base/util/ranges:ranges",
     "//build:branding_buildflags",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
     "//cc",
     "//cc/animation",
     "//cc/mojo_embedder",

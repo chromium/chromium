@@ -26,7 +26,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_APPLE)
 #include <mach/mach.h>

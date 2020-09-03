@@ -10,7 +10,7 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_handle.h"

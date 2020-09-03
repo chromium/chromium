@@ -1500,7 +1500,7 @@ static_library("ui") {
     ]
     deps += [
       "//base/util/values:values_util",
-      "//build:lacros_buildflags",
+      "//build:chromeos_buildflags",
       "//chrome/app/vector_icons",
       "//chrome/browser:theme_properties",
       "//chrome/browser/media/kaleidoscope/mojom",
@@ -2524,7 +2524,7 @@ static_library("ui") {
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/public/cpp/vector_icons",
       "//ash/shortcut_viewer",
-      "//build:lacros_buildflags",
+      "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:backdrop_wallpaper_proto",

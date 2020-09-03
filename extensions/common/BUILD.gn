@@ -334,7 +334,7 @@ if (enable_extensions) {
     deps = [
       "//base",
       "//build:branding_buildflags",
-      "//build:lacros_buildflags",
+      "//build:chromeos_buildflags",
       "//components/crx_file",
       "//components/nacl/common:buildflags",
       "//components/url_formatter",

@@ -20,7 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info_internal.h"
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 namespace {
 

@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_LACROS)

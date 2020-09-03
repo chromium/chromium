@@ -606,7 +606,7 @@ static_library("constants") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
     "//components/bookmarks/common",
     "//components/nacl/common:switches",
     "//components/offline_pages/buildflags",

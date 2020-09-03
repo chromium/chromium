@@ -5,7 +5,7 @@
 #include "components/feedback/feedback_common.h"
 
 #include "base/bind.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/proto/common.pb.h"
 #include "components/feedback/proto/dom.pb.h"

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_SAD_TAB_TYPES_H_
 
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 enum SadTabKind {
   SAD_TAB_KIND_CRASHED,  // Tab crashed.

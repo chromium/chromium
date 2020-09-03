@@ -15,7 +15,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

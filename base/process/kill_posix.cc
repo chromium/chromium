@@ -19,7 +19,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base {
 

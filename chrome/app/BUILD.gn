@@ -116,7 +116,7 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
     "//chrome/app:shutdown_signal_handlers",
     "//chrome/browser",
     "//chrome/browser/policy:path_parser",

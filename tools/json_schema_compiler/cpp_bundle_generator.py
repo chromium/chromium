@@ -260,7 +260,7 @@ class _APICCGenerator(object):
                      'generated_api_registration.h')))
     c.Append()
     c.Append('#include "build/build_config.h"')
-    c.Append('#include "build/lacros_buildflags.h"')
+    c.Append('#include "build/chromeos_buildflags.h"')
     c.Append()
     for namespace in self._bundle._model.namespaces.values():
       namespace_name = namespace.unix_name.replace("experimental_", "")

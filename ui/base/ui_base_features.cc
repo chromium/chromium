@@ -4,7 +4,7 @@
 
 #include "ui/base/ui_base_features.h"
 
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"

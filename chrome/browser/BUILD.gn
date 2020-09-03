@@ -1866,7 +1866,7 @@ static_library("browser") {
     "//base/util/memory_pressure:memory_pressure",
     "//base/util/values:values_util",
     "//build:branding_buildflags",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
     "//cc",
     "//chrome:extra_resources",
     "//chrome:resources",

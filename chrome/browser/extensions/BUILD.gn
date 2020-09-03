@@ -754,7 +754,7 @@ static_library("extensions") {
     "//apps",
     "//base/util/values:values_util",
     "//build:branding_buildflags",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
     "//chrome:extra_resources",
     "//chrome:resources",
     "//chrome:strings",

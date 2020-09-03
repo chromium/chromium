@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "build/util/webkit_version.h"
 
 #if defined(OS_MAC)

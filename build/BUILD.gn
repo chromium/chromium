@@ -33,8 +33,8 @@ buildflag_header("chromecast_buildflags") {
   flags = [ "IS_CHROMECAST=$is_chromecast" ]
 }
 
-buildflag_header("lacros_buildflags") {
-  header = "lacros_buildflags.h"
+buildflag_header("chromeos_buildflags") {
+  header = "chromeos_buildflags.h"
 
   flags = [ "IS_LACROS=$chromeos_is_browser_only" ]
 }

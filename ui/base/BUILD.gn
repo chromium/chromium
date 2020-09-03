@@ -635,7 +635,7 @@ component("features") {
   deps = [
     ":buildflags",
     "//base",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
   ]
 }
 

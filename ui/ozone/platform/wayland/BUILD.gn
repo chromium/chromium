@@ -142,7 +142,7 @@ source_set("wayland") {
 
   deps = [
     "//base",
-    "//build:lacros_buildflags",
+    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//mojo/public/cpp/bindings",

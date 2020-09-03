@@ -8,7 +8,7 @@
 #define BASE_BASE_SWITCHES_H_
 
 #include "build/build_config.h"
-#include "build/lacros_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
