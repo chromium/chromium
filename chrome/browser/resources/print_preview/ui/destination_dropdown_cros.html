@@ -29,14 +29,13 @@
     --iron-icon-height: 24px;
     --iron-icon-width: 44px;
     align-items: center;
+    left: 2px;
     margin-inline-start: -4px;
-    right: 0;
     top: 50%;
   }
 
   :host-context([dir='rtl']) #dropdown-icon {
-    left: 0;
-    right: unset;
+    right: 2px;
   }
 
   #dropdown-box {
@@ -93,9 +92,8 @@
   #destination-display {
     box-sizing: border-box;
     overflow: hidden;
-    padding-inline-end: 32px;
     padding-inline-start: 8px;
-    text-overflow: clip;
+    text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
   }
@@ -115,7 +113,9 @@
           printer-state="[[computePrinterState_( value.printerStatusReason)]]">
       </printer-status-icon-cros>
     </div>
-    <div id="destination-display">[[value.displayName]]</div>
+    <div id="destination-display" title="[[value.displayName]]">
+      [[value.displayName]]
+    </div>
     <iron-icon id="dropdown-icon" icon="cr:arrow-drop-down"></iron-icon>
   </div>
   <div id="dropdown-box">
