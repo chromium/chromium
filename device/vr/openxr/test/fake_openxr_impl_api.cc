@@ -150,10 +150,6 @@ XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
       XR_ERROR_VALIDATION_FAILURE,
       "XrInstanceCreateInfo ApiLayer is not supported by this version of test");
 
-  RETURN_IF(create_info->enabledExtensionCount !=
-                OpenXrTestHelper::kNumExtensionsSupported,
-            XR_ERROR_VALIDATION_FAILURE, "enabledExtensionCount invalid");
-
   for (uint32_t i = 0; i < create_info->enabledExtensionCount; i++) {
     bool valid_extension = false;
     for (size_t j = 0; j < OpenXrTestHelper::kNumExtensionsSupported; j++) {
