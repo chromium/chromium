@@ -24,6 +24,7 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       !data.ReadFilters(&(*out)->filters) ||
       !data.ReadBackdropFilters(&(*out)->backdrop_filters) ||
       !data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds) ||
+      !data.ReadContentColorUsage(&(*out)->content_color_usage) ||
       !data.ReadCopyRequests(&(*out)->copy_requests) ||
       !data.ReadId(&(*out)->id)) {
     return false;

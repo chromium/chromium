@@ -191,6 +191,8 @@ class VizSerializationPerfTest : public testing::Test {
     ResourceId arbitrary_resourceid3 = 23;
     ResourceId arbitrary_resourceid4 = 16;
     SkScalar arbitrary_sigma = SkFloatToScalar(2.0f);
+    gfx::ContentColorUsage arbitrary_content_color_usage =
+        gfx::ContentColorUsage::kSRGB;
     CompositorRenderPassId root_id{14};
 
     cc::FilterOperations arbitrary_filters1;
@@ -208,8 +210,9 @@ class VizSerializationPerfTest : public testing::Test {
     auto pass_in = CompositorRenderPass::Create();
     pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
                     arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
-                    arbitrary_rrectf1, arbitrary_bool1, arbitrary_bool1,
-                    arbitrary_bool1, arbitrary_bool1);
+                    arbitrary_rrectf1, arbitrary_content_color_usage,
+                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool1,
+                    arbitrary_bool1);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {
