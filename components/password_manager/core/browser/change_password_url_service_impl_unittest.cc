@@ -20,7 +20,7 @@ namespace {
 
 constexpr char kMockResponse[] = R"({
   "google.com": "https://google.com/change-password",
-  "a.netlify.com": "https://a.netlify.com/change-password",
+  "a.blogspot.com": "https://a.blogspot.com/change-password",
   "web.app": "https://web.app/change-password"
 })";
 }  // namespace
@@ -94,10 +94,10 @@ TEST_F(ChangePasswordUrlServiceTest, eTLDLookup) {
 
   EXPECT_EQ(GetChangePasswordUrl(GURL("https://web.app")), GURL());
 
-  EXPECT_EQ(GetChangePasswordUrl(GURL("https://netlify.com")), GURL());
-  EXPECT_EQ(GetChangePasswordUrl(GURL("https://a.netlify.com")),
-            GURL("https://a.netlify.com/change-password"));
-  EXPECT_EQ(GetChangePasswordUrl(GURL("https://b.netlify.com")), GURL());
+  EXPECT_EQ(GetChangePasswordUrl(GURL("https://blogspot.com")), GURL());
+  EXPECT_EQ(GetChangePasswordUrl(GURL("https://a.blogspot.com")),
+            GURL("https://a.blogspot.com/change-password"));
+  EXPECT_EQ(GetChangePasswordUrl(GURL("https://b.blogspot.com")), GURL());
 
   EXPECT_EQ(GetChangePasswordUrl(GURL("https://notlisted.com/foo")), GURL());
 }
