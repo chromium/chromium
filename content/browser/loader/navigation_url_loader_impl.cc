@@ -13,6 +13,7 @@
 #include "base/bind_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -646,7 +647,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
           non_network_url_loader_factory_remotes_[resource_request_->url
                                                       .scheme()];
       if (!non_network_factory.is_bound()) {
-        BindNonNetworkURLLoaderFactoryReceiver(
+        BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
             resource_request_->url,
             non_network_factory.BindNewPipeAndPassReceiver());
       }
@@ -1170,6 +1171,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
             frame_tree_node_id_,
             base::UkmSourceId::FromInt64(frame_tree_node->navigation_request()
                                              ->GetNextPageUkmSourceId()),
+            &non_network_uniquely_owned_factories_,
             &non_network_url_loader_factories_);
 
     // The embedder may want to proxy all network-bound URLLoaderFactory
@@ -1198,7 +1200,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     }
 
     const std::string storage_domain;
-    non_network_url_loader_factories_.emplace(
+    non_network_uniquely_owned_factories_.emplace(
         url::kFileSystemScheme,
         CreateFileSystemURLLoaderFactory(
             ChildProcessHost::kInvalidUniqueID,
@@ -1206,32 +1208,24 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
             storage_partition_->GetFileSystemContext(), storage_domain));
   }
 
-  non_network_url_loader_factories_.emplace(
+  non_network_uniquely_owned_factories_.emplace(
       url::kAboutScheme, std::make_unique<AboutURLLoaderFactory>());
 
-  non_network_url_loader_factories_.emplace(
+  non_network_uniquely_owned_factories_.emplace(
       url::kDataScheme, std::make_unique<DataURLLoaderFactory>());
 
-  std::unique_ptr<network::mojom::URLLoaderFactory> file_url_loader_factory =
-      std::make_unique<FileURLLoaderFactory>(
-          browser_context_->GetPath(),
-          browser_context_->GetSharedCorsOriginAccessList(),
-          // USER_BLOCKING because this scenario is exactly one of the examples
-          // given by the doc comment for USER_BLOCKING:
-          // Loading and rendering a web page after the user clicks a link.
-          base::TaskPriority::USER_BLOCKING);
-
-  if (frame_tree_node) {  // May be nullptr in some unit tests.
-    devtools_instrumentation::WillCreateURLLoaderFactory(
-        frame_tree_node->current_frame_host(), true /* is_navigation */,
-        false /* is_download */, &file_url_loader_factory);
-  }
-
-  non_network_url_loader_factories_.emplace(url::kFileScheme,
-                                            std::move(file_url_loader_factory));
+  // USER_BLOCKING because this scenario is exactly one of the examples
+  // given by the doc comment for USER_BLOCKING:
+  // Loading and rendering a web page after the user clicks a link.
+  base::TaskPriority file_factory_priority = base::TaskPriority::USER_BLOCKING;
+  non_network_url_loader_factories_.emplace(
+      url::kFileScheme, FileURLLoaderFactory::Create(
+                            browser_context_->GetPath(),
+                            browser_context_->GetSharedCorsOriginAccessList(),
+                            file_factory_priority));
 
 #if defined(OS_ANDROID)
-  non_network_url_loader_factories_.emplace(
+  non_network_uniquely_owned_factories_.emplace(
       url::kContentScheme,
       std::make_unique<ContentURLLoaderFactory>(
           base::ThreadPool::CreateSequencedTaskRunner(
@@ -1239,6 +1233,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})));
 #endif
 
+  for (auto& iter : non_network_uniquely_owned_factories_)
+    known_schemes_.insert(iter.first);
   for (auto& iter : non_network_url_loader_factories_)
     known_schemes_.insert(iter.first);
 
@@ -1348,12 +1344,29 @@ void NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
 void NavigationURLLoaderImpl::BindNonNetworkURLLoaderFactoryReceiver(
     const GURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver) {
-  auto it = non_network_url_loader_factories_.find(url.scheme());
-  if (it == non_network_url_loader_factories_.end()) {
-    DVLOG(1) << "Ignoring request with unknown scheme: " << url.spec();
+  auto it = non_network_uniquely_owned_factories_.find(url.scheme());
+  if (it != non_network_uniquely_owned_factories_.end()) {
+    it->second->Clone(std::move(factory_receiver));
     return;
   }
 
+  auto it2 = non_network_url_loader_factories_.find(url.scheme());
+  if (it2 != non_network_url_loader_factories_.end()) {
+    mojo::Remote<network::mojom::URLLoaderFactory> remote(
+        std::move(it2->second));
+    remote->Clone(std::move(factory_receiver));
+    non_network_url_loader_factories_.erase(it2);
+    return;
+  }
+
+  DVLOG(1) << "Ignoring request with unknown scheme: " << url.spec();
+}
+
+void NavigationURLLoaderImpl::
+    BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
+        const GURL& url,
+        mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+            factory_receiver) {
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   DCHECK(frame_tree_node);
@@ -1368,7 +1381,20 @@ void NavigationURLLoaderImpl::BindNonNetworkURLLoaderFactoryReceiver(
       &factory_receiver, nullptr /* header_client */,
       nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
       nullptr /* factory_override */);
-  it->second->Clone(std::move(factory_receiver));
+
+  // TODO(lukasza, jam): It is unclear why FileURLLoaderFactory is the only
+  // non-http factory that allows DevTools intereception.  For comparison all
+  // non-WebUI, non-AppCache cases in RFHI::CommitNavigation allow DevTools
+  // interception.  Let's try to be more consistent / less ad-hoc.
+  if (url.SchemeIs(url::kFileScheme)) {
+    if (frame_tree_node) {  // May be nullptr in some unit tests.
+      devtools_instrumentation::WillCreateURLLoaderFactory(
+          frame, true /* is_navigation */, false /* is_download */,
+          &factory_receiver, nullptr /* factory_override */);
+    }
+  }
+
+  BindNonNetworkURLLoaderFactoryReceiver(url, std::move(factory_receiver));
 }
 
 }  // namespace content

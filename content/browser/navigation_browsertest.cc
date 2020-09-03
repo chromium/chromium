@@ -3253,12 +3253,13 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
     void RegisterNonNetworkNavigationURLLoaderFactories(
         int frame_tree_node_id,
         base::UkmSourceId ukm_source_id,
+        NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
         NonNetworkURLLoaderFactoryMap* factories) override {
       auto url_loader_factory = std::make_unique<FakeNetworkURLLoaderFactory>(
           "HTTP/1.1 200 OK\nContent-Type: text/html\n\n", "This is a test",
           /* network_accessed */ true, net::OK);
-      factories->emplace(std::string(kNoAccessScheme),
-                         std::move(url_loader_factory));
+      uniquely_owned_factories->emplace(std::string(kNoAccessScheme),
+                                        std::move(url_loader_factory));
     }
 
     bool ShouldAssignSiteForURL(const GURL& url) override {

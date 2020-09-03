@@ -853,6 +853,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
 void AwContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
   WebContents* web_contents = content::WebContents::FromRenderFrameHost(
       content::RenderFrameHost::FromID(render_process_id, render_frame_id));
@@ -861,10 +862,11 @@ void AwContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
   if (aw_settings && aw_settings->GetAllowFileAccess()) {
     AwBrowserContext* aw_browser_context =
         AwBrowserContext::FromWebContents(web_contents);
-    auto file_factory = CreateFileURLLoaderFactory(
-        aw_browser_context->GetPath(),
-        aw_browser_context->GetSharedCorsOriginAccessList());
-    factories->emplace(url::kFileScheme, std::move(file_factory));
+    factories->emplace(
+        url::kFileScheme,
+        content::CreateFileURLLoaderFactory(
+            aw_browser_context->GetPath(),
+            aw_browser_context->GetSharedCorsOriginAccessList()));
   }
 }
 

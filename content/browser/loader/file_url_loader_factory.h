@@ -30,16 +30,30 @@ class CONTENT_EXPORT FileURLLoaderFactory
     : public network::mojom::URLLoaderFactory,
       public base::SupportsWeakPtr<FileURLLoaderFactory> {
  public:
+  // Returns mojo::PendingRemote to a newly constructed FileURLLoaderFactory.
+  // The factory is self-owned - it will delete itself once there are no more
+  // receivers (including the receiver associated with the returned
+  // mojo::PendingRemote and the receivers bound by the Clone method).
+  //
   // |shared_cors_origin_access_list| can be nullptr if only "no-cors" requests
-  // will be made. Thread pool tasks posted by the constructed
-  // FileURLLoadedFactory use |priority|.
-  FileURLLoaderFactory(
+  // will be made.
+  //
+  // Thread pool tasks posted by the constructed FileURLLoaderFactory use
+  // |task_priority|.
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
       const base::FilePath& profile_path,
       scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list,
       base::TaskPriority task_priority);
-  ~FileURLLoaderFactory() override;
+
+ private:
+  FileURLLoaderFactory(
+      const base::FilePath& profile_path,
+      scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list,
+      base::TaskPriority task_priority,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
   // network::mojom::URLLoaderFactory:
+  ~FileURLLoaderFactory() override;
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       int32_t routing_id,
@@ -49,14 +63,8 @@ class CONTENT_EXPORT FileURLLoaderFactory
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-                 pending_receiver) override;
-
- private:
-  FileURLLoaderFactory(
-      const base::FilePath& profile_path,
-      scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  void Clone(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) override;
 
   void CreateLoaderAndStartInternal(
       const network::ResourceRequest request,
@@ -64,10 +72,13 @@ class CONTENT_EXPORT FileURLLoaderFactory
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
+  void OnDisconnect();
+
   const base::FilePath profile_path_;
   const scoped_refptr<SharedCorsOriginAccessList>
       shared_cors_origin_access_list_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   THREAD_CHECKER(thread_checker_);
 

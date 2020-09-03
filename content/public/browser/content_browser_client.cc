@@ -754,21 +754,23 @@ ContentBrowserClient::CreateURLLoaderThrottles(
 void ContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
     base::UkmSourceId ukm_source_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {}
 
 void ContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryMap* factories) {}
+        NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories) {}
 
 void ContentBrowserClient::
     RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
         BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryMap* factories) {}
+        NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories) {}
 
 void ContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {}
 
 bool ContentBrowserClient::WillCreateURLLoaderFactory(

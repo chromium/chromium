@@ -868,6 +868,7 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
 void CastContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
     base::UkmSourceId ukm_source_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   content::WebContents* web_contents =
@@ -877,15 +878,17 @@ void CastContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
       extensions::CreateExtensionNavigationURLLoaderFactory(
           browser_context, ukm_source_id,
           !!extensions::WebViewGuest::FromWebContents(web_contents));
-  factories->emplace(extensions::kExtensionScheme,
-                     std::make_unique<CastExtensionURLLoaderFactory>(
-                         browser_context, std::move(extension_factory)));
+  uniquely_owned_factories->emplace(
+      extensions::kExtensionScheme,
+      std::make_unique<CastExtensionURLLoaderFactory>(
+          browser_context, std::move(extension_factory)));
 #endif
 }
 
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
   if (render_frame_id == MSG_ROUTING_NONE) {
     LOG(ERROR) << "Service worker not supported.";
@@ -898,12 +901,13 @@ void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
   auto* browser_context = frame_host->GetProcess()->GetBrowserContext();
   auto extension_factory = extensions::CreateExtensionURLLoaderFactory(
       render_process_id, render_frame_id);
-  factories->emplace(extensions::kExtensionScheme,
-                     std::make_unique<CastExtensionURLLoaderFactory>(
-                         browser_context, std::move(extension_factory)));
+  uniquely_owned_factories->emplace(
+      extensions::kExtensionScheme,
+      std::make_unique<CastExtensionURLLoaderFactory>(
+          browser_context, std::move(extension_factory)));
 #endif
 
-  factories->emplace(
+  uniquely_owned_factories->emplace(
       kChromeResourceScheme,
       content::CreateWebUIURLLoader(
           frame_host, kChromeResourceScheme,

@@ -1290,15 +1290,6 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
   if (blob_url_loader_factory) {
     DCHECK(params->url().SchemeIsBlob());
     pending_url_loader_factory = blob_url_loader_factory->Clone();
-  } else if (params->url().SchemeIsFile()) {
-    pending_url_loader_factory =
-        CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
-            std::make_unique<FileURLLoaderFactory>(
-                browser_context_->GetPath(),
-                browser_context_->GetSharedCorsOriginAccessList(),
-                // USER_VISIBLE because download should progress
-                // even when there is high priority work to do.
-                base::TaskPriority::USER_VISIBLE));
   } else if (rfh && params->url().SchemeIs(content::kChromeUIScheme)) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote;
@@ -1327,22 +1318,43 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
         CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
             std::make_unique<DataURLLoaderFactory>(params->url()));
   } else if (rfh && !blink::IsURLHandledByNetworkService(params->url())) {
+    ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
+        non_network_uniquely_owned_factories;
     ContentBrowserClient::NonNetworkURLLoaderFactoryMap
         non_network_url_loader_factories;
+
+    // USER_VISIBLE because download should progress
+    // even when there is high priority work to do.
+    base::TaskPriority file_factory_priority = base::TaskPriority::USER_VISIBLE;
+    non_network_url_loader_factories.emplace(
+        url::kFileScheme, FileURLLoaderFactory::Create(
+                              browser_context_->GetPath(),
+                              browser_context_->GetSharedCorsOriginAccessList(),
+                              file_factory_priority));
+
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
             params->render_process_host_id(),
             params->render_frame_host_routing_id(),
+            &non_network_uniquely_owned_factories,
             &non_network_url_loader_factories);
-    auto it = non_network_url_loader_factories.find(params->url().scheme());
-    if (it == non_network_url_loader_factories.end()) {
-      DLOG(ERROR) << "No URLLoaderFactory found to download " << params->url();
-      return;
-    } else {
+    auto it = non_network_uniquely_owned_factories.find(params->url().scheme());
+    if (it != non_network_uniquely_owned_factories.end()) {
       pending_url_loader_factory =
           CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
               std::move(it->second));
+    } else {
+      auto it2 = non_network_url_loader_factories.find(params->url().scheme());
+      if (it2 != non_network_url_loader_factories.end()) {
+        pending_url_loader_factory =
+            std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+                std::move(it2->second));
+      } else {
+        DLOG(ERROR) << "No URLLoaderFactory found to download "
+                    << params->url();
+        return;
+      }
     }
   } else {
     StoragePartitionImpl* storage_partition =

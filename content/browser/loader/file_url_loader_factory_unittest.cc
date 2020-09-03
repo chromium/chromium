@@ -83,11 +83,10 @@ class FileURLLoaderFactoryTest : public testing::Test {
  public:
   FileURLLoaderFactoryTest()
       : access_list_(
-            base::MakeRefCounted<SharedCorsOriginAccessListForTesting>()),
-        factory_(std::make_unique<FileURLLoaderFactory>(
-            profile_dummy_path_,
-            access_list_,
-            base::TaskPriority::BEST_EFFORT)) {}
+            base::MakeRefCounted<SharedCorsOriginAccessListForTesting>()) {
+    factory_.Bind(FileURLLoaderFactory::Create(
+        profile_dummy_path_, access_list_, base::TaskPriority::BEST_EFFORT));
+  }
   FileURLLoaderFactoryTest(const FileURLLoaderFactoryTest&) = delete;
   FileURLLoaderFactoryTest& operator=(const FileURLLoaderFactoryTest&) = delete;
   ~FileURLLoaderFactoryTest() override = default;
@@ -131,7 +130,7 @@ class FileURLLoaderFactoryTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::FilePath profile_dummy_path_;
   scoped_refptr<SharedCorsOriginAccessListForTesting> access_list_;
-  std::unique_ptr<network::mojom::URLLoaderFactory> factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> factory_;
 };
 
 TEST_F(FileURLLoaderFactoryTest, MissedRequestInitiator) {

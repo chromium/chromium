@@ -25,7 +25,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
 namespace crx_file {
@@ -41,9 +43,6 @@ struct AccessTokenInfo;
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
-namespace mojom {
-class URLLoaderFactory;
-}
 struct ResourceRequest;
 }  // namespace network
 
@@ -444,7 +443,7 @@ class ExtensionDownloader {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The URL loader factory exclusively used to load file:// URLs.
-  std::unique_ptr<network::mojom::URLLoaderFactory> file_url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> file_url_loader_factory_;
 
   // The profile path used to load file:// URLs. It can be invalid.
   base::FilePath profile_path_for_url_loader_factory_;

@@ -195,17 +195,29 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
     bool filesystem_url_support) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
+      non_network_uniquely_owned_factories;
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
-  non_network_factories[url::kDataScheme] =
+  non_network_uniquely_owned_factories[url::kDataScheme] =
       std::make_unique<DataURLLoaderFactory>();
   if (filesystem_url_support) {
     // TODO(https://crbug.com/986188): Pass ChildProcessHost::kInvalidUniqueID
     // instead of valid |worker_process_id| for |factory_bundle_for_browser|
     // once CanCommitURL-like check is implemented in PlzWorker.
-    non_network_factories[url::kFileSystemScheme] =
+    non_network_uniquely_owned_factories[url::kFileSystemScheme] =
         CreateFileSystemURLLoaderFactory(
             worker_process_id, RenderFrameHost::kNoFrameTreeNodeId,
             storage_partition->GetFileSystemContext(), storage_domain);
+  }
+  if (file_support) {
+    // USER_VISIBLE because worker script fetch may affect the UI.
+    base::TaskPriority file_factory_priority = base::TaskPriority::USER_VISIBLE;
+    non_network_factories.emplace(
+        url::kFileScheme, FileURLLoaderFactory::Create(
+                              storage_partition->browser_context()->GetPath(),
+                              storage_partition->browser_context()
+                                  ->GetSharedCorsOriginAccessList(),
+                              file_factory_priority));
   }
 
   switch (loader_type) {
@@ -213,19 +225,21 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
       GetContentClient()
           ->browser()
           ->RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
-              storage_partition->browser_context(), &non_network_factories);
+              storage_partition->browser_context(),
+              &non_network_uniquely_owned_factories);
       break;
     case LoaderType::kSubResource:
       GetContentClient()
           ->browser()
           ->RegisterNonNetworkSubresourceURLLoaderFactories(
-              worker_process_id, MSG_ROUTING_NONE, &non_network_factories);
+              worker_process_id, MSG_ROUTING_NONE,
+              &non_network_uniquely_owned_factories, &non_network_factories);
       break;
   }
 
   auto factory_bundle =
       std::make_unique<blink::PendingURLLoaderFactoryBundle>();
-  for (auto& pair : non_network_factories) {
+  for (auto& pair : non_network_uniquely_owned_factories) {
     const std::string& scheme = pair.first;
     std::unique_ptr<network::mojom::URLLoaderFactory> factory =
         std::move(pair.second);
@@ -236,19 +250,12 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
     factory_bundle->pending_scheme_specific_factories().emplace(
         scheme, std::move(factory_remote));
   }
-
-  if (file_support) {
-    auto file_factory = std::make_unique<FileURLLoaderFactory>(
-        storage_partition->browser_context()->GetPath(),
-        storage_partition->browser_context()->GetSharedCorsOriginAccessList(),
-        // USER_VISIBLE because worker script fetch may affect the UI.
-        base::TaskPriority::USER_VISIBLE);
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> file_factory_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::move(file_factory),
-        file_factory_remote.InitWithNewPipeAndPassReceiver());
+  for (auto& pair : non_network_factories) {
+    const std::string& scheme = pair.first;
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>& pending_remote =
+        pair.second;
     factory_bundle->pending_scheme_specific_factories().emplace(
-        url::kFileScheme, std::move(file_factory_remote));
+        scheme, std::move(pending_remote));
   }
 
   return factory_bundle;

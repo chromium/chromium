@@ -1238,17 +1238,28 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
   // to handle navigation URL requests for schemes not handled by the Network
-  // Service. Only called when the Network Service is enabled.
+  // Service.
+  //
   // Note that a RenderFrameHost or RenderProcessHost aren't passed in because
   // these can change during a navigation (e.g. depending on redirects).
   //
   // |ukm_source_id| can be used to record UKM events associated with the
   // navigation.
-  using NonNetworkURLLoaderFactoryMap =
+  //
+  // TODO(lukasza): https://crbug.com/1106995: Remove
+  // NonNetworkURLLoaderFactoryDeprecatedMap type alias (and parameters in
+  // methods below that use this type).  This type encourages incorrect lifetime
+  // of factories (the factories and their clones need to be fully owned by
+  // their receivers).
+  using NonNetworkURLLoaderFactoryDeprecatedMap =
       std::map<std::string, std::unique_ptr<network::mojom::URLLoaderFactory>>;
+  using NonNetworkURLLoaderFactoryMap =
+      std::map<std::string,
+               mojo::PendingRemote<network::mojom::URLLoaderFactory>>;
   virtual void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
       base::UkmSourceId ukm_source_id,
+      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory
@@ -1256,9 +1267,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // initiated by the browser process for schemes not handled by the Network
   // Service. The resulting |factories| must be used only by the browser
   // process. The caller must not send any of |factories| to any other process.
+  //
+  // TODO(lukasza): https://crbug.com/1106995: Deprecate and remove the
+  // |uniquely_owned_factories| parameter - it results in incorrect factory
+  // lifetimes.
   virtual void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       BrowserContext* browser_context,
-      NonNetworkURLLoaderFactoryMap* factories);
+      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory
   // implementations to handle service worker main/imported script requests
@@ -1267,9 +1282,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // ServiceWorkerImportedScriptUpdateCheck is enabled.
   // The resulting |factories| must be used only by the browser process. The
   // caller must not send any of |factories| to any other process.
+  //
+  // TODO(lukasza): https://crbug.com/1106995: Deprecate and remove the
+  // |uniquely_owned_factories| parameter - it results in incorrect factory
+  // lifetimes.
   virtual void RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
       BrowserContext* browser_context,
-      NonNetworkURLLoaderFactoryMap* factories);
+      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
   // to handle subresource URL requests for schemes not handled by the Network
@@ -1278,9 +1297,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   //   -downloads
   //   -service worker script when starting a service worker. In that case, the
   //    frame id will be MSG_ROUTING_NONE
+  //
+  // TODO(lukasza): https://crbug.com/1106995: Deprecate and remove the
+  // |uniquely_owned_factories| parameter - it results in incorrect factory
+  // lifetimes.
   virtual void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
+      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Describes the purpose of the factory in WillCreateURLLoaderFactory().

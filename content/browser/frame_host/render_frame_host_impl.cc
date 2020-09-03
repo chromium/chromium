@@ -6093,7 +6093,7 @@ void RenderFrameHostImpl::CommitNavigation(
           appcache_remote.Unbind();
     }
 
-    non_network_url_loader_factories_.clear();
+    non_network_uniquely_owned_factories_.clear();
 
     // Set up the default factory.
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -6126,7 +6126,7 @@ void RenderFrameHostImpl::CommitNavigation(
         // WebUIURLLoaderFactory will kill the renderer if it sees a request
         // with a non-chrome scheme. Register a URLLoaderFactory for the about
         // scheme so about:blank doesn't kill the renderer.
-        non_network_url_loader_factories_[url::kAboutScheme] =
+        non_network_uniquely_owned_factories_[url::kAboutScheme] =
             std::make_unique<AboutURLLoaderFactory>();
       } else {
         // This is a webui scheme that doesn't have webui bindings. Give it
@@ -6203,18 +6203,23 @@ void RenderFrameHostImpl::CommitNavigation(
     //
     // TODO(crbug.com/888079): In the future, use
     // GetOriginForURLLoaderFactory/GetOriginToCommit.
+    ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
     if ((common_params->url.SchemeIsFile() ||
          (common_params->url.IsAboutBlank() &&
           common_params->initiator_origin &&
           common_params->initiator_origin->scheme() == url::kFileScheme)) &&
         !navigation_to_web_bundle) {
-      auto file_factory = std::make_unique<FileURLLoaderFactory>(
-          browser_context->GetPath(),
-          browser_context->GetSharedCorsOriginAccessList(),
-          // A user-initiated navigation is USER_BLOCKING.
-          base::TaskPriority::USER_BLOCKING);
-      non_network_url_loader_factories_.emplace(url::kFileScheme,
-                                                std::move(file_factory));
+      // USER_BLOCKING because this scenario is exactly one of the examples
+      // given by the doc comment for USER_BLOCKING: Loading and rendering a web
+      // page after the user clicks a link.
+      base::TaskPriority file_factory_priority =
+          base::TaskPriority::USER_BLOCKING;
+      non_network_factories.emplace(
+          url::kFileScheme,
+          FileURLLoaderFactory::Create(
+              browser_context->GetPath(),
+              browser_context->GetSharedCorsOriginAccessList(),
+              file_factory_priority));
     }
 
 #if defined(OS_ANDROID)
@@ -6224,30 +6229,30 @@ void RenderFrameHostImpl::CommitNavigation(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-      non_network_url_loader_factories_.emplace(url::kContentScheme,
-                                                std::move(content_factory));
+      non_network_uniquely_owned_factories_.emplace(url::kContentScheme,
+                                                    std::move(content_factory));
     }
 #endif
 
     auto* partition =
         static_cast<StoragePartitionImpl*>(BrowserContext::GetStoragePartition(
             browser_context, GetSiteInstance()));
-    non_network_url_loader_factories_.emplace(
+    non_network_uniquely_owned_factories_.emplace(
         url::kFileSystemScheme, content::CreateFileSystemURLLoaderFactory(
                                     GetProcess()->GetID(), GetFrameTreeNodeId(),
                                     partition->GetFileSystemContext(),
                                     partition->GetPartitionDomain()));
 
-    non_network_url_loader_factories_.emplace(
+    non_network_uniquely_owned_factories_.emplace(
         url::kDataScheme, std::make_unique<DataURLLoaderFactory>());
 
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
             GetProcess()->GetID(), routing_id_,
-            &non_network_url_loader_factories_);
+            &non_network_uniquely_owned_factories_, &non_network_factories);
 
-    for (auto& factory : non_network_url_loader_factories_) {
+    for (auto& factory : non_network_uniquely_owned_factories_) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_factory_proxy;
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
@@ -6255,6 +6260,20 @@ void RenderFrameHostImpl::CommitNavigation(
       WillCreateURLLoaderFactory(main_world_origin_for_url_loader_factory,
                                  &factory_receiver);
       factory.second->Clone(std::move(factory_receiver));
+      subresource_loader_factories->pending_scheme_specific_factories().emplace(
+          factory.first, std::move(pending_factory_proxy));
+    }
+
+    for (auto& factory : non_network_factories) {
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_factory_proxy;
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
+          pending_factory_proxy.InitWithNewPipeAndPassReceiver();
+      WillCreateURLLoaderFactory(main_world_origin_for_url_loader_factory,
+                                 &factory_receiver);
+      mojo::Remote<network::mojom::URLLoaderFactory> remote(
+          std::move(factory.second));
+      remote->Clone(std::move(factory_receiver));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
           factory.first, std::move(pending_factory_proxy));
     }

@@ -238,10 +238,11 @@ ShellContentBrowserClient::GetNavigationUIData(
 void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
     base::UkmSourceId ukm_source_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  factories->emplace(
+  uniquely_owned_factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionNavigationURLLoaderFactory(
           web_contents->GetBrowserContext(), ukm_source_id,
@@ -251,7 +252,7 @@ void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 void ShellContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryMap* factories) {
+        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
   factories->emplace(
@@ -263,7 +264,7 @@ void ShellContentBrowserClient::
 void ShellContentBrowserClient::
     RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryMap* factories) {
+        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
   factories->emplace(
@@ -275,11 +276,13 @@ void ShellContentBrowserClient::
 void ShellContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
   auto factory = extensions::CreateExtensionURLLoaderFactory(render_process_id,
                                                              render_frame_id);
   if (factory)
-    factories->emplace(extensions::kExtensionScheme, std::move(factory));
+    uniquely_owned_factories->emplace(extensions::kExtensionScheme,
+                                      std::move(factory));
 }
 
 bool ShellContentBrowserClient::WillCreateURLLoaderFactory(

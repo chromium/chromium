@@ -541,10 +541,9 @@ network::mojom::URLLoaderFactory* ExtensionDownloader::GetURLLoaderFactoryToUse(
 
   // For file:// URL support, since we only issue "no-cors" requests with this
   // factory, we can pass nullptr for the second argument.
-  auto file_url_loader_factory = content::CreateFileURLLoaderFactory(
+  file_url_loader_factory_.Bind(content::CreateFileURLLoaderFactory(
       profile_path_for_url_loader_factory_,
-      nullptr /* shared_cors_origin_access_list */);
-  file_url_loader_factory_ = std::move(file_url_loader_factory);
+      nullptr /* shared_cors_origin_access_list */));
   return file_url_loader_factory_.get();
 }
 

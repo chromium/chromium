@@ -4480,12 +4480,13 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
     base::UkmSourceId ukm_source_id,
+    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
 #if BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_CHROMEOS)
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  factories->emplace(
+  uniquely_owned_factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionNavigationURLLoaderFactory(
           web_contents->GetBrowserContext(), ukm_source_id,
@@ -4494,9 +4495,10 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 #if defined(OS_CHROMEOS)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  factories->emplace(content::kExternalFileScheme,
-                     std::make_unique<chromeos::ExternalFileURLLoaderFactory>(
-                         profile, content::ChildProcessHost::kInvalidUniqueID));
+  uniquely_owned_factories->emplace(
+      content::kExternalFileScheme,
+      std::make_unique<chromeos::ExternalFileURLLoaderFactory>(
+          profile, content::ChildProcessHost::kInvalidUniqueID));
 #endif  // defined(OS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_CHROMEOS)
 }
@@ -4504,7 +4506,7 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 void ChromeContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryMap* factories) {
+        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(browser_context);
   DCHECK(factories);
@@ -4518,7 +4520,7 @@ void ChromeContentBrowserClient::
 void ChromeContentBrowserClient::
     RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
         content::BrowserContext* browser_context,
-        NonNetworkURLLoaderFactoryMap* factories) {
+        NonNetworkURLLoaderFactoryDeprecatedMap* factories) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(browser_context);
   DCHECK(factories);
@@ -4613,6 +4615,7 @@ void ChromeContentBrowserClient::
     RegisterNonNetworkSubresourceURLLoaderFactories(
         int render_process_id,
         int render_frame_id,
+        NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
         NonNetworkURLLoaderFactoryMap* factories) {
 #if defined(OS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS)
   content::RenderFrameHost* frame_host =
@@ -4624,9 +4627,10 @@ void ChromeContentBrowserClient::
   if (web_contents) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    factories->emplace(content::kExternalFileScheme,
-                       std::make_unique<chromeos::ExternalFileURLLoaderFactory>(
-                           profile, render_process_id));
+    uniquely_owned_factories->emplace(
+        content::kExternalFileScheme,
+        std::make_unique<chromeos::ExternalFileURLLoaderFactory>(
+            profile, render_process_id));
   }
 #endif  // defined(OS_CHROMEOS)
 
@@ -4634,7 +4638,8 @@ void ChromeContentBrowserClient::
   auto factory = extensions::CreateExtensionURLLoaderFactory(render_process_id,
                                                              render_frame_id);
   if (factory)
-    factories->emplace(extensions::kExtensionScheme, std::move(factory));
+    uniquely_owned_factories->emplace(extensions::kExtensionScheme,
+                                      std::move(factory));
 
   // This logic should match
   // ChromeExtensionWebContentsObserver::RenderFrameCreated.
@@ -4648,7 +4653,7 @@ void ChromeContentBrowserClient::
   // The test below matches what's done by ShouldServiceRequestIOThread in
   // local_ntp_source.cc.
   if (instant_service->IsInstantProcess(render_process_id)) {
-    factories->emplace(
+    uniquely_owned_factories->emplace(
         chrome::kChromeSearchScheme,
         content::CreateWebUIURLLoader(
             frame_host, chrome::kChromeSearchScheme,
@@ -4690,7 +4695,7 @@ void ChromeContentBrowserClient::
     allowed_webui_hosts.emplace_back(chrome::kChromeUIAppIconHost);
   }
   if (!allowed_webui_hosts.empty()) {
-    factories->emplace(
+    uniquely_owned_factories->emplace(
         content::kChromeUIScheme,
         content::CreateWebUIURLLoader(frame_host, content::kChromeUIScheme,
                                       std::move(allowed_webui_hosts)));
@@ -4702,8 +4707,9 @@ void ChromeContentBrowserClient::
       extensions::ProcessManager::Get(web_contents->GetBrowserContext())
           ->GetBackgroundHostForExtension(extension->id());
   if (host) {
-    factories->emplace(url::kFileScheme, std::make_unique<FileURLLoaderFactory>(
-                                             render_process_id));
+    uniquely_owned_factories->emplace(
+        url::kFileScheme,
+        std::make_unique<FileURLLoaderFactory>(render_process_id));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }

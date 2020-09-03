@@ -1966,7 +1966,8 @@ ServiceWorkerContextWrapper::
     CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
         BrowserContext* browser_context) {
   DCHECK(blink::ServiceWorkerUtils::IsImportedScriptUpdateCheckEnabled());
-  ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
+  ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
+      non_network_factories;
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(

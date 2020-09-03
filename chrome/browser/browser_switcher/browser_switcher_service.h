@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
@@ -91,7 +92,7 @@ class XmlDownloader {
 
   network::mojom::URLLoaderFactory* GetURLLoaderFactoryForURL(const GURL& url);
 
-  std::unique_ptr<network::mojom::URLLoaderFactory> file_url_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> file_url_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> other_url_factory_;
 
   // This |BrowserSwitcherService| owns this object.

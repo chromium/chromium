@@ -253,6 +253,7 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
 
     network::mojom::URLLoaderFactory* factory = nullptr;
     std::unique_ptr<network::mojom::URLLoaderFactory> url_loader_factory;
+    mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
     auto* rfh = RenderFrameHostImpl::FromID(render_process_host_id,
                                             render_frame_routing_id);
 
@@ -264,10 +265,10 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
       url_loader_factory = std::make_unique<DataURLLoaderFactory>();
       factory = url_loader_factory.get();
     } else if (url.SchemeIsFile()) {
-      url_loader_factory = std::make_unique<FileURLLoaderFactory>(
+      factory_remote.Bind(FileURLLoaderFactory::Create(
           context->GetPath(), context->GetSharedCorsOriginAccessList(),
-          base::TaskPriority::USER_VISIBLE);
-      factory = url_loader_factory.get();
+          base::TaskPriority::USER_VISIBLE));
+      factory = factory_remote.get();
     } else if (url.SchemeIsFileSystem() && rfh) {
       auto* storage_partition_impl =
           static_cast<StoragePartitionImpl*>(storage_partition);

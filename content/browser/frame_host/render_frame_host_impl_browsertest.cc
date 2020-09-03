@@ -141,6 +141,7 @@ class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
       base::UkmSourceId ukm_source_id,
+      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories) override {
     auto trustme_factory = std::make_unique<network::TestURLLoaderFactory>();
     auto trustmeifembeddingsecure_factory =
@@ -150,9 +151,10 @@ class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
     trustme_factory->AddResponse(kTrustMeUrl, response_body);
     trustmeifembeddingsecure_factory->AddResponse(kTrustMeIfEmbeddingSecureUrl,
                                                   response_body);
-    factories->emplace("trustme", std::move(trustme_factory));
-    factories->emplace("trustmeifembeddingsecure",
-                       std::move(trustmeifembeddingsecure_factory));
+    uniquely_owned_factories->emplace("trustme", std::move(trustme_factory));
+    uniquely_owned_factories->emplace(
+        "trustmeifembeddingsecure",
+        std::move(trustmeifembeddingsecure_factory));
   }
 
  private:

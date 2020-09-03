@@ -2831,8 +2831,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // A collection of non-network URLLoaderFactory implementations which are used
   // to service any supported non-network subresource requests for the currently
   // committed navigation.
-  ContentBrowserClient::NonNetworkURLLoaderFactoryMap
-      non_network_url_loader_factories_;
+  ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
+      non_network_uniquely_owned_factories_;
 
   // Renderer-side states that blocks fast shutdown of the frame.
   bool has_before_unload_handler_ = false;

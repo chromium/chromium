@@ -1257,15 +1257,18 @@ EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
 
   factory_bundle->set_bypass_redirect_checks(bypass_redirect_checks);
 
+  ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
+      non_network_uniquely_owned_factories;
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
-  non_network_factories[url::kDataScheme] =
+  non_network_uniquely_owned_factories[url::kDataScheme] =
       std::make_unique<DataURLLoaderFactory>();
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkSubresourceURLLoaderFactories(
-          rph->GetID(), MSG_ROUTING_NONE, &non_network_factories);
+          rph->GetID(), MSG_ROUTING_NONE, &non_network_uniquely_owned_factories,
+          &non_network_factories);
 
-  for (auto& pair : non_network_factories) {
+  for (auto& pair : non_network_uniquely_owned_factories) {
     const std::string& scheme = pair.first;
     std::unique_ptr<network::mojom::URLLoaderFactory> factory =
         std::move(pair.second);
@@ -1281,6 +1284,22 @@ EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
     factory_bundle->pending_scheme_specific_factories().emplace(
         scheme, std::move(factory_remote));
   }
+
+  for (auto& pair : non_network_factories) {
+    const std::string& scheme = pair.first;
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>& pending_remote =
+        pair.second;
+
+    // To be safe, ignore schemes that aren't allowed to register service
+    // workers. We assume that importScripts and fetch() should fail on such
+    // schemes.
+    if (!base::Contains(GetServiceWorkerSchemes(), scheme))
+      continue;
+
+    factory_bundle->pending_scheme_specific_factories().emplace(
+        scheme, std::move(pending_remote));
+  }
+
   return factory_bundle;
 }
 

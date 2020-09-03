@@ -163,6 +163,7 @@ class DownloadTestContentBrowserClient : public TestContentBrowserClient {
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
       base::UkmSourceId ukm_source_id,
+      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories) override {
     if (!enable_register_non_network_url_loader_)
       return;
@@ -173,8 +174,8 @@ class DownloadTestContentBrowserClient : public TestContentBrowserClient {
             "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
             "This is a test for download mhtml through non http/https urls",
             /* network_accessed */ true, net::OK);
-    factories->emplace(url::kContentScheme,
-                       std::move(content_url_loader_factory));
+    uniquely_owned_factories->emplace(url::kContentScheme,
+                                      std::move(content_url_loader_factory));
 #endif  // OS_ANDROID
 
     auto file_url_loader_factory =
@@ -182,7 +183,8 @@ class DownloadTestContentBrowserClient : public TestContentBrowserClient {
             "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
             "This is a test for download mhtml through non http/https urls",
             /* network_accessed */ true, net::OK);
-    factories->emplace(url::kFileScheme, std::move(file_url_loader_factory));
+    uniquely_owned_factories->emplace(url::kFileScheme,
+                                      std::move(file_url_loader_factory));
   }
 
  private:
