@@ -1514,11 +1514,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     if (self.sharedState.tableView.backgroundView == self.emptyViewBackground) {
       self.sharedState.tableView.backgroundView = nil;
     }
+    self.navigationItem.searchController = self.searchController;
     if ([self isDisplayingBookmarkRoot]) {
       self.navigationItem.largeTitleDisplayMode =
           UINavigationItemLargeTitleDisplayModeAutomatic;
     }
-    self.navigationItem.searchController = self.searchController;
   } else {
     self.sharedState.tableView.backgroundView = nil;
   }
