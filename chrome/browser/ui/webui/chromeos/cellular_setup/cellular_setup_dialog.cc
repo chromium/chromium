@@ -53,16 +53,14 @@ void CellularSetupDialog::ShowDialog(const std::string& cellular_network_guid) {
 
 CellularSetupDialog::CellularSetupDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUICellularSetupUrl),
-                              base::string16()) {}
+                              base::string16()) {
+  set_can_resize(false);
+}
 
 CellularSetupDialog::~CellularSetupDialog() = default;
 
 void CellularSetupDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDialogWidthPx, kDialogHeightPx);
-}
-
-bool CellularSetupDialog::CanResizeDialog() const {
-  return false;
 }
 
 void CellularSetupDialog::OnDialogClosed(const std::string& json_retval) {

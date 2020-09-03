@@ -81,7 +81,6 @@ class BookmarkEditorView : public BookmarkEditor,
   // views::DialogDelegateView:
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   ui::ModalType GetModalType() const override;
-  bool CanResize() const override;
   bool ShouldShowCloseButton() const override;
   base::string16 GetWindowTitle() const override;
   bool Accept() override;

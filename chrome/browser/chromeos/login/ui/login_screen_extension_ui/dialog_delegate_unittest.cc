@@ -59,7 +59,7 @@ TEST_F(DialogDelegateUnittest, Test) {
                 extensions::Extension::GetBaseURLFromExtensionId(kExtensionId),
                 kResourcePath),
             delegate->GetDialogContentURL());
-  EXPECT_FALSE(delegate->CanResizeDialog());
+  EXPECT_FALSE(delegate->can_resize());
   EXPECT_TRUE(delegate->ShouldShowDialogTitle());
   EXPECT_TRUE(delegate->ShouldCenterDialogTitleText());
   EXPECT_FALSE(delegate->ShouldCloseDialogOnEscape());

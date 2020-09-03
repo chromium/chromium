@@ -65,6 +65,7 @@ CrostiniUpgraderDialog::CrostiniUpgraderDialog(
   crostini::CrostiniManager::GetForProfile(profile_)->SetCrostiniDialogStatus(
       crostini::DialogType::UPGRADER, true);
   set_can_minimize(true);
+  set_can_resize(false);
 }
 
 CrostiniUpgraderDialog::~CrostiniUpgraderDialog() {
@@ -88,10 +89,6 @@ bool CrostiniUpgraderDialog::ShouldShowDialogTitle() const {
 }
 
 bool CrostiniUpgraderDialog::ShouldCloseDialogOnEscape() const {
-  return false;
-}
-
-bool CrostiniUpgraderDialog::CanResizeDialog() const {
   return false;
 }
 

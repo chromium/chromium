@@ -164,33 +164,24 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
 // OverlayWindow implementation of WidgetDelegate.
 class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
  public:
-  explicit OverlayWindowWidgetDelegate(views::Widget* widget)
-      : widget_(widget) {
+  OverlayWindowWidgetDelegate() {
+    SetCanResize(true);
+    SetModalType(ui::MODAL_TYPE_NONE);
+    // While not shown, the title is still used to identify the window in the
+    // window switcher.
+    SetShowTitle(false);
+    SetTitle(IDS_PICTURE_IN_PICTURE_TITLE_TEXT);
     SetOwnedByWidget(true);
-    DCHECK(widget_);
   }
   ~OverlayWindowWidgetDelegate() override = default;
 
   // views::WidgetDelegate:
-  bool CanResize() const override { return true; }
-  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_NONE; }
-  base::string16 GetWindowTitle() const override {
-    // While the window title is not shown on the window itself, it is used to
-    // identify the window on the system tray.
-    return l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_TITLE_TEXT);
-  }
-  bool ShouldShowWindowTitle() const override { return false; }
-  views::Widget* GetWidget() override { return widget_; }
-  const views::Widget* GetWidget() const override { return widget_; }
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     return std::make_unique<OverlayWindowFrameView>(widget);
   }
 
  private:
-  // Owns OverlayWindowWidgetDelegate.
-  views::Widget* widget_;
-
   DISALLOW_COPY_AND_ASSIGN(OverlayWindowWidgetDelegate);
 };
 
@@ -212,8 +203,7 @@ std::unique_ptr<content::OverlayWindow> OverlayWindowViews::Create(
   params.remove_standard_frame = true;
   params.name = "PictureInPictureWindow";
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  // Set WidgetDelegate for more control over |widget_|.
-  params.delegate = new OverlayWindowWidgetDelegate(overlay_window.get());
+  params.delegate = new OverlayWindowWidgetDelegate();
 
   overlay_window->Init(std::move(params));
   overlay_window->OnRootViewReady();

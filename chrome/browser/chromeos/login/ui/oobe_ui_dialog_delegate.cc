@@ -300,6 +300,7 @@ class CaptivePortalDialogDelegate
 OobeUIDialogDelegate::OobeUIDialogDelegate(
     base::WeakPtr<LoginDisplayHostMojo> controller)
     : controller_(controller) {
+  set_can_resize(false);
   keyboard_observer_.Add(ChromeKeyboardControllerClient::Get());
 
   for (size_t i = 0; i < ash::kLoginAcceleratorDataLength; ++i) {
@@ -450,10 +451,6 @@ void OobeUIDialogDelegate::GetWebUIMessageHandlers(
 
 void OobeUIDialogDelegate::GetDialogSize(gfx::Size* size) const {
   // Dialog will be resized externally by LayoutWidgetDelegateView.
-}
-
-bool OobeUIDialogDelegate::CanResizeDialog() const {
-  return false;
 }
 
 std::string OobeUIDialogDelegate::GetDialogArgs() const {

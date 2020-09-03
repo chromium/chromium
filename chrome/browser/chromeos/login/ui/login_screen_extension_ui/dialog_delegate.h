@@ -46,7 +46,6 @@ class DialogDelegate : public ui::WebDialogDelegate {
   ui::ModalType GetDialogModalType() const override;
   base::string16 GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
-  bool CanResizeDialog() const override;
   void GetDialogSize(gfx::Size* size) const override;
   bool OnDialogCloseRequested() override;
   void GetWebUIMessageHandlers(

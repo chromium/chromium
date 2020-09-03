@@ -116,6 +116,7 @@ void CertificateSelector::CertificateTableModel::SetObserver(
 CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
                                          content::WebContents* web_contents)
     : web_contents_(web_contents) {
+  SetCanResize(true);
   CHECK(web_contents_);
 
   view_cert_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
@@ -262,10 +263,6 @@ bool CertificateSelector::Accept() {
 
   DCHECK_LT(static_cast<size_t>(selected), identities_.size());
   AcceptCertificate(std::move(identities_[selected]));
-  return true;
-}
-
-bool CertificateSelector::CanResize() const {
   return true;
 }
 

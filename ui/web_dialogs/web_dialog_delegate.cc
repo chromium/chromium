@@ -20,10 +20,6 @@ void WebDialogDelegate::GetMinimumDialogSize(gfx::Size* size) const {
   GetDialogSize(size);
 }
 
-bool WebDialogDelegate::CanResizeDialog() const {
-  return true;
-}
-
 bool WebDialogDelegate::CanMaximizeDialog() const {
   return false;
 }

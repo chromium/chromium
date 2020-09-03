@@ -91,7 +91,6 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
   void GetDialogSize(gfx::Size* size) const override;
-  bool CanResizeDialog() const override;
   std::string GetDialogArgs() const override;
   // NOTE: This function starts cleanup sequence that would call FinishCleanup
   // and delete this object in the end.

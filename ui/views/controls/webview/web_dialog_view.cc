@@ -80,6 +80,7 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
       delegate_(delegate),
       web_view_(new ObservableWebView(context, delegate)) {
   SetCanMinimize(!delegate_ || delegate_->can_minimize());
+  SetCanResize(!delegate_ || delegate_->can_resize());
   SetModalType(GetDialogModalType());
   web_view_->set_allow_accelerators(true);
   AddChildView(web_view_);
@@ -176,12 +177,6 @@ views::CloseRequestResult WebDialogView::OnWindowCloseRequested() {
 
 bool WebDialogView::OnCloseRequested(Widget::ClosedReason close_reason) {
   return !delegate_ || delegate_->DeprecatedOnDialogCloseRequested();
-}
-
-bool WebDialogView::CanResize() const {
-  if (delegate_)
-    return delegate_->CanResizeDialog();
-  return true;
 }
 
 bool WebDialogView::CanMaximize() const {

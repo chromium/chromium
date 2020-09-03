@@ -79,7 +79,8 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   // Returns true if the dialog can ever be resized. Default implementation
   // returns true.
-  virtual bool CanResizeDialog() const;
+  bool can_resize() const { return can_resize_; }
+  void set_can_resize(bool can_resize) { can_resize_ = can_resize; }
 
   // Returns true if the dialog can ever be maximized. Default implementation
   // returns false.
@@ -196,6 +197,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
  private:
   bool can_minimize_ = false;
+  bool can_resize_ = true;
 };
 
 }  // namespace ui

@@ -102,6 +102,7 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
 SystemWebDialogDelegate::SystemWebDialogDelegate(const GURL& gurl,
                                                  const base::string16& title)
     : gurl_(gurl), title_(title), modal_type_(ui::MODAL_TYPE_NONE) {
+  set_can_resize(false);
   switch (session_manager::SessionManager::Get()->session_state()) {
     // Normally system dialogs are not modal.
     case session_manager::SessionState::UNKNOWN:
@@ -159,10 +160,6 @@ void SystemWebDialogDelegate::GetWebUIMessageHandlers(
 
 void SystemWebDialogDelegate::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDialogWidth, kDialogHeight);
-}
-
-bool SystemWebDialogDelegate::CanResizeDialog() const {
-  return false;
 }
 
 std::string SystemWebDialogDelegate::GetDialogArgs() const {

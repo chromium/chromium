@@ -44,6 +44,7 @@ namespace chromeos {
 NetworkPortalWebDialog::NetworkPortalWebDialog(
     base::WeakPtr<NetworkPortalNotificationController> controller)
     : controller_(controller), widget_(nullptr) {
+  set_can_resize(false);
 }
 
 NetworkPortalWebDialog::~NetworkPortalWebDialog() {
@@ -83,10 +84,6 @@ void NetworkPortalWebDialog::GetDialogSize(gfx::Size* size) const {
 
 std::string NetworkPortalWebDialog::GetDialogArgs() const {
   return std::string();
-}
-
-bool NetworkPortalWebDialog::CanResizeDialog() const {
-  return false;
 }
 
 void NetworkPortalWebDialog::OnDialogClosed(const std::string& json_retval) {

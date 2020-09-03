@@ -93,7 +93,6 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
 
   // WidgetDelegate:
   bool OnCloseRequested(Widget::ClosedReason close_reason) override;
-  bool CanResize() const override;
   bool CanMaximize() const override;
   base::string16 GetWindowTitle() const override;
   base::string16 GetAccessibleWindowTitle() const override;

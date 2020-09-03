@@ -62,7 +62,9 @@ void MobileSetupDialog::ShowByNetworkId(const std::string& network_id) {
 MobileSetupDialog::MobileSetupDialog(const NetworkState& network)
     : SystemWebDialogDelegate(
           GetURL(network),
-          l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE)) {}
+          l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE)) {
+  set_can_resize(true);
+}
 
 MobileSetupDialog::~MobileSetupDialog() {
   dialog_instance = nullptr;
@@ -70,10 +72,6 @@ MobileSetupDialog::~MobileSetupDialog() {
 
 void MobileSetupDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kMobileSetupDialogWidth, kMobileSetupDialogHeight);
-}
-
-bool MobileSetupDialog::CanResizeDialog() const {
-  return true;
 }
 
 std::string MobileSetupDialog::GetDialogArgs() const {

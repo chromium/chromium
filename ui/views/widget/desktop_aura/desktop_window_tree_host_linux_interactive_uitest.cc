@@ -214,25 +214,17 @@ class HitTestNonClientFrameView : public NativeFrameView {
 // This is used to return HitTestNonClientFrameView on create call.
 class HitTestWidgetDelegate : public WidgetDelegate {
  public:
-  explicit HitTestWidgetDelegate(Widget* widget) : widget_(widget) {
+  HitTestWidgetDelegate() {
+    SetCanResize(true);
     SetOwnedByWidget(true);
   }
   ~HitTestWidgetDelegate() override = default;
 
-  void set_can_resize(bool can_resize) {
-    can_resize_ = can_resize;
-    widget_->OnSizeConstraintsChanged();
-  }
-
   HitTestNonClientFrameView* frame_view() { return frame_view_; }
 
   // WidgetDelegate:
-  bool CanResize() const override { return can_resize_; }
-  Widget* GetWidget() override { return widget_; }
-  Widget* GetWidget() const override { return widget_; }
   std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
       Widget* widget) override {
-    DCHECK_EQ(widget_, widget);
     DCHECK(!frame_view_);
     auto frame_view = std::make_unique<HitTestNonClientFrameView>(widget);
     frame_view_ = frame_view.get();
@@ -240,9 +232,7 @@ class HitTestWidgetDelegate : public WidgetDelegate {
   }
 
  private:
-  Widget* const widget_;
   HitTestNonClientFrameView* frame_view_ = nullptr;
-  bool can_resize_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(HitTestWidgetDelegate);
 };
@@ -289,7 +279,7 @@ class DesktopWindowTreeHostLinuxTest
  protected:
   Widget* BuildTopLevelDesktopWidget(const gfx::Rect& bounds) {
     Widget* toplevel = new Widget;
-    delegate_ = new HitTestWidgetDelegate(toplevel);
+    delegate_ = new HitTestWidgetDelegate();
     Widget::InitParams toplevel_params =
         CreateParams(Widget::InitParams::TYPE_WINDOW);
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
@@ -355,7 +345,6 @@ TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {
   host_->DestroyNonClientEventFilter();
   host_->non_client_window_event_filter_ =
       std::make_unique<WindowEventFilterLinux>(host_, handler.get());
-  delegate_->set_can_resize(true);
 
   // It is not important to use pointer locations corresponding to the hittests
   // values used in the browser itself, because we fake the hit test results,

@@ -25,7 +25,6 @@ class CellularSetupDialog : public SystemWebDialogDelegate {
 
   // ui::WebDialogDelegate
   void GetDialogSize(gfx::Size* size) const override;
-  bool CanResizeDialog() const override;
   void OnDialogClosed(const std::string& json_retval) override;
 
  private:

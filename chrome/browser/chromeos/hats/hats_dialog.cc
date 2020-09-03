@@ -132,6 +132,7 @@ void HatsDialog::Show(const std::string& site_context) {
 HatsDialog::HatsDialog(const std::string& trigger_id, Profile* user_profile)
     : trigger_id_(trigger_id), user_profile_(user_profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  set_can_resize(false);
 }
 
 HatsDialog::~HatsDialog() {
@@ -156,10 +157,6 @@ void HatsDialog::GetWebUIMessageHandlers(
 
 void HatsDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDefaultWidth, kDefaultHeight);
-}
-
-bool HatsDialog::CanResizeDialog() const {
-  return false;
 }
 
 std::string HatsDialog::GetDialogArgs() const {

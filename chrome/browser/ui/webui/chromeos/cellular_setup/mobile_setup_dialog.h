@@ -24,7 +24,6 @@ class MobileSetupDialog : public SystemWebDialogDelegate {
 
   // ui::WebDialogDelegate
   void GetDialogSize(gfx::Size* size) const override;
-  bool CanResizeDialog() const override;
   std::string GetDialogArgs() const override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;

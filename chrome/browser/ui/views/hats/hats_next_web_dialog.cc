@@ -139,10 +139,6 @@ void HatsNextWebDialog::GetWebUIMessageHandlers(
 
 void HatsNextWebDialog::GetDialogSize(gfx::Size* size) const {}
 
-bool HatsNextWebDialog::CanResizeDialog() const {
-  return false;
-}
-
 std::string HatsNextWebDialog::GetDialogArgs() const {
   return std::string();
 }
@@ -197,6 +193,7 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
       timeout_(timeout) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
+  set_can_resize(false);
   set_close_on_deactivate(false);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);

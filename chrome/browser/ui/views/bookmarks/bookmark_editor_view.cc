@@ -71,6 +71,7 @@ BookmarkEditorView::BookmarkEditorView(
   DCHECK(profile);
   DCHECK(bb_model_);
   DCHECK(bb_model_->client()->CanBeEditedByUser(parent));
+  SetCanResize(true);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_SAVE));
   if (show_tree_) {
     new_folder_button_ =
@@ -103,10 +104,6 @@ bool BookmarkEditorView::IsDialogButtonEnabled(ui::DialogButton button) const {
 
 ui::ModalType BookmarkEditorView::GetModalType() const {
   return ui::MODAL_TYPE_WINDOW;
-}
-
-bool BookmarkEditorView::CanResize() const {
-  return true;
 }
 
 bool BookmarkEditorView::ShouldShowCloseButton() const {

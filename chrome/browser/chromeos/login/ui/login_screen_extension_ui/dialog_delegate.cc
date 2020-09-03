@@ -27,7 +27,9 @@ DialogDelegate::DialogDelegate(CreateOptions* create_options)
     : extension_name_(create_options->extension_name),
       content_url_(create_options->content_url),
       can_close_(create_options->can_be_closed_by_user),
-      close_callback_(std::move(create_options->close_callback)) {}
+      close_callback_(std::move(create_options->close_callback)) {
+  set_can_resize(false);
+}
 
 DialogDelegate::~DialogDelegate() = default;
 
@@ -54,10 +56,6 @@ void DialogDelegate::GetDialogSize(gfx::Size* size) const {
 
 bool DialogDelegate::OnDialogCloseRequested() {
   return can_close_;
-}
-
-bool DialogDelegate::CanResizeDialog() const {
-  return false;
 }
 
 void DialogDelegate::GetWebUIMessageHandlers(

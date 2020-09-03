@@ -65,7 +65,6 @@ class CertificateSelector : public views::DialogDelegateView,
 
   // DialogDelegateView:
   bool Accept() override;
-  bool CanResize() const override;
   base::string16 GetWindowTitle() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;

@@ -81,6 +81,7 @@ HatsWebDialog::HatsWebDialog(Browser* browser, const std::string& site_id)
           Profile::OTRProfileID::CreateUnique("HaTS:WebDialog"))),
       browser_(browser),
       site_id_(site_id) {
+  set_can_resize(false);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
 
@@ -129,10 +130,6 @@ void HatsWebDialog::GetWebUIMessageHandlers(
 
 void HatsWebDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDefaultHatsDialogWidth, kDefaultHatsDialogHeight);
-}
-
-bool HatsWebDialog::CanResizeDialog() const {
-  return false;
 }
 
 std::string HatsWebDialog::GetDialogArgs() const {
