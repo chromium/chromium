@@ -163,21 +163,13 @@ void LayoutReplaced::RecalcVisualOverflow() {
 
 void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  // In cases where both size dimensions are overridden, or we apply size
-  // containment we don't need to compute sizing information, since the final
-  // result does not depend on it.
-  // TODO(vmpstr): The only difference between this and calling
-  // ComputeIntrinsicSizingInfo below is that the latter may use an aspect ratio
-  // from width and height. See if the two code paths can be unified.
-  if ((HasOverrideIntrinsicContentLogicalWidth() &&
-       HasOverrideIntrinsicContentLogicalHeight()) ||
-      ShouldApplySizeContainment()) {
+  // In cases where we apply size containment we don't need to compute sizing
+  // information, since the final result does not depend on it.
+  if (ShouldApplySizeContainment()) {
     // Reset the size in case it was already populated.
     intrinsic_sizing_info.size = FloatSize();
 
-    // If any of the dimensions are overriden, set those sizes. Note that we
-    // have to check individual dimensions because we might reach here because
-    // of size-containment.
+    // If any of the dimensions are overridden, set those sizes.
     if (HasOverrideIntrinsicContentLogicalWidth()) {
       intrinsic_sizing_info.size.SetWidth(
           OverrideIntrinsicContentLogicalWidth().ToFloat());
@@ -189,16 +181,12 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
     return;
   }
 
-  ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
+  // Size overrides only apply if there is size-containment, which is checked
+  // above.
+  DCHECK(!HasOverrideIntrinsicContentLogicalWidth());
+  DCHECK(!HasOverrideIntrinsicContentLogicalHeight());
 
-  // The above call to ComputeIntrinsicSizingInfo should have used the override
-  // if it was set.
-  DCHECK(!HasOverrideIntrinsicContentLogicalWidth() ||
-         OverrideIntrinsicContentLogicalWidth() ==
-             intrinsic_sizing_info.size.Width());
-  DCHECK(!HasOverrideIntrinsicContentLogicalHeight() ||
-         OverrideIntrinsicContentLogicalHeight() ==
-             intrinsic_sizing_info.size.Height());
+  ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
 
   // Update our intrinsic size to match what was computed, so that
   // when we constrain the size, the correct intrinsic size will be

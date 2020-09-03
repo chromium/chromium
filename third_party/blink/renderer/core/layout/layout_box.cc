@@ -3967,9 +3967,6 @@ static inline const Length& HeightForDocumentElement(const Document& document) {
 void LayoutBox::ComputeLogicalHeight(
     LogicalExtentComputedValues& computed_values) const {
   LayoutUnit height;
-  // TODO(962979): Implement grid layout with display locking. We need to figure
-  // out what happens here if IsLayoutGrid() is true and size containment is
-  // specified while the box is locked.
   if (HasOverrideIntrinsicContentLogicalHeight()) {
     height = OverrideIntrinsicContentLogicalHeight() +
              BorderAndPaddingLogicalHeight() + ScrollbarLogicalHeight();
