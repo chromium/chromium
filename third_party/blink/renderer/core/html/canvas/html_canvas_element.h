@@ -248,6 +248,8 @@ class CORE_EXPORT HTMLCanvasElement final
   static void RegisterRenderingContextFactory(
       std::unique_ptr<CanvasRenderingContextFactory>);
 
+  bool StyleChangeNeedsDidDraw(const ComputedStyle* old_style,
+                               const ComputedStyle& new_style);
   void StyleDidChange(const ComputedStyle* old_style,
                       const ComputedStyle& new_style);
   void LayoutObjectDestroyed();
