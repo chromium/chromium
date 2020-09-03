@@ -6,10 +6,3 @@ include_rules = [
   "+sandbox",
   "+ui/android",
 ]
-
-specific_include_rules = {
-  "PhotoPickerDialog\.java": [
-    # TODO(crbug.com/470582): remove this exemption.
-    "+base/android/java/src/org/chromium/base/ApplicationStatus.java",
-  ]
-}

@@ -41,4 +41,7 @@ public interface PhotoPickerListener {
      * @param photos The photos that were selected.
      */
     void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos);
+
+    /** Called when the dialog has been dismissed. */
+    void onPhotoPickerDismissed();
 }

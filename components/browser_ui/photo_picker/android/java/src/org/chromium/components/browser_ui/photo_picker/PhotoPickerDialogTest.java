@@ -29,7 +29,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -55,7 +54,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Tests for the PhotoPickerDialog class.
  */
-@DisabledTest(message = "https://crbug.com/1123848")
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         implements PhotoPickerListener, SelectionObserver<PickerBitmap>,
@@ -99,6 +97,9 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     // The list of currently selected photos (built piecemeal).
     private List<PickerBitmap> mCurrentPhotoSelection;
 
+    // True when {@link onPhotoPickerDismissed} has been called.
+    private boolean mDismissed;
+
     // A callback that fires when something is selected in the dialog.
     public final CallbackHelper mOnSelectionCallback = new CallbackHelper();
 
@@ -134,6 +135,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     @After
     public void tearDown() throws Exception {
+        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> { return mDismissed; }));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
 
@@ -183,6 +185,12 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         mLastSelectedPhotos = photos != null ? photos.clone() : null;
         if (mLastSelectedPhotos != null) Arrays.sort(mLastSelectedPhotos);
         mOnActionCallback.notifyCalled();
+    }
+
+    @Override
+    public void onPhotoPickerDismissed() {
+        Assert.assertFalse(mDismissed);
+        mDismissed = true;
     }
 
     // DecoderServiceHost.DecoderStatusCallback:
@@ -379,8 +387,6 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
         Assert.assertNull(mLastSelectedPhotos);
         Assert.assertEquals(PhotoPickerAction.CANCEL, mLastActionRecorded);
-
-        dismissDialog();
     }
 
     @Test
@@ -409,8 +415,6 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         Assert.assertEquals(1, mLastSelectedPhotos.length);
         Assert.assertEquals(PhotoPickerAction.PHOTOS_SELECTED, mLastActionRecorded);
         Assert.assertEquals(mTestFiles.get(1).getUri().getPath(), mLastSelectedPhotos[0].getPath());
-
-        dismissDialog();
     }
 
     @Test
@@ -446,8 +450,6 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         Assert.assertEquals(mTestFiles.get(0).getUri().getPath(), mLastSelectedPhotos[0].getPath());
         Assert.assertEquals(mTestFiles.get(2).getUri().getPath(), mLastSelectedPhotos[1].getPath());
         Assert.assertEquals(mTestFiles.get(4).getUri().getPath(), mLastSelectedPhotos[2].getPath());
-
-        dismissDialog();
     }
 
     @Test

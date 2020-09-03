@@ -15,14 +15,10 @@ public interface PhotoPickerDelegate {
      *                 picker.
      * @param allowMultiple Whether the dialog should allow multiple images to be selected.
      * @param mimeTypes A list of mime types to show in the dialog.
+     * @return the PhotoPicker object.
      */
-    void showPhotoPicker(WindowAndroid windowAndroid, PhotoPickerListener listener,
+    PhotoPicker showPhotoPicker(WindowAndroid windowAndroid, PhotoPickerListener listener,
             boolean allowMultiple, List<String> mimeTypes);
-
-    /**
-     * Called when the photo picker dialog has been dismissed.
-     */
-    void onPhotoPickerDismissed();
 
     /**
      * Returns whether video decoding support is supported in the photo picker.
