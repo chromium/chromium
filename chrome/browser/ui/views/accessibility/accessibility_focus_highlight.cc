@@ -77,9 +77,6 @@ bool AccessibilityFocusHighlight::skip_activation_check_for_testing_ = false;
 // static
 bool AccessibilityFocusHighlight::use_default_color_for_testing_ = false;
 
-// static
-bool AccessibilityFocusHighlight::no_fade_for_testing_ = false;
-
 AccessibilityFocusHighlight::AccessibilityFocusHighlight(
     BrowserView* browser_view)
     : browser_view_(browser_view) {
@@ -101,7 +98,7 @@ AccessibilityFocusHighlight::AccessibilityFocusHighlight(
     fade_in_time_ = kFadeInTime;
     persist_time_ = kHighlightPersistTime;
     fade_out_time_ = kFadeOutTime;
-    default_color_ = SkColorSetRGB(0x10, 0x10, 0x10);  // #101010
+    default_color_ = SkColorSetRGB(16, 16, 16);  // #101010
   }
 }
 
@@ -112,7 +109,9 @@ AccessibilityFocusHighlight::~AccessibilityFocusHighlight() {
 
 // static
 void AccessibilityFocusHighlight::SetNoFadeForTesting() {
-  no_fade_for_testing_ = true;
+  fade_in_time_ = base::TimeDelta();
+  persist_time_ = base::TimeDelta::FromHours(1);
+  fade_out_time_ = base::TimeDelta();
 }
 
 // static
@@ -125,17 +124,7 @@ void AccessibilityFocusHighlight::UseDefaultColorForTesting() {
   use_default_color_for_testing_ = true;
 }
 
-// static
-ui::Layer* AccessibilityFocusHighlight::GetLayerForTesting() {
-  return layer_.get();
-}
-
 SkColor AccessibilityFocusHighlight::GetHighlightColor() {
-#if !defined(OS_MAC)
-  // Match behaviour with renderer_preferences_util::UpdateFromSystemSettings
-  // setting prefs->focus_ring_color
-  return default_color_;
-#else
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
   SkColor theme_color = native_theme->GetSystemColor(
       ui::NativeTheme::kColorId_FocusedBorderColor);
@@ -144,7 +133,6 @@ SkColor AccessibilityFocusHighlight::GetHighlightColor() {
     return default_color_;
 
   return native_theme->FocusRingColorForBaseColor(theme_color);
-#endif
 }
 
 void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
@@ -205,9 +193,6 @@ void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
 }
 
 void AccessibilityFocusHighlight::RemoveLayer() {
-  if (no_fade_for_testing_)
-    return;
-
   layer_.reset();
   if (compositor_) {
     compositor_->RemoveAnimationObserver(this);
@@ -326,29 +311,6 @@ void AccessibilityFocusHighlight::OnPaintLayer(
   recorder.canvas()->DrawRoundRect(bounds, kBorderRadius, original_flags);
 }
 
-float AccessibilityFocusHighlight::ComputeOpacity(
-    base::TimeDelta time_since_layer_create,
-    base::TimeDelta time_since_focus_move) {
-  float opacity = 1.0f;
-
-  if (no_fade_for_testing_)
-    return opacity;
-
-  if (time_since_layer_create < fade_in_time_) {
-    // We're fading in.
-    opacity = time_since_layer_create / fade_in_time_;
-  }
-
-  if (time_since_focus_move > persist_time_) {
-    // Fading out.
-    base::TimeDelta time_since_began_fading =
-        time_since_focus_move - (fade_in_time_ + persist_time_);
-    opacity = 1.0f - (time_since_began_fading / fade_out_time_);
-  }
-
-  return base::ClampToRange(opacity, 0.0f, 1.0f);
-}
-
 void AccessibilityFocusHighlight::OnAnimationStep(base::TimeTicks timestamp) {
   if (!layer_)
     return;
@@ -376,8 +338,21 @@ void AccessibilityFocusHighlight::OnAnimationStep(base::TimeTicks timestamp) {
     return;
   }
 
-  float opacity =
-      ComputeOpacity(time_since_layer_create, time_since_focus_move);
+  // Compute the opacity based on the fade in and fade out times.
+  // TODO(aboxhall): figure out how to use cubic beziers
+  float opacity = 1.0f;
+  if (time_since_layer_create < fade_in_time_) {
+    // We're fading in.
+    opacity = time_since_layer_create / fade_in_time_;
+  } else if (time_since_focus_move > persist_time_) {
+    // Fading out.
+    base::TimeDelta time_since_began_fading =
+        time_since_focus_move - (fade_in_time_ + persist_time_);
+    opacity = 1.0f - (time_since_began_fading / fade_out_time_);
+  }
+
+  // Layer::SetOpacity will throw an error if we're not within 0...1.
+  opacity = base::ClampToRange(opacity, 0.0f, 1.0f);
   layer_->SetOpacity(opacity);
 }
 
