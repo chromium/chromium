@@ -187,6 +187,9 @@ bool FileTypeSupportedForDlp(const base::FilePath& path);
 DeepScanningClientResponse SimpleDeepScanningClientResponseForTesting(
     base::Optional<bool> dlp_success,
     base::Optional<bool> malware_success);
+enterprise_connectors::ContentAnalysisResponse
+SimpleContentAnalysisResponseForTesting(base::Optional<bool> dlp_success,
+                                        base::Optional<bool> malware_success);
 
 // Helper function to convert a EventResult to a string that.  The format of
 // string returned is processed by the sever.

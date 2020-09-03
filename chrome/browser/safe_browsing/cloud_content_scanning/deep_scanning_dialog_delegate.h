@@ -70,14 +70,6 @@ class DeepScanningDialogDelegate {
     Data(Data&& other);
     ~Data();
 
-    // Members than indicate what type of scans to perform.  If |do_dlp_scan|
-    // is true then the text and files specified by the members below will be
-    // scanned for content compliance.  If |do_malware_scan| is true then the
-    // files specified by the members below will be scanned for malware.  Text
-    // strings are not scanned for malware.
-    bool do_dlp_scan = false;
-    bool do_malware_scan = false;
-
     // URL of the page that is to receive sensitive data.
     GURL url;
 
@@ -238,15 +230,10 @@ class DeepScanningDialogDelegate {
 
   // Callbacks from uploading data.  Protected so they can be called from
   // testing derived classes.
-  void StringRequestCallback(BinaryUploadService::Result result,
-                             DeepScanningClientResponse response);
-  void ConnectorStringRequestCallback(
+  void StringRequestCallback(
       BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
-  void FileRequestCallback(base::FilePath path,
-                           BinaryUploadService::Result result,
-                           DeepScanningClientResponse response);
-  void ConnectorFileRequestCallback(
+  void FileRequestCallback(
       base::FilePath path,
       BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
@@ -260,6 +247,10 @@ class DeepScanningDialogDelegate {
   // the background and false if there is nothing to do.
   bool UploadData();
 
+  // Prepares an upload request for the text in |data_|. If |data_.text| is
+  // empty, this method does nothing.
+  void PrepareTextRequest();
+
   // Prepares an upload request for the file at |path|.  If the file
   // cannot be uploaded it will have a failure verdict added to |result_|.
   // Virtual so that it can be overridden in tests.
@@ -267,8 +258,6 @@ class DeepScanningDialogDelegate {
 
   // Adds required fields to |request| before sending it to the binary upload
   // service.
-  void PrepareRequest(DlpDeepScanningClientRequest::ContentSource trigger,
-                      BinaryUploadService::Request* request);
   void PrepareRequest(enterprise_connectors::AnalysisConnector connector,
                       BinaryUploadService::Request* request);
 
@@ -309,12 +298,7 @@ class DeepScanningDialogDelegate {
 
   // Completion of |FileRequestCallback| once the mime type is obtained
   // asynchronously.
-  void CompleteFileRequestCallback(size_t index,
-                                   base::FilePath path,
-                                   BinaryUploadService::Result result,
-                                   DeepScanningClientResponse response,
-                                   std::string mime_type);
-  void CompleteConnectorFileRequestCallback(
+  void CompleteFileRequestCallback(
       size_t index,
       base::FilePath path,
       BinaryUploadService::Result result,
@@ -341,14 +325,11 @@ class DeepScanningDialogDelegate {
 
   // Set to true if the full text got a DLP warning verdict.
   bool text_warning_ = false;
-  DeepScanningClientResponse text_response_;
-  enterprise_connectors::ContentAnalysisResponse
-      content_analysis_text_response_;
+  enterprise_connectors::ContentAnalysisResponse text_response_;
 
   // Scanning responses of files that got DLP warning verdicts.
-  std::map<size_t, DeepScanningClientResponse> file_warnings_;
   std::map<size_t, enterprise_connectors::ContentAnalysisResponse>
-      content_analysis_file_warnings_;
+      file_warnings_;
 
   // Set to true once the scan of text has completed.  If the scan request has
   // no text requiring deep scanning, this is set to true immediately.

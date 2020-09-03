@@ -50,9 +50,13 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
 
   // Set what StatusCallback returns.
   void SetStatusCallbackResponse(DeepScanningClientResponse response);
+  void SetStatusCallbackResponse(
+      enterprise_connectors::ContentAnalysisResponse response);
 
   // Callbacks used to set up the fake delegate factory.
   DeepScanningClientResponse StatusCallback(const base::FilePath& path);
+  enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
+      const base::FilePath& path);
   bool EncryptionStatusCallback(const base::FilePath& path);
 
   // Creates temporary files for testing in |temp_dir_|, and add them to |data|.
@@ -66,6 +70,8 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::RepeatingClosure quit_closure_;
   DeepScanningClientResponse status_callback_response_;
+  enterprise_connectors::ContentAnalysisResponse
+      connector_status_callback_response_;
   base::ScopedTempDir temp_dir_;
   std::vector<base::FilePath> created_file_paths_;
   bool use_legacy_policies_;

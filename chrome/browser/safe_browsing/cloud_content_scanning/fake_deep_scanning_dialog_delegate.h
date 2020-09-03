@@ -30,9 +30,7 @@ class FakeDeepScanningDialogDelegate : public DeepScanningDialogDelegate {
   // as the value returned by SuccessfulResponse().  To simulate a file that
   // does not pass a scan return a failed response, such as the value returned
   // by MalwareResponse() or DlpResponse().
-  using StatusCallback = base::RepeatingCallback<DeepScanningClientResponse(
-      const base::FilePath&)>;
-  using ContentAnalysisStatusCallback =
+  using StatusCallback =
       base::RepeatingCallback<enterprise_connectors::ContentAnalysisResponse(
           const base::FilePath&)>;
 
@@ -43,13 +41,6 @@ class FakeDeepScanningDialogDelegate : public DeepScanningDialogDelegate {
 
   FakeDeepScanningDialogDelegate(base::RepeatingClosure delete_closure,
                                  StatusCallback status_callback,
-                                 EncryptionStatusCallback encryption_callback,
-                                 std::string dm_token,
-                                 content::WebContents* web_contents,
-                                 Data data,
-                                 CompletionCallback callback);
-  FakeDeepScanningDialogDelegate(base::RepeatingClosure delete_closure,
-                                 ContentAnalysisStatusCallback status_callback,
                                  EncryptionStatusCallback encryption_callback,
                                  std::string dm_token,
                                  content::WebContents* web_contents,
@@ -68,55 +59,25 @@ class FakeDeepScanningDialogDelegate : public DeepScanningDialogDelegate {
       content::WebContents* web_contents,
       Data data,
       CompletionCallback callback);
-  static std::unique_ptr<DeepScanningDialogDelegate> CreateForConnectors(
-      base::RepeatingClosure delete_closure,
-      ContentAnalysisStatusCallback status_callback,
-      EncryptionStatusCallback encryption_callback,
-      std::string dm_token,
-      content::WebContents* web_contents,
-      Data data,
-      CompletionCallback callback);
 
   // Sets a delay to have before returning responses. This is used by tests that
   // need to simulate response taking some time.
   static void SetResponseDelay(base::TimeDelta delay);
-
-  // Returns a deep scanning response that represents a successful scan.
-  static DeepScanningClientResponse SuccessfulResponse(
-      bool include_dlp = true,
-      bool include_malware = true);
 
   // Returns a content analysis response that represents a successful scan and
   // includes the given tags.
   static enterprise_connectors::ContentAnalysisResponse SuccessfulResponse(
       const std::set<std::string>& tags);
 
-  // Returns a deep scanning response with a specific malware verdict.
-  static DeepScanningClientResponse MalwareResponse(
-      MalwareDeepScanningVerdict::Verdict verdict);
-
   // Returns a content analysis response with a specific malware action.
   static enterprise_connectors::ContentAnalysisResponse MalwareResponse(
       enterprise_connectors::TriggeredRule::Action action);
-
-  // Returns a deep scanning response with a specific DLP verdict.
-  static DeepScanningClientResponse DlpResponse(
-      DlpDeepScanningVerdict::Status status,
-      const std::string& rule_name,
-      DlpDeepScanningVerdict::TriggeredRule::Action action);
 
   // Returns a content analysis response with a specific DLP action.
   static enterprise_connectors::ContentAnalysisResponse DlpResponse(
       enterprise_connectors::ContentAnalysisResponse::Result::Status status,
       const std::string& rule_name,
       enterprise_connectors::TriggeredRule::Action action);
-
-  // Returns a deep scanning response with specific malware and DLP verdicts.
-  static DeepScanningClientResponse MalwareAndDlpResponse(
-      MalwareDeepScanningVerdict::Verdict verdict,
-      DlpDeepScanningVerdict::Status status,
-      const std::string& rule_name,
-      DlpDeepScanningVerdict::TriggeredRule::Action action);
 
   // Returns a content analysis response with specific malware and DLP actions.
   static enterprise_connectors::ContentAnalysisResponse MalwareAndDlpResponse(
@@ -143,15 +104,11 @@ class FakeDeepScanningDialogDelegate : public DeepScanningDialogDelegate {
       const base::FilePath& path,
       std::unique_ptr<BinaryUploadService::Request> request) override;
 
-  bool use_legacy_protos() const;
-
   static BinaryUploadService::Result result_;
   base::RepeatingClosure delete_closure_;
   StatusCallback status_callback_;
-  ContentAnalysisStatusCallback content_analysis_status_callback_;
   EncryptionStatusCallback encryption_callback_;
   std::string dm_token_;
-  bool use_legacy_protos_;
 
   base::WeakPtrFactory<FakeDeepScanningDialogDelegate> weakptr_factory_{this};
 };

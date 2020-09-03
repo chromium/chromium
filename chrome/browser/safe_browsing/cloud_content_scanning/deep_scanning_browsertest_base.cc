@@ -219,7 +219,7 @@ void DeepScanningBrowserTestBase::SetUpDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
   DeepScanningDialogDelegate::SetFactoryForTesting(base::BindRepeating(
       &FakeDeepScanningDialogDelegate::Create, base::DoNothing(),
-      base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
+      base::Bind(&DeepScanningBrowserTestBase::ConnectorStatusCallback,
                  base::Unretained(this)),
       base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
                  base::Unretained(this)),
@@ -230,7 +230,7 @@ void DeepScanningBrowserTestBase::SetUpUnresponsiveDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
   DeepScanningDialogDelegate::SetFactoryForTesting(base::BindRepeating(
       &UnresponsiveDeepScanningDialogDelegate::Create, base::DoNothing(),
-      base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
+      base::Bind(&DeepScanningBrowserTestBase::ConnectorStatusCallback,
                  base::Unretained(this)),
       base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
                  base::Unretained(this)),
@@ -252,9 +252,20 @@ void DeepScanningBrowserTestBase::SetStatusCallbackResponse(
   status_callback_response_ = response;
 }
 
+void DeepScanningBrowserTestBase::SetStatusCallbackResponse(
+    enterprise_connectors::ContentAnalysisResponse response) {
+  connector_status_callback_response_ = response;
+}
+
 DeepScanningClientResponse DeepScanningBrowserTestBase::StatusCallback(
     const base::FilePath& path) {
   return status_callback_response_;
+}
+
+enterprise_connectors::ContentAnalysisResponse
+DeepScanningBrowserTestBase::ConnectorStatusCallback(
+    const base::FilePath& path) {
+  return connector_status_callback_response_;
 }
 
 bool DeepScanningBrowserTestBase::EncryptionStatusCallback(

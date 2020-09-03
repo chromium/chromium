@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace safe_browsing {
@@ -401,29 +402,32 @@ bool FileTypeSupportedForDlp(const base::FilePath& path) {
   return std::binary_search(dlp_types.begin(), dlp_types.end(), extension);
 }
 
-DeepScanningClientResponse SimpleDeepScanningClientResponseForTesting(
-    base::Optional<bool> dlp_success,
-    base::Optional<bool> malware_success) {
-  DeepScanningClientResponse response;
+enterprise_connectors::ContentAnalysisResponse
+SimpleContentAnalysisResponseForTesting(base::Optional<bool> dlp_success,
+                                        base::Optional<bool> malware_success) {
+  enterprise_connectors::ContentAnalysisResponse response;
 
   if (dlp_success.has_value()) {
-    response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::SUCCESS);
+    auto* result = response.add_results();
+    result->set_tag("dlp");
+    result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     if (!dlp_success.value()) {
-      DlpDeepScanningVerdict::TriggeredRule* rule =
-          response.mutable_dlp_scan_verdict()->add_triggered_rules();
-      rule->set_rule_name("rule");
-      rule->set_action(DlpDeepScanningVerdict::TriggeredRule::BLOCK);
+      auto* rule = result->add_triggered_rules();
+      rule->set_rule_name("dlp");
+      rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
     }
   }
 
   if (malware_success.has_value()) {
-    if (malware_success.value()) {
-      response.mutable_malware_scan_verdict()->set_verdict(
-          MalwareDeepScanningVerdict::CLEAN);
-    } else {
-      response.mutable_malware_scan_verdict()->set_verdict(
-          MalwareDeepScanningVerdict::MALWARE);
+    auto* result = response.add_results();
+    result->set_tag("malware");
+    result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    if (!malware_success.value()) {
+      auto* rule = result->add_triggered_rules();
+      rule->set_rule_name("malware");
+      rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
     }
   }
 
