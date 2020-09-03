@@ -5793,6 +5793,7 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="BackForwardCacheDisabledForRenderFrameHostReason">
+  <int value="-2017390318" label="FileChooser"/>
   <int value="-1859200986" label="WebUSB"/>
   <int value="-1521338555" label="OfflinePage"/>
   <int value="-1449100855" label="safe_browsing::ThreatDetails"/>
@@ -5806,8 +5807,12 @@ Unknown properties are collapsed to zero. -->
   <int value="72716222" label="WebBluetooth"/>
   <int value="88001126" label="MixedContentSettingsTabHelper"/>
   <int value="362309862" label="OomInterventionTabHelper"/>
+  <int value="664553540" label="DomDistillerViewerSource"/>
   <int value="671363579" label="banners::AppBannerManager"/>
+  <int value="801711953" label="MediaDevicesDispatcherHost"/>
   <int value="990438262" label="MediaWebContentsObserver::OnMediaPlaying"/>
+  <int value="1479171090"
+      label="browser::DomDistiller_SelfDeletingRequestDelegate"/>
   <int value="1683256665" label="NativeFileSystem"/>
   <int value="1774599341" label="WebAuthenticationAPI"/>
   <int value="1985234179" label="PermissionServiceContext"/>
