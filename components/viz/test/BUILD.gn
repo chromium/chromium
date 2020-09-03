@@ -2,8 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
-import("//gpu/vulkan/features.gni")
+
+# Generate a buildflag header to determine which tests should be enabled.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [
+    "ENABLE_GL_BACKEND_TESTS=$enable_gl_backend_tests",
+    "ENABLE_VULKAN_BACKEND_TESTS=$enable_vulkan_backend_tests",
+    "ENABLE_DAWN_BACKEND_TESTS=$enable_dawn_backend_tests",
+  ]
+}
 
 viz_static_library("test_support") {
   testonly = true
@@ -67,6 +79,8 @@ viz_static_library("test_support") {
     "test_output_surface_provider.h",
     "test_shared_bitmap_manager.cc",
     "test_shared_bitmap_manager.h",
+    "test_types.cc",
+    "test_types.h",
   ]
   deps = [
     "//base",
@@ -84,6 +98,8 @@ viz_static_library("test_support") {
     "//ui/gl",
     "//ui/latency:test_support",
   ]
+
+  public_deps = [ ":buildflags" ]
 
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/init" ]

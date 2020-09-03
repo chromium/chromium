@@ -16,7 +16,7 @@ class LayerTreeHostPixelResourceTest : public LayerTreePixelTest {
  public:
   explicit LayerTreeHostPixelResourceTest(RasterTestConfig test_config);
 
-  TestRendererType renderer_type() const { return test_config_.renderer_type; }
+  viz::RendererType renderer_type() const { return test_config_.renderer_type; }
 
   const char* GetRendererSuffix() const;
 

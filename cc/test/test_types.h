@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_util.h"
+#include "components/viz/test/test_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -29,16 +30,6 @@ struct PrintTupleToStringParamName {
   }
 };
 
-enum class TestRendererType {
-  kGL,
-  kSkiaGL,
-  kSkiaVk,
-  // SkiaRenderer with the Dawn backend will be used; on Linux this will
-  // initialize Vulkan, and on Windows this will initialize D3D12.
-  kSkiaDawn,
-  kSoftware,
-};
-
 enum class TestRasterType {
   kBitmap,
   kGpu,
@@ -48,11 +39,9 @@ enum class TestRasterType {
 };
 
 struct RasterTestConfig {
-  TestRendererType renderer_type;
+  viz::RendererType renderer_type;
   TestRasterType raster_type;
 };
-
-void PrintTo(TestRendererType type, std::ostream* os);
 
 // Joins the |renderer_type| and |raster_type| labels using an underscore
 // character, resulting in e.g. "Test/SkiaGL_OOP".

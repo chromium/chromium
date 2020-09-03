@@ -15,6 +15,7 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/test/buildflags.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 
@@ -25,11 +26,11 @@ namespace {
 
 class LayerTreeHostScrollbarsPixelTest
     : public LayerTreePixelTest,
-      public ::testing::WithParamInterface<TestRendererType> {
+      public ::testing::WithParamInterface<viz::RendererType> {
  protected:
   LayerTreeHostScrollbarsPixelTest() : LayerTreePixelTest(renderer_type()) {}
 
-  TestRendererType renderer_type() const { return GetParam(); }
+  viz::RendererType renderer_type() const { return GetParam(); }
 
   void SetupTree() override {
     SetInitialDeviceScaleFactor(device_scale_factor_);
@@ -73,15 +74,15 @@ class PaintedScrollbar : public FakeScrollbar {
   SkColor color_ = SK_ColorGREEN;
 };
 
-TestRendererType const kRendererTypes[] = {
-    TestRendererType::kGL,
-    TestRendererType::kSkiaGL,
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    TestRendererType::kSkiaVk,
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
-#if defined(ENABLE_CC_DAWN_TESTS)
-    TestRendererType::kSkiaDawn,
-#endif  // defined(ENABLE_CC_DAWN_TESTS)
+viz::RendererType const kRendererTypes[] = {
+    viz::RendererType::kGL,
+    viz::RendererType::kSkiaGL,
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    viz::RendererType::kSkiaVk,
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    viz::RendererType::kSkiaDawn,
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -184,8 +185,8 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   scale_transform.Scale(scale, scale);
   layer->SetTransform(scale_transform);
 
-  if (renderer_type_ == TestRendererType::kSkiaGL ||
-      renderer_type_ == TestRendererType::kSkiaDawn)
+  if (renderer_type_ == viz::RendererType::kSkiaGL ||
+      renderer_type_ == viz::RendererType::kSkiaDawn)
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
 
   RunPixelTest(background,

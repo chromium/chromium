@@ -43,7 +43,7 @@ class TextureLayer;
 
 class LayerTreePixelTest : public LayerTreeTest {
  protected:
-  explicit LayerTreePixelTest(TestRendererType renderer_type);
+  explicit LayerTreePixelTest(viz::RendererType renderer_type);
   ~LayerTreePixelTest() override;
 
   // LayerTreeTest overrides.

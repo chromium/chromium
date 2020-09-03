@@ -68,4 +68,7 @@ specific_include_rules = {
   "delegated_ink_point_renderer\.*" : [
     "+mojo/public/cpp/bindings",
   ],
+  "viz_pixel_test\.(cc|h)": [
+    "+components/viz/test",
+  ],
 }

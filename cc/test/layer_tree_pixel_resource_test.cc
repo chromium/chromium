@@ -25,14 +25,14 @@ LayerTreeHostPixelResourceTest::LayerTreeHostPixelResourceTest(
 
 const char* LayerTreeHostPixelResourceTest::GetRendererSuffix() const {
   switch (renderer_type_) {
-    case TestRendererType::kGL:
+    case viz::RendererType::kGL:
       return "gl";
-    case TestRendererType::kSkiaGL:
+    case viz::RendererType::kSkiaGL:
       return "skia_gl";
-    case TestRendererType::kSkiaVk:
-    case TestRendererType::kSkiaDawn:
+    case viz::RendererType::kSkiaVk:
+    case viz::RendererType::kSkiaDawn:
       return "skia_vk";
-    case TestRendererType::kSoftware:
+    case viz::RendererType::kSoftware:
       return "sw";
   }
 }

@@ -13,6 +13,7 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/test/buildflags.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 
 #if !defined(OS_ANDROID)
@@ -28,7 +29,7 @@ class LayerTreeHostTilesPixelTest
     set_raster_type(GetParam().raster_type);
   }
 
-  TestRendererType renderer_type() const { return GetParam().renderer_type; }
+  viz::RendererType renderer_type() const { return GetParam().renderer_type; }
 
   void InitializeSettings(LayerTreeSettings* settings) override {
     LayerTreePixelTest::InitializeSettings(settings);
@@ -148,17 +149,17 @@ class LayerTreeHostTilesTestPartialInvalidation
 };
 
 std::vector<RasterTestConfig> const kTestCases = {
-    {TestRendererType::kSoftware, TestRasterType::kBitmap},
-    {TestRendererType::kGL, TestRasterType::kOneCopy},
-    {TestRendererType::kGL, TestRasterType::kGpu},
-    {TestRendererType::kSkiaGL, TestRasterType::kOneCopy},
-    {TestRendererType::kSkiaGL, TestRasterType::kGpu},
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    {TestRendererType::kSkiaVk, TestRasterType::kOop},
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
-#if defined(ENABLE_CC_DAWN_TESTS)
-    {TestRendererType::kSkiaDawn, TestRasterType::kOop},
-#endif  // defined(ENABLE_CC_DAWN_TESTS)
+    {viz::RendererType::kSoftware, TestRasterType::kBitmap},
+    {viz::RendererType::kGL, TestRasterType::kOneCopy},
+    {viz::RendererType::kGL, TestRasterType::kGpu},
+    {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
+    {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    {viz::RendererType::kSkiaDawn, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -187,16 +188,16 @@ TEST_P(LayerTreeHostTilesTestPartialInvalidation, FullRaster) {
 }
 
 std::vector<RasterTestConfig> const kTestCasesMultiThread = {
-    {TestRendererType::kGL, TestRasterType::kOneCopy},
-    {TestRendererType::kSkiaGL, TestRasterType::kOneCopy},
-#if defined(ENABLE_CC_VULKAN_TESTS)
+    {viz::RendererType::kGL, TestRasterType::kOneCopy},
+    {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     // TODO(sgilhuly): Switch this to one copy raster once is is supported for
     // Vulkan in these tests.
-    {TestRendererType::kSkiaVk, TestRasterType::kOop},
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
-#if defined(ENABLE_CC_DAWN_TESTS)
-    {TestRendererType::kSkiaDawn, TestRasterType::kOop},
-#endif  // defined(ENABLE_CC_DAWN_TESTS)
+    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    {viz::RendererType::kSkiaDawn, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
 using LayerTreeHostTilesTestPartialInvalidationMultiThread =
@@ -247,8 +248,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostTilesTestPartialInvalidationLowBitDepth,
     ::testing::Values(
-        RasterTestConfig{TestRendererType::kSkiaGL, TestRasterType::kGpu},
-        RasterTestConfig{TestRendererType::kGL, TestRasterType::kGpu}),
+        RasterTestConfig{viz::RendererType::kSkiaGL, TestRasterType::kGpu},
+        RasterTestConfig{viz::RendererType::kGL, TestRasterType::kGpu}),
     ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth, PartialRaster) {

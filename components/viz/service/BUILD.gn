@@ -494,7 +494,7 @@ viz_source_set("unit_tests") {
     "surfaces/surface_unittest.cc",
   ]
 
-  if (enable_viz_gl_tests) {
+  if (enable_gl_backend_tests) {
     sources += [
       "display/gl_renderer_copier_pixeltest.cc",
       "display/gl_renderer_copier_unittest.cc",
@@ -575,30 +575,11 @@ viz_source_set("unit_tests") {
     ]
   }
 
-  defines = []
-
-  if (enable_viz_gl_tests) {
-    defines += [ "ENABLE_VIZ_GL_TESTS" ]
-  }
-
   if (enable_vulkan) {
     deps += [
       "//gpu/vulkan:test_support",
       "//gpu/vulkan/init",
     ]
-
-    # TODO(samans): Support more configurations.
-    # CFI issue: https://crbug.com/967819
-    # LSAN issue: https://crbug.com/971357
-    # Fuchsia ARM64 https://crbug.com/1058247
-    if ((use_x11 && !is_cfi && !is_lsan) ||
-        (is_fuchsia && target_cpu == "x64")) {
-      defines += [ "ENABLE_VIZ_VULKAN_TESTS" ]
-    }
-  }
-
-  if (skia_use_dawn && enable_skia_dawn_gtests) {
-    defines += [ "ENABLE_VIZ_DAWN_TESTS" ]
   }
 }
 

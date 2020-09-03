@@ -16,6 +16,7 @@
 #include "cc/test/layer_tree_pixel_resource_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
+#include "components/viz/test/buildflags.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -213,7 +214,7 @@ class LayerTreeHostBlendingPixelTest
     const int kRootHeight = kRootWidth * kCSSTestColorsCount;
 
     // Force shaders only applies to gl renderer.
-    if (renderer_type_ != TestRendererType::kGL && flags & kForceShaders)
+    if (renderer_type_ != viz::RendererType::kGL && flags & kForceShaders)
       return;
 
     SCOPED_TRACE(TestTypeToString());
@@ -232,8 +233,8 @@ class LayerTreeHostBlendingPixelTest
     force_antialiasing_ = (flags & kUseAntialiasing);
     force_blending_with_shaders_ = (flags & kForceShaders);
 
-    if ((renderer_type_ == TestRendererType::kGL && force_antialiasing_) ||
-        renderer_type_ == TestRendererType::kSkiaVk) {
+    if ((renderer_type_ == viz::RendererType::kGL && force_antialiasing_) ||
+        renderer_type_ == viz::RendererType::kSkiaVk) {
       // Blending results might differ with one pixel.
       float percentage_pixels_error = 35.f;
       float percentage_pixels_small_error = 0.f;
@@ -260,12 +261,12 @@ class LayerTreeHostBlendingPixelTest
 };
 
 std::vector<RasterTestConfig> const kTestCases = {
-    {TestRendererType::kSoftware, TestRasterType::kBitmap},
-    {TestRendererType::kGL, TestRasterType::kZeroCopy},
-    {TestRendererType::kSkiaGL, TestRasterType::kGpu},
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    {TestRendererType::kSkiaVk, TestRasterType::kOop},
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
+    {viz::RendererType::kSoftware, TestRasterType::kBitmap},
+    {viz::RendererType::kGL, TestRasterType::kZeroCopy},
+    {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(

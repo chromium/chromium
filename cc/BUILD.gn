@@ -825,8 +825,6 @@ cc_test("cc_unittests") {
     "//third_party/mesa_headers",
   ]
 
-  defines = []
-
   if (is_fuchsia) {
     manifest = "//build/config/fuchsia/gfx_tests.cmx"
   }
@@ -836,19 +834,6 @@ cc_test("cc_unittests") {
       "//gpu/vulkan:test_support",
       "//gpu/vulkan/init",
     ]
-
-    # TODO(samans): Support more configurations.
-    # CFI issue: https://crbug.com/967819
-    # LSAN issue: https://crbug.com/971325
-    # Fuchsia ARM64 https://crbug.com/1058247
-    if ((use_x11 && !is_cfi && !is_lsan) ||
-        (is_fuchsia && target_cpu == "x64")) {
-      defines += [ "ENABLE_CC_VULKAN_TESTS" ]
-    }
-  }
-
-  if (skia_use_dawn && enable_skia_dawn_gtests) {
-    defines += [ "ENABLE_CC_DAWN_TESTS" ]
   }
 }
 

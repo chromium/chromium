@@ -366,7 +366,7 @@ viz_source_set("unit_tests") {
     "yuv_readback_unittest.cc",
   ]
 
-  if (enable_viz_gl_tests) {
+  if (enable_gl_backend_tests) {
     sources += [
       "gl_i420_converter_pixeltest.cc",
       "gl_i420_converter_unittest.cc",

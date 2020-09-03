@@ -5,6 +5,7 @@
 #include "components/viz/service/display/viz_pixel_test.h"
 
 #include "build/build_config.h"
+#include "components/viz/test/buildflags.h"
 #include "ui/base/ui_base_features.h"
 
 namespace viz {
@@ -15,41 +16,21 @@ std::vector<RendererType> GetRendererTypes(bool include_software,
   std::vector<RendererType> types;
   if (include_software)
     types.push_back(RendererType::kSoftware);
-#if defined(ENABLE_VIZ_GL_TESTS)
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
   types.push_back(RendererType::kGL);
   types.push_back(RendererType::kSkiaGL);
 #endif
-#if defined(ENABLE_VIZ_VULKAN_TESTS)
-  types.push_back(RendererType::kSkiaVulkan);
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+  types.push_back(RendererType::kSkiaVk);
 #endif
-#if defined(ENABLE_VIZ_DAWN_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
   if (include_dawn)
     types.push_back(RendererType::kSkiaDawn);
 #endif
   return types;
 }
 
-// Provides a test suffix appropriate for |type|.
-const char* RendererTypeTestSuffix(RendererType type) {
-  switch (type) {
-    case RendererType::kSoftware:
-      return "Software";
-    case RendererType::kGL:
-      return "GL";
-    case RendererType::kSkiaGL:
-      return "SkiaGL";
-    case RendererType::kSkiaVulkan:
-      return "SkiaVulkan";
-    case RendererType::kSkiaDawn:
-      return "SkiaDawn";
-  }
-}
-
 }  // namespace
-
-void PrintTo(RendererType type, std::ostream* os) {
-  *os << RendererTypeTestSuffix(type);
-}
 
 std::vector<RendererType> GetRendererTypes() {
   return GetRendererTypes(true, true);
@@ -70,7 +51,7 @@ std::vector<RendererType> GetGpuRendererTypesNoDawn() {
 // static
 cc::PixelTest::GraphicsBackend VizPixelTest::RenderTypeToBackend(
     RendererType renderer_type) {
-  if (renderer_type == RendererType::kSkiaVulkan) {
+  if (renderer_type == RendererType::kSkiaVk) {
 #if defined(USE_OZONE) && defined(OS_LINUX) && !defined(OS_CHROMEOS)
     // TODO(https://crbug.com/1113577): Enable SkiaVulkan backend for
     // PixelTests. For example, RendererPixelTest* hadn't been using
@@ -102,7 +83,7 @@ void VizPixelTest::SetUp() {
       SetUpGLRenderer(GetSurfaceOrigin());
       break;
     case RendererType::kSkiaGL:
-    case RendererType::kSkiaVulkan:
+    case RendererType::kSkiaVk:
     case RendererType::kSkiaDawn:
       SetUpSkiaRenderer(GetSurfaceOrigin());
       break;

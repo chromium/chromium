@@ -12,6 +12,7 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
+#include "components/viz/test/buildflags.h"
 
 #if !defined(OS_ANDROID)
 
@@ -20,25 +21,25 @@ namespace {
 
 class LayerTreeHostFiltersPixelTest
     : public LayerTreePixelTest,
-      public ::testing::WithParamInterface<TestRendererType> {
+      public ::testing::WithParamInterface<viz::RendererType> {
  protected:
   LayerTreeHostFiltersPixelTest() : LayerTreePixelTest(renderer_type()) {}
 
-  TestRendererType renderer_type() const { return GetParam(); }
+  viz::RendererType renderer_type() const { return GetParam(); }
 
-  // Text string for graphics backend of the TestRendererType. Suitable for
+  // Text string for graphics backend of the viz::RendererType. Suitable for
   // generating separate base line file paths.
   const char* GetRendererSuffix() {
     switch (renderer_type_) {
-      case TestRendererType::kGL:
+      case viz::RendererType::kGL:
         return "gl";
-      case TestRendererType::kSkiaGL:
+      case viz::RendererType::kSkiaGL:
         return "skia_gl";
-      case TestRendererType::kSkiaVk:
+      case viz::RendererType::kSkiaVk:
         return "skia_vk";
-      case TestRendererType::kSkiaDawn:
+      case viz::RendererType::kSkiaDawn:
         return "skia_dawn";
-      case TestRendererType::kSoftware:
+      case viz::RendererType::kSoftware:
         return "sw";
     }
   }
@@ -72,15 +73,15 @@ class LayerTreeHostFiltersPixelTest
   }
 };
 
-TestRendererType const kRendererTypes[] = {
-    TestRendererType::kGL,       TestRendererType::kSkiaGL,
-    TestRendererType::kSoftware,
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    TestRendererType::kSkiaVk,
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
-#if defined(ENABLE_CC_DAWN_TESTS)
-    TestRendererType::kSkiaDawn,
-#endif  // defined(ENABLE_CC_DAWN_TESTS)
+viz::RendererType const kRendererTypes[] = {
+    viz::RendererType::kGL,       viz::RendererType::kSkiaGL,
+    viz::RendererType::kSoftware,
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    viz::RendererType::kSkiaVk,
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    viz::RendererType::kSkiaDawn,
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -90,15 +91,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 using LayerTreeHostFiltersPixelTestGPU = LayerTreeHostFiltersPixelTest;
 
-TestRendererType const kRendererTypesGpu[] = {
-    TestRendererType::kGL,
-    TestRendererType::kSkiaGL,
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    TestRendererType::kSkiaVk,
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
-#if defined(ENABLE_CC_DAWN_TESTS)
-    TestRendererType::kSkiaDawn,
-#endif  // defined(ENABLE_CC_DAWN_TESTS)
+viz::RendererType const kRendererTypesGpu[] = {
+    viz::RendererType::kGL,
+    viz::RendererType::kSkiaGL,
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    viz::RendererType::kSkiaVk,
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    viz::RendererType::kSkiaDawn,
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -384,12 +385,12 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
 
 // TODO(sgilhuly): Enable these tests for Skia Dawn, and switch over to using
 // kRendererTypesGpu.
-TestRendererType const kRendererTypesGpuNonDawn[] = {
-    TestRendererType::kGL,
-    TestRendererType::kSkiaGL,
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    TestRendererType::kSkiaVk,
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
+viz::RendererType const kRendererTypesGpuNonDawn[] = {
+    viz::RendererType::kGL,
+    viz::RendererType::kSkiaGL,
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    viz::RendererType::kSkiaVk,
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
@@ -759,13 +760,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
 // kRendererTypes.
 using LayerTreeHostFiltersPixelTestNonDawn = LayerTreeHostFiltersPixelTest;
 
-TestRendererType const kRendererTypesNonDawn[] = {
-    TestRendererType::kGL,
-    TestRendererType::kSkiaGL,
-    TestRendererType::kSoftware,
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    TestRendererType::kSkiaVk,
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
+viz::RendererType const kRendererTypesNonDawn[] = {
+    viz::RendererType::kGL,
+    viz::RendererType::kSkiaGL,
+    viz::RendererType::kSoftware,
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    viz::RendererType::kSkiaVk,
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -992,7 +993,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, TranslatedFilter) {
   parent->AddChild(child);
   clip->AddChild(parent);
 
-  if (use_software_renderer() || renderer_type_ == TestRendererType::kSkiaDawn)
+  if (use_software_renderer() || renderer_type_ == viz::RendererType::kSkiaDawn)
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
 
   RunPixelTest(clip, base::FilePath(

@@ -621,7 +621,7 @@ class LayerTreeTestLayerTreeFrameSinkClient
   TestHooks* hooks_;
 };
 
-LayerTreeTest::LayerTreeTest(TestRendererType renderer_type)
+LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
     : renderer_type_(renderer_type),
       initial_root_bounds_(1, 1),
       layer_tree_frame_sink_client_(
@@ -669,10 +669,10 @@ LayerTreeTest::LayerTreeTest(TestRendererType renderer_type)
 
   // Check if the graphics backend needs to initialize Vulkan.
   bool init_vulkan = false;
-  if (renderer_type_ == TestRendererType::kSkiaVk) {
+  if (renderer_type_ == viz::RendererType::kSkiaVk) {
     scoped_feature_list_.InitAndEnableFeature(features::kVulkan);
     init_vulkan = true;
-  } else if (renderer_type_ == TestRendererType::kSkiaDawn) {
+  } else if (renderer_type_ == viz::RendererType::kSkiaDawn) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaDawn);
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     init_vulkan = true;

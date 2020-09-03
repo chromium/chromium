@@ -8,22 +8,6 @@ namespace cc {
 
 namespace {
 
-// Provides a test renderer suffix appropriate for |type|.
-const char* RendererTypeTestSuffix(TestRendererType type) {
-  switch (type) {
-    case TestRendererType::kGL:
-      return "GL";
-    case TestRendererType::kSkiaGL:
-      return "SkiaGL";
-    case TestRendererType::kSkiaVk:
-      return "SkiaVulkan";
-    case TestRendererType::kSkiaDawn:
-      return "SkiaDawn";
-    case TestRendererType::kSoftware:
-      return "Software";
-  }
-}
-
 // Provides a test raster suffix appropriate for |type|.
 const char* RasterTypeTestSuffix(TestRasterType type) {
   switch (type) {
@@ -41,10 +25,6 @@ const char* RasterTypeTestSuffix(TestRasterType type) {
 }
 
 }  // namespace
-
-void PrintTo(TestRendererType type, std::ostream* os) {
-  *os << RendererTypeTestSuffix(type);
-}
 
 void PrintTo(const RasterTestConfig& config, std::ostream* os) {
   PrintTo(config.renderer_type, os);

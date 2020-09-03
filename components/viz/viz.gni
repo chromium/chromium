@@ -2,11 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//gpu/vulkan/features.gni")
+import("//skia/features.gni")
 import("//testing/test.gni")
 
 # Fuchsia doesn't support GL rendering so there is no need to run tests for
 # that code path.
-enable_viz_gl_tests = !is_fuchsia
+enable_gl_backend_tests = !is_fuchsia
+
+# TODO(samans): Support more configurations.
+# CFI issue: https://crbug.com/967819
+# LSAN issue: https://crbug.com/971357
+# Fuchsia ARM64 https://crbug.com/1058247
+enable_vulkan_backend_tests =
+    enable_vulkan &&
+    ((use_x11 && !is_cfi && !is_lsan) || (is_fuchsia && target_cpu == "x64"))
+
+enable_dawn_backend_tests = skia_use_dawn && enable_skia_dawn_gtests
 
 viz_remove_configs = []
 viz_add_configs = [ "//build/config:precompiled_headers" ]

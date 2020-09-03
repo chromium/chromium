@@ -7,6 +7,7 @@
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
+#include "components/viz/test/buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform_util.h"
 
@@ -17,22 +18,22 @@ namespace {
 
 class LayerTreeHostMirrorPixelTest
     : public LayerTreePixelTest,
-      public ::testing::WithParamInterface<TestRendererType> {
+      public ::testing::WithParamInterface<viz::RendererType> {
  protected:
   LayerTreeHostMirrorPixelTest() : LayerTreePixelTest(renderer_type()) {}
 
-  TestRendererType renderer_type() const { return GetParam(); }
+  viz::RendererType renderer_type() const { return GetParam(); }
 };
 
-const TestRendererType kRendererTypes[] = {
-    TestRendererType::kGL,       TestRendererType::kSkiaGL,
-    TestRendererType::kSoftware,
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    TestRendererType::kSkiaVk,
-#endif  // defined(ENABLE_CC_VULKAN_TESTS)
-#if defined(ENABLE_CC_DAWN_TESTS)
-    TestRendererType::kSkiaDawn,
-#endif  // defined(ENABLE_CC_DAWN_TESTS)
+const viz::RendererType kRendererTypes[] = {
+    viz::RendererType::kGL,       viz::RendererType::kSkiaGL,
+    viz::RendererType::kSoftware,
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    viz::RendererType::kSkiaVk,
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    viz::RendererType::kSkiaDawn,
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
