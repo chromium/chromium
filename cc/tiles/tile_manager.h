@@ -64,15 +64,15 @@ class CC_EXPORT TileManagerClient {
   virtual void NotifyTileStateChanged(const Tile* tile) = 0;
 
   // Given an empty raster tile priority queue, this will build a priority queue
-  // that will return tiles in order in which they should be rasterized.
-  // Note if the queue was previous built, Reset must be called on it.
+  // that will return tiles in the order in which they should be rasterized.
+  // Note if the queue was previously built, Reset must be called on it.
   virtual std::unique_ptr<RasterTilePriorityQueue> BuildRasterQueue(
       TreePriority tree_priority,
       RasterTilePriorityQueue::Type type) = 0;
 
   // Given an empty eviction tile priority queue, this will build a priority
-  // queue that will return tiles in order in which they should be evicted.
-  // Note if the queue was previous built, Reset must be called on it.
+  // queue that will return tiles in the order in which they should be evicted.
+  // Note if the queue was previously built, Reset must be called on it.
   virtual std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) = 0;
 
