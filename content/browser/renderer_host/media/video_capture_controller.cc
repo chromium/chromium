@@ -706,6 +706,10 @@ void VideoCaptureController::ReleaseDeviceAsync(base::OnceClosure done_cb) {
     device_launcher_->AbortLaunch();
     return;
   }
+  // |buffer_contexts_| contain references to |launched_device_| as observers.
+  // Clear those observer references prior to resetting |launced_device_|.
+  for (auto& entry : buffer_contexts_)
+    entry.set_consumer_feedback_observer(nullptr);
   launched_device_.reset();
 }
 
