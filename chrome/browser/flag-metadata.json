@@ -2330,7 +2330,7 @@
   {
     "name": "enable-webrtc-capture-multi-channel-audio-processing",
     "owners": [ "saza" ],
-    "expiry_milestone": 85
+    "expiry_milestone": 123
   },
   {
     "name": "enable-webrtc-hide-local-ips-with-mdns",
