@@ -848,15 +848,41 @@ class PDFExtensionJSUpdatesDisabledTest : public PDFExtensionJSTestBase {
   ~PDFExtensionJSUpdatesDisabledTest() override = default;
 
  protected:
-  const std::vector<base::Feature> GetDisabledFeatures() const override {
-    return {chrome_pdf::features::kPDFViewerUpdate};
-  }
+  bool ShouldEnablePDFViewerUpdate() const override { return false; }
 };
 
 // Zoom toolbar doesn't exist and the top toolbar is sticky with the new PDF
 // viewer updates, so run this test only with the updates disabled.
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesDisabledTest, ToolbarManager) {
   RunTestsInJsModule("toolbar_manager_test.js", "test.pdf");
+}
+
+class PDFExtensionJSUpdatesEnabledTest : public PDFExtensionJSTestBase {
+ public:
+  ~PDFExtensionJSUpdatesEnabledTest() override = default;
+
+ protected:
+  bool ShouldEnablePDFViewerUpdate() const override { return true; }
+};
+
+// The following tests verify behavior of elements that are only used when the
+// PDFViewerUpdate flag is enabled.
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerPdfToolbarNew) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("viewer_pdf_toolbar_new_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerPdfSidenav) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("viewer_pdf_sidenav_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerThumbnailBar) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
 }
 
 class PDFExtensionJSTest : public PDFExtensionJSTestBase,
@@ -925,24 +951,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfToolbarNew) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("viewer_pdf_toolbar_new_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfSidenav) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("viewer_pdf_sidenav_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnailBar) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Title) {
