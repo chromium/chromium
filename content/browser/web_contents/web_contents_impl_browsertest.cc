@@ -2083,8 +2083,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   DownloadImageTestInternal(shell(), kImageUrl, 200, 1);
 }
 
+// Disabled due to flakiness: https://crbug.com/1124349.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DownloadImage_Deny_FileImage) {
+                       DISABLED_DownloadImage_Deny_FileImage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   shell()->LoadURL(embedded_test_server()->GetURL("/simple_page.html"));
 
@@ -2092,8 +2093,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   DownloadImageTestInternal(shell(), kImageUrl, 0, 0);
 }
 
+// Disabled due to flakiness: https://crbug.com/1124349.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DownloadImage_Allow_FileImage) {
+                       DISABLED_DownloadImage_Allow_FileImage) {
   shell()->LoadURL(GetTestUrl("", "simple_page.html"));
 
   const GURL kImageUrl =
