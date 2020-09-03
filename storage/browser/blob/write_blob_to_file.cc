@@ -97,7 +97,8 @@ bool CopyFileContentsWithOffsetAndSize(base::File* infile,
 
   for (;;) {
     size_t bytes_to_read =
-        std::min(buffer.size(), base::saturated_cast<size_t>(max_size));
+        std::min(buffer.size(),
+                 base::checked_cast<size_t>(checked_max_size.ValueOrDie()));
     int bytes_read = infile->ReadAtCurrentPos(buffer.data(), bytes_to_read);
     if (bytes_read < 0)
       return false;
