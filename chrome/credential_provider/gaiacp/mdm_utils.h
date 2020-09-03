@@ -79,6 +79,10 @@ extern const wchar_t kRegUpdateCredentialsOnChange[];
 // again.
 extern const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh;
 
+// Registry key that indicates account name for an unassociated Windows account
+// should be in shorter form.
+extern const wchar_t kRegUseShorterAccountName[];
+
 // Class used in tests to force either a successful on unsuccessful enrollment
 // to google MDM.
 class GoogleMdmEnrollmentStatusForTesting {

@@ -553,16 +553,28 @@ HRESULT MakeUsernameForAccount(const base::Value& result,
     std::string username_utf8 =
         gaia::SanitizeEmail(base::UTF16ToUTF8(os_username));
 
-    size_t tld_length =
-        net::registry_controlled_domains::GetCanonicalHostRegistryLength(
-            gaia::ExtractDomainName(username_utf8),
-            net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (GetGlobalFlagOrDefault(kRegUseShorterAccountName, 0)) {
+      size_t separator_pos = username_utf8.find('@');
 
-    // If an TLD is found strip it off, plus 1 to remove the separating dot too.
-    if (tld_length > 0) {
-      username_utf8.resize(username_utf8.length() - tld_length - 1);
-      os_username = base::UTF8ToUTF16(username_utf8);
+      // os_username carries the email. Fall through if not find "@" in the
+      // email.
+      if (separator_pos != username_utf8.npos) {
+        username_utf8 = username_utf8.substr(0, separator_pos);
+        os_username = base::UTF8ToUTF16(username_utf8);
+      }
+    } else {
+      size_t tld_length =
+          net::registry_controlled_domains::GetCanonicalHostRegistryLength(
+              gaia::ExtractDomainName(username_utf8),
+              net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+      // If an TLD is found strip it off, plus 1 to remove the separating dot
+      // too.
+      if (tld_length > 0) {
+        username_utf8.resize(username_utf8.length() - tld_length - 1);
+        os_username = base::UTF8ToUTF16(username_utf8);
+      }
     }
   }
 

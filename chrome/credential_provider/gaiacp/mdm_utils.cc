@@ -54,6 +54,7 @@ constexpr wchar_t kRegGlsPath[] = L"gls_path";
 constexpr wchar_t kRegUpdateCredentialsOnChange[] =
     L"update_credentials_on_change";
 constexpr wchar_t kRegUserDeviceResourceId[] = L"device_resource_id";
+constexpr wchar_t kRegUseShorterAccountName[] = L"use_shorter_account_name";
 constexpr wchar_t kUserPasswordLsaStoreKeyPrefix[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     L"Chrome-GCPW-";
