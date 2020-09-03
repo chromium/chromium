@@ -93,9 +93,10 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void ResetFallbackToFirstNavigationSurface() override {}
 
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
-  void EnsureSurfaceSynchronizedForWebTest() override {}
+  void EnsureSurfaceSynchronizedForWebTest() override;
 
   // RenderWidgetHostViewBase:
+  uint32_t GetCaptureSequenceNumber() const override;
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
                    const gfx::Rect& bounds) override {}
   void InitAsFullscreen(RenderWidgetHostView* reference_host_view) override {}
@@ -133,6 +134,11 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   bool is_showing_;
   bool is_occluded_;
   ui::DummyTextInputClient text_input_client_;
+
+  // Latest capture sequence number which is incremented when the caller
+  // requests surfaces be synchronized via
+  // EnsureSurfaceSynchronizedForWebTest().
+  uint32_t latest_capture_sequence_number_ = 0u;
 
 #if defined(USE_AURA)
   std::unique_ptr<aura::Window> window_;

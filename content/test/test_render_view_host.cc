@@ -144,6 +144,14 @@ void TestRenderWidgetHostView::WasOccluded() {
   is_occluded_ = true;
 }
 
+void TestRenderWidgetHostView::EnsureSurfaceSynchronizedForWebTest() {
+  ++latest_capture_sequence_number_;
+}
+
+uint32_t TestRenderWidgetHostView::GetCaptureSequenceNumber() const {
+  return latest_capture_sequence_number_;
+}
+
 void TestRenderWidgetHostView::RenderProcessGone() {
   delete this;
 }
