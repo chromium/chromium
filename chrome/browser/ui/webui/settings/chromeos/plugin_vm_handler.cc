@@ -12,10 +12,31 @@
 #include "base/bind_helpers.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
+
+namespace {
+
+base::ListValue UsbDevicesToListValue(
+    const std::vector<CrosUsbDeviceInfo>& shared_usbs) {
+  base::ListValue usb_devices_list;
+  for (const auto& device : shared_usbs) {
+    base::Value device_info(base::Value::Type::DICTIONARY);
+    device_info.SetStringKey("guid", device.guid);
+    device_info.SetStringKey("label", device.label);
+    auto it = device.vm_sharing_info.find(plugin_vm::kPluginVmName);
+    bool shared = it != device.vm_sharing_info.end() && it->second.shared;
+    device_info.SetBoolKey("shared", shared);
+    usb_devices_list.Append(std::move(device_info));
+  }
+  return usb_devices_list;
+}
+
+}  // namespace
+
 namespace settings {
 
 PluginVmHandler::PluginVmHandler(Profile* profile) : profile_(profile) {}
@@ -33,6 +54,15 @@ void PluginVmHandler::RegisterMessages() {
       base::BindRepeating(&PluginVmHandler::HandleRemovePluginVmSharedPath,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "notifyPluginVmSharedUsbDevicesPageReady",
+      base::BindRepeating(
+          &PluginVmHandler::HandleNotifyPluginVmSharedUsbDevicesPageReady,
+          weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "setPluginVmUsbDeviceShared",
+      base::BindRepeating(&PluginVmHandler::HandleSetPluginVmUsbDeviceShared,
+                          weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
       "wouldPermissionChangeRequireRelaunch",
       base::BindRepeating(
           &PluginVmHandler::HandleWouldPermissionChangeRequireRelaunch,
@@ -45,6 +75,18 @@ void PluginVmHandler::RegisterMessages() {
       "relaunchPluginVm",
       base::BindRepeating(&PluginVmHandler::HandleRelaunchPluginVm,
                           base::Unretained(this)));
+}
+
+void PluginVmHandler::OnJavascriptAllowed() {
+  if (chromeos::CrosUsbDetector::Get()) {
+    chromeos::CrosUsbDetector::Get()->AddUsbDeviceObserver(this);
+  }
+}
+
+void PluginVmHandler::OnJavascriptDisallowed() {
+  if (chromeos::CrosUsbDetector::Get()) {
+    chromeos::CrosUsbDetector::Get()->RemoveUsbDeviceObserver(this);
+  }
 }
 
 void PluginVmHandler::HandleGetPluginVmSharedPathsDisplayText(
@@ -79,6 +121,42 @@ void PluginVmHandler::HandleRemovePluginVmSharedPath(
             }
           },
           path));
+}
+
+void PluginVmHandler::HandleNotifyPluginVmSharedUsbDevicesPageReady(
+    const base::ListValue* args) {
+  AllowJavascript();
+  OnUsbDevicesChanged();
+}
+
+void PluginVmHandler::HandleSetPluginVmUsbDeviceShared(
+    const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetList().size());
+  const auto& args_list = args->GetList();
+  const std::string& guid = args_list[0].GetString();
+  bool shared = args_list[1].GetBool();
+
+  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
+  if (!detector)
+    return;
+
+  if (shared) {
+    detector->AttachUsbDeviceToVm(plugin_vm::kPluginVmName, guid,
+                                  base::DoNothing());
+    return;
+  }
+  detector->DetachUsbDeviceFromVm(plugin_vm::kPluginVmName, guid,
+                                  base::DoNothing());
+}
+
+void PluginVmHandler::OnUsbDevicesChanged() {
+  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
+  if (!detector)
+    return;
+
+  FireWebUIListener(
+      "plugin-vm-shared-usb-devices-changed",
+      UsbDevicesToListValue(detector->GetDevicesSharableWithCrostini()));
 }
 
 void PluginVmHandler::HandleWouldPermissionChangeRequireRelaunch(

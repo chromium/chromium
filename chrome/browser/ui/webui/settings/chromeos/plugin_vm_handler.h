@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/chromeos/usb/cros_usb_detector.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class Profile;
@@ -17,23 +18,32 @@ class Profile;
 namespace chromeos {
 namespace settings {
 
-class PluginVmHandler : public ::settings::SettingsPageUIHandler {
+class PluginVmHandler : public ::settings::SettingsPageUIHandler,
+                        public chromeos::CrosUsbDeviceObserver {
  public:
   explicit PluginVmHandler(Profile* profile);
   ~PluginVmHandler() override;
 
   // SettingsPageUIHandler
   void RegisterMessages() override;
-  void OnJavascriptAllowed() override {}
-  void OnJavascriptDisallowed() override {}
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
  private:
+  // chromeos::SharedUsbDeviceObserver.
+  void OnUsbDevicesChanged() override;
+
   // Callback for the "getSharedPathsDisplayText" message.  Converts actual
   // paths in chromeos to values suitable to display to users.
   // E.g. /home/chronos/u-<hash>/Downloads/foo => "Downloads > foo".
   void HandleGetPluginVmSharedPathsDisplayText(const base::ListValue* args);
   // Remove a specified path from being shared.
   void HandleRemovePluginVmSharedPath(const base::ListValue* args);
+  // Called when the shared USB devices page is ready.
+  void HandleNotifyPluginVmSharedUsbDevicesPageReady(
+      const base::ListValue* args);
+  // Set the share state of a USB device.
+  void HandleSetPluginVmUsbDeviceShared(const base::ListValue* args);
   // Checks if Plugin VM would need to be relaunched if the proposed changes are
   // made.
   void HandleWouldPermissionChangeRequireRelaunch(const base::ListValue* args);

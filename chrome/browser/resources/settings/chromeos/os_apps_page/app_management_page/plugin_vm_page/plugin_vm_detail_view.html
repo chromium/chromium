@@ -54,12 +54,23 @@
 
       <div class="permission-card-row separated-row header-text clickable"
           on-click="onSharedPathsClick_">
-        <div id="label" class="header-text" aria-hidden="true">
+        <div id="sharedPathsLabel" class="header-text" aria-hidden="true">
           $i18n{pluginVmSharedPaths}
         </div>
         <div class="permission-row-controls">
           <cr-icon-button class="subpage-arrow app-management-item-arrow"
-            role="link" tabindex="0" aria-labelledby="label">
+              role="link" tabindex="0" aria-labelledby="sharedPathsLabel">
+          </cr-icon-button>
+        </div>
+      </div>
+      <div class="permission-card-row separated-row header-text clickable"
+          on-click="onSharedUsbDevicesClick_">
+        <div id="sharedUsbDevicesLabel" class="header-text" aria-hidden="true">
+          $i18n{pluginVmSharedUsbDevicesLabel}
+        </div>
+        <div class="permission-row-controls">
+          <cr-icon-button class="subpage-arrow app-management-item-arrow"
+              role="link" tabindex="0" aria-labelledby="sharedUsbDevicesLabel">
           </cr-icon-button>
         </div>
       </div>

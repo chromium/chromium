@@ -20,6 +20,7 @@
 <link rel="import" href="app_management_page/app_management_page.html">
 <link rel="import" href="app_management_page/app_detail_view.html">
 <link rel="import" href="app_management_page/plugin_vm_page/plugin_vm_shared_paths.html">
+<link rel="import" href="app_management_page/plugin_vm_page/plugin_vm_shared_usb_devices.html">
 <link rel="import" href="app_management_page/uninstall_button.html">
 
 <dom-module id="os-settings-apps-page">
@@ -124,6 +125,13 @@
         <settings-subpage page-title="$i18n{pluginVmSharedPaths}">
           <settings-plugin-vm-shared-paths prefs="{{prefs}}">
           </settings-plugin-vm-shared-paths>
+        </settings-subpage>
+      </template>
+      <template is="dom-if"
+          route-path="/app-management/pluginVm/sharedUsbDevices">
+        <settings-subpage page-title="$i18n{pluginVmSharedUsbDevicesLabel}">
+          <settings-plugin-vm-shared-usb-devices>
+          </settings-plugin-vm-shared-usb-devices>
         </settings-subpage>
       </template>
     </template>

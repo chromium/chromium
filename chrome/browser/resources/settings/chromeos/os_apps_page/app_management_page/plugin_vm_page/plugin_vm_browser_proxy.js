@@ -19,6 +19,13 @@ const PermissionType = {
 let PermissionSetting;
 
 /**
+ * @typedef {{guid: string,
+ *            label: string,
+ *            shared: boolean}}
+ */
+let PluginVmSharedUsbDevice;
+
+/**
  * @fileoverview A helper object used by the Plugin VM section
  * to manage the Plugin VM.
  */
@@ -36,6 +43,15 @@ cr.define('settings', function() {
      * @param {string} path Path to stop sharing.
      */
     removePluginVmSharedPath(vmName, path) {}
+
+    /** Called when page is ready. */
+    notifyPluginVmSharedUsbDevicesPageReady() {}
+
+    /**
+     * @param {string} guid Unique device identifier.
+     * @param {boolean} shared Whether device is currently shared with Crostini.
+     */
+    setPluginVmUsbDeviceShared(guid, shared) {}
 
     /**
      * @param {!PermissionSetting} permissionSetting The proposed change to
@@ -67,6 +83,16 @@ cr.define('settings', function() {
     /** @override */
     removePluginVmSharedPath(vmName, path) {
       chrome.send('removePluginVmSharedPath', [vmName, path]);
+    }
+
+    /** @override */
+    notifyPluginVmSharedUsbDevicesPageReady() {
+      return cr.sendWithPromise('notifyPluginVmSharedUsbDevicesPageReady');
+    }
+
+    /** @override */
+    setPluginVmUsbDeviceShared(guid, shared) {
+      return chrome.send('setPluginVmUsbDeviceShared', [guid, shared]);
     }
 
     /** @override */

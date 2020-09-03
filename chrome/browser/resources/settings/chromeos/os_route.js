@@ -179,6 +179,9 @@ cr.define('settings', function() {
       r.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS = createSubpage(
           r.APP_MANAGEMENT, mojom.PLUGIN_VM_SHARED_PATHS_SUBPAGE_PATH,
           Subpage.kPluginVmSharedPaths);
+      r.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES = createSubpage(
+          r.APP_MANAGEMENT, mojom.PLUGIN_VM_USB_PREFERENCES_SUBPAGE_PATH,
+          Subpage.kPluginVmUsbPreferences);
     }
 
     // Crostini section.

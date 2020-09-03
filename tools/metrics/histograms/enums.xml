@@ -53305,6 +53305,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="701" label="App Details"/>
   <int value="702" label="Google Play Store"/>
   <int value="703" label="Plugin Vm Shared Paths"/>
+  <int value="704" label="Plugin Vm USB Preferences"/>
   <int value="800" label="Crostini Details"/>
   <int value="801" label="Crostini Manage Shared Folders"/>
   <int value="802" label="Crostini Usb Preferences"/>

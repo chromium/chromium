@@ -259,6 +259,12 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::SearchResultIcon::kAppsGrid,
                                    mojom::SearchResultDefaultRank::kMedium,
                                    mojom::kPluginVmSharedPathsSubpagePath);
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL,
+      mojom::Subpage::kPluginVmUsbPreferences, mojom::Subpage::kAppManagement,
+      mojom::SearchResultIcon::kAppsGrid,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPluginVmUsbPreferencesSubpagePath);
 
   // Google Play Store.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_ANDROID_APPS_LABEL,
@@ -322,6 +328,14 @@ void AppsSection::AddPluginVmLoadTimeData(
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_SHARING},
       {"pluginVmSharedPathsListEmptyMessage",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE},
+      {"pluginVmSharedUsbDevicesLabel",
+       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL},
+      {"pluginVmSharedUsbDevicesDescription",
+       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION},
+      {"pluginVmSharedUsbDevicesExtraDescription",
+       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
+      {"pluginVmSharedUsbDevicesListEmptyMessage",
+       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE},
       {"pluginVmPermissionDialogCameraLabel",
        IDS_SETTINGS_APPS_PLUGIN_VM_PERMISSION_DIALOG_CAMERA_LABEL},
       {"pluginVmPermissionDialogMicrophoneLabel",

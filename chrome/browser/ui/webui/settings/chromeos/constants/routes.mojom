@@ -87,6 +87,7 @@ enum Subpage {
   kAppDetails = 701,
   kGooglePlayStore = 702,
   kPluginVmSharedPaths = 703,
+  kPluginVmUsbPreferences = 704,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -192,6 +193,8 @@ const string kAppDetailsSubpagePath = "app-management/detail";
 const string kGooglePlayStoreSubpagePath = "androidAppsDetails";
 const string kPluginVmSharedPathsSubpagePath =
     "app-management/pluginVm/sharedPaths";
+const string kPluginVmUsbPreferencesSubpagePath =
+    "app-management/pluginVm/sharedUsbDevices";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";

@@ -445,28 +445,52 @@ TEST_F('OSSettingsAppManagementPluginVmDetailViewTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-// Test fixture for the Plugin VM page.
+// Test fixture for the Plugin VM shared paths page.
 // eslint-disable-next-line no-var
-var OSSettingsAppManagementPluginVmPageTest =
+var OSSettingsAppManagementPluginVmSharedPathsTest =
     class extends OSSettingsAppManagementBrowserTest {
   /** @override */
   get browsePreload() {
     return super.browsePreload +
-        'app_management/plugin_vm_page/plugin_vm_shared_folders.html';
+        'app_management/plugin_vm_page/plugin_vm_shared_paths.html';
   }
 
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
-      'app_management/plugin_vm_shared_folders_test.js',
+      'app_management/plugin_vm_shared_paths_test.js',
     ]);
   }
 };
 
-TEST_F('OSSettingsAppManagementPluginVmPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAppManagementPluginVmSharedPathsTest', 'AllJsTests', () => {
   mocha.run();
 });
+
+// Test fixture for the Plugin VM shared USB devices page.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementPluginVmSharedUsbDevicesTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'app_management/plugin_vm_page/plugin_vm_shared_usb_devices.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      'app_management/plugin_vm_shared_usb_devices_test.js',
+    ]);
+  }
+};
+
+TEST_F(
+    'OSSettingsAppManagementPluginVmSharedUsbDevicesTest', 'AllJsTests', () => {
+      mocha.run();
+    });
 
 // Test fixture for the app management managed app view.
 // eslint-disable-next-line no-var

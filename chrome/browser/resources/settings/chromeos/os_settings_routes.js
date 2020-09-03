@@ -18,6 +18,7 @@
  *   APP_MANAGEMENT: !settings.Route,
  *   APP_MANAGEMENT_DETAIL: !settings.Route,
  *   APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS: !settings.Route,
+ *   APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES: !settings.Route,
  *   APPS: !settings.Route,
  *   ANDROID_APPS_DETAILS: !settings.Route,
  *   CROSTINI: !settings.Route,
