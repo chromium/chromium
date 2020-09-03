@@ -88,7 +88,7 @@ void PasswordInputType::CreateShadowSubtree() {
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     Element* container = ContainerElement();
     Element* view_port = GetElement().UserAgentShadowRoot()->getElementById(
-        shadow_element_names::EditingViewPort());
+        shadow_element_names::kIdEditingViewPort);
     DCHECK(container);
     DCHECK(view_port);
     container->InsertBefore(MakeGarbageCollected<PasswordRevealButtonElement>(
@@ -128,7 +128,7 @@ void PasswordInputType::UpdateView() {
 
 void PasswordInputType::UpdatePasswordRevealButton() {
   Element* button = GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::PasswordRevealButton());
+      shadow_element_names::kIdPasswordRevealButton);
 
   // Update the glyph.
   const AtomicString reveal("reveal");

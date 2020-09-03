@@ -59,7 +59,7 @@ LayoutObject* HTMLSummaryElement::CreateLayoutObject(const ComputedStyle& style,
 void HTMLSummaryElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   auto* marker_control =
       MakeGarbageCollected<DetailsMarkerControl>(GetDocument());
-  marker_control->SetIdAttribute(shadow_element_names::DetailsMarker());
+  marker_control->SetIdAttribute(shadow_element_names::kIdDetailsMarker);
   root.AppendChild(marker_control);
   root.AppendChild(HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
 }
@@ -74,7 +74,7 @@ HTMLDetailsElement* HTMLSummaryElement::DetailsElement() const {
 
 Element* HTMLSummaryElement::MarkerControl() {
   return EnsureUserAgentShadowRoot().getElementById(
-      shadow_element_names::DetailsMarker());
+      shadow_element_names::kIdDetailsMarker);
 }
 
 bool HTMLSummaryElement::IsMainSummary() const {

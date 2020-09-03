@@ -38,7 +38,7 @@ namespace blink {
 
 DetailsMarkerControl::DetailsMarkerControl(Document& document)
     : HTMLDivElement(document) {
-  SetShadowPseudoId(shadow_element_names::WebKitDetailsMarker());
+  SetShadowPseudoId(shadow_element_names::kPseudoWebKitDetailsMarker);
 }
 
 LayoutObject* DetailsMarkerControl::CreateLayoutObject(const ComputedStyle&,

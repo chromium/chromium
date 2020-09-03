@@ -163,7 +163,7 @@ void HTMLOptGroupElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   label->setAttribute(html_names::kAriaLabelAttr, AtomicString());
   label->SetInlineStyleProperty(CSSPropertyID::kPadding, label_padding);
   label->SetInlineStyleProperty(CSSPropertyID::kMinHeight, label_min_height);
-  label->SetIdAttribute(shadow_element_names::OptGroupLabel());
+  label->SetIdAttribute(shadow_element_names::kIdOptGroupLabel);
   root.AppendChild(label);
 
   root.AppendChild(
@@ -179,7 +179,7 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
 
 HTMLDivElement& HTMLOptGroupElement::OptGroupLabelElement() const {
   auto* element = UserAgentShadowRoot()->getElementById(
-      shadow_element_names::OptGroupLabel());
+      shadow_element_names::kIdOptGroupLabel);
   CHECK(!element || IsA<HTMLDivElement>(element));
   return *To<HTMLDivElement>(element);
 }

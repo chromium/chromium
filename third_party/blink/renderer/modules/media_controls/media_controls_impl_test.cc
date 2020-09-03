@@ -728,7 +728,7 @@ TEST_F(MediaControlsImplTest, TimelineMetricsDragFromCurrentPosition) {
   DOMRect* thumb_rect =
       TimelineElement()
           ->UserAgentShadowRoot()
-          ->getElementById(shadow_element_names::SliderThumb())
+          ->getElementById(shadow_element_names::kIdSliderThumb)
           ->getBoundingClientRect();
   gfx::PointF thumb(thumb_rect->x() + (thumb_rect->width() / 2),
                     thumb_rect->y() + 1);

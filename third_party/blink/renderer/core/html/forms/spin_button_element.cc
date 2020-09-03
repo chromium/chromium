@@ -52,7 +52,7 @@ SpinButtonElement::SpinButtonElement(Document& document,
                        this,
                        &SpinButtonElement::RepeatingTimerFired) {
   SetShadowPseudoId(AtomicString("-webkit-inner-spin-button"));
-  setAttribute(html_names::kIdAttr, shadow_element_names::SpinButton());
+  setAttribute(html_names::kIdAttr, shadow_element_names::kIdSpinButton);
 }
 
 void SpinButtonElement::DetachLayoutTree(bool performing_reattach) {

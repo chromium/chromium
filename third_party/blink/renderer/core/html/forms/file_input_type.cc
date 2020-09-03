@@ -333,7 +333,7 @@ void FileInputType::CreateShadowSubtree() {
                                   : IDS_FORM_FILE_BUTTON_LABEL)));
   button->SetShadowPseudoId(AtomicString("-webkit-file-upload-button"));
   button->setAttribute(html_names::kIdAttr,
-                       shadow_element_names::FileUploadButton());
+                       shadow_element_names::kIdFileUploadButton);
   button->SetActive(GetElement().CanReceiveDroppedFiles());
   GetElement().UserAgentShadowRoot()->AppendChild(button);
 
@@ -349,7 +349,7 @@ void FileInputType::CreateShadowSubtree() {
 
 HTMLInputElement* FileInputType::UploadButton() const {
   Element* element = GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::FileUploadButton());
+      shadow_element_names::kIdFileUploadButton);
   CHECK(!element || IsA<HTMLInputElement>(element));
   return To<HTMLInputElement>(element);
 }

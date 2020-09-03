@@ -246,7 +246,8 @@ void RangeInputType::CreateShadowSubtree() {
   Document& document = GetElement().GetDocument();
   auto* track = MakeGarbageCollected<HTMLDivElement>(document);
   track->SetShadowPseudoId(AtomicString("-webkit-slider-runnable-track"));
-  track->setAttribute(html_names::kIdAttr, shadow_element_names::SliderTrack());
+  track->setAttribute(html_names::kIdAttr,
+                      shadow_element_names::kIdSliderTrack);
   track->AppendChild(MakeGarbageCollected<SliderThumbElement>(document));
   auto* container = MakeGarbageCollected<SliderContainerElement>(document);
   container->AppendChild(track);
@@ -337,12 +338,12 @@ bool RangeInputType::ShouldRespectListAttribute() {
 inline SliderThumbElement* RangeInputType::GetSliderThumbElement() const {
   return To<SliderThumbElement>(
       GetElement().UserAgentShadowRoot()->getElementById(
-          shadow_element_names::SliderThumb()));
+          shadow_element_names::kIdSliderThumb));
 }
 
 inline Element* RangeInputType::SliderTrackElement() const {
   return GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::SliderTrack());
+      shadow_element_names::kIdSliderTrack);
 }
 
 void RangeInputType::ListAttributeTargetChanged() {

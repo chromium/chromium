@@ -177,7 +177,7 @@ HTMLElement* TextControlElement::PlaceholderElement() const {
     return nullptr;
   DCHECK(UserAgentShadowRoot());
   auto* element = UserAgentShadowRoot()->getElementById(
-      shadow_element_names::Placeholder());
+      shadow_element_names::kIdPlaceholder);
   CHECK(!element || IsA<HTMLElement>(element));
   return To<HTMLElement>(element);
 }

@@ -534,8 +534,6 @@ blink_core_sources("html") {
     "shadow/details_marker_control.h",
     "shadow/progress_shadow_element.cc",
     "shadow/progress_shadow_element.h",
-    "shadow/shadow_element_names.cc",
-    "shadow/shadow_element_names.h",
     "shadow/shadow_element_utils.cc",
     "shadow/shadow_element_utils.h",
     "table_constants.h",

@@ -85,12 +85,12 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   HTMLSlotElement* summary_slot =
       HTMLSlotElement::CreateUserAgentCustomAssignSlot(GetDocument());
-  summary_slot->SetIdAttribute(shadow_element_names::DetailsSummary());
+  summary_slot->SetIdAttribute(shadow_element_names::kIdDetailsSummary);
   summary_slot->AppendChild(default_summary);
   root.AppendChild(summary_slot);
 
   auto* content = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  content->SetIdAttribute(shadow_element_names::DetailsContent());
+  content->SetIdAttribute(shadow_element_names::kIdDetailsContent);
   content->AppendChild(
       HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
   content->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
@@ -125,7 +125,7 @@ void HTMLDetailsElement::ParseAttribute(
                   WrapPersistent(this), params.reason));
 
     Element* content = EnsureUserAgentShadowRoot().getElementById(
-        shadow_element_names::DetailsContent());
+        shadow_element_names::kIdDetailsContent);
     DCHECK(content);
     if (is_open_) {
       content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);

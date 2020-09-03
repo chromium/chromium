@@ -610,7 +610,7 @@ void HTMLTextAreaElement::UpdatePlaceholderText() {
     placeholder = new_element;
     placeholder->SetShadowPseudoId(AtomicString("-webkit-input-placeholder"));
     placeholder->setAttribute(html_names::kIdAttr,
-                              shadow_element_names::Placeholder());
+                              shadow_element_names::kIdPlaceholder);
     placeholder->SetInlineStyleProperty(
         CSSPropertyID::kDisplay,
         IsPlaceholderVisible() ? CSSValueID::kBlock : CSSValueID::kNone, true);

@@ -535,7 +535,7 @@ DateTimeEditElement::DateTimeEditElement(Document& document,
     : HTMLDivElement(document), edit_control_owner_(&edit_control_owner) {
   SetHasCustomStyleCallbacks();
   SetShadowPseudoId(AtomicString("-webkit-datetime-edit"));
-  setAttribute(html_names::kIdAttr, shadow_element_names::DateTimeEdit());
+  setAttribute(html_names::kIdAttr, shadow_element_names::kIdDateTimeEdit);
 }
 
 DateTimeEditElement::~DateTimeEditElement() = default;

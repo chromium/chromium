@@ -54,7 +54,7 @@ namespace blink {
 SliderThumbElement::SliderThumbElement(Document& document)
     : HTMLDivElement(document), in_drag_mode_(false) {
   SetHasCustomStyleCallbacks();
-  setAttribute(html_names::kIdAttr, shadow_element_names::SliderThumb());
+  setAttribute(html_names::kIdAttr, shadow_element_names::kIdSliderThumb);
 }
 
 void SliderThumbElement::SetPositionFromValue() {
@@ -99,7 +99,7 @@ void SliderThumbElement::DragFrom(const LayoutPoint& point) {
 void SliderThumbElement::SetPositionFromPoint(const LayoutPoint& point) {
   HTMLInputElement* input(HostInput());
   Element* track_element = input->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::SliderTrack());
+      shadow_element_names::kIdSliderTrack);
 
   const LayoutObject* input_object = input->GetLayoutObject();
   const LayoutBox* thumb_box = GetLayoutBox();
@@ -369,7 +369,7 @@ void SliderContainerElement::HandleTouchEvent(TouchEvent* event) {
 
   TouchList* touches = event->targetTouches();
   auto* thumb = To<SliderThumbElement>(
-      GetTreeScope().getElementById(shadow_element_names::SliderThumb()));
+      GetTreeScope().getElementById(shadow_element_names::kIdSliderThumb));
   if (!thumb || !touches)
     return;
 

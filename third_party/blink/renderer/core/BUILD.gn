@@ -720,6 +720,11 @@ make_names("make_core_generated_performance_entry_names") {
   output_dir = blink_core_output_dir
 }
 
+make_names("make_core_generated_shadow_element_names") {
+  in_files = [ "html/shadow/shadow_element_names.json5" ]
+  output_dir = "$blink_core_output_dir/html/shadow"
+}
+
 # make_qualified_names ---------------------------------------------------------
 
 make_qualified_names("make_core_generated_xlink_names") {
@@ -912,6 +917,7 @@ targets_generating_sources = [
   ":make_core_generated_media_type_names",
   ":make_core_generated_origin_trials",
   ":make_core_generated_performance_entry_names",
+  ":make_core_generated_shadow_element_names",
   ":make_core_generated_style_property_shorthand",
   ":make_core_generated_svg_element_type_helpers",
   ":make_core_generated_svg_names",

@@ -312,7 +312,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   IntSize thumb_size;
   LayoutObject* thumb_layout_object =
       input->UserAgentShadowRoot()
-          ->getElementById(shadow_element_names::SliderThumb())
+          ->getElementById(shadow_element_names::kIdSliderThumb)
           ->GetLayoutObject();
   if (thumb_layout_object && thumb_layout_object->IsBox())
     thumb_size = FlooredIntSize(ToLayoutBox(thumb_layout_object)->Size());
@@ -325,7 +325,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   IntRect track_bounds;
   LayoutObject* track_layout_object =
       input->UserAgentShadowRoot()
-          ->getElementById(shadow_element_names::SliderTrack())
+          ->getElementById(shadow_element_names::kIdSliderTrack)
           ->GetLayoutObject();
   if (track_layout_object && track_layout_object->IsBox()) {
     track_bounds = IntRect(

@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/event_factory.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/html_tokenizer_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -107,7 +108,7 @@ void CoreInitializer::Initialize() {
       html_tokenizer_names::kNamesCount + http_names::kNamesCount +
       input_type_names::kNamesCount + keywords::kNamesCount +
       media_feature_names::kNamesCount + media_type_names::kNamesCount +
-      performance_entry_names::kNamesCount;
+      performance_entry_names::kNamesCount + shadow_element_names::kNamesCount;
 
   StringImpl::ReserveStaticStringsCapacityForSize(
       kCoreStaticStringsCount + StringImpl::AllStaticStrings().size());
@@ -134,6 +135,7 @@ void CoreInitializer::Initialize() {
   media_feature_names::Init();
   media_type_names::Init();
   performance_entry_names::Init();
+  shadow_element_names::Init();
 
   MediaQueryEvaluator::Init();
   CSSParserTokenRange::InitStaticEOFToken();

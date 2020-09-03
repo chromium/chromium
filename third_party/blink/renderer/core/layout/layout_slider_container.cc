@@ -54,9 +54,9 @@ void LayoutSliderContainer::UpdateLayout() {
   const bool is_vertical = !StyleRef().IsHorizontalWritingMode();
 
   Element* thumb_element = input->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::SliderThumb());
+      shadow_element_names::kIdSliderThumb);
   Element* track_element = input->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::SliderTrack());
+      shadow_element_names::kIdSliderTrack);
   LayoutBox* thumb = thumb_element ? thumb_element->GetLayoutBox() : nullptr;
   LayoutBox* track = track_element ? track_element->GetLayoutBox() : nullptr;
 

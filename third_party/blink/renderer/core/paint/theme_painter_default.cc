@@ -355,7 +355,7 @@ bool ThemePainterDefault::PaintSliderTrack(const LayoutObject& o,
   if (input) {
     Element* thumb_element = input->UserAgentShadowRoot()
                                  ? input->UserAgentShadowRoot()->getElementById(
-                                       shadow_element_names::SliderThumb())
+                                       shadow_element_names::kIdSliderThumb)
                                  : nullptr;
     LayoutBox* thumb = thumb_element ? thumb_element->GetLayoutBox() : nullptr;
     LayoutBox* input_box = input->GetLayoutBox();

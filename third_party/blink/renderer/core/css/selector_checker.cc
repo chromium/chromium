@@ -1422,7 +1422,8 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         if (element.ShadowPseudoId() != selector.Value())
           return false;
         if (!is_ua_rule_ &&
-            selector.Value() == shadow_element_names::WebKitDetailsMarker()) {
+            selector.Value() ==
+                shadow_element_names::kPseudoWebKitDetailsMarker) {
           UseCounter::Count(element.GetDocument(),
                             WebFeature::kCSSSelectorPseudoWebKitDetailsMarker);
         }

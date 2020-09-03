@@ -122,10 +122,10 @@ ControlPart AutoAppearanceFor(const Element& element) {
   if (element.IsInUserAgentShadowRoot()) {
     const AtomicString& id_value =
         element.FastGetAttribute(html_names::kIdAttr);
-    if (id_value == shadow_element_names::SliderThumb())
+    if (id_value == shadow_element_names::kIdSliderThumb)
       return kSliderThumbHorizontalPart;
-    if (id_value == shadow_element_names::SearchClearButton() ||
-        id_value == shadow_element_names::ClearButton())
+    if (id_value == shadow_element_names::kIdSearchClearButton ||
+        id_value == shadow_element_names::kIdClearButton)
       return kSearchFieldCancelButtonPart;
 
     // Slider container elements and -webkit-meter-inner-element don't have IDs.

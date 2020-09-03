@@ -99,7 +99,7 @@ class DataListIndicatorElement final : public HTMLDivElement {
  public:
   DataListIndicatorElement(Document& document) : HTMLDivElement(document) {
     SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
-    setAttribute(html_names::kIdAttr, shadow_element_names::PickerIndicator());
+    setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
   }
 };
 
@@ -123,7 +123,7 @@ InputType::ValueMode TextFieldInputType::GetValueMode() const {
 
 SpinButtonElement* TextFieldInputType::GetSpinButtonElement() const {
   auto* element = GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::SpinButton());
+      shadow_element_names::kIdSpinButton);
   CHECK(!element || IsA<SpinButtonElement>(element));
   return To<SpinButtonElement>(element);
 }
@@ -312,7 +312,7 @@ void TextFieldInputType::CreateShadowSubtree() {
 
   Document& document = GetElement().GetDocument();
   auto* container = MakeGarbageCollected<HTMLDivElement>(document);
-  container->SetIdAttribute(shadow_element_names::TextFieldContainer());
+  container->SetIdAttribute(shadow_element_names::kIdTextFieldContainer);
   container->SetShadowPseudoId(
       AtomicString("-webkit-textfield-decoration-container"));
   shadow_root->AppendChild(container);
@@ -341,7 +341,7 @@ void TextFieldInputType::CreateShadowSubtree() {
 
 Element* TextFieldInputType::ContainerElement() const {
   return GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::TextFieldContainer());
+      shadow_element_names::kIdTextFieldContainer);
 }
 
 void TextFieldInputType::DestroyShadowSubtree() {
@@ -354,7 +354,7 @@ void TextFieldInputType::ListAttributeTargetChanged() {
   if (ChromeClient* chrome_client = GetChromeClient())
     chrome_client->TextFieldDataListChanged(GetElement());
   Element* picker = GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::PickerIndicator());
+      shadow_element_names::kIdPickerIndicator);
   bool did_have_picker_indicator = picker;
   bool will_have_picker_indicator = GetElement().HasValidDataListOptions();
   if (did_have_picker_indicator == will_have_picker_indicator)
@@ -371,7 +371,7 @@ void TextFieldInputType::ListAttributeTargetChanged() {
       // but they are different. We should simplify the code by making
       // containerElement mandatory.
       auto* rp_container = MakeGarbageCollected<HTMLDivElement>(document);
-      rp_container->SetIdAttribute(shadow_element_names::TextFieldContainer());
+      rp_container->SetIdAttribute(shadow_element_names::kIdTextFieldContainer);
       rp_container->SetShadowPseudoId(
           AtomicString("-webkit-textfield-decoration-container"));
       Element* inner_editor = GetElement().InnerEditorElement();
@@ -508,7 +508,7 @@ void TextFieldInputType::UpdatePlaceholderText() {
                                             : CSSValueID::kNone,
                                         true);
     placeholder->setAttribute(html_names::kIdAttr,
-                              shadow_element_names::Placeholder());
+                              shadow_element_names::kIdPlaceholder);
     Element* container = ContainerElement();
     Node* previous = container ? container : GetElement().InnerEditorElement();
     previous->parentNode()->InsertBefore(placeholder, previous);
