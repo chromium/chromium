@@ -66,4 +66,8 @@ public class TabUtils {
                 screenSize.x, screenSize.y);
         return screenBounds;
     }
+
+    public static Tab fromWebContents(WebContents webContents) {
+        return TabImplJni.get().fromWebContents(webContents);
+    }
 }

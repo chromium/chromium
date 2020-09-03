@@ -2789,6 +2789,8 @@ static_library("browser") {
       "media/android/cdm/per_device_provisioning_permission.h",
       "media/android/remote/flinging_controller_bridge.cc",
       "media/android/remote/flinging_controller_bridge.h",
+      "media/android/router/chrome_media_router_client.cc",
+      "media/android/router/chrome_media_router_client.h",
       "media/android/router/media_router_android.cc",
       "media/android/router/media_router_android.h",
       "media/android/router/media_router_android_bridge.cc",

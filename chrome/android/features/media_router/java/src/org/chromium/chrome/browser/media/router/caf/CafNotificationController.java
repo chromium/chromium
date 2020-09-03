@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.media.router.caf;
 
 import android.content.Intent;
 
-import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.media.router.R;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
 
@@ -19,8 +18,7 @@ public class CafNotificationController extends BaseNotificationController {
 
     @Override
     public Intent createContentIntent() {
-        Intent contentIntent = ChromeIntentUtil.createBringTabToFrontIntent(
-                mSessionController.getRouteCreationInfo().tabId);
+        Intent contentIntent = createBringTabToFrontIntent();
         if (contentIntent != null) {
             contentIntent.putExtra(MediaNotificationUma.INTENT_EXTRA_NAME,
                     MediaNotificationUma.Source.PRESENTATION);

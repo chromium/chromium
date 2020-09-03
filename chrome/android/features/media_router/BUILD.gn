@@ -18,7 +18,11 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/tab:java",
     "//components/browser_ui/media/android:java",
+
+    # For WebContents.
+    "//content/public/android:content_java",
     "//services/media_session/public/cpp/android:media_session_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
@@ -29,10 +33,11 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/media/router/BaseMediaRouteDialogManager.java",
+    "java/src/org/chromium/chrome/browser/media/router/BrowserMediaRouter.java",
+    "java/src/org/chromium/chrome/browser/media/router/BrowserMediaRouterDialogController.java",
     "java/src/org/chromium/chrome/browser/media/router/CastRequestIdGenerator.java",
     "java/src/org/chromium/chrome/browser/media/router/CastSessionUtil.java",
-    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouter.java",
-    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterDialogController.java",
+    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
     "java/src/org/chromium/chrome/browser/media/router/ClientRecord.java",
     "java/src/org/chromium/chrome/browser/media/router/DiscoveryCallback.java",
     "java/src/org/chromium/chrome/browser/media/router/DiscoveryDelegate.java",
@@ -46,6 +51,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/media/router/MediaRouteDialogManager.java",
     "java/src/org/chromium/chrome/browser/media/router/MediaRouteManager.java",
     "java/src/org/chromium/chrome/browser/media/router/MediaRouteProvider.java",
+    "java/src/org/chromium/chrome/browser/media/router/MediaRouterClient.java",
     "java/src/org/chromium/chrome/browser/media/router/MediaSink.java",
     "java/src/org/chromium/chrome/browser/media/router/MediaSource.java",
     "java/src/org/chromium/chrome/browser/media/router/MediaStatusBridge.java",
@@ -74,8 +80,9 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouter.java",
-    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterDialogController.java",
+    "java/src/org/chromium/chrome/browser/media/router/BrowserMediaRouter.java",
+    "java/src/org/chromium/chrome/browser/media/router/BrowserMediaRouterDialogController.java",
+    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
     "java/src/org/chromium/chrome/browser/media/router/FlingingControllerBridge.java",
     "java/src/org/chromium/chrome/browser/media/router/MediaStatusBridge.java",
   ]
@@ -111,9 +118,9 @@ android_library("test_java") {
 
 junit_binary("media_router_junit_tests") {
   sources = [
-    "junit/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterRouteTest.java",
-    "junit/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterSinkObservationTest.java",
-    "junit/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterTestBase.java",
+    "junit/src/org/chromium/chrome/browser/media/router/BrowserMediaRouterRouteTest.java",
+    "junit/src/org/chromium/chrome/browser/media/router/BrowserMediaRouterSinkObservationTest.java",
+    "junit/src/org/chromium/chrome/browser/media/router/BrowserMediaRouterTestBase.java",
     "junit/src/org/chromium/chrome/browser/media/router/DiscoveryCallbackTest.java",
     "junit/src/org/chromium/chrome/browser/media/router/JSONTestUtils.java",
     "junit/src/org/chromium/chrome/browser/media/router/TestUtils.java",
@@ -136,6 +143,7 @@ junit_binary("media_router_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_mediarouter_mediarouter_java",
   ]

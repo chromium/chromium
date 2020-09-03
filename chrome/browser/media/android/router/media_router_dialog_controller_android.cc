@@ -12,8 +12,7 @@
 #include "base/bind.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/features/media_router/jni_headers/ChromeMediaRouterDialogController_jni.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/android/features/media_router/jni_headers/BrowserMediaRouterDialogController_jni.h"
 #include "chrome/browser/media/android/router/media_router_android.h"
 #include "chrome/browser/media/router/media_router.h"
 #include "chrome/browser/media/router/media_router_factory.h"
@@ -130,7 +129,7 @@ MediaRouterDialogControllerAndroid::MediaRouterDialogControllerAndroid(
     WebContents* web_contents)
     : MediaRouterDialogController(web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_dialog_controller_.Reset(Java_ChromeMediaRouterDialogController_create(
+  java_dialog_controller_.Reset(Java_BrowserMediaRouterDialogController_create(
       env, reinterpret_cast<jlong>(this)));
 }
 
@@ -165,7 +164,7 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
         base::android::ConvertUTF8ToJavaString(
             env, matching_route->media_route_id());
 
-    Java_ChromeMediaRouterDialogController_openRouteControllerDialog(
+    Java_BrowserMediaRouterDialogController_openRouteControllerDialog(
         env, java_dialog_controller_, jsource_id, jmedia_route_id);
     return;
   }
@@ -176,20 +175,20 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
     source_ids.push_back(base::UTF8ToUTF16(source.id()));
   ScopedJavaLocalRef<jobjectArray> jsource_ids =
       base::android::ToJavaArrayOfStrings(env, source_ids);
-  Java_ChromeMediaRouterDialogController_openRouteChooserDialog(
+  Java_BrowserMediaRouterDialogController_openRouteChooserDialog(
       env, java_dialog_controller_, jsource_ids);
 }
 
 void MediaRouterDialogControllerAndroid::CloseMediaRouterDialog() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  Java_ChromeMediaRouterDialogController_closeDialog(env,
-                                                     java_dialog_controller_);
+  Java_BrowserMediaRouterDialogController_closeDialog(env,
+                                                      java_dialog_controller_);
 }
 
 bool MediaRouterDialogControllerAndroid::IsShowingMediaRouterDialog() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_ChromeMediaRouterDialogController_isShowingDialog(
+  return Java_BrowserMediaRouterDialogController_isShowingDialog(
       env, java_dialog_controller_);
 }
 

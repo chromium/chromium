@@ -22,6 +22,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.mediarouter.media.MediaRouter;
 
@@ -46,7 +47,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.media.router.ClientRecord;
 import org.chromium.chrome.browser.media.router.MediaRoute;
 import org.chromium.chrome.browser.media.router.MediaRouteManager;
+import org.chromium.chrome.browser.media.router.MediaRouterClient;
 import org.chromium.chrome.browser.media.router.MediaSink;
+import org.chromium.components.browser_ui.media.MediaNotificationInfo;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Robolectric tests for CafMediaRouteProvider.
@@ -94,6 +98,22 @@ public class CafMediaRouteProviderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        MediaRouterClient.setInstance(new MediaRouterClient() {
+            @Override
+            public int getTabId(WebContents webContents) {
+                return 1;
+            }
+
+            @Override
+            public Intent createBringTabToFrontIntent(int tabId) {
+                return null;
+            }
+
+            @Override
+            public void showNotification(MediaNotificationInfo notificationInfo) {}
+        });
+
         mContext = RuntimeEnvironment.application;
         ShadowCastContext.setInstance(mCastContext);
         ShadowCastMediaSource.setImplementation(mShadowCastMediaSource);

@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.media.router.caf.remoting.RemotingMediaSource
  * on Android.
  */
 @JNINamespace("media_router")
-public class ChromeMediaRouterDialogController implements MediaRouteDialogDelegate {
+public class BrowserMediaRouterDialogController implements MediaRouteDialogDelegate {
     private static final String MEDIA_ROUTE_CONTROLLER_DIALOG_FRAGMENT =
             "android.support.v7.mediarouter:MediaRouteControllerDialogFragment";
 
@@ -27,13 +27,13 @@ public class ChromeMediaRouterDialogController implements MediaRouteDialogDelega
     private MediaRouteDialogManager mDialogManager;
 
     /**
-     * Returns a new initialized {@link ChromeMediaRouterDialogController}.
+     * Returns a new initialized {@link BrowserMediaRouterDialogController}.
      * @param nativeDialogController the handle of the native object.
      * @return a new dialog controller to use from the native side.
      */
     @CalledByNative
-    public static ChromeMediaRouterDialogController create(long nativeDialogController) {
-        return new ChromeMediaRouterDialogController(nativeDialogController);
+    public static BrowserMediaRouterDialogController create(long nativeDialogController) {
+        return new BrowserMediaRouterDialogController(nativeDialogController);
     }
 
     /**
@@ -55,8 +55,8 @@ public class ChromeMediaRouterDialogController implements MediaRouteDialogDelega
         MediaRouteSelector routeSelector = source == null ? null : source.buildRouteSelector();
 
         if (routeSelector == null) {
-            ChromeMediaRouterDialogControllerJni.get().onMediaSourceNotSupported(
-                    mNativeDialogController, ChromeMediaRouterDialogController.this);
+            BrowserMediaRouterDialogControllerJni.get().onMediaSourceNotSupported(
+                    mNativeDialogController, BrowserMediaRouterDialogController.this);
             return;
         }
 
@@ -80,8 +80,8 @@ public class ChromeMediaRouterDialogController implements MediaRouteDialogDelega
         MediaRouteSelector routeSelector = source == null ? null : source.buildRouteSelector();
 
         if (routeSelector == null) {
-            ChromeMediaRouterDialogControllerJni.get().onMediaSourceNotSupported(
-                    mNativeDialogController, ChromeMediaRouterDialogController.this);
+            BrowserMediaRouterDialogControllerJni.get().onMediaSourceNotSupported(
+                    mNativeDialogController, BrowserMediaRouterDialogController.this);
             return;
         }
 
@@ -112,15 +112,15 @@ public class ChromeMediaRouterDialogController implements MediaRouteDialogDelega
     @Override
     public void onSinkSelected(String sourceUrn, MediaSink sink) {
         mDialogManager = null;
-        ChromeMediaRouterDialogControllerJni.get().onSinkSelected(mNativeDialogController,
-                ChromeMediaRouterDialogController.this, sourceUrn, sink.getId());
+        BrowserMediaRouterDialogControllerJni.get().onSinkSelected(mNativeDialogController,
+                BrowserMediaRouterDialogController.this, sourceUrn, sink.getId());
     }
 
     @Override
     public void onRouteClosed(String mediaRouteId) {
         mDialogManager = null;
-        ChromeMediaRouterDialogControllerJni.get().onRouteClosed(
-                mNativeDialogController, ChromeMediaRouterDialogController.this, mediaRouteId);
+        BrowserMediaRouterDialogControllerJni.get().onRouteClosed(
+                mNativeDialogController, BrowserMediaRouterDialogController.this, mediaRouteId);
     }
 
     @Override
@@ -132,23 +132,23 @@ public class ChromeMediaRouterDialogController implements MediaRouteDialogDelega
         if (mDialogManager == null) return;
 
         mDialogManager = null;
-        ChromeMediaRouterDialogControllerJni.get().onDialogCancelled(
-                mNativeDialogController, ChromeMediaRouterDialogController.this);
+        BrowserMediaRouterDialogControllerJni.get().onDialogCancelled(
+                mNativeDialogController, BrowserMediaRouterDialogController.this);
     }
 
-    private ChromeMediaRouterDialogController(long nativeDialogController) {
+    private BrowserMediaRouterDialogController(long nativeDialogController) {
         mNativeDialogController = nativeDialogController;
     }
 
     @NativeMethods
     interface Natives {
         void onDialogCancelled(long nativeMediaRouterDialogControllerAndroid,
-                ChromeMediaRouterDialogController caller);
+                BrowserMediaRouterDialogController caller);
         void onSinkSelected(long nativeMediaRouterDialogControllerAndroid,
-                ChromeMediaRouterDialogController caller, String sourceUrn, String sinkId);
+                BrowserMediaRouterDialogController caller, String sourceUrn, String sinkId);
         void onRouteClosed(long nativeMediaRouterDialogControllerAndroid,
-                ChromeMediaRouterDialogController caller, String routeId);
+                BrowserMediaRouterDialogController caller, String routeId);
         void onMediaSourceNotSupported(long nativeMediaRouterDialogControllerAndroid,
-                ChromeMediaRouterDialogController caller);
+                BrowserMediaRouterDialogController caller);
     }
 }

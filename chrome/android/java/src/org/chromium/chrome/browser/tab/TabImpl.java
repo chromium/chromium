@@ -1496,6 +1496,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     @NativeMethods
     interface Natives {
+        TabImpl fromWebContents(WebContents webContents);
         void init(TabImpl caller);
         void destroy(long nativeTabAndroid, TabImpl caller);
         void initWebContents(long nativeTabAndroid, TabImpl caller, boolean incognito,

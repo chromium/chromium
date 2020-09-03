@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * A complimentary interface to {@link MediaRouteProvider}. Media route providers use the
- * implementation to communicate back to the {@link ChromeMediaRouter}.
+ * implementation to communicate back to the {@link BrowserMediaRouter}.
  */
 public interface MediaRouteManager {
     /**

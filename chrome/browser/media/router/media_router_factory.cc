@@ -6,10 +6,11 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_context.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/media/android/router/chrome_media_router_client.h"
 #include "chrome/browser/media/android/router/media_router_android.h"
 #else
 #include "chrome/browser/media/router/event_page_request_manager_factory.h"
@@ -74,7 +75,8 @@ KeyedService* MediaRouterFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
   MediaRouterBase* media_router = nullptr;
 #if defined(OS_ANDROID)
-  media_router = new MediaRouterAndroid(context);
+  InitChromeMediaRouterJavaClient();
+  media_router = new MediaRouterAndroid();
 #else
   media_router = new MediaRouterDesktop(context);
 #endif

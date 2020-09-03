@@ -13,6 +13,10 @@
 #include "media/base/flinging_controller.h"
 #include "url/origin.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace media_router {
 
 class MediaRouterAndroid;
@@ -29,13 +33,12 @@ class MediaRouterAndroidBridge {
                            const MediaSink::Id& sink_id,
                            const std::string& presentation_id,
                            const url::Origin& origin,
-                           int tab_id,
-                           bool is_incognito,
+                           content::WebContents* web_contents,
                            int route_request_id);
   virtual void JoinRoute(const MediaSource::Id& source_id,
                          const std::string& presentation_id,
                          const url::Origin& origin,
-                         int tab_id,
+                         content::WebContents* web_contents,
                          int route_request_id);
   virtual void TerminateRoute(const MediaRoute::Id& route_id);
   virtual void SendRouteMessage(const MediaRoute::Id& route_id,

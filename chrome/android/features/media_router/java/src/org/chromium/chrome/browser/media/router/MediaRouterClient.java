@@ -1,0 +1,50 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.media.router;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+
+import org.chromium.components.browser_ui.media.MediaNotificationInfo;
+import org.chromium.content_public.browser.WebContents;
+
+/**
+ * An abstraction that allows embedders to implement behavior needed by shared Media Router code.
+ */
+public abstract class MediaRouterClient {
+    @SuppressLint("StaticFieldLeak")
+    private static MediaRouterClient sInstance;
+
+    /**
+     * Sets the singleton client instance.
+     * @param client the {@link Client} provided by the given embedder.
+     */
+    public static void setInstance(MediaRouterClient mediaRouterClient) {
+        sInstance = mediaRouterClient;
+    }
+
+    public static MediaRouterClient getInstance() {
+        return sInstance;
+    }
+
+    /**
+     * @param webContents a {@link WebContents} in a tab.
+     * @return a unique integer identifier for the associated tab.
+     */
+
+    public abstract int getTabId(WebContents webContents);
+
+    /**
+     * @param tabId a tab identifier.
+     * @return an {@link Intent} that brings the identified tab to the foreground.
+     */
+    public abstract Intent createBringTabToFrontIntent(int tabId);
+
+    /**
+     * @param MediaNotificationInfo contains contents and metadata about a media notification
+     *         that should be shown.
+     */
+    public abstract void showNotification(MediaNotificationInfo notificationInfo);
+}

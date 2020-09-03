@@ -14,7 +14,7 @@ import androidx.mediarouter.media.MediaRouter;
 import com.google.android.gms.cast.framework.CastSession;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.media.router.ChromeMediaRouter;
+import org.chromium.chrome.browser.media.router.BrowserMediaRouter;
 import org.chromium.chrome.browser.media.router.ClientRecord;
 import org.chromium.chrome.browser.media.router.MediaRoute;
 import org.chromium.chrome.browser.media.router.MediaRouteManager;
@@ -48,7 +48,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     private final CastSessionController mSessionController;
 
     public static CafMediaRouteProvider create(MediaRouteManager manager) {
-        return new CafMediaRouteProvider(ChromeMediaRouter.getAndroidMediaRouter(), manager);
+        return new CafMediaRouteProvider(BrowserMediaRouter.getAndroidMediaRouter(), manager);
     }
 
     public Map<String, ClientRecord> getClientIdToRecords() {

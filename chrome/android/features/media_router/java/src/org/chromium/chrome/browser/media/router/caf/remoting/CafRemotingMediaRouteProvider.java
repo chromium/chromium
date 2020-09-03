@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.media.router.ChromeMediaRouter;
+import org.chromium.chrome.browser.media.router.BrowserMediaRouter;
 import org.chromium.chrome.browser.media.router.FlingingController;
 import org.chromium.chrome.browser.media.router.MediaRouteManager;
 import org.chromium.chrome.browser.media.router.MediaRouteProvider;
@@ -25,7 +25,7 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
 
     public static CafRemotingMediaRouteProvider create(MediaRouteManager manager) {
         return new CafRemotingMediaRouteProvider(
-                ChromeMediaRouter.getAndroidMediaRouter(), manager);
+                BrowserMediaRouter.getAndroidMediaRouter(), manager);
     }
 
     @Override

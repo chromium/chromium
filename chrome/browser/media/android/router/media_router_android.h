@@ -19,10 +19,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace content {
-class BrowserContext;
-}
-
 namespace media_router {
 
 // An implementation of MediaRouter interface on Android.
@@ -137,7 +133,7 @@ class MediaRouterAndroid : public MediaRouterBase {
     DISALLOW_COPY_AND_ASSIGN(PresentationConnectionProxy);
   };
 
-  explicit MediaRouterAndroid(content::BrowserContext*);
+  MediaRouterAndroid();
 
   // Removes the route with the given id from |active_routes_| and updates the
   // registered route observers.

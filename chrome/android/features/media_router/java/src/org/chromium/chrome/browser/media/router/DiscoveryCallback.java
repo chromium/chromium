@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * Callback for discovering routes with one particular filter. Keeps a set of all source URIs that
  * media sinks were requested for. Once a route is added or removed, updates the
- * {@link ChromeMediaRouter} with the new routes.
+ * {@link BrowserMediaRouter} with the new routes.
  */
 public class DiscoveryCallback extends MediaRouter.Callback {
     private final DiscoveryDelegate mDiscoveryDelegate;
@@ -56,7 +56,7 @@ public class DiscoveryCallback extends MediaRouter.Callback {
         MediaSink sink = MediaSink.fromRoute(route);
         if (mSinks.contains(sink)) return;
         mSinks.add(sink);
-        updateChromeMediaRouter();
+        updateBrowserMediaRouter();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class DiscoveryCallback extends MediaRouter.Callback {
         MediaSink sink = MediaSink.fromRoute(route);
         if (!mSinks.contains(sink)) return;
         mSinks.remove(sink);
-        updateChromeMediaRouter();
+        updateBrowserMediaRouter();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class DiscoveryCallback extends MediaRouter.Callback {
         }
     }
 
-    private void updateChromeMediaRouter() {
+    private void updateBrowserMediaRouter() {
         for (String sourceUrn : mSourceUrns) {
             mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<MediaSink>(mSinks));
         }

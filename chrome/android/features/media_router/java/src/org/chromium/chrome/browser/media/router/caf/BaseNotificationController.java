@@ -10,7 +10,7 @@ import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
-import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationManager;
+import org.chromium.chrome.browser.media.router.MediaRouterClient;
 import org.chromium.chrome.media.router.R;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationListener;
@@ -21,9 +21,10 @@ import org.chromium.services.media_session.MediaMetadata;
 public abstract class BaseNotificationController
         implements MediaNotificationListener, BaseSessionController.Callback {
     private MediaNotificationInfo.Builder mNotificationBuilder;
-    protected final BaseSessionController mSessionController;
+    private final BaseSessionController mSessionController;
 
     public BaseNotificationController(BaseSessionController sessionController) {
+        assert MediaRouterClient.getInstance() != null;
         mSessionController = sessionController;
     }
 
@@ -46,7 +47,7 @@ public abstract class BaseNotificationController
                         .setListener(this);
 
         updateNotificationMetadata();
-        ChromeMediaNotificationManager.show(mNotificationBuilder.build());
+        MediaRouterClient.getInstance().showNotification(mNotificationBuilder.build());
     }
 
     @Override
@@ -73,7 +74,7 @@ public abstract class BaseNotificationController
         } else {
             mNotificationBuilder.setActions(MediaNotificationInfo.ACTION_STOP);
         }
-        ChromeMediaNotificationManager.show(mNotificationBuilder.build());
+        MediaRouterClient.getInstance().showNotification(mNotificationBuilder.build());
     }
 
     /** Called when media metadata updated. */
@@ -81,7 +82,7 @@ public abstract class BaseNotificationController
     public void onMetadataUpdated() {
         if (mNotificationBuilder == null) return;
         updateNotificationMetadata();
-        ChromeMediaNotificationManager.show(mNotificationBuilder.build());
+        MediaRouterClient.getInstance().showNotification(mNotificationBuilder.build());
     }
 
     private void updateNotificationMetadata() {
@@ -144,6 +145,11 @@ public abstract class BaseNotificationController
 
     @Override
     public void onMediaSessionSeekTo(long pos) {}
+
+    protected Intent createBringTabToFrontIntent() {
+        return MediaRouterClient.getInstance().createBringTabToFrontIntent(
+                mSessionController.getRouteCreationInfo().tabId);
+    }
 
     // Abstract methods to be implemented by children.
     public abstract Intent createContentIntent();

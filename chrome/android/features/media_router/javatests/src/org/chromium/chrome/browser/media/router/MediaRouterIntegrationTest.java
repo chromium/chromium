@@ -87,7 +87,7 @@ public class MediaRouterIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        ChromeMediaRouter.setRouteProviderFactoryForTest(new MockMediaRouteProvider.Factory());
+        BrowserMediaRouter.setRouteProviderFactoryForTest(new MockMediaRouteProvider.Factory());
         mActivityTestRule.startMainActivityOnBlankPage();
         // Temporary until support library is updated, see http://crbug.com/576393.
         TestThreadUtils.runOnUiThreadBlocking(

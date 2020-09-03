@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/browser/tab/java",
+  "+components/browser_ui/media/android",
+  "-content/public/android",
+  "+content/public/android/java/src/org/chromium/content_public",
+]

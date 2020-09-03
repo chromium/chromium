@@ -27,19 +27,18 @@ class MockMediaRouterAndroidBridge : public MediaRouterAndroidBridge {
   MockMediaRouterAndroidBridge() : MediaRouterAndroidBridge(nullptr) {}
   ~MockMediaRouterAndroidBridge() override = default;
 
-  MOCK_METHOD7(CreateRoute,
+  MOCK_METHOD6(CreateRoute,
                void(const MediaSource::Id&,
                     const MediaSink::Id&,
                     const std::string&,
                     const url::Origin&,
-                    int,
-                    bool,
+                    content::WebContents*,
                     int));
   MOCK_METHOD5(JoinRoute,
                void(const MediaSource::Id&,
                     const std::string&,
                     const url::Origin&,
-                    int,
+                    content::WebContents*,
                     int));
   MOCK_METHOD1(TerminateRoute, void(const MediaRoute::Id&));
   MOCK_METHOD2(SendRouteMessage,
@@ -53,7 +52,7 @@ class MediaRouterAndroidTest : public testing::Test {
  public:
   void SetUp() override {
     mock_bridge_ = new MockMediaRouterAndroidBridge();
-    router_.reset(new MediaRouterAndroid(nullptr));
+    router_ = base::WrapUnique(new MediaRouterAndroid());
     router_->SetMediaRouterBridgeForTest(mock_bridge_);
   }
 
@@ -77,7 +76,7 @@ TEST_F(MediaRouterAndroidTest, DetachRoute) {
   EXPECT_CALL(callback, Run(StateChangeInfoEquals(change_info_closed)));
 
   Expectation createRouteExpectation =
-      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, _, 1))
+      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, 1))
           .WillOnce(Return());
   EXPECT_CALL(*mock_bridge_, DetachRoute("route"))
       .After(createRouteExpectation)
@@ -99,7 +98,7 @@ TEST_F(MediaRouterAndroidTest, DetachRoute) {
 
 TEST_F(MediaRouterAndroidTest, OnRouteTerminated) {
   Expectation createRouteExpectation =
-      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, _, 1))
+      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, 1))
           .WillOnce(Return());
 
   router_->CreateRoute("source", "sink", url::Origin(), nullptr,
@@ -128,7 +127,7 @@ TEST_F(MediaRouterAndroidTest, OnRouteClosed) {
   EXPECT_CALL(callback, Run(StateChangeInfoEquals(change_info_closed)));
 
   Expectation createRouteExpectation =
-      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, _, 1))
+      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, 1))
           .WillOnce(Return());
 
   router_->CreateRoute("source", "sink", url::Origin(), nullptr,
@@ -156,7 +155,7 @@ TEST_F(MediaRouterAndroidTest, OnRouteClosedWithError) {
   EXPECT_CALL(callback, Run(StateChangeInfoEquals(change_info_closed)));
 
   Expectation createRouteExpectation =
-      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, _, 1))
+      EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, 1))
           .WillOnce(Return());
 
   router_->CreateRoute("source", "sink", url::Origin(), nullptr,

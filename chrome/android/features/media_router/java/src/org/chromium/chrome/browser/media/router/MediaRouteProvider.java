@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 /**
  * An interface components providing media sinks and routes need to implement to hooks up into
- * {@link ChromeMediaRouter}.
+ * {@link BrowserMediaRouter}.
  *
  * Note: Empty-string origins passed through this interface should be considered
  * "unique origins" from url::Origin for the purposes of comparison.

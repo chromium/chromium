@@ -13,14 +13,11 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/media/router/media_sinks_observer.h"
 #include "chrome/browser/media/router/route_message_observer.h"
 #include "chrome/browser/media/router/route_message_util.h"
 #include "components/media_router/common/route_request_result.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -91,7 +88,7 @@ MediaRouterAndroid::MediaRouteRequest::MediaRouteRequest(
 
 MediaRouterAndroid::MediaRouteRequest::~MediaRouteRequest() {}
 
-MediaRouterAndroid::MediaRouterAndroid(content::BrowserContext*)
+MediaRouterAndroid::MediaRouterAndroid()
     : bridge_(new MediaRouterAndroidBridge(this)) {}
 
 MediaRouterAndroid::~MediaRouterAndroid() {}
@@ -116,20 +113,11 @@ void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
   // TODO(avayvod): Implement timeouts (crbug.com/583036).
   std::string presentation_id = MediaRouterBase::CreatePresentationId();
 
-  int tab_id = -1;
-  TabAndroid* tab =
-      web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
-  if (tab)
-    tab_id = tab->GetAndroidId();
-
-  bool is_incognito =
-      web_contents && web_contents->GetBrowserContext()->IsOffTheRecord();
-
   int route_request_id =
       route_requests_.Add(std::make_unique<MediaRouteRequest>(
           MediaSource(source_id), presentation_id, std::move(callback)));
-  bridge_->CreateRoute(source_id, sink_id, presentation_id, origin, tab_id,
-                       is_incognito, route_request_id);
+  bridge_->CreateRoute(source_id, sink_id, presentation_id, origin,
+                       web_contents, route_request_id);
 }
 
 void MediaRouterAndroid::ConnectRouteByRouteId(
@@ -152,18 +140,13 @@ void MediaRouterAndroid::JoinRoute(const MediaSource::Id& source_id,
                                    bool incognito) {
   DCHECK(callback);
   // TODO(avayvod): Implement timeouts (crbug.com/583036).
-  int tab_id = -1;
-  TabAndroid* tab =
-      web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
-  if (tab)
-    tab_id = tab->GetAndroidId();
-
   DVLOG(2) << "JoinRoute: " << source_id << ", " << presentation_id << ", "
-           << origin.GetURL().spec() << ", " << tab_id;
+           << origin.GetURL().spec();
 
   int request_id = route_requests_.Add(std::make_unique<MediaRouteRequest>(
       MediaSource(source_id), presentation_id, std::move(callback)));
-  bridge_->JoinRoute(source_id, presentation_id, origin, tab_id, request_id);
+  bridge_->JoinRoute(source_id, presentation_id, origin, web_contents,
+                     request_id);
 }
 
 void MediaRouterAndroid::TerminateRoute(const MediaRoute::Id& route_id) {

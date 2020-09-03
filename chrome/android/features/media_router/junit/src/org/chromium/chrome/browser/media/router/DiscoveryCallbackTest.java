@@ -33,7 +33,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class DiscoveryCallbackTest extends ChromeMediaRouterTestBase {
+public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     protected DiscoveryDelegate mDiscoveryDelegate;
 
     @Override

@@ -12,7 +12,7 @@ public class MediaRoute {
     private static final String MEDIA_ROUTE_ID_SEPARATOR = "/";
 
     /**
-     * The unique id of the route, assigned by the {@link ChromeMediaRouter}.
+     * The unique id of the route, assigned by the {@link BrowserMediaRouter}.
      */
     public final String id;
 

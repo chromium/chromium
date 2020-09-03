@@ -17,9 +17,9 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.CommandLine;
 
 /**
- * Robolectric test base class for ChromeMediaRouter.
+ * Robolectric test base class for BrowserMediaRouter.
  */
-public class ChromeMediaRouterTestBase {
+public class BrowserMediaRouterTestBase {
     protected static final String SOURCE_ID1 = "cast:CCCCCCCC?"
             + "clientId=11111111111111111&"
             + "autoJoinPolicy=origin_scoped&"
@@ -42,18 +42,18 @@ public class ChromeMediaRouterTestBase {
     protected static final int TAB_ID2 = 2;
     protected static final int REQUEST_ID1 = 1;
     protected static final int REQUEST_ID2 = 2;
-    protected ChromeMediaRouter mChromeMediaRouter;
+    protected BrowserMediaRouter mBrowserMediaRouter;
     protected MediaRouteProvider mRouteProvider;
 
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
-        mChromeMediaRouter = spy(new ChromeMediaRouter(0));
+        mBrowserMediaRouter = spy(new BrowserMediaRouter(0));
         mRouteProvider = mock(MediaRouteProvider.class);
         doReturn(true).when(mRouteProvider).supportsSource(anyString());
-        mChromeMediaRouter.addMediaRouteProvider(mRouteProvider);
-        assertEquals(1, mChromeMediaRouter.getRouteProvidersForTest().size());
-        assertEquals(mRouteProvider, mChromeMediaRouter.getRouteProvidersForTest().get(0));
+        mBrowserMediaRouter.addMediaRouteProvider(mRouteProvider);
+        assertEquals(1, mBrowserMediaRouter.getRouteProvidersForTest().size());
+        assertEquals(mRouteProvider, mBrowserMediaRouter.getRouteProvidersForTest().get(0));
         assertNotNull(mRouteProvider);
 
         // Initialize the command line to avoid an assertion failure in SysUtils.

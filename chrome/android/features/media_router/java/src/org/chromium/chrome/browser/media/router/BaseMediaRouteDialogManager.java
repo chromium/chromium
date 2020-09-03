@@ -106,7 +106,7 @@ public abstract class BaseMediaRouteDialogManager implements MediaRouteDialogMan
             String sourceId, MediaRouteSelector routeSelector, MediaRouteDialogDelegate delegate) {
         mSourceId = sourceId;
         mRouteSelector = routeSelector;
-        mAndroidMediaRouter = ChromeMediaRouter.getAndroidMediaRouter();
+        mAndroidMediaRouter = BrowserMediaRouter.getAndroidMediaRouter();
         mDelegate = delegate;
     }
 
