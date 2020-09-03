@@ -1849,7 +1849,11 @@ public class PaymentRequestImpl
 
         int missingFields = 0;
         if (mPendingApps.isEmpty()) {
-            if (mPaymentUIsManager.merchantSupportsAutofillCards()) {
+            // TODO(crbug.com/1107039): This value could be null when this method is entered from
+            // PaymentRequest#init. We should turn it into boolean after correcting this bug.
+            Boolean merchantSupportsAutofillCards =
+                    mPaymentUIsManager.merchantSupportsAutofillCards();
+            if (merchantSupportsAutofillCards != null && merchantSupportsAutofillCards) {
                 // Record all fields if basic-card is supported but no card exists.
                 missingFields = AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_EXPIRED
                         | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_CARDHOLDER
