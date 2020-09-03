@@ -271,9 +271,6 @@ crbug.com/angleproject/4855 [ win intel vulkan passthrough ] conformance/offscre
 crbug.com/907195 [ win intel opengl passthrough intel_lt_25.20.100.6444 ] conformance/ogles/GL/biuDepthRange/biuDepthRange_001_to_002.html [ Skip ]
 crbug.com/907195 [ win intel opengl passthrough intel_lt_25.20.100.6444 ] conformance/uniforms/no-over-optimization-on-uniform-array-09.html [ Skip ]
 
-# TODO(kbr): re-enable suppression for same test below once fixed.
-crbug.com/angleproject/2103 [ win ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Skip ]
-
 # Note that the following test seems to pass, but it may still be flaky.
 crbug.com/478572 [ win d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 crbug.com/478572 [ win amd vulkan passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
@@ -371,15 +368,10 @@ crbug.com/963205 [ win nvidia vulkan passthrough ] conformance/extensions/webgl-
 crbug.com/964321 [ win nvidia vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc.html [ RetryOnFailure ]
 crbug.com/1051576 [ win nvidia vulkan passthrough ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
 crbug.com/963217 [ win nvidia vulkan passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
-crbug.com/angleproject/2915 [ win nvidia vulkan passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/angleproject/3883 [ win nvidia vulkan passthrough ] conformance/misc/uninitialized-test.html [ Failure ]
-crbug.com/angleproject/2909 [ win nvidia vulkan passthrough ] conformance/ogles/GL/faceforward/faceforward_001_to_006.html [ Failure ]
-crbug.com/angleproject/2722 [ win nvidia vulkan passthrough ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
 crbug.com/angleproject/2939 [ win nvidia vulkan passthrough ] conformance/rendering/gl-scissor-fbo-test.html [ RetryOnFailure ]
 crbug.com/963223 [ win nvidia vulkan passthrough ] conformance/rendering/out-of-bounds-array-buffers.html [ Failure ]
-crbug.com/angleproject/2722 [ win nvidia vulkan passthrough ] conformance/textures/misc/texture-attachment-formats.html [ Failure ]
 crbug.com/1020295 [ win7 nvidia vulkan passthrough ] conformance/textures/misc/texture-complete.html [ RetryOnFailure ]
-crbug.com/angleproject/2915 [ win nvidia vulkan passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
 crbug.com/angleproject/2930 [ win nvidia vulkan passthrough ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
 crbug.com/angleproject/3481 [ win nvidia vulkan passthrough ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
 crbug.com/angleproject/2926 [ win nvidia vulkan passthrough ] deqp/data/gles2/shaders/conversions.html [ Failure ]
@@ -395,9 +387,7 @@ crbug.com/1017162 [ win nvidia vulkan passthrough ] conformance/renderbuffers/st
 crbug.com/1017162 [ win nvidia vulkan passthrough ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ Failure ]
 
 # Vulkan / Win / AMD / Passthrough command decoder
-crbug.com/angleproject/2898 [ win amd vulkan passthrough ] conformance/extensions/oes-texture-float-with-canvas.html [ Failure ]
-crbug.com/angleproject/2898 [ win amd vulkan passthrough ] conformance/extensions/oes-texture-half-float-with-canvas.html [ Failure ]
-crbug.com/angleproject/2722 [ win amd vulkan passthrough ] conformance/rendering/clipping-wide-points.html [ Failure ]
+crbug.com/angleproject/1506 [ win amd vulkan passthrough ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/angleproject/2926 [ win amd vulkan passthrough ] deqp/data/gles2/shaders/conversions.html [ Failure ]
 crbug.com/angleproject/2926 [ win amd vulkan passthrough ] deqp/data/gles2/shaders/linkage.html [ Failure ]
 crbug.com/974347 [ win amd vulkan passthrough ] conformance/textures/image/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
@@ -453,7 +443,7 @@ crbug.com/1027776 [ mac nvidia-0xfe9 ] conformance/textures/canvas_sub_rectangle
 
 # Mac / Passthrough command decoder
 crbug.com/989194 [ mac passthrough ] conformance/extensions/oes-texture-half-float.html [ Failure ]
-crbug.com/angleproject/3766 [ mac passthrough ] conformance/textures/misc/gl-teximage.html [ Failure ]
+crbug.com/angleproject/4986 [ mac passthrough ] conformance/textures/misc/gl-teximage.html [ Failure ]
 
 # Mac / Passthrough command decoder / AMD
 crbug.com/angleproject/3767 [ mac passthrough amd ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
@@ -652,7 +642,7 @@ crbug.com/847222 [ android qualcomm-adreno-(tm)-420 ] conformance/rendering/line
 crbug.com/499555 [ android qualcomm-adreno-(tm)-420 no-passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
 crbug.com/663071 [ android qualcomm-adreno-(tm)-430 ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
 crbug.com/693135 [ android qualcomm-adreno-(tm)-420 ] conformance/offscreencanvas/context-attribute-preserve-drawing-buffer.html [ Failure ]
-crbug.com/angleproject/2046 [ android qualcomm-adreno-(tm)-420 ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Failure ]
+crbug.com/angleproject/5015 [ android qualcomm-adreno-(tm)-420 ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Failure ]
 
 # Android NVIDIA: Nexus 9 and/or Shield TV
 crbug.com/798117 [ android nvidia ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
@@ -760,7 +750,6 @@ crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_sRGB [ Fa
 crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Failure ]
 
 # All platforms, Vulkan backend
-crbug.com/1099961 [ swiftshader passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
 crbug.com/1114284 [ win swiftshader passthrough google-0xffff ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 crbug.com/1114284 [ linux swiftshader passthrough google-0xffff ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 

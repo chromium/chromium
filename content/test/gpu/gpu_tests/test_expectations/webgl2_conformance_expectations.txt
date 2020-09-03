@@ -475,8 +475,6 @@ crbug.com/1086194 [ mac nvidia-0xfe9 ] conformance/textures/canvas_sub_rectangle
 crbug.com/870856 [ mac amd ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 crbug.com/870856 [ mac amd no-passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 
-crbug.com/angleproject/3701 [ mac amd ] conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ RetryOnFailure ]
-
 crbug.com/1044638 [ mac amd ] conformance2/rendering/framebuffer-texture-level1.html [ RetryOnFailure ]
 
 # The transformfeedback tests are specialized for two different AMD
@@ -801,7 +799,7 @@ crbug.com/705865 [ linux amd ] conformance2/textures/image/tex-2d-r11f_g11f_b10f
 
 # Uniform buffer related failures
 crbug.com/483282 [ linux amd ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
-crbug.com/angleproject/2103 [ linux amd ] conformance2/uniforms/uniform-blocks-with-arrays.html [ Failure ]
+crbug.com/angleproject/5014 [ linux amd ] conformance2/uniforms/uniform-blocks-with-arrays.html [ Failure ]
 crbug.com/809595 [ no-angle linux amd ] conformance2/uniforms/simple-buffer-change.html [ Failure ]
 
 # Linux AMD R7 240
