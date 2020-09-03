@@ -33,6 +33,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
              mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel)
       override;
 
+  void OnDisconnect();
+
   mojo::Receiver<mojom::MirroringService> receiver_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   std::unique_ptr<Session> session_;  // Current mirroring session.
