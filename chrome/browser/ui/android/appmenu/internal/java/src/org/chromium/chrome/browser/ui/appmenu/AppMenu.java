@@ -235,16 +235,13 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
         mIsByPermanentButton = isByPermanentButton;
 
         // Extract visible items from the Menu.
-        int numItems = mMenu.size();
-        int numGroupDivider = 0;
         List<MenuItem> menuItems = new ArrayList<MenuItem>();
-        for (int i = 0; i < numItems; ++i) {
+        List<Integer> heightList = new ArrayList<Integer>();
+        for (int i = 0; i < mMenu.size(); ++i) {
             MenuItem item = mMenu.getItem(i);
             if (item.isVisible()) {
                 menuItems.add(item);
-                if (item.getItemId() == groupDividerResourceId) {
-                    numGroupDivider++;
-                }
+                heightList.add(getMenuItemHeight(item, context, customViewBinders));
             }
         }
 
@@ -277,8 +274,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
         // See crbug.com/761726.
         mListView.setAdapter(mAdapter);
 
-        int popupHeight = setMenuHeight(menuItems.size() - numGroupDivider, visibleDisplayFrame,
-                screenHeight, sizingPadding, footerHeight, headerHeight, anchorView);
+        int popupHeight = setMenuHeight(menuItems, heightList, visibleDisplayFrame, screenHeight,
+                sizingPadding, footerHeight, headerHeight, anchorView, groupDividerResourceId);
         int[] popupPosition = getPopupPosition(mTempLocation, mIsByPermanentButton,
                 mNegativeSoftwareVerticalOffset, mNegativeVerticalOffsetNotTopAnchored,
                 mCurrentScreenRotation, visibleDisplayFrame, sizingPadding, anchorView, popupWidth,
@@ -469,11 +466,9 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
         if (mAdapter != null) mAdapter.notifyDataSetChanged();
     }
 
-    // TODO(crbug.com/1114611): Calculate app menu height by each items height since custom menu
-    // item may have different height than |mItemRowHeight|.
-    private int setMenuHeight(int numMenuItems, Rect appDimensions, int screenHeight, Rect padding,
-            int footerHeight, int headerHeight, View anchorView) {
-        int menuHeight;
+    private int setMenuHeight(List<MenuItem> menuItems, List<Integer> heightList,
+            Rect appDimensions, int screenHeight, Rect padding, int footerHeight, int headerHeight,
+            View anchorView, @IdRes int groupDividerResourceId) {
         anchorView.getLocationOnScreen(mTempLocation);
         int anchorViewY = mTempLocation[1] - appDimensions.top;
 
@@ -489,27 +484,51 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
         availableScreenSpace -= (padding.bottom + footerHeight + headerHeight);
         if (mIsByPermanentButton) availableScreenSpace -= padding.top;
 
-        int numCanFit = availableScreenSpace / (mItemRowHeight + mItemDividerHeight);
-
-        // Fade out the last item if we cannot fit all items.
-        if (numCanFit < numMenuItems) {
-            int spaceForFullItems = numCanFit * (mItemRowHeight + mItemDividerHeight);
-            spaceForFullItems += footerHeight + headerHeight;
-
-            int spaceForPartialItem = (int) (LAST_ITEM_SHOW_FRACTION * mItemRowHeight);
-            // Determine which item needs hiding.
-            if (spaceForFullItems + spaceForPartialItem < availableScreenSpace) {
-                menuHeight = spaceForFullItems + spaceForPartialItem + padding.top + padding.bottom;
-            } else {
-                menuHeight = spaceForFullItems - mItemRowHeight + spaceForPartialItem + padding.top
-                        + padding.bottom;
-            }
-        } else {
-            int spaceForFullItems = numMenuItems * (mItemRowHeight + mItemDividerHeight);
-            spaceForFullItems += footerHeight + headerHeight;
-            menuHeight = spaceForFullItems + padding.top + padding.bottom;
-        }
+        int menuHeight = calculateHeightForItems(
+                menuItems, heightList, groupDividerResourceId, availableScreenSpace);
+        menuHeight += footerHeight + headerHeight + padding.top + padding.bottom;
         mPopup.setHeight(menuHeight);
+        return menuHeight;
+    }
+
+    @VisibleForTesting
+    int calculateHeightForItems(List<MenuItem> menuItems, List<Integer> heightList,
+            @IdRes int groupDividerResourceId, int availableScreenSpace) {
+        int spaceForFullItems = 0;
+        for (int i = 0; i < heightList.size(); i++) {
+            spaceForFullItems += heightList.get(i);
+        }
+
+        int menuHeight;
+        // Fade out the last item if we cannot fit all items.
+        if (availableScreenSpace < spaceForFullItems) {
+            int spaceForItems = 0;
+            int lastItem = 0;
+            for (; lastItem < heightList.size(); lastItem++) {
+                if (spaceForItems + heightList.get(lastItem) > availableScreenSpace) {
+                    break;
+                }
+                spaceForItems += heightList.get(lastItem);
+            }
+            assert lastItem > 0;
+
+            int spaceForPartialItem = (int) (LAST_ITEM_SHOW_FRACTION * heightList.get(lastItem));
+            // Determine which item needs hiding. We only show Partial of the last item, if there is
+            // not enough screen space to partially show the last identified item, then partially
+            // show the second to last item instead. We also do not show the partial divider line.
+            assert menuItems.size() == heightList.size();
+            while (spaceForItems + spaceForPartialItem > availableScreenSpace
+                    || menuItems.get(lastItem).getItemId() == groupDividerResourceId) {
+                spaceForItems -= heightList.get(lastItem - 1);
+                spaceForPartialItem =
+                        (int) (LAST_ITEM_SHOW_FRACTION * heightList.get(lastItem - 1));
+                lastItem--;
+            }
+
+            menuHeight = spaceForItems + spaceForPartialItem;
+        } else {
+            menuHeight = spaceForFullItems;
+        }
         return menuHeight;
     }
 
@@ -578,5 +597,19 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
                 + (mSelectedItemBeforeDismiss ? "SelectedItem" : "Abandoned");
         final long timeToTakeActionMs = SystemClock.elapsedRealtime() - mMenuShownTimeMs;
         RecordHistogram.recordMediumTimesHistogram(histogramName, timeToTakeActionMs);
+    }
+
+    private int getMenuItemHeight(
+            MenuItem item, Context context, @Nullable List<CustomViewBinder> customViewBinders) {
+        // Check if |item| is custom type
+        if (customViewBinders != null) {
+            for (int i = 0; i < customViewBinders.size(); i++) {
+                CustomViewBinder binder = customViewBinders.get(i);
+                if (binder.getItemViewType(item.getItemId()) != CustomViewBinder.NOT_HANDLED) {
+                    return binder.getPixelHeight(context);
+                }
+            }
+        }
+        return mItemRowHeight;
     }
 }

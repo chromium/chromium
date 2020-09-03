@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,4 +59,14 @@ public interface CustomViewBinder {
      * @return True if the standard animation should be applied.
      */
     boolean supportsEnterAnimation(int id);
+
+    /**
+     * Retrieve the pixel height for the custom view. We cannot use View#getHeight() in {{@link
+     * #getView(MenuItem, View, ViewGroup, LayoutInflater)}} because View#getHeight() will return 0
+     * before the view is laid out. This method is for calculating popup window size, and the height
+     * should bese on the layout xml file related to the custom view.
+     * @param context The context of the custom view.
+     * @return The pixel size of the height.
+     */
+    int getPixelHeight(Context context);
 }

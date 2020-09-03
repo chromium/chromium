@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,5 +44,14 @@ class DividerLineMenuItemViewBinder implements CustomViewBinder {
     @Override
     public boolean supportsEnterAnimation(int id) {
         return true;
+    }
+
+    @Override
+    public int getPixelHeight(Context context) {
+        int dividerLineHeight =
+                context.getResources().getDimensionPixelSize(R.dimen.divider_height);
+        int paddingSize = context.getResources().getDimensionPixelSize(
+                R.dimen.overflow_menu_divider_line_padding);
+        return dividerLineHeight + paddingSize * 2 /* top padding and bottom padding */;
     }
 }

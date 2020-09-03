@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -41,7 +43,6 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
     public View getView(
             MenuItem item, View convertView, ViewGroup parent, LayoutInflater inflater) {
         assert item.getItemId() == R.id.update_menu_id;
-
         UpdateMenuItemViewHolder holder;
         if (convertView == null || !(convertView.getTag() instanceof UpdateMenuItemViewHolder)) {
             holder = new UpdateMenuItemViewHolder();
@@ -99,5 +100,17 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
         public TextView text;
         public ImageView image;
         public TextView summary;
+    }
+
+    @Override
+    public int getPixelHeight(Context context) {
+        int textSize = context.getResources().getDimensionPixelSize(
+                R.dimen.overflow_menu_update_min_height);
+        int paddingSize =
+                context.getResources().getDimensionPixelSize(R.dimen.overflow_menu_update_padding);
+        int iconSize = AppCompatResources.getDrawable(context, R.drawable.menu_update)
+                               .getIntrinsicHeight();
+
+        return Math.max(textSize, iconSize) + paddingSize * 2 /* top padding and bottom padding */;
     }
 }
