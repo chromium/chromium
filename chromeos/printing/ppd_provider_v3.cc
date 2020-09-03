@@ -266,7 +266,12 @@ class PpdProviderImpl : public PpdProvider {
   // locale-sensitive.
   void ResolvePpdLicense(base::StringPiece effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
-    // TODO(crbug.com/888189): implement this.
+    auto callback = base::BindOnce(
+        &PpdProviderImpl::FindLicenseForEmm, weak_factory_.GetWeakPtr(),
+        std::string(effective_make_and_model), std::move(cb));
+    metadata_manager_->FindAllEmmsAvailableInIndex(
+        {std::string(effective_make_and_model)}, kMaxDataAge,
+        std::move(callback));
   }
 
  protected:
@@ -564,6 +569,34 @@ class PpdProviderImpl : public PpdProvider {
     // At this point, we couldn't build a PpdReference directly from a
     // forward index search. ResolvePpdReference() continues to step 2.
     TryToResolvePpdReferenceFromUsbIndices(std::move(context));
+  }
+
+  // Continues a prior call to ResolvePpdLicense().
+  // This callback is fed to
+  // PpdMetadataManager::FindAllEmmsAvailableInIndexCallback().
+  void FindLicenseForEmm(const std::string& effective_make_and_model,
+                         ResolvePpdLicenseCallback cb,
+                         const base::flat_map<std::string, ParsedIndexValues>&
+                             forward_index_results) {
+    const ParsedIndexLeaf* const index_leaf = FirstAllowableParsedIndexLeaf(
+        effective_make_and_model, forward_index_results);
+    if (!index_leaf) {
+      // This particular |effective_make_and_model| is invisible to the
+      // current |version_|; either it is restricted or it is missing
+      // entirely from the forward indices.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(cb), CallbackResultCode::NOT_FOUND,
+                         /*license_name=*/""));
+      return;
+    }
+
+    // Note that the license can also be empty; this denotes that
+    // no license is associated with this particular
+    // |effective_make_and_model| in this |version_|.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cb), CallbackResultCode::SUCCESS,
+                                  index_leaf->license));
   }
 
   // Locale of the browser, as returned by
