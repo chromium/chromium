@@ -90,7 +90,10 @@ const CGFloat kImageWidth = 150.0;
     if (self.subviews.count == 0)
       [self setupViews];
     [self.container.widthAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.widthAnchor]
+        constraintLessThanOrEqualToAnchor:self.safeAreaLayoutGuide.widthAnchor]
+        .active = YES;
+    [self.container.centerXAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.centerXAnchor]
         .active = YES;
   }
 }
@@ -171,6 +174,7 @@ const CGFloat kImageWidth = 150.0;
     [topLabel.bottomAnchor
         constraintEqualToAnchor:bottomLabel.topAnchor
                        constant:-kTabGridEmptyStateVerticalMargin],
+
     [bottomLabel.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
     [bottomLabel.trailingAnchor
         constraintEqualToAnchor:container.trailingAnchor],
@@ -179,7 +183,6 @@ const CGFloat kImageWidth = 150.0;
 
     [container.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
     [container.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
-    [container.centerXAnchor constraintEqualToAnchor:scrollView.centerXAnchor],
 
     [scrollView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
     [scrollView.topAnchor constraintGreaterThanOrEqualToAnchor:self.topAnchor],
