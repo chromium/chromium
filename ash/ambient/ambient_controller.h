@@ -174,6 +174,9 @@ class ASH_EXPORT AmbientController
 
   bool is_screen_off_ = false;
 
+  // Used to record Ambient mode engagement metrics.
+  base::Optional<base::Time> start_time_ = base::nullopt;
+
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AmbientController);
 };

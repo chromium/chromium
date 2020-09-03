@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_AMBIENT_AMBIENT_METRICS_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -31,6 +32,9 @@ AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 
 ASH_PUBLIC_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
                                                    bool tablet_mode);
+
+ASH_PUBLIC_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
+                                                    bool tablet_mode);
 
 }  // namespace ambient
 }  // namespace ash
