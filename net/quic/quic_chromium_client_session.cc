@@ -1700,6 +1700,23 @@ void QuicChromiumClientSession::OnConnectionClosed(
   const quic::QuicErrorCode error = frame.quic_error_code;
   const std::string& error_details = frame.error_details;
 
+  if (source == quic::ConnectionCloseSource::FROM_SELF &&
+      error == quic::QUIC_NETWORK_IDLE_TIMEOUT && ShouldKeepConnectionAlive()) {
+    quic::QuicStreamCount streams_waiting_to_write = 0;
+    PerformActionOnActiveStreams(
+        [&streams_waiting_to_write](quic::QuicStream* stream) {
+          if (stream->HasBufferedData())
+            ++streams_waiting_to_write;
+          return true;
+        });
+
+    UMA_HISTOGRAM_COUNTS_100(
+        "Net.QuicSession.NumStreamsWaitingToWriteOnIdleTimeout",
+        streams_waiting_to_write);
+    UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumActiveStreamsOnIdleTimeout",
+                             GetNumActiveStreams());
+  }
+
   if (source == quic::ConnectionCloseSource::FROM_PEER) {
     if (error == quic::QUIC_PUBLIC_RESET) {
       // is_from_google_server will be true if the received EPID is
