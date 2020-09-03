@@ -2283,6 +2283,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest, CombinedShiftArrowPresses) {
   SendCopyCommandAndCheckCopyPasteClipboard("L");
 }
 
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PDFExtensionClipboardTest,
+                         testing::Bool());
+
 // Verifies that an <embed> of size zero will still instantiate a guest and post
 // message to the <embed> is correctly forwarded to the extension. This is for
 // catching future regression in docs/ and slides/ pages (see
