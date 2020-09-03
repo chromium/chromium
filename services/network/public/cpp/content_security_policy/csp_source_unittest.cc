@@ -358,6 +358,7 @@ TEST(CSPSourceTest, Intersect) {
        "https://example.org/page.html"},
       {"http://example.org:*/page.html", "https://example.org/",
        "https://example.org/page.html"},
+      {"http://*.example.com:*", "http://*.com", "http://*.example.com"},
       // Empty intersection
       {"data:", "http:", nullptr},
       {"data:", "http://example.org", nullptr},
@@ -373,7 +374,7 @@ TEST(CSPSourceTest, Intersect) {
     auto b = CSPSource(test.b);
 
     auto a_intersect_b = CSPSourcesIntersect(a, b);
-    auto b_intersect_a = CSPSourcesIntersect(a, b);
+    auto b_intersect_a = CSPSourcesIntersect(b, a);
     if (test.intersection) {
       EXPECT_EQ(test.intersection, ToString(a_intersect_b))
           << "The intersection of " << test.a << " and " << test.b

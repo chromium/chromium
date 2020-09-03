@@ -246,14 +246,18 @@ mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSourcePtr& source_a,
     return nullptr;
   }
 
-  if (SourceAllowPort(source_a, source_b->port, source_b->scheme) !=
-          PortMatchingResult::NotMatching &&
-      // If port_a is explicitly specified but port_b is omitted, then we should
-      // take port_a instead of port_b, since port_a is stricter.
-      !(source_a->port != url::PORT_UNSPECIFIED &&
-        source_b->port == url::PORT_UNSPECIFIED)) {
+  if (source_b->is_port_wildcard) {
+    result->port = source_a->port;
+    result->is_port_wildcard = source_a->is_port_wildcard;
+  } else if (source_a->is_port_wildcard) {
     result->port = source_b->port;
-    result->is_port_wildcard = source_b->is_port_wildcard;
+  } else if (SourceAllowPort(source_a, source_b->port, source_b->scheme) !=
+                 PortMatchingResult::NotMatching &&
+             // If port_a is explicitly specified but port_b is omitted, then we
+             // should take port_a instead of port_b, since port_a is stricter.
+             !(source_a->port != url::PORT_UNSPECIFIED &&
+               source_b->port == url::PORT_UNSPECIFIED)) {
+    result->port = source_b->port;
   } else if (SourceAllowPort(source_b, source_a->port, source_a->scheme) !=
              PortMatchingResult::NotMatching) {
     result->port = source_a->port;
