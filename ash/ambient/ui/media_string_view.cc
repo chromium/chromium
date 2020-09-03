@@ -9,10 +9,13 @@
 
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_service.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -30,6 +33,18 @@ constexpr char kPreceedingEighthNoteSymbol[] = "\u266A ";
 constexpr int kDefaultFontSizeDip = 64;
 constexpr int kMediaStringFontSizeDip = 16;
 
+// Returns true if we should show media string for ambient mode on lock-screen
+// based on user pref. We should keep the same user policy here as the
+// lock-screen media controls to avoid exposing user data on lock-screen without
+// consent.
+bool ShouldShowOnLockScreen() {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  DCHECK(pref);
+
+  return pref->GetBoolean(prefs::kLockScreenMediaControlsEnabled);
+}
+
 }  // namespace
 
 MediaStringView::MediaStringView() {
@@ -45,6 +60,11 @@ const char* MediaStringView::GetClassName() const {
 
 void MediaStringView::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  if (ambient::util::IsShowing(LockScreen::ScreenType::kLock) &&
+      !ShouldShowOnLockScreen()) {
+    return;
+  }
+
   // Don't show the media string if session info is unavailable, or the active
   // session is marked as sensitive.
   if (!session_info || session_info->is_sensitive) {

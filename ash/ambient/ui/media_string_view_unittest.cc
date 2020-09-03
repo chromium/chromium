@@ -5,13 +5,25 @@
 #include "ash/ambient/ui/media_string_view.h"
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/shell.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace ash {
 
-using MediaStringViewTest = AmbientAshTestBase;
+class MediaStringViewTest : public AmbientAshTestBase {
+ public:
+  MediaStringViewTest() : AmbientAshTestBase() {}
+  ~MediaStringViewTest() override = default;
+
+  // AmbientAshTestBase:
+  void SetUp() override {
+    AmbientAshTestBase::SetUp();
+    GetSessionControllerClient()->set_show_lock_screen_views(true);
+  }
+};
 
 TEST_F(MediaStringViewTest, ShowMediaTitleAndArtist) {
   ShowAmbientScreen();
@@ -50,6 +62,24 @@ TEST_F(MediaStringViewTest, DoNotShowWhenMediaIsPaused) {
   // Simulates the ongoing media paused.
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPaused);
+  EXPECT_FALSE(GetMediaStringView()->GetVisible());
+}
+
+TEST_F(MediaStringViewTest, DoNotShowOnLockScreenIfPrefIsDisabled) {
+  // Disables user preference for media controls.
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  pref->SetBoolean(prefs::kLockScreenMediaControlsEnabled, false);
+
+  // Simulates Ambient Mode shown on lock-screen.
+  LockScreen();
+  FastForwardToInactivity();
+
+  // Simulates active and playing media session.
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+
+  // Verifies media string is hidden.
   EXPECT_FALSE(GetMediaStringView()->GetVisible());
 }
 
