@@ -51,9 +51,9 @@ testcase.fileDisplayLaunchOnLocalFolder = async () => {
   // Wait for app window to open.
   const appId = await remoteCall.waitForWindow('files#');
 
-  // Check: The current directory is MyFiles/Downloads/photos.
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(
-      appId, '/My files/Downloads/photos');
+  // Check: the Downloads/photos folder should be selected.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="photos"][selected]');
 
   // The API used to launch the Files app does not set the IN_TEST flag to true:
   // error when attempting to retrieve Web Store access token.
