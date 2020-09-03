@@ -35,6 +35,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/posix/safe_strerror.h"
 #include "base/process/environment_internal.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
@@ -485,6 +486,9 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
     RAW_LOG(ERROR, "LaunchProcess: failed to execvp:");
     RAW_LOG(ERROR, argv_cstr[0]);
+    char error_buff[256] = {};
+    base::safe_strerror_r(errno, error_buff, sizeof(error_buff));
+    RAW_LOG(ERROR, error_buff);
     _exit(127);
   } else {
     // Parent process
