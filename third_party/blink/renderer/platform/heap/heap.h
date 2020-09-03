@@ -301,13 +301,8 @@ class PLATFORM_EXPORT ThreadHeap {
 
   // Returns true if concurrent markers will have work to steal
   bool HasWorkForConcurrentMarking() const;
-  // Returns the amount of work currently available for stealing (there could be
-  // work remaining even if this is 0).
-  size_t ConcurrentMarkingGlobalWorkSize() const;
   // Returns true if marker is done
-  bool AdvanceConcurrentMarking(ConcurrentMarkingVisitor*,
-                                base::JobDelegate*,
-                                base::TimeTicks);
+  bool AdvanceConcurrentMarking(ConcurrentMarkingVisitor*, base::TimeTicks);
 
   // Conservatively checks whether an address is a pointer in any of the
   // thread heaps.  If so marks the object pointed to as live.

@@ -48,6 +48,8 @@ blink_platform_sources("heap") {
     "blink_gc.h",
     "blink_gc_memory_dump_provider.cc",
     "blink_gc_memory_dump_provider.h",
+    "cancelable_task_scheduler.cc",
+    "cancelable_task_scheduler.h",
     "collection_support/heap_hash_table_backing.h",
     "collection_support/heap_linked_stack.h",
     "collection_support/heap_vector_backing.h",
@@ -152,6 +154,7 @@ source_set("blink_heap_unittests_sources") {
   sources = [
     "../testing/run_all_tests.cc",
     "test/blink_gc_memory_dump_provider_test.cc",
+    "test/cancelable_task_scheduler_test.cc",
     "test/card_table_test.cc",
     "test/concurrent_marking_test.cc",
     "test/gc_info_test.cc",
