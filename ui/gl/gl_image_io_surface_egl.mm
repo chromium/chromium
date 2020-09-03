@@ -302,6 +302,12 @@ bool GLImageIOSurfaceEGL::CopyTexImage(unsigned target) {
     return false;
   }
 
+  // Disable mipmap filtering since iosurface doesn't have mipmap. Rectangle
+  // textures have mipmap disabled by default but other types of texture don't.
+  glTexParameteri(target_gl, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
   const EGLint texture_type =
       format_ == gfx::BufferFormat::P010 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_BYTE;
 
@@ -338,6 +344,10 @@ bool GLImageIOSurfaceEGL::CopyTexImage(unsigned target) {
     LOG(ERROR) << "Can't bind UV texture";
     return false;
   }
+
+  glTexParameteri(target_gl, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(target_gl, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   // clang-format off
   const EGLint uvAttribs[] = {

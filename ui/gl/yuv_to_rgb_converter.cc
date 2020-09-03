@@ -97,7 +97,7 @@ STRINGIZE(
   void main() {
     vec3 yuv = vec3(
         TEX(a_y_texture, v_texCoord).r,
-        TEX(a_uv_texture, v_texCoord * 0.5).rg);
+        TEX(a_uv_texture, v_texCoord).rg);
     FRAGCOLOR = vec4(DoColorConversion(yuv), 1.0);
   }
 );
@@ -249,7 +249,11 @@ void YUVToRGBConverter::CopyYUV420ToRGB(unsigned target,
   DCHECK_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
             glCheckFramebufferStatusEXT(GL_FRAMEBUFFER));
   ScopedUseProgram use_program(program_);
-  glUniform2f(size_location_, size.width(), size.height());
+  if (source_texture_target_ == GL_TEXTURE_RECTANGLE_ARB) {
+    glUniform2f(size_location_, size.width(), size.height());
+  } else {
+    glUniform2f(size_location_, 1, 1);
+  }
   // User code may have set up the other vertex attributes in the
   // context in unexpected ways, including setting vertex attribute
   // divisors which may otherwise cause GL_INVALID_OPERATION during
