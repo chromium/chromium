@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_INPUT_IPC_FACTORY_H_
-#define CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_INPUT_IPC_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_INPUT_IPC_FACTORY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_INPUT_IPC_FACTORY_H_
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
-#include "media/audio/audio_source_parameters.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -20,12 +18,13 @@ class SingleThreadTaskRunner;
 
 namespace media {
 class AudioInputIPC;
-}
+struct AudioSourceParameters;
+}  // namespace media
 
-namespace content {
+namespace blink {
 
 // This is a thread-safe factory for AudioInputIPC objects.
-class CONTENT_EXPORT AudioInputIPCFactory {
+class BLINK_MODULES_EXPORT AudioInputIPCFactory {
  public:
   AudioInputIPCFactory(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
@@ -57,6 +56,6 @@ class CONTENT_EXPORT AudioInputIPCFactory {
   DISALLOW_COPY_AND_ASSIGN(AudioInputIPCFactory);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_INPUT_IPC_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_INPUT_IPC_FACTORY_H_

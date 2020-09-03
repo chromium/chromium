@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/audio/mojo_audio_input_ipc.h"
+#include "third_party/blink/renderer/modules/media/audio/mojo_audio_input_ipc.h"
 
 #include <utility>
 
@@ -10,10 +10,10 @@
 #include "base/bind_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "media/audio/audio_device_description.h"
-#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom-blink.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-namespace content {
+namespace blink {
 
 MojoAudioInputIPC::MojoAudioInputIPC(
     const media::AudioSourceParameters& source_params,
@@ -39,7 +39,7 @@ void MojoAudioInputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
 
   delegate_ = delegate;
 
-  mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+  mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
       client;
   factory_client_receiver_.Bind(client.InitWithNewPipeAndPassReceiver());
   factory_client_receiver_.set_disconnect_handler(base::BindOnce(
@@ -79,10 +79,10 @@ void MojoAudioInputIPC::CloseStream() {
 }
 
 void MojoAudioInputIPC::StreamCreated(
-    mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-    mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
+    mojo::PendingRemote<media::mojom::blink::AudioInputStream> stream,
+    mojo::PendingReceiver<media::mojom::blink::AudioInputStreamClient>
         stream_client_receiver,
-    media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+    media::mojom::blink::ReadOnlyAudioDataPipePtr data_pipe,
     bool initially_muted,
     const base::Optional<base::UnguessableToken>& stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -120,4 +120,4 @@ void MojoAudioInputIPC::OnMutedStateChanged(bool is_muted) {
   delegate_->OnMuted(is_muted);
 }
 
-}  // namespace content
+}  // namespace blink

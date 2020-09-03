@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_AUDIO_MOJO_AUDIO_INPUT_IPC_H_
-#define CONTENT_RENDERER_MEDIA_AUDIO_MOJO_AUDIO_INPUT_IPC_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_MOJO_AUDIO_INPUT_IPC_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_MOJO_AUDIO_INPUT_IPC_H_
 
 #include <string>
 
@@ -12,33 +12,32 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "content/common/content_export.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/audio/audio_source_parameters.h"
-#include "media/mojo/mojom/audio_input_stream.mojom.h"
-#include "media/webrtc/audio_processor_controls.h"
+#include "media/mojo/mojom/audio_input_stream.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
+#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-blink.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
-namespace content {
+namespace blink {
 
 // MojoAudioInputIPC is a renderer-side class for handling creation,
 // initialization and control of an input stream. May only be used on a single
 // thread.
-class CONTENT_EXPORT MojoAudioInputIPC
+class MODULES_EXPORT MojoAudioInputIPC
     : public media::AudioInputIPC,
-      public blink::mojom::RendererAudioInputStreamFactoryClient,
-      public media::mojom::AudioInputStreamClient {
+      public mojom::blink::RendererAudioInputStreamFactoryClient,
+      public media::mojom::blink::AudioInputStreamClient {
  public:
   // This callback is used by MojoAudioInputIPC to create streams.
   // It is expected that after calling, either client->StreamCreated() is
   // called or |client| is destructed.
   using StreamCreatorCB = base::RepeatingCallback<void(
       const media::AudioSourceParameters& source_params,
-      mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+      mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
           client,
       const media::AudioParameters& params,
       bool automatic_gain_control,
@@ -66,10 +65,10 @@ class CONTENT_EXPORT MojoAudioInputIPC
 
  private:
   void StreamCreated(
-      mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-      mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
+      mojo::PendingRemote<media::mojom::blink::AudioInputStream> stream,
+      mojo::PendingReceiver<media::mojom::blink::AudioInputStreamClient>
           stream_client_receiver,
-      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+      media::mojom::blink::ReadOnlyAudioDataPipePtr data_pipe,
       bool initially_muted,
       const base::Optional<base::UnguessableToken>& stream_id) override;
   void OnError() override;
@@ -82,11 +81,11 @@ class CONTENT_EXPORT MojoAudioInputIPC
   StreamCreatorCB stream_creator_;
   StreamAssociatorCB stream_associator_;
 
-  mojo::Remote<media::mojom::AudioInputStream> stream_;
+  mojo::Remote<media::mojom::blink::AudioInputStream> stream_;
   // Initialized on StreamCreated.
   base::Optional<base::UnguessableToken> stream_id_;
   mojo::Receiver<AudioInputStreamClient> stream_client_receiver_{this};
-  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+  mojo::Receiver<mojom::blink::RendererAudioInputStreamFactoryClient>
       factory_client_receiver_{this};
   media::AudioInputIPCDelegate* delegate_ = nullptr;
 
@@ -95,6 +94,6 @@ class CONTENT_EXPORT MojoAudioInputIPC
   DISALLOW_COPY_AND_ASSIGN(MojoAudioInputIPC);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_MEDIA_AUDIO_MOJO_AUDIO_INPUT_IPC_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_MOJO_AUDIO_INPUT_IPC_H_

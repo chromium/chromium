@@ -49,6 +49,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
+#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -680,6 +681,20 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Reset the currently tracked scrolled focused node.
   virtual void ResetHasScrolledFocusedEditableIntoView() {}
+
+  // TODO(https://crbug.com/787252): Remove the methods below and use the
+  // Supplement mechanism.
+  virtual void CreateAudioInputStream(
+      CrossVariantMojoRemote<
+          blink::mojom::RendererAudioInputStreamFactoryClientInterfaceBase>
+          client,
+      const base::UnguessableToken& session_id,
+      const media::AudioParameters& params,
+      bool automatic_gain_control,
+      uint32_t shared_memory_count) {}
+  virtual void AssociateInputAndOutputForAec(
+      const base::UnguessableToken& input_stream_id,
+      const std::string& output_device_id) {}
 };
 
 }  // namespace blink

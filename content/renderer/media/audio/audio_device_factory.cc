@@ -16,10 +16,8 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/common/content_constants_internal.h"
-#include "content/renderer/media/audio/audio_input_ipc_factory.h"
 #include "content/renderer/media/audio/audio_renderer_mixer_manager.h"
 #include "content/renderer/media/audio/audio_renderer_sink_cache_impl.h"
-#include "content/renderer/media/audio/mojo_audio_input_ipc.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/audio/audio_input_device.h"
@@ -27,6 +25,7 @@
 #include "media/base/audio_renderer_mixer_input.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
 
 namespace content {
@@ -182,7 +181,8 @@ AudioDeviceFactory::NewAudioCapturerSource(
   }
 
   return base::MakeRefCounted<media::AudioInputDevice>(
-      AudioInputIPCFactory::get()->CreateAudioInputIPC(frame_token, params),
+      blink::AudioInputIPCFactory::get()->CreateAudioInputIPC(frame_token,
+                                                              params),
       media::AudioInputDevice::Purpose::kUserInput,
       media::AudioInputDevice::DeadStreamDetection::kEnabled);
 }

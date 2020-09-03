@@ -42,7 +42,6 @@
 #include "content/public/renderer/url_loader_throttle_provider.h"
 #include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/discardable_memory_utils.h"
-#include "content/renderer/media/audio/audio_input_ipc_factory.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/media_buildflags.h"
@@ -62,6 +61,7 @@
 #include "third_party/blink/public/platform/scheduler/web_rail_mode_observer.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_memory_statistics.h"
 #include "ui/gfx/native_widget_types.h"
@@ -533,7 +533,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // Provides AudioInputIPC objects for audio input devices. Initialized in
   // Init.
-  base::Optional<AudioInputIPCFactory> audio_input_ipc_factory_;
+  base::Optional<blink::AudioInputIPCFactory> audio_input_ipc_factory_;
   // Provides AudioOutputIPC objects for audio output devices. Initialized in
   // Init.
   base::Optional<blink::WebAudioOutputIPCFactory> audio_output_ipc_factory_;

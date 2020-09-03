@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/audio/audio_input_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
 
 #include <string>
 #include <utility>
@@ -11,33 +11,29 @@
 #include "base/check_op.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
-#include "content/renderer/media/audio/mojo_audio_input_ipc.h"
-#include "content/renderer/render_frame_impl.h"
+#include "media/audio/audio_source_parameters.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
+#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-blink.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/modules/media/audio/mojo_audio_input_ipc.h"
 
-namespace content {
+namespace blink {
 
 namespace {
-
-RenderFrameImpl* GetRenderFrameImplFromFrameToken(
-    const blink::LocalFrameToken& frame_token) {
-  return RenderFrameImpl::FromWebFrame(
-      blink::WebFrame::FromFrameToken(frame_token));
-}
 
 void CreateMojoAudioInputStreamOnMainThread(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& source_params,
-    mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+    mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
         client,
     const media::AudioParameters& params,
     bool automatic_gain_control,
     uint32_t total_segments) {
-  if (auto* frame = GetRenderFrameImplFromFrameToken(frame_token)) {
-    frame->GetAudioInputStreamFactory()->CreateStream(
+  if (auto* web_frame = static_cast<WebLocalFrame*>(
+          blink::WebFrame::FromFrameToken(frame_token))) {
+    web_frame->Client()->CreateAudioInputStream(
         std::move(client), source_params.session_id, params,
         automatic_gain_control, total_segments);
   }
@@ -47,7 +43,7 @@ void CreateMojoAudioInputStream(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& source_params,
-    mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+    mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
         client,
     const media::AudioParameters& params,
     bool automatic_gain_control,
@@ -64,19 +60,18 @@ void AssociateInputAndOutputForAec(
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& input_stream_id,
     const std::string& output_device_id) {
-  main_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const blink::LocalFrameToken& frame_token,
-             const base::UnguessableToken& input_stream_id,
-             const std::string& output_device_id) {
-            if (auto* frame = GetRenderFrameImplFromFrameToken(frame_token)) {
-              frame->GetAudioInputStreamFactory()
-                  ->AssociateInputAndOutputForAec(input_stream_id,
-                                                  output_device_id);
-            }
-          },
-          frame_token, input_stream_id, output_device_id));
+  auto task = base::BindOnce(
+      [](const blink::LocalFrameToken& frame_token,
+         const base::UnguessableToken& input_stream_id,
+         const std::string& output_device_id) {
+        if (auto* web_frame = static_cast<WebLocalFrame*>(
+                WebFrame::FromFrameToken(frame_token))) {
+          web_frame->Client()->AssociateInputAndOutputForAec(input_stream_id,
+                                                             output_device_id);
+        }
+      },
+      frame_token, input_stream_id, output_device_id);
+  main_task_runner->PostTask(FROM_HERE, std::move(task));
 }
 }  // namespace
 
@@ -108,4 +103,4 @@ std::unique_ptr<media::AudioInputIPC> AudioInputIPCFactory::CreateAudioInputIPC(
                           frame_token));
 }
 
-}  // namespace content
+}  // namespace blink

@@ -762,6 +762,17 @@ class CONTENT_EXPORT RenderFrameImpl
   void SyncSelectionIfRequired() override;
   void ScrollFocusedEditableElementIntoRect(const gfx::Rect& rect) override;
   void ResetHasScrolledFocusedEditableIntoView() override;
+  void CreateAudioInputStream(
+      blink::CrossVariantMojoRemote<
+          blink::mojom::RendererAudioInputStreamFactoryClientInterfaceBase>
+          client,
+      const base::UnguessableToken& session_id,
+      const media::AudioParameters& params,
+      bool automatic_gain_control,
+      uint32_t shared_memory_count) override;
+  void AssociateInputAndOutputForAec(
+      const base::UnguessableToken& input_stream_id,
+      const std::string& output_device_id) override;
 
   // Binds to the fullscreen service in the browser.
   void BindFullscreen(
