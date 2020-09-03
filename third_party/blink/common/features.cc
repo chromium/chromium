@@ -311,8 +311,8 @@ const char kMixedContentAutoupgradeModeAllPassive[] = "all-passive";
 // Decodes jpeg 4:2:0 formatted images to YUV instead of RGBX and stores in this
 // format in the image decode cache. See crbug.com/919627 for details on the
 // feature.
-const base::Feature kDecodeJpeg420ImagesToYUV{
-    "DecodeJpeg420ImagesToYUV", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDecodeJpeg420ImagesToYUV{"DecodeJpeg420ImagesToYUV",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Decodes lossy WebP images to YUV instead of RGBX and stores in this format
 // in the image decode cache. See crbug.com/900264 for details on the feature.
