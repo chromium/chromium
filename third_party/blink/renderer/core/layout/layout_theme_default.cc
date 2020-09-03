@@ -106,6 +106,8 @@ Color LayoutThemeDefault::PlatformInactiveSelectionForegroundColor(
 }
 
 IntSize LayoutThemeDefault::SliderTickSize() const {
+  // The value should be synchronized with a -webkit-slider-container rule in
+  // html.css.
   if (features::IsFormControlsRefreshEnabled())
     return IntSize(1, 4);
   else
@@ -113,6 +115,8 @@ IntSize LayoutThemeDefault::SliderTickSize() const {
 }
 
 int LayoutThemeDefault::SliderTickOffsetFromTrackCenter() const {
+  // The value should be synchronized with a -webkit-slider-container rule in
+  // html.css and LayoutThemeAndroid::ExtraDefaultStyleSheet().
   if (features::IsFormControlsRefreshEnabled())
     return 7;
   else

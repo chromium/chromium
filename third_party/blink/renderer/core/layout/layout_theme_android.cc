@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme_android.h"
 
+#include "ui/base/ui_base_features.h"
+
 namespace blink {
 
 scoped_refptr<LayoutTheme> LayoutThemeAndroid::Create() {
@@ -16,5 +18,18 @@ LayoutTheme& LayoutTheme::NativeTheme() {
 }
 
 LayoutThemeAndroid::~LayoutThemeAndroid() {}
+
+String LayoutThemeAndroid::ExtraDefaultStyleSheet() {
+  String extra_sheet = LayoutThemeMobile::ExtraDefaultStyleSheet();
+  if (features::IsFormControlsRefreshEnabled())
+    return extra_sheet;
+
+  // "32px" comes from
+  // 2 * -LayoutThemeDefault::SliderTickOffsetFromTrackCenter().
+  return extra_sheet + R"CSS(
+input[type="range" i]:-internal-has-datalist::-webkit-slider-container {
+    min-block-size: 32px;
+})CSS";
+}
 
 }  // namespace blink

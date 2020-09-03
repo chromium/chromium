@@ -243,6 +243,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoUnresolved,
     kPseudoDefined,
     kPseudoContent,
+    kPseudoHasDatalist,
     kPseudoHost,
     kPseudoHostContext,
     kPseudoShadow,

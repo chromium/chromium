@@ -13,6 +13,7 @@ class LayoutThemeAndroid final : public LayoutThemeMobile {
  public:
   static scoped_refptr<LayoutTheme> Create();
   bool DelegatesMenuListRendering() const override { return true; }
+  String ExtraDefaultStyleSheet() override;
 
  private:
   ~LayoutThemeAndroid() override;

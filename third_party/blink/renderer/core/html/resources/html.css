@@ -643,6 +643,14 @@ input[type="range" i]::-webkit-slider-container, input[type="range" i]::-webkit-
     display: flex;
 }
 
+input[type="range" i]:-internal-has-datalist::-webkit-slider-container {
+    /*
+     * See LayoutThemeDefault. "22px" is
+     * 2 * (SliderTickOffsetFromTrackCenter() + SliderTickSize().Height()).
+     */
+    min-block-size: 22px;
+}
+
 input[type="range" i]::-webkit-slider-runnable-track {
     flex: 1;
     min-inline-size: 0;

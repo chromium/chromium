@@ -164,6 +164,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoShadow:
     case CSSSelector::kPseudoSpatialNavigationFocus:
     case CSSSelector::kPseudoSpatialNavigationInterest:
+    case CSSSelector::kPseudoHasDatalist:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
     case CSSSelector::kPseudoMultiSelectFocus:
@@ -555,6 +556,7 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoVideoPersistentAncestor:
       case CSSSelector::kPseudoXrOverlay:
       case CSSSelector::kPseudoSpatialNavigationInterest:
+      case CSSSelector::kPseudoHasDatalist:
       case CSSSelector::kPseudoMultiSelectFocus:
         return &EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                             position);

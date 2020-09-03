@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
 
 namespace blink {
 
@@ -50,41 +49,6 @@ inline static Decimal SliderPosition(HTMLInputElement* element) {
   const Decimal old_value =
       ParseToDecimalForNumberType(element->value(), step_range.DefaultValue());
   return step_range.ProportionFromValue(step_range.ClampValue(old_value));
-}
-
-void LayoutSliderContainer::ComputeLogicalHeight(
-    LayoutUnit logical_height,
-    LayoutUnit logical_top,
-    LogicalExtentComputedValues& computed_values) const {
-  auto* input = To<HTMLInputElement>(GetNode()->OwnerShadowHost());
-
-  if (input->GetLayoutObject() && input->list()) {
-    int offset_from_center =
-        LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter();
-    LayoutUnit track_height;
-    if (offset_from_center < 0) {
-      track_height = LayoutUnit(-2 * offset_from_center);
-    } else {
-      int tick_length = LayoutTheme::GetTheme().SliderTickSize().Height();
-      track_height = LayoutUnit(2 * (offset_from_center + tick_length));
-    }
-    float zoom_factor = StyleRef().EffectiveZoom();
-    if (zoom_factor != 1.0)
-      track_height *= zoom_factor;
-
-    // FIXME: The trackHeight should have been added before updateLogicalHeight
-    // was called to avoid this hack.
-    SetIntrinsicContentLogicalHeight(track_height);
-
-    LayoutBox::ComputeLogicalHeight(track_height, logical_top, computed_values);
-    return;
-  }
-
-  // FIXME: The trackHeight should have been added before updateLogicalHeight
-  // was called to avoid this hack.
-  SetIntrinsicContentLogicalHeight(logical_height);
-
-  LayoutBox::ComputeLogicalHeight(logical_height, logical_top, computed_values);
 }
 
 MinMaxSizes LayoutSliderContainer::ComputeIntrinsicLogicalWidths() const {

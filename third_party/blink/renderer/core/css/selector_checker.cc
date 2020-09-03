@@ -86,6 +86,11 @@ static bool MatchesSpatialNavigationFocusPseudoClass(const Element& element) {
          IsFrameFocused(element);
 }
 
+static bool MatchesHasDatalistPseudoClass(const Element& element) {
+  auto* html_input_element = DynamicTo<HTMLInputElement>(element);
+  return html_input_element && html_input_element->list();
+}
+
 static bool MatchesListBoxPseudoClass(const Element& element) {
   auto* html_select_element = DynamicTo<HTMLSelectElement>(element);
   return html_select_element && !html_select_element->UsesMenuList();
@@ -1296,6 +1301,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoSpatialNavigationInterest:
       DCHECK(is_ua_rule_);
       return MatchesSpatialNavigationInterestPseudoClass(element);
+    case CSSSelector::kPseudoHasDatalist:
+      DCHECK(is_ua_rule_);
+      return MatchesHasDatalistPseudoClass(element);
     case CSSSelector::kPseudoIsHtml:
       DCHECK(is_ua_rule_);
       return IsA<HTMLDocument>(element.GetDocument());

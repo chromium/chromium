@@ -447,6 +447,9 @@ void HTMLInputElement::UpdateType() {
     PseudoStateChanged(CSSSelector::kPseudoInRange);
     PseudoStateChanged(CSSSelector::kPseudoOutOfRange);
   }
+  if (input_type_->ShouldRespectListAttribute() !=
+      new_type->ShouldRespectListAttribute())
+    PseudoStateChanged(CSSSelector::kPseudoHasDatalist);
 
   bool placeholder_changed =
       input_type_->SupportsPlaceholder() != new_type->SupportsPlaceholder();
@@ -882,6 +885,7 @@ void HTMLInputElement::ParseAttribute(
       ResetListAttributeTargetObserver();
       ListAttributeTargetChanged();
     }
+    PseudoStateChanged(CSSSelector::kPseudoHasDatalist);
     UseCounter::Count(GetDocument(), WebFeature::kListAttribute);
   } else if (name == html_names::kWebkitdirectoryAttr) {
     TextControlElement::ParseAttribute(params);
@@ -1752,6 +1756,7 @@ void HTMLInputElement::ResetListAttributeTargetObserver() {
 
 void HTMLInputElement::ListAttributeTargetChanged() {
   input_type_view_->ListAttributeTargetChanged();
+  PseudoStateChanged(CSSSelector::kPseudoHasDatalist);
 }
 
 bool HTMLInputElement::IsSteppable() const {

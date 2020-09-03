@@ -289,6 +289,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPictureInPicture:
     case kPseudoSpatialNavigationFocus:
     case kPseudoSpatialNavigationInterest:
+    case kPseudoHasDatalist:
     case kPseudoIsHtml:
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
@@ -316,6 +317,7 @@ struct NameToPseudoStruct {
 const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-autofill-previewed", CSSSelector::kPseudoAutofillPreviewed},
     {"-internal-autofill-selected", CSSSelector::kPseudoAutofillSelected},
+    {"-internal-has-datalist", CSSSelector::kPseudoHasDatalist},
     {"-internal-is-html", CSSSelector::kPseudoIsHtml},
     {"-internal-list-box", CSSSelector::kPseudoListBox},
     {"-internal-media-controls-overlay-cast-button",
@@ -590,6 +592,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       if (match_ != kPseudoElement || mode != kUASheetMode)
         pseudo_type_ = kPseudoUnknown;
       break;
+    case kPseudoHasDatalist:
     case kPseudoHostHasAppearance:
     case kPseudoIsHtml:
     case kPseudoListBox:
@@ -983,6 +986,7 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoNot:
     case CSSSelector::kPseudoSpatialNavigationFocus:
     case CSSSelector::kPseudoSpatialNavigationInterest:
+    case CSSSelector::kPseudoHasDatalist:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
     case CSSSelector::kPseudoHostHasAppearance:
