@@ -563,6 +563,7 @@ View* BubbleFrameView::GetFootnoteView() const {
 
 void BubbleFrameView::SetCornerRadius(int radius) {
   bubble_border_->SetCornerRadius(radius);
+  UpdateClientLayerCornerRadius();
 }
 
 void BubbleFrameView::SetArrow(BubbleBorder::Arrow arrow) {
