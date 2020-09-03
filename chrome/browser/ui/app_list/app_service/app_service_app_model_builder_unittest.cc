@@ -22,8 +22,8 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -809,7 +809,8 @@ class PluginVmAppTest : public ::testing::TestWithParam<ProviderType> {
 };
 
 TEST_P(PluginVmAppTest, PluginVmDisabled) {
-  EXPECT_FALSE(plugin_vm::IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_FALSE(
+      plugin_vm::PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
   EXPECT_THAT(GetModelContent(model_updater_.get()), testing::IsEmpty());
 }
 

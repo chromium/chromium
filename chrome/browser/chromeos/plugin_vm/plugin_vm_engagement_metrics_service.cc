@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_engagement_metrics_service.h"
 
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,7 +54,7 @@ bool PluginVmEngagementMetricsService::Factory::ServiceIsNULLWhileTesting()
 
 PluginVmEngagementMetricsService::PluginVmEngagementMetricsService(
     Profile* profile) {
-  if (!IsPluginVmAllowedForProfile(profile))
+  if (!PluginVmFeatures::Get()->IsAllowed(profile))
     return;
   guest_os_engagement_metrics_ =
       std::make_unique<guest_os::GuestOsEngagementMetrics>(

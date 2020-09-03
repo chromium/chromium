@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_engagement_metrics_service.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
@@ -126,7 +127,7 @@ void PluginVmManagerImpl::LaunchPluginVm(LaunchPluginVmCallback callback) {
   if (launch_in_progress)
     return;
 
-  if (!IsPluginVmAllowedForProfile(profile_)) {
+  if (!PluginVmFeatures::Get()->IsAllowed(profile_)) {
     LOG(ERROR) << "Attempted to launch PluginVm when it is not allowed";
     LaunchFailed();
     return;

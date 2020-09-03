@@ -15,9 +15,9 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
@@ -125,7 +125,8 @@ apps::mojom::AppPtr GetPluginVmApp(Profile* profile, bool allowed) {
       apps::mojom::IconKey::kDoesNotChangeOverTime,
       IDR_LOGO_PLUGIN_VM_DEFAULT_192, apps::IconEffects::kNone);
 
-  SetShowInAppManagement(app.get(), plugin_vm::IsPluginVmConfigured(profile));
+  SetShowInAppManagement(
+      app.get(), plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile));
   PopulatePermissions(app.get(), profile, allowed);
   SetAppAllowed(app.get(), allowed);
 
@@ -141,7 +142,7 @@ PluginVmApps::PluginVmApps(
     Profile* profile)
     : profile_(profile), registry_(nullptr), permissions_observer_(this) {
   // Don't show anything for non-primary profiles. We can't use
-  // `IsPluginVmAllowedForProfile()` here because we still let the user
+  // `PluginVmFeatures::Get()->IsAllowed()` here because we still let the user
   // uninstall Plugin VM when it isn't allowed for some other reasons (e.g.
   // policy).
   if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
@@ -169,7 +170,7 @@ PluginVmApps::PluginVmApps(
       base::BindRepeating(&PluginVmApps::OnPluginVmConfiguredChanged,
                           base::Unretained(this)));
 
-  is_allowed_ = plugin_vm::IsPluginVmAllowedForProfile(profile_);
+  is_allowed_ = plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile_);
   if (is_allowed_) {
     permissions_observer_.Add(
         plugin_vm::PluginVmManagerFactory::GetForProfile(profile_));
@@ -219,7 +220,7 @@ void PluginVmApps::Launch(const std::string& app_id,
                           apps::mojom::LaunchSource launch_source,
                           int64_t display_id) {
   DCHECK_EQ(plugin_vm::kPluginVmShelfAppId, app_id);
-  if (plugin_vm::IsPluginVmEnabled(profile_)) {
+  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_)) {
     plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)->LaunchPluginVm(
         base::DoNothing());
   } else {
@@ -355,7 +356,8 @@ void PluginVmApps::OnPluginVmConfiguredChanged() {
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_type = apps::mojom::AppType::kPluginVm;
   app->app_id = plugin_vm::kPluginVmShelfAppId;
-  SetShowInAppManagement(app.get(), plugin_vm::IsPluginVmConfigured(profile_));
+  SetShowInAppManagement(
+      app.get(), plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile_));
   Publish(std::move(app), subscribers_);
 }
 

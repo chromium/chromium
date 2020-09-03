@@ -17,6 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_drive_image_download_service.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_license_checker.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
@@ -122,7 +123,7 @@ void PluginVmInstaller::Start() {
   // Defensive check preventing any download attempts when PluginVm is
   // not allowed to run (this might happen in rare cases if PluginVm has
   // been disabled but the installer icon is still visible).
-  if (!IsPluginVmAllowedForProfile(profile_)) {
+  if (!PluginVmFeatures::Get()->IsAllowed(profile_)) {
     LOG(ERROR) << "Download of PluginVm image cannot be started because "
                << "the user is not allowed to run PluginVm";
     InstallFailed(FailureReason::NOT_ALLOWED);

@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -136,7 +137,7 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
   // Even if not allowed, we still want to show Plugin VM if the VM image is on
   // disk, so that users are still able to delete the image at will.
-  return plugin_vm::IsPluginVmAllowedForProfile(profile) ||
+  return plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile) ||
          pref_service.GetBoolean(plugin_vm::prefs::kPluginVmImageExists);
 }
 

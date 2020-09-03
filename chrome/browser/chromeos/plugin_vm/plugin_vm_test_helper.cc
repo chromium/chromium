@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -130,12 +131,12 @@ void PluginVmTestHelper::EnterpriseEnrollDevice() {
 }
 
 void PluginVmTestHelper::AllowPluginVm() {
-  ASSERT_FALSE(IsPluginVmAllowedForProfile(testing_profile_));
+  ASSERT_FALSE(PluginVmFeatures::Get()->IsAllowed(testing_profile_));
   SetUserRequirementsToAllowPluginVm();
   EnablePluginVmFeature();
   EnterpriseEnrollDevice();
   SetPolicyRequirementsToAllowPluginVm();
-  ASSERT_TRUE(IsPluginVmAllowedForProfile(testing_profile_));
+  ASSERT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_));
 }
 
 void PluginVmTestHelper::EnablePluginVm() {

@@ -14,7 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -225,7 +225,7 @@ void ChromeFeaturesServiceProvider::IsPluginVmEnabled(
 
   SendResponse(
       method_call, std::move(response_sender),
-      profile ? plugin_vm::IsPluginVmAllowedForProfile(profile) : false);
+      profile ? plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile) : false);
 }
 
 void ChromeFeaturesServiceProvider::IsUsbguardEnabled(

@@ -59,17 +59,6 @@ const net::NetworkTrafficAnnotationTag kPluginVmNetworkTrafficAnnotation =
       }
     )");
 
-// Checks if Plugin VM is allowed for the current profile.
-bool IsPluginVmAllowedForProfile(const Profile* profile);
-
-// Returns whether Plugin VM has been installed.
-// TODO(timloh): We should detect installations via VMC, currently the user
-// needs to manually launch the installer once for the pref to get set.
-bool IsPluginVmConfigured(const Profile* profile);
-
-// Returns true if Plugin VM is allowed and configured for the current profile.
-bool IsPluginVmEnabled(const Profile* profile);
-
 // Determines if the default Plugin VM is running and visible.
 bool IsPluginVmRunning(Profile* profile);
 
@@ -106,7 +95,7 @@ void RemoveDriveDownloadDirectoryIfExists();
 base::Optional<std::string> GetIdFromDriveUrl(const GURL& url);
 
 // A subscription for changes to PluginVm policy that may affect
-// IsPluginVmAllowedForProfile.
+// PluginVmFeatures::Get()->IsAllowed.
 class PluginVmPolicySubscription {
  public:
   using PluginVmAllowedChanged = base::RepeatingCallback<void(bool is_allowed)>;

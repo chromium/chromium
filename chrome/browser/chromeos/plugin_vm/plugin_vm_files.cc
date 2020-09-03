@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
@@ -148,7 +149,7 @@ void LaunchPluginVmApp(Profile* profile,
                        std::string app_id,
                        const std::vector<storage::FileSystemURL>& files,
                        LaunchPluginVmAppCallback callback) {
-  if (!plugin_vm::IsPluginVmEnabled(profile)) {
+  if (!plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile)) {
     return std::move(callback).Run(LaunchPluginVmAppResult::FAILED,
                                    "Plugin VM is not enabled for this profile");
   }

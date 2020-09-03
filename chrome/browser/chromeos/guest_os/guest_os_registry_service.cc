@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
@@ -597,7 +598,8 @@ void GuestOsRegistryService::RecordStartupMetrics() {
 
   bool crostini_enabled =
       crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
-  bool plugin_vm_enabled = plugin_vm::IsPluginVmEnabled(profile_);
+  bool plugin_vm_enabled =
+      plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
   if (!crostini_enabled && !plugin_vm_enabled)
     return;
 

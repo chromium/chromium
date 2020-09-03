@@ -25,6 +25,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -210,7 +211,8 @@ void FindGuestOsTasks(Profile* profile,
                       std::vector<FullTaskDescriptor>* result_list,
                       base::OnceClosure completion_closure) {
   bool crostini_enabled = crostini::CrostiniFeatures::Get()->IsEnabled(profile);
-  bool plugin_vm_enabled = plugin_vm::IsPluginVmEnabled(profile);
+  bool plugin_vm_enabled =
+      plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile);
 
   if (!crostini_enabled && !plugin_vm_enabled) {
     std::move(completion_closure).Run();
@@ -302,7 +304,7 @@ void ExecuteGuestOsTask(
       return;
     case guest_os::GuestOsRegistryService::VmType::
         ApplicationList_VmType_PLUGIN_VM:
-      DCHECK(plugin_vm::IsPluginVmEnabled(profile));
+      DCHECK(plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
       plugin_vm::LaunchPluginVmApp(
           profile, task.app_id, file_system_urls,
           base::BindOnce(

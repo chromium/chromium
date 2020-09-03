@@ -15,17 +15,15 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_drive_image_download_service.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -56,71 +54,6 @@ static std::string& GetFakeUserId() {
 }
 
 }  // namespace
-
-// For PluginVm to be allowed:
-// * Profile should be eligible.
-// * PluginVm feature should be enabled.
-// * Device should be enterprise enrolled:
-//   * User should be affiliated.
-//   * PluginVmAllowed device policy should be set to true.
-//   * UserPluginVmAllowed user policy should be set to true.
-// * At least one of the following should be set:
-//   * PluginVmLicenseKey policy.
-//   * PluginVmUserId policy.
-bool IsPluginVmAllowedForProfile(const Profile* profile) {
-  // Check that the profile is eligible.
-  if (!profile || profile->IsChild() || profile->IsLegacySupervised() ||
-      profile->IsOffTheRecord() ||
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile) ||
-      !chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
-    return false;
-  }
-
-  // Check that PluginVm feature is enabled.
-  if (!base::FeatureList::IsEnabled(features::kPluginVm))
-    return false;
-
-  // Bypass other checks when a fake policy is set
-  if (FakeLicenseKeyIsSet())
-    return true;
-
-  // Check that the device is enterprise enrolled.
-  if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged())
-    return false;
-
-  // Check that the user is affiliated.
-  const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user == nullptr || !user->IsAffiliated())
-    return false;
-
-  // Check that PluginVm is allowed to run by policy.
-  bool plugin_vm_allowed_for_device;
-  if (!chromeos::CrosSettings::Get()->GetBoolean(
-          chromeos::kPluginVmAllowed, &plugin_vm_allowed_for_device)) {
-    return false;
-  }
-  bool plugin_vm_allowed_for_user =
-      profile->GetPrefs()->GetBoolean(plugin_vm::prefs::kPluginVmAllowed);
-  if (!plugin_vm_allowed_for_device || !plugin_vm_allowed_for_user)
-    return false;
-
-  if (GetPluginVmLicenseKey().empty() &&
-      GetPluginVmUserIdForProfile(profile).empty())
-    return false;
-
-  return true;
-}
-
-bool IsPluginVmConfigured(const Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(
-      plugin_vm::prefs::kPluginVmImageExists);
-}
-
-bool IsPluginVmEnabled(const Profile* profile) {
-  return IsPluginVmAllowedForProfile(profile) && IsPluginVmConfigured(profile);
-}
 
 bool IsPluginVmRunning(Profile* profile) {
   return plugin_vm::PluginVmManagerFactory::GetForProfile(profile)
@@ -250,11 +183,11 @@ PluginVmPolicySubscription::PluginVmPolicySubscription(
       base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
                           base::Unretained(this)));
 
-  is_allowed_ = IsPluginVmAllowedForProfile(profile);
+  is_allowed_ = PluginVmFeatures::Get()->IsAllowed(profile);
 }
 
 void PluginVmPolicySubscription::OnPolicyChanged() {
-  bool allowed = IsPluginVmAllowedForProfile(profile_);
+  bool allowed = PluginVmFeatures::Get()->IsAllowed(profile_);
   if (allowed != is_allowed_) {
     is_allowed_ = allowed;
     callback_.Run(allowed);

@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
@@ -127,7 +128,7 @@ class PluginVmManagerImplTest : public testing::Test {
 };
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmRequiresPluginVmAllowed) {
-  EXPECT_FALSE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_FALSE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
   MockLaunchPluginVmCallback callback;
   EXPECT_CALL(callback, Run(false));
   plugin_vm_manager_->LaunchPluginVm(callback.Get());
@@ -145,7 +146,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmRequiresPluginVmAllowed) {
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmStartAndShow) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   // The PluginVmManagerImpl calls StartVm when the VM is not yet running.
   SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
@@ -170,7 +171,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmStartAndShow) {
 
 TEST_F(PluginVmManagerImplTest, LaunchesOnceFromMultipleRequests) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   // The PluginVmManagerImpl calls StartVm when the VM is not yet running.
   SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
@@ -193,7 +194,7 @@ TEST_F(PluginVmManagerImplTest, LaunchesOnceFromMultipleRequests) {
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmShowAndStop) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   // The PluginVmManagerImpl skips calling StartVm when the VM is already
   // running.
@@ -225,7 +226,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmShowAndStop) {
 
 TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   // Signals for RUNNING, then STOPPED.
   test_helper_->OpenShelfItem();
@@ -259,7 +260,7 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmSpinner) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   // No spinner before doing anything
   EXPECT_FALSE(SpinnerController()->HasApp(kPluginVmShelfAppId));
@@ -317,7 +318,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmFromSuspending) {
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmInvalidLicense) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   // The PluginVmManagerImpl calls StartVm when the VM is not yet running.
   SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
@@ -339,7 +340,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmInvalidLicense) {
 
 TEST_F(PluginVmManagerImplTest, RelaunchPluginVm) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   // The PluginVmManagerImpl calls StartVm when the VM is not yet running.
   SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
@@ -362,7 +363,7 @@ TEST_F(PluginVmManagerImplTest, RelaunchPluginVm) {
 
 TEST_F(PluginVmManagerImplTest, UninstallRunningPluginVm) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
   testing_profile_->GetPrefs()->SetBoolean(
@@ -388,7 +389,7 @@ TEST_F(PluginVmManagerImplTest, UninstallRunningPluginVm) {
 
 TEST_F(PluginVmManagerImplTest, UninstallStoppedPluginVm) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
   testing_profile_->GetPrefs()->SetBoolean(
@@ -414,7 +415,7 @@ TEST_F(PluginVmManagerImplTest, UninstallStoppedPluginVm) {
 
 TEST_F(PluginVmManagerImplTest, UninstallSuspendingPluginVm) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDING);
   testing_profile_->GetPrefs()->SetBoolean(
@@ -455,7 +456,7 @@ TEST_F(PluginVmManagerImplTest, UninstallSuspendingPluginVm) {
 
 TEST_F(PluginVmManagerImplTest, UninstallMissingPluginVm) {
   test_helper_->AllowPluginVm();
-  EXPECT_TRUE(IsPluginVmAllowedForProfile(testing_profile_.get()));
+  EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
   VmPluginDispatcherClient().set_list_vms_response({});  // An empty list.
   testing_profile_->GetPrefs()->SetBoolean(
