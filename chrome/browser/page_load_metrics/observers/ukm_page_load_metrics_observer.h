@@ -130,10 +130,8 @@ class UkmPageLoadMetricsObserver
   // Records metrics based on the page load information exposed by the observer
   // delegate, as well as updating the URL. |app_background_time| should be set
   // to a timestamp if the app was backgrounded, otherwise it should be set to
-  // a null TimeTicks. |became_hidden| should be set when this method callback
-  // was caused by the page becoming backgrounded but not closed.
-  void RecordPageLoadMetrics(base::TimeTicks app_background_time,
-                             bool became_hidden);
+  // a null TimeTicks.
+  void RecordPageLoadMetrics(base::TimeTicks app_background_time);
 
   // Adds main resource timing metrics to |builder|.
   void ReportMainResourceTimingMetrics(
@@ -144,9 +142,10 @@ class UkmPageLoadMetricsObserver
 
   void ReportPerfectHeuristicsMetrics();
 
-  void ReportAbortMetrics(
+  void RecordAbortMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
-      base::TimeTicks page_end_time);
+      base::TimeTicks page_end_time,
+      ukm::builders::PageLoad* builder);
 
   void RecordInputTimingMetrics();
 
@@ -172,6 +171,12 @@ class UkmPageLoadMetricsObserver
   // engine) for starting URL and committed URL.
   void RecordGeneratedNavigationUKM(ukm::SourceId source_id,
                                     const GURL& committed_url);
+
+  // Records some metrics at the end of a page, even for failed provisional
+  // loads.
+  void RecordPageEndMetrics(
+      const page_load_metrics::mojom::PageLoadTiming* timing,
+      base::TimeTicks page_end_time);
 
   // Guaranteed to be non-null during the lifetime of |this|.
   network::NetworkQualityTracker* network_quality_tracker_;

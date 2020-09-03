@@ -242,14 +242,14 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
-    RecordPageLoadMetrics(current_time, true /* became_hidden */);
+    RecordPageLoadMetrics(current_time);
     RecordTimingMetrics(timing);
     RecordInputTimingMetrics();
   }
   ReportLayoutStability();
   // Assume that page ends on this method, as the app could be evicted right
   // after.
-  ReportAbortMetrics(timing, current_time);
+  RecordPageEndMetrics(&timing, current_time);
   return STOP_OBSERVING;
 }
 
@@ -264,8 +264,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
   currently_in_foreground_ = false;
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
-    RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */,
-                          true /* became_hidden */);
+    RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */);
     RecordTimingMetrics(timing);
     RecordInputTimingMetrics();
     was_hidden_ = true;
@@ -288,10 +287,11 @@ void UkmPageLoadMetricsObserver::OnFailedProvisionalLoad(
   if (is_portal_)
     return;
 
+  RecordPageEndMetrics(nullptr, base::TimeTicks());
   if (was_hidden_)
     return;
-  RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */,
-                        false /* became_hidden */);
+
+  RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */);
 
   // Error codes have negative values, however we log net error code enum values
   // for UMA histograms using the equivalent positive value. For consistency in
@@ -313,14 +313,13 @@ void UkmPageLoadMetricsObserver::OnComplete(
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
-    RecordPageLoadMetrics(current_time /* no app_background_time */,
-                          false /* became_hidden */);
+    RecordPageLoadMetrics(current_time /* no app_background_time */);
     RecordTimingMetrics(timing);
     RecordInputTimingMetrics();
   }
   ReportLayoutStability();
   ReportPerfectHeuristicsMetrics();
-  ReportAbortMetrics(timing, current_time);
+  RecordPageEndMetrics(&timing, current_time);
 }
 
 void UkmPageLoadMetricsObserver::OnResourceDataUseObserved(
@@ -677,8 +676,7 @@ void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
 }
 
 void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
-    base::TimeTicks app_background_time,
-    bool became_hidden) {
+    base::TimeTicks app_background_time) {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   base::Optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(GetDelegate(),
@@ -687,17 +685,6 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetPageTiming_ForegroundDuration(
         foreground_duration.value().InMilliseconds());
   }
-
-  bool is_user_initiated_navigation =
-      // All browser initiated page loads are user-initiated.
-      GetDelegate().GetUserInitiatedInfo().browser_initiated ||
-
-      // Renderer-initiated navigations are user-initiated if there is an
-      // associated input event.
-      GetDelegate().GetUserInitiatedInfo().user_input_event;
-
-  builder.SetExperimental_Navigation_UserInitiated(
-      is_user_initiated_navigation);
 
   // Convert to the EffectiveConnectionType as used in SystemProfileProto
   // before persisting the metric.
@@ -726,16 +713,6 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetNet_DownstreamKbpsEstimate_OnNavigationStart(
         static_cast<int64_t>(downstream_kbps_estimate_.value()));
   }
-  // page_transition_ fits in a uint32_t, so we can safely cast to int64_t.
-  builder.SetNavigation_PageTransition(static_cast<int64_t>(page_transition_));
-  // GetDelegate().GetPageEndReason() fits in a uint32_t, so we can safely cast
-  // to int64_t.
-  int64_t page_end_reason = GetDelegate().GetPageEndReason();
-  if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
-      became_hidden) {
-    page_end_reason = page_load_metrics::PageEndReason::END_HIDDEN;
-  }
-  builder.SetNavigation_PageEndReason2(page_end_reason);
   if (GetDelegate().DidCommit() && was_cached_) {
     builder.SetWasCached(1);
   }
@@ -878,9 +855,10 @@ void UkmPageLoadMetricsObserver::ReportPerfectHeuristicsMetrics() {
       ukm::UkmRecorder::Get());
 }
 
-void UkmPageLoadMetricsObserver::ReportAbortMetrics(
+void UkmPageLoadMetricsObserver::RecordAbortMetrics(
     const page_load_metrics::mojom::PageLoadTiming& timing,
-    base::TimeTicks page_end_time) {
+    base::TimeTicks page_end_time,
+    ukm::builders::PageLoad* builder) {
   PageLoadType page_load_type = PageLoadType::kNeverForegrounded;
   if (page_load_metrics::WasInForeground(GetDelegate())) {
     page_load_type = timing.paint_timing->first_contentful_paint.has_value()
@@ -894,12 +872,11 @@ void UkmPageLoadMetricsObserver::ReportAbortMetrics(
                             page_load_type);
   PAGE_LOAD_LONG_HISTOGRAM("PageLoad.Experimental.TotalForegroundDuration",
                            total_foreground_duration_);
-  ukm::builders::PageLoad(GetDelegate().GetPageUkmSourceId())
-      .SetExperimental_PageLoadType(static_cast<int>(page_load_type))
+
+  builder->SetExperimental_PageLoadType(static_cast<int>(page_load_type))
       .SetExperimental_TotalForegroundDuration(
           ukm::GetExponentialBucketMinForUserTiming(
-              total_foreground_duration_.InMilliseconds()))
-      .Record(ukm::UkmRecorder::Get());
+              total_foreground_duration_.InMilliseconds()));
 }
 
 void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
@@ -913,6 +890,35 @@ void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
               .GetPageInputTiming()
               .total_adjusted_input_delay.InMilliseconds())
       .Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
+    const page_load_metrics::mojom::PageLoadTiming* timing,
+    base::TimeTicks page_end_time) {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  // page_transition_ fits in a uint32_t, so we can safely cast to int64_t.
+  builder.SetNavigation_PageTransition(static_cast<int64_t>(page_transition_));
+
+  // GetDelegate().GetPageEndReason() fits in a uint32_t, so we can safely cast
+  // to int64_t.
+  int64_t page_end_reason = GetDelegate().GetPageEndReason();
+  if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
+      was_hidden_) {
+    page_end_reason = page_load_metrics::PageEndReason::END_HIDDEN;
+  }
+  builder.SetNavigation_PageEndReason2(page_end_reason);
+  bool is_user_initiated_navigation =
+      // All browser initiated page loads are user-initiated.
+      GetDelegate().GetUserInitiatedInfo().browser_initiated ||
+      // Renderer-initiated navigations are user-initiated if there is an
+      // associated input event.
+      GetDelegate().GetUserInitiatedInfo().user_input_event;
+  builder.SetExperimental_Navigation_UserInitiated(
+      is_user_initiated_navigation);
+  if (timing)
+    RecordAbortMetrics(*timing, page_end_time, &builder);
+
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 base::Optional<int64_t>

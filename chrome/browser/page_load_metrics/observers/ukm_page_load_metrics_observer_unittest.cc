@@ -479,15 +479,50 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
   EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
       entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName));
-  // Hidden before navigation, so PageEndReason should not be available.
-  EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-      entry, PageLoad::kNavigation_PageEndReason2Name));
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kNavigation_PageEndReason2Name,
+      page_load_metrics::END_CLOSE);
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> internal_merged_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
           PageLoad_Internal::kEntryName);
   // RecordTimingMetrics() is not called in this test.
   EXPECT_EQ(0ul, internal_merged_entries.size());
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, AbortNeverForegrounded) {
+  std::unique_ptr<base::SimpleTestClock> mock_clock(
+      new base::SimpleTestClock());
+  mock_clock->SetNow(base::Time::NowFromSystemTime());
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  PopulateRequiredTimingFields(&timing);
+  // The duration between nav start and first background set to 1ms.
+  mock_clock->Advance(base::TimeDelta::FromMilliseconds(1));
+  web_contents()->WasHidden();
+  NavigateAndCommit(GURL(kTestUrl1));
+  tester()->SimulateTimingUpdate(timing);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kNavigation_PageEndReason2Name,
+      page_load_metrics::END_CLOSE);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kExperimental_PageLoadTypeName,
+      static_cast<int64_t>(PageLoadType::kNeverForegrounded));
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kNavigation_PageTransitionName,
+      ui::PAGE_TRANSITION_LINK);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kExperimental_TotalForegroundDurationName, 0);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, FCPPlusPlus_DiscardBackgroundResult) {
@@ -519,9 +554,9 @@ TEST_F(UkmPageLoadMetricsObserverTest, FCPPlusPlus_DiscardBackgroundResult) {
   const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
   EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
       entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName));
-  // Hidden before navigation, so PageEndReason should not be available.
-  EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-      entry, PageLoad::kNavigation_PageEndReason2Name));
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kNavigation_PageEndReason2Name,
+      page_load_metrics::END_CLOSE);
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> internal_merged_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -1419,7 +1454,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
         100);
     ukm_recorder.ExpectEntryMetric(kv.second.get(),
                                    PageLoad::kNavigation_PageEndReason2Name,
-                                   page_load_metrics::END_HIDDEN);
+                                   page_load_metrics::END_CLOSE);
   }
 
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(

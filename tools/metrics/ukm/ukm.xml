@@ -8806,7 +8806,7 @@ be describing additional metrics about the same event.
       this page load. Replaced Navigation.PageEndReason at the end of May 2020
       to reduce occurrences of page_load_metrics::PageEndReason::END_NONE by
       setting the value to page_load_metrics::PageEndReason::END_HIDDEN when the
-      metric is recorded due to the page becoming hidden.
+      metric is recorded after the page became hidden.
     </summary>
   </metric>
   <metric name="Navigation.PageTransition">
