@@ -166,6 +166,9 @@ class ExtensionActionViewControllerUnitTest
     return extension_service_;
   }
   ToolbarActionsModel* toolbar_model() { return toolbar_model_; }
+  ExtensionsContainer* container() {
+    return test_util_->GetExtensionsContainer();
+  }
   const gfx::Size& view_size() const { return view_size_; }
 
  private:
@@ -533,8 +536,19 @@ TEST_P(ExtensionsMenuExtensionActionViewControllerUnitTest,
 
   // Default state: unpinned.
   check_visibility_string(action, IDS_EXTENSIONS_PIN_TO_TOOLBAR);
+
+  // Pin the extension; re-check.
   toolbar_model()->SetActionVisibility(id, true);
   check_visibility_string(action, IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR);
+
+  // Unpin the extension and ephemerally pop it out.
+  toolbar_model()->SetActionVisibility(id, false);
+  EXPECT_FALSE(container()->IsActionVisibleOnToolbar(action));
+  base::RunLoop run_loop;
+  container()->PopOutAction(action, false, run_loop.QuitClosure());
+  EXPECT_TRUE(container()->IsActionVisibleOnToolbar(action));
+  // The string should still just be "pin".
+  check_visibility_string(action, IDS_EXTENSIONS_PIN_TO_TOOLBAR);
 }
 
 class ExtensionActionViewControllerGrayscaleTest
