@@ -26,14 +26,12 @@ class FakeSecureChannelClient : public SecureChannelClient {
     ConnectionRequestArguments(multidevice::RemoteDeviceRef device_to_connect,
                                multidevice::RemoteDeviceRef local_device,
                                const std::string& feature,
-                               ConnectionMedium connection_medium,
-                               ConnectionPriority connection_priority);
+                               const ConnectionPriority& connection_priority);
     ~ConnectionRequestArguments();
 
     multidevice::RemoteDeviceRef device_to_connect;
     multidevice::RemoteDeviceRef local_device;
     std::string feature;
-    ConnectionMedium connection_medium;
     ConnectionPriority connection_priority;
 
    private:
@@ -123,13 +121,11 @@ class FakeSecureChannelClient : public SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
-      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) override;
   std::unique_ptr<ConnectionAttempt> ListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
-      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) override;
 
  private:

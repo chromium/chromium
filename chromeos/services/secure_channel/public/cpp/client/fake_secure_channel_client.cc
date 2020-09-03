@@ -14,12 +14,10 @@ FakeSecureChannelClient::ConnectionRequestArguments::ConnectionRequestArguments(
     multidevice::RemoteDeviceRef device_to_connect,
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
-    ConnectionMedium connection_medium,
-    ConnectionPriority connection_priority)
+    const ConnectionPriority& connection_priority)
     : device_to_connect(device_to_connect),
       local_device(local_device),
       feature(feature),
-      connection_medium(connection_medium),
       connection_priority(connection_priority) {}
 
 FakeSecureChannelClient::ConnectionRequestArguments::
@@ -37,7 +35,6 @@ FakeSecureChannelClient::InitiateConnectionToDevice(
     multidevice::RemoteDeviceRef device_to_connect,
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
-    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority) {
   auto remote_local_pair = std::make_pair(device_to_connect, local_device);
   std::unique_ptr<ConnectionAttempt> connection_attempt = std::move(
@@ -51,7 +48,6 @@ FakeSecureChannelClient::ListenForConnectionFromDevice(
     multidevice::RemoteDeviceRef device_to_connect,
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
-    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority) {
   auto remote_local_pair = std::make_pair(device_to_connect, local_device);
   std::unique_ptr<ConnectionAttempt> connection_attempt = std::move(
