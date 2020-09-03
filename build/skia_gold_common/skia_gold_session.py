@@ -282,9 +282,16 @@ class SkiaGoldSession(object):
       try:
         with open(self._triage_link_file) as tlf:
           triage_link = tlf.read().strip()
-        self._comparison_results[name].internal_triage_link = triage_link
-        self._comparison_results[name].public_triage_link =\
-            self._GeneratePublicTriageLink(triage_link)
+        if not triage_link:
+          self._comparison_results[name].triage_link_omission_reason = (
+              'Gold did not provide a triage link. This is likely a bug on '
+              "Gold's end.")
+          self._comparison_results[name].internal_triage_link = None
+          self._comparison_results[name].public_triage_link = None
+        else:
+          self._comparison_results[name].internal_triage_link = triage_link
+          self._comparison_results[name].public_triage_link =\
+              self._GeneratePublicTriageLink(triage_link)
       except IOError:
         self._comparison_results[name].triage_link_omission_reason = (
             'Failed to read triage link from file')

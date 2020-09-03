@@ -623,6 +623,27 @@ class SkiaGoldSessionCompareTest(fake_filesystem_unittest.TestCase):
                      (public_link, internal_link))
 
   @mock.patch.object(skia_gold_session.SkiaGoldSession, '_RunCmdForRcAndOutput')
+  def test_validOmissionOnMissingLink(self, cmd_mock):
+    args = createSkiaGoldArgs(git_revision='a')
+    sgp = skia_gold_properties.SkiaGoldProperties(args)
+    session = skia_gold_session.SkiaGoldSession(self._working_dir, sgp,
+                                                'keys_file', None, None)
+
+    def WriteTriageLinkFile(_):
+      with open(session._triage_link_file, 'w'):
+        pass
+      return (1, None)
+
+    cmd_mock.side_effect = WriteTriageLinkFile
+    rc, _ = session.Compare('name', 'png_file')
+    self.assertEqual(rc, 1)
+    comparison_result = session._comparison_results['name']
+    self.assertEqual(comparison_result.public_triage_link, None)
+    self.assertEqual(comparison_result.internal_triage_link, None)
+    self.assertIn('Gold did not provide a triage link',
+                  comparison_result.triage_link_omission_reason)
+
+  @mock.patch.object(skia_gold_session.SkiaGoldSession, '_RunCmdForRcAndOutput')
   def test_validOmissionOnIoError(self, cmd_mock):
     cmd_mock.return_value = (1, None)
     args = createSkiaGoldArgs(git_revision='a')
