@@ -1049,6 +1049,12 @@ const char kUpdateRequiredWarningPeriod[] = "update_required_warning_period";
 // when System-proxy and ARC++ are enabled by policy.
 const char kSystemProxyUserTrafficHostAndPort[] =
     "system_proxy.user_traffic_host_and_port";
+
+// Boolean pref indicating whether the supervised user has migrated EDU
+// secondary account to ARC++.
+const char kEduCoexistenceArcMigrationCompleted[] =
+    "account_manager.edu_coexistence_arc_migration_completed";
+
 #endif  // defined(OS_CHROMEOS)
 
 // A boolean pref set to true if a Home button to open the Home pages should be

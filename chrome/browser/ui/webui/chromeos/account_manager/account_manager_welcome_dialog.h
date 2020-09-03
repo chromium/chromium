@@ -19,6 +19,11 @@ class AccountManagerWelcomeDialog : public SystemWebDialogDelegate {
   // false otherwise.
   static bool ShowIfRequired();
 
+  // Displays the Chrome OS Account Manager welcome screen. Only to be used for
+  // the EDUCoexistence use case.  Returns true if the screen was displayed,
+  // false otherwise.
+  static bool ShowIfRequiredForEduCoexistence();
+
  protected:
   AccountManagerWelcomeDialog();
   ~AccountManagerWelcomeDialog() override;
@@ -32,6 +37,8 @@ class AccountManagerWelcomeDialog : public SystemWebDialogDelegate {
   bool ShouldShowCloseButton() const override;
 
  private:
+  static bool ShowIfRequiredInternal();
+
   DISALLOW_COPY_AND_ASSIGN(AccountManagerWelcomeDialog);
 };
 
