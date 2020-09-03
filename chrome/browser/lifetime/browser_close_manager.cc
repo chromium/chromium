@@ -119,8 +119,7 @@ void BrowserCloseManager::ConfirmCloseWithPendingDownloads(
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   DCHECK(browser);
   browser->window()->ConfirmBrowserCloseWithPendingDownloads(
-      download_count, Browser::DownloadCloseType::kBrowserShutdown, true,
-      callback);
+      download_count, Browser::DownloadCloseType::kBrowserShutdown, callback);
 }
 
 void BrowserCloseManager::OnReportDownloadsCancellable(bool proceed) {

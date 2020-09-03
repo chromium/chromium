@@ -2750,7 +2750,7 @@ bool Browser::CanCloseWithInProgressDownloads() {
   // that's ok.
   cancel_download_confirmation_state_ = WAITING_FOR_RESPONSE;
   window_->ConfirmBrowserCloseWithPendingDownloads(
-      num_downloads_blocking, dialog_type, false,
+      num_downloads_blocking, dialog_type,
       base::Bind(&Browser::InProgressDownloadResponse,
                  weak_factory_.GetWeakPtr()));
 

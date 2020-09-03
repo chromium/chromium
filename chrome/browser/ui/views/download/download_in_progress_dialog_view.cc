@@ -20,21 +20,21 @@ void DownloadInProgressDialogView::Show(
     gfx::NativeWindow parent,
     int download_count,
     Browser::DownloadCloseType dialog_type,
-    bool app_modal,
     const base::Callback<void(bool)>& callback) {
-  DownloadInProgressDialogView* window = new DownloadInProgressDialogView(
-      download_count, dialog_type, app_modal, callback);
+  DownloadInProgressDialogView* window =
+      new DownloadInProgressDialogView(download_count, dialog_type, callback);
   constrained_window::CreateBrowserModalDialogViews(window, parent)->Show();
 }
 
 DownloadInProgressDialogView::DownloadInProgressDialogView(
     int download_count,
     Browser::DownloadCloseType dialog_type,
-    bool app_modal,
     const base::Callback<void(bool)>& callback)
-    : download_count_(download_count),
-      app_modal_(app_modal),
-      callback_(callback) {
+    : callback_(callback) {
+  SetTitle(l10n_util::GetPluralStringFUTF16(IDS_ABANDON_DOWNLOAD_DIALOG_TITLE,
+                                            download_count));
+  SetShowCloseButton(false);
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
@@ -90,19 +90,6 @@ gfx::Size DownloadInProgressDialogView::CalculatePreferredSize() const {
                         DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType DownloadInProgressDialogView::GetModalType() const {
-  return app_modal_ ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_WINDOW;
-}
-
-bool DownloadInProgressDialogView::ShouldShowCloseButton() const {
-  return false;
-}
-
-base::string16 DownloadInProgressDialogView::GetWindowTitle() const {
-  return l10n_util::GetPluralStringFUTF16(IDS_ABANDON_DOWNLOAD_DIALOG_TITLE,
-                                          download_count_);
 }
 
 BEGIN_METADATA(DownloadInProgressDialogView, views::DialogDelegateView)

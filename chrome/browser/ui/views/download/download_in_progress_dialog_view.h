@@ -24,24 +24,17 @@ class DownloadInProgressDialogView : public views::DialogDelegateView {
   static void Show(gfx::NativeWindow parent_window,
                    int download_count,
                    Browser::DownloadCloseType dialog_type,
-                   bool app_modal,
                    const base::Callback<void(bool)>& callback);
 
  private:
   DownloadInProgressDialogView(int download_count,
                                Browser::DownloadCloseType dialog_type,
-                               bool app_modal,
                                const base::Callback<void(bool)>& callback);
   ~DownloadInProgressDialogView() override;
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  base::string16 GetWindowTitle() const override;
 
-  const int download_count_;
-  const bool app_modal_;
   const base::Callback<void(bool)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadInProgressDialogView);
