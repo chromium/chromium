@@ -19,7 +19,7 @@ public class EphemeralTabMetrics {
     /** The timestamp when the panel entered the peeking state for the first time. */
     private long mPanelPeekedNanoseconds;
 
-    /** Remembers whether the panel was opened beyond the peeking state. */
+    /** Remembers whether the panel was opened fully. */
     private boolean mDidRecordFirstOpen;
 
     /** The timestamp when the panel entered the opened state for the first time. */
@@ -28,12 +28,21 @@ public class EphemeralTabMetrics {
     /** Whether the panel is in any visible state. */
     private boolean mIsVisible;
 
+    /** Whether the panel was opened beyond peeking state. */
+    private boolean mIsViewed;
+
     /** Records metrics for the peeked panel state. */
     public void recordMetricsForPeeked() {
         mIsVisible = true;
         startPeekTimer();
         // Could be returning to Peek from Open.
         finishOpenTimer();
+    }
+
+    /** Records metrics when the panel has gone beyond peek state. */
+    public void recordMetricsForViewed() {
+        mIsViewed = true;
+        finishPeekTimer();
     }
 
     /** Records metrics when the panel has been fully opened. */
@@ -49,6 +58,7 @@ public class EphemeralTabMetrics {
 
         finishPeekTimer();
         finishOpenTimer();
+        RecordHistogram.recordBooleanHistogram("EphemeralTab.CtrPeek", mIsViewed);
         RecordHistogram.recordBooleanHistogram("EphemeralTab.Ctr", mDidRecordFirstOpen);
         RecordHistogram.recordEnumeratedHistogram("EphemeralTab.BottomSheet.CloseReason",
                 stateChangeReason, StateChangeReason.MAX_VALUE + 1);
@@ -73,6 +83,7 @@ public class EphemeralTabMetrics {
         mDidRecordFirstOpen = false;
         mPanelOpenedNanoseconds = 0;
         mIsVisible = false;
+        mIsViewed = false;
     }
 
     /** Starts timing the peek state if it's not already been started. */
