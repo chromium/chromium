@@ -166,6 +166,12 @@
             "optional": true
           }
         }
+      },
+      {
+        "id": "AcceleratorAction",
+        "type": "string",
+        "enum": [ "focusPreviousPane", "focusNextPane" ],
+        "description": "A subset of accelerator actions used by accessibility."
       }
     ],
     "functions": [
@@ -428,6 +434,18 @@
           {
             "name": "subpage",
             "type": "string"
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "performAcceleratorAction",
+        "type": "function",
+        "description": "Performs an accelerator action.",
+        "parameters": [
+          {
+            "name": "acceleratorAction",
+            "$ref": "AcceleratorAction"
           }
         ],
         "platforms": ["chromeos"]
