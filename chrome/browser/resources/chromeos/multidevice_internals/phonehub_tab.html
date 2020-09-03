@@ -8,10 +8,6 @@
     display: flex;
     flex: 0 0 100%;
   }
-
-  .cr-padded-text {
-    margin: 10px;
-  }
 </style>
 
 <div class="cr-row">
@@ -34,12 +30,15 @@
     </select>
     <div class="cr-padded-text" hidden="[[isFeatureEnabledAndConnected_]]">
       More controls will appear if the feature status is set to
-      <div class="emphasize">ENABLED_AND_CONNECTED</div>.
+      <span class="emphasize">ENABLED_AND_CONNECTED</span>.
     </div>
   </div>
   <template is="dom-if" if="[[isFeatureEnabledAndConnected_]]" restamp>
     <div class="cr-row">
       <phone-status-model-form></phone-status-model-form>
+    </div>
+    <div class="cr-row">
+      <browser-tabs-model-form></browser-tabs-model-form>
     </div>
   </template>
 </template>

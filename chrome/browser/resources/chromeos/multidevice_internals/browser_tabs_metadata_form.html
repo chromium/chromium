@@ -1,0 +1,40 @@
+<style include="cr-shared-style shared-style">
+  :host {
+    display: flex;
+    flex: 1 0 100%;
+  }
+
+  #faviconSelector {
+    align-items: normal;
+  }
+</style>
+
+<div class="column">
+  <div class="label">URL: </div>
+  <cr-input value="{{url_}}" id="urlInput" auto-validate required
+      error-message="This browser tab will be a nullopt if no url input">
+  </cr-input>
+</div>
+<div class="column">
+  <div class="label">Title: </div>
+  <cr-input value="{{title_}}" id="titleInput" auto-validate required
+      error-message="This browser tab will be a nullopt if no title input">
+  </cr-input>
+</div>
+<div class="column">
+  <div class="label">Last Accessed (ms): </div>
+  <cr-input value="{{lastAccessedTimeStamp_}}"
+      id="lastAccessedTimeStampInput" type="number" min="0"
+      on-change="onLastAccessTimeStampChanged_"
+      auto-validate error-message="Must be greater than 0" required>
+  </cr-input>
+</div>
+<div class="column" id="faviconSelector">
+  <div class="label">Favicon selector: </div>
+  <select id="faviconList" class="md-select"
+    on-change="onFaviconSelected_">
+    <template is="dom-repeat" items="[[faviconList_]]">
+      <option>[[getFaviconTypeName_(item)]]</option>
+    </template>
+  </select>
+</div>

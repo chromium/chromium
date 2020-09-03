@@ -68,7 +68,7 @@ export const SignalStrength = {
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * ChargingState inchromeos/components/phonehub/phone_status_model.h.
+ * ChargingState in chromeos/components/phonehub/phone_status_model.h.
  * @enum{number}
  */
 export const ChargingState = {
@@ -79,12 +79,25 @@ export const ChargingState = {
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * BatterySaverState inchromeos/components/phonehub/phone_status_model.h.
+ * BatterySaverState in chromeos/components/phonehub/phone_status_model.h.
  * @enum{number}
  */
 export const BatterySaverState = {
   OFF: 0,
   ON: 1,
+};
+
+/**
+ * Numerical values should not be changed because they must stay in sync with
+ * FaviconType in chromeos/components/phonehub/phone_status_model.cc.
+ * @enum{number}
+ */
+export const FaviconType = {
+  PINK: 0,
+  RED: 1,
+  GREEN: 2,
+  BLUE: 3,
+  YELLOW: 4,
 };
 
 /**
@@ -98,3 +111,22 @@ export const BatterySaverState = {
  * }}
  */
 export let PhoneStatusModel;
+
+/**
+ * @typedef {{
+ *   url: string,
+ *   title: string,
+ *   lastAccessedTimeStamp: number,
+ *   favicon: !FaviconType,
+ * }}
+ */
+export let BrowserTabsMetadataModel;
+
+/**
+ * @typedef {{
+ *   isTabSyncEnabled: boolean,
+ *   browserTabOneMetadata: ?BrowserTabsMetadataModel,
+ *   browserTabTwoMetadata: ?BrowserTabsMetadataModel,
+ * }}
+ */
+export let BrowserTabsModel;

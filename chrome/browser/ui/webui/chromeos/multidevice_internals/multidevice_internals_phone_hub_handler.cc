@@ -5,13 +5,88 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_phone_hub_handler.h"
 
 #include "ash/public/cpp/system_tray.h"
+#include "base/optional.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
 
 namespace chromeos {
 namespace multidevice {
+
+namespace {
+
+// Fake Favicon colors used for coloring the fake favicon bitmaps.
+enum class FaviconType {
+  kPink = 0,
+  kRed = 1,
+  kGreen = 2,
+  kBlue = 3,
+  kYellow = 4,
+};
+
+const SkBitmap FaviconNumToBitmap(FaviconType favicon_num) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  switch (favicon_num) {
+    case FaviconType::kPink:
+      bitmap.eraseARGB(0, 255, 192, 203);
+      break;
+    case FaviconType::kRed:
+      bitmap.eraseARGB(0, 255, 0, 0);
+      break;
+    case FaviconType::kGreen:
+      bitmap.eraseARGB(0, 0, 255, 0);
+      break;
+    case FaviconType::kBlue:
+      bitmap.eraseARGB(0, 0, 0, 255);
+      break;
+    case FaviconType::kYellow:
+      bitmap.eraseARGB(0, 255, 255, 0);
+      break;
+    default:
+      break;
+  }
+  return bitmap;
+}
+
+base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata>
+DictToBrowserTabMetadataModel(
+    const base::DictionaryValue* browser_tab_metadata) {
+  std::string url;
+  if (!browser_tab_metadata->GetString("url", &url) || url.empty()) {
+    return base::nullopt;
+  }
+
+  base::string16 title;
+  if (!browser_tab_metadata->GetString("title", &title) || title.empty()) {
+    return base::nullopt;
+  }
+
+  // JavaScript time stamps don't fit in int.
+  double last_accessed_timestamp;
+  if (!browser_tab_metadata->GetDouble("lastAccessedTimeStamp",
+                                       &last_accessed_timestamp)) {
+    return base::nullopt;
+  }
+
+  int favicon_type_as_int;
+  if (!browser_tab_metadata->GetInteger("favicon", &favicon_type_as_int)) {
+    return base::nullopt;
+  }
+
+  auto favicon_type = static_cast<FaviconType>(favicon_type_as_int);
+  gfx::Image favicon =
+      gfx::Image::CreateFrom1xBitmap(FaviconNumToBitmap(favicon_type));
+  return phonehub::BrowserTabsModel::BrowserTabMetadata(
+      GURL(url), title, base::Time::FromJsTime(last_accessed_timestamp),
+      favicon);
+}
+
+}  // namespace
 
 MultidevicePhoneHubHandler::MultidevicePhoneHubHandler() = default;
 
@@ -35,6 +110,11 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setFakePhoneStatus",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFakePhoneStatus,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "setBrowserTabs",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetBrowserTabs,
                           base::Unretained(this)));
 }
 
@@ -128,6 +208,51 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
                   << "\n  charging state: " << charging_state
                   << "\n  battery saver state: " << battery_saver_state
                   << "\n  battery percentage: " << battery_percentage;
+}
+
+void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
+    const base::ListValue* args) {
+  const base::DictionaryValue* browser_tab_status_dict = nullptr;
+  CHECK(args->GetDictionary(0, &browser_tab_status_dict));
+  bool is_tab_sync_enabled;
+  CHECK(browser_tab_status_dict->GetBoolean("isTabSyncEnabled",
+                                            &is_tab_sync_enabled));
+
+  if (!is_tab_sync_enabled) {
+    fake_phone_hub_manager_->mutable_phone_model()->SetBrowserTabsModel(
+        phonehub::BrowserTabsModel(is_tab_sync_enabled));
+    PA_LOG(VERBOSE) << "Tab sync off; cleared browser tab metadata";
+    return;
+  }
+
+  base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata> metadata_one;
+  const base::DictionaryValue* browser_tab_one_metadata = nullptr;
+  if (browser_tab_status_dict->GetDictionary("browserTabOneMetadata",
+                                             &browser_tab_one_metadata)) {
+    metadata_one = DictToBrowserTabMetadataModel(browser_tab_one_metadata);
+  }
+
+  base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata> metadata_two;
+  const base::DictionaryValue* browser_tab_two_metadata = nullptr;
+  if (browser_tab_status_dict->GetDictionary("browserTabTwoMetadata",
+                                             &browser_tab_two_metadata)) {
+    metadata_two = DictToBrowserTabMetadataModel(browser_tab_two_metadata);
+  }
+
+  // TODO(hsuregan): Add metadata_three and metadata_four.
+  std::vector<base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata>>
+      metadatas{{metadata_one, metadata_two}};
+  std::sort(metadatas.begin(), metadatas.end());
+
+  fake_phone_hub_manager_->mutable_phone_model()->SetBrowserTabsModel(
+      phonehub::BrowserTabsModel(is_tab_sync_enabled, metadatas[1],
+                                 metadatas[0]));
+
+  if (metadatas[1].has_value())
+    PA_LOG(VERBOSE) << "Set most recent browser tab to" << *metadatas[1];
+
+  if (metadatas[0].has_value())
+    PA_LOG(VERBOSE) << "Set second most recent browser tab to" << *metadatas[0];
 }
 
 }  // namespace multidevice

@@ -34,6 +34,12 @@ bool BrowserTabsModel::BrowserTabMetadata::operator!=(
   return !(*this == other);
 }
 
+bool BrowserTabsModel::BrowserTabMetadata::operator<(
+    const BrowserTabMetadata& other) const {
+  return std::tie(last_accessed_timestamp) <
+         std::tie(other.last_accessed_timestamp);
+}
+
 BrowserTabsModel::BrowserTabsModel(
     bool is_tab_sync_enabled,
     const base::Optional<BrowserTabMetadata>& most_recent_tab,

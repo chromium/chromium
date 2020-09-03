@@ -5,8 +5,9 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import './shared_style.js';
+import './browser_tabs_model_form.js';
 import './phone_status_model_form.js';
+import './shared_style.js';
 
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
@@ -77,7 +78,7 @@ Polymer({
     isFeatureEnabledAndConnected_: {
       type: Boolean,
       computed: 'isFeatureEnabledAndConnectedComputed_(featureStatus_)',
-    }
+    },
   },
 
   /** @private {?MultidevicePhoneHubBrowserProxy}*/

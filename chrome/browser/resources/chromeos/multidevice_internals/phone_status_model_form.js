@@ -63,13 +63,13 @@ Polymer({
     /** @private{MobileStatus} */
     mobileStatus_: {
       type: Number,
-      value: MobileStatus.SIM_WITH_RECEPTION,
+      value: MobileStatus.NO_SIM,
     },
 
     /** @private{SignalStrength}*/
     signalStrength_: {
       type: Number,
-      value: SignalStrength.TWO_BARS,
+      value: SignalStrength.ZERO_BARS,
     },
 
     /** @private */
@@ -217,6 +217,7 @@ Polymer({
 
   /**
    * @param {MobileStatus} mobileStatus
+   * @return {String}
    * @private
    */
   getMobileStatusName_(mobileStatus) {
@@ -225,6 +226,7 @@ Polymer({
 
   /**
    * @param {SignalStrength} signalStrength
+   * @return {String}
    * @private
    */
   getSignalStrengthName_(signalStrength) {
@@ -233,6 +235,7 @@ Polymer({
 
   /**
    * @param {ChargingState} chargingState
+   * @return {String}
    * @private
    */
   getChargingStateName_(chargingState) {
@@ -241,6 +244,7 @@ Polymer({
 
   /**
    * @param {BatterySaverState} batterySaverState
+   * @return {String}
    * @private
    */
   getBatterySaverStateName_(batterySaverState) {

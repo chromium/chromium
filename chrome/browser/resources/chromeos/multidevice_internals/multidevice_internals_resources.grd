@@ -12,6 +12,14 @@
   </outputs>
   <release seq="1">
     <includes>
+      <include name="IDR_MULTIDEVICE_INTERNALS_BROWSER_TABS_METADATA_FORM_JS"
+               file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\browser_tabs_metadata_form.js"
+               use_base_dir="false"
+               type="BINDATA"/>
+      <include name="IDR_MULTIDEVICE_INTERNALS_BROWSER_TABS_MODEL_FORM_JS"
+               file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\browser_tabs_model_form.js"
+               use_base_dir="false"
+               type="BINDATA"/>
       <include name="IDR_MULTIDEVICE_INTERNALS_INDEX_HTML"
                file="index.html"
                type="BINDATA"/>

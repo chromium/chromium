@@ -8,15 +8,28 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
+    ":browser_tabs_metadata_form",
     ":log_object",
     ":logging_tab",
     ":multidevice_internals",
     ":multidevice_logs_browser_proxy",
     ":multidevice_phonehub_browser_proxy",
+    ":multidevice_phonehub_browser_proxy",
     ":phone_status_model_form",
     ":phonehub_tab",
     ":types",
   ]
+}
+
+js_library("browser_tabs_model_form") {
+  deps = [
+    ":multidevice_phonehub_browser_proxy",
+    ":types",
+  ]
+}
+
+js_library("browser_tabs_metadata_form") {
+  deps = [ ":types" ]
 }
 
 js_library("phone_status_model_form") {
@@ -28,6 +41,7 @@ js_library("phone_status_model_form") {
 
 js_library("phonehub_tab") {
   deps = [
+    ":browser_tabs_model_form",
     ":multidevice_phonehub_browser_proxy",
     ":phone_status_model_form",
     ":types",
@@ -91,5 +105,7 @@ html_to_js("web_components") {
     "phonehub_tab.js",
     "phone_status_model_form.js",
     "shared_style.js",
+    "browser_tabs_metadata_form.js",
+    "browser_tabs_model_form.js",
   ]
 }

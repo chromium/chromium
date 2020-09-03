@@ -28,6 +28,7 @@ class BrowserTabsModel {
 
     bool operator==(const BrowserTabMetadata& other) const;
     bool operator!=(const BrowserTabMetadata& other) const;
+    bool operator<(const BrowserTabMetadata& other) const;
 
     GURL url;
     base::string16 title;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {FeatureStatus, PhoneStatusModel} from './types.js';
+import {BrowserTabsModel, FeatureStatus, PhoneStatusModel} from './types.js';
 
 /**
  * JavaScript hooks into the native WebUI handler for Phonehub tab.
@@ -32,6 +32,15 @@ export class MultidevicePhoneHubBrowserProxy {
    */
   setFakePhoneStatus(phoneStatusModel) {
     chrome.send('setFakePhoneStatus', [phoneStatusModel]);
+  }
+
+  /**
+   * Sets the browser tabs model.
+   * @param {!BrowserTabsModel} browserTabsModel The browser tab model with fake
+   *     values.
+   */
+  setBrowserTabs(browserTabsModel) {
+    chrome.send('setBrowserTabs', [browserTabsModel]);
   }
 }
 
