@@ -417,6 +417,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features->AppendString(GenerateFeatureFlag(
       "assistiveAutoCorrect",
       base::FeatureList::IsEnabled(chromeos::features::kAssistAutoCorrect)));
+  features->AppendString(
+      GenerateFeatureFlag("systemlatinphysicaltyping",
+                          base::FeatureList::IsEnabled(
+                              chromeos::features::kSystemLatinPhysicalTyping)));
 
   results->Set("features", std::move(features));
 

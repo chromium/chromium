@@ -207,6 +207,8 @@ extern const base::Feature kSplitSettingsSync;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kSuggestedContentToggle;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kSystemLatinPhysicalTyping;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kTelemetryExtension;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kUnifiedMediaView;

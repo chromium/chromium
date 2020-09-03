@@ -480,6 +480,11 @@ const base::Feature kSplitSettingsSync{"SplitSettingsSync",
 const base::Feature kSuggestedContentToggle{"SuggestedContentToggle",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables using the system input engine for physical typing in
+// languages based on latin script.
+const base::Feature kSystemLatinPhysicalTyping{
+    "SystemLatinPhysicalTyping", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Chrome OS Telemetry Extension.
 const base::Feature kTelemetryExtension{"TelemetryExtension",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
