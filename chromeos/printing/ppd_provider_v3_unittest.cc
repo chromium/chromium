@@ -32,6 +32,7 @@
 #include "chromeos/printing/ppd_metadata_manager.h"
 #include "chromeos/printing/printer_config_cache.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -39,6 +40,11 @@ namespace chromeos {
 namespace {
 
 using PrinterDiscoveryType = PrinterSearchData::PrinterDiscoveryType;
+using ::testing::AllOf;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::StrEq;
+using ::testing::UnorderedElementsAre;
 
 // A pseudo-ppd that should get cupsFilter lines extracted from it.
 const char kCupsFilterPpdContents[] = R"(
@@ -321,8 +327,25 @@ class PpdProviderTest : public ::testing::Test {
                   }
                 }
             })"},
-            {"metadata_v3/index-13.json",
+            {"metadata_v3/index-08.json",
              R"({
+                "ppdIndex": {
+                  "Some canonical reference": {
+                    "ppdMetadata": [ {
+                      "name": "unused.ppd"
+                    } ]
+                  }
+                }
+            })"},
+            {"metadata_v3/index-10.json",
+             R"({
+                "ppdIndex": {
+                  "Some other canonical reference": {
+                    "ppdMetadata": [ {
+                      "name": "unused.ppd"
+                    } ]
+                  }
+                }
             })"},
             {"metadata_v3/usb-031f.json",
              R"({
@@ -337,6 +360,15 @@ class PpdProviderTest : public ::testing::Test {
             })"},
             {"metadata_v3/usb-03f0.json", ""},
             {"metadata_v3/usb-1234.json", ""},
+            {"metadata_v3/usb_vendor_ids.json", R"({
+              "entries": [ {
+                "vendorId": 799,
+                "vendorName": "Seven Ninety Nine LLC"
+              }, {
+                "vendorId": 1008,
+                "vendorName": "HP"
+              } ]
+            })"},
             {"metadata_v3/reverse_index-en-01.json",
              R"({
                 "reverseIndex": {
@@ -565,7 +597,7 @@ TEST_F(PpdProviderTest, ManufacturersFetchNoServer) {
 TEST_F(PpdProviderTest, RepeatedMakeModel) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
 
   PrinterSearchData unrecognized_printer;
@@ -608,7 +640,7 @@ TEST_F(PpdProviderTest, RepeatedMakeModel) {
 TEST_F(PpdProviderTest, UsbResolution) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
 
   PrinterSearchData search_data;
@@ -628,6 +660,8 @@ TEST_F(PpdProviderTest, UsbResolution) {
                                   base::Unretained(this)));
 
   // Vendor id that exists, nonexistent device id, should get a NOT_FOUND.
+  // In our fake serving root, the manufacturer with vendor ID 0x031f
+  // (== 799) is named "Seven Ninety Nine LLC."
   search_data.usb_vendor_id = 0x031f;
   search_data.usb_product_id = 8162;
   provider->ResolvePpdReference(
@@ -646,15 +680,28 @@ TEST_F(PpdProviderTest, UsbResolution) {
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(captured_resolve_ppd_references_.size(), static_cast<size_t>(4));
-  EXPECT_EQ(captured_resolve_ppd_references_[0].code, PpdProvider::SUCCESS);
-  EXPECT_EQ(captured_resolve_ppd_references_[0].ref.effective_make_and_model,
-            "Some canonical reference");
-  EXPECT_EQ(captured_resolve_ppd_references_[1].code, PpdProvider::SUCCESS);
-  EXPECT_EQ(captured_resolve_ppd_references_[1].ref.effective_make_and_model,
-            "Some other canonical reference");
-  EXPECT_EQ(captured_resolve_ppd_references_[2].code, PpdProvider::NOT_FOUND);
-  EXPECT_FALSE(captured_resolve_ppd_references_[3].code ==
-               PpdProvider::SUCCESS);
+
+  // ResolvePpdReference() takes place in several asynchronous steps, so
+  // order is not guaranteed.
+  EXPECT_THAT(
+      captured_resolve_ppd_references_,
+      UnorderedElementsAre(
+          AllOf(Field(&CapturedResolvePpdReferenceResults::code,
+                      Eq(PpdProvider::SUCCESS)),
+                Field(&CapturedResolvePpdReferenceResults::ref,
+                      Field(&Printer::PpdReference::effective_make_and_model,
+                            StrEq("Some canonical reference")))),
+          AllOf(Field(&CapturedResolvePpdReferenceResults::code,
+                      Eq(PpdProvider::SUCCESS)),
+                Field(&CapturedResolvePpdReferenceResults::ref,
+                      Field(&Printer::PpdReference::effective_make_and_model,
+                            StrEq("Some other canonical reference")))),
+          AllOf(Field(&CapturedResolvePpdReferenceResults::code,
+                      Eq(PpdProvider::NOT_FOUND)),
+                Field(&CapturedResolvePpdReferenceResults::usb_manufacturer,
+                      StrEq("Seven Ninety Nine LLC"))),
+          Field(&CapturedResolvePpdReferenceResults::code,
+                Eq(PpdProvider::NOT_FOUND))));
 }
 
 // Test basic ResolvePrinters() functionality.  At the same time, make
@@ -875,7 +922,7 @@ TEST_F(PpdProviderTest, ResolvedPpdsGetCached) {
 TEST_F(PpdProviderTest, CaseInsensitiveMakeAndModel) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
   std::string ref = "pRiNteR_A_reF";
 
@@ -1141,7 +1188,7 @@ TEST_F(PpdProviderTest, UserPpdAlwaysRefreshedIfAvailable) {
 TEST_F(PpdProviderTest, ResolveUsbManufacturer) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
 
   PrinterSearchData search_data;

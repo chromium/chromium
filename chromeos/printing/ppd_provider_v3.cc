@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/printing/epson_driver_matching.h"
 #include "chromeos/printing/ppd_cache.h"
 #include "chromeos/printing/ppd_metadata_manager.h"
 #include "chromeos/printing/ppd_provider_v3.h"
@@ -51,6 +52,10 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy{
 // Age limit for time-sensitive API calls. Typically denotes "Please
 // respond with data no older than kMaxDataAge." Arbitrarily chosen.
 constexpr base::TimeDelta kMaxDataAge = base::TimeDelta::FromMinutes(30LL);
+
+// Effective-make-and-model string that describes a printer capable of
+// using the generic Epson PPD.
+const char kEpsonGenericEmm[] = "epson generic escpr printer";
 
 // Helper struct for PpdProviderImpl. Allows PpdProviderImpl to defer
 // its public method calls, which PpdProviderImpl will do when the
@@ -189,13 +194,36 @@ class PpdProviderImpl : public PpdProvider {
                                    std::move(manager_callback));
   }
 
-  // This method depends on
-  // 1. forward indices and
-  // 2. USB indices,
-  // neither of which are locale-sensitive.
+  // This method examines the members of |search_data| in turn and seeks
+  // out an appropriate PPD from the serving root. The order is
+  // 1. |search_data|::make_and_model - we seek out
+  //    effective-make-and-model strings from forward index metadata.
+  // 2. |search_data|::usb_*_id - we seek out a device with a matching
+  //    ID from USB index metadata.
+  // 3. |search_data|::make_and_model - we check if any among these
+  //    effective-make-and-model strings describe a printer for which
+  //    we can use the generic Epson PPD.
+  //
+  // *  This method observes and honors PPD restrictions (furnished by
+  //    forward index metadata) and will ignore PPDs that are not
+  //    advertised to run with the current |version_|.
+  // *  This method is not locale-sensitive.
   void ResolvePpdReference(const PrinterSearchData& search_data,
                            ResolvePpdReferenceCallback cb) override {
-    // TODO(crbug.com/888189): implement this.
+    ResolvePpdReferenceContext context(search_data, std::move(cb));
+
+    // Initiate step 1 if possible.
+    if (!search_data.make_and_model.empty()) {
+      auto callback = base::BindOnce(
+          &PpdProviderImpl::TryToResolvePpdReferenceFromForwardIndices,
+          weak_factory_.GetWeakPtr(), std::move(context));
+      metadata_manager_->FindAllEmmsAvailableInIndex(
+          search_data.make_and_model, kMaxDataAge, std::move(callback));
+      return;
+    }
+
+    // Otherwise, jump straight to step 2.
+    TryToResolvePpdReferenceFromUsbIndices(std::move(context));
   }
 
   // This method depends on a successful prior call to
@@ -245,6 +273,22 @@ class PpdProviderImpl : public PpdProvider {
   ~PpdProviderImpl() override = default;
 
  private:
+  // Convenience container used throughout ResolvePpdReference().
+  struct ResolvePpdReferenceContext {
+    ResolvePpdReferenceContext(const PrinterSearchData& search_data_arg,
+                               ResolvePpdReferenceCallback cb_arg)
+        : search_data(search_data_arg), cb(std::move(cb_arg)) {}
+    ~ResolvePpdReferenceContext() = default;
+
+    // This container is not copyable and is move-only.
+    ResolvePpdReferenceContext(ResolvePpdReferenceContext&& other) = default;
+    ResolvePpdReferenceContext& operator=(ResolvePpdReferenceContext&& other) =
+        default;
+
+    PrinterSearchData search_data;
+    ResolvePpdReferenceCallback cb;
+  };
+
   // Readies |metadata_manager_| to call methods which require a
   // successful callback from PpdMetadataManager::GetLocale().
   //
@@ -260,7 +304,8 @@ class PpdProviderImpl : public PpdProvider {
 
   // Evaluates true if our |version_| falls within the bounds set by
   // |restrictions|.
-  bool CurrentVersionSatisfiesRestrictions(const Restrictions& restrictions) {
+  bool CurrentVersionSatisfiesRestrictions(
+      const Restrictions& restrictions) const {
     if ((restrictions.min_milestone.IsValid() &&
          version_ < restrictions.min_milestone) ||
         (restrictions.max_milestone.IsValid() &&
@@ -321,6 +366,204 @@ class PpdProviderImpl : public PpdProvider {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), CallbackResultCode::SUCCESS,
                                   printers_available_to_our_version));
+  }
+
+  // Finds the first ParsedIndexLeaf keyed on |effective_make_and_model|
+  // from |forward_index_subset| (a slice of forward index metadata)
+  // that is allowed for use in our current |version_|.
+  //
+  // Note that |forward_index_subset| has the type returned by
+  // PpdMetadataManager::FindAllEmmsAvailableInIndexCallback.
+  const ParsedIndexLeaf* FirstAllowableParsedIndexLeaf(
+      base::StringPiece effective_make_and_model,
+      const base::flat_map<std::string, ParsedIndexValues>&
+          forward_index_subset) const {
+    const auto& iter = forward_index_subset.find(effective_make_and_model);
+    if (iter == forward_index_subset.end()) {
+      return nullptr;
+    }
+
+    for (const ParsedIndexLeaf& index_leaf : iter->second.values) {
+      if (!index_leaf.restrictions.has_value() ||
+          CurrentVersionSatisfiesRestrictions(
+              index_leaf.restrictions.value())) {
+        return &index_leaf;
+      }
+    }
+
+    return nullptr;
+  }
+
+  static void SuccessfullyResolvePpdReferenceWithEmm(
+      base::StringPiece effective_make_and_model,
+      ResolvePpdReferenceCallback cb) {
+    Printer::PpdReference reference;
+    reference.effective_make_and_model = std::string(effective_make_and_model);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cb), CallbackResultCode::SUCCESS,
+                                  std::move(reference), /*manufacturer=*/""));
+  }
+
+  // Fails a prior call to ResolvePpdReference().
+  // |usb_manufacturer| may be empty
+  // *  if we didn't find a manufacturer name for the given vendor ID or
+  // *  if we invoked this method directly with an empty manufacturer
+  //    name: "this wasn't a USB printer in the first place, so there's
+  //    no USB manufacturer to speak of."
+  static void FailToResolvePpdReferenceWithUsbManufacturer(
+      ResolvePpdReferenceCallback cb,
+      const std::string& usb_manufacturer) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cb), CallbackResultCode::NOT_FOUND,
+                                  Printer::PpdReference(), usb_manufacturer));
+  }
+
+  // Entry point to fail a prior call to ResolvePpdReference().
+  void FailToResolvePpdReference(ResolvePpdReferenceContext context) {
+    if (context.search_data.discovery_type ==
+        PrinterSearchData::PrinterDiscoveryType::kUsb) {
+      auto callback = base::BindOnce(
+          &PpdProviderImpl::FailToResolvePpdReferenceWithUsbManufacturer,
+          std::move(context.cb));
+      metadata_manager_->GetUsbManufacturerName(
+          context.search_data.usb_vendor_id, kMaxDataAge, std::move(callback));
+      return;
+    }
+
+    // If |search_data| does not describe a USB printer, the |cb| is
+    // posted in the same way, but with an empty USB manufacturer name.
+    FailToResolvePpdReferenceWithUsbManufacturer(std::move(context.cb),
+                                                 /*manufacturer=*/"");
+  }
+
+  // Continues a prior call to ResolvePpdReference() (step 3).
+  // This callback is fed to
+  // PpdMetadataManager::FindAllEmmsAvailableInIndex(), as we treat the
+  // hardcoded generic Epson effective-make-and-model string like any
+  // other emm, duly verifying its presence in forward index metadata
+  // and that it is not restricted from running in this |version_|.
+  void OnForwardIndicesSearchedForGenericEpsonEmm(
+      ResolvePpdReferenceContext context,
+      const base::flat_map<std::string, ParsedIndexValues>&
+          forward_index_results) {
+    const ParsedIndexLeaf* const index_leaf =
+        FirstAllowableParsedIndexLeaf(kEpsonGenericEmm, forward_index_results);
+    if (index_leaf) {
+      SuccessfullyResolvePpdReferenceWithEmm(kEpsonGenericEmm,
+                                             std::move(context.cb));
+      return;
+    }
+
+    // This really shouldn't happen, but we couldn't build a
+    // PpdReference that would point to the generic Epson PPD.
+    // (This might mean that the serving root is badly messed up in a
+    // way that escaped the attention of the Chrome OS printing team.)
+    FailToResolvePpdReference(std::move(context));
+  }
+
+  // Continues a prior call to ResolvePpdReference() (step 3).
+  void TryToResolvePpdReferenceWithGenericEpsonPpd(
+      ResolvePpdReferenceContext context) {
+    if (CanUseEpsonGenericPPD(context.search_data)) {
+      auto callback = base::BindOnce(
+          &PpdProviderImpl::OnForwardIndicesSearchedForGenericEpsonEmm,
+          weak_factory_.GetWeakPtr(), std::move(context));
+      metadata_manager_->FindAllEmmsAvailableInIndex(
+          {kEpsonGenericEmm}, kMaxDataAge, std::move(callback));
+      return;
+    }
+
+    // At this point, we couldn't build a PpdReference using the
+    // generic Epson PPD. ResolvePpdReference() can only fail now.
+    FailToResolvePpdReference(std::move(context));
+  }
+
+  // Continues a prior call to ResolvePpdReference() (step 2).
+  // This callback is fed to
+  // PpdMetadataManager::FindAllEmmsAvailableInIndex().
+  void OnForwardIndicesSearchedForUsbEmm(
+      ResolvePpdReferenceContext context,
+      const std::string& effective_make_and_model_from_usb_index,
+      const base::flat_map<std::string, ParsedIndexValues>&
+          forward_index_results) {
+    const ParsedIndexLeaf* const index_leaf = FirstAllowableParsedIndexLeaf(
+        effective_make_and_model_from_usb_index, forward_index_results);
+    if (index_leaf) {
+      SuccessfullyResolvePpdReferenceWithEmm(
+          effective_make_and_model_from_usb_index, std::move(context.cb));
+      return;
+    }
+
+    // At this point, we couldn't build a PpdReference from the
+    // effective-make-and-model string sourced from the USB index.
+    // ResolvePpdReference() continues to its next step.
+    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+  }
+
+  // Continues a prior call to ResolvePpdReference() (step 2).
+  // This callback is fed to PpdMetadataManager::FindDeviceInUsbIndex().
+  void OnUsbIndicesSearched(ResolvePpdReferenceContext context,
+                            const std::string& effective_make_and_model) {
+    if (!effective_make_and_model.empty()) {
+      auto callback =
+          base::BindOnce(&PpdProviderImpl::OnForwardIndicesSearchedForUsbEmm,
+                         weak_factory_.GetWeakPtr(), std::move(context),
+                         effective_make_and_model);
+      metadata_manager_->FindAllEmmsAvailableInIndex(
+          {effective_make_and_model}, kMaxDataAge, std::move(callback));
+      return;
+    }
+
+    // At this point, we couldn't build a PpdReference from a USB index
+    // search. ResolvePpdReference() continues to its next step.
+    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+  }
+
+  // Continues a prior call to ResolvePpdReference() (step 2).
+  void TryToResolvePpdReferenceFromUsbIndices(
+      ResolvePpdReferenceContext context) {
+    const int vendor_id = context.search_data.usb_vendor_id;
+    const int product_id = context.search_data.usb_product_id;
+    if (vendor_id && product_id) {
+      auto callback =
+          base::BindOnce(&PpdProviderImpl::OnUsbIndicesSearched,
+                         weak_factory_.GetWeakPtr(), std::move(context));
+      metadata_manager_->FindDeviceInUsbIndex(vendor_id, product_id,
+                                              kMaxDataAge, std::move(callback));
+      return;
+    }
+
+    // At this point, we couldn't use |search_data| to search USB indices.
+    // ResolvePpdReference() continues to its next step.
+    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+  }
+
+  // Continues a prior call to ResolvePpdReference() (step 1).
+  // This callback is fed to
+  // PpdMetadataManager::FindAllEmmsAvailableInIndexCallback().
+  void TryToResolvePpdReferenceFromForwardIndices(
+      ResolvePpdReferenceContext context,
+      const base::flat_map<std::string, ParsedIndexValues>&
+          forward_index_results) {
+    // Sweeps through the results of the forward index metadata search.
+    // If any effective-make-and-model string advertises an available
+    // PPD, we use that result to post |cb|.
+    for (base::StringPiece effective_make_and_model :
+         context.search_data.make_and_model) {
+      const ParsedIndexLeaf* const index_leaf = FirstAllowableParsedIndexLeaf(
+          effective_make_and_model, forward_index_results);
+      if (!index_leaf) {
+        continue;
+      }
+
+      SuccessfullyResolvePpdReferenceWithEmm(effective_make_and_model,
+                                             std::move(context.cb));
+      return;
+    }
+
+    // At this point, we couldn't build a PpdReference directly from a
+    // forward index search. ResolvePpdReference() continues to step 2.
+    TryToResolvePpdReferenceFromUsbIndices(std::move(context));
   }
 
   // Locale of the browser, as returned by
