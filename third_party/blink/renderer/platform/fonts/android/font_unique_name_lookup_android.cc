@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file.h"
+
 #include "third_party/blink/renderer/platform/fonts/android/font_unique_name_lookup_android.h"
-#include "mojo/public/mojom/base/shared_memory.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
@@ -74,15 +79,26 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueName(
     const String& font_unique_name) {
   if (!IsFontUniqueNameLookupReadyForSyncLookup())
     return nullptr;
-  return MatchUniqueNameFromFirmwareFonts(font_unique_name);
+  sk_sp<SkTypeface> result_font =
+      MatchUniqueNameFromFirmwareFonts(font_unique_name);
+  if (result_font)
+    return result_font;
+  return MatchUniqueNameFromDownloadableFonts(font_unique_name);
 }
 
 void FontUniqueNameLookupAndroid::EnsureServiceConnected() {
-  if (firmware_font_lookup_service_)
+  if (firmware_font_lookup_service_ && android_font_lookup_service_)
     return;
 
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      firmware_font_lookup_service_.BindNewPipeAndPassReceiver());
+  if (!firmware_font_lookup_service_) {
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        firmware_font_lookup_service_.BindNewPipeAndPassReceiver());
+  }
+
+  if (!android_font_lookup_service_) {
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        android_font_lookup_service_.BindNewPipeAndPassReceiver());
+  }
 }
 
 void FontUniqueNameLookupAndroid::ReceiveReadOnlySharedMemoryRegion(
@@ -104,4 +120,40 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueNameFromFirmwareFonts(
   return SkTypeface::MakeFromFile(match_result->font_path.c_str(),
                                   match_result->ttc_index);
 }
+
+sk_sp<SkTypeface>
+FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
+    const String& font_unique_name) {
+  if (!android_font_lookup_service_.is_bound()) {
+    LOG(ERROR) << "Service not connected.";
+    return nullptr;
+  }
+
+  base::File font_file;
+  if (!android_font_lookup_service_->MatchLocalFontByUniqueName(
+          font_unique_name, &font_file)) {
+    LOG(ERROR) << "Mojo method returned false for unique font name: "
+               << font_unique_name;
+    return nullptr;
+  }
+
+  if (!font_file.IsValid()) {
+    LOG(ERROR) << "Received platform font handle invalid.";
+    return nullptr;
+  }
+
+  sk_sp<SkData> font_data = SkData::MakeFromFD(font_file.GetPlatformFile());
+
+  if (font_data->isEmpty()) {
+    LOG(ERROR) << "Received file descriptor has 0 size.";
+    return nullptr;
+  }
+
+  sk_sp<SkTypeface> return_typeface(SkTypeface::MakeFromData(font_data));
+
+  if (!return_typeface)
+    LOG(ERROR) << "Cannot instantiate SkTypeface from font blob SkData.";
+  return return_typeface;
+}
+
 }  // namespace blink
