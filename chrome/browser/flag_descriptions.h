@@ -1434,9 +1434,6 @@ extern const char kWebrtcHwDecodingDescription[];
 extern const char kWebrtcHwEncodingName[];
 extern const char kWebrtcHwEncodingDescription[];
 
-extern const char kWebrtcNewEncodeCpuLoadEstimatorName[];
-extern const char kWebrtcNewEncodeCpuLoadEstimatorDescription[];
-
 extern const char kWebRtcRemoteEventLogName[];
 extern const char kWebRtcRemoteEventLogDescription[];
 

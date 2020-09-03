@@ -7750,24 +7750,6 @@
             ]
         }
     ],
-    "WebRTC-NewCpuLoadEstimator": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NewEncodeCpuLoadEstimator"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebRTC-Pacer-BlockAudio": [
         {
             "platforms": [

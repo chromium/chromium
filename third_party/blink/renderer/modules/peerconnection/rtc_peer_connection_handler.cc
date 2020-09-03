@@ -1078,8 +1078,7 @@ bool RTCPeerConnectionHandler::Initialize(
   configuration_.set_prerenderer_smoothing(
       !blink::Platform::Current()->RTCSmoothnessAlgorithmEnabled());
 
-  configuration_.set_experiment_cpu_load_estimator(
-      base::FeatureList::IsEnabled(media::kNewEncodeCpuLoadEstimator));
+  configuration_.set_experiment_cpu_load_estimator(true);
 
   // Configure optional SRTP configurations enabled via the command line.
   configuration_.crypto_options = webrtc::CryptoOptions{};
