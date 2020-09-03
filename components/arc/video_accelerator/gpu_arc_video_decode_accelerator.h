@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "gpu/config/gpu_preferences.h"
@@ -150,7 +151,7 @@ class GpuArcVideoDecodeAccelerator
 
   size_t protected_input_buffer_count_ = 0;
 
-  bool secure_mode_ = false;
+  base::Optional<bool> secure_mode_ = base::nullopt;
   size_t output_buffer_count_ = 0;
   bool assign_picture_buffers_called_ = false;
 

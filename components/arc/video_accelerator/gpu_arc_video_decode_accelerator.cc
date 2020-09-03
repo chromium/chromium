@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/files/scoped_file.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
@@ -312,11 +314,6 @@ GpuArcVideoDecodeAccelerator::InitializeTask(
     return mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES;
   }
 
-  if (config->secure_mode && !protected_buffer_manager_) {
-    VLOGF(1) << "Secure mode unsupported";
-    return mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE;
-  }
-
   media::VideoDecodeAccelerator::Config vda_config(config->profile);
   vda_config.output_mode =
       media::VideoDecodeAccelerator::Config::OutputMode::IMPORT;
@@ -331,7 +328,7 @@ GpuArcVideoDecodeAccelerator::InitializeTask(
   }
 
   client_count_++;
-  secure_mode_ = config->secure_mode;
+  secure_mode_ = base::nullopt;
   error_state_ = false;
   pending_requests_ = {};
   pending_flush_callbacks_ = {};
@@ -359,8 +356,31 @@ void GpuArcVideoDecodeAccelerator::Decode(
   }
   DVLOGF(4) << "fd=" << handle_fd.get();
 
+  // If this is the first input buffer, determine if the playback is secure by
+  // querying ProtectedBufferManager. If we can get the corresponding protected
+  // buffer, then we consider the playback as secure. Otherwise, we consider it
+  // as a normal playback.
+  if (!secure_mode_.has_value()) {
+    if (!protected_buffer_manager_) {
+      DVLOGF(3) << "ProtectedBufferManager is null, treat as normal playback";
+      secure_mode_ = false;
+    } else {
+      base::ScopedFD dup_fd(HANDLE_EINTR(dup(handle_fd.get())));
+      if (!dup_fd.is_valid()) {
+        client_->NotifyError(
+            mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+        return;
+      }
+
+      secure_mode_ = protected_buffer_manager_
+                         ->GetProtectedSharedMemoryRegionFor(std::move(dup_fd))
+                         .IsValid();
+      VLOGF(2) << "First input buffer is secure buffer? " << *secure_mode_;
+    }
+  }
+
   base::subtle::PlatformSharedMemoryRegion shm_region;
-  if (secure_mode_) {
+  if (*secure_mode_) {
     // Use protected shared memory associated with the given file descriptor.
     shm_region = protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
         std::move(handle_fd));
@@ -473,7 +493,8 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
 
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::NATIVE_PIXMAP;
-  if (secure_mode_) {
+  DCHECK(!secure_mode_.has_value());
+  if (*secure_mode_) {
     // Get protected output buffer associated with |handle_fd|.
     // Duplicating handle here is needed as ownership of passed fd is
     // transferred to AllocateProtectedNativePixmap().
