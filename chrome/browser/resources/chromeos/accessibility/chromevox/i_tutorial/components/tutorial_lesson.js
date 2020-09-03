@@ -58,6 +58,17 @@ export const TutorialLesson = Polymer({
         this.$.practiceContent.addEventListener(
             evt, this.onPracticeEvent.bind(this), true);
       }
+      this.$.practiceContent.addEventListener('focus', (evt) => {
+        // The practice area has the potential to overflow, so ensure elements
+        // are scrolled into view when focused.
+        evt.target.scrollIntoView();
+      }, true);
+      this.$.practiceContent.addEventListener('click', (evt) => {
+        // Intercept click events. For example, clicking a link will exit the
+        // tutorial without this listener.
+        evt.preventDefault();
+        evt.stopPropagation();
+      }, true);
     }
   },
 
@@ -125,6 +136,7 @@ export const TutorialLesson = Polymer({
   startPractice() {
     this.$.practice.showModal();
     this.startHints();
+    this.$.practiceTitle.focus();
   },
 
   /** @private */

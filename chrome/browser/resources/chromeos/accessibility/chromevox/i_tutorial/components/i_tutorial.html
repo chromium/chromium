@@ -14,13 +14,10 @@
   top: 0;
 }
 
-#mainMenu {
-  margin: auto;
-  text-align: center;
-  width: 50%;
-}
-
-#lessonMenu {
+#mainMenu,
+#lessonMenu,
+#lessonContainer,
+#nav {
   margin: auto;
   text-align: center;
   width: 50%;
@@ -32,27 +29,9 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-}
-
-#lessonContainer {
   margin: auto;
-  text-align: center;
-  width: 50%;
-}
-
-#nav {
-  margin: auto;
-  text-align: center;
-  width: 50%;
-}
-
-h1 {
-  display: flex;
-  flex-direction: column;
-  font-family: Google Sans;
-  font-size: 24px;
-  line-height: 32px;
-  padding: 8px;
+  max-height: 500px;
+  overflow: scroll;
 }
 
 #mainMenuButtons {
@@ -66,14 +45,27 @@ h1 {
 #navSeparator {
   background: rgb(232, 234, 237);
   height: 1px;
-  margin: 10px;
+  margin: 30px;
+}
+
+h1,
+cr-button {
+  font-family: Google Sans;
+}
+
+h1 {
+  display: flex;
+  flex-direction: column;
+  font-size: 32px;
+  line-height: 32px;
+  margin: 20px;
+  padding: 8px;
 }
 
 #mainMenu cr-button,
 #lessonMenu cr-button {
   color: rgb(32, 33, 36);
-  font-family: Roboto;
-  font-size: 18px;
+  font-size: 22px;
   font-style: normal;
   font-weight: normal;
   line-height: 20px;
@@ -82,8 +74,7 @@ h1 {
 
 #navButtons cr-button {
   color: rgb(26, 115, 232);
-  font-family: Roboto;
-  font-size: 13px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
@@ -146,8 +137,7 @@ h1 {
 </div>
 
 <div id="nav">
-  <div id="navSeparator">
-  </div>
+  <div id="navSeparator"></div>
   <div id="navButtons">
     <cr-button on-click="showPreviousLesson"
         hidden$="[[

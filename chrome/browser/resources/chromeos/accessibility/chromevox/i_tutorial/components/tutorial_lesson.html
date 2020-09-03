@@ -3,21 +3,91 @@
      found in the LICENSE file. -->
 <style>
 
+body,
+div,
+h1,
+p,
+cr-button,
+a {
+  font-family: Google Sans;
+}
+
+#title {
+  font-size: 32px;
+}
+
 #content {
   display: block;
-  font-family: Google Sans;
-  font-size: 18px;
+  font-size: 28px;
   font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
+  font-weight: normal;
+  line-height: 36px;
+  margin: auto;
+  max-height: 500px;
+  overflow: scroll;
   text-align: center;
 }
 
+#practice {
+  overflow: scroll;
+}
+
+#practiceTitle {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+#practiceInstructions {
+  line-height: 32px;
+  margin: 5px;
+  padding: 5px;
+}
+
+#practiceBody {
+  color: #000;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: normal;
+  padding: 20px;
+  text-align: center;
+}
+
+#practiceBody h1,
+#practiceBody h2,
+#practiceBody h3,
+#practiceBody h4,
+#practiceBody h5,
+#practiceBody h6 {
+  margin: 5px;
+}
+
+#practiceContent cr-button {
+  font-size: 18px;
+  margin: 20px;
+}
+
+#practiceContent a {
+  color: rgb(26, 115, 232);
+  font-size: 18px;
+  margin: 20px;
+}
+
 #startPractice {
+  color: rgb(26, 115, 232);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
   margin-bottom: 10px;
   margin-inline-end: 10px;
   margin-inline-start: 10px;
   margin-top: 10px;
+}
+
+#separator {
+  background: rgb(232, 234, 237);
+  height: 1px;
+  margin: 20px;
 }
 
 </style>
@@ -33,9 +103,12 @@
   </div>
   <cr-dialog id="practice" close-text="Exit practice area"
       on-close="endPractice" show-close-button>
-    <div class="title" slot="title" tabindex="-1">[[ practiceTitle ]]</div>
-    <div class="body" slot="body" tabindex="-1">
-      <p>[[ practiceInstructions ]]</p>
+    <div id="practiceTitle" class="title" slot="title" tabindex="-1">
+      [[ practiceTitle ]]
+    </div>
+    <div id="practiceBody" class="body" slot="body" tabindex="-1">
+      <p id="practiceInstructions">[[ practiceInstructions ]]</p>
+      <div id="separator"></div>
       <div id="practiceContent"></div>
     </div>
   </cr-dialog>
