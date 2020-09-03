@@ -1589,7 +1589,8 @@ void LocalDOMWindow::moveBy(int x, int y) const {
   window_rect.SaturatedMove(x, y);
   // Security check (the spec talks about UniversalBrowserWrite to disable this
   // check...)
-  page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, *frame);
+  page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, *frame,
+                                                      *frame);
 }
 
 void LocalDOMWindow::moveTo(int x, int y) const {
@@ -1605,7 +1606,8 @@ void LocalDOMWindow::moveTo(int x, int y) const {
   window_rect.SetLocation(IntPoint(x, y));
   // Security check (the spec talks about UniversalBrowserWrite to disable this
   // check...)
-  page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, *frame);
+  page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, *frame,
+                                                      *frame);
 }
 
 void LocalDOMWindow::resizeBy(int x, int y) const {
@@ -1620,7 +1622,7 @@ void LocalDOMWindow::resizeBy(int x, int y) const {
   IntRect fr = page->GetChromeClient().RootWindowRect(*frame);
   IntSize dest = fr.Size() + IntSize(x, y);
   IntRect update(fr.Location(), dest);
-  page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame);
+  page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame, *frame);
 }
 
 void LocalDOMWindow::resizeTo(int width, int height) const {
@@ -1635,7 +1637,7 @@ void LocalDOMWindow::resizeTo(int width, int height) const {
   IntRect fr = page->GetChromeClient().RootWindowRect(*frame);
   IntSize dest = IntSize(width, height);
   IntRect update(fr.Location(), dest);
-  page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame);
+  page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame, *frame);
 }
 
 int LocalDOMWindow::requestAnimationFrame(V8FrameRequestCallback* callback) {

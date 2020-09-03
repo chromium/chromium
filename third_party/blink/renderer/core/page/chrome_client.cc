@@ -53,7 +53,8 @@ void ChromeClient::InstallSupplements(LocalFrame& frame) {
 }
 
 void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
-                                               LocalFrame& frame) {
+                                               LocalFrame& frame,
+                                               LocalFrame& requesting_frame) {
   IntRect screen(GetScreenInfo(frame).available_rect);
   IntRect window = pending_rect;
 
@@ -67,8 +68,10 @@ void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
     // on another screen, and so it should not be limited by the current screen.
     // This relies on the embedder clamping bounds to the target screen for now.
     // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
-    if (!RuntimeEnabledFeatures::WindowPlacementEnabled(frame.DomWindow()))
+    if (!RuntimeEnabledFeatures::WindowPlacementEnabled(
+            requesting_frame.DomWindow())) {
       width = std::min(width, screen.Width());
+    }
     window.SetWidth(width);
     size_for_constraining_move.SetWidth(window.Width());
   }
@@ -78,8 +81,10 @@ void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
     // on another screen, and so it should not be limited by the current screen.
     // This relies on the embedder clamping bounds to the target screen for now.
     // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
-    if (!RuntimeEnabledFeatures::WindowPlacementEnabled(frame.DomWindow()))
+    if (!RuntimeEnabledFeatures::WindowPlacementEnabled(
+            requesting_frame.DomWindow())) {
       height = std::min(height, screen.Height());
+    }
     window.SetHeight(height);
     size_for_constraining_move.SetHeight(window.Height());
   }
@@ -88,7 +93,8 @@ void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
   // on another screen, and so it should not be limited by the current screen.
   // This relies on the embedder clamping bounds to the target screen for now.
   // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
-  if (!RuntimeEnabledFeatures::WindowPlacementEnabled(frame.DomWindow())) {
+  if (!RuntimeEnabledFeatures::WindowPlacementEnabled(
+          requesting_frame.DomWindow())) {
     // Constrain the window position within the valid screen area.
     window.SetX(
         std::max(screen.X(),
