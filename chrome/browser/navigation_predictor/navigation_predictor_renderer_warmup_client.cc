@@ -7,13 +7,17 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "base/task/post_task.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -58,7 +62,12 @@ NavigationPredictorRendererWarmupClient::
           base::GetFieldTrialParamByFeatureAsInt(
               kNavigationPredictorRendererWarmup,
               "cooldown_duration_ms",
-              60 * 1000))) {
+              60 * 1000))),
+      renderer_warmup_delay_(base::TimeDelta::FromMilliseconds(
+          base::GetFieldTrialParamByFeatureAsInt(
+              kNavigationPredictorRendererWarmup,
+              "renderer_warmup_delay_ms",
+              0))) {
   if (clock) {
     tick_clock_ = clock;
   } else {
@@ -197,5 +206,10 @@ void NavigationPredictorRendererWarmupClient::RecordMetricsAndMaybeDoWarmup() {
     return;
   }
 
-  DoRendererWarmpup();
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &NavigationPredictorRendererWarmupClient::DoRendererWarmpup,
+          weak_factory_.GetWeakPtr()),
+      renderer_warmup_delay_);
 }

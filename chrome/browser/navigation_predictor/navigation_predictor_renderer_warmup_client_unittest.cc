@@ -42,7 +42,10 @@ class TestNavigationPredictorRendererWarmupClient
       : NavigationPredictorRendererWarmupClient(profile, clock) {}
   ~TestNavigationPredictorRendererWarmupClient() override = default;
 
-  bool DidDoRendererWarmup() const { return did_renderer_warmup_; }
+  bool DidDoRendererWarmup() const {
+    base::RunLoop().RunUntilIdle();
+    return did_renderer_warmup_;
+  }
 
   void Reset() { did_renderer_warmup_ = false; }
 

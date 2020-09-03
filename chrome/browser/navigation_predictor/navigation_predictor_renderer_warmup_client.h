@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_RENDERER_WARMUP_CLIENT_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -87,6 +88,12 @@ class NavigationPredictorRendererWarmupClient
 
   // The amount of time to wait in-between doing a renderer warmup.
   const base::TimeDelta cooldown_duration_;
+
+  // The amount of time to delay starting a spare renderer.
+  const base::TimeDelta renderer_warmup_delay_;
+
+  base::WeakPtrFactory<NavigationPredictorRendererWarmupClient> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(NavigationPredictorRendererWarmupClient);
 };
