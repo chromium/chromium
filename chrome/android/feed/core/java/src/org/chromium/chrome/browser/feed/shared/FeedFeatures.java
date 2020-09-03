@@ -32,4 +32,8 @@ public final class FeedFeatures {
                         && CachedFeatureFlags.isEnabled(
                                 ChromeFeatureList.REPORT_FEED_USER_ACTIONS));
     }
+
+    public static boolean isV2Enabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2);
+    }
 }

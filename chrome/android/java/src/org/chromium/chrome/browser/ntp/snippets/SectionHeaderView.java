@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp.snippets;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
@@ -44,9 +45,19 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
     private SectionHeader mHeader;
 
     private boolean mHasMenu;
+    private boolean mHairlineWhenDisabled = true;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        TypedArray attrArray = context.getTheme().obtainStyledAttributes(
+                attrs, R.styleable.SectionHeaderView, 0, 0);
+
+        try {
+            mHairlineWhenDisabled = attrArray.getBoolean(
+                    R.styleable.SectionHeaderView_showHairlineWhenDisabled, true);
+        } finally {
+            attrArray.recycle();
+        }
     }
 
     @Override
@@ -103,8 +114,9 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                 mStatusView.setText(
                         mHeader.isExpanded() ? R.string.hide_content : R.string.show_content);
             }
-            setBackgroundResource(
-                    mHeader.isExpanded() ? 0 : R.drawable.hairline_border_card_background);
+            setBackgroundResource(mHeader.isExpanded() || !mHairlineWhenDisabled
+                            ? 0
+                            : R.drawable.hairline_border_card_background);
         }
     }
 
