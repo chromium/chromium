@@ -22,13 +22,32 @@ class PrintMode:
     build_targets: bool
 
 
+def print_with_indent(indent, message):
+    print(' ' * indent + message)
+
+
+def print_class_nodes_grouped_by_target(
+        class_nodes: List[class_dependency.JavaClass], print_mode: PrintMode):
+    # TODO(crbug.com/1124836): This is not quite correct because
+    # sets considered equal can be converted to different strings. Fix this by
+    # making JavaClass.build_targets return a List instead of a Set.
+    class_nodes = sorted(class_nodes, key=lambda c: str(c.build_targets))
+    last_build_target = None
+    for class_node in class_nodes:
+        build_target = str(class_node.build_targets)
+        if last_build_target != build_target:
+            print_with_indent(4, f'[{", ".join(class_node.build_targets)}]')
+            last_build_target = build_target
+        print_with_indent(8, f'{class_node.name}')
+
+
 def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
                       print_mode: PrintMode):
-    for class_node in class_nodes:
-        output = f'\t{class_node.name}'
-        if print_mode.build_targets:
-            output += f' [{", ".join(class_node.build_targets)}]'
-        print(output)
+    if print_mode.build_targets:
+        print_class_nodes_grouped_by_target(class_nodes, print_mode)
+    else:
+        for class_node in class_nodes:
+            print_with_indent(8, f'{class_node.name}')
 
 
 def print_class_dependencies_for_key(
@@ -38,12 +57,12 @@ def print_class_dependencies_for_key(
     node: class_dependency.JavaClass = class_graph.get_node_by_key(key)
 
     if print_mode.inbound:
-        print(f'{len(node.inbound)} inbound dependency(ies) for {node.name}:')
+        print(f'{len(node.inbound)} inbound dependency(ies) into {node.name}:')
         print_class_nodes(graph.sorted_nodes_by_name(node.inbound), print_mode)
 
     if print_mode.outbound:
         print(
-            f'{len(node.outbound)} outbound dependency(ies) for {node.name}:')
+            f'{len(node.outbound)} outbound dependency(ies) from {node.name}:')
         print_class_nodes(graph.sorted_nodes_by_name(node.outbound),
                           print_mode)
 
