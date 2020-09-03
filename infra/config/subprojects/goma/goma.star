@@ -439,6 +439,12 @@ goma_builder(
 )
 
 goma_builder(
+    name = "chromeos-amd64-generic-rel-goma-rbe-staging",
+    goma_backend = goma.backend.RBE_STAGING,
+    goma_enable_ats = True,
+)
+
+goma_builder(
     name = "Chromium Linux Goma Staging",
     goma_use_luci_auth = False,
 )
@@ -451,6 +457,12 @@ goma_builder(
 
 goma_builder(
     name = "Chromium Linux Goma RBE ToT (ATS)",
+    goma_backend = goma.backend.RBE_TOT,
+    goma_enable_ats = True,
+)
+
+goma_builder(
+    name = "chromeos-amd64-generic-rel-goma-rbe-tot",
     goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = True,
 )

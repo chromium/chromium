@@ -54,6 +54,10 @@ luci.console_view(
             short_name = "ats",
         ),
         luci.console_view_entry(
+            builder = "goma/chromeos-amd64-generic-rel-goma-rbe-tot",
+            category = "rbe|tot|cros|rel",
+        ),
+        luci.console_view_entry(
             builder = "goma/Chromium Linux Goma RBE Staging (clobber)",
             category = "rbe|staging|linux|rel",
             short_name = "clb",
@@ -96,6 +100,10 @@ luci.console_view(
         luci.console_view_entry(
             builder = "goma/Chromium Android ARM 32-bit Goma RBE Staging",
             category = "rbe|staging|android arm|rel",
+        ),
+        luci.console_view_entry(
+            builder = "goma/chromeos-amd64-generic-rel-goma-rbe-staging",
+            category = "rbe|staging|cros|rel",
         ),
     ],
 )
