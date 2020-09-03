@@ -12,18 +12,19 @@
 #include "build/build_config.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_buffer_tracker.h"
+#include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "ui/gfx/buffer_format_util.h"
 
 namespace media {
 
 VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
-    std::unique_ptr<VideoCaptureBufferTrackerFactory> buffer_tracker_factory,
     VideoCaptureBufferType buffer_type,
     int count)
     : buffer_type_(buffer_type),
       count_(count),
       next_buffer_id_(0),
-      buffer_tracker_factory_(std::move(buffer_tracker_factory)) {
+      buffer_tracker_factory_(
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {
   DCHECK_GT(count, 0);
 }
 

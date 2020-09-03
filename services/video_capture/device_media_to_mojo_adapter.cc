@@ -91,11 +91,8 @@ void DeviceMediaToMojoAdapter::Start(
   }
 
   // Create a dedicated buffer pool for the device usage session.
-  auto buffer_tracker_factory =
-      std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>();
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
-      new media::VideoCaptureBufferPoolImpl(std::move(buffer_tracker_factory),
-                                            requested_settings.buffer_type,
+      new media::VideoCaptureBufferPoolImpl(requested_settings.buffer_type,
                                             max_buffer_pool_buffer_count()));
 #if defined(OS_CHROMEOS)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(

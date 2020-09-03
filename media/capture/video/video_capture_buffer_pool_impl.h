@@ -30,7 +30,6 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
     : public VideoCaptureBufferPool {
  public:
   explicit VideoCaptureBufferPoolImpl(
-      std::unique_ptr<VideoCaptureBufferTrackerFactory> buffer_tracker_factory,
       VideoCaptureBufferType buffer_type,
       int count);
 

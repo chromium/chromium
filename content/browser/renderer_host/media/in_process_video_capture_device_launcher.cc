@@ -248,7 +248,6 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
 
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
       new media::VideoCaptureBufferPoolImpl(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
           requested_buffer_type, buffer_pool_max_buffer_count);
 
 #if defined(OS_CHROMEOS)

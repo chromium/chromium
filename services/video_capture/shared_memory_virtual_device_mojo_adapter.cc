@@ -38,7 +38,6 @@ SharedMemoryVirtualDeviceMojoAdapter::SharedMemoryVirtualDeviceMojoAdapter(
       send_buffer_handles_to_producer_as_raw_file_descriptors_(
           send_buffer_handles_to_producer_as_raw_file_descriptors),
       buffer_pool_(new media::VideoCaptureBufferPoolImpl(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
           media::VideoCaptureBufferType::kSharedMemory,
           max_buffer_pool_buffer_count())) {}
 
