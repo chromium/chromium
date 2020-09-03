@@ -128,8 +128,11 @@ void MathMLOperatorElement::ParseAttribute(
     SetOperatorPropertyDirtyFlagIfNeeded(
         param, MathMLOperatorElement::kMovableLimits, needs_layout);
   }
-  if (needs_layout && GetLayoutObject())
-    GetLayoutObject()->UpdateFromElement();
+  if (needs_layout && GetLayoutObject() && GetLayoutObject()->IsMathML()) {
+    GetLayoutObject()
+        ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+            layout_invalidation_reason::kAttributeChanged);
+  }
   MathMLElement::ParseAttribute(param);
 }
 

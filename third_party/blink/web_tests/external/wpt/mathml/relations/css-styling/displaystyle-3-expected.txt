@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL movablelimits for munder element (displaystyle=false) assert_true: expected true got false
-FAIL movablelimits for munder element (displaystyle=true) assert_true: expected true got false
-FAIL movablelimits for mover element (displaystyle=false) assert_true: expected true got false
-FAIL movablelimits for mover element (displaystyle=true) assert_true: expected true got false
-FAIL movablelimits for munderover element (displaystyle=false) assert_true: expected true got false
-FAIL movablelimits for munderover element (displaystyle=true) assert_true: expected true got false
-Harness: the test ran to completion.
-

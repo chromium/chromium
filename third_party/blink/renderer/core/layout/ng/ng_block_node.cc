@@ -136,8 +136,8 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
       return;
     } else if (IsA<MathMLScriptsElement>(element) &&
                IsValidMathMLScript(params.node)) {
-      // TODO(rbuis): take into account movablelimits.
-      if (IsA<MathMLUnderOverElement>(element)) {
+      if (IsA<MathMLUnderOverElement>(element) &&
+          !IsUnderOverLaidOutAsSubSup(params.node)) {
         CreateAlgorithmAndRun<NGMathUnderOverLayoutAlgorithm>(params, callback);
       } else {
         CreateAlgorithmAndRun<NGMathScriptsLayoutAlgorithm>(params, callback);

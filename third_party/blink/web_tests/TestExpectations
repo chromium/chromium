@@ -1249,10 +1249,7 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-axis-height-
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-minus-plus.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-movablelimits.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-paint-lspace-rspace.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/operator-dictionary-001.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/operator-dictionary-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/underover-parameters-4.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]
@@ -1262,9 +1259,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-002.html [ F
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/attribute-mapping-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-011.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-012.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-013.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-015.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-1.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-2.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Failure Timeout ]
@@ -1295,7 +1289,6 @@ crbug.com/6606 external/wpt/mathml/relations/html5-tree/integration-point-4.html
 # Need to handle OOF for these.
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-002.html [ Skip ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-movablelimits-from-in-flow.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/cramped-001.html [ Skip ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Skip ]
 

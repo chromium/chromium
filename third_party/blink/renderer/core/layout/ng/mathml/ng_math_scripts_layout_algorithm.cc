@@ -121,6 +121,7 @@ void NGMathScriptsLayoutAlgorithm::GatherChildren(
     }
     switch (script_type) {
       case MathScriptType::kSub:
+      case MathScriptType::kUnder:
         // These elements must have exactly two children.
         // The second child is a postscript and there are no prescripts.
         // <msub> base subscript </msub>
@@ -129,9 +130,11 @@ void NGMathScriptsLayoutAlgorithm::GatherChildren(
         sub_sup_pairs->at(0).sub = block_child;
         continue;
       case MathScriptType::kSuper:
+      case MathScriptType::kOver:
         DCHECK(!sub_sup_pairs->at(0).sup);
         sub_sup_pairs->at(0).sup = block_child;
         continue;
+      case MathScriptType::kUnderOver:
       case MathScriptType::kSubSup:
         // These elements must have exactly three children.
         // The second and third children are postscripts and there are no
@@ -184,6 +187,7 @@ NGMathScriptsLayoutAlgorithm::GetVerticalMetrics(
 
   MathScriptType type = Node().ScriptType();
   if (type == MathScriptType::kSub || type == MathScriptType::kSubSup ||
+      type == MathScriptType::kMultiscripts || type == MathScriptType::kUnder ||
       type == MathScriptType::kMultiscripts) {
     metrics.sub_shift =
         std::max(parameters.subscript_shift_down,
@@ -191,6 +195,7 @@ NGMathScriptsLayoutAlgorithm::GetVerticalMetrics(
   }
   LayoutUnit shift_up = parameters.superscript_shift_up;
   if (type == MathScriptType::kSuper || type == MathScriptType::kSubSup ||
+      type == MathScriptType::kMultiscripts || type == MathScriptType::kOver ||
       type == MathScriptType::kMultiscripts) {
     if (Style().MathSuperscriptShiftStyle() ==
         EMathSuperscriptShiftStyle::kInline)
@@ -201,19 +206,22 @@ NGMathScriptsLayoutAlgorithm::GetVerticalMetrics(
   }
 
   switch (type) {
-    case MathScriptType::kSub: {
+    case MathScriptType::kSub:
+    case MathScriptType::kUnder: {
       metrics.descent = sub_metrics[0].descent;
       metrics.sub_shift =
           std::max(metrics.sub_shift,
                    sub_metrics[0].ascent - parameters.subscript_top_max);
     } break;
-    case MathScriptType::kSuper: {
+    case MathScriptType::kSuper:
+    case MathScriptType::kOver: {
       metrics.ascent = sup_metrics[0].ascent;
       metrics.sup_shift =
           std::max(metrics.sup_shift,
                    parameters.superscript_bottom_min + sup_metrics[0].descent);
     } break;
     case MathScriptType::kMultiscripts:
+    case MathScriptType::kUnderOver:
     case MathScriptType::kSubSup: {
       for (wtf_size_t idx = 0; idx < sub_metrics.size(); ++idx) {
         metrics.ascent = std::max(metrics.ascent, sup_metrics[idx].ascent);
@@ -255,12 +263,6 @@ NGMathScriptsLayoutAlgorithm::GetVerticalMetrics(
         metrics.sup_shift = std::max(metrics.sup_shift, sup_script_shift);
       }
     } break;
-    case MathScriptType::kOver:
-    case MathScriptType::kUnder:
-    case MathScriptType::kUnderOver:
-      // TODO(rbuis): implement movablelimits.
-      NOTREACHED();
-      break;
   }
 
   return metrics;
@@ -431,6 +433,8 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
   LayoutUnit space = GetSpaceAfterScript(Style());
   switch (Node().ScriptType()) {
     case MathScriptType::kSub:
+    case MathScriptType::kUnder:
+    case MathScriptType::kOver:
     case MathScriptType::kSuper: {
       // TODO(fwang): Take italic correction into account.
       NGBlockNode sub = sub_sup_pairs[0].sub;
@@ -448,6 +452,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       break;
     }
     case MathScriptType::kSubSup:
+    case MathScriptType::kUnderOver:
     case MathScriptType::kMultiscripts: {
       // TODO(fwang): Take italic correction into account.
       MinMaxSizes sub_sup_pair_size;
@@ -478,12 +483,6 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       } while (++index < sub_sup_pairs.size());
       break;
     }
-    case MathScriptType::kUnder:
-    case MathScriptType::kOver:
-    case MathScriptType::kUnderOver:
-      // TODO(rbuis): implement movablelimits.
-      NOTREACHED();
-      break;
   }
   sizes += BorderScrollbarPadding().InlineSum();
 

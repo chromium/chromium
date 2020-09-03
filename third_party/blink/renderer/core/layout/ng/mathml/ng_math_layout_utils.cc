@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_fraction_element.h"
+#include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_radical_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_scripts_element.h"
 
@@ -196,6 +197,22 @@ MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(
   }
 
   return sizes;
+}
+
+bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
+  DCHECK(IsValidMathMLScript(node));
+  if (HasDisplayStyle(node.Style()))
+    return false;
+  if (!node.IsBlock() || !node.GetLayoutBox()->IsMathML())
+    return false;
+  auto base = To<NGBlockNode>(FirstChildInFlow(node));
+  // TODO(crbug.com/1124298)):
+  // https://mathml-refresh.github.io/mathml-core/#embellished-operators
+  if (auto* element =
+          DynamicTo<MathMLOperatorElement>(base.GetLayoutBox()->GetNode())) {
+    return element->HasBooleanProperty(MathMLOperatorElement::kMovableLimits);
+  }
+  return false;
 }
 
 namespace {

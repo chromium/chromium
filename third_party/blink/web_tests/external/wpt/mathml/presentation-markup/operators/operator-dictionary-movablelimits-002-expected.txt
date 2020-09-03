@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Operator dictionary chunk 1 - movablelimits assert_true: expected true got false
-FAIL Operator dictionary chunk 2 - movablelimits assert_true: expected true got false
-FAIL Operator dictionary chunk 3 - movablelimits assert_true: expected true got false
-FAIL Operator dictionary chunk 4 - movablelimits assert_true: expected true got false
-FAIL Operator dictionary chunk 5 - movablelimits assert_true: expected true got false
-Harness: the test ran to completion.
-
