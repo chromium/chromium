@@ -33,18 +33,43 @@ def _CheckNoBaseTimeCalls(input_api, output_api):
         files) ]
   return []
 
+def _CheckFeatureNames(input_api, output_api):
+  """Checks that no features are enabled."""
+
+  pattern = input_api.re.compile(
+          r'\bbase::Feature\s+k(\w*)\s*{\s*"(\w*)"',
+          input_api.re.MULTILINE)
+  warnings = []
+
+  for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
+    if (f.LocalPath().startswith('components/autofill/') and
+        f.LocalPath().endswith('features.cc')):
+      contents = input_api.ReadFile(f)
+      mismatches = [(constant, feature)
+              for (constant, feature) in pattern.findall(contents)
+              if constant != feature]
+      if mismatches:
+        mismatch_strings = ['\t{} -- {}'.format(*m) for m in mismatches]
+        mismatch_string = format('\n').join(mismatch_strings)
+        warnings += [ output_api.PresubmitPromptWarning(
+            'Feature names should be identical to variable names:\n{}'
+                .format(mismatch_string),
+            [f]) ]
+
+  return warnings
+
 
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoBaseTimeCalls(input_api, output_api))
+  results.extend(_CheckFeatureNames(input_api, output_api))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(_CommonChecks(input_api, output_api))
   return results
-
 
 def CheckChangeOnCommit(input_api, output_api):
   results = []
