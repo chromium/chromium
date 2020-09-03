@@ -286,8 +286,9 @@ AuthenticationService::GetLastKnownAccountsFromForeground() {
 ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
   // There is no authenticated identity if there is no signed in user or if the
   // user signed in via the client login flow.
-  if (!IsAuthenticated())
+  if (!identity_manager_->HasPrimaryAccount()) {
     return nil;
+  }
 
   std::string authenticated_gaia_id =
       identity_manager_->GetPrimaryAccountInfo().gaia;
@@ -356,7 +357,7 @@ void AuthenticationService::SignOut(
     signin_metrics::ProfileSignout signout_source,
     bool force_clear_browsing_data,
     ProceduralBlock completion) {
-  if (!IsAuthenticated()) {
+  if (!identity_manager_->HasPrimaryAccount()) {
     if (completion)
       completion();
     return;
@@ -525,7 +526,7 @@ void AuthenticationService::HandleIdentityListChanged() {
 void AuthenticationService::HandleForgottenIdentity(
     ChromeIdentity* invalid_identity,
     bool should_prompt) {
-  if (!IsAuthenticated()) {
+  if (!identity_manager_->HasPrimaryAccount()) {
     // User is not signed in. Nothing to do here.
     return;
   }
@@ -560,7 +561,7 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
 }
 
 bool AuthenticationService::IsAuthenticated() const {
-  return identity_manager_->HasPrimaryAccount();
+  return GetAuthenticatedIdentity() != nil;
 }
 
 bool AuthenticationService::IsAuthenticatedIdentityManaged() const {

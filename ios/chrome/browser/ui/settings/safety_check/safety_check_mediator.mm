@@ -570,10 +570,9 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 
 // Computes whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return (self.authService->IsAuthenticated() &&
-          self.authService->GetAuthenticatedIdentity()) &&
-         (self.syncService->IsSyncEnabled() &&
-          !self.syncService->IsEncryptEverythingEnabled());
+  return self.authService->IsAuthenticated() &&
+         self.syncService->IsSyncEnabled() &&
+         !self.syncService->IsEncryptEverythingEnabled();
 }
 
 // Configures check error info with a link for popovers.

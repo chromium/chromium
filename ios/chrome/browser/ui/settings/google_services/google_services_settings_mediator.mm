@@ -573,8 +573,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 #pragma mark - Properties
 
 - (BOOL)isAuthenticated {
-  return self.authService->IsAuthenticated() &&
-         self.authService->GetAuthenticatedIdentity();
+  return self.authService->IsAuthenticated();
 }
 
 - (BOOL)isSyncSettingsConfirmed {

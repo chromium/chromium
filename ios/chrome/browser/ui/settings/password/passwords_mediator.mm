@@ -216,10 +216,8 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return (_authService->IsAuthenticated() &&
-          _authService->GetAuthenticatedIdentity()) &&
-         (_syncService->IsSyncEnabled() &&
-          !_syncService->IsEncryptEverythingEnabled());
+  return _authService->IsAuthenticated() && _syncService->IsSyncEnabled() &&
+         !_syncService->IsEncryptEverythingEnabled();
 }
 
 // Configures text for Error Info Popover.

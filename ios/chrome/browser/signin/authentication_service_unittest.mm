@@ -185,6 +185,7 @@ class AuthenticationServiceTest : public PlatformTest {
 
 TEST_F(AuthenticationServiceTest, TestDefaultGetAuthenticatedIdentity) {
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_FALSE(authentication_service()->IsAuthenticated());
 }
 
 TEST_F(AuthenticationServiceTest, TestSignInAndGetAuthenticatedIdentity) {
@@ -205,6 +206,7 @@ TEST_F(AuthenticationServiceTest, TestSignInAndGetAuthenticatedIdentity) {
   EXPECT_EQ(base::SysNSStringToUTF8([identity(0) gaiaID]), account_info.gaia);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_TRUE(authentication_service()->IsAuthenticated());
 }
 
 TEST_F(AuthenticationServiceTest, TestSetPromptForSignIn) {
@@ -233,6 +235,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   // in (as the action was user initiated).
   EXPECT_TRUE(identity_manager()->GetPrimaryAccountInfo().email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_FALSE(authentication_service()->IsAuthenticated());
   EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
 }
 
@@ -251,6 +254,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // in (as the action was user initiated).
   EXPECT_TRUE(identity_manager()->GetPrimaryAccountInfo().email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_FALSE(authentication_service()->IsAuthenticated());
   EXPECT_TRUE(authentication_service()->ShouldPromptForSignIn());
 }
 
