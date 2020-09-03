@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECTION_MEDIUM_H_
-#define CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECTION_MEDIUM_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_CONNECTION_MEDIUM_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_CONNECTION_MEDIUM_H_
 
 #include <ostream>
 
@@ -21,4 +21,4 @@ std::ostream& operator<<(std::ostream& stream, const ConnectionMedium& medium);
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECTION_MEDIUM_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_CONNECTION_MEDIUM_H_

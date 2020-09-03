@@ -4,6 +4,8 @@
 
 source_set("shared") {
   sources = [
+    "connection_medium.cc",
+    "connection_medium.h",
     "connection_priority.cc",
     "connection_priority.h",
   ]

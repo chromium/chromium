@@ -13,7 +13,6 @@
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
 #include "chromeos/services/secure_channel/connection_details.h"
-#include "chromeos/services/secure_channel/connection_medium.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
@@ -23,6 +22,7 @@
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/services/secure_channel/fake_pending_connection_request.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
+#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

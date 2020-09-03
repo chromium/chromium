@@ -14,12 +14,12 @@
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/secure_channel/connection_details.h"
-#include "chromeos/services/secure_channel/connection_medium.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/services/secure_channel/fake_multiplexed_channel.h"
 #include "chromeos/services/secure_channel/fake_single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "chromeos/services/secure_channel/single_client_message_proxy_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
