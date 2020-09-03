@@ -21,6 +21,9 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
   if (is_starred)
     return BOOKMARK;
 
+  // TODO(crbug.com/1122669): Handle trending zero-prefix suggestions by
+  // checking the match subtype similar to AutocompleteMatch::GetVectorIcon().
+
   switch (type) {
     case AutocompleteMatchType::BOOKMARK_TITLE:
     case AutocompleteMatchType::CLIPBOARD_URL:

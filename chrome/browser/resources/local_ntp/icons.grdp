@@ -28,4 +28,6 @@
            file="resources/local_ntp/icons/extension_app.svg" type="BINDATA" />
    <include name="IDR_LOCAL_NTP_ICONS_PAGE"
            file="resources/local_ntp/icons/page.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_TRENDING_UP"
+           file="resources/local_ntp/icons/trending_up.svg" type="BINDATA" />
 </grit-part>

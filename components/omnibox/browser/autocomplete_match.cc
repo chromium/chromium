@@ -266,8 +266,13 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TAB_SEARCH_DEPRECATED:
       return omnibox::kPageIcon;
 
+    case Type::SEARCH_SUGGEST: {
+      if (subtypes.contains(/*SUBTYPE_TRENDS=*/143))
+        return omnibox::kTrendingUpIcon;
+      return vector_icons::kSearchIcon;
+    }
+
     case Type::SEARCH_WHAT_YOU_TYPED:
-    case Type::SEARCH_SUGGEST:
     case Type::SEARCH_SUGGEST_ENTITY:
     case Type::SEARCH_SUGGEST_PROFILE:
     case Type::SEARCH_OTHER_ENGINE:

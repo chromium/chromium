@@ -36,6 +36,7 @@ extern const char kDriveVideoIconResourceName[];
 extern const char kExtensionAppIconResourceName[];
 extern const char kPageIconResourceName[];
 extern const char kSearchIconResourceName[];
+extern const char kTrendingUpIconResourceName[];
 
 std::string AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon);

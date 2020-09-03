@@ -171,6 +171,8 @@ const struct Resource{
     {omnibox::kPageIconResourceName, IDR_LOCAL_NTP_ICONS_PAGE, "image/svg+xml"},
     {omnibox::kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH,
      "image/svg+xml"},
+    {omnibox::kTrendingUpIconResourceName, IDR_LOCAL_NTP_ICONS_TRENDING_UP,
+     "image/svg+xml"},
 };
 
 // This enum must match the numbering for NTPSearchSuggestionsRequestStatusi in

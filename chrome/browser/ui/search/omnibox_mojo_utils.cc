@@ -55,6 +55,7 @@ const char kDriveVideoIconResourceName[] = "drive_video.svg";
 const char kExtensionAppIconResourceName[] = "extension_app.svg";
 const char kPageIconResourceName[] = "page.svg";
 const char kSearchIconResourceName[] = "search.svg";
+const char kTrendingUpIconResourceName[] = "trending_up.svg";
 
 std::string AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
@@ -92,6 +93,8 @@ std::string AutocompleteMatchVectorIconToResourceName(
     return "";  // Pedals are not supported in the NTP Realbox.
   } else if (icon.name == vector_icons::kSearchIcon.name) {
     return kSearchIconResourceName;
+  } else if (icon.name == omnibox::kTrendingUpIcon.name) {
+    return kTrendingUpIconResourceName;
   } else {
     NOTREACHED()
         << "Every vector icon returned by AutocompleteMatch::GetVectorIcon "
