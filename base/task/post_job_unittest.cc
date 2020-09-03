@@ -5,6 +5,8 @@
 #include "base/task/post_job.h"
 
 #include <atomic>
+#include <iterator>
+#include <numeric>
 
 #include "base/task/test_task_traits_extension.h"
 #include "base/test/bind_test_util.h"
@@ -35,6 +37,31 @@ TEST(PostJobTest, PostJobExtension) {
         BindRepeating([](JobDelegate* delegate) {}),
         BindRepeating([](size_t /*worker_count*/) -> size_t { return 0; }));
   });
+}
+
+// Verify that concurrent accesses with task_id as the only form of
+// synchronisation doesn't trigger a race.
+TEST(PostJobTest, TaskIds) {
+  static constexpr size_t kNumConcurrentThreads = 2;
+  static constexpr size_t kNumTasksToRun = 1000;
+  base::test::TaskEnvironment task_environment;
+
+  size_t concurrent_array[kNumConcurrentThreads] = {0};
+  std::atomic_size_t remaining_tasks{kNumTasksToRun};
+  base::JobHandle handle = base::PostJob(
+      FROM_HERE, {base::ThreadPool()},
+      BindLambdaForTesting([&](base::JobDelegate* job) {
+        uint8_t id = job->GetTaskId();
+        size_t& slot = concurrent_array[id];
+        slot++;
+        --remaining_tasks;
+      }),
+      BindLambdaForTesting([&remaining_tasks](size_t) {
+        return std::min(remaining_tasks.load(), kNumConcurrentThreads);
+      }));
+  handle.Join();
+  EXPECT_EQ(kNumTasksToRun, std::accumulate(std::begin(concurrent_array),
+                                            std::end(concurrent_array), 0U));
 }
 
 }  // namespace base
