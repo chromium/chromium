@@ -198,7 +198,7 @@ enum Setting {
   kStickyKeys = 1511,
   kOnScreenKeyboard = 1512,
   kDictation = 1513,
-  kSpeakToType = 1514,
+  kHighlightKeyboardFocus = 1514,
   kHighlightTextCaret = 1515,
   kAutoClickWhenCursorStops = 1516,
   kLargeCursor = 1517,

@@ -53180,7 +53180,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1511" label="Sticky Keys"/>
   <int value="1512" label="On Screen Keyboard"/>
   <int value="1513" label="Dictation"/>
-  <int value="1514" label="Speak-To-Type"/>
+  <int value="1514" label="Highlight Keyboard Focus"/>
   <int value="1515" label="Highlight Text Caret"/>
   <int value="1516" label="Auto-Click When Cursor Stops"/>
   <int value="1517" label="Large Cursor"/>
