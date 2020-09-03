@@ -17295,14 +17295,9 @@
       'id': 421,
       'caption': '''Allow devices to run virtual machines on Chrome OS''',
       'tags': ['system-security'],
-      'desc': '''Allows you to control whether virtual machines are allowed to run on Chrome OS.
+      'desc': '''Setting the policy to Enabled lets the device run virtual machines on <ph name="PRODUCT_OS_NAME">$2<ex>Chrome OS</ex></ph>. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME">VirtualMachinesAllowed</ph> and <ph name="CROSTINI_ALLOWED_POLICY_NAME">CrostiniAllowed</ph> must be Enabled to use <ph name="PRODUCT_CROSTINI_NAME">$6<ex>Crostini</ex></ph>. Setting the policy to Disabled means the device can't run virtual machines. Changing it to Disabled starts applying the policy to starting new virtual machines, not those already running.
 
-      If the policy is set to True, the device is allowed to run virtual machines.
-      If the policy is set to False, the device will not be allowed to run virtual machines.
-      All three policies, VirtualMachinesAllowed, CrostiniAllowed, and DeviceUnaffiliatedCrostiniAllowed need to be true when they apply for Crostini to be allowed to run.
-      When this policy is changed to False, it applies to starting new virtual machines but does not shut down virtual machines which are already running.
-      When this policy is not set on a managed device, the device is not allowed to run virtual machines.
-      Unmanaged devices are allowed to run virtual machines.''',
+      When this policy is not set on a managed device, the device can't run virtual machines. Unmanaged devices can run virtual machines.''',
     },
     {
       'name': 'CrostiniAllowed',
@@ -17318,12 +17313,7 @@
       'id': 481,
       'caption': '''User is enabled to run Crostini''',
       'tags': ['system-security'],
-      'desc': '''Enable this user to run Crostini.
-
-      If the policy is set to false, Crostini is not enabled for the user.
-      If set to true or left unset, Crostini is enabled for the user as long as other settings also allow it.
-      All three policies, VirtualMachinesAllowed, CrostiniAllowed, and DeviceUnaffiliatedCrostiniAllowed need to be true when they apply for Crostini to be allowed to run.
-      When this policy is changed to false, it applies to starting new Crostini containers but does not shut down containers which are already running.''',
+      'desc': '''Setting the policy to Enabled or leaving it unset lets users run <ph name="PRODUCT_CROSTINI_NAME">$6<ex>Crostini</ex></ph>, as long as <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME">VirtualMachinesAllowed</ph> and <ph name="CROSTINI_ALLOWED_POLICY_NAME">CrostiniAllowed</ph> are set to Enabled. Setting the policy to Disabled turns <ph name="PRODUCT_CROSTINI_NAME">$6<ex>Crostini</ex></ph> off for the user. Changing it to Disabled starts applying the policy to starting new <ph name="PRODUCT_CROSTINI_NAME">$6<ex>Crostini</ex></ph> containers, not those already running.''',
     },
     {
       'name': 'DeviceUnaffiliatedCrostiniAllowed',
@@ -17339,11 +17329,7 @@
       'id': 482,
       'caption': '''Allow unaffiliated users to use Crostini''',
       'tags': ['system-security'],
-      'desc': '''If the policy is set to false, unaffiliated users will not be allowed to use Crostini.
-
-      If the policy is unset or set to true, all users are allowed to use Crostini as long as other settings also allow it.
-      All three policies, VirtualMachinesAllowed, CrostiniAllowed, and DeviceUnaffiliatedCrostiniAllowed need to be true when they apply for Crostini to be allowed to run.
-      When this policy is changed to false, it applies to starting new Crostini containers but does not shut down containers which are already running.''',
+      'desc': '''Setting the policy to Enabled or leaving it unset lets all users use <ph name="PRODUCT_CROSTINI_NAME">$6<ex>Crostini</ex></ph> as long as all 3 policies, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME">VirtualMachinesAllowed</ph>, <ph name="CROSTINI_ALLOWED_POLICY_NAME">CrostiniAllowed</ph>, and <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME">DeviceUnaffiliatedCrostiniAllowed</ph> are set to Enabled. Setting the policy to Disabled means unaffiliated users can't use <ph name="PRODUCT_CROSTINI_NAME">$6<ex>Crostini</ex></ph>. Changing it to Disabled starts applying the policy to starting new <ph name="PRODUCT_CROSTINI_NAME">$6<ex>Crostini</ex></ph> containers, not those already running.''',
     },
     {
       'name': 'CrostiniExportImportUIAllowed',
@@ -17359,7 +17345,7 @@
       'id': 523,
       'caption': '''User is enabled to export / import Crostini containers via the UI''',
       'tags': ['system-security'],
-      'desc': '''If the policy is set to false, the export / import UI will not be available to users, however it is still possible to use 'lxc' commands directly in the virtual machine to export and import container images.''',
+      'desc': '''Setting the policy to Enabled or leaving it unset makes the export-import UI available to users. Setting the policy to Disabled renders the export-import UI unavailable to users.''',
     },
     {
       'name': 'CrostiniRootAccessAllowed',
