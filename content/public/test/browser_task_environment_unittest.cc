@@ -4,14 +4,18 @@
 
 #include "content/public/test/browser_task_environment.h"
 
+#include <string>
+
 #include "base/atomicops.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/dcheck_is_on.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind_test_util.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -176,6 +180,36 @@ TEST(BrowserTaskEnvironmentTest, TraitsConstructorOverrideMainThreadType) {
 
   // There should be a mock clock.
   EXPECT_THAT(task_environment.GetMockClock(), testing::NotNull());
+}
+
+// Verify that posting tasks to the UI/IO threads without having the
+// BrowserTaskEnvironment instance causes a crash.
+TEST(BrowserTaskEnvironmentTest, NotInitialized) {
+  testing::FLAGS_gtest_death_test_style = "threadsafe";
+
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::UI);
+
+  std::string death_matcher;
+#if DCHECK_IS_ON() && !defined(OS_ANDROID)
+  // Expect that in builds with working DCHECK messages the failure message
+  // includes a hint towards using the BrowserTaskEnvironment class.
+  death_matcher = "Check failed:.*\n*.*BrowserTaskEnvironment";
+#endif
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      { GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
+      death_matcher);
+  EXPECT_DEATH_IF_SUPPORTED(
+      { GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
+      death_matcher);
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      { base::PostTask(FROM_HERE, {BrowserThread::UI}, base::DoNothing()); },
+      death_matcher);
+  EXPECT_DEATH_IF_SUPPORTED(
+      { base::PostTask(FROM_HERE, {BrowserThread::IO}, base::DoNothing()); },
+      death_matcher);
 }
 
 }  // namespace content

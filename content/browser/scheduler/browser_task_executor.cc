@@ -171,7 +171,7 @@ void BrowserTaskExecutor::Create() {
   DCHECK(!base::ThreadTaskRunnerHandle::IsSet());
   CreateInternal(std::make_unique<BrowserUIThreadScheduler>(),
                  std::make_unique<BrowserIOThreadDelegate>());
-  g_browser_task_executor->ui_thread_executor_->BindToCurrentThread();
+  Get()->ui_thread_executor_->BindToCurrentThread();
 }
 
 // static
@@ -208,7 +208,10 @@ void BrowserTaskExecutor::CreateInternal(
 
 // static
 BrowserTaskExecutor* BrowserTaskExecutor::Get() {
-  DCHECK(g_browser_task_executor);
+  DCHECK(g_browser_task_executor)
+      << "No browser task executor created.\nHint: if this is in a unit test, "
+         "you're likely missing a content::BrowserTaskEnvironment member in "
+         "your fixture.";
   return g_browser_task_executor;
 }
 
@@ -229,13 +232,10 @@ void BrowserTaskExecutor::ResetForTesting() {
 
 // static
 void BrowserTaskExecutor::PostFeatureListSetup() {
-  DCHECK(g_browser_task_executor);
-  DCHECK(g_browser_task_executor->browser_ui_thread_handle_);
-  DCHECK(g_browser_task_executor->browser_io_thread_handle_);
-  g_browser_task_executor->browser_ui_thread_handle_
-      ->PostFeatureListInitializationSetup();
-  g_browser_task_executor->browser_io_thread_handle_
-      ->PostFeatureListInitializationSetup();
+  DCHECK(Get()->browser_ui_thread_handle_);
+  DCHECK(Get()->browser_io_thread_handle_);
+  Get()->browser_ui_thread_handle_->PostFeatureListInitializationSetup();
+  Get()->browser_io_thread_handle_->PostFeatureListInitializationSetup();
 }
 
 // static
@@ -243,8 +243,8 @@ void BrowserTaskExecutor::Shutdown() {
   if (!g_browser_task_executor)
     return;
 
-  DCHECK(g_browser_task_executor->ui_thread_executor_);
-  DCHECK(g_browser_task_executor->io_thread_executor_);
+  DCHECK(Get()->ui_thread_executor_);
+  DCHECK(Get()->io_thread_executor_);
   // We don't delete |g_browser_task_executor| because other threads may
   // PostTask or call BrowserTaskExecutor::GetTaskRunner while we're tearing
   // things down. We don't want to add locks so we just leak instead of dealing
@@ -252,25 +252,25 @@ void BrowserTaskExecutor::Shutdown() {
   // PostTaskAndroid::SignalNativeSchedulerShutdown on Android. In tests however
   // we need to clean up, so BrowserTaskExecutor::ResetForTesting should be
   // called.
-  g_browser_task_executor->ui_thread_executor_.reset();
-  g_browser_task_executor->io_thread_executor_.reset();
+  Get()->ui_thread_executor_.reset();
+  Get()->io_thread_executor_.reset();
 }
 
 // static
 void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
     BrowserThread::ID identifier) {
-  DCHECK(g_browser_task_executor);
+  DCHECK(Get());
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
   switch (identifier) {
     case BrowserThread::UI:
-      g_browser_task_executor->browser_ui_thread_handle_
-          ->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+      Get()->browser_ui_thread_handle_->ScheduleRunAllPendingTasksForTesting(
+          run_loop.QuitClosure());
       break;
     case BrowserThread::IO: {
-      g_browser_task_executor->browser_io_thread_handle_
-          ->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+      Get()->browser_io_thread_handle_->ScheduleRunAllPendingTasksForTesting(
+          run_loop.QuitClosure());
       break;
     }
     case BrowserThread::ID_COUNT:
@@ -282,38 +282,32 @@ void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
 
 // static
 void BrowserTaskExecutor::EnableAllQueues() {
-  DCHECK(g_browser_task_executor);
-  g_browser_task_executor->browser_ui_thread_handle_->EnableAllQueues();
-  g_browser_task_executor->browser_io_thread_handle_->EnableAllQueues();
+  Get()->browser_ui_thread_handle_->EnableAllQueues();
+  Get()->browser_io_thread_handle_->EnableAllQueues();
 }
 
 // static
 scoped_refptr<base::SingleThreadTaskRunner>
 BrowserTaskExecutor::GetUIThreadTaskRunner(const BrowserTaskTraits& traits) {
-  DCHECK(g_browser_task_executor);
-  return g_browser_task_executor->GetTaskRunner(BrowserThread::UI, traits);
+  return Get()->GetTaskRunner(BrowserThread::UI, traits);
 }
 
 // static
 scoped_refptr<base::SingleThreadTaskRunner>
 BrowserTaskExecutor::GetIOThreadTaskRunner(const BrowserTaskTraits& traits) {
-  DCHECK(g_browser_task_executor);
-  return g_browser_task_executor->GetTaskRunner(BrowserThread::IO, traits);
+  return Get()->GetTaskRunner(BrowserThread::IO, traits);
 }
 
 // static
 void BrowserTaskExecutor::InitializeIOThread() {
-  DCHECK(g_browser_task_executor);
-  g_browser_task_executor->browser_io_thread_handle_
-      ->EnableAllExceptBestEffortQueues();
+  Get()->browser_io_thread_handle_->EnableAllExceptBestEffortQueues();
 }
 
 std::unique_ptr<BrowserProcessSubThread> BrowserTaskExecutor::CreateIOThread() {
-  DCHECK(g_browser_task_executor);
-  DCHECK(g_browser_task_executor->io_thread_executor_);
+  DCHECK(Get()->io_thread_executor_);
 
   std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate =
-      g_browser_task_executor->io_thread_executor_->TakeDelegate();
+      Get()->io_thread_executor_->TakeDelegate();
 
   DCHECK(browser_io_thread_delegate);
   TRACE_EVENT0("startup", "BrowserTaskExecutor::CreateIOThread");
