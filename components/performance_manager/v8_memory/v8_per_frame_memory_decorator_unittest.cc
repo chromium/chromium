@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/v8_memory/v8_per_frame_memory_decorator.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -100,8 +101,15 @@ class LenientMockV8PerFrameMemoryObserverAnySeq
                const V8PerFrameMemoryObserverAnySeq::FrameDataMap& frame_data),
               (override));
 };
+
 using MockV8PerFrameMemoryObserverAnySeq =
     testing::StrictMock<LenientMockV8PerFrameMemoryObserverAnySeq>;
+
+// The mode enum used in the API.
+using MeasurementMode = V8PerFrameMemoryRequest::MeasurementMode;
+
+// The mode enum used in test expectations.
+using ExpectedMode = MockV8DetailedMemoryReporter::Mode;
 
 class V8PerFrameMemoryDecoratorTestBase {
  public:
@@ -141,11 +149,10 @@ class V8PerFrameMemoryDecoratorTestBase {
       base::RepeatingCallback<
           void(MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback callback)>
           responder,
-      MockV8DetailedMemoryReporter::Mode expected_mode =
-          MockV8DetailedMemoryReporter::Mode::DEFAULT) {
+      ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
     EXPECT_CALL(*mock_reporter, GetV8MemoryUsage(expected_mode, _))
         .WillOnce([this, responder](
-                      MockV8DetailedMemoryReporter::Mode mode,
+                      ExpectedMode mode,
                       MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback
                           callback) {
           this->last_query_time_ = base::TimeTicks::Now();
@@ -155,8 +162,7 @@ class V8PerFrameMemoryDecoratorTestBase {
 
   void ExpectQueryAndReply(MockV8DetailedMemoryReporter* mock_reporter,
                            blink::mojom::PerProcessV8MemoryUsagePtr data,
-                           MockV8DetailedMemoryReporter::Mode expected_mode =
-                               MockV8DetailedMemoryReporter::Mode::DEFAULT) {
+                           ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
     ExpectQuery(
         mock_reporter,
         base::BindRepeating(&V8PerFrameMemoryDecoratorTestBase::ReplyWithData,
@@ -168,8 +174,7 @@ class V8PerFrameMemoryDecoratorTestBase {
       MockV8DetailedMemoryReporter* mock_reporter,
       const base::TimeDelta& delay,
       blink::mojom::PerProcessV8MemoryUsagePtr data,
-      MockV8DetailedMemoryReporter::Mode expected_mode =
-          MockV8DetailedMemoryReporter::Mode::DEFAULT) {
+      ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
     ExpectQuery(mock_reporter,
                 base::BindRepeating(
                     &V8PerFrameMemoryDecoratorTestBase::DelayedReplyWithData,
@@ -181,8 +186,7 @@ class V8PerFrameMemoryDecoratorTestBase {
       MockV8DetailedMemoryReporter* mock_reporter,
       blink::mojom::PerProcessV8MemoryUsagePtr data,
       RenderProcessHostId expected_process_id = kTestProcessID,
-      MockV8DetailedMemoryReporter::Mode expected_mode =
-          MockV8DetailedMemoryReporter::Mode::DEFAULT) {
+      ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
     // Wrap the move-only |data| in a callback for the expectation below.
     ExpectQueryAndReply(mock_reporter, std::move(data), expected_mode);
 
@@ -255,6 +259,32 @@ class V8PerFrameMemoryDecoratorTest : public GraphTestHarness,
       override {
     return task_env().GetMainThreadTaskRunner();
   }
+};
+
+// kBounded mode and kEagerForTesting mode behave identically as far as
+// V8PerFrameMemoryDecorator is concerned. (The differences are all on the
+// renderer side.) So mode tests hardcode kLazy mode and use a parameter to
+// choose which of the two to use for bounded mode.
+class V8PerFrameMemoryDecoratorModeTest
+    : public V8PerFrameMemoryDecoratorTest,
+      public ::testing::WithParamInterface<
+          std::pair<MeasurementMode, ExpectedMode>> {
+ public:
+  V8PerFrameMemoryDecoratorModeTest() {
+    internal::SetEagerMemoryMeasurementEnabledForTesting(true);
+    std::tie(bounded_mode_, expected_bounded_mode_) = GetParam();
+  }
+
+  ~V8PerFrameMemoryDecoratorModeTest() override {
+    internal::SetEagerMemoryMeasurementEnabledForTesting(false);
+  }
+
+ protected:
+  // The mode that will be used for bounded requests.
+  MeasurementMode bounded_mode_;
+
+  // The expected mojo mode parameter for bounded requests.
+  ExpectedMode expected_bounded_mode_;
 };
 
 using V8PerFrameMemoryDecoratorDeathTest = V8PerFrameMemoryDecoratorTest;
@@ -602,18 +632,17 @@ TEST_F(V8PerFrameMemoryDecoratorTest, PerFrameDataIsDistributed) {
                        ->unassociated_v8_bytes_used());
 }
 
-TEST_F(V8PerFrameMemoryDecoratorTest, LazyRequests) {
+TEST_P(V8PerFrameMemoryDecoratorModeTest, LazyRequests) {
   constexpr base::TimeDelta kLazyRequestLength =
       base::TimeDelta::FromSeconds(30);
-  V8PerFrameMemoryRequest lazy_request(
-      kLazyRequestLength, V8PerFrameMemoryRequest::MeasurementMode::kLazy,
-      graph());
+  V8PerFrameMemoryRequest lazy_request(kLazyRequestLength,
+                                       MeasurementMode::kLazy, graph());
 
   MockV8DetailedMemoryReporter reporter;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     ExpectBindAndRespondToQuery(&reporter, std::move(data), kTestProcessID,
-                                MockV8DetailedMemoryReporter::Mode::LAZY);
+                                ExpectedMode::LAZY);
   }
 
   auto process = CreateNode<ProcessNodeImpl>(
@@ -628,14 +657,13 @@ TEST_F(V8PerFrameMemoryDecoratorTest, LazyRequests) {
   constexpr base::TimeDelta kLongBoundedRequestLength =
       base::TimeDelta::FromSeconds(45);
   V8PerFrameMemoryRequest long_bounded_request(kLongBoundedRequestLength,
-                                               graph());
+                                               bounded_mode_, graph());
   auto* decorator = V8PerFrameMemoryDecorator::GetFromGraph(graph());
   ASSERT_TRUE(decorator);
   ASSERT_TRUE(decorator->GetNextRequest());
   EXPECT_EQ(decorator->GetNextRequest()->min_time_between_requests(),
             kLazyRequestLength);
-  EXPECT_EQ(decorator->GetNextRequest()->mode(),
-            V8PerFrameMemoryRequest::MeasurementMode::kLazy);
+  EXPECT_EQ(decorator->GetNextRequest()->mode(), MeasurementMode::kLazy);
   {
     // Next lazy request sent after 30 sec + 10 sec delay until reply = 40 sec
     // until reply arrives. kLongBoundedRequestLength > 40 sec so the reply
@@ -643,8 +671,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, LazyRequests) {
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->unassociated_bytes_used = 1U;
     ExpectQueryAndDelayReply(&reporter, base::TimeDelta::FromSeconds(10),
-                             std::move(data),
-                             MockV8DetailedMemoryReporter::Mode::LAZY);
+                             std::move(data), ExpectedMode::LAZY);
   }
 
   // Wait long enough for the upgraded request to be sent, to verify that it
@@ -655,12 +682,11 @@ TEST_F(V8PerFrameMemoryDecoratorTest, LazyRequests) {
   constexpr base::TimeDelta kUpgradeRequestLength =
       base::TimeDelta::FromSeconds(40);
   V8PerFrameMemoryRequest bounded_request_upgrade(kUpgradeRequestLength,
-                                                  graph());
+                                                  bounded_mode_, graph());
   ASSERT_TRUE(decorator->GetNextRequest());
   EXPECT_EQ(decorator->GetNextRequest()->min_time_between_requests(),
             kLazyRequestLength);
-  EXPECT_EQ(decorator->GetNextRequest()->mode(),
-            V8PerFrameMemoryRequest::MeasurementMode::kLazy);
+  EXPECT_EQ(decorator->GetNextRequest()->mode(), MeasurementMode::kLazy);
 
   {
     ::testing::InSequence seq;
@@ -670,13 +696,11 @@ TEST_F(V8PerFrameMemoryDecoratorTest, LazyRequests) {
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->unassociated_bytes_used = 2U;
     ExpectQueryAndDelayReply(&reporter, base::TimeDelta::FromSeconds(10),
-                             std::move(data),
-                             MockV8DetailedMemoryReporter::Mode::LAZY);
+                             std::move(data), ExpectedMode::LAZY);
 
     auto data2 = NewPerProcessV8MemoryUsage(1);
     data2->isolates[0]->unassociated_bytes_used = 3U;
-    ExpectQueryAndReply(&reporter, std::move(data2),
-                        MockV8DetailedMemoryReporter::Mode::DEFAULT);
+    ExpectQueryAndReply(&reporter, std::move(data2), expected_bounded_mode_);
   }
 
   // Wait long enough for the upgraded request to be sent.
@@ -689,13 +713,21 @@ TEST_F(V8PerFrameMemoryDecoratorTest, LazyRequests) {
 
   // Bounded requests should be preferred over lazy requests with the same
   // min_time_between_requests.
-  V8PerFrameMemoryRequest short_bounded_request(kLazyRequestLength, graph());
+  V8PerFrameMemoryRequest short_bounded_request(kLazyRequestLength,
+                                                bounded_mode_, graph());
   ASSERT_TRUE(decorator->GetNextRequest());
   EXPECT_EQ(decorator->GetNextRequest()->min_time_between_requests(),
             kLazyRequestLength);
-  EXPECT_EQ(decorator->GetNextRequest()->mode(),
-            V8PerFrameMemoryRequest::MeasurementMode::kBounded);
+  EXPECT_EQ(decorator->GetNextRequest()->mode(), bounded_mode_);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    AllBoundedModes,
+    V8PerFrameMemoryDecoratorModeTest,
+    testing::Values(std::make_pair(MeasurementMode::kBounded,
+                                   ExpectedMode::DEFAULT),
+                    std::make_pair(MeasurementMode::kEagerForTesting,
+                                   ExpectedMode::EAGER)));
 
 TEST_F(V8PerFrameMemoryDecoratorTest, MeasurementRequestsSorted) {
   // Create some queries with different sample frequencies.
@@ -1280,6 +1312,19 @@ TEST_F(V8PerFrameMemoryDecoratorDeathTest, EnforceObserversRemoved) {
     memory_request.AddObserver(&observer);
     // Request should explode if it still has observers registered when it goes
     // out of scope.
+  });
+}
+
+TEST_F(V8PerFrameMemoryDecoratorDeathTest, EagerModeDisallowed) {
+  // Not allowed to use kEagerForTesting mode without calling
+  // SetEagerMemoryMeasurementEnabledForTesting.
+  EXPECT_DCHECK_DEATH({
+    V8PerFrameMemoryRequest memory_request(kMinTimeBetweenRequests,
+                                           MeasurementMode::kEagerForTesting);
+  });
+  EXPECT_DCHECK_DEATH({
+    V8PerFrameMemoryRequestAnySeq memory_request(
+        kMinTimeBetweenRequests, MeasurementMode::kEagerForTesting);
   });
 }
 

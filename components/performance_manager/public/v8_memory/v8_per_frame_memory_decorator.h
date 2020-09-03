@@ -269,8 +269,8 @@ class V8PerFrameMemoryDecorator
   // Returns the next measurement request that should be scheduled.
   V8PerFrameMemoryRequest* GetNextRequest() const;
 
-  // Returns the next measurement request with mode kBounded that should be
-  // scheduled.
+  // Returns the next measurement request with mode kBounded or
+  // kEagerForTesting that should be scheduled.
   V8PerFrameMemoryRequest* GetNextBoundedRequest() const;
 
   // Implementation details below this point.
@@ -310,6 +310,12 @@ class V8PerFrameMemoryRequest {
     // Measurements will only be taken at the next scheduled GC after a request
     // is received.
     kLazy,
+
+    // Measurements will be taken immediately when a request is received. This
+    // causes an extra GC so should only be done in tests. Attempts to use this
+    // mode will DCHECK if SetEagerMemoryMeasurementEnabledForTesting was not
+    // called.
+    kEagerForTesting,
 
     kDefault = kBounded,
   };
@@ -544,6 +550,11 @@ using BindV8DetailedMemoryReporterCallback = base::RepeatingCallback<void(
 // function is called again with nullptr.
 void SetBindV8DetailedMemoryReporterCallbackForTesting(
     BindV8DetailedMemoryReporterCallback* callback);
+
+// Enables or disables MeasurementMode::kEagerModeForTesting. Creating eager
+// measurement requests can have a high performance penalty so this should only
+// be enabled in tests.
+void SetEagerMemoryMeasurementEnabledForTesting(bool enable);
 
 }  // namespace internal
 
