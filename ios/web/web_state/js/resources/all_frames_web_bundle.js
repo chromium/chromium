@@ -11,4 +11,3 @@ goog.require('__crWeb.common');
 goog.require('__crWeb.cookie');
 goog.require('__crWeb.findInPage');
 goog.require('__crWeb.message');
-goog.require('__crWeb.shareWorkaround');
