@@ -648,6 +648,9 @@ error::Error WebGPUDecoderImpl::InitDawnDeviceAndSetWireServer(
   if (request_device_properties.textureCompressionBC) {
     device_descriptor.requiredExtensions.push_back("texture_compression_bc");
   }
+  if (request_device_properties.shaderFloat16) {
+    device_descriptor.requiredExtensions.push_back("shader_float16");
+  }
 
   WGPUDevice wgpu_device =
       dawn_adapters_[requested_adapter_index].CreateDevice(&device_descriptor);

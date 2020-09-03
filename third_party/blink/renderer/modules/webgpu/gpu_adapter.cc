@@ -28,6 +28,8 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
   requested_device_properties.textureCompressionBC =
       extension_set.Contains("texture-compression-bc") ||
       extension_set.Contains("textureCompressionBC");
+  requested_device_properties.shaderFloat16 =
+      extension_set.Contains("shader-float16");
 
   return requested_device_properties;
 }
@@ -75,6 +77,9 @@ void GPUAdapter::InitializeExtensionNameList() {
   if (adapter_properties_.textureCompressionBC) {
     extension_name_list_.emplace_back("texture-compression-bc");
     extension_name_list_.emplace_back("textureCompressionBC");
+  }
+  if (adapter_properties_.shaderFloat16) {
+    extension_name_list_.emplace_back("shader-float16");
   }
 }
 
