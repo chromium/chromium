@@ -169,6 +169,13 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     new_layout_block->SetShouldCheckForPaintInvalidation();
 }
 
+void CaretDisplayItemClient::SetVisibleIfActive(bool visible) {
+  if (visible == is_visible_if_active_)
+    return;
+  is_visible_if_active_ = visible;
+  needs_paint_invalidation_ = true;
+}
+
 void CaretDisplayItemClient::InvalidatePaint(
     const LayoutBlock& block,
     const PaintInvalidatorContext& context) {
@@ -227,7 +234,8 @@ void CaretDisplayItemClient::PaintCaret(
   DrawingRecorder recorder(context, *this, display_item_type,
                            EnclosingIntRect(drawing_rect));
   IntRect paint_rect = PixelSnappedIntRect(drawing_rect);
-  context.FillRect(paint_rect, color_, DarkModeFilter::ElementRole::kText);
+  context.FillRect(paint_rect, is_visible_if_active_ ? color_ : Color(),
+                   DarkModeFilter::ElementRole::kText);
 }
 
 String CaretDisplayItemClient::DebugName() const {

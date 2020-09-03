@@ -52,12 +52,16 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
   // caret for paint invalidation and painting.
   void UpdateStyleAndLayoutIfNeeded(const PositionWithAffinity& caret_position);
 
+  bool IsVisibleIfActive() const { return is_visible_if_active_; }
+  void SetVisibleIfActive(bool visible);
+
   // Called during LayoutBlock paint invalidation.
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
 
   bool ShouldPaintCaret(const LayoutBlock& block) const {
     return &block == layout_block_;
   }
+
   void PaintCaret(GraphicsContext&,
                   const PhysicalOffset& paint_offset,
                   DisplayItem::Type) const;
@@ -97,6 +101,7 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
   const LayoutBlock* previous_layout_block_ = nullptr;
 
   bool needs_paint_invalidation_ = false;
+  bool is_visible_if_active_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(CaretDisplayItemClient);
 };

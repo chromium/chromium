@@ -29,8 +29,8 @@ class FrameCaretTest : public EditingTestBase {
     WebTestSupport::SetIsRunningWebTest(was_running_web_test_);
   }
 
-  static bool ShouldBlinkCaret(const FrameCaret& caret) {
-    return caret.ShouldBlinkCaret();
+  static bool ShouldShowCaret(const FrameCaret& caret) {
+    return caret.ShouldShowCaret();
   }
 
  private:
@@ -55,26 +55,26 @@ TEST_F(FrameCaretTest, BlinkAfterTyping) {
 
   EXPECT_TRUE(caret.IsActive());
   EXPECT_FALSE(caret.ShouldShowBlockCursor());
-  EXPECT_TRUE(caret.ShouldPaintCaretForTesting())
+  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
       << "Initially a caret should be in visible cycle.";
 
   task_runner->AdvanceTimeAndRun(kInterval);
-  EXPECT_FALSE(caret.ShouldPaintCaretForTesting())
+  EXPECT_FALSE(caret.IsVisibleIfActiveForTesting())
       << "The caret blinks normally.";
 
   TypingCommand::InsertLineBreak(GetDocument());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(caret.ShouldPaintCaretForTesting())
+  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
       << "The caret should be in visible cycle just after a typing command.";
 
   task_runner->AdvanceTimeAndRun(kInterval - 1);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(caret.ShouldPaintCaretForTesting())
+  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
       << "The typing command reset the timer. The caret is still visible.";
 
   task_runner->AdvanceTimeAndRun(1);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(caret.ShouldPaintCaretForTesting())
+  EXPECT_FALSE(caret.IsVisibleIfActiveForTesting())
       << "The caret should blink after the typing command.";
 }
 
@@ -94,18 +94,18 @@ TEST_F(FrameCaretTest, ShouldNotBlinkWhenSelectionLooseFocus) {
   const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
   EXPECT_EQ(selection.Base(),
             Position(input, PositionAnchorType::kBeforeChildren));
-  EXPECT_FALSE(ShouldBlinkCaret(caret));
+  EXPECT_FALSE(ShouldShowCaret(caret));
 }
 
 TEST_F(FrameCaretTest, ShouldBlinkCaretWhileCaretBrowsing) {
   FrameCaret& caret = Selection().FrameCaretForTesting();
   Selection().SetSelection(SetSelectionTextToBody("<div>a|b</div>"),
                            SetSelectionOptions());
-  Selection().SetCaretVisible(true);
-  EXPECT_FALSE(ShouldBlinkCaret(caret));
+  Selection().SetCaretEnabled(true);
+  EXPECT_FALSE(ShouldShowCaret(caret));
   GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(ShouldBlinkCaret(caret));
+  EXPECT_TRUE(ShouldShowCaret(caret));
 }
 
 }  // namespace blink

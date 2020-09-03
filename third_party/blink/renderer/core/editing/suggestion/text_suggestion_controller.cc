@@ -370,7 +370,7 @@ void TextSuggestionController::OnSuggestionMenuClosed() {
 
   GetDocument().Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::ActiveSuggestion());
-  GetFrame().Selection().SetCaretVisible(true);
+  GetFrame().Selection().SetCaretEnabled(true);
   is_suggestion_menu_open_ = false;
 }
 
@@ -425,7 +425,7 @@ void TextSuggestionController::ShowSpellCheckMenu(
   const String& description = marker->Description();
 
   is_suggestion_menu_open_ = true;
-  GetFrame().Selection().SetCaretVisible(false);
+  GetFrame().Selection().SetCaretEnabled(false);
   GetDocument().Markers().AddActiveSuggestionMarker(
       active_suggestion_range, SK_ColorTRANSPARENT,
       ui::mojom::ImeTextSpanThickness::kNone,
@@ -499,7 +499,7 @@ void TextSuggestionController::ShowSuggestionMenu(
       suggestion_infos_with_node_and_highlight_color.highlight_color);
 
   is_suggestion_menu_open_ = true;
-  GetFrame().Selection().SetCaretVisible(false);
+  GetFrame().Selection().SetCaretEnabled(false);
 
   const String& misspelled_word = PlainText(marker_range);
   CallMojoShowTextSuggestionMenu(

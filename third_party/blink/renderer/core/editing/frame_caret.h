@@ -47,8 +47,6 @@ class SelectionEditor;
 struct PaintInvalidatorContext;
 struct PhysicalOffset;
 
-enum class CaretVisibility { kVisible, kHidden };
-
 class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
  public:
   FrameCaret(LocalFrame&, const SelectionEditor&);
@@ -65,7 +63,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   bool IsCaretBlinkingSuspended() const { return is_caret_blinking_suspended_; }
   void StopCaretBlinkTimer();
   void StartBlinkCaret();
-  void SetCaretVisibility(CaretVisibility);
+  void SetCaretEnabled(bool);
   IntRect AbsoluteCaretBounds() const;
 
   bool ShouldShowBlockCursor() const { return should_show_block_cursor_; }
@@ -83,7 +81,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   const CaretDisplayItemClient& CaretDisplayItemClientForTesting() const {
     return *display_item_client_;
   }
-  bool ShouldPaintCaretForTesting() const { return should_paint_caret_; }
+  bool IsVisibleIfActiveForTesting() const;
   void RecreateCaretBlinkTimerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner>);
 
@@ -95,19 +93,19 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
 
   const PositionWithAffinity CaretPosition() const;
 
-  bool ShouldBlinkCaret() const;
+  bool ShouldShowCaret() const;
   void CaretBlinkTimerFired(TimerBase*);
   void UpdateAppearance();
 
   const Member<const SelectionEditor> selection_editor_;
   const Member<LocalFrame> frame_;
   const std::unique_ptr<CaretDisplayItemClient> display_item_client_;
-  CaretVisibility caret_visibility_;
   // TODO(https://crbug.com/668758): Consider using BeginFrame update for this.
   std::unique_ptr<TaskRunnerTimer<FrameCaret>> caret_blink_timer_;
-  bool should_paint_caret_ : 1;
-  bool is_caret_blinking_suspended_ : 1;
-  bool should_show_block_cursor_ : 1;
+  bool is_caret_enabled_ = false;
+  bool should_show_caret_ = false;
+  bool is_caret_blinking_suspended_ = false;
+  bool should_show_block_cursor_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FrameCaret);
 };

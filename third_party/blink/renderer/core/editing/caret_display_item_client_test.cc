@@ -317,12 +317,12 @@ TEST_P(CaretDisplayItemClientTest, CaretHideMoveAndShow) {
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
   // Simulate that the blinking cursor becomes invisible.
-  Selection().SetCaretVisible(false);
+  Selection().SetCaretEnabled(false);
   // Move the caret to the end of the text.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(text, 5)).Build());
   // Simulate that the cursor blinking is restarted.
-  Selection().SetCaretVisible(true);
+  Selection().SetCaretEnabled(true);
 
   EXPECT_TRUE(GetCaretDisplayItemClient().IsValid());
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
