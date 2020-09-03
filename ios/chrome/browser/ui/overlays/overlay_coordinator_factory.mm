@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_supported_overlay_coordinator_classes.h"
 #import "ios/chrome/browser/ui/overlays/overlay_coordinator_factory+initialization.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator.h"
-#import "ios/chrome/browser/ui/overlays/screen_time/screen_time_supported_overlay_coordinator_classes.h"
 #import "ios/chrome/browser/ui/overlays/web_content_area/web_content_area_supported_overlay_coordinator_classes.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -44,10 +43,6 @@
     case OverlayModality::kWebContentArea:
       supportedCoordinatorClasses =
           web_content_area::GetSupportedOverlayCoordinatorClasses();
-      break;
-    case OverlayModality::kScreenTime:
-      supportedCoordinatorClasses =
-          screen_time::GetSupportedOverlayCoordinatorClasses();
       break;
     case OverlayModality::kInfobarBanner:
       supportedCoordinatorClasses =
