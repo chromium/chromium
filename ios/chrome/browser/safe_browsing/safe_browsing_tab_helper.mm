@@ -213,22 +213,25 @@ SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
       pending_main_frame_query_->decision = CreateSafeBrowsingErrorDecision();
       return web::WebStatePolicyDecider::PolicyDecision::Allow();
     }
-  }
 
-  // Check to see if an error page should be displayed for a sub frame resource.
-  web::NavigationManager* navigation_manager =
-      web_state()->GetNavigationManager();
-  web::NavigationItem* reloaded_item = navigation_manager->GetPendingItem();
-  if (ui::PageTransitionCoreTypeIs(request_info.transition_type,
-                                   ui::PAGE_TRANSITION_RELOAD) &&
-      reloaded_item == navigation_manager->GetLastCommittedItem() &&
-      unsafe_resource_container->GetSubFrameUnsafeResource(reloaded_item)) {
-    // Store the safe browsing error decision without re-checking the URL.
-    // TODO(crbug.com/1064803): This should directly return the safe browsing
-    // error decision once error pages for cancelled requests are supported.
-    // For now, only cancelled response errors are displayed properly.
-    pending_main_frame_query_->decision = CreateSafeBrowsingErrorDecision();
-    return web::WebStatePolicyDecider::PolicyDecision::Allow();
+    // Error pages for unsafe subframes are triggered by associating an
+    // UnsafeResource with the corresponding main frame item and reloading that
+    // item. Check to see if this main frame request is a reload and has an
+    // associated sub frame UnsafeResource.
+    web::NavigationManager* navigation_manager =
+        web_state()->GetNavigationManager();
+    web::NavigationItem* reloaded_item = navigation_manager->GetPendingItem();
+    if (ui::PageTransitionCoreTypeIs(request_info.transition_type,
+                                     ui::PAGE_TRANSITION_RELOAD) &&
+        reloaded_item == navigation_manager->GetLastCommittedItem() &&
+        unsafe_resource_container->GetSubFrameUnsafeResource(reloaded_item)) {
+      // Store the safe browsing error decision without re-checking the URL.
+      // TODO(crbug.com/1064803): This should directly return the safe browsing
+      // error decision once error pages for cancelled requests are supported.
+      // For now, only cancelled response errors are displayed properly.
+      pending_main_frame_query_->decision = CreateSafeBrowsingErrorDecision();
+      return web::WebStatePolicyDecider::PolicyDecision::Allow();
+    }
   }
 
   // Create the URL checker and check for navigation safety on the IO thread.
