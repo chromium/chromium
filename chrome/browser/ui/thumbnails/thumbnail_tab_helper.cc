@@ -175,6 +175,8 @@ class ThumbnailTabHelper::TabStateTracker
   // ThumbnailImage::Delegate:
   void ThumbnailImageBeingObservedChanged(bool is_being_observed) override {
     capture_driver_.UpdateThumbnailVisibility(is_being_observed);
+    if (is_being_observed)
+      web_contents()->GetController().LoadIfNecessary();
   }
 
   void PageReadinessChanged(PageReadiness readiness) {
