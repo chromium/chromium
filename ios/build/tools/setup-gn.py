@@ -132,7 +132,7 @@ class GnGenerator(object):
         self.GetGnCommand(gn_path, root_path, build_dir, True))
 
   def CreateGnRules(self, gn_path, root_path, build_dir):
-    gn_command = self.GetGnCommand('gn', root_path, build_dir, False)
+    gn_command = self.GetGnCommand(gn_path, root_path, build_dir, False)
     self.WriteArgsGn(build_dir)
     self.WriteBuildNinja(gn_command, build_dir)
     self.WriteBuildNinjaDeps(build_dir)
