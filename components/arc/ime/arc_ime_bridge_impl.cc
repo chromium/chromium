@@ -118,6 +118,16 @@ void ArcImeBridgeImpl::SendOnKeyboardAppearanceChanging(
   ime_instance->OnKeyboardAppearanceChanging(new_bounds, is_available);
 }
 
+void ArcImeBridgeImpl::SendSetComposingRegion(
+    const gfx::Range& composing_range) {
+  auto* ime_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(bridge_service_->ime(), SetComposingRegion);
+  if (!ime_instance)
+    return;
+
+  ime_instance->SetComposingRegion(composing_range);
+}
+
 void ArcImeBridgeImpl::OnTextInputTypeChanged(
     ui::TextInputType type,
     bool is_personalized_learning_allowed,

@@ -60,6 +60,7 @@ class ArcImeBridge {
   virtual void SendExtendSelectionAndDelete(size_t before, size_t after) = 0;
   virtual void SendOnKeyboardAppearanceChanging(const gfx::Rect& new_bounds,
                                                 bool is_available) = 0;
+  virtual void SendSetComposingRegion(const gfx::Range& composing_range) = 0;
 
  protected:
   ArcImeBridge() {}

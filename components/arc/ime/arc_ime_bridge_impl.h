@@ -37,6 +37,7 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
   void SendOnKeyboardAppearanceChanging(const gfx::Rect& new_bounds,
                                         bool is_available) override;
   void SendSelectionRange(const gfx::Range& selection_range) override;
+  void SendSetComposingRegion(const gfx::Range& composing_range) override;
 
   // mojom::ImeHost overrides:
   void OnTextInputTypeChanged(ui::TextInputType type,

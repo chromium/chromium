@@ -34,9 +34,7 @@ namespace {
 class FakeArcImeBridge : public ArcImeBridge {
  public:
   FakeArcImeBridge()
-      : count_send_insert_text_(0),
-        last_keyboard_availability_(false),
-        selection_range_(gfx::Range()) {}
+      : count_send_insert_text_(0), last_keyboard_availability_(false) {}
 
   void SendSetCompositionText(const ui::CompositionText& composition) override {
   }
@@ -55,6 +53,9 @@ class FakeArcImeBridge : public ArcImeBridge {
     last_keyboard_bounds_ = new_bounds;
     last_keyboard_availability_ = is_available;
   }
+  void SendSetComposingRegion(const gfx::Range& composing_range) override {
+    composing_range_ = composing_range;
+  }
 
   int count_send_insert_text() const { return count_send_insert_text_; }
   const gfx::Rect& last_keyboard_bounds() const {
@@ -64,12 +65,14 @@ class FakeArcImeBridge : public ArcImeBridge {
     return last_keyboard_availability_;
   }
   gfx::Range selection_range() { return selection_range_; }
+  gfx::Range composing_range() { return composing_range_; }
 
  private:
   int count_send_insert_text_;
   gfx::Rect last_keyboard_bounds_;
   bool last_keyboard_availability_;
   gfx::Range selection_range_;
+  gfx::Range composing_range_;
 };
 
 class FakeInputMethod : public ui::DummyInputMethod {
@@ -510,6 +513,29 @@ TEST_F(ArcImeServiceTest, DoNothingIfArcWindowIsNotFocused) {
   EXPECT_EQ(0, fake_input_method_->count_on_text_input_type_changed());
   EXPECT_EQ(0, fake_input_method_->count_on_caret_bounds_changed());
   EXPECT_EQ(0, fake_input_method_->count_cancel_composition());
+}
+
+TEST_F(ArcImeServiceTest, SetComposingRegion) {
+  instance_->OnWindowFocused(arc_win_.get(), nullptr);
+
+  const gfx::Range composing_range(1, 3);
+
+  // Ignore it if the range is outside of text range.
+  instance_->SetCompositionFromExistingText(composing_range, {});
+  EXPECT_EQ(gfx::Range(), fake_arc_ime_bridge_->composing_range());
+
+  instance_->OnCursorRectChangedWithSurroundingText(
+      gfx::Rect(), gfx::Range(0, 100), base::string16(100, 'a'),
+      gfx::Range(0, 0), false);
+  instance_->SetCompositionFromExistingText(composing_range, {});
+  EXPECT_EQ(composing_range, fake_arc_ime_bridge_->composing_range());
+
+  // Ignore it if the range is outside of text range.
+  instance_->OnCursorRectChangedWithSurroundingText(
+      gfx::Rect(), gfx::Range(0, 100), base::string16(100, 'a'),
+      gfx::Range(0, 0), false);
+  instance_->SetCompositionFromExistingText(gfx::Range(50, 101), {});
+  EXPECT_EQ(composing_range, fake_arc_ime_bridge_->composing_range());
 }
 
 }  // namespace arc

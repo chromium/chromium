@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 15
+// Next MinVersion: 16
 
 module arc.mojom;
 
@@ -114,7 +114,7 @@ interface ImeHost {
       => (bool is_consumed);
 };
 
-// Next method ID: 8
+// Next method ID: 9
 interface ImeInstance {
   // DEPRECATED: Please use Init@6 instead.
   InitDeprecated@0(pending_remote<ImeHost> host_remote);
@@ -145,4 +145,7 @@ interface ImeInstance {
   // Deletes current selection plus the specified number of char16 values
   // before and after selection or caret.
   [MinVersion=4] ExtendSelectionAndDelete@5(uint64 before, uint64 after);
+
+  // Sets composing region requested by the host IME.
+  [MinVersion=15] SetComposingRegion@8(Range range);
 };
