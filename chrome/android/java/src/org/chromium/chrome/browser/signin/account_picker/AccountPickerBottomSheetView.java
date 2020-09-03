@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -49,6 +50,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
     private final View mIncognitoInterstitialView;
+    private final ProgressBar mSpinnerView;
     private final ButtonCompat mContinueAsButton;
 
     AccountPickerBottomSheetView(Context context, BackPressListener backPressListener) {
@@ -68,6 +70,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mAccountListView.setLayoutManager(new LinearLayoutManager(
                 mAccountListView.getContext(), LinearLayoutManager.VERTICAL, false));
         mSelectedAccountView = mContentView.findViewById(R.id.account_picker_selected_account);
+        mSpinnerView = mContentView.findViewById(R.id.account_picker_signin_spinner_view);
         mContinueAsButton = mContentView.findViewById(R.id.account_picker_continue_as_button);
     }
 
@@ -113,28 +116,31 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * Expands the account list.
      */
     void expandAccountList() {
+        mAccountListView.setVisibility(View.VISIBLE);
+
         mSelectedAccountView.setVisibility(View.GONE);
         mContinueAsButton.setVisibility(View.GONE);
-        mAccountListView.setVisibility(View.VISIBLE);
     }
 
     /**
      * Collapses the account list to the selected account.
      */
     void collapseAccountList() {
-        mAccountListView.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.VISIBLE);
         mContinueAsButton.setVisibility(View.VISIBLE);
+
+        mAccountListView.setVisibility(View.GONE);
     }
 
     /**
      * Collapses the account list to the no account view.
      */
     void collapseToNoAccountView() {
+        mContinueAsButton.setText(R.string.signin_add_account_to_device);
+        mContinueAsButton.setVisibility(View.VISIBLE);
+
         mAccountListView.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
-        mContinueAsButton.setVisibility(View.VISIBLE);
-        mContinueAsButton.setText(R.string.signin_add_account_to_device);
     }
 
     /**
@@ -146,8 +152,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mAccountPickerSubtitle.setVisibility(View.INVISIBLE);
         // Set the account picker subtitle text in case there's an error.
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_general_error_subtitle);
-        mContentView.findViewById(R.id.account_picker_signin_spinner_view)
-                .setVisibility(View.VISIBLE);
+        mSpinnerView.setVisibility(View.VISIBLE);
         mContinueAsButton.setVisibility(View.INVISIBLE);
 
         mHorizontalDivider.setVisibility(View.GONE);
@@ -173,8 +178,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_general_error_subtitle);
         mAccountPickerSubtitle.setVisibility(View.VISIBLE);
-        mContentView.findViewById(R.id.account_picker_signin_spinner_view)
-                .setVisibility(View.INVISIBLE);
+        mSpinnerView.setVisibility(View.INVISIBLE);
         mContinueAsButton.setText(R.string.signin_account_picker_general_error_button);
         mContinueAsButton.setVisibility(View.VISIBLE);
 
@@ -189,8 +193,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_auth_error_subtitle);
         mAccountPickerSubtitle.setVisibility(View.VISIBLE);
-        mContentView.findViewById(R.id.account_picker_signin_spinner_view)
-                .setVisibility(View.INVISIBLE);
+        mSpinnerView.setVisibility(View.INVISIBLE);
         mContinueAsButton.setText(R.string.auth_error_card_button);
         mContinueAsButton.setVisibility(View.VISIBLE);
 
