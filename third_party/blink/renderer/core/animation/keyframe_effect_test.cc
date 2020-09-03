@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
-#include "third_party/blink/renderer/core/animation/animation_test_helper.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
@@ -28,6 +28,9 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+
+using animation_test_helpers::SetV8ObjectPropertyAsNumber;
+using animation_test_helpers::SetV8ObjectPropertyAsString;
 
 class KeyframeEffectTest : public PageTestBase {
  protected:

@@ -7,7 +7,7 @@
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
-#include "third_party/blink/renderer/core/animation/animation_test_helper.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
+
+using animation_test_helpers::EnsureInterpolatedValueCached;
 
 class AnimationEffectStackTest : public PageTestBase {
  protected:

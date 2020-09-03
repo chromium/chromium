@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/animation/animation_test_helper.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
@@ -52,6 +52,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
+
+using animation_test_helpers::EnsureInterpolatedValueCached;
 
 class AnimationKeyframeEffectModel : public PageTestBase {
  protected:
