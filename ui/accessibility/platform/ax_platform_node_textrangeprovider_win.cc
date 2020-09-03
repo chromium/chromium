@@ -850,13 +850,15 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Select() {
 
 HRESULT AXPlatformNodeTextRangeProviderWin::AddToSelection() {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_ADDTOSELECTION);
-  return UIA_E_INVALIDOPERATION;  // not supporting disjoint text selections
+  // Blink does not support disjoint text selections.
+  return UIA_E_INVALIDOPERATION;
 }
 
 HRESULT
 AXPlatformNodeTextRangeProviderWin::RemoveFromSelection() {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_REMOVEFROMSELECTION);
-  return UIA_E_INVALIDOPERATION;  // not supporting disjoint text selections
+  // Blink does not support disjoint text selections.
+  return UIA_E_INVALIDOPERATION;
 }
 
 HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
@@ -1185,21 +1187,12 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange() {
   // first snap them both to be unignored positions.
   NormalizeAsUnignoredTextRange();
 
-  // Do not normalize text ranges when a cursor or selection is visible. ATs
-  // may depend on the specific position that the caret or selection is at. This
-  // condition fixes issues when the caret is inside a plain text field, but
-  // causes more issues when used inside of a rich text field. For this reason,
-  // if we have a caret or a selection inside of an editable node, restrict this
-  // to a plain text field as we gain nothing from using it in a rich text
-  // field.
-  AXPlatformNodeDelegate* start_delegate = GetDelegate(start_.get());
-  AXPlatformNodeDelegate* end_delegate = GetDelegate(end_.get());
-  if ((start_delegate && start_delegate->HasVisibleCaretOrSelection() &&
-       (!start_delegate->GetData().HasState(ax::mojom::State::kEditable) ||
-        start_delegate->IsChildOfPlainTextField())) ||
-      (end_delegate && end_delegate->HasVisibleCaretOrSelection() &&
-       (!end_delegate->GetData().HasState(ax::mojom::State::kEditable) ||
-        end_delegate->IsChildOfPlainTextField()))) {
+  // When carets are visible or selections are occurring, the precise state of
+  // the TextPattern must be preserved so that the UIA client can handle
+  // scenarios such as determining which characters were deleted. So
+  // normalization must be bypassed.
+  if (HasCaretOrSelectionInPlainTextField(start_) ||
+      HasCaretOrSelectionInPlainTextField(end_)) {
     return;
   }
 
@@ -1337,6 +1330,24 @@ AXPlatformNodeTextRangeProviderWin::GetLowestAccessibleCommonPlatformNode()
   DCHECK(platform_node);
 
   return platform_node->GetLowestAccessibleElement();
+}
+
+bool AXPlatformNodeTextRangeProviderWin::HasCaretOrSelectionInPlainTextField(
+    const AXPositionInstance& position) const {
+  // This condition fixes issues when the caret is inside a plain text field,
+  // but causes more issues when used inside of a rich text field. For this
+  // reason, if we have a caret or a selection inside of an editable node,
+  // restrict this to a plain text field as we gain nothing from using it in a
+  // rich text field.
+  AXPlatformNodeDelegate* delegate = GetDelegate(position.get());
+  if (delegate && delegate->HasVisibleCaretOrSelection()) {
+    if (!delegate->GetData().HasState(ax::mojom::State::kEditable) ||
+        (delegate->GetData().IsPlainTextField() ||
+         delegate->IsChildOfPlainTextField())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // static
