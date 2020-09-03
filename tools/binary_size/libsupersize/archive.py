@@ -1282,7 +1282,7 @@ def _CreatePakObjectMap(object_paths_by_name):
   # resource ID in them. These names are collected along with all other symbols
   # by running "nm" on them. We just need to extract the values from them.
   object_paths_by_pak_id = {}
-  PREFIX = 'void ui::WhitelistedResource<'
+  PREFIX = 'void ui::AllowlistedResource<'
   id_start_idx = len(PREFIX)
   id_end_idx = -len('>()')
   for name in object_paths_by_name:

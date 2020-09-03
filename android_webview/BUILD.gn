@@ -15,11 +15,11 @@ import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/trichrome.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//tools/grit/repack.gni")
-import("//tools/resources/generate_resource_whitelist.gni")
+import("//tools/resources/generate_resource_allowlist.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 
-if (enable_resource_whitelist_generation) {
+if (enable_resource_allowlist_generation) {
   system_webview_pak_allowlist =
       "$target_gen_dir/system_webview_pak_allowlist.txt"
 }
@@ -683,11 +683,11 @@ android_library("android_webview_product_config_java") {
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
 }
 
-if (enable_resource_whitelist_generation) {
+if (enable_resource_allowlist_generation) {
   libwebviewchromium_tmpl("system_webview_pak_allowlist_inputs") {
     ldflags = [ "--collect-inputs-only" ]
   }
-  generate_resource_whitelist("system_webview_pak_allowlist") {
+  generate_resource_allowlist("system_webview_pak_allowlist") {
     deps = [ ":system_webview_pak_allowlist_inputs" ]
     inputs = [ "$root_out_dir/lib.unstripped/libsystem_webview_pak_allowlist_inputs$shlib_extension" ]
     output = system_webview_pak_allowlist
@@ -698,7 +698,7 @@ webview_repack_locales("repack_locales") {
   input_locales = locales
   output_locales = locales
 
-  if (enable_resource_whitelist_generation) {
+  if (enable_resource_allowlist_generation) {
     repack_whitelist = system_webview_pak_allowlist
     deps = [ ":system_webview_pak_allowlist" ]
   }
@@ -737,7 +737,7 @@ repack("repack_pack") {
   ]
   output = "$target_gen_dir/resources.pak"
 
-  if (enable_resource_whitelist_generation) {
+  if (enable_resource_allowlist_generation) {
     repack_whitelist = system_webview_pak_allowlist
     deps += [ ":system_webview_pak_allowlist" ]
   }
@@ -761,7 +761,7 @@ repack("repack_100_percent") {
   ]
   output = "$target_gen_dir/chrome_100_percent.pak"
 
-  if (enable_resource_whitelist_generation) {
+  if (enable_resource_allowlist_generation) {
     repack_whitelist = system_webview_pak_allowlist
     deps += [ ":system_webview_pak_allowlist" ]
   }

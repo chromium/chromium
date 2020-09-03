@@ -4881,8 +4881,11 @@ def CheckStrings(input_api, output_api):
       for f in input_api.AffectedFiles(include_deletes=True)
       if f.Action() == 'D')
 
-  affected_grds = [f for f in input_api.AffectedFiles()
-      if (f.LocalPath().endswith(('.grd', '.grdp')))]
+  affected_grds = [
+      f for f in input_api.AffectedFiles()
+      if f.LocalPath().endswith(('.grd', '.grdp'))
+  ]
+  affected_grds = [f for f in affected_grds if not 'testdata' in f.LocalPath()]
   if not affected_grds:
     return []
 

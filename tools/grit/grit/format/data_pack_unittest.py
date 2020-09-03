@@ -70,31 +70,46 @@ class FormatDataPackUnittest(unittest.TestCase):
     self.assertDictEqual(expected_data_pack.__dict__, loaded.__dict__)
 
   def testRePackUnittest(self):
-    expected_with_whitelist = {
-        1: 'Never gonna', 10: 'give you up', 20: 'Never gonna let',
-        30: 'you down', 40: 'Never', 50: 'gonna run around and',
-        60: 'desert you'}
-    expected_without_whitelist = {
-        1: 'Never gonna', 10: 'give you up', 20: 'Never gonna let', 65: 'Close',
-        30: 'you down', 40: 'Never', 50: 'gonna run around and', 4: 'click',
-        60: 'desert you', 6: 'chirr', 32: 'oops, try again', 70: 'Awww, snap!'}
+    expected_with_allowlist = {
+        1: 'Never gonna',
+        10: 'give you up',
+        20: 'Never gonna let',
+        30: 'you down',
+        40: 'Never',
+        50: 'gonna run around and',
+        60: 'desert you'
+    }
+    expected_without_allowlist = {
+        1: 'Never gonna',
+        10: 'give you up',
+        20: 'Never gonna let',
+        65: 'Close',
+        30: 'you down',
+        40: 'Never',
+        50: 'gonna run around and',
+        4: 'click',
+        60: 'desert you',
+        6: 'chirr',
+        32: 'oops, try again',
+        70: 'Awww, snap!'
+    }
     inputs = [{1: 'Never gonna', 4: 'click', 6: 'chirr', 10: 'give you up'},
               {20: 'Never gonna let', 30: 'you down', 32: 'oops, try again'},
               {40: 'Never', 50: 'gonna run around and', 60: 'desert you'},
               {65: 'Close', 70: 'Awww, snap!'}]
-    whitelist = [1, 10, 20, 30, 40, 50, 60]
+    allowlist = [1, 10, 20, 30, 40, 50, 60]
     inputs = [(i, data_pack.UTF8) for i in inputs]
 
-    # RePack using whitelist
+    # RePack using allowlist
     output, _ = data_pack.RePackFromDataPackStrings(
-        inputs, whitelist, suppress_removed_key_output=True)
-    self.assertDictEqual(expected_with_whitelist, output,
+        inputs, allowlist, suppress_removed_key_output=True)
+    self.assertDictEqual(expected_with_allowlist, output,
                          'Incorrect resource output')
 
-    # RePack a None whitelist
+    # RePack a None allowlist
     output, _ = data_pack.RePackFromDataPackStrings(
         inputs, None, suppress_removed_key_output=True)
-    self.assertDictEqual(expected_without_whitelist, output,
+    self.assertDictEqual(expected_without_allowlist, output,
                          'Incorrect resource output')
 
 

@@ -284,7 +284,7 @@ class ClankCompiler(object):
 
     # Set the "Release Official" flavor, the parts affecting performance.
     args = [
-        'enable_resource_whitelist_generation=false',
+        'enable_resource_allowlist_generation=false',
         'is_chrome_branded=' + str(not self._public).lower(),
         'is_debug=false',
         'is_official_build=true',

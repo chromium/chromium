@@ -23,7 +23,7 @@ declare_args() {
   # Currently works only on some platforms and enabled by default for release
   # builds.
   # Requires debug info, so disabled for symbol_level=0 & strip_debug_info=true.
-  enable_resource_whitelist_generation =
+  enable_resource_allowlist_generation =
       is_official_build &&
       # Don't enable for Android-on-Chrome OS so that they can build with
       # symbol_level=0 without this failing (crbug.com/891164).
@@ -33,7 +33,7 @@ declare_args() {
 # When the arg is set via args.gn, it applies to all toolchains. In order to not
 # hit the assert in grit_rule.gni, explicitly disable for host toolchains.
 if ((is_linux || is_chromeos) && target_os == "android") {
-  enable_resource_whitelist_generation = false
+  enable_resource_allowlist_generation = false
 }
 
 # This template defines a toolchain for something that works like gcc

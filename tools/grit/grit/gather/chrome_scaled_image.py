@@ -46,7 +46,7 @@ _ANCILLARY_CHUNKS_TO_LEAVE = frozenset(
 
 def _MoveSpecialChunksToFront(data):
   '''Move special chunks immediately after the IHDR chunk (so that the PNG
-  remains valid). Also delete ancillary chunks that are not on our whitelist.
+  remains valid). Also delete ancillary chunks that are not on our allowlist.
   '''
   first = [_PNG_MAGIC]
   special_chunks = []

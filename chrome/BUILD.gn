@@ -21,7 +21,7 @@ import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/widevine/cdm/widevine.gni")
-import("//tools/resources/generate_resource_whitelist.gni")
+import("//tools/resources/generate_resource_allowlist.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//ui/gl/features.gni")
 import("//v8/gni/v8.gni")
@@ -53,7 +53,7 @@ declare_args() {
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
-if (enable_resource_whitelist_generation) {
+if (enable_resource_allowlist_generation) {
   chrome_resource_whitelist = "$target_gen_dir/chrome_resource_whitelist.txt"
 }
 
@@ -1407,7 +1407,7 @@ if (!is_android) {
       output_dir = root_out_dir
     }
 
-    if (enable_resource_whitelist_generation) {
+    if (enable_resource_allowlist_generation) {
       repack_whitelist = chrome_resource_whitelist
       deps = [ "//chrome:resource_whitelist" ]
     }
@@ -1531,8 +1531,8 @@ if (is_android) {
   }
 }
 
-if (enable_resource_whitelist_generation) {
-  generate_resource_whitelist("resource_whitelist") {
+if (enable_resource_allowlist_generation) {
+  generate_resource_allowlist("resource_whitelist") {
     if (is_android) {
       deps = [ "//chrome/android:libchrome" ]
       inputs = [ "$root_out_dir/lib.unstripped/libchrome$shlib_extension" ]

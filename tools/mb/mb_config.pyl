@@ -2604,7 +2604,7 @@
                   'use_hashed_jni_names=true '
                   'default_min_sdk_version=16 '
                   'clang_use_default_sample_profile=false '
-                  'enable_resource_whitelist_generation=false'),
+                  'enable_resource_allowlist_generation=false'),
     },
 
     'cronet_ios': {
@@ -2867,7 +2867,7 @@
     },
 
     'no_resource_whitelisting': {
-      'gn_args': 'enable_resource_whitelist_generation=false',
+      'gn_args': 'enable_resource_allowlist_generation=false',
     },
 
     'no_symbols': {
@@ -2976,7 +2976,7 @@
     },
 
     'resource_whitelisting': {
-      'gn_args': 'enable_resource_whitelist_generation=true',
+      'gn_args': 'enable_resource_allowlist_generation=true',
     },
 
     'shared': {

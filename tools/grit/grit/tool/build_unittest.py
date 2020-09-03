@@ -22,13 +22,13 @@ from grit.tool import build
 
 class BuildUnittest(unittest.TestCase):
 
-  # IDs should not change based on whitelisting.
+  # IDs should not change based on allowlisting.
   # Android WebView currently relies on this.
   EXPECTED_ID_MAP = {
-      'IDS_MESSAGE_WHITELISTED': 6889,
-      'IDR_STRUCTURE_WHITELISTED': 11546,
-      'IDR_STRUCTURE_IN_TRUE_IF_WHITELISTED': 11548,
-      'IDR_INCLUDE_WHITELISTED': 15601,
+      'IDR_INCLUDE_ALLOWLISTED': 9369,
+      'IDR_STRUCTURE_ALLOWLISTED': 8062,
+      'IDR_STRUCTURE_IN_TRUE_IF_ALLOWLISTED': 8064,
+      'IDS_MESSAGE_ALLOWLISTED': 20376,
   }
 
   def testFindTranslationsWithSubstitutions(self):
@@ -156,104 +156,101 @@ class BuildUnittest(unittest.TestCase):
             '-a', os.path.abspath(output_dir.GetPath('resource.h'))]))
     output_dir.CleanUp()
 
-  def _verifyWhitelistedOutput(self,
+  def _verifyAllowlistedOutput(self,
                                filename,
-                               whitelisted_ids,
-                               non_whitelisted_ids,
+                               allowlisted_ids,
+                               non_allowlisted_ids,
                                encoding='utf8'):
     self.failUnless(os.path.exists(filename))
-    whitelisted_ids_found = []
-    non_whitelisted_ids_found = []
+    allowlisted_ids_found = []
+    non_allowlisted_ids_found = []
     with codecs.open(filename, encoding=encoding) as f:
       for line in f.readlines():
-        for whitelisted_id in whitelisted_ids:
-          if whitelisted_id in line:
-            whitelisted_ids_found.append(whitelisted_id)
+        for allowlisted_id in allowlisted_ids:
+          if allowlisted_id in line:
+            allowlisted_ids_found.append(allowlisted_id)
             if filename.endswith('.h'):
               numeric_id = int(line.split()[2])
-              expected_numeric_id = self.EXPECTED_ID_MAP.get(whitelisted_id)
+              expected_numeric_id = self.EXPECTED_ID_MAP.get(allowlisted_id)
               self.assertEqual(
                   expected_numeric_id, numeric_id,
                   'Numeric ID for {} was {} should be {}'.format(
-                      whitelisted_id, numeric_id, expected_numeric_id))
-        for non_whitelisted_id in non_whitelisted_ids:
-          if non_whitelisted_id in line:
-            non_whitelisted_ids_found.append(non_whitelisted_id)
+                      allowlisted_id, numeric_id, expected_numeric_id))
+        for non_allowlisted_id in non_allowlisted_ids:
+          if non_allowlisted_id in line:
+            non_allowlisted_ids_found.append(non_allowlisted_id)
     self.longMessage = True
-    self.assertEqual(whitelisted_ids,
-                     whitelisted_ids_found,
+    self.assertEqual(allowlisted_ids, allowlisted_ids_found,
                      '\nin file {}'.format(os.path.basename(filename)))
-    non_whitelisted_msg = ('Non-Whitelisted IDs {} found in {}'
-        .format(non_whitelisted_ids_found, os.path.basename(filename)))
-    self.assertFalse(non_whitelisted_ids_found, non_whitelisted_msg)
+    non_allowlisted_msg = ('Non-Allowlisted IDs {} found in {}'.format(
+        non_allowlisted_ids_found, os.path.basename(filename)))
+    self.assertFalse(non_allowlisted_ids_found, non_allowlisted_msg)
 
-  def testWhitelistStrings(self):
+  def testAllowlistStrings(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
     class DummyOpts(object):
       def __init__(self):
-        self.input = util.PathFromRoot('grit/testdata/whitelist_strings.grd')
+        self.input = util.PathFromRoot('grit/testdata/allowlist_strings.grd')
         self.verbose = False
         self.extra_verbose = False
-    whitelist_file = util.PathFromRoot('grit/testdata/whitelist.txt')
-    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(),
-                              '-w', whitelist_file])
-    header = output_dir.GetPath('whitelist_test_resources.h')
-    rc = output_dir.GetPath('en_whitelist_test_strings.rc')
 
-    whitelisted_ids = ['IDS_MESSAGE_WHITELISTED']
-    non_whitelisted_ids = ['IDS_MESSAGE_NOT_WHITELISTED']
-    self._verifyWhitelistedOutput(
-      header,
-      whitelisted_ids,
-      non_whitelisted_ids,
+    allowlist_file = util.PathFromRoot('grit/testdata/allowlist.txt')
+    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(), '-w', allowlist_file])
+    header = output_dir.GetPath('allowlist_test_resources.h')
+    rc = output_dir.GetPath('en_allowlist_test_strings.rc')
+
+    allowlisted_ids = ['IDS_MESSAGE_ALLOWLISTED']
+    non_allowlisted_ids = ['IDS_MESSAGE_NOT_ALLOWLISTED']
+    self._verifyAllowlistedOutput(
+        header,
+        allowlisted_ids,
+        non_allowlisted_ids,
     )
-    self._verifyWhitelistedOutput(
-      rc,
-      whitelisted_ids,
-      non_whitelisted_ids,
-      encoding='utf16'
-    )
+    self._verifyAllowlistedOutput(rc,
+                                  allowlisted_ids,
+                                  non_allowlisted_ids,
+                                  encoding='utf16')
     output_dir.CleanUp()
 
-  def testWhitelistResources(self):
+  def testAllowlistResources(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
     class DummyOpts(object):
       def __init__(self):
-        self.input = util.PathFromRoot('grit/testdata/whitelist_resources.grd')
+        self.input = util.PathFromRoot('grit/testdata/allowlist_resources.grd')
         self.verbose = False
         self.extra_verbose = False
-    whitelist_file = util.PathFromRoot('grit/testdata/whitelist.txt')
-    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(),
-                              '-w', whitelist_file])
-    header = output_dir.GetPath('whitelist_test_resources.h')
-    map_cc = output_dir.GetPath('whitelist_test_resources_map.cc')
-    map_h = output_dir.GetPath('whitelist_test_resources_map.h')
-    pak = output_dir.GetPath('whitelist_test_resources.pak')
+
+    allowlist_file = util.PathFromRoot('grit/testdata/allowlist.txt')
+    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(), '-w', allowlist_file])
+    header = output_dir.GetPath('allowlist_test_resources.h')
+    map_cc = output_dir.GetPath('allowlist_test_resources_map.cc')
+    map_h = output_dir.GetPath('allowlist_test_resources_map.h')
+    pak = output_dir.GetPath('allowlist_test_resources.pak')
 
     # Ensure the resource map header and .pak files exist, but don't verify
     # their content.
     self.failUnless(os.path.exists(map_h))
     self.failUnless(os.path.exists(pak))
 
-    whitelisted_ids = [
-        'IDR_STRUCTURE_WHITELISTED',
-        'IDR_STRUCTURE_IN_TRUE_IF_WHITELISTED',
-        'IDR_INCLUDE_WHITELISTED',
+    allowlisted_ids = [
+        'IDR_STRUCTURE_ALLOWLISTED',
+        'IDR_STRUCTURE_IN_TRUE_IF_ALLOWLISTED',
+        'IDR_INCLUDE_ALLOWLISTED',
     ]
-    non_whitelisted_ids = [
-        'IDR_STRUCTURE_NOT_WHITELISTED',
-        'IDR_STRUCTURE_IN_TRUE_IF_NOT_WHITELISTED',
-        'IDR_STRUCTURE_IN_FALSE_IF_WHITELISTED',
-        'IDR_STRUCTURE_IN_FALSE_IF_NOT_WHITELISTED',
-        'IDR_INCLUDE_NOT_WHITELISTED',
+    non_allowlisted_ids = [
+        'IDR_STRUCTURE_NOT_ALLOWLISTED',
+        'IDR_STRUCTURE_IN_TRUE_IF_NOT_ALLOWLISTED',
+        'IDR_STRUCTURE_IN_FALSE_IF_ALLOWLISTED',
+        'IDR_STRUCTURE_IN_FALSE_IF_NOT_ALLOWLISTED',
+        'IDR_INCLUDE_NOT_ALLOWLISTED',
     ]
     for output_file in (header, map_cc):
-      self._verifyWhitelistedOutput(
-        output_file,
-        whitelisted_ids,
-        non_whitelisted_ids,
+      self._verifyAllowlistedOutput(
+          output_file,
+          allowlisted_ids,
+          non_allowlisted_ids,
       )
     output_dir.CleanUp()
 

@@ -312,7 +312,7 @@ class GritNode(base.Node):
     self.defines = {}
     self.substituter = None
     self.target_platform = sys.platform
-    self.whitelist_support = False
+    self.allowlist_support = False
     self._predetermined_ids_file = None
     self._id_map = None  # Dict of textual_id -> numeric_id.
 
@@ -433,11 +433,11 @@ class GritNode(base.Node):
     """
     return self.attrs['base_dir']
 
-  def IsWhitelistSupportEnabled(self):
-    return self.whitelist_support
+  def IsAllowlistSupportEnabled(self):
+    return self.allowlist_support
 
-  def SetWhitelistSupportEnabled(self, whitelist_support):
-    self.whitelist_support = whitelist_support
+  def SetAllowlistSupportEnabled(self, allowlist_support):
+    self.allowlist_support = allowlist_support
 
   def GetInputFiles(self):
     """Returns the list of files that are read to produce the output."""

@@ -107,7 +107,7 @@ Options:
                     override the value specified in the <grit> node's
                     first_ids_file.
 
-  -w WHITELISTFILE  Path to a file containing the string names of the
+  -w ALLOWLISTFILE  Path to a file containing the string names of the
                     resources to include.  Anything not listed is dropped.
 
   -t PLATFORM       Specifies the platform the build is targeting; defaults
@@ -115,8 +115,8 @@ Options:
                     flag should match what sys.platform would report for your
                     target platform; see grit.node.base.EvaluateCondition.
 
-  --whitelist-support
-                    Generate code to support extracting a resource whitelist
+  --allowlist-support
+                    Generate code to support extracting a resource allowlist
                     from executables.
 
   --write-only-new flag
@@ -164,12 +164,12 @@ are exported to translation interchange files (e.g. XMB files), etc.
     self.output_directory = '.'
     first_ids_file = None
     predetermined_ids_file = None
-    whitelist_filenames = []
+    allowlist_filenames = []
     assert_output_files = []
     target_platform = None
     depfile = None
     depdir = None
-    whitelist_support = False
+    allowlist_support = False
     write_only_new = False
     depend_on_stamp = False
     js_minifier = None
@@ -180,7 +180,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
         ('depdir=', 'depfile=', 'assert-file-list=', 'help',
          'output-all-resource-defines', 'no-output-all-resource-defines',
          'no-replace-ellipsis', 'depend-on-stamp', 'js-minifier=',
-         'css-minifier=', 'write-only-new=', 'whitelist-support', 'brotli='))
+         'css-minifier=', 'write-only-new=', 'allowlist-support', 'brotli='))
     for (key, val) in own_opts:
       if key == '-a':
         assert_output_files.append(val)
@@ -201,7 +201,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
         # .grd itself.
         first_ids_file = val
       elif key == '-w':
-        whitelist_filenames.append(val)
+        allowlist_filenames.append(val)
       elif key == '--no-replace-ellipsis':
         replace_ellipsis = False
       elif key == '-p':
@@ -220,8 +220,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
         js_minifier = val
       elif key == '--css-minifier':
         css_minifier = val
-      elif key == '--whitelist-support':
-        whitelist_support = True
+      elif key == '--allowlist-support':
+        allowlist_support = True
       elif key == '--brotli':
         brotli_util.SetBrotliCommand([os.path.abspath(val)])
       elif key == '--help':
@@ -236,12 +236,12 @@ are exported to translation interchange files (e.g. XMB files), etc.
                     (self.output_directory,
                      os.path.abspath(self.output_directory)))
 
-    if whitelist_filenames:
-      self.whitelist_names = set()
-      for whitelist_filename in whitelist_filenames:
-        self.VerboseOut('Using whitelist: %s\n' % whitelist_filename);
-        whitelist_contents = util.ReadFile(whitelist_filename, 'utf-8')
-        self.whitelist_names.update(whitelist_contents.strip().split('\n'))
+    if allowlist_filenames:
+      self.allowlist_names = set()
+      for allowlist_filename in allowlist_filenames:
+        self.VerboseOut('Using allowlist: %s\n' % allowlist_filename)
+        allowlist_contents = util.ReadFile(allowlist_filename, 'utf-8')
+        self.allowlist_names.update(allowlist_contents.strip().split('\n'))
 
     if js_minifier:
       minifier.SetJsMinifier(js_minifier)
@@ -262,7 +262,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # gathering stage; we use a dummy language here since we are not outputting
     # a specific language.
     self.res.SetOutputLanguage('en')
-    self.res.SetWhitelistSupportEnabled(whitelist_support)
+    self.res.SetAllowlistSupportEnabled(allowlist_support)
     self.res.RunGatherers()
 
     # Replace ... with the single-character version. http://crbug.com/621772
@@ -295,15 +295,15 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # has been called, otherwise None.
     self.res = None
 
-    # The set of names that are whitelisted to actually be included in the
+    # The set of names that are allowlisted to actually be included in the
     # output.
-    self.whitelist_names = None
+    self.allowlist_names = None
 
     # Whether to compare outputs to their old contents before writing.
     self.write_only_new = False
 
   @staticmethod
-  def AddWhitelistTags(start_node, whitelist_names):
+  def AddAllowlistTags(start_node, allowlist_names):
     # Walk the tree of nodes added attributes for the nodes that shouldn't
     # be written into the target files (skip markers).
     for node in start_node:
@@ -313,9 +313,9 @@ are exported to translation interchange files (e.g. XMB files), etc.
           isinstance(node, message.MessageNode) or
           isinstance(node, structure.StructureNode)):
         text_ids = node.GetTextualIds()
-        # Mark the item to be skipped if it wasn't in the whitelist.
-        if text_ids and text_ids[0] not in whitelist_names:
-          node.SetWhitelistMarkedAsSkip(True)
+        # Mark the item to be skipped if it wasn't in the allowlist.
+        if text_ids and text_ids[0] not in allowlist_names:
+          node.SetAllowlistMarkedAsSkip(True)
 
   @staticmethod
   def ProcessNode(node, output_node, outfile):
@@ -371,10 +371,10 @@ are exported to translation interchange files (e.g. XMB files), etc.
       output.output_filename = os.path.abspath(os.path.join(
         self.output_directory, output.GetOutputFilename()))
 
-    # If there are whitelisted names, tag the tree once up front, this way
+    # If there are allowlisted names, tag the tree once up front, this way
     # while looping through the actual output, it is just an attribute check.
-    if self.whitelist_names:
-      self.AddWhitelistTags(self.res, self.whitelist_names)
+    if self.allowlist_names:
+      self.AddAllowlistTags(self.res, self.allowlist_names)
 
     for output in self.res.GetOutputFiles():
       self.VerboseOut('Creating %s...' % output.GetOutputFilename())

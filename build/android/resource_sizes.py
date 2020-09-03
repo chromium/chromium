@@ -64,7 +64,7 @@ _BASE_CHART = {
     'charts': {}
 }
 # Macro definitions look like (something, 123) when
-# enable_resource_whitelist_generation=true.
+# enable_resource_allowlist_generation=true.
 _RC_HEADER_RE = re.compile(r'^#define (?P<name>\w+).* (?P<id>\d+)\)?$')
 _RE_NON_LANGUAGE_PAK = re.compile(r'^assets/.*(resources|percent)\.pak$')
 _READELF_SIZES_METRICS = {

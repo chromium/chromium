@@ -108,7 +108,7 @@ def DoMain(argv):
   # line flags.
   parser.add_option("-E", action="append", dest="build_env", default=[])
   parser.add_option("-p", action="store", dest="predetermined_ids_file")
-  parser.add_option("-w", action="append", dest="whitelist_files", default=[])
+  parser.add_option("-w", action="append", dest="allowlist_files", default=[])
   parser.add_option("-f", dest="ids_file", default="")
   parser.add_option("-t", dest="target_platform", default=None)
 
@@ -141,8 +141,8 @@ def DoMain(argv):
     if len(args) == 1:
       # Include grd file as second input (works around gyp expecting it).
       inputs.insert(1, args[0])
-    if options.whitelist_files:
-      inputs.extend(options.whitelist_files)
+    if options.allowlist_files:
+      inputs.extend(options.allowlist_files)
     return '\n'.join(inputs)
   elif options.outputs:
     if len(args) != 2:

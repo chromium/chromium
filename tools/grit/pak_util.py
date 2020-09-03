@@ -40,7 +40,9 @@ def _RepackMain(args):
       output_info_filepath = splitext[0] + '.info'
   else:
     out_path = args.output_pak_file
-  data_pack.RePack(out_path, args.input_pak_files, args.whitelist,
+  data_pack.RePack(out_path,
+                   args.input_pak_files,
+                   args.allowlist,
                    args.suppress_removed_key_output,
                    output_info_filepath=output_info_filepath)
   if args.compress:
@@ -156,10 +158,13 @@ def main():
   sub_parser.add_argument('output_pak_file', help='File to create.')
   sub_parser.add_argument('input_pak_files', nargs='+',
       help='Input .pak files.')
-  sub_parser.add_argument('--whitelist',
-      help='Path to a whitelist used to filter output pak file resource IDs.')
-  sub_parser.add_argument('--suppress-removed-key-output', action='store_true',
-      help='Do not log which keys were removed by the whitelist.')
+  sub_parser.add_argument(
+      '--allowlist',
+      help='Path to a allowlist used to filter output pak file resource IDs.')
+  sub_parser.add_argument(
+      '--suppress-removed-key-output',
+      action='store_true',
+      help='Do not log which keys were removed by the allowlist.')
   sub_parser.add_argument('--compress', dest='compress', action='store_true',
       default=False, help='Compress output_pak_file using gzip.')
   sub_parser.set_defaults(func=_RepackMain)

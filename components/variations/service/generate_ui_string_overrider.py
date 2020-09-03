@@ -19,7 +19,7 @@ SCRIPT_NAME = "generate_ui_string_overrider.py"
 # Without generate whitelist flag:
 #   #define IDS_FOO_MESSAGE 1234
 # With generate whitelist flag:
-#   #define IDS_FOO_MESSAGE (::ui::WhitelistedResource<1234>(), 1234)
+#   #define IDS_FOO_MESSAGE (::ui::AllowlistedResource<1234>(), 1234)
 RESOURCE_EXTRACT_REGEX = re.compile('^#define (\S*).* (\d+)\)?$', re.MULTILINE)
 
 class Error(Exception):

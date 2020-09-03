@@ -63,7 +63,7 @@ template("repack") {
     if (defined(invoker.repack_whitelist)) {
       inputs += [ invoker.repack_whitelist ]
       _rebased_whitelist = rebase_path(invoker.repack_whitelist)
-      args += [ "--whitelist=$_rebased_whitelist" ]
+      args += [ "--allowlist=$_rebased_whitelist" ]
       args += [ "--suppress-removed-key-output" ]
     }
     args += [ rebase_path(invoker.output, root_build_dir) ]

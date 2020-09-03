@@ -123,7 +123,7 @@ int VersionUI::VersionProcessorVariation() {
 #if defined(OS_ANDROID)
   // When building for Android, "unused" strings are removed. However, binaries
   // of both bitnesses are stripped of strings based on string analysis of one
-  // bitness. Search the code for "generate_resource_whitelist" for more
+  // bitness. Search the code for "generate_resource_allowlist" for more
   // information. Therefore, make sure both the IDS_VERSION_UI_32BIT and
   // IDS_VERSION_UI_64BIT strings are marked as always used so that they’re
   // never stripped. https://crbug.com/1119479

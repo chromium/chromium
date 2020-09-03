@@ -123,15 +123,15 @@ class RcHeaderFormatterUnittest(unittest.TestCase):
                       '#define IDS_GREETING 10000\n'
                       '#define IDS_BONGO 10001\n'), ''.join(output))
 
-    # Using resource whitelist support.
-    grd.SetWhitelistSupportEnabled(True)
+    # Using resource allowlist support.
+    grd.SetAllowlistSupportEnabled(True)
     output = rc_header.FormatDefines(grd)
     self.assertEqual(('#define IDR_LOGO '
-                      '(::ui::WhitelistedResource<300>(), 300)\n'
+                      '(::ui::AllowlistedResource<300>(), 300)\n'
                       '#define IDS_GREETING '
-                      '(::ui::WhitelistedResource<10000>(), 10000)\n'
+                      '(::ui::AllowlistedResource<10000>(), 10000)\n'
                       '#define IDS_BONGO '
-                      '(::ui::WhitelistedResource<10001>(), 10001)\n'),
+                      '(::ui::AllowlistedResource<10001>(), 10001)\n'),
                      ''.join(output))
 
 if __name__ == '__main__':

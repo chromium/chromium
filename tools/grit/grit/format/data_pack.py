@@ -218,7 +218,9 @@ def ReadGrdInfo(grd_file):
   return info_dict
 
 
-def RePack(output_file, input_files, whitelist_file=None,
+def RePack(output_file,
+           input_files,
+           allowlist_file=None,
            suppress_removed_key_output=False,
            output_info_filepath=None):
   """Write a new data pack file by combining input pack files.
@@ -226,7 +228,7 @@ def RePack(output_file, input_files, whitelist_file=None,
   Args:
       output_file: path to the new data pack file.
       input_files: a list of paths to the data pack files to combine.
-      whitelist_file: path to the file that contains the list of resource IDs
+      allowlist_file: path to the file that contains the list of resource IDs
                       that should be kept in the output file or None to include
                       all resources.
       suppress_removed_key_output: allows the caller to suppress the output from
@@ -239,15 +241,15 @@ def RePack(output_file, input_files, whitelist_file=None,
   """
   input_data_packs = [ReadDataPack(filename) for filename in input_files]
   input_info_files = [filename + '.info' for filename in input_files]
-  whitelist = None
-  if whitelist_file:
-    lines = util.ReadFile(whitelist_file, 'utf-8').strip().splitlines()
+  allowlist = None
+  if allowlist_file:
+    lines = util.ReadFile(allowlist_file, 'utf-8').strip().splitlines()
     if not lines:
-      raise Exception('Whitelist file should not be empty')
-    whitelist = set(int(x) for x in lines)
+      raise Exception('Allowlist file should not be empty')
+    allowlist = set(int(x) for x in lines)
   inputs = [(p.resources, p.encoding) for p in input_data_packs]
-  resources, encoding = RePackFromDataPackStrings(
-      inputs, whitelist, suppress_removed_key_output)
+  resources, encoding = RePackFromDataPackStrings(inputs, allowlist,
+                                                  suppress_removed_key_output)
   WriteDataPack(resources, output_file, encoding)
   if output_info_filepath is None:
     output_info_filepath = output_file + '.info'
@@ -257,13 +259,14 @@ def RePack(output_file, input_files, whitelist_file=None,
         output_info_file.writelines(info_file.readlines())
 
 
-def RePackFromDataPackStrings(inputs, whitelist,
+def RePackFromDataPackStrings(inputs,
+                              allowlist,
                               suppress_removed_key_output=False):
   """Combines all inputs into one.
 
   Args:
       inputs: a list of (resources_by_id, encoding) tuples to be combined.
-      whitelist: a list of resource IDs that should be kept in the output string
+      allowlist: a list of resource IDs that should be kept in the output string
                  or None to include all resources.
       suppress_removed_key_output: Do not print removed keys.
 
@@ -289,13 +292,14 @@ def RePackFromDataPackStrings(inputs, whitelist,
       raise KeyError('Inconsistent encodings: ' + str(encoding) +
                      ' vs ' + str(input_encoding))
 
-    if whitelist:
-      whitelisted_resources = dict([(key, input_resources[key])
+    if allowlist:
+      allowlisted_resources = dict([(key, input_resources[key])
                                     for key in input_resources.keys()
-                                    if key in whitelist])
-      resources.update(whitelisted_resources)
-      removed_keys = [key for key in input_resources.keys()
-                      if key not in whitelist]
+                                    if key in allowlist])
+      resources.update(allowlisted_resources)
+      removed_keys = [
+          key for key in input_resources.keys() if key not in allowlist
+      ]
       if not suppress_removed_key_output:
         for key in removed_keys:
           print('RePackFromDataPackStrings Removed Key:', key)

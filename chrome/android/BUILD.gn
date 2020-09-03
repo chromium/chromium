@@ -27,7 +27,7 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/icu/config.gni")
 import("//third_party/protobuf/proto_library.gni")
-import("//tools/resources/generate_resource_whitelist.gni")
+import("//tools/resources/generate_resource_allowlist.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 import("channel.gni")
@@ -1473,14 +1473,14 @@ template("libchrome_impl") {
   }
 }
 
-if (enable_resource_whitelist_generation) {
+if (enable_resource_allowlist_generation) {
   libchrome_impl("libchrome_pak_whitelist_inputs") {
     collect_inputs_only = true
   }
 }
 
 libchrome_impl("libchrome") {
-  if (enable_resource_whitelist_generation) {
+  if (enable_resource_allowlist_generation) {
     # Make sure whitelist_inputs is built first so when concurrent_links == 1
     # it comes before the actual (very slow) link step.
     deps = [ ":libchrome_pak_whitelist_inputs" ]
@@ -1569,7 +1569,7 @@ if (current_toolchain == default_toolchain) {
       _variant += "_apk"
     }
 
-    if (enable_resource_whitelist_generation) {
+    if (enable_resource_allowlist_generation) {
       if (_is_trichrome || _is_monochrome) {
         _lib = "libmonochrome_pak_whitelist_inputs"
       } else {
@@ -1580,7 +1580,7 @@ if (current_toolchain == default_toolchain) {
           "$target_gen_dir/${_variant}_resource_whitelist.txt"
       _lib_path = "/lib.unstripped/" + _lib + shlib_extension
 
-      generate_resource_whitelist(_resource_whitelist_target) {
+      generate_resource_allowlist(_resource_whitelist_target) {
         _fat_lib_toolchain = ""
         if (_is_monochrome || _is_trichrome) {
           # Always use the 32-bit library's whitelist since the 64-bit one is
@@ -1680,7 +1680,7 @@ if (current_toolchain == default_toolchain) {
         deps += [ "//chrome/browser/resources:dev_ui_paks" ]
       }
 
-      if (enable_resource_whitelist_generation) {
+      if (enable_resource_allowlist_generation) {
         repack_whitelist = _resource_whitelist_file
         deps += [ ":${_resource_whitelist_target}" ]
         if (_is_monochrome) {
@@ -1787,7 +1787,7 @@ template("libmonochrome_apk_or_bundle_tmpl") {
 
 if (!android_64bit_target_cpu ||
     current_toolchain == android_secondary_abi_toolchain) {
-  if (enable_resource_whitelist_generation) {
+  if (enable_resource_allowlist_generation) {
     # Avoiding a real link for this step allows the actual libmonochrome to
     # run at the same time as R8.
     libmonochrome_apk_or_bundle_tmpl("libmonochrome_pak_whitelist_inputs") {
@@ -1795,7 +1795,7 @@ if (!android_64bit_target_cpu ||
     }
   }
   libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
-    if (enable_resource_whitelist_generation) {
+    if (enable_resource_allowlist_generation) {
       # Make sure whitelist_inputs is built first so when concurrent_links == 1
       # it comes before the actual (very slow) link step.
       deps = [ ":libmonochrome_pak_whitelist_inputs" ]
