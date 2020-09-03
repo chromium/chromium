@@ -234,7 +234,7 @@ handling functions) in the order it's executed.
 
 For examples of this idiom, see
 
-* [HttpStreamParser::DoLoop](https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_stream_parser.cc&q=HttpStreamParser::DoLoop&sq=package:chromium).
-* [HttpNetworkTransaction::DoLoop](https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_network_transaction.cc&q=HttpNetworkTransaction::DoLoop&sq=package:chromium)
+* [HttpStreamParser::DoLoop](https://source.chromium.org/chromium/chromium/src/+/HEAD:net/http/http_stream_parser.cc).
+* [HttpNetworkTransaction::DoLoop](https://source.chromium.org/chromium/chromium/src/+/HEAD:net/http/http_network_transaction.cc)
 
 [net_error_list.h]: https://chromium.googlesource.com/chromium/src/+/master/net/base/net_error_list.h#1
