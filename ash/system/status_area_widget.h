@@ -27,6 +27,7 @@ class LogoutButtonTray;
 class MediaTray;
 class OverviewButtonTray;
 class PaletteTray;
+class PhoneHubTray;
 class SelectToSpeakTray;
 class Shelf;
 class StatusAreaOverflowButtonTray;
@@ -220,6 +221,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   std::unique_ptr<UnifiedSystemTray> unified_system_tray_;
   std::unique_ptr<LogoutButtonTray> logout_button_tray_;
   std::unique_ptr<PaletteTray> palette_tray_;
+  std::unique_ptr<PhoneHubTray> phone_hub_tray_;
   std::unique_ptr<StopRecordingButtonTray> stop_recording_button_tray_;
   std::unique_ptr<VirtualKeyboardTray> virtual_keyboard_tray_;
   std::unique_ptr<BloomTray> bloom_tray_;

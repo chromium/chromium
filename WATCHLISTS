@@ -1528,8 +1528,9 @@
                   '|permission_context',
     },
     'phonehub': {
-      'filepath': 'chrome/browser/chromeos/phonehub/|'\
-                  'chromeos/components/phonehub/',
+      'filepath': 'chrome/browser/chromeos/phonehub/'\
+                  '|chromeos/components/phonehub/'\
+                  '|ash/system/phonehub/',
     },
     'picture_in_picture': {
       'filepath': 'third_party/blink/renderer/modules/picture_in_picture/'

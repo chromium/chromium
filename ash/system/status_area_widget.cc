@@ -22,6 +22,7 @@
 #include "ash/system/media/media_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
@@ -34,6 +35,7 @@
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "media/base/media_switches.h"
@@ -126,6 +128,11 @@ void StatusAreaWidget::Initialize() {
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
     media_tray_ = std::make_unique<MediaTray>(shelf_);
     AddTrayButton(media_tray_.get());
+  }
+
+  if (chromeos::features::IsPhoneHubEnabled()) {
+    phone_hub_tray_ = std::make_unique<PhoneHubTray>(shelf_);
+    AddTrayButton(phone_hub_tray_.get());
   }
 
   unified_system_tray_ = std::make_unique<UnifiedSystemTray>(shelf_);
