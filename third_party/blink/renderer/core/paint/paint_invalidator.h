@@ -99,7 +99,7 @@ struct CORE_EXPORT PaintInvalidatorContext {
   // The previous PaintOffset of FragmentData.
   PhysicalOffset old_paint_offset;
 
-  const FragmentData* fragment_data;
+  const FragmentData* fragment_data = nullptr;
 
  private:
   friend class PaintInvalidator;
@@ -129,9 +129,6 @@ class PaintInvalidator {
   friend struct PaintInvalidatorContext;
   friend class PrePaintTreeWalk;
 
-  ALWAYS_INLINE IntRect ComputeVisualRect(const LayoutObject&,
-                                          const NGPrePaintInfo*,
-                                          const PaintInvalidatorContext&);
   ALWAYS_INLINE void UpdatePaintingLayer(const LayoutObject&,
                                          PaintInvalidatorContext&,
                                          bool is_ng_painting);
