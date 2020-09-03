@@ -607,9 +607,7 @@ Polymer({
         shouldGetNetworkDetails =
             this.deviceState_.deviceState != newDeviceState.deviceState;
         this.deviceState_ = newDeviceState;
-      } else if (
-          this.deviceState_ &&
-          this.deviceState_.scanning != newDeviceState.scanning) {
+      } else if (this.deviceState_.scanning != newDeviceState.scanning) {
         // Update just the scanning state to avoid interrupting other parts of
         // the UI (e.g. custom IP addresses or nameservers).
         this.deviceState_.scanning = newDeviceState.scanning;
@@ -618,6 +616,12 @@ Polymer({
         if (type === mojom.NetworkType.kCellular) {
           shouldGetNetworkDetails = true;
         }
+      } else if (type === mojom.NetworkType.kCellular) {
+        // If there are no device state property changes but type is
+        // cellular, then always fetch network details. This is because
+        // for cellular networks, some shill device level properties are
+        // represented at network level in ONC.
+        shouldGetNetworkDetails = true;
       }
       if (shouldGetNetworkDetails) {
         this.getNetworkDetails_();
