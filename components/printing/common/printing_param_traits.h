@@ -29,6 +29,16 @@ struct ParamTraits<printing::mojom::DidPrintContentParamsPtr> {
   static void Log(const param_type& p, std::string* l);
 };
 
+template <>
+struct ParamTraits<printing::mojom::PrintParamsPtr> {
+  typedef printing::mojom::PrintParamsPtr param_type;
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
+
 }  // namespace IPC
 
 #endif  // COMPONENTS_PRINTING_COMMON_PRINTING_PARAM_TRAITS_H_

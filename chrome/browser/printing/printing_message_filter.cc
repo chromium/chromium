@@ -205,18 +205,18 @@ void PrintingMessageFilter::OnScriptedPrint(
 void PrintingMessageFilter::OnScriptedPrintReply(
     std::unique_ptr<PrinterQuery> printer_query,
     IPC::Message* reply_msg) {
-  PrintMsg_PrintPages_Params params;
-  if (printer_query->last_status() != PrintingContext::OK ||
-      !printer_query->settings().dpi()) {
-    params.Reset();
-  } else {
-    RenderParamsFromPrintSettings(printer_query->settings(), &params.params);
-    params.params.document_cookie = printer_query->cookie();
+  mojom::PrintPagesParams params;
+  params.params = mojom::PrintParams::New();
+  if (printer_query->last_status() == PrintingContext::OK &&
+      printer_query->settings().dpi()) {
+    RenderParamsFromPrintSettings(printer_query->settings(),
+                                  params.params.get());
+    params.params->document_cookie = printer_query->cookie();
     params.pages = PageRange::GetPages(printer_query->settings().ranges());
   }
   PrintHostMsg_ScriptedPrint::WriteReplyParams(reply_msg, params);
   Send(reply_msg);
-  if (!params.params.dpi.IsEmpty() && params.params.document_cookie) {
+  if (!params.params->dpi.IsEmpty() && params.params->document_cookie) {
     queue_->QueuePrinterQuery(std::move(printer_query));
   } else {
     printer_query->StopWorker();
@@ -263,12 +263,12 @@ void PrintingMessageFilter::NotifySystemDialogCancelled(int routing_id) {
 void PrintingMessageFilter::OnUpdatePrintSettingsReply(
     std::unique_ptr<PrinterQuery> printer_query,
     IPC::Message* reply_msg) {
-  PrintMsg_PrintPages_Params params;
-  if (!printer_query || printer_query->last_status() != PrintingContext::OK) {
-    params.Reset();
-  } else {
-    RenderParamsFromPrintSettings(printer_query->settings(), &params.params);
-    params.params.document_cookie = printer_query->cookie();
+  mojom::PrintPagesParams params;
+  params.params = mojom::PrintParams::New();
+  if (printer_query && printer_query->last_status() == PrintingContext::OK) {
+    RenderParamsFromPrintSettings(printer_query->settings(),
+                                  params.params.get());
+    params.params->document_cookie = printer_query->cookie();
     params.pages = PageRange::GetPages(printer_query->settings().ranges());
   }
   bool canceled = printer_query &&

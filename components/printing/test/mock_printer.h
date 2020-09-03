@@ -19,8 +19,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-struct PrintMsg_PrintPages_Params;
-
 // A class which represents an output page used in the MockPrinter class.
 // The MockPrinter class stores output pages in a vector, so, this class
 // inherits the base::RefCounted<> class so that the MockPrinter class can use
@@ -81,9 +79,9 @@ class MockPrinter {
   void ScriptedPrint(int cookie,
                      int expected_pages_count,
                      bool has_selection,
-                     PrintMsg_PrintPages_Params* settings);
+                     printing::mojom::PrintPagesParams* settings);
   void UpdateSettings(int cookie,
-                      PrintMsg_PrintPages_Params* params,
+                      printing::mojom::PrintPagesParams* params,
                       const std::vector<int>& page_range_array,
                       int margins_type,
                       const gfx::Size& page_size,

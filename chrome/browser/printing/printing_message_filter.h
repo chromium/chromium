@@ -35,7 +35,7 @@ class PrintingMessageFilter : public content::BrowserMessageFilter {
   class TestDelegate {
    public:
     // Returns the print params to be used in OnUpdatePrintSettingsReply().
-    virtual mojom::PrintParams GetPrintParams() = 0;
+    virtual mojom::PrintParamsPtr GetPrintParams() = 0;
 
    protected:
     virtual ~TestDelegate() = default;

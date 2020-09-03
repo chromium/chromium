@@ -79,7 +79,7 @@ struct DidPreviewDocumentParams {
 };
 
 // Parameters for a render request.
-struct PrintParams{
+struct PrintParams {
   // Physical size of the page, including non-printable margins,
   // in pixels according to dpi.
   gfx.mojom.Size page_size;
@@ -137,6 +137,16 @@ struct PrintParams{
   // Defaults to 1 if the feature is disabled, and some number greater
   // than 1 otherwise.  See printing::NupParameters for supported values.
   uint32 pages_per_sheet = 1;
+};
+
+// Parameters for a print setting that has parameters for a print request and an
+// array of pages to print.
+struct PrintPagesParams {
+  // Parameters to render the page as a printed page. It must always be the same
+  // value for all the document.
+  PrintParams params;
+  // If empty, this means a request to render all the printed pages.
+  array<int32> pages;
 };
 
 // Parameters to describe a rendered page.

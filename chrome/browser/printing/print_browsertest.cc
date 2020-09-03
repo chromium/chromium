@@ -127,16 +127,16 @@ class NupPrintingTestDelegate : public PrintingMessageFilter::TestDelegate {
   }
 
   // PrintingMessageFilter::TestDelegate:
-  mojom::PrintParams GetPrintParams() override {
-    mojom::PrintParams params;
-    params.page_size = gfx::Size(612, 792);
-    params.content_size = gfx::Size(540, 720);
-    params.printable_area = gfx::Rect(612, 792);
-    params.dpi = gfx::Size(72, 72);
-    params.document_cookie = kDefaultDocumentCookie;
-    params.pages_per_sheet = 4;
-    params.printed_doc_type = IsOopifEnabled() ? mojom::SkiaDocumentType::kMSKP
-                                               : mojom::SkiaDocumentType::kPDF;
+  mojom::PrintParamsPtr GetPrintParams() override {
+    auto params = mojom::PrintParams::New();
+    params->page_size = gfx::Size(612, 792);
+    params->content_size = gfx::Size(540, 720);
+    params->printable_area = gfx::Rect(612, 792);
+    params->dpi = gfx::Size(72, 72);
+    params->document_cookie = kDefaultDocumentCookie;
+    params->pages_per_sheet = 4;
+    params->printed_doc_type = IsOopifEnabled() ? mojom::SkiaDocumentType::kMSKP
+                                                : mojom::SkiaDocumentType::kPDF;
     return params;
   }
 

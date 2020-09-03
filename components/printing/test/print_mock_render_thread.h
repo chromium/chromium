@@ -25,7 +25,6 @@ class DictionaryValue;
 
 class MockPrinter;
 struct PrintHostMsg_PreviewIds;
-struct PrintMsg_PrintPages_Params;
 
 // Extends content::MockRenderThread to know about printing
 class PrintMockRenderThread : public content::MockRenderThread {
@@ -74,7 +73,7 @@ class PrintMockRenderThread : public content::MockRenderThread {
 
   // PrintRenderFrameHelper expects final print settings from the user.
   void OnScriptedPrint(const printing::mojom::ScriptedPrintParams& params,
-                       PrintMsg_PrintPages_Params* settings);
+                       IPC::Message* reply_msg);
 
   void OnDidPrintDocument(const printing::mojom::DidPrintDocumentParams& params,
                           IPC::Message* reply_msg);
@@ -89,8 +88,7 @@ class PrintMockRenderThread : public content::MockRenderThread {
   // For print preview, PrintRenderFrameHelper will update settings.
   void OnUpdatePrintSettings(int document_cookie,
                              const base::DictionaryValue& job_settings,
-                             PrintMsg_PrintPages_Params* params,
-                             bool* canceled);
+                             IPC::Message* reply_msg);
 
   // A mock printer device used for printing tests.
   std::unique_ptr<MockPrinter> printer_;

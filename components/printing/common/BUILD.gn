@@ -46,3 +46,15 @@ mojom("mojo_interfaces") {
     enabled_features = [ "enable_print_preview" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "printing_param_traits_unittest.cc" ]
+  deps = [
+    ":common",
+    "//ipc:test_support",
+    "//printing/mojom",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}

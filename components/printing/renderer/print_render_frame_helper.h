@@ -30,8 +30,6 @@
 #include "third_party/blink/public/web/web_print_params.h"
 #include "ui/gfx/geometry/size.h"
 
-struct PrintMsg_PrintPages_Params;
-
 // RenderViewTest-based tests crash on Android
 // http://crbug.com/187500
 #if defined(OS_ANDROID)
@@ -335,7 +333,7 @@ class PrintRenderFrameHelper
                                 const blink::WebNode& node,
                                 int expected_pages_count,
                                 PrintRequestType print_request_type,
-                                PrintMsg_PrintPages_Params* print_settings);
+                                mojom::PrintPagesParams* print_settings);
 
   // Page Printing / Rendering ------------------------------------------------
 
@@ -389,9 +387,8 @@ class PrintRenderFrameHelper
 
   // Return an array of pages to print given the print |params| and an expected
   // |page_count|. Page numbers are zero-based.
-  static std::vector<int> GetPrintedPages(
-      const PrintMsg_PrintPages_Params& params,
-      int page_count);
+  static std::vector<int> GetPrintedPages(const mojom::PrintPagesParams& params,
+                                          int page_count);
 
   // Given the |device| and |canvas| to draw on, prints the appropriate headers
   // and footers using strings from |header_footer_info| on to the canvas.
@@ -436,13 +433,13 @@ class PrintRenderFrameHelper
   void OnPreviewDisconnect();
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-  void SetPrintPagesParams(const PrintMsg_PrintPages_Params& settings);
+  void SetPrintPagesParams(const mojom::PrintPagesParams& settings);
 
   // WebView used only to print the selection.
   std::unique_ptr<PrepareFrameAndViewForPrint> prep_frame_view_;
   bool reset_prep_frame_view_ = false;
 
-  std::unique_ptr<PrintMsg_PrintPages_Params> print_pages_params_;
+  mojom::PrintPagesParamsPtr print_pages_params_;
   gfx::Rect printer_printable_area_;
   bool is_print_ready_metafile_sent_ = false;
   bool ignore_css_margins_ = false;

@@ -95,9 +95,10 @@ void AwPrintManager::OnScriptedPrint(
     const printing::mojom::ScriptedPrintParams& scripted_params,
     IPC::Message* reply_msg) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PrintMsg_PrintPages_Params params;
-  printing::RenderParamsFromPrintSettings(*settings_, &params.params);
-  params.params.document_cookie = scripted_params.cookie;
+  printing::mojom::PrintPagesParams params;
+  params.params = printing::mojom::PrintParams::New();
+  printing::RenderParamsFromPrintSettings(*settings_, params.params.get());
+  params.params->document_cookie = scripted_params.cookie;
   params.pages = printing::PageRange::GetPages(settings_->ranges());
   PrintHostMsg_ScriptedPrint::WriteReplyParams(reply_msg, params);
   render_frame_host->Send(reply_msg);

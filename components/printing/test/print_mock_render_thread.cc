@@ -55,8 +55,9 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 #if BUILDFLAG(ENABLE_PRINTING)
     IPC_MESSAGE_HANDLER(PrintHostMsg_GetDefaultPrintSettings,
                         OnGetDefaultPrintSettings)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_UpdatePrintSettings, OnUpdatePrintSettings)
+    IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
+    IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_UpdatePrintSettings,
+                                    OnUpdatePrintSettings)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_DidPrintDocument,
                                     OnDidPrintDocument)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -79,11 +80,15 @@ void PrintMockRenderThread::OnGetDefaultPrintSettings(
 
 void PrintMockRenderThread::OnScriptedPrint(
     const printing::mojom::ScriptedPrintParams& params,
-    PrintMsg_PrintPages_Params* settings) {
+    IPC::Message* reply_msg) {
+  printing::mojom::PrintPagesParams settings;
+  settings.params = printing::mojom::PrintParams::New();
   if (print_dialog_user_response_) {
     printer_->ScriptedPrint(params.cookie, params.expected_pages_count,
-                            params.has_selection, settings);
+                            params.has_selection, &settings);
   }
+  PrintHostMsg_ScriptedPrint::WriteReplyParams(reply_msg, settings);
+  Send(reply_msg);
 }
 
 void PrintMockRenderThread::OnDidPrintDocument(
@@ -121,10 +126,11 @@ void PrintMockRenderThread::OnCheckForCancel(const PrintHostMsg_PreviewIds& ids,
 void PrintMockRenderThread::OnUpdatePrintSettings(
     int document_cookie,
     const base::DictionaryValue& job_settings,
-    PrintMsg_PrintPages_Params* params,
-    bool* canceled) {
-  if (canceled)
-    *canceled = false;
+    IPC::Message* reply_msg) {
+  printing::mojom::PrintPagesParams params;
+  params.params = printing::mojom::PrintParams::New();
+  bool canceled = false;
+
   // Check and make sure the required settings are all there.
   // We don't actually care about the values.
   base::Optional<int> margins_type =
@@ -140,6 +146,9 @@ void PrintMockRenderThread::OnUpdatePrintSettings(
       !job_settings.FindIntKey(printing::kSettingCopies) ||
       !job_settings.FindIntKey(printing::kPreviewUIID) ||
       !job_settings.FindIntKey(printing::kPreviewRequestID)) {
+    PrintHostMsg_UpdatePrintSettings::WriteReplyParams(reply_msg, params,
+                                                       canceled);
+    Send(reply_msg);
     return;
   }
 
@@ -193,14 +202,17 @@ void PrintMockRenderThread::OnUpdatePrintSettings(
   int scale_factor = setting_scale_factor.value_or(100);
 
   std::vector<int> pages(printing::PageRange::GetPages(new_ranges));
-  printer_->UpdateSettings(document_cookie, params, pages, margins_type.value(),
-                           page_size, scale_factor);
+  printer_->UpdateSettings(document_cookie, &params, pages,
+                           margins_type.value(), page_size, scale_factor);
   base::Optional<bool> selection_only =
       job_settings.FindBoolKey(printing::kSettingShouldPrintSelectionOnly);
   base::Optional<bool> should_print_backgrounds =
       job_settings.FindBoolKey(printing::kSettingShouldPrintBackgrounds);
-  params->params.selection_only = selection_only.value();
-  params->params.should_print_backgrounds = should_print_backgrounds.value();
+  params.params->selection_only = selection_only.value();
+  params.params->should_print_backgrounds = should_print_backgrounds.value();
+  PrintHostMsg_UpdatePrintSettings::WriteReplyParams(reply_msg, params,
+                                                     canceled);
+  Send(reply_msg);
 }
 
 MockPrinter* PrintMockRenderThread::printer() {

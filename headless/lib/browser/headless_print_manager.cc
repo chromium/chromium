@@ -145,7 +145,7 @@ void HeadlessPrintManager::GetPDFContents(content::RenderFrameHost* rfh,
   GetPrintRenderFrame(rfh)->PrintRequestedPages();
 }
 
-std::unique_ptr<PrintMsg_PrintPages_Params>
+printing::mojom::PrintPagesParamsPtr
 HeadlessPrintManager::GetPrintParamsFromSettings(
     const HeadlessPrintSettings& settings) {
   printing::PrintSettings print_settings;
@@ -173,15 +173,16 @@ HeadlessPrintManager::GetPrintParamsFromSettings(
   print_settings.SetPrinterPrintableArea(settings.paper_size_in_points,
                                          printable_area_device_units, true);
 
-  auto print_params = std::make_unique<PrintMsg_PrintPages_Params>();
+  auto print_params = printing::mojom::PrintPagesParams::New();
+  print_params->params = printing::mojom::PrintParams::New();
   printing::RenderParamsFromPrintSettings(print_settings,
-                                          &print_params->params);
-  print_params->params.document_cookie = printing::PrintSettings::NewCookie();
-  print_params->params.header_template =
+                                          print_params->params.get());
+  print_params->params->document_cookie = printing::PrintSettings::NewCookie();
+  print_params->params->header_template =
       base::UTF8ToUTF16(settings.header_template);
-  print_params->params.footer_template =
+  print_params->params->footer_template =
       base::UTF8ToUTF16(settings.footer_template);
-  print_params->params.prefer_css_page_size = settings.prefer_css_page_size;
+  print_params->params->prefer_css_page_size = settings.prefer_css_page_size;
   return print_params;
 }
 
@@ -225,8 +226,8 @@ bool HeadlessPrintManager::OnMessageReceived(
 void HeadlessPrintManager::OnGetDefaultPrintSettings(
     content::RenderFrameHost* render_frame_host,
     IPC::Message* reply_msg) {
-  PrintHostMsg_GetDefaultPrintSettings::WriteReplyParams(reply_msg,
-                                                         print_params_->params);
+  PrintHostMsg_GetDefaultPrintSettings::WriteReplyParams(
+      reply_msg, *print_params_->params);
   // Intentionally using |printing_rfh_| instead of |render_frame_host|
   // parameter.
   printing_rfh_->Send(reply_msg);

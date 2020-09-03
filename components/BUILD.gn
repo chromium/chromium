@@ -413,6 +413,7 @@ test("components_unittests") {
   if (enable_basic_printing) {
     deps += [
       "//components/printing/browser:unit_tests",
+      "//components/printing/common:unit_tests",
       "//components/services/print_compositor:unit_tests",
     ]
   }

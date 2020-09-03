@@ -148,31 +148,32 @@ void MockPrinter::UseInvalidContentSize() {
 void MockPrinter::ScriptedPrint(int cookie,
                                 int expected_pages_count,
                                 bool has_selection,
-                                PrintMsg_PrintPages_Params* settings) {
+                                printing::mojom::PrintPagesParams* settings) {
   // Verify the input parameters.
   EXPECT_EQ(document_cookie_, cookie);
 
-  settings->Reset();
+  *settings->params = printing::mojom::PrintParams();
+  settings->pages.clear();
 
-  settings->params.dpi = gfx::Size(dpi_, dpi_);
-  settings->params.selection_only = selection_only_;
-  settings->params.should_print_backgrounds = should_print_backgrounds_;
-  settings->params.document_cookie = document_cookie_;
-  settings->params.page_size = page_size_;
-  settings->params.content_size = content_size_;
-  settings->params.printable_area = printable_area_;
-  settings->params.is_first_request = is_first_request_;
-  settings->params.print_scaling_option = print_scaling_option_;
-  settings->params.print_to_pdf = print_to_pdf_;
-  settings->params.preview_request_id = preview_request_id_;
-  settings->params.display_header_footer = display_header_footer_;
-  settings->params.title = title_;
-  settings->params.url = url_;
+  settings->params->dpi = gfx::Size(dpi_, dpi_);
+  settings->params->selection_only = selection_only_;
+  settings->params->should_print_backgrounds = should_print_backgrounds_;
+  settings->params->document_cookie = document_cookie_;
+  settings->params->page_size = page_size_;
+  settings->params->content_size = content_size_;
+  settings->params->printable_area = printable_area_;
+  settings->params->is_first_request = is_first_request_;
+  settings->params->print_scaling_option = print_scaling_option_;
+  settings->params->print_to_pdf = print_to_pdf_;
+  settings->params->preview_request_id = preview_request_id_;
+  settings->params->display_header_footer = display_header_footer_;
+  settings->params->title = title_;
+  settings->params->url = url_;
   printer_status_ = PRINTER_PRINTING;
 }
 
 void MockPrinter::UpdateSettings(int cookie,
-                                 PrintMsg_PrintPages_Params* params,
+                                 printing::mojom::PrintPagesParams* params,
                                  const std::vector<int>& pages,
                                  int margins_type,
                                  const gfx::Size& page_size,
@@ -180,12 +181,12 @@ void MockPrinter::UpdateSettings(int cookie,
   if (document_cookie_ == -1) {
     document_cookie_ = CreateDocumentCookie();
   }
-  params->Reset();
+  *params->params = printing::mojom::PrintParams();
   params->pages = pages;
-  SetPrintParams(&(params->params));
-  UpdateMargins(margins_type, dpi_, &(params->params));
+  SetPrintParams(params->params.get());
+  UpdateMargins(margins_type, dpi_, params->params.get());
   if (!page_size.IsEmpty())
-    UpdatePageSizeAndScaling(page_size, scale_factor, &params->params);
+    UpdatePageSizeAndScaling(page_size, scale_factor, params->params.get());
   printer_status_ = PRINTER_PRINTING;
 }
 

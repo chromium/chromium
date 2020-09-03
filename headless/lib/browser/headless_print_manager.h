@@ -17,8 +17,6 @@
 #include "headless/public/headless_export.h"
 #include "printing/print_settings.h"
 
-struct PrintMsg_PrintPages_Params;
-
 namespace headless {
 
 // Exported for tests.
@@ -90,7 +88,7 @@ class HeadlessPrintManager
   explicit HeadlessPrintManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HeadlessPrintManager>;
 
-  std::unique_ptr<PrintMsg_PrintPages_Params> GetPrintParamsFromSettings(
+  printing::mojom::PrintPagesParamsPtr GetPrintParamsFromSettings(
       const HeadlessPrintSettings& settings);
   // content::WebContentsObserver implementation.
   bool OnMessageReceived(const IPC::Message& message,
@@ -115,7 +113,7 @@ class HeadlessPrintManager
 
   content::RenderFrameHost* printing_rfh_ = nullptr;
   GetPDFCallback callback_;
-  std::unique_ptr<PrintMsg_PrintPages_Params> print_params_;
+  printing::mojom::PrintPagesParamsPtr print_params_;
   std::string page_ranges_text_;
   bool ignore_invalid_page_ranges_ = false;
   std::string data_;

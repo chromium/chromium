@@ -31,18 +31,6 @@
 #ifndef INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_
 #define INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_
 
-struct PrintMsg_PrintPages_Params {
-  PrintMsg_PrintPages_Params();
-  PrintMsg_PrintPages_Params(const PrintMsg_PrintPages_Params& other);
-  ~PrintMsg_PrintPages_Params();
-
-  // Resets the members of the struct to 0.
-  void Reset();
-
-  printing::mojom::PrintParams params;
-  std::vector<int> pages;
-};
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 struct PrintHostMsg_RequestPrintPreview_Params {
   PrintHostMsg_RequestPrintPreview_Params();
@@ -191,7 +179,7 @@ IPC_STRUCT_TRAITS_BEGIN(printing::mojom::PageSizeMargins)
   IPC_STRUCT_TRAITS_MEMBER(margin_bottom)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(PrintMsg_PrintPages_Params)
+IPC_STRUCT_TRAITS_BEGIN(printing::mojom::PrintPagesParams)
   // Parameters to render the page as a printed page. It must always be the same
   // value for all the document.
   IPC_STRUCT_TRAITS_MEMBER(params)
@@ -312,11 +300,12 @@ IPC_SYNC_MESSAGE_ROUTED0_1(PrintHostMsg_GetDefaultPrintSettings,
 
 // The renderer wants to update the current print settings with new
 // |job_settings|.
-IPC_SYNC_MESSAGE_ROUTED2_2(PrintHostMsg_UpdatePrintSettings,
-                           int /* document_cookie */,
-                           base::DictionaryValue /* job_settings */,
-                           PrintMsg_PrintPages_Params /* current_settings */,
-                           bool /* canceled */)
+IPC_SYNC_MESSAGE_ROUTED2_2(
+    PrintHostMsg_UpdatePrintSettings,
+    int /* document_cookie */,
+    base::DictionaryValue /* job_settings */,
+    printing::mojom::PrintPagesParams /* current_settings */,
+    bool /* canceled */)
 
 // It's the renderer that controls the printing process when it is generated
 // by javascript. This step is about showing UI to the user to select the
@@ -324,7 +313,7 @@ IPC_SYNC_MESSAGE_ROUTED2_2(PrintHostMsg_UpdatePrintSettings,
 // PrintMsg_PrintPages which is executed implicitly.
 IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_ScriptedPrint,
                            printing::mojom::ScriptedPrintParams,
-                           PrintMsg_PrintPages_Params
+                           printing::mojom::PrintPagesParams
                            /* settings chosen by the user*/)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
