@@ -40674,6 +40674,7 @@ from previous Chrome versions.
   <int value="-1832221649" label="disable-out-of-process-pac"/>
   <int value="-1830472348" label="CryptAuthV2DeviceSync:enabled"/>
   <int value="-1830199297" label="force-empty-corb-allowlist"/>
+  <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
@@ -43191,6 +43192,7 @@ from previous Chrome versions.
   <int value="779086132" label="enable-data-reduction-proxy-alt"/>
   <int value="779703052" label="ChromeOSAmbientMode:enabled"/>
   <int value="779849093" label="OfflinePagesCTSuppressNotifications:disabled"/>
+  <int value="780743733" label="QueryTilesLocalOrdering:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>

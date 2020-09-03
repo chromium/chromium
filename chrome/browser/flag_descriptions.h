@@ -1743,6 +1743,8 @@ extern const char kQueryTilesCountryCodeIndia[];
 extern const char kQueryTilesCountryCodeBrazil[];
 extern const char kQueryTilesCountryCodeNigeria[];
 extern const char kQueryTilesCountryCodeIndonesia[];
+extern const char kQueryTilesLocalOrderingName[];
+extern const char kQueryTilesLocalOrderingDescription[];
 extern const char kQueryTilesInstantFetchName[];
 extern const char kQueryTilesInstantFetchDescription[];
 

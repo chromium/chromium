@@ -3026,6 +3026,10 @@ const char kQueryTilesCountryCodeIndia[] = "IN";
 const char kQueryTilesCountryCodeBrazil[] = "BR";
 const char kQueryTilesCountryCodeNigeria[] = "NG";
 const char kQueryTilesCountryCodeIndonesia[] = "ID";
+const char kQueryTilesLocalOrderingName[] =
+    "Query Tiles - Enable local ordering";
+const char kQueryTilesLocalOrderingDescription[] =
+    "Enables ordering query tiles locally based on user interactions.";
 const char kQueryTilesInstantFetchName[] = "Query tile instant fetch";
 const char kQueryTilesInstantFetchDescription[] =
     "Immediately schedule background task to fetch query tiles";

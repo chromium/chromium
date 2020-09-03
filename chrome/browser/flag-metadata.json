@@ -3794,6 +3794,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "query-tiles-local-ordering",
+    "owners": [ "hesen", "qinmin" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "query-tiles-omnibox",
     "owners": [ "shaktisahu", "qinmin" ],
     "expiry_milestone": 88

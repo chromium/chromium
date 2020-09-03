@@ -14,6 +14,8 @@ const base::Feature kQueryTilesInOmnibox{"QueryTilesInOmnibox",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kQueryTilesEnableQueryEditing{
     "QueryTilesEnableQueryEditing", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kQueryTilesLocalOrdering{"QueryTilesLocalOrdering",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsEnabledQueryTilesInOmnibox() {
   return base::FeatureList::IsEnabled(features::kQueryTilesGeoFilter) &&

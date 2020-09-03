@@ -26,6 +26,10 @@ extern const base::Feature kQueryTilesInOmnibox;
 // level of tiles will be displayed.
 extern const base::Feature kQueryTilesEnableQueryEditing;
 
+// Feature flag to determine whether query tiles should be displayed in an order
+// based on local user interactions.
+extern const base::Feature kQueryTilesLocalOrdering;
+
 // Helper function to determine whether query tiles should be shown on omnibox.
 bool IsEnabledQueryTilesInOmnibox();
 
@@ -45,6 +49,7 @@ extern const char kQueryTilesInstantBackgroundTask[];
 
 // If set, server will return trending tiles along with curated tiles.
 extern const char kQueryTilesEnableTrending[];
+
 }  // namespace switches
 }  // namespace query_tiles
 
