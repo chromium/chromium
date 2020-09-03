@@ -7,7 +7,7 @@
 // API is only valid if called from a browser or app associated with the
 // primary user. See the Open Network Configuration (ONC) documentation for
 // descriptions of properties:
-// <a href="https://code.google.com/p/chromium/codesearch#chromium/src/components/onc/docs/onc_spec.html">
+// <a href="https://source.chromium.org/chromium/chromium/src/+/HEAD:components/onc/docs/onc_spec.md">
 // src/components/onc/docs/onc_spec.html</a>, or the
 // <a href="http://www.chromium.org/chromium-os/chromiumos-design-docs/open-network-configuration">
 // Open Network Configuration</a> page at chromium.org.
