@@ -2287,7 +2287,6 @@ bool OutOfProcessInstance::SendInputEventToEngine(const pp::InputEvent& event) {
       // instead.
       return engine()->HandleEvent(NoneInputEvent());
     case PP_INPUTEVENT_TYPE_UNDEFINED:
-      NOTREACHED();
       return false;
   }
 }
