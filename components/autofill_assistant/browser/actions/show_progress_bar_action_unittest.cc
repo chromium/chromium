@@ -152,6 +152,18 @@ TEST_F(ShowProgressBarActionTest, SetActiveStep) {
   Run();
 }
 
+TEST_F(ShowProgressBarActionTest, SetActiveStepWithError) {
+  proto_.set_active_step(2);
+  proto_.set_error_state(true);
+
+  EXPECT_CALL(mock_action_delegate_, SetProgressActiveStep(2));
+  EXPECT_CALL(mock_action_delegate_, SetProgressBarErrorState(2));
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
 TEST_F(ShowProgressBarActionTest, OutOfBoundsActiveStepFailsAction) {
   proto_.set_active_step(-1);
 

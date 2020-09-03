@@ -39,10 +39,10 @@ public class AssistantStepProgressBar {
     // animation starts scaling and after a while the alpha changes.
     private static final int PULSING_ALPHA_CHANGE_DELAY_MS = 300;
     private static final int PULSING_RESTART_DELAY_MS = 2_000;
+    private static final int COLOR_LIST = R.color.blue_when_enabled;
+    private static final int ERROR_COLOR_LIST = R.color.default_red;
 
     private static class IconViewHolder {
-        private static final int COLOR_LIST = R.color.blue_when_enabled;
-        private static final int ERROR_COLOR_LIST = R.color.default_red;
 
         private final RelativeLayout mView;
         private final Context mContext;
@@ -52,6 +52,7 @@ public class AssistantStepProgressBar {
 
         private boolean mShouldRunAnimation;
         private boolean mDisableAnimations;
+        private boolean mFirstAnimation;
 
         IconViewHolder(ViewGroup view, Context context) {
             mContext = context;
@@ -123,15 +124,18 @@ public class AssistantStepProgressBar {
             pulseAnimation.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animator) {
-                    mPulsor.setScaleX(0f);
-                    mPulsor.setScaleY(0f);
-                    mPulsor.setAlpha(1f);
-                    mPulsor.setVisibility(View.VISIBLE);
+                    if (mShouldRunAnimation) {
+                        mPulsor.setScaleX(0f);
+                        mPulsor.setScaleY(0f);
+                        mPulsor.setAlpha(1f);
+                        mPulsor.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
                     mPulsor.setVisibility(View.GONE);
+                    mFirstAnimation = false;
                     if (mShouldRunAnimation) {
                         pulseAnimation.setStartDelay(PULSING_RESTART_DELAY_MS);
                         pulseAnimation.start();
@@ -207,6 +211,7 @@ public class AssistantStepProgressBar {
                 return;
             }
 
+            mFirstAnimation = true;
             mShouldRunAnimation = true;
             mPulseAnimation.setStartDelay(delayed
                             ? ANIMATION_DELAY_MS + ICON_ENABLED_ANIMATION_DURATION_MS
@@ -220,19 +225,39 @@ public class AssistantStepProgressBar {
         }
 
         void setError(boolean error) {
-            ApiCompatibilityUtils.setImageTintList(mIcon,
-                    ContextCompat.getColorStateList(
-                            mContext, error ? ERROR_COLOR_LIST : COLOR_LIST));
+            if (mIcon.isEnabled() || !error) {
+                ApiCompatibilityUtils.setImageTintList(mIcon,
+                        ContextCompat.getColorStateList(
+                                mContext, error ? ERROR_COLOR_LIST : COLOR_LIST));
+            } else if ((!mPulseAnimation.isStarted() || mFirstAnimation) && !mDisableAnimations) {
+                // This is in case when the blue line is animating towards the icon that we need to
+                // set in error state. We want to wait for the line to reach the icon before turning
+                // the icon red.
+                mPulseAnimation.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        mPulseAnimation.removeListener(this);
+                        ApiCompatibilityUtils.setImageTintList(
+                                mIcon, ContextCompat.getColorStateList(mContext, ERROR_COLOR_LIST));
+                    }
+                });
+            } else {
+                mPulseAnimation.cancel();
+                ApiCompatibilityUtils.setImageTintList(
+                        mIcon, ContextCompat.getColorStateList(mContext, ERROR_COLOR_LIST));
+            }
         }
     }
 
     private static class LineViewHolder {
+        private final Context mContext;
         private final LinearLayout mView;
         private final View mLineForeground;
 
         private boolean mDisableAnimations;
 
         LineViewHolder(ViewGroup view, Context context) {
+            mContext = context;
             mView = addMainContainer(view, context);
             RelativeLayout relativeContainer = addRelativeContainer(mView, context);
             addBackgroundLine(relativeContainer, context);
@@ -285,6 +310,8 @@ public class AssistantStepProgressBar {
 
             line.setBackground(ApiCompatibilityUtils.getDrawable(context.getResources(),
                     R.drawable.autofill_assistant_rounded_corner_background));
+
+            line.setTag(AssistantTagsForTesting.PROGRESSBAR_LINE_FOREGROUND_TAG);
             line.setEnabled(true);
 
             line.setScaleX(0f);
@@ -325,6 +352,11 @@ public class AssistantStepProgressBar {
                 mLineForeground.setPivotX(-mLineForeground.getWidth());
             });
             animator.start();
+        }
+
+        void setError(boolean error) {
+            int colorId = error ? R.color.default_red : R.color.default_icon_color_blue;
+            mLineForeground.setBackgroundColor(ContextCompat.getColor(mContext, colorId));
         }
     }
 
@@ -417,8 +449,13 @@ public class AssistantStepProgressBar {
     }
 
     public void setError(boolean error) {
+        boolean errorAfterCompletion = error && mCurrentStep >= mNumberOfSteps;
         for (int i = 0; i < mNumberOfSteps; ++i) {
-            mIcons[i].setError(error && i == mCurrentStep);
+            mIcons[i].setError(errorAfterCompletion || (error && i == mCurrentStep));
+            mIcons[i].setPulsingAnimationEnabled(!error && i == mCurrentStep);
+        }
+        for (LineViewHolder line : mLines) {
+            line.setError(errorAfterCompletion);
         }
     }
 }

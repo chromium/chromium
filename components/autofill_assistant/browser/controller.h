@@ -121,6 +121,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetProgress(int progress) override;
   void SetProgressActiveStep(int active_step) override;
   void SetProgressVisible(bool visible) override;
+  void SetProgressBarErrorState(bool error) override;
   void SetStepProgressBarConfiguration(
       const ShowProgressBarProto::StepProgressBarConfiguration& configuration)
       override;
@@ -325,8 +326,6 @@ class Controller : public ScriptExecutorDelegate,
 
   // Clear out visible state and enter the stopped state.
   void EnterStoppedState();
-
-  void SetProgressBarErrorState(bool error);
 
   ElementArea* touchable_element_area();
   ScriptTracker* script_tracker();
