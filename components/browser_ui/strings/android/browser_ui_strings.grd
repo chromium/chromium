@@ -331,6 +331,9 @@
       <message name="IDS_ACCESSIBILITY_CANCEL_SELECTION" desc="Content description for the cancel selection button that deselects the selected items in a selectable list view.">
         Cancel selection
       </message>
+      <message name="IDS_ACCESSIBILITY_EXPAND_BUTTON" desc="Content description for the expand button in the expand_arrow_with_separator layout.">
+        Expand
+      </message>
 
       <message name="IDS_SELECTED_ITEMS" desc="Content description for a number indicating how many items are selected. [ICU Syntax]">
         {NUM_SELECTED, plural,

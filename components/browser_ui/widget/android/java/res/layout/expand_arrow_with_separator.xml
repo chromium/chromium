@@ -26,5 +26,6 @@
         android:paddingEnd="@dimen/radio_button_with_description_lateral_padding"
         android:src="@drawable/ic_expand_more_horizontal_black_24dp"
         android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/accessibility_expand_button"
         app:tint="@color/default_icon_color_tint_list"/>
 </LinearLayout>
