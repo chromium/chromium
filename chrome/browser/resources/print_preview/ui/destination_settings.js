@@ -22,6 +22,7 @@ import '../strings.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -153,6 +154,26 @@ Polymer({
 
     /** @private {!Array<string>} */
     users_: Array,
+
+    // <if expr="chromeos">
+    /** @private */
+    printerStatusFlagEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('showPrinterStatus');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * The key for this map is a destination.id and the value is a
+     * destination.key. This map is needed to track which destinations have had
+     * statuses requested while also giving quick look up of destination id to
+     * the corresponding destination key.
+     * @private {!Map<string, string>}
+     */
+    statusRequestedMap_: Object,
+    // </if>
   },
 
   /** @private {string} */
@@ -191,6 +212,10 @@ Polymer({
         this.destinationStore_,
         DestinationStore.EventType.DESTINATION_EULA_READY,
         this.updateDestinationEulaUrl_.bind(this));
+
+    if (this.printerStatusFlagEnabled_) {
+      this.statusRequestedMap_ = new Map();
+    }
     // </if>
   },
 

@@ -22,7 +22,7 @@ export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, DuplexType, getInstance, whenReady} from './data/model.js';
 // <if expr="chromeos">
-export {PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
+export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
 // </if>
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
@@ -33,8 +33,5 @@ export {DEFAULT_MAX_COPIES} from './ui/copies_settings.js';
 export {DestinationState} from './ui/destination_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';
-// <if expr="chromeos">
-export {PrinterState} from './ui/printer_status_icon_cros.js';
-// </if>
 export {SelectBehavior} from './ui/select_behavior.js';
 export {SelectOption} from './ui/settings_select.js';

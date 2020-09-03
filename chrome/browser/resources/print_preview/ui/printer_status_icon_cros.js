@@ -7,26 +7,7 @@ import './icons.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * Enumeration giving a local Chrome OS printer 3 different state possibilities
- * depending on its current status.
- * @enum {number}
- */
-export const PrinterState = {
-  GOOD: 0,
-  ERROR: 1,
-  UNKNOWN: 2,
-};
-
-/**
- * Enumeration used to choose styling based on whether this icon is located in
- * the destination display or the destination dropdown.
- * @enum {number}
- */
-export const IconLocation = {
-  DISPLAY: 0,
-  DROPDOWN: 1,
-};
+import {IconLocation, PrinterState} from '../data/printer_status_cros.js';
 
 Polymer({
   is: 'printer-status-icon-cros',

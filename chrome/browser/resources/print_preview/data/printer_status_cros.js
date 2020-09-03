@@ -39,6 +39,27 @@ export const PrinterStatusSeverity = {
 };
 
 /**
+ * Enumeration giving a local Chrome OS printer 3 different state possibilities
+ * depending on its current status.
+ * @enum {number}
+ */
+export const PrinterState = {
+  GOOD: 0,
+  ERROR: 1,
+  UNKNOWN: 2,
+};
+
+/**
+ * Enumeration used to choose styling based on whether this icon is located in
+ * the destination display or the destination dropdown.
+ * @enum {number}
+ */
+export const IconLocation = {
+  DISPLAY: 0,
+  DROPDOWN: 1,
+};
+
+/**
  * A container for the results of a printer status query. A printer status query
  * can return multiple error reasons. |timestamp| is set at the time of status
  * creation.
@@ -71,3 +92,51 @@ export const ERROR_STRING_KEY_MAP = new Map([
   [PrinterStatusReason.STOPPED, 'printerStatusStopped'],
   [PrinterStatusReason.TRAY_MISSING, 'printerStatusTrayMissing'],
 ]);
+
+/**
+ * A |printerStatus| can have multiple status reasons so this function's
+ * responsibility is to determine which status reason is most relevant to
+ * surface to the user. Any status reason with a severity of WARNING or ERROR
+ * will get highest precedence since this usually means the printer is in a
+ * bad state. NO_ERROR status reason is the next highest precedence so the
+ * printer can be shown as available whenever possible.
+ * @param {!PrinterStatus} printerStatus
+ * @return {!PrinterStatusReason} Status reason extracted from |printerStatus|.
+ */
+export function getStatusReasonFromPrinterStatus(printerStatus) {
+  if (!printerStatus.printerId) {
+    return PrinterStatusReason.UNKNOWN_REASON;
+  }
+
+  let seenNoErrorReason = false;
+  for (const statusReason of printerStatus.statusReasons) {
+    const reason = statusReason.reason;
+    const severity = statusReason.severity;
+
+    if (reason !== PrinterStatusReason.UNKNOWN_REASON &&
+        (severity === PrinterStatusSeverity.WARNING ||
+         severity === PrinterStatusSeverity.ERROR)) {
+      return reason;
+    }
+
+    seenNoErrorReason =
+        seenNoErrorReason || reason === PrinterStatusReason.NO_ERROR;
+  }
+  return seenNoErrorReason ? PrinterStatusReason.NO_ERROR :
+                             PrinterStatusReason.UNKNOWN_REASON;
+}
+
+/**
+ * @param {?PrinterStatusReason} printerStatusReason
+ * @return {number}
+ */
+export function computePrinterState(printerStatusReason) {
+  if (!printerStatusReason ||
+      printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
+    return PrinterState.UNKNOWN;
+  }
+  if (printerStatusReason === PrinterStatusReason.NO_ERROR) {
+    return PrinterState.GOOD;
+  }
+  return PrinterState.ERROR;
+}

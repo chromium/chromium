@@ -154,6 +154,7 @@ suite(printer_status_test_cros.suiteName, function() {
     destinationSelect =
         /** @type {!PrintPreviewDestinationSelectCrosElement} */
         (document.createElement('print-preview-destination-select-cros'));
+    destinationSelect.statusRequestedMap = new Map();
     document.body.appendChild(destinationSelect);
   });
 

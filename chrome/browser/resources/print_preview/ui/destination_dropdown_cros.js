@@ -9,14 +9,13 @@ import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import './print_preview_vars_css.js';
+import './printer_status_icon_cros.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
-import {ERROR_STRING_KEY_MAP, PrinterStatusReason} from '../data/printer_status_cros.js';
-
-import {IconLocation, PrinterState} from './printer_status_icon_cros.js';
+import {computePrinterState, ERROR_STRING_KEY_MAP, IconLocation, PrinterState, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 Polymer({
   is: 'print-preview-destination-dropdown-cros',
@@ -267,14 +266,7 @@ Polymer({
    * @private
    */
   computePrinterState_(printerStatusReason) {
-    if (!printerStatusReason ||
-        printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
-      return PrinterState.UNKNOWN;
-    }
-    if (printerStatusReason === PrinterStatusReason.NO_ERROR) {
-      return PrinterState.GOOD;
-    }
-    return PrinterState.ERROR;
+    return computePrinterState(printerStatusReason);
   },
 
   /**

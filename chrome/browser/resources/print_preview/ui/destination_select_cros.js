@@ -22,7 +22,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Base, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudOrigins, Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
-import {ERROR_STRING_KEY_MAP, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from '../data/printer_status_cros.js';
+import {ERROR_STRING_KEY_MAP, getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from '../data/printer_status_cros.js';
 import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
@@ -57,6 +57,9 @@ Polymer({
     noDestinations: Boolean,
 
     pdfPrinterDisabled: Boolean,
+
+    /** @type {!Map<string, string>} */
+    statusRequestedMap: Object,
 
     /** @type {!Array<!Destination>} */
     recentDestinationList: {
@@ -100,15 +103,6 @@ Polymer({
       readOnly: true,
     },
 
-    /**
-     * The key for this map is a destination.id and the value is a
-     * destination.key. This map is needed to track which destinations have had
-     * statuses requested while also giving quick look up of destination id to
-     * the corresponding destination key.
-     * @private {!Map<string, string>}
-     */
-    statusRequestedMap_: Map,
-
     /** @private */
     isCurrentDestinationCrosLocal_: {
       type: Boolean,
@@ -136,15 +130,6 @@ Polymer({
   /** @private {!IronMetaElement} */
   meta_: /** @type {!IronMetaElement} */ (
       Base.create('iron-meta', {type: 'iconset'})),
-
-  /** @override */
-  attached() {
-    if (!this.printerStatusFlagEnabled_) {
-      return;
-    }
-
-    this.statusRequestedMap_ = new Map();
-  },
 
   focus() {
     if (this.printerStatusFlagEnabled_) {
@@ -255,14 +240,14 @@ Polymer({
 
     for (const destination of this.recentDestinationList) {
       if (destination.origin !== DestinationOrigin.CROS ||
-          this.statusRequestedMap_.has(destination.id)) {
+          this.statusRequestedMap.has(destination.id)) {
         continue;
       }
 
       NativeLayerImpl.getInstance()
           .requestPrinterStatusUpdate(destination.id)
           .then(status => this.onPrinterStatusReceived_(status));
-      this.statusRequestedMap_.set(destination.id, destination.key);
+      this.statusRequestedMap.set(destination.id, destination.key);
     }
   },
 
@@ -278,8 +263,7 @@ Polymer({
       return;
     }
 
-    const destinationKey =
-        this.statusRequestedMap_.get(printerStatus.printerId);
+    const destinationKey = this.statusRequestedMap.get(printerStatus.printerId);
     if (!destinationKey) {
       return;
     }
@@ -292,11 +276,10 @@ Polymer({
       return;
     }
 
-    const statusReason = this.getStatusReasonFromPrinterStatus_(printerStatus);
+    const statusReason = getStatusReasonFromPrinterStatus(printerStatus);
     if (!statusReason) {
       return;
     }
-
 
     this.recentDestinationList[indexFound].printerStatusReason = statusReason;
     // Set the new printer status reason then use notifyPath to trigger the
@@ -309,44 +292,6 @@ Polymer({
     if (this.destination && this.destination.key === destinationKey) {
       this.notifyPath(`destination.printerStatusReason`);
     }
-  },
-
-  /**
-   * A |printerStatus| can have multiple status reasons so this function's
-   * responsibility is to determine which status reason is most relevant to
-   * surface to the user. Any status reason with a severity of WARNING or ERROR
-   * will get highest precedence since this usually means the printer is in a
-   * bad state. NO_ERROR status reason is the next highest precedence so the
-   * printer can be shown as available whenever possible.
-   * @param {!PrinterStatus} printerStatus
-   * @return {!PrinterStatusReason} Status reason extracted from
-   *     |printerStatus|.
-   * @private
-   */
-  getStatusReasonFromPrinterStatus_(printerStatus) {
-    assert(this.printerStatusFlagEnabled_);
-
-    if (!printerStatus.printerId) {
-      return PrinterStatusReason.UNKNOWN_REASON;
-    }
-
-    let seenNoErrorReason = false;
-    for (const statusReason of printerStatus.statusReasons) {
-      const reason = statusReason.reason;
-      const severity = statusReason.severity;
-
-      if (reason !== PrinterStatusReason.UNKNOWN_REASON &&
-          (severity === PrinterStatusSeverity.WARNING ||
-           severity === PrinterStatusSeverity.ERROR)) {
-        return reason;
-      }
-
-      if (reason === PrinterStatusReason.NO_ERROR) {
-        seenNoErrorReason = true;
-      }
-    }
-    return seenNoErrorReason ? PrinterStatusReason.NO_ERROR :
-                               PrinterStatusReason.UNKNOWN_REASON;
   },
 
   /**
