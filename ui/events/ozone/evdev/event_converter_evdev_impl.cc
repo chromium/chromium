@@ -256,10 +256,10 @@ void EventConverterEvdevImpl::FlushEvents(const input_event& input) {
 
   cursor_->MoveCursor(gfx::Vector2dF(x_offset_, y_offset_));
 
-  dispatcher_->DispatchMouseMoveEvent(
-      MouseMoveEventParams(input_device_.id, EF_NONE, cursor_->GetLocation(),
-                           PointerDetails(EventPointerType::kMouse),
-                           TimeTicksFromInputEvent(input)));
+  dispatcher_->DispatchMouseMoveEvent(MouseMoveEventParams(
+      input_device_.id, EF_NONE, cursor_->GetLocation(),
+      nullptr /* ordinal_delta*/, PointerDetails(EventPointerType::kMouse),
+      TimeTicksFromInputEvent(input)));
 
   x_offset_ = 0;
   y_offset_ = 0;

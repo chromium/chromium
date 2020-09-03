@@ -242,6 +242,10 @@ void EventFactoryEvdev::DispatchMouseMoveEvent(
   event.set_location_f(location);
   event.set_root_location_f(location);
   event.set_source_device_id(params.device_id);
+  if (params.ordinal_delta.has_value()) {
+    ui::MouseEvent::DispatcherApi(&event).set_movement(
+        params.ordinal_delta.value());
+  }
   DispatchUiEvent(&event);
 }
 
@@ -471,6 +475,7 @@ void EventFactoryEvdev::WarpCursorTo(gfx::AcceleratedWidget widget,
           weak_ptr_factory_.GetWeakPtr(),
           MouseMoveEventParams(
               -1 /* device_id */, EF_NONE, cursor_->GetLocation(),
+              nullptr /* ordinal_delta */,
               PointerDetails(EventPointerType::kMouse), EventTimeForNow())));
 }
 

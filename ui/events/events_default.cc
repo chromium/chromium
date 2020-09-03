@@ -6,6 +6,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 
@@ -55,6 +56,14 @@ PointerDetails GetMousePointerDetailsFromNative(
   PointerDetails pointer_detail = event->pointer_details();
   pointer_detail.id = kPointerIdMouse;
   return pointer_detail;
+}
+
+const gfx::Vector2dF& GetMouseMovementFromNative(
+    const PlatformEvent& native_event) {
+  DCHECK(native_event->IsMouseEvent());
+  const ui::MouseEvent* event =
+      static_cast<const ui::MouseEvent*>(native_event);
+  return event->movement();
 }
 
 KeyboardCode KeyboardCodeFromNative(const PlatformEvent& native_event) {

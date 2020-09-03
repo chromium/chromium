@@ -24,6 +24,7 @@
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_timer_provider.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 #ifndef REL_WHEEL_HI_RES
 #define REL_WHEEL_HI_RES 0x0b
@@ -296,9 +297,9 @@ void GestureInterpreterLibevdevCros::OnGestureMove(const Gesture* gesture,
     return;  // No cursor!
 
   cursor_->MoveCursor(gfx::Vector2dF(move->dx, move->dy));
-  // TODO(spang): Use move->ordinal_dx, move->ordinal_dy
+  gfx::Vector2dF ordinal_delta(move->ordinal_dx, move->ordinal_dy);
   dispatcher_->DispatchMouseMoveEvent(
-      MouseMoveEventParams(id_, EF_NONE, cursor_->GetLocation(),
+      MouseMoveEventParams(id_, EF_NONE, cursor_->GetLocation(), &ordinal_delta,
                            PointerDetails(EventPointerType::kMouse),
                            StimeToTimeTicks(gesture->end_time)));
 }

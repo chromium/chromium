@@ -433,6 +433,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
   MouseEvent(const MouseEvent& model, T* source, T* target)
       : LocatedEvent(model, source, target),
         changed_button_flags_(model.changed_button_flags_),
+        movement_(model.movement_),
         pointer_details_(model.pointer_details_) {}
 
   template <class T>
@@ -443,6 +444,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
              int flags)
       : LocatedEvent(model, source, target),
         changed_button_flags_(model.changed_button_flags_),
+        movement_(model.movement_),
         pointer_details_(model.pointer_details_) {
     SetType(type);
     set_flags(flags);

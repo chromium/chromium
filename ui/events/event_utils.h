@@ -28,7 +28,7 @@
 namespace gfx {
 class Point;
 class Vector2d;
-}
+}  // namespace gfx
 
 namespace base {
 class TimeTicks;
@@ -106,6 +106,10 @@ EVENTS_EXPORT int GetChangedMouseButtonFlagsFromNative(
 // Returns the detailed pointer information for mouse events.
 EVENTS_EXPORT PointerDetails
 GetMousePointerDetailsFromNative(const PlatformEvent& native_event);
+
+// Returns the movement vector associated with this mouse movement event.
+EVENTS_EXPORT const gfx::Vector2dF& GetMouseMovementFromNative(
+    const PlatformEvent& native_event);
 
 // Gets the mouse wheel offsets from a native event.
 EVENTS_EXPORT gfx::Vector2d GetMouseWheelOffset(

@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -797,6 +798,36 @@ TEST(EventTest, MouseWheelEventLinearTickCalculation) {
       origin, origin, EventTimeForNow(), 0, 0);
   EXPECT_EQ(mouse_wheel_ev.tick_120ths().x(), -240);
   EXPECT_EQ(mouse_wheel_ev.tick_120ths().y(), 120);
+}
+
+TEST(EventTest, OrdinalMotionConversion) {
+  const gfx::Point origin(0, 0);
+  const gfx::Vector2dF movement(2.67, 3.14);
+
+  // Model conversion depends on the class having a specific static method.
+  struct OrdinalMotionConversionModel {
+    static void ConvertPointToTarget(const OrdinalMotionConversionModel*,
+                                     const OrdinalMotionConversionModel*,
+                                     gfx::Point*) {
+      // Do nothing.
+    }
+  } src, dst;
+
+  MouseEvent mouseev1(ET_MOUSE_PRESSED, origin, origin, EventTimeForNow(), 0,
+                      0);
+  MouseEvent::DispatcherApi(&mouseev1).set_movement(movement);
+  EXPECT_EQ(mouseev1.movement(), movement);
+  EXPECT_TRUE(mouseev1.flags() & EF_UNADJUSTED_MOUSE);
+
+  MouseEvent mouseev2(mouseev1, &src, &dst);
+  EXPECT_EQ(mouseev2.movement(), movement);
+  EXPECT_TRUE(mouseev2.flags() & EF_UNADJUSTED_MOUSE);
+
+  // Setting the flags in construction should override the model's.
+  MouseEvent mouseev3(mouseev1, &src, &dst, EventType::ET_MOUSE_MOVED,
+                      /* flags */ 0);
+  EXPECT_EQ(mouseev3.movement(), movement);
+  EXPECT_FALSE(mouseev3.flags() & EF_UNADJUSTED_MOUSE);
 }
 
 // Checks that Event.Latency.OS.TOUCH_PRESSED, TOUCH_MOVED,

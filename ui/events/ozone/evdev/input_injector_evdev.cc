@@ -29,8 +29,7 @@ InputInjectorEvdev::InputInjectorEvdev(
     CursorDelegateEvdev* cursor)
     : cursor_(cursor), dispatcher_(std::move(dispatcher)) {}
 
-InputInjectorEvdev::~InputInjectorEvdev() {
-}
+InputInjectorEvdev::~InputInjectorEvdev() {}
 
 void InputInjectorEvdev::InjectMouseButton(EventFlags button, bool down) {
   unsigned int code;
@@ -69,7 +68,8 @@ void InputInjectorEvdev::MoveCursorTo(const gfx::PointF& location) {
 
   dispatcher_->DispatchMouseMoveEvent(MouseMoveEventParams(
       kDeviceIdForInjection, EF_NONE, cursor_->GetLocation(),
-      PointerDetails(EventPointerType::kMouse), EventTimeForNow()));
+      nullptr /* ordinal_delta */, PointerDetails(EventPointerType::kMouse),
+      EventTimeForNow()));
 }
 
 void InputInjectorEvdev::InjectKeyEvent(DomCode physical_key,
@@ -87,4 +87,3 @@ void InputInjectorEvdev::InjectKeyEvent(DomCode physical_key,
 }
 
 }  // namespace ui
-

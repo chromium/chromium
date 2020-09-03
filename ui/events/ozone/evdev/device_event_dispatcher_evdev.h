@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "ui/events/devices/gamepad_device.h"
 #include "ui/events/devices/input_device.h"
@@ -48,15 +49,17 @@ struct COMPONENT_EXPORT(EVDEV) MouseMoveEventParams {
   MouseMoveEventParams(int device_id,
                        int flags,
                        const gfx::PointF& location,
+                       gfx::Vector2dF* ordinal_delta,
                        const PointerDetails& details,
                        base::TimeTicks timestamp);
   MouseMoveEventParams(const MouseMoveEventParams& other);
-  MouseMoveEventParams() {}
+  MouseMoveEventParams();
   ~MouseMoveEventParams();
 
   int device_id;
   int flags;
   gfx::PointF location;
+  base::Optional<gfx::Vector2dF> ordinal_delta;
   PointerDetails pointer_details;
   base::TimeTicks timestamp;
 };
