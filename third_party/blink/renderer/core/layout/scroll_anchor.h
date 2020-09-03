@@ -157,8 +157,10 @@ class CORE_EXPORT ScrollAnchor final {
   // Which corner of m_anchorObject's bounding box to anchor to.
   Corner corner_;
 
-  // Location of m_layoutObject relative to scroller at time of
-  // notifyBeforeLayout().
+  // Location of anchor_object_ relative to scroller block-start at the time of
+  // NotifyBeforeLayout(). Note that the block-offset is a logical coordinate,
+  // which makes a difference if we're in a block-flipped writing-mode
+  // (vertical-rl).
   LayoutPoint saved_relative_offset_;
 
   // Previously calculated css selector that uniquely locates the current
