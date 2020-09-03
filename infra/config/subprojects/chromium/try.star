@@ -252,7 +252,9 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-marshmallow-x86-rel",
     branch_selector = branches.STANDARD_RELEASES,
-    goma_jobs = goma.jobs.J150,
+    cores = 16,
+    goma_jobs = goma.jobs.J300,
+    ssd = True,
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
