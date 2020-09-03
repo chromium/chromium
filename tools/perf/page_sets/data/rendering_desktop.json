@@ -22,13 +22,13 @@
             "DEFAULT": "rendering_desktop_3a59b064d2.wprgo"
         },
         "animometer_webgl_indexed": {
-            "DEFAULT": "rendering_desktop_e66a172ea7.wprgo"
+            "DEFAULT": "rendering_desktop_e0cf9b9bd8.wprgo"
         },
         "animometer_webgl_indexed_multi_draw": {
-            "DEFAULT": "rendering_desktop_e66a172ea7.wprgo"
+            "DEFAULT": "rendering_desktop_e0cf9b9bd8.wprgo"
         },
         "animometer_webgl_indexed_multi_draw_base_vertex_base_instance": {
-            "DEFAULT": "rendering_desktop_e66a172ea7.wprgo"
+            "DEFAULT": "rendering_desktop_e0cf9b9bd8.wprgo"
         },
         "animometer_webgl_multi_draw": {
             "DEFAULT": "rendering_desktop_a8987d91b9.wprgo"
