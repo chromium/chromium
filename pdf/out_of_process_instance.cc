@@ -119,6 +119,7 @@ constexpr char kJSProgressPercentage[] = "progress";
 constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
 // Metadata
 constexpr char kJSMetadataType[] = "metadata";
+constexpr char kJSAttachments[] = "attachments";
 constexpr char kJSBookmarks[] = "bookmarks";
 constexpr char kJSTitle[] = "title";
 constexpr char kJSCanSerializeDocument[] = "canSerializeDocument";
@@ -2214,6 +2215,8 @@ void OutOfProcessInstance::SendDocumentMetadata() {
   const std::string& title = engine()->GetDocumentMetadata().title;
   if (!base::TrimWhitespace(base::UTF8ToUTF16(title), base::TRIM_ALL).empty())
     metadata_message.Set(pp::Var(kJSTitle), pp::Var(title));
+
+  metadata_message.Set(pp::Var(kJSAttachments), GetDocumentAttachments());
 
   pp::VarArray bookmarks = engine()->GetBookmarks();
   metadata_message.Set(pp::Var(kJSBookmarks), bookmarks);

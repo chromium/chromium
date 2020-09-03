@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @typedef {{
+ *   name: string,
+ *   size: number,
+ *   readable: boolean,
+ * }}
+ */
+export let Attachment;
+
 /** @enum {string} */
 export const DisplayAnnotationsAction = {
   DISPLAY_ANNOTATIONS: 'display-annotations',

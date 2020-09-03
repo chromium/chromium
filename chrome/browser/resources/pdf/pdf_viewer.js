@@ -23,7 +23,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
-import {FittingType, Point, SaveRequestType} from './constants.js';
+import {Attachment, FittingType, Point, SaveRequestType} from './constants.js';
 import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 // <if expr="chromeos">
 import {InkController} from './ink_controller.js';
@@ -51,6 +51,7 @@ let NavigateMessageData;
  * @typedef {{
  *   type: string,
  *   title: string,
+ *   attachments: !Array<!Attachment>,
  *   bookmarks: !Array<!Bookmark>,
  *   canSerializeDocument: boolean,
  * }}
@@ -112,6 +113,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         value: false,
       },
 
+      attachments_: Array,
+
       bookmarks_: Array,
 
       documentHasFocus_: {
@@ -163,6 +166,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     /** @private {boolean} */
     this.annotationMode_ = false;
+
+    /** @private {!Array<!Attachment>} */
+    this.attachments_ = [];
 
     /** @private {!Array<!Bookmark>} */
     this.bookmarks_ = [];
@@ -812,6 +818,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   setDocumentMetadata_(metadata) {
     this.title_ = metadata.title || getFilenameFromURL(this.originalUrl);
     document.title = this.title_;
+    this.attachments_ = metadata.attachments;
     this.bookmarks_ = metadata.bookmarks;
     this.canSerializeDocument_ = metadata.canSerializeDocument;
   }
