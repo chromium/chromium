@@ -23,7 +23,6 @@
 #include "remoting/protocol/video_stream.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
-#include "third_party/webrtc/common_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace webrtc {

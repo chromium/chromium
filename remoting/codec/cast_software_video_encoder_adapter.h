@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "remoting/codec/webrtc_video_encoder.h"
-#include "third_party/webrtc/common_types.h"
 
 namespace media {
 class VideoFrame;

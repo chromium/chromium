@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "remoting/codec/webrtc_video_encoder.h"
-#include "third_party/webrtc/common_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace webrtc {
