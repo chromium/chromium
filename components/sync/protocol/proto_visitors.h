@@ -1175,7 +1175,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics::
   VISIT(secure_http_proxy_port);
   VISIT(socks_host_url);
   VISIT(socks_host_port);
-  VISIT_REP(whitelisted_domains);
+  VISIT_REP(excluded_domains);
 }
 
 VISIT_PROTO_FIELDS(

@@ -170,7 +170,7 @@ ProxyConfigurationProtoFromMojo(
     if (proxy_settings->exclude_domains) {
       for (const std::string& domain :
            proxy_settings->exclude_domains->active_value) {
-        manual_settings->add_whitelisted_domains(domain);
+        manual_settings->add_excluded_domains(domain);
       }
     }
   }
@@ -235,7 +235,7 @@ network_config::mojom::ProxySettingsPtr MojoProxySettingsFromProto(
 
       std::vector<std::string> exclude_domains;
       for (const std::string& domain :
-           synced_manual_configuration.whitelisted_domains()) {
+           synced_manual_configuration.excluded_domains()) {
         exclude_domains.push_back(domain);
       }
       proxy_settings->exclude_domains = std::move(exclude_domains);

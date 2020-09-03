@@ -71,7 +71,7 @@ message WifiConfigurationSpecifics {
       optional int32 secure_http_proxy_port = 4;
       optional string socks_host_url = 5;
       optional int32 socks_host_port = 6;
-      repeated string whitelisted_domains = 7;
+      repeated string excluded_domains = 7;
     }
     // Only set if PROXY_OPTION_MANUAL.
     optional ManualProxyConfiguration manual_proxy_configuration = 3;
