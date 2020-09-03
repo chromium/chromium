@@ -212,8 +212,14 @@ void StatusUploader::OnStatusReceived(StatusCollectorParams callback_params) {
     return;
   }
 
-  SYSLOG(INFO) << "Starting status upload: has_device_status = "
-               << has_device_status;
+  // TODO(crbug.com/1123153): Remove write_protect_switch logging after bugfix.
+  SYSLOG(INFO)
+      << "Starting status upload: has_device_status = " << has_device_status
+      << " write_protect_switch = "
+      << (callback_params.device_status &&
+                  callback_params.device_status->has_write_protect_switch()
+              ? callback_params.device_status->write_protect_switch()
+              : -1);
 
   client_->UploadDeviceStatus(callback_params.device_status.get(),
                               callback_params.session_status.get(),

@@ -14,7 +14,7 @@ TEST(NameValuePairsParser, TestParseNameValuePairs) {
   NameValuePairsParser::NameValueMap map;
   NameValuePairsParser parser(&map);
   const std::string contents1 = "foo=Foo bar=Bar\nfoobar=FooBar\n";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents1, "=", " \n"));
+  EXPECT_TRUE(parser.ParseNameValuePairs(contents1, "=", " \n", ""));
   EXPECT_EQ(3U, map.size());
   EXPECT_EQ("Foo", map["foo"]);
   EXPECT_EQ("Bar", map["bar"]);
@@ -22,21 +22,21 @@ TEST(NameValuePairsParser, TestParseNameValuePairs) {
 
   map.clear();
   const std::string contents2 = "foo=Foo,bar=Bar";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents2, "=", ",\n"));
+  EXPECT_TRUE(parser.ParseNameValuePairs(contents2, "=", ",\n", ""));
   EXPECT_EQ(2U, map.size());
   EXPECT_EQ("Foo", map["foo"]);
   EXPECT_EQ("Bar", map["bar"]);
 
   map.clear();
   const std::string contents3 = "foo=Foo=foo,bar=Bar";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents3, "=", ",\n"));
+  EXPECT_TRUE(parser.ParseNameValuePairs(contents3, "=", ",\n", ""));
   EXPECT_EQ(2U, map.size());
   EXPECT_EQ("Foo=foo", map["foo"]);
   EXPECT_EQ("Bar", map["bar"]);
 
   map.clear();
   const std::string contents4 = "foo=Foo,=Bar";
-  EXPECT_FALSE(parser.ParseNameValuePairs(contents4, "=", ",\n"));
+  EXPECT_FALSE(parser.ParseNameValuePairs(contents4, "=", ",\n", ""));
   EXPECT_EQ(1U, map.size());
   EXPECT_EQ("Foo", map["foo"]);
 
@@ -45,7 +45,7 @@ TEST(NameValuePairsParser, TestParseNameValuePairs) {
       "\"initial_locale\"=\"ja\"\n"
       "\"initial_timezone\"=\"Asia/Tokyo\"\n"
       "\"keyboard_layout\"=\"mozc-jp\"\n";
-  EXPECT_TRUE(parser.ParseNameValuePairs(contents5, "=", "\n"));
+  EXPECT_TRUE(parser.ParseNameValuePairs(contents5, "=", "\n", ""));
   EXPECT_EQ(3U, map.size());
   EXPECT_EQ("ja", map["initial_locale"]);
   EXPECT_EQ("Asia/Tokyo", map["initial_timezone"]);
@@ -57,8 +57,8 @@ TEST(NameValuePairsParser, TestParseNameValuePairsWithComments) {
   NameValuePairsParser parser(&map);
 
   const std::string contents1 = "foo=Foo,bar=#Bar,baz= 0 #Baz";
-  EXPECT_TRUE(parser.ParseNameValuePairsWithComments(
-      contents1, "=", ",\n", "#"));
+  EXPECT_TRUE(
+      parser.ParseNameValuePairsWithComments(contents1, "=", ",\n", "#", ""));
   EXPECT_EQ(3U, map.size());
   EXPECT_EQ("Foo", map["foo"]);
   EXPECT_EQ("", map["bar"]);
@@ -66,15 +66,15 @@ TEST(NameValuePairsParser, TestParseNameValuePairsWithComments) {
 
   map.clear();
   const std::string contents2 = "foo=";
-  EXPECT_TRUE(parser.ParseNameValuePairsWithComments(
-      contents2, "=", ",\n", "#"));
+  EXPECT_TRUE(
+      parser.ParseNameValuePairsWithComments(contents2, "=", ",\n", "#", ""));
   EXPECT_EQ(1U, map.size());
   EXPECT_EQ("", map["foo"]);
 
   map.clear();
   const std::string contents3 = " \t ,,#all empty,";
-  EXPECT_FALSE(parser.ParseNameValuePairsWithComments(
-      contents3, "=", ",\n", "#"));
+  EXPECT_FALSE(
+      parser.ParseNameValuePairsWithComments(contents3, "=", ",\n", "#", ""));
   EXPECT_EQ(0U, map.size());
 }
 

@@ -2061,8 +2061,16 @@ bool DeviceStatusCollector::GetWriteProtectSwitch(
   if (!statistics_provider_->GetMachineStatistic(
           chromeos::system::kFirmwareWriteProtectCurrentKey,
           &firmware_write_protect)) {
+    // TODO(crbug.com/1123153): Remove logging after the bug is fixed.
+    LOG(WARNING) << "Missing "
+                 << chromeos::system::kFirmwareWriteProtectCurrentKey
+                 << " statistics";
     return false;
   }
+  // TODO(crbug.com/1123153): Remove logging after the bug is fixed.
+  LOG(WARNING) << "Statistics "
+               << chromeos::system::kFirmwareWriteProtectCurrentKey << ": "
+               << firmware_write_protect;
 
   if (firmware_write_protect ==
       chromeos::system::kFirmwareWriteProtectCurrentValueOff) {

@@ -11,9 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "chromeos/system/statistics_provider.h"
 
 namespace chromeos {  // NOLINT
 namespace system {
@@ -51,10 +53,13 @@ bool NameValuePairsParser::GetNameValuePairsFromFile(
     const std::string& delim) {
   std::string contents;
   if (base::ReadFileToString(file_path, &contents)) {
-    return ParseNameValuePairs(contents, eq, delim);
+    return ParseNameValuePairs(contents, eq, delim,
+                               /*debug_source=*/file_path.value());
   } else {
-    if (base::SysInfo::IsRunningOnChromeOS())
-      VLOG(1) << "Statistics file not present: " << file_path.value();
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      // TODO(crbug.com/1123153): Downgrade to VLOG(1) after fixing the bug.
+      LOG(WARNING) << "Statistics file not present: " << file_path.value();
+    }
     return false;
   }
 }
@@ -65,12 +70,14 @@ bool NameValuePairsParser::ParseNameValuePairsFromTool(
     const std::string& eq,
     const std::string& delim,
     const std::string& comment_delim) {
+  DCHECK_GE(argc, 1);
+
   std::string output_string;
   if (!GetToolOutput(argc, argv, &output_string))
     return false;
 
-  return ParseNameValuePairsWithComments(output_string, eq, delim,
-                                         comment_delim);
+  return ParseNameValuePairsWithComments(
+      output_string, eq, delim, comment_delim, /*debug_source=*/argv[0]);
 }
 
 void NameValuePairsParser::DeletePairsWithValue(const std::string& value) {
@@ -96,17 +103,21 @@ void NameValuePairsParser::AddNameValuePair(const std::string& key,
   }
 }
 
-bool NameValuePairsParser::ParseNameValuePairs(const std::string& in_string,
-                                               const std::string& eq,
-                                               const std::string& delim) {
-  return ParseNameValuePairsWithComments(in_string, eq, delim, "");
+bool NameValuePairsParser::ParseNameValuePairs(
+    const std::string& in_string,
+    const std::string& eq,
+    const std::string& delim,
+    const std::string& debug_source) {
+  return ParseNameValuePairsWithComments(in_string, eq, delim, "",
+                                         debug_source);
 }
 
 bool NameValuePairsParser::ParseNameValuePairsWithComments(
     const std::string& in_string,
     const std::string& eq,
     const std::string& delim,
-    const std::string& comment_delim) {
+    const std::string& comment_delim,
+    const std::string& debug_source) {
   bool all_valid = true;
   // Set up the pair tokenizer.
   base::StringTokenizer pair_toks(in_string, delim);
@@ -114,6 +125,13 @@ bool NameValuePairsParser::ParseNameValuePairsWithComments(
   // Process token pairs.
   while (pair_toks.GetNext()) {
     std::string pair(pair_toks.token());
+
+    // TODO(crbug.com/1123153): Delete logging after the bug is fixed.
+    LOG_IF(WARNING,
+           pair.find(kFirmwareWriteProtectCurrentKey) != std::string::npos)
+        << "Statistics " << kFirmwareWriteProtectCurrentKey << " mentioned in "
+        << debug_source << ": " << base::HexEncode(pair.c_str(), pair.size());
+
     // Anything before the first |eq| is the key, anything after is the value.
     // |eq| must exist.
     size_t eq_pos = pair.find(eq);
