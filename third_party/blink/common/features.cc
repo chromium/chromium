@@ -656,7 +656,7 @@ const base::FeatureParam<AlignFontDisplayAutoTimeoutWithLCPGoalMode>
 // in background main frames.  In addition, trials showed that this
 // did not cause excessive install delays or timeouts.
 const base::Feature kThrottleInstallingServiceWorker{
-    "ThrottleInstallingServiceWorker", base::FEATURE_ENABLED_BY_DEFAULT};
+    "ThrottleInstallingServiceWorker", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<int> kInstallingServiceWorkerOutstandingThrottledLimit{
     &kThrottleInstallingServiceWorker, "limit", 3};
 
