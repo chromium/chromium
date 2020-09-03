@@ -1061,7 +1061,8 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   dbus::ObjectProxy* session_manager_proxy_ = nullptr;
   std::unique_ptr<BlockingMethodCaller> blocking_method_caller_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::Unchecked observers_{
+      base::ObserverListPolicy::EXISTING_ONLY};
 
   // Most recent screen-lock state received from session_manager.
   bool screen_is_locked_ = false;
