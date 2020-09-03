@@ -49,9 +49,6 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   // Clipping bounds for backdrop filter.
   base::Optional<gfx::RRectF> backdrop_filter_bounds;
 
-  // The type of color content present in this RenderPass.
-  gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
-
   // If false, the pixels in the render pass' texture are all opaque.
   bool has_transparent_background = true;
 
@@ -63,9 +60,6 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
 
   // Generate mipmap for trilinear filtering, applied to render pass' texture.
   bool generate_mipmap = false;
-
-  // Indicates current RenderPass is a color conversion pass.
-  bool is_color_conversion_pass = false;
 
   // If non-empty, the renderer should produce a copy of the render pass'
   // contents as a bitmap, and give a copy of the bitmap to each callback in

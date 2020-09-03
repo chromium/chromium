@@ -89,6 +89,12 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // Uniquely identifies the render pass in the aggregated frame.
   AggregatedRenderPassId id;
 
+  // The type of color content present in this RenderPass.
+  gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
+
+  // Indicates current RenderPass is a color conversion pass.
+  bool is_color_conversion_pass = false;
+
  private:
   template <typename DrawQuadType>
   DrawQuadType* CopyFromAndAppendTypedDrawQuad(const DrawQuad* quad) {
