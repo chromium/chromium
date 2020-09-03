@@ -75,6 +75,9 @@ constexpr bool kDefaultKeyAutoRepeatEnabled = true;
 // Whether dark mode is enabled by default.
 constexpr bool kDefaultDarkModeEnabled = true;
 
+// Whether color mode is themed by default.
+constexpr bool kDefaultColorModeThemed = true;
+
 // The default delay before a held keypress will start to auto repeat.
 constexpr base::TimeDelta kDefaultKeyAutoRepeatDelay =
     base::TimeDelta::FromMilliseconds(500);

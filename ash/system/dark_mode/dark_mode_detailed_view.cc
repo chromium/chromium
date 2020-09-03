@@ -43,10 +43,13 @@ class TrayRadioButton : public views::RadioButton {
 
 DarkModeDetailedView::DarkModeDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
+  AshColorProvider::Get()->AddObserver(this);
   CreateItems();
 }
 
-DarkModeDetailedView::~DarkModeDetailedView() = default;
+DarkModeDetailedView::~DarkModeDetailedView() {
+  AshColorProvider::Get()->RemoveObserver(this);
+}
 
 void DarkModeDetailedView::CreateItems() {
   CreateTitleRow(IDS_ASH_STATUS_TRAY_DARK_THEME_TITLE);
@@ -54,9 +57,10 @@ void DarkModeDetailedView::CreateItems() {
   // Add toggle button.
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
+  auto* ash_color_provider = AshColorProvider::Get();
   toggle_ =
       TrayPopupUtils::CreateToggleButton(this, IDS_ASH_STATUS_TRAY_BLUETOOTH);
-  toggle_->SetIsOn(AshColorProvider::Get()->IsDarkModeEnabled());
+  toggle_->SetIsOn(ash_color_provider->IsDarkModeEnabled());
   tri_view()->AddView(TriView::Container::END, toggle_);
 
   // Add color mode options.
@@ -80,10 +84,7 @@ void DarkModeDetailedView::CreateItems() {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_DESCRIPTION))));
 
-  // Set the relevant radio button to be checked.
-  AshColorProvider::Get()->is_themed() ? themed_mode_button_->SetChecked(true)
-                                       : neutral_mode_button_->SetChecked(true);
-
+  OnColorModeThemed(ash_color_provider->IsThemed());
   scroll_content()->SizeToPreferredSize();
   Layout();
 }
@@ -94,13 +95,18 @@ const char* DarkModeDetailedView::GetClassName() const {
 
 void DarkModeDetailedView::HandleButtonPressed(views::Button* sender,
                                                const ui::Event& event) {
-  if (sender == toggle_) {
-    // TODO(amehfooz): Toggle Dark / Light mode here.
-  } else if (sender == themed_mode_button_) {
-    // TODO(amehfooz): Switch to themed mode here.
-  } else if (sender == neutral_mode_button_) {
-    // TODO(amehfooz): Switch to neutral mode here.
-  }
+  auto* ash_color_provider = AshColorProvider::Get();
+  if (sender == toggle_)
+    ash_color_provider->ToggleColorMode();
+  else if (sender == themed_mode_button_)
+    ash_color_provider->UpdateColorModeThemed(/*is_themed=*/true);
+  else if (sender == neutral_mode_button_)
+    ash_color_provider->UpdateColorModeThemed(/*is_themed=*/false);
+}
+
+void DarkModeDetailedView::OnColorModeThemed(bool is_themed) {
+  is_themed ? themed_mode_button_->SetChecked(true)
+            : neutral_mode_button_->SetChecked(true);
 }
 
 }  // namespace ash

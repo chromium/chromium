@@ -43,8 +43,7 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
 }
 
 void DarkModeFeaturePodController::OnIconPressed() {
-  // TODO: Switch dark mode here.
-  AshColorProvider::Get()->Toggle();
+  AshColorProvider::Get()->ToggleColorMode();
 
   // TODO(amehfooz): Add metrics recording here.
 }

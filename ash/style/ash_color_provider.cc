@@ -101,6 +101,9 @@ void AshColorProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kDarkModeEnabled, kDefaultDarkModeEnabled,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kColorModeThemed, kDefaultColorModeThemed,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
@@ -112,9 +115,14 @@ void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
       prefs::kDarkModeEnabled,
       base::BindRepeating(&AshColorProvider::NotifyDarkModeEnabledPrefChange,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kColorModeThemed,
+      base::BindRepeating(&AshColorProvider::NotifyColorModeThemedPrefChange,
+                          base::Unretained(this)));
 
   // Immediately tell all the observers to load this user's saved preferences.
   NotifyDarkModeEnabledPrefChange();
+  NotifyColorModeThemedPrefChange();
 }
 
 SkColor AshColorProvider::GetLoginBackgroundBaseColor() const {
@@ -206,7 +214,7 @@ AshColorProvider::RippleAttributes AshColorProvider::GetRippleAttributes(
 SkColor AshColorProvider::GetBackgroundColor(AshColorMode color_mode) const {
   DCHECK(color_mode == AshColorProvider::AshColorMode::kLight ||
          color_mode == AshColorProvider::AshColorMode::kDark);
-  return is_themed_ ? GetBackgroundThemedColor(color_mode)
+  return IsThemed() ? GetBackgroundThemedColor(color_mode)
                     : GetBackgroundDefaultColor(color_mode);
 }
 
@@ -286,10 +294,25 @@ bool AshColorProvider::IsDarkModeEnabled() const {
   return active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled);
 }
 
-void AshColorProvider::Toggle() {
+bool AshColorProvider::IsThemed() const {
+  if (!active_user_pref_service_)
+    return kDefaultColorModeThemed;
+  return active_user_pref_service_->GetBoolean(prefs::kColorModeThemed);
+}
+
+void AshColorProvider::ToggleColorMode() {
   DCHECK(active_user_pref_service_);
   active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
                                         !IsDarkModeEnabled());
+  active_user_pref_service_->CommitPendingWrite();
+}
+
+void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
+  if (is_themed == IsThemed())
+    return;
+
+  DCHECK(active_user_pref_service_);
+  active_user_pref_service_->SetBoolean(prefs::kColorModeThemed, is_themed);
   active_user_pref_service_->CommitPendingWrite();
 }
 
@@ -473,6 +496,12 @@ void AshColorProvider::NotifyDarkModeEnabledPrefChange() {
   const bool is_enabled = IsDarkModeEnabled();
   for (auto& observer : observers_)
     observer.OnColorModeChanged(is_enabled);
+}
+
+void AshColorProvider::NotifyColorModeThemedPrefChange() {
+  const bool is_themed = IsThemed();
+  for (auto& observer : observers_)
+    observer.OnColorModeThemed(is_themed);
 }
 
 }  // namespace ash

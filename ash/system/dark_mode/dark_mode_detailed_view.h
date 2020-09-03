@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_DARK_MODE_DARK_MODE_DETAILED_VIEW_H_
 #define ASH_SYSTEM_DARK_MODE_DARK_MODE_DETAILED_VIEW_H_
 
+#include "ash/system/dark_mode/color_mode_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
 
 namespace views {
@@ -17,7 +18,7 @@ namespace ash {
 // This view displays options to switch between themed and neutral
 // color mode for the system. Accessed by clicking on the dark mode
 // feature pod label button.
-class DarkModeDetailedView : public TrayDetailedView {
+class DarkModeDetailedView : public TrayDetailedView, public ColorModeObserver {
  public:
   explicit DarkModeDetailedView(DetailedViewDelegate* delegate);
   DarkModeDetailedView(const DarkModeDetailedView& other) = delete;
@@ -33,6 +34,9 @@ class DarkModeDetailedView : public TrayDetailedView {
   // TrayDetailedView:
   void HandleButtonPressed(views::Button* sender,
                            const ui::Event& event) override;
+
+  // ColorModeObserver:
+  void OnColorModeThemed(bool is_themed) override;
 
   views::ToggleButton* toggle_ = nullptr;
   views::RadioButton* themed_mode_button_ = nullptr;

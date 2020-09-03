@@ -208,6 +208,7 @@ ASH_PUBLIC_EXPORT extern const char kMouseReverseScroll[];
 ASH_PUBLIC_EXPORT extern const char kMultipasteNudges[];
 
 ASH_PUBLIC_EXPORT extern const char kDarkModeEnabled[];
+ASH_PUBLIC_EXPORT extern const char kColorModeThemed[];
 
 }  // namespace prefs
 

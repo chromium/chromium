@@ -13,7 +13,10 @@ namespace ash {
 class ASH_EXPORT ColorModeObserver : public base::CheckedObserver {
  public:
   // Called when the color mode changes.
-  virtual void OnColorModeChanged(bool dark_mode_enabled) = 0;
+  virtual void OnColorModeChanged(bool dark_mode_enabled) {}
+
+  // Called when the themed state of the color mode is changed.
+  virtual void OnColorModeThemed(bool is_themed) {}
 
  protected:
   ~ColorModeObserver() override = default;

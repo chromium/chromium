@@ -239,13 +239,18 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // is dark.
   bool IsDarkModeEnabled() const;
 
+  // Whether the system color mode is themed, by default is true. If true, the
+  // background color will be calculated based on extracted wallpaper color.
+  bool IsThemed() const;
+
   // Toggles pref |kDarkModeEnabled|.
-  void Toggle();
+  void ToggleColorMode();
+
+  // Updates pref |kColorModeThemed| to |is_themed|.
+  void UpdateColorModeThemed(bool is_themed);
 
   // Gets the background base color for login screen.
   SkColor GetLoginBackgroundBaseColor() const;
-
-  bool is_themed() const { return is_themed_; }
 
  private:
   // Gets Shield layer color on |type| and |color_mode|. This function will be
@@ -284,12 +289,11 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // Notifies all the observers on |kDarkModeEnabled|'s change.
   void NotifyDarkModeEnabledPrefChange();
 
+  // Notifies all the observers on |kColorModeThemed|'s change.
+  void NotifyColorModeThemedPrefChange();
+
   // Current color mode of system UI.
   AshColorMode color_mode_ = AshColorMode::kDefault;
-
-  // Whether the system color mode is themed, by default is true. If true, the
-  // background color will be calculated based on extracted wallpaper color.
-  bool is_themed_ = true;
 
   base::ObserverList<ColorModeObserver> observers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
