@@ -63,20 +63,6 @@ struct SameSizeAsHarfBuzzRunGlyphData {
 
 ASSERT_SIZE(HarfBuzzRunGlyphData, SameSizeAsHarfBuzzRunGlyphData);
 
-struct SameSizeAsShapeResult : RefCounted<SameSizeAsShapeResult> {
-  float width_;
-  FloatRect deprecated_ink_bounds_;
-  Vector<scoped_refptr<ShapeResult::RunInfo>> runs_;
-  scoped_refptr<const SimpleFontData> primary_font_;
-  std::unique_ptr<int> character_position_;
-
-  unsigned start_index_;
-  unsigned num_characters_;
-  unsigned flags;
-};
-
-ASSERT_SIZE(ShapeResult, SameSizeAsShapeResult);
-
 unsigned ShapeResult::RunInfo::NextSafeToBreakOffset(unsigned offset) const {
   DCHECK_LE(offset, num_characters_);
   if (!Rtl()) {
@@ -384,8 +370,7 @@ ShapeResult::ShapeResult(scoped_refptr<const SimpleFontData> font_data,
       num_characters_(num_characters),
       num_glyphs_(0),
       direction_(static_cast<unsigned>(direction)),
-      has_vertical_offsets_(false),
-      is_applied_spacing_(false) {}
+      has_vertical_offsets_(0) {}
 
 ShapeResult::ShapeResult(const Font* font,
                          unsigned start_index,
@@ -907,7 +892,6 @@ void ShapeResult::ApplySpacingImpl(
 
 void ShapeResult::ApplySpacing(ShapeResultSpacing<String>& spacing,
                                int text_start_offset) {
-  is_applied_spacing_ = true;
   ApplySpacingImpl(spacing, text_start_offset);
 }
 
