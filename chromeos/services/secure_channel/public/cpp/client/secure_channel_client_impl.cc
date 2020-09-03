@@ -50,6 +50,7 @@ SecureChannelClientImpl::InitiateConnectionToDevice(
     multidevice::RemoteDeviceRef device_to_connect,
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority) {
   auto connection_attempt = ConnectionAttemptImpl::Factory::Create();
 
@@ -60,7 +61,8 @@ SecureChannelClientImpl::InitiateConnectionToDevice(
       base::BindOnce(
           &SecureChannelClientImpl::PerformInitiateConnectionToDevice,
           weak_ptr_factory_.GetWeakPtr(), device_to_connect, local_device,
-          feature, connection_priority, connection_attempt->GenerateRemote()));
+          feature, connection_medium, connection_priority,
+          connection_attempt->GenerateRemote()));
 
   return connection_attempt;
 }
@@ -70,6 +72,7 @@ SecureChannelClientImpl::ListenForConnectionFromDevice(
     multidevice::RemoteDeviceRef device_to_connect,
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority) {
   auto connection_attempt = ConnectionAttemptImpl::Factory::Create();
 
@@ -81,7 +84,8 @@ SecureChannelClientImpl::ListenForConnectionFromDevice(
       base::BindOnce(
           &SecureChannelClientImpl::PerformListenForConnectionFromDevice,
           weak_ptr_factory_.GetWeakPtr(), device_to_connect, local_device,
-          feature, connection_priority, connection_attempt->GenerateRemote()));
+          feature, connection_medium, connection_priority,
+          connection_attempt->GenerateRemote()));
 
   return connection_attempt;
 }
@@ -90,11 +94,12 @@ void SecureChannelClientImpl::PerformInitiateConnectionToDevice(
     multidevice::RemoteDeviceRef device_to_connect,
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote) {
   secure_channel_remote_->InitiateConnectionToDevice(
       device_to_connect.GetRemoteDevice(), local_device.GetRemoteDevice(),
-      feature, ConnectionMedium::kBluetoothLowEnergy, connection_priority,
+      feature, connection_medium, connection_priority,
       std::move(connection_delegate_remote));
 }
 
@@ -102,11 +107,12 @@ void SecureChannelClientImpl::PerformListenForConnectionFromDevice(
     multidevice::RemoteDeviceRef device_to_connect,
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
+    ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote) {
   secure_channel_remote_->ListenForConnectionFromDevice(
       device_to_connect.GetRemoteDevice(), local_device.GetRemoteDevice(),
-      feature, ConnectionMedium::kBluetoothLowEnergy, connection_priority,
+      feature, connection_medium, connection_priority,
       std::move(connection_delegate_remote));
 }
 

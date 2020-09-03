@@ -163,9 +163,11 @@ class SecureChannelClientImplTest : public testing::Test {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     auto connection_attempt = client_->ListenForConnectionFromDevice(
-        device_to_connect, local_device, feature, connection_priority);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority);
     auto fake_connection_attempt = base::WrapUnique(
         static_cast<FakeConnectionAttempt*>(connection_attempt.release()));
     fake_connection_attempt->SetDelegate(
@@ -182,9 +184,11 @@ class SecureChannelClientImplTest : public testing::Test {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     auto connection_attempt = client_->InitiateConnectionToDevice(
-        device_to_connect, local_device, feature, connection_priority);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority);
     auto fake_connection_attempt = base::WrapUnique(
         static_cast<FakeConnectionAttempt*>(connection_attempt.release()));
     fake_connection_attempt->SetDelegate(
@@ -227,7 +231,8 @@ class SecureChannelClientImplTest : public testing::Test {
 TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice) {
   auto fake_connection_attempt = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -249,7 +254,8 @@ TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice) {
 TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice_Failure) {
   auto fake_connection_attempt = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -270,7 +276,8 @@ TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice_Failure) {
 TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice) {
   auto fake_connection_attempt = CallListenForConnectionFromDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -292,7 +299,8 @@ TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice) {
 TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice_Failure) {
   auto fake_connection_attempt = CallListenForConnectionFromDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -313,7 +321,8 @@ TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice_Failure) {
 TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
   auto fake_connection_attempt_1 = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
   base::RunLoop run_loop_1;
   fake_connection_attempt_1->set_on_connection_callback(
       run_loop_1.QuitClosure());
@@ -331,7 +340,8 @@ TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
 
   auto fake_connection_attempt_2 = CallListenForConnectionFromDevice(
       test_remote_device_ref_list_[2], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
   base::RunLoop run_loop_2;
   fake_connection_attempt_2->set_on_connection_callback(
       run_loop_2.QuitClosure());

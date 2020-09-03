@@ -133,7 +133,9 @@ void MessageTransferOperation::Initialize() {
             this, remote_device,
             secure_channel_client_->ListenForConnectionFromDevice(
                 remote_device, *device_sync_client_->GetLocalDeviceMetadata(),
-                kTetherFeature, connection_priority_));
+                kTetherFeature,
+                secure_channel::ConnectionMedium::kBluetoothLowEnergy,
+                connection_priority_));
   }
 }
 

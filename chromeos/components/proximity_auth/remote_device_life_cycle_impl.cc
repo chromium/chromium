@@ -80,6 +80,7 @@ void RemoteDeviceLifeCycleImpl::TransitionToState(
 void RemoteDeviceLifeCycleImpl::FindConnection() {
   connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
       remote_device_, *local_device_, kSmartLockFeatureName,
+      chromeos::secure_channel::ConnectionMedium::kBluetoothLowEnergy,
       chromeos::secure_channel::ConnectionPriority::kHigh);
   connection_attempt_->SetDelegate(this);
 

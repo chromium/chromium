@@ -67,7 +67,8 @@ void ConnectionManagerImpl::AttemptConnection() {
 
   connection_attempt_ = secure_channel_client_->InitiateConnectionToDevice(
       *remote_device, *local_device, kPhoneHubFeatureName,
-      chromeos::secure_channel::ConnectionPriority::kMedium);
+      secure_channel::ConnectionMedium::kNearbyConnections,
+      secure_channel::ConnectionPriority::kMedium);
   connection_attempt_->SetDelegate(this);
   NotifyStatusChanged();
 }

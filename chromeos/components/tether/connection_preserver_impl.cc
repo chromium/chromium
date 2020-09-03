@@ -175,7 +175,8 @@ void ConnectionPreserverImpl::SetPreservedConnection(
 
   connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
       *remote_device, *device_sync_client_->GetLocalDeviceMetadata(),
-      kTetherFeature, secure_channel::ConnectionPriority::kLow);
+      kTetherFeature, secure_channel::ConnectionMedium::kBluetoothLowEnergy,
+      secure_channel::ConnectionPriority::kLow);
   connection_attempt_->SetDelegate(this);
 
   preserved_connection_timer_->Start(
