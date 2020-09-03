@@ -24,17 +24,17 @@
 
 <div id="container" hidden>
   <template is="dom-if" if="[[ title ]]">
-    <h1 id="title" tabindex="0">[[ title ]]</h1>
+    <h1 id="title" tabindex="-1">[[ title ]]</h1>
   </template>
   <div id="content">
     <template is="dom-repeat" items="[[ content ]]" as="text">
-      <p tabindex="0">[[ text ]]</p>
+      <p tabindex="-1">[[ text ]]</p>
     </template>
   </div>
   <cr-dialog id="practice" close-text="Exit practice area"
       on-close="endPractice" show-close-button>
-    <div class="title" slot="title" tabindex="0">[[ practiceTitle ]]</div>
-    <div class="body" slot="body" tabindex="0">
+    <div class="title" slot="title" tabindex="-1">[[ practiceTitle ]]</div>
+    <div class="body" slot="body" tabindex="-1">
       <p>[[ practiceInstructions ]]</p>
       <div id="practiceContent"></div>
     </div>

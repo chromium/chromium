@@ -99,7 +99,7 @@ h1 {
 
 <div id="mainMenu"
     hidden$="[[ shouldHideMainMenu(activeScreen) ]]">
-  <h1 id="mainMenuHeader" tabindex="0">[[ chooseYourExperience ]]</h1>
+  <h1 id="mainMenuHeader" tabindex="-1">[[ chooseYourExperience ]]</h1>
   <div id="mainMenuButtons">
     <cr-button id="newUserButton" on-click="chooseCurriculum">
       [[ newUser ]]
@@ -116,7 +116,7 @@ h1 {
 <div id="lessonMenu"
     hidden$="[[ shouldHideLessonMenu(activeScreen) ]]">
   <h1 id="lessonMenuHeader"
-      tabindex="0">[[ computeLessonMenuHeader(curriculum, medium) ]]</h1>
+      tabindex="-1">[[ computeLessonMenuHeader(curriculum, medium) ]]</h1>
   <div id="lessonShortcuts"></div>
 </div>
 
