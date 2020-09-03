@@ -15,6 +15,9 @@ enum class LanguageCode {
   kJaJp = 2,
 };
 
+// Location of the libsoda binary within the SODA installation directory.
+extern const base::FilePath::CharType kSodaBinaryRelativePath[];
+
 // Location of the SODA component relative to the components directory.
 extern const base::FilePath::CharType kSodaInstallationRelativePath[];
 
@@ -30,15 +33,9 @@ extern const base::FilePath::CharType kSodaEnUsInstallationRelativePath[];
 // directory.
 extern const base::FilePath::CharType kSodaJaJpInstallationRelativePath[];
 
-// Location of the libsoda binary within the SODA installation directory.
-extern const base::FilePath::CharType kSodaBinaryRelativePath[];
-
-// Location of the en-US SODA config file within the SODA installation
-// directory. Note: SODA is currently only available in English.
-extern const base::FilePath::CharType kSodaEnUsConfigFileRelativePath[];
-
-// Location of the ja-JP SODA config file within the SODA installation
-extern const base::FilePath::CharType kSodaJaJpConfigFileRelativePath[];
+// Location of the SODA models directory relative to the language pack
+// installation directory.
+extern const base::FilePath::CharType kSodaLanguagePackDirectoryRelativePath[];
 
 // Get the absolute path of the SODA component directory.
 const base::FilePath GetSodaDirectory();

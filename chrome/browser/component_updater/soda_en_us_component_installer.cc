@@ -27,7 +27,7 @@ namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: oegebmmcimckjhkhbggblnkjloogjdfg
-const uint8_t kSodaEnUsPublicKeySHA256[32] = {
+constexpr uint8_t kSodaEnUsPublicKeySHA256[32] = {
     0xe4, 0x64, 0x1c, 0xc2, 0x8c, 0x2a, 0x97, 0xa7, 0x16, 0x61, 0xbd,
     0xa9, 0xbe, 0xe6, 0x93, 0x56, 0xf5, 0x05, 0x33, 0x9b, 0x8b, 0x0b,
     0x02, 0xe2, 0x6b, 0x7e, 0x6c, 0x40, 0xa1, 0xd2, 0x7e, 0x18};
@@ -35,10 +35,7 @@ const uint8_t kSodaEnUsPublicKeySHA256[32] = {
 static_assert(base::size(kSodaEnUsPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
-const char kSodaEnUsManifestName[] = "SODA en-US Models";
-
-constexpr base::FilePath::CharType kSodaEnUsConfigFileRelativePath[] =
-    FILE_PATH_LITERAL("SODAModels/dictation.ascii_proto");
+constexpr char kSodaEnUsManifestName[] = "SODA en-US Models";
 
 }  // namespace
 
@@ -70,7 +67,8 @@ void SodaEnUsComponentInstallerPolicy::UpdateSodaEnUsComponentOnDemand() {
 bool SodaEnUsComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
-  return base::PathExists(install_dir.Append(kSodaEnUsConfigFileRelativePath));
+  return base::PathExists(
+      install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
 }
 
 bool SodaEnUsComponentInstallerPolicy::
@@ -128,8 +126,9 @@ std::vector<std::string> SodaEnUsComponentInstallerPolicy::GetMimeTypes()
 void UpdateSodaEnUsInstallDirPref(PrefService* prefs,
                                   const base::FilePath& install_dir) {
 #if !defined(OS_ANDROID)
-  prefs->SetFilePath(prefs::kSodaEnUsConfigPath,
-                     install_dir.Append(kSodaEnUsConfigFileRelativePath));
+  prefs->SetFilePath(
+      prefs::kSodaEnUsConfigPath,
+      install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
 #endif
 }
 

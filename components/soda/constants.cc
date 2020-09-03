@@ -32,6 +32,9 @@ constexpr base::FilePath::CharType kSodaEnUsInstallationRelativePath[] =
 constexpr base::FilePath::CharType kSodaJaJpInstallationRelativePath[] =
     FILE_PATH_LITERAL("SODALanguagePacks/ja-JP");
 
+constexpr base::FilePath::CharType kSodaLanguagePackDirectoryRelativePath[] =
+    FILE_PATH_LITERAL("SODAModels");
+
 const base::FilePath GetSodaDirectory() {
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,

@@ -27,7 +27,7 @@ namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: onhpjgkfgajmkkeniaoflicgokpaebfa
-const uint8_t kSodaJaJpPublicKeySHA256[32] = {
+constexpr uint8_t kSodaJaJpPublicKeySHA256[32] = {
     0xed, 0x7f, 0x96, 0xa5, 0x60, 0x9c, 0xaa, 0x4d, 0x80, 0xe5, 0xb8,
     0x26, 0xea, 0xf0, 0x41, 0x50, 0x09, 0x52, 0xa4, 0xb3, 0x1e, 0x6a,
     0x8e, 0x24, 0x99, 0xde, 0x51, 0x14, 0xc4, 0x3c, 0xfa, 0x48};
@@ -35,10 +35,7 @@ const uint8_t kSodaJaJpPublicKeySHA256[32] = {
 static_assert(base::size(kSodaJaJpPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
-const char kSodaJaJpManifestName[] = "SODA ja-JP Models";
-
-constexpr base::FilePath::CharType kSodaJaJpConfigFileRelativePath[] =
-    FILE_PATH_LITERAL("SODAModels/dictation.ascii_proto");
+constexpr char kSodaJaJpManifestName[] = "SODA ja-JP Models";
 
 }  // namespace
 
@@ -70,7 +67,8 @@ void SodaJaJpComponentInstallerPolicy::UpdateSodaJaJpComponentOnDemand() {
 bool SodaJaJpComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
-  return base::PathExists(install_dir.Append(kSodaJaJpConfigFileRelativePath));
+  return base::PathExists(
+      install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
 }
 
 bool SodaJaJpComponentInstallerPolicy::
@@ -128,8 +126,9 @@ std::vector<std::string> SodaJaJpComponentInstallerPolicy::GetMimeTypes()
 void UpdateSodaJaJpInstallDirPref(PrefService* prefs,
                                   const base::FilePath& install_dir) {
 #if !defined(OS_ANDROID)
-  prefs->SetFilePath(prefs::kSodaJaJpConfigPath,
-                     install_dir.Append(kSodaJaJpConfigFileRelativePath));
+  prefs->SetFilePath(
+      prefs::kSodaJaJpConfigPath,
+      install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
 #endif
 }
 

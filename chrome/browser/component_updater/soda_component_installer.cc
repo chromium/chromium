@@ -29,7 +29,7 @@ namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: icnkogojpkfjeajonkmlplionaamopkf
-const uint8_t kSODAPublicKeySHA256[32] = {
+constexpr uint8_t kSODAPublicKeySHA256[32] = {
     0x82, 0xda, 0xe6, 0xe9, 0xfa, 0x59, 0x40, 0x9e, 0xda, 0xcb, 0xfb,
     0x8e, 0xd0, 0x0c, 0xef, 0xa5, 0xc0, 0x97, 0x00, 0x84, 0x1c, 0x21,
     0xa6, 0xae, 0xc8, 0x1b, 0x87, 0xfb, 0x12, 0x27, 0x28, 0xb1};
@@ -37,7 +37,7 @@ const uint8_t kSODAPublicKeySHA256[32] = {
 static_assert(base::size(kSODAPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
-const char kSODAManifestName[] = "SODA Library";
+constexpr char kSODAManifestName[] = "SODA Library";
 
 }  // namespace
 
