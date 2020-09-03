@@ -519,20 +519,22 @@ NearbyShareSettings* NearbySharingServiceImpl::GetSettings() {
 
 void NearbySharingServiceImpl::OnNearbyProfileChanged(Profile* profile) {
   // TODO(crbug.com/1084576): Notify UI about the new active profile.
-  NS_LOG(VERBOSE) << __func__ << ": Nearby profile changed to "
-                  << process_manager_->IsActiveProfile(profile_);
+  NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile changed to: "
+                  << profile_->GetProfileUserName();
   InvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::OnNearbyProcessStarted() {
   if (process_manager_->IsActiveProfile(profile_))
-    NS_LOG(VERBOSE) << __func__ << ": Nearby process started!";
+    NS_LOG(VERBOSE) << __func__ << ": Nearby process started for profile: "
+                    << profile_->GetProfileUserName();
 }
 
 void NearbySharingServiceImpl::OnNearbyProcessStopped() {
   InvalidateSurfaceState();
   if (process_manager_->IsActiveProfile(profile_))
-    NS_LOG(VERBOSE) << __func__ << ": Nearby process stopped!";
+    NS_LOG(VERBOSE) << __func__ << ": Nearby process stopped for profile: "
+                    << profile_->GetProfileUserName();
 }
 
 void NearbySharingServiceImpl::OnIncomingConnection(
@@ -961,7 +963,8 @@ void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
 void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
-                    << ": Stopping advertising because profile not active";
+                    << ": Stopping advertising because profile was not active: "
+                    << profile_->GetProfileUserName();
     StopAdvertising();
     return;
   }
@@ -1112,7 +1115,8 @@ void NearbySharingServiceImpl::InvalidateSendSurfaceState() {
 void NearbySharingServiceImpl::InvalidateScanningState() {
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
-                    << ": Stopping discovery because profile not active";
+                    << ": Stopping discovery because profile was not active: "
+                    << profile_->GetProfileUserName();
     StopScanning();
     return;
   }
