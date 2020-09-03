@@ -24,6 +24,7 @@ blink_modules_sources("v8") {
   }
 
   deps = [
+    ":generate_mojo_bindings",
     ":generated",
     "//third_party/blink/renderer/platform",
     "//v8",
