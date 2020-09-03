@@ -59,14 +59,16 @@ class FakeServiceConnectionImpl : public ServiceConnection,
       override;
 
   void LoadHandwritingModel(
+      mojom::HandwritingRecognizerSpecPtr spec,
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelCallback
           result_callback) override;
 
+  // Will be deprecated and removed soon.
   void LoadHandwritingModelWithSpec(
       mojom::HandwritingRecognizerSpecPtr spec,
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-      mojom::MachineLearningService::LoadHandwritingModelCallback
+      mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
           result_callback) override;
 
   // mojom::Model:
@@ -174,6 +176,10 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void HandleLoadHandwritingModel(
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelCallback callback);
+  void HandleLoadHandwritingModelWithSpec(
+      mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
+      mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
+          callback);
   void HandleRecognize(
       mojom::HandwritingRecognitionQueryPtr query,
       mojom::HandwritingRecognizer::RecognizeCallback callback);
@@ -183,6 +189,7 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   mojo::ReceiverSet<mojom::TextClassifier> text_classifier_receivers_;
   mojo::ReceiverSet<mojom::HandwritingRecognizer> handwriting_receivers_;
   mojom::TensorPtr output_tensor_;
+  mojom::LoadHandwritingModelResult load_handwriting_model_result_;
   mojom::LoadModelResult load_model_result_;
   mojom::LoadModelResult load_text_classifier_result_;
   mojom::CreateGraphExecutorResult create_graph_executor_result_;

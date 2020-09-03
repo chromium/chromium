@@ -77525,6 +77525,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadHandwritingModelResultEvent"
+    expires_after="2021-01-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    The result of load handwriting model, which can be OK or some specific
+    error. The error code could be logged in machine learning service in chrome
+    or in chromeos when handwriting model is not loaded successfully.
+  </summary>
+</histogram>
+
 <histogram name="MachineLearningService.HandwritingModel.Recognize.Event"
     enum="Boolean" expires_after="2021-01-01">
   <owner>amoylan@chromium.org</owner>
@@ -208484,15 +208497,10 @@ regressions. -->
   <affected-histogram name="Media.Audio.InputStartupSuccessMac"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MachineLearningServiceLoadModelResult" separator="."
-    ordering="prefix">
-  <suffix name="HandwritingModel" label="On-device handwriting model."/>
+<histogram_suffixes name="MachineLearningServiceLoadModelResultEvent"
+    separator="." ordering="prefix">
   <suffix name="TextClassifier" label="On-device text classification model."/>
-  <affected-histogram
-      name="MachineLearningService.LoadModelResult.CpuTimeMicrosec"/>
   <affected-histogram name="MachineLearningService.LoadModelResult.Event"/>
-  <affected-histogram
-      name="MachineLearningService.LoadModelResult.TotalMemoryDeltaKb"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="MachineLearningServiceModels" separator="."
@@ -208550,10 +208558,12 @@ regressions. -->
     ordering="prefix">
   <suffix base="true" name="CreateGraphExecutorResult" label=""/>
   <suffix base="true" name="ExecuteResult" label=""/>
+  <suffix name="HandwritingModel.LoadModelResult" label=""/>
   <suffix name="HandwritingModel.Recognize" label=""/>
   <suffix base="true" name="LoadModelResult" label=""/>
   <suffix name="TextClassifier.Annotate" label=""/>
   <suffix name="TextClassifier.FindLanguages" label=""/>
+  <suffix name="TextClassifier.LoadModelResult" label=""/>
   <suffix name="TextClassifier.SuggestSelection" label=""/>
   <affected-histogram name="MachineLearningService.CpuTimeMicrosec"/>
   <affected-histogram name="MachineLearningService.ElapsedTimeMicrosec">

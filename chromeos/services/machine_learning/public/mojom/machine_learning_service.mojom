@@ -50,10 +50,12 @@ interface MachineLearningService {
   // Create a new TextClassifier.
   LoadTextClassifier@2(pending_receiver<TextClassifier> receiver)
       => (LoadModelResult result);
-  // Create and initialize a handwriting recognizer.
-  LoadHandwritingModel@3(pending_receiver<HandwritingRecognizer> receiver)
-      => (LoadModelResult result);
   // Create and initialize a handwriting recognizer with given `spec`.
+  LoadHandwritingModel@3(
+      HandwritingRecognizerSpec spec,
+      pending_receiver<HandwritingRecognizer> receiver)
+      => (LoadHandwritingModelResult result);
+  // Will be deprecated soon.
   LoadHandwritingModelWithSpec@4(
       HandwritingRecognizerSpec spec,
       pending_receiver<HandwritingRecognizer> receiver)

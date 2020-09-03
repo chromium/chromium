@@ -44752,6 +44752,21 @@ from previous Chrome versions.
   <int value="9" label="EXECUTION_ERROR"/>
 </enum>
 
+<enum name="MachineLearningServiceLoadHandwritingModelResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="DEPRECATED_MODEL_SPEC_ERROR"/>
+  <int value="2" label="LOAD_MODEL_ERROR"/>
+  <int value="3" label="FEATURE_NOT_SUPPORTED_ERROR"/>
+  <int value="4" label="LANGUAGE_NOT_SUPPORTED_ERROR"/>
+  <int value="5" label="FEATURE_DISABLED_BY_USER"/>
+  <int value="6" label="DLC_DOES_NOT_EXIST"/>
+  <int value="7" label="DLC_INSTALL_ERROR"/>
+  <int value="8" label="DLC_GET_PATH_ERROR"/>
+  <int value="9" label="LOAD_NATIVE_LIB_ERROR"/>
+  <int value="10" label="LOAD_FUNC_PTR_ERROR"/>
+  <int value="11" label="LOAD_MODEL_FILES_ERROR"/>
+</enum>
+
 <enum name="MachineLearningServiceLoadModelResultEvent">
   <int value="0" label="OK"/>
   <int value="1" label="MODEL_SPEC_ERROR"/>

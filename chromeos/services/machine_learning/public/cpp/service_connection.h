@@ -70,19 +70,20 @@ class ServiceConnection {
       mojom::MachineLearningService::LoadTextClassifierCallback
           result_callback) = 0;
 
-  // DEPRECATED, DO NOT USE.
+  // Instruct ML daemon to load the Handwriting model with the given |spec|,
+  // binding a Handwriting implementation to |receiver|. Bootstraps the initial
+  // Mojo connection to the daemon if necessary.
   virtual void LoadHandwritingModel(
+      mojom::HandwritingRecognizerSpecPtr spec,
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelCallback
           result_callback) = 0;
 
-  // Instruct ML daemon to load the Handwriting model with the given |spec|,
-  // binding a Handwriting implementation to |receiver|. Bootstraps the initial
-  // Mojo connection to the daemon if necessary.
+  // Same as LoadHandwritingModel, but will be deprecated and removed soon.
   virtual void LoadHandwritingModelWithSpec(
       mojom::HandwritingRecognizerSpecPtr spec,
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-      mojom::MachineLearningService::LoadHandwritingModelCallback
+      mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
           result_callback) = 0;
 
  protected:

@@ -14,6 +14,7 @@ namespace machine_learning {
 
 FakeServiceConnectionImpl::FakeServiceConnectionImpl()
     : output_tensor_(mojom::Tensor::New()),
+      load_handwriting_model_result_(mojom::LoadHandwritingModelResult::OK),
       load_model_result_(mojom::LoadModelResult::OK),
       load_text_classifier_result_(mojom::LoadModelResult::OK),
       create_graph_executor_result_(mojom::CreateGraphExecutorResult::OK),
@@ -65,17 +66,21 @@ void FakeServiceConnectionImpl::LoadTextClassifier(
 }
 
 void FakeServiceConnectionImpl::LoadHandwritingModel(
-    mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-    mojom::MachineLearningService::LoadHandwritingModelCallback callback) {
-  NOTREACHED();
-}
-
-void FakeServiceConnectionImpl::LoadHandwritingModelWithSpec(
     mojom::HandwritingRecognizerSpecPtr spec,
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     mojom::MachineLearningService::LoadHandwritingModelCallback callback) {
   ScheduleCall(base::BindOnce(
       &FakeServiceConnectionImpl::HandleLoadHandwritingModel,
+      base::Unretained(this), std::move(receiver), std::move(callback)));
+}
+
+void FakeServiceConnectionImpl::LoadHandwritingModelWithSpec(
+    mojom::HandwritingRecognizerSpecPtr spec,
+    mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
+    mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
+        callback) {
+  ScheduleCall(base::BindOnce(
+      &FakeServiceConnectionImpl::HandleLoadHandwritingModelWithSpec,
       base::Unretained(this), std::move(receiver), std::move(callback)));
 }
 
@@ -282,6 +287,16 @@ void FakeServiceConnectionImpl::Recognize(
 void FakeServiceConnectionImpl::HandleLoadHandwritingModel(
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     mojom::MachineLearningService::LoadHandwritingModelCallback callback) {
+  if (load_handwriting_model_result_ == mojom::LoadHandwritingModelResult::OK)
+    handwriting_receivers_.Add(this, std::move(receiver));
+
+  std::move(callback).Run(load_handwriting_model_result_);
+}
+
+void FakeServiceConnectionImpl::HandleLoadHandwritingModelWithSpec(
+    mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
+    mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
+        callback) {
   if (load_model_result_ == mojom::LoadModelResult::OK)
     handwriting_receivers_.Add(this, std::move(receiver));
 
