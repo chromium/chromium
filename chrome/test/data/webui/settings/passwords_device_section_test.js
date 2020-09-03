@@ -64,6 +64,8 @@ suite('PasswordsDeviceSection', function() {
   let passwordManager = null;
   /** @type {TestSyncBrowserProxy} */
   let syncBrowserProxy = null;
+  /** @type {!settings.StoredAccount} */
+  const SIGNED_IN_ACCOUNT = {email: 'john@gmail.com'};
 
   setup(function() {
     PolymerTest.clearBody();
@@ -74,7 +76,7 @@ suite('PasswordsDeviceSection', function() {
 
     // The user only enters this page when they are eligible (signed-in but not
     // syncing) and opted-in to account storage.
-    syncBrowserProxy.storedAccounts = [{email: 'john@gmail.com'}];
+    syncBrowserProxy.storedAccounts = [SIGNED_IN_ACCOUNT];
     simulateStoredAccounts(syncBrowserProxy.storedAccounts);
     syncBrowserProxy.syncStatus = {signedIn: false};
     simulateSyncStatus(syncBrowserProxy.syncStatus);
@@ -190,18 +192,52 @@ suite('PasswordsDeviceSection', function() {
         passwordsDeviceSection.$.deviceAndAccountPasswordList, []);
   });
 
-  // Test verifies that the overflow menu offers an option to move a password
-  // to the account and that it has the right text.
-  test('hasMoveToAccountOption', async function() {
+  // Test checks that when the overflow menu is opened for any password not
+  // corresponding to the first signed-in account, an option to move it to that
+  // account is shown.
+  test(
+      'hasMoveToAccountOptionIfIsNotSignedInAccountPassword', async function() {
+        const nonGooglePasswordWithSameEmail = createPasswordEntry(
+            {username: SIGNED_IN_ACCOUNT.email, url: 'not-google.com'});
+        const googlePasswordWithDifferentEmail = createPasswordEntry(
+            {username: 'another-user', url: 'accounts.google.com'});
+        const passwordsDeviceSection = await createPasswordsDeviceSection(
+            syncBrowserProxy, passwordManager,
+            [nonGooglePasswordWithSameEmail, googlePasswordWithDifferentEmail]);
+        const passwordElements =
+            passwordsDeviceSection.root.querySelectorAll('password-list-item');
+
+        passwordElements[0].$.moreActionsButton.click();
+        flush();
+        let moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler
+                                      .$.menuMovePasswordToAccount;
+        assertFalse(moveToAccountOption.hidden);
+
+        passwordsDeviceSection.$.passwordsListHandler.$.menu.close();
+
+        passwordElements[1].$.moreActionsButton.click();
+        flush();
+        moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler.$
+                                  .menuMovePasswordToAccount;
+        assertFalse(moveToAccountOption.hidden);
+      });
+
+  // Test checks that when the overflow menu is opened for the password
+  // corresponding to the first signed-in account, no option to move it to the
+  // same account is shown.
+  test('hasNoMoveToAccountOptionIfIsSignedInAccountPassword', async function() {
+    const signedInGoogleAccountPassword = createPasswordEntry(
+        {username: SIGNED_IN_ACCOUNT.email, url: 'accounts.google.com'});
     const passwordsDeviceSection = await createPasswordsDeviceSection(
-        syncBrowserProxy, passwordManager, []);
-    const moveToAccountButton =
-        passwordsDeviceSection.$.passwordsListHandler.$$(
-            '#menuMovePasswordToAccount');
-    assertTrue(!!moveToAccountButton);
-    assertEquals(
-        passwordsDeviceSection.i18n('movePasswordToAccount'),
-        moveToAccountButton.innerText);
+        syncBrowserProxy, passwordManager, [signedInGoogleAccountPassword]);
+    const [password] =
+        passwordsDeviceSection.root.querySelectorAll('password-list-item');
+
+    password.$.moreActionsButton.click();
+    flush();
+    const moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler.$
+                                    .menuMovePasswordToAccount;
+    assertTrue(moveToAccountOption.hidden);
   });
 
 
@@ -225,8 +261,7 @@ suite('PasswordsDeviceSection', function() {
     const [password] =
         passwordsDeviceSection.root.querySelectorAll('password-list-item');
     password.$.moreActionsButton.click();
-    passwordsDeviceSection.$.passwordsListHandler
-        .$$('#menuMovePasswordToAccount')
+    passwordsDeviceSection.$.passwordsListHandler.$.menuMovePasswordToAccount
         .click();
     flush();
     const moveToAccountDialog =

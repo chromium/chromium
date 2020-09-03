@@ -20,9 +20,11 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
@@ -61,7 +63,7 @@ Polymer({
      * Whether an option for moving a password to the account should be offered
      * in the overflow menu.
      */
-    shouldShowMoveToAccountOption: {
+    allowMoveToAccountOption: {
       type: Boolean,
       value: false,
     },
@@ -115,8 +117,19 @@ Polymer({
 
     /**
      * The message displayed in the toast following a password removal.
+     * @private
      */
     removalNotification_: {
+      type: String,
+      value: '',
+    },
+
+    /**
+     * The email of the first signed-in account, or the empty string if
+     * there's none.
+     * @private
+     */
+    firstSignedInAccountEmail_: {
       type: String,
       value: '',
     }
@@ -124,6 +137,7 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
+    WebUIListenerBehavior,
   ],
 
   listeners: {
@@ -138,6 +152,14 @@ Polymer({
   /** @override */
   attached() {
     this.passwordManager_ = PasswordManagerImpl.getInstance();
+
+    const extractFirstAccountEmail = accounts => {
+      this.firstSignedInAccountEmail_ =
+          accounts.length > 0 ? accounts[0].email : '';
+    };
+    SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(
+        extractFirstAccountEmail);
+    this.addWebUIListener('stored-accounts-updated', extractFirstAccountEmail);
   },
 
   /** @override */
@@ -349,6 +371,19 @@ Polymer({
 
     // A removal possibly happened, so don't reset the focus.
     this.activeDialogAnchor_ = null;
+  },
+
+  /**
+   * Whether the move option should be present in the overflow menu.
+   * @private
+   * @return {boolean}
+   */
+  shouldShowMoveToAccountOption_() {
+    const isFirstSignedInAccountPassword = !!this.activePassword &&
+        this.activePassword.entry.urls.origin.includes('accounts.google.com') &&
+        this.activePassword.entry.username === this.firstSignedInAccountEmail_;
+    // It's not useful to move a password for an account into that same account.
+    return this.allowMoveToAccountOption && !isFirstSignedInAccountPassword;
   },
 
 });

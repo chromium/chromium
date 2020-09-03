@@ -1502,8 +1502,8 @@ suite('PasswordsSection', function() {
     test('noMoveToAccountOption', function() {
       const passwordsSection =
           elementFactory.createPasswordsSection(passwordManager, [], []);
-      assertFalse(!!passwordsSection.$.passwordsListHandler.$$(
-          '#menuMovePasswordToAccount'));
+      assertTrue(passwordsSection.$.passwordsListHandler.$
+                     .menuMovePasswordToAccount.hidden);
     });
 
     // Tests that the opt-in/opt-out buttons appear for signed-in (non-sync)

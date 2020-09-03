@@ -218,12 +218,14 @@ js_library("passwords_list_handler") {
     ":password_manager_proxy",
     ":password_move_to_account_dialog",
     ":password_remove_dialog",
+    "../people_page:sync_browser_proxy.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
 }
