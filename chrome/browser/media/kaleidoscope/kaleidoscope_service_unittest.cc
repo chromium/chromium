@@ -103,30 +103,122 @@ TEST_F(KaleidoscopeServiceTest, Success) {
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
       base::BindLambdaForTesting(
-          [&](const std::string& result) { EXPECT_EQ(kTestData, result); }));
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_EQ(kTestData, result->response);
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kSuccess,
+                      result->result);
+          }));
 
   WaitForRequest();
   ASSERT_TRUE(RespondToFetch(kTestData));
+
+  // If we call again then we should hit the cache.
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindLambdaForTesting(
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_EQ(kTestData, result->response);
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kSuccess,
+                      result->result);
+          }));
+
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(url_loader_factory()->pending_requests()->empty());
+
+  // If we change the GAIA id then we should trigger a refetch.
+  GetService()->GetCollections(
+      CreateCredentials(), "1234", "abcd",
+      base::BindLambdaForTesting(
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_EQ(kTestData, result->response);
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kSuccess,
+                      result->result);
+          }));
+
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(url_loader_factory()->pending_requests()->empty());
+}
+
+TEST_F(KaleidoscopeServiceTest, ServerFail_Forbidden) {
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindLambdaForTesting(
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_TRUE(result->response.empty());
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kNotAvailable,
+                      result->result);
+          }));
+
+  WaitForRequest();
+  ASSERT_TRUE(RespondToFetch("", net::HTTP_FORBIDDEN));
+
+  // If we call again then we should hit the cache. HTTP Forbidden is special
+  // cased because this indicates the user cannot access Kaleidoscope.
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindLambdaForTesting(
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_TRUE(result->response.empty());
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kNotAvailable,
+                      result->result);
+          }));
+
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(url_loader_factory()->pending_requests()->empty());
 }
 
 TEST_F(KaleidoscopeServiceTest, ServerFail) {
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
       base::BindLambdaForTesting(
-          [&](const std::string& result) { EXPECT_TRUE(result.empty()); }));
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_TRUE(result->response.empty());
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kFailed,
+                      result->result);
+          }));
 
   WaitForRequest();
   ASSERT_TRUE(RespondToFetch("", net::HTTP_BAD_REQUEST));
+
+  // If we call again then we should not hit the cache.
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindLambdaForTesting(
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_TRUE(result->response.empty());
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kFailed,
+                      result->result);
+          }));
+
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(url_loader_factory()->pending_requests()->empty());
 }
 
 TEST_F(KaleidoscopeServiceTest, NetworkFail) {
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
       base::BindLambdaForTesting(
-          [&](const std::string& result) { EXPECT_TRUE(result.empty()); }));
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_TRUE(result->response.empty());
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kFailed,
+                      result->result);
+          }));
 
   WaitForRequest();
   ASSERT_TRUE(RespondToFetch("", net::HTTP_OK, net::ERR_UNEXPECTED));
+
+  // If we call again then we should not hit the cache.
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindLambdaForTesting(
+          [&](media::mojom::GetCollectionsResponsePtr result) {
+            EXPECT_TRUE(result->response.empty());
+            EXPECT_EQ(media::mojom::GetCollectionsResult::kFailed,
+                      result->result);
+          }));
+
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(url_loader_factory()->pending_requests()->empty());
 }
 
 }  // namespace kaleidoscope

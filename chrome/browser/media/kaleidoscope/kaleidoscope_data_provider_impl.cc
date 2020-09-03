@@ -287,7 +287,8 @@ void KaleidoscopeDataProviderImpl::OnGotCredentialsForCollections(
     media::mojom::CredentialsResult result) {
   // If we have no credentials then we should return an empty response.
   if (result != media::mojom::CredentialsResult::kSuccess) {
-    std::move(cb).Run("");
+    std::move(cb).Run(media::mojom::GetCollectionsResponse::New(
+        "", media::mojom::GetCollectionsResult::kFailed));
     return;
   }
 

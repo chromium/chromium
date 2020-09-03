@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/media/history/media_history_store.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_service_factory.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_switches.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +16,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -101,7 +103,29 @@ class GetCollectionsRequest {
 
   std::string gaia_id() const { return gaia_id_; }
 
+  network::SimpleURLLoader& url_loader() const {
+    return *pending_request_.get();
+  }
+
+  bool has_failed() const {
+    return url_loader().NetError() != net::OK ||
+           response_code() != net::HTTP_OK;
+  }
+
+  bool not_available() const {
+    return url_loader().NetError() == net::OK &&
+           response_code() == net::HTTP_FORBIDDEN;
+  }
+
  private:
+  int response_code() const {
+    if (url_loader().ResponseInfo() && url_loader().ResponseInfo()->headers) {
+      return url_loader().ResponseInfo()->headers->response_code();
+    }
+
+    return 0;
+  }
+
   std::string const gaia_id_;
 
   std::unique_ptr<::network::SimpleURLLoader> pending_request_;
@@ -134,9 +158,31 @@ void KaleidoscopeService::GetCollections(
     request_.reset();
   }
 
-  // If this is a test then return early.
-  if (collections_for_testing_.has_value()) {
-    std::move(callback).Run(*collections_for_testing_);
+  // Check Media History if we have any cached kaleidoscope data.
+  media_history::MediaHistoryKeyedService::Get(profile_)->GetKaleidoscopeData(
+      gaia_id,
+      base::BindOnce(&KaleidoscopeService::OnGotCachedData,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(credentials),
+                     gaia_id, request, std::move(callback)));
+}
+
+void KaleidoscopeService::SetCollectionsForTesting(
+    const std::string& collections) {
+  media_history::MediaHistoryKeyedService::Get(profile_)->SetKaleidoscopeData(
+      media::mojom::GetCollectionsResponse::New(
+          collections, media::mojom::GetCollectionsResult::kSuccess),
+      "");
+}
+
+void KaleidoscopeService::OnGotCachedData(
+    media::mojom::CredentialsPtr credentials,
+    const std::string& gaia_id,
+    const std::string& request,
+    GetCollectionsCallback callback,
+    media::mojom::GetCollectionsResponsePtr cached) {
+  // If we got cached data then return that.
+  if (cached) {
+    std::move(callback).Run(std::move(cached));
     return;
   }
 
@@ -149,28 +195,37 @@ void KaleidoscopeService::GetCollections(
         std::move(credentials), gaia_id, request,
         GetURLLoaderFactoryForFetcher(),
         base::BindOnce(&KaleidoscopeService::OnURLFetchComplete,
-                       base::Unretained(this)));
+                       base::Unretained(this), gaia_id));
   }
-}
-
-void KaleidoscopeService::SetCollectionsForTesting(
-    const std::string& collections) {
-  collections_for_testing_ = collections;
 }
 
 void KaleidoscopeService::OnURLFetchComplete(
+    const std::string& gaia_id,
     std::unique_ptr<std::string> data) {
-  request_.reset();
+  auto response = media::mojom::GetCollectionsResponse::New();
+  if (request_->not_available()) {
+    response->result = media::mojom::GetCollectionsResult::kNotAvailable;
+  } else if (request_->has_failed()) {
+    response->result = media::mojom::GetCollectionsResult::kFailed;
+  } else {
+    response->result = media::mojom::GetCollectionsResult::kSuccess;
+    response->response = *data;
+  }
 
   for (auto& callback : pending_callbacks_) {
-    if (!data) {
-      std::move(callback).Run("");
-    } else {
-      std::move(callback).Run(*data);
-    }
+    std::move(callback).Run(response.Clone());
   }
 
   pending_callbacks_.clear();
+  request_.reset();
+
+  // If the request did not fail then we should save it in the cache so we avoid
+  // hitting the server later. If the response was that Kaleidoscope is not
+  // available to the user then that is cacheable too.
+  if (response->result != media::mojom::GetCollectionsResult::kFailed) {
+    media_history::MediaHistoryKeyedService::Get(profile_)->SetKaleidoscopeData(
+        response.Clone(), gaia_id);
+  }
 }
 
 scoped_refptr<::network::SharedURLLoaderFactory>

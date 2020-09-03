@@ -32,7 +32,8 @@ class KaleidoscopeService : public KeyedService {
   // Returns the instance attached to the given |profile|.
   static KaleidoscopeService* Get(Profile* profile);
 
-  using GetCollectionsCallback = base::OnceCallback<void(const std::string&)>;
+  using GetCollectionsCallback =
+      base::OnceCallback<void(media::mojom::GetCollectionsResponsePtr)>;
   void GetCollections(media::mojom::CredentialsPtr credentials,
                       const std::string& gaia_id,
                       const std::string& request,
@@ -43,7 +44,14 @@ class KaleidoscopeService : public KeyedService {
  private:
   friend class KaleidoscopeServiceTest;
 
-  void OnURLFetchComplete(std::unique_ptr<std::string> data);
+  void OnGotCachedData(media::mojom::CredentialsPtr credentials,
+                       const std::string& gaia_id,
+                       const std::string& request,
+                       GetCollectionsCallback callback,
+                       media::mojom::GetCollectionsResponsePtr cached);
+
+  void OnURLFetchComplete(const std::string& gaia_id,
+                          std::unique_ptr<std::string> data);
 
   scoped_refptr<::network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForFetcher();
@@ -57,7 +65,7 @@ class KaleidoscopeService : public KeyedService {
 
   std::vector<GetCollectionsCallback> pending_callbacks_;
 
-  base::Optional<std::string> collections_for_testing_;
+  base::WeakPtrFactory<KaleidoscopeService> weak_ptr_factory_{this};
 };
 
 }  // namespace kaleidoscope

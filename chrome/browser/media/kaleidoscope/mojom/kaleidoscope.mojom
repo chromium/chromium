@@ -88,6 +88,27 @@ interface KaleidoscopeDataProvider {
   SendFeedback();
 
   // Gets the collections from the backend to be displayed. Takes a string that
-  // contains the request to be sent to the server.
-  GetCollections(string request) => (string response);
+  // contains the request to be sent to the server. The request is the
+  // GetCollectionsRequest proto here: go/ks-media-proto.
+  GetCollections(string request) => (GetCollectionsResponse response);
+};
+
+enum GetCollectionsResult {
+ // The request was successful.
+ kSuccess,
+
+ // The request failed.
+ kFailed,
+
+ // Kaleidoscope is not available to the user.
+ kNotAvailable,
+};
+
+struct GetCollectionsResponse {
+  // Contains the response from the server. The response is the
+  // GetCollectionsResponse proto here: go/ks-media-proto.
+  string response;
+
+  // Contains the result of wether the request was successful or not.
+  GetCollectionsResult result;
 };

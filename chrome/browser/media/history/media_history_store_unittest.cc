@@ -179,6 +179,23 @@ class MediaHistoryStoreUnitTest
     return out;
   }
 
+  media::mojom::GetCollectionsResponsePtr GetKaleidoscopeDataSync(
+      MediaHistoryKeyedService* service,
+      const std::string& gaia_id) {
+    base::RunLoop run_loop;
+    media::mojom::GetCollectionsResponsePtr out;
+
+    service->GetKaleidoscopeData(
+        gaia_id, base::BindLambdaForTesting(
+                     [&](media::mojom::GetCollectionsResponsePtr data) {
+                       out = std::move(data);
+                       run_loop.Quit();
+                     }));
+
+    run_loop.Run();
+    return out;
+  }
+
   std::vector<mojom::MediaHistoryPlaybackRowPtr> GetPlaybackRowsSync(
       MediaHistoryKeyedService* service) {
     base::RunLoop run_loop;
@@ -267,6 +284,13 @@ class MediaHistoryStoreUnitTest
   bool IsReadOnly() const { return GetParam() != TestState::kNormal; }
 
   Profile* GetProfile() { return profile_.get(); }
+
+  media::mojom::GetCollectionsResponsePtr GetExpectedKaleidoscopeData() {
+    auto data = media::mojom::GetCollectionsResponse::New();
+    data->response = "abcd";
+    data->result = media::mojom::GetCollectionsResult::kFailed;
+    return data;
+  }
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -610,6 +634,64 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
 
   // The OTR service should have the same data.
   EXPECT_EQ(origins, GetOriginRowsSync(otr_service()));
+}
+
+TEST_P(MediaHistoryStoreUnitTest, KaleidoscopeData) {
+  {
+    // The data should be empty at the start.
+    auto data = GetKaleidoscopeDataSync(service(), "123");
+    EXPECT_TRUE(data.is_null());
+  }
+
+  service()->SetKaleidoscopeData(GetExpectedKaleidoscopeData(), "123");
+  WaitForDB();
+
+  {
+    // We should be able to get the data.
+    auto data = GetKaleidoscopeDataSync(service(), "123");
+
+    if (IsReadOnly()) {
+      EXPECT_TRUE(data.is_null());
+    } else {
+      EXPECT_EQ(GetExpectedKaleidoscopeData(), data);
+    }
+  }
+
+  {
+    // Getting with a different GAIA ID should wipe the data and return an
+    // empty string.
+    auto data = GetKaleidoscopeDataSync(service(), "1234");
+    EXPECT_TRUE(data.is_null());
+  }
+
+  {
+    // The data should be empty for the other GAIA ID too.
+    auto data = GetKaleidoscopeDataSync(service(), "123");
+    EXPECT_TRUE(data.is_null());
+  }
+
+  service()->SetKaleidoscopeData(GetExpectedKaleidoscopeData(), "123");
+  WaitForDB();
+
+  {
+    // We should be able to get the data.
+    auto data = GetKaleidoscopeDataSync(service(), "123");
+
+    if (IsReadOnly()) {
+      EXPECT_TRUE(data.is_null());
+    } else {
+      EXPECT_EQ(GetExpectedKaleidoscopeData(), data);
+    }
+  }
+
+  service()->DeleteKaleidoscopeData();
+  WaitForDB();
+
+  {
+    // The data should have been deleted.
+    auto data = GetKaleidoscopeDataSync(service(), "123");
+    EXPECT_TRUE(data.is_null());
+  }
 }
 
 TEST_P(MediaHistoryStoreUnitTest, GetOriginsWithHighWatchTime) {

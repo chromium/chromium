@@ -1049,6 +1049,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         media_history_service->ResetMediaFeedDueToCacheClearing(
             delete_begin_, delete_end_, nullable_filter,
             CreateTaskCompletionClosure(TracingDataType::kMediaFeeds));
+
+        if (nullable_filter.is_null() ||
+            nullable_filter.Run(GaiaUrls::GetInstance()->google_url())) {
+          media_history_service->DeleteKaleidoscopeData();
+        }
       }
     }
 

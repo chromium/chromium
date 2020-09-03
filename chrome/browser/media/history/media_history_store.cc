@@ -15,6 +15,7 @@
 #include "chrome/browser/media/history/media_history_feed_items_table.h"
 #include "chrome/browser/media/history/media_history_feeds_table.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
+#include "chrome/browser/media/history/media_history_kaleidoscope_data_table.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "chrome/browser/media/history/media_history_playback_table.h"
 #include "chrome/browser/media/history/media_history_session_images_table.h"
@@ -191,6 +192,8 @@ MediaHistoryStore::MediaHistoryStore(
       feed_items_table_(IsMediaFeedsEnabled()
                             ? new MediaHistoryFeedItemsTable(db_task_runner_)
                             : nullptr),
+      kaleidoscope_table_(
+          new MediaHistoryKaleidoscopeDataTable(db_task_runner_)),
       initialization_successful_(false) {
   db_->set_histogram_tag("MediaHistory");
   db_->set_exclusive_locking();
@@ -452,6 +455,8 @@ sql::InitStatus MediaHistoryStore::InitializeTables() {
     status = feeds_table_->Initialize(db_.get());
   if (feed_items_table_ && status == sql::INIT_OK)
     status = feed_items_table_->Initialize(db_.get());
+  if (status == sql::INIT_OK)
+    status = kaleidoscope_table_->Initialize(db_.get());
 
   return status;
 }
@@ -1211,6 +1216,60 @@ void MediaHistoryStore::UpdateFeedUserStatus(
   }
 
   if (!feeds_table_->UpdateFeedUserStatus(feed_id, status)) {
+    DB()->RollbackTransaction();
+    return;
+  }
+
+  DB()->CommitTransaction();
+}
+
+void MediaHistoryStore::SetKaleidoscopeData(
+    media::mojom::GetCollectionsResponsePtr data,
+    const std::string& gaia_id) {
+  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  if (!CanAccessDatabase())
+    return;
+
+  if (!DB()->BeginTransaction()) {
+    DLOG(ERROR) << "Failed to begin the transaction.";
+    return;
+  }
+
+  if (!kaleidoscope_table_->Set(std::move(data), gaia_id)) {
+    DB()->RollbackTransaction();
+    return;
+  }
+
+  DB()->CommitTransaction();
+}
+
+media::mojom::GetCollectionsResponsePtr MediaHistoryStore::GetKaleidoscopeData(
+    const std::string& gaia_id) {
+  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  if (!CanAccessDatabase())
+    return nullptr;
+
+  if (!DB()->BeginTransaction()) {
+    DLOG(ERROR) << "Failed to begin the transaction.";
+    return nullptr;
+  }
+
+  auto out = kaleidoscope_table_->Get(gaia_id);
+  DB()->CommitTransaction();
+  return out;
+}
+
+void MediaHistoryStore::DeleteKaleidoscopeData() {
+  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  if (!CanAccessDatabase())
+    return;
+
+  if (!DB()->BeginTransaction()) {
+    DLOG(ERROR) << "Failed to begin the transaction.";
+    return;
+  }
+
+  if (!kaleidoscope_table_->Delete()) {
     DB()->RollbackTransaction();
     return;
   }
