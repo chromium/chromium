@@ -337,8 +337,26 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 
 // In the case of tcmalloc we also want to plumb into the glibc hooks
 // to avoid that allocations made in glibc itself (e.g., strdup()) get
-// accidentally performed on the glibc heap instead of the tcmalloc one.
-#if BUILDFLAG(USE_TCMALLOC)
+// accidentally performed on the glibc heap.
+//
+// More details:
+// Some glibc versions (until commit 6c444ad6e953dbdf9c7be065308a0a777)
+// incorrectly call __libc_memalign() to allocate memory (see elf/dl-tls.c in
+// glibc 2.23 for instance), and free() to free it. This causes issues for us,
+// as we are then asked to free memory we didn't allocate.
+//
+// This only happened in glibc to allocate TLS storage metadata, and there are
+// no other callers of __libc_memalign() there as of September 2020. To work
+// around this issue, intercept this internal libc symbol to make sure that both
+// the allocation and the free() are caught by the shim.
+//
+// This seems fragile, and is, but there is ample precedent for it, making it
+// quite likely to keep working in the future. For instance, both tcmalloc (in
+// libc_override_glibc.h, see in third_party/tcmalloc) and LLVM for LSAN use the
+// same mechanism.
+
+#if defined(LIBC_GLIBC) && \
+    (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
 #include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 

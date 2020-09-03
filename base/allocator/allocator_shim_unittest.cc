@@ -38,6 +38,10 @@
 #include <unistd.h>
 #endif
 
+#if defined(LIBC_GLIBC)
+extern "C" void* __libc_memalign(size_t align, size_t s);
+#endif
+
 namespace base {
 namespace allocator {
 namespace {
@@ -370,6 +374,17 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 
 #endif  // !OS_WIN && !OS_APPLE
 
+// See allocator_shim_override_glibc_weak_symbols.h for why we intercept
+// internal libc symbols.
+#if defined(LIBC_GLIBC) && \
+    (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+  void* libc_memalign_ptr = __libc_memalign(512, 56);
+  ASSERT_NE(nullptr, memalign_ptr);
+  ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(libc_memalign_ptr) % 512);
+  ASSERT_GE(aligned_allocs_intercepted_by_alignment[512], 1u);
+  ASSERT_GE(aligned_allocs_intercepted_by_size[56], 1u);
+#endif
+
   char* realloc_ptr = static_cast<char*>(malloc(10));
   strcpy(realloc_ptr, "foobar");
   void* old_realloc_ptr = realloc_ptr;
@@ -405,6 +420,12 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 #endif  // !defined(OS_ANDROID)
 
 #endif  // !OS_WIN
+
+#if defined(LIBC_GLIBC) && \
+    (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+  free(libc_memalign_ptr);
+  ASSERT_GE(frees_intercepted_by_addr[Hash(memalign_ptr)], 1u);
+#endif
 
   free(realloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(realloc_ptr)], 1u);
