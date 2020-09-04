@@ -106,11 +106,11 @@ dictionary ExtendableCookieChangeEventInit : ExtendableEventInit {
 
 [SecureContext]
 partial interface Window {
-  [Replaceable, SameObject] readonly attribute CookieStore cookieStore;
+  [SameObject] readonly attribute CookieStore cookieStore;
 };
 
 partial interface ServiceWorkerGlobalScope {
-  [Replaceable, SameObject] readonly attribute CookieStore cookieStore;
+  [SameObject] readonly attribute CookieStore cookieStore;
 
   attribute EventHandler oncookiechange;
 };
