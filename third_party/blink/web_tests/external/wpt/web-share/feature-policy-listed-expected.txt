@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL allowsFeature() returns true for web-share assert_true: expected true got false
+FAIL features() includes web-share assert_true: expected true got false
+FAIL allowedFeatures() includes web-share assert_true: expected true got false
+FAIL allowsFeature() returns a single entry for web-share assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+

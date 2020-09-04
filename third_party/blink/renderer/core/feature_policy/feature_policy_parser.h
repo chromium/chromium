@@ -118,6 +118,10 @@ CORE_EXPORT bool AllowFeatureEverywhereIfNotPresent(
 CORE_EXPORT void DisallowFeature(mojom::blink::FeaturePolicyFeature,
                                  ParsedFeaturePolicy&);
 
+// Returns true iff the feature should not be exposed to script.
+CORE_EXPORT bool IsFeatureForMeasurementOnly(
+    mojom::blink::FeaturePolicyFeature);
+
 // Replaces any existing declarations in the policy for the given feature with
 // a declaration which allows the feature in all origins.
 CORE_EXPORT void AllowFeatureEverywhere(mojom::blink::FeaturePolicyFeature,
