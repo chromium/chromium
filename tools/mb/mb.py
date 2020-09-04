@@ -297,6 +297,8 @@ class MetaBuildWrapper(object):
     subp.add_argument('-d', '--dimension', default=[], action='append', nargs=2,
                       dest='dimensions', metavar='FOO bar',
                       help='dimension to filter on')
+    subp.add_argument('--tags', default=[], action='append', metavar='FOO:BAR',
+                      help='Tags to assign to the swarming task')
     subp.add_argument('--no-default-dimensions', action='store_false',
                       dest='default_dimensions', default=True,
                       help='Do not automatically add dimensions to the task')
@@ -591,6 +593,8 @@ class MetaBuildWrapper(object):
           file=sys.stderr)
       return 1
 
+    tags = ['--tags=%s' % tag for tag in self.args.tags]
+
     cmd = [
         self.executable,
         self.PathJoin('tools', 'swarming_client', 'swarming.py'),
@@ -600,7 +604,7 @@ class MetaBuildWrapper(object):
           '--namespace', namespace,
           '-S', swarming_server,
           '--tags=purpose:user-debug-mb',
-      ] + dimensions
+      ] + tags + dimensions
     if self.args.extra_args:
       cmd += ['--'] + self.args.extra_args
     self.Print('')
