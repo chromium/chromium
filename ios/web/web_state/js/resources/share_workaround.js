@@ -14,8 +14,14 @@ goog.provide('__crWeb.shareWorkaround');
 
 /** @private */
 // Store originals to prevent calling a modified version later.
-const originalNavigator_ = navigator;
 const originalNavigatorShare_ = Navigator.prototype.share;
+// Navigator.share is only supported in secure contexts, do not create function
+// if it does not exist.
+if (!originalNavigatorShare_) {
+  return;
+}
+
+const originalNavigator_ = navigator;
 const originalReflectApply_ = Reflect.apply;
 const originalObjectDefineProperty_ = Object.defineProperty;
 
