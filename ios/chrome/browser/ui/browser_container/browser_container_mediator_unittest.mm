@@ -31,6 +31,7 @@ using base::test::ios::kWaitForUIElementTimeout;
 @property(nonatomic, strong) UIViewController* contentViewController;
 @property(nonatomic, strong)
     UIViewController* webContentsOverlayContainerViewController;
+@property(nonatomic, strong) UIViewController* screenTimeViewController;
 @property(nonatomic, assign, getter=isContentBlocked) BOOL contentBlocked;
 @end
 

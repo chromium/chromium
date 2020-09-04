@@ -2,6 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("screen_time") {
+  sources = [
+    "screen_time_consumer.h",
+    "screen_time_coordinator.h",
+    "screen_time_coordinator.mm",
+    "screen_time_mediator.h",
+    "screen_time_mediator.mm",
+    "screen_time_view_controller.h",
+    "screen_time_view_controller.mm",
+  ]
+  frameworks = [
+    "ScreenTime.framework",
+    "UIKit.framework",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":feature_flags",
+    "//base",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//net",
+  ]
+}
+
 source_set("feature_flags") {
   sources = [
     "features.h",

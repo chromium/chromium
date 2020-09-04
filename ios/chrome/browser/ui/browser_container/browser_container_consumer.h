@@ -23,6 +23,10 @@
 - (void)setWebContentsOverlayContainerViewController:
     (UIViewController*)webContentsOverlayContainerViewController;
 
+// The UIViewController used to display the ScreenTime UI above the web content
+// area.
+- (void)setScreenTimeViewController:(UIViewController*)screenTimeViewController;
+
 // Whether the content view should be blocked.  When set to YES, the content
 // area is blocked.  Overlay UI shown in OverlayModality::kWebContentArea remain
 // visible when |contentBlocked| is YES.

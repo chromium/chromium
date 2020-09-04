@@ -17,6 +17,11 @@
 @property(nonatomic, strong, readonly)
     UIViewController* webContentsOverlayContainerViewController;
 
+// The UIViewController used to display the ScreenTime blocker above the web
+// content area.
+@property(nonatomic, strong, readonly)
+    UIViewController* screenTimeViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_CONTAINER_BROWSER_CONTAINER_VIEW_CONTROLLER_H_

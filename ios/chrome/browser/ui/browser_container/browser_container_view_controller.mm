@@ -17,6 +17,7 @@
 @property(nonatomic, strong) UIViewController* contentViewController;
 @property(nonatomic, strong)
     UIViewController* webContentsOverlayContainerViewController;
+@property(nonatomic, strong) UIViewController* screenTimeViewController;
 @property(nonatomic, assign, getter=isContentBlocked) BOOL contentBlocked;
 // The view inserted into the hierarchy when self.contentBlocked is set to YES.
 @property(nonatomic, strong) UIView* contentBlockingView;
@@ -37,9 +38,11 @@
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  // OverlayContainerView should cover all subviews of BrowserContainerView.
+  // OverlayContainerView should cover all subviews of BrowserContainerView. The
+  // ScreenTime container must be above the WebContentArea overlay container.
   [self.view
       bringSubviewToFront:self.webContentsOverlayContainerViewController.view];
+  [self.view bringSubviewToFront:self.screenTimeViewController.view];
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)animated

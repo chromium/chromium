@@ -2836,6 +2836,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [overlays addObject:presentedOverlayView];
   }
 
+  UIView* screenTimeView =
+      self.browserContainerViewController.screenTimeViewController.view;
+  if (screenTimeView) {
+    [overlays addObject:screenTimeView];
+  }
+
   UIView* childOverlayView =
       overlayContainerViewController.childViewControllers.firstObject.view;
   if (childOverlayView) {
