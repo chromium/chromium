@@ -890,7 +890,7 @@
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="204706822916043810">Виртуал машиныг шалгаж байна</translation>
 <translation id="2048182445208425546">Сүлжээнийхээ ачааллагдсан мэдээлэл рүү нэвтэр</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" />-н төхөөрөмжийн Ойролцоо хуваалцах тохиргоо, '<ph name="DEVICE_NAME" />'.</translation>
+<translation id="2048243703055695889"><ph name="USER_EMAIL" />-н '<ph name="DEVICE_NAME" />' төхөөрөмжийн Ойролцоо хуваалцах тохиргоо.</translation>
 <translation id="2048653237708779538">Үйлдэл боломжгүй байна</translation>
 <translation id="204914487372604757">Богино холболт үүсгэх</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>

@@ -4187,6 +4187,11 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante cierta cantidad de tiempo.</translation>
 <translation id="7032813174556919004">Inhabilitar DNS sobre HTTPS</translation>
+<translation id="7033778618670823541">Si estableces la política, se especificará una lista de orígenes (URL) o patrones de nombres de host (como *.example.com) para los que no se aplicarán restricciones de seguridad en orígenes inseguros. Las organizaciones pueden especificar orígenes para las apps heredadas que no pueden implementar TLS o configurar un servidor de etapa de pruebas para desarrollos web internos. Así, los desarrolladores pueden probar las funciones que requieren contextos seguros sin tener que implementar TLS en el servidor de pruebas. Esta política también previene que el origen se considere "No seguro" en la barra de direcciones.
+
+      Establecer una lista de URL en esta política equivale a establecer la marca de línea de comandos --unsafely-treat-insecure-origin-as-secure en una lista separada por comas de las mismas URL. La política anulará esta marca y también UnsafelyTreatInsecureOriginAsSecure, si se aplica.
+
+      Para obtener más información sobre contextos seguros, consulta Secure Contexts ( https://www.w3.org/TR/secure-contexts ).</translation>
 <translation id="7037812781389976160">Controla la posición de la biblioteca de <ph name="PRODUCT_OS_NAME" />.
 
       Si se establece la política como "Parte inferior", se ubicará la biblioteca en la parte inferior de la pantalla.

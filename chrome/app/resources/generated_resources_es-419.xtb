@@ -891,6 +891,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Revisando la máquina virtual</translation>
 <translation id="2048182445208425546">Acceder al tráfico de la red</translation>
+<translation id="2048243703055695889">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_EMAIL" />, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">La acción no está disponible</translation>
 <translation id="204914487372604757">Crear accesos directos</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -1177,6 +1178,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2384436799579181135">Se produjo un error. Revisa la impresora y vuelve a intentarlo.</translation>
 <translation id="2387052489799050037">Ve a la página principal</translation>
 <translation id="2387458720915042159">Tipo de conexión proxy</translation>
+<translation id="2390347491606624519">No se puede establecer conexión con el proxy; vuelve a intentarlo</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
 <translation id="2391419135980381625">Fuente estándar</translation>
 <translation id="2392163307141705938">Alcanzaste el límite de tiempo que tu padre o madre estableció para <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3322,6 +3324,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5017643436812738274">Puedes navegar páginas con un cursor de texto. Presiona Ctrl+Buscar+7 para desactivar esta función.</translation>
 <translation id="5018207570537526145">Abrir el sitio web de la extensión</translation>
 <translation id="5018526990965779848">Envía datos de uso y diagnóstico. Para mejorar tu experiencia de Android, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
+<translation id="5019392775062123007">Visible para dispositivos cercanos como <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Aún no se actualizó</translation>
 <translation id="5026806129670917316">Activar Wi-Fi</translation>
 <translation id="5026874946691314267">No volver a mostrar</translation>
@@ -3411,6 +3414,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5133483819862530305">Del atardecer al amanecer</translation>
 <translation id="5135085122826131075">Di "Ok Google" para acceder al Asistente.</translation>
 <translation id="5135533361271311778">No se pudo crear el elemento de marcador.</translation>
+<translation id="5136343472380336530">Asegúrate de que ambos dispositivos estén cerca el uno del otro, desbloqueados y con el Bluetooth activado. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Borrar este elemento</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, búsqueda de <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Ingresa el PIN para tu llave de seguridad. Si no lo conoces, restablece la llave.</translation>
@@ -4418,6 +4422,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6342069812937806050">Recién</translation>
 <translation id="6344170822609224263">Acceder a la lista de conexiones de red</translation>
 <translation id="6344576354370880196">Impresoras guardadas</translation>
+<translation id="6345418402353744910">Para que el administrador pueda configurar tu red, proporciona tu nombre de usuario y contraseña para el proxy <ph name="PROXY" />.</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">La sincronización no funciona. Intenta salir y volver a acceder.</translation>
 <translation id="6351063337294363751">Puedes borrar los datos de navegación desde este menú</translation>
@@ -4775,6 +4780,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6810613314571580006">Accede automáticamente a los sitios web con las credenciales almacenadas. Si la función está inhabilitada, deberás confirmar siempre tu identidad para acceder a un sitio web.</translation>
 <translation id="6810768462515084623">Parece que caducó la contraseña. Renuévala en otro dispositivo y vuelve a intentarlo.</translation>
 <translation id="6811034713472274749">Ya puedes ver la página</translation>
+<translation id="6811332638216701903">Nombre de host DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> no se puede ejecutar como raíz.</translation>
 <translation id="6812841287760418429">Conservar cambios</translation>
 <translation id="6817174620439930047">Preguntarme cuando un sitio quiera usar los mensajes exclusivos del sistema para acceder a dispositivos MIDI (recomendado)</translation>
@@ -4852,6 +4858,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6903907808598579934">Activar la sincronización</translation>
 <translation id="6904344821472985372">Revocar acceso al archivo</translation>
 <translation id="6904655473976120856">Presionar el botón de la app para salir</translation>
+<translation id="6909422577741440844">¿Deseas recibir contenido de este dispositivo?</translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="691024665142758461">Descargar varios archivos</translation>
 <translation id="691106080621596509">Esta acción borrará todos los datos y cookies almacenados por <ph name="SITE_GROUP_NAME" />, sus sitios secundarios y su app instalada</translation>
