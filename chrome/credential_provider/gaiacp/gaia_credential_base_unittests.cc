@@ -822,6 +822,60 @@ TEST_F(GcpGaiaCredentialBaseTest, TrimPeriodAtTheEnd) {
   EXPECT_EQ(test->GetFinalEmail(), email);
 }
 
+TEST_F(GcpGaiaCredentialBaseTest, UseShorterFormForAccountName) {
+  USES_CONVERSION;
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegUseShorterAccountName, 1));
+
+  // Create provider and start logon.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
+
+  constexpr char email[] = "abc@def.com";
+
+  ASSERT_EQ(S_OK, test->SetGlsEmailAddress(email));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  ASSERT_STREQ(W2COLE(L"abc"), test->GetFinalUsername());
+  EXPECT_EQ(test->GetFinalEmail(), email);
+}
+
+TEST_F(GcpGaiaCredentialBaseTest, UseShorterFormForAccountNameWithConflict) {
+  USES_CONVERSION;
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegUseShorterAccountName, 1));
+
+  const wchar_t user_name[] = L"abc";
+  const wchar_t password[] = L"password";
+
+  CComBSTR local_sid;
+  DWORD error;
+  HRESULT hr = fake_os_user_manager()->AddUser(
+      user_name, password, L"fullname", L"comment", true, &local_sid, &error);
+  ASSERT_EQ(S_OK, hr);
+  ASSERT_EQ(0u, error);
+
+  // Create provider and start logon.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
+
+  constexpr char email[] = "abc@def.com";
+
+  ASSERT_EQ(S_OK, test->SetGlsEmailAddress(email));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  ASSERT_STREQ(W2COLE(L"abc2"), test->GetFinalUsername());
+  EXPECT_EQ(test->GetFinalEmail(), email);
+}
+
 TEST_F(GcpGaiaCredentialBaseTest, NewUserDisabledThroughUsageScenario) {
   USES_CONVERSION;
   // Create provider and start logon.
