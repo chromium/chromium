@@ -5658,7 +5658,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       La intención es permitir que las organizaciones definan orígenes incluidos
       en listas blancas para aplicaciones antiguas que no pueden implementar
-      TLS, o bien configuren un servidor provisional para desarrollar web internas
+      TLS, o bien configuren un servidor staging para desarrollo web interno
       y conseguir que los desarrolladores puedan probar las funciones que
       necesiten en contextos seguros sin tener que implementar TLS en el
       servidor provisional. Esta política también evita que el origen aparezca con
@@ -5675,8 +5675,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       política.
 
       Para obtener más información sobre contextos seguros, consulta la página
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
+      https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="8942616385591203339">Esta política controla si se muestra Sync Consent al usuario durante el primer inicio de sesión. Se le debería asignar el valor "False" si no es necesario mostrar Sync Consent al usuario en ningún caso.
       Si se le asigna el valor "False", Sync Consent no se mostrará.
       Si se le asigna el valor "True" o no se le asigna ningún valor, Sync Consent no se puede mostrar.</translation>

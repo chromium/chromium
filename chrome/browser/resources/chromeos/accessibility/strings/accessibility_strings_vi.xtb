@@ -131,7 +131,7 @@
 <translation id="1923956950274750765">Màu phong lan hài hòa</translation>
 <translation id="1928932365747995741">Không có trường văn bản có thể chỉnh sửa nào trước đó</translation>
 <translation id="1964135212174907577">Đối tượng tiếp theo</translation>
-<translation id="1966649499058910679">Đánh đấu từng từ khi từ được đọc</translation>
+<translation id="1966649499058910679">Làm nổi bật từng từ khi từ được đọc</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Hiển thị các lệnh chữ nổi trong trình đơn của ChromeVox</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{dấu mở ngoặc vuông}other{# dấu mở ngoặc vuông}}</translation>
@@ -457,7 +457,7 @@
 <translation id="4505167975768625962">Chèn</translation>
 <translation id="4511186779140817916">Màu cam nâu nhạt</translation>
 <translation id="451510441928265982">Không có tiêu đề cấp 2 nào trước đó</translation>
-<translation id="4515799157838123044">Làm phai màu của nội dung trong nền</translation>
+<translation id="4515799157838123044">Làm tối nội dung trong nền</translation>
 <translation id="4517854969512651305">Tăng giá trị</translation>
 <translation id="4532633738839459153">{COUNT,plural, =1{dấu gạch chéo}other{# dấu gạch chéo}}</translation>
 <translation id="4537277403911487429">Mục tương tự tiếp theo</translation>
@@ -693,7 +693,7 @@
 <translation id="6452403590345320472">Mục lục</translation>
 <translation id="6468049171101508116">Nút tiếp theo</translation>
 <translation id="646954774886932461">Chú dẫn</translation>
-<translation id="6475604559827479857">Màu đánh dấu cho từ:</translation>
+<translation id="6475604559827479857">Màu làm nổi bật từ:</translation>
 <translation id="6493991254603208962">Giảm độ sáng</translation>
 <translation id="6501595918865591267">Màu ngọc lam</translation>
 <translation id="6508059270146105198">Di chuyển màn hình chữ nổi xuống cuối trang</translation>
@@ -863,7 +863,7 @@
 <translation id="7882421473871500483">Nâu</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">Không có tiêu đề cấp 2 nào tiếp theo</translation>
-<translation id="7914870167134465181">Đánh dấu</translation>
+<translation id="7914870167134465181">Làm nổi bật</translation>
 <translation id="7927711904086083099">Chưa chọn</translation>
 <translation id="7935627501098484003">Kiểm soát thời gian</translation>
 <translation id="7939428177581522200">đã thêm vào lựa chọn</translation>
