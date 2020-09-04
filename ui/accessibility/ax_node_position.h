@@ -49,6 +49,7 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
   int AnchorChildCount() const override;
   int AnchorUnignoredChildCount() const override;
   int AnchorIndexInParent() const override;
+  int AnchorSiblingCount() const override;
   base::stack<AXNode*> GetAncestorAnchors() const override;
   AXNode* GetLowestUnignoredAncestor() const override;
   void AnchorParent(AXTreeID* tree_id, AXNode::AXID* parent_id) const override;
@@ -58,7 +59,8 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
 
   bool IsEmbeddedObjectInParent() const override;
   bool IsInLineBreakingObject() const override;
-  ax::mojom::Role GetRole() const override;
+  ax::mojom::Role GetAnchorRole() const override;
+  ax::mojom::Role GetRole(AXNode* node) const override;
   AXNodeTextStyles GetTextStyles() const override;
   std::vector<int32_t> GetWordStartOffsets() const override;
   std::vector<int32_t> GetWordEndOffsets() const override;

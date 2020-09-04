@@ -99,6 +99,14 @@ int AXNodePosition::AnchorIndexInParent() const {
   return GetAnchor() ? int{GetAnchor()->index_in_parent()} : INVALID_INDEX;
 }
 
+int AXNodePosition::AnchorSiblingCount() const {
+  AXNode* parent = GetAnchor()->GetUnignoredParent();
+  if (parent)
+    return static_cast<int>(parent->GetUnignoredChildCount());
+
+  return 0;
+}
+
 base::stack<AXNode*> AXNodePosition::GetAncestorAnchors() const {
   base::stack<AXNode*> anchors;
   AXNode* current_anchor = GetAnchor();
@@ -283,11 +291,15 @@ bool AXNodePosition::IsInLineBreakingObject() const {
          !GetAnchor()->IsInListMarker();
 }
 
-ax::mojom::Role AXNodePosition::GetRole() const {
+ax::mojom::Role AXNodePosition::GetAnchorRole() const {
   if (IsNullPosition())
     return ax::mojom::Role::kNone;
   DCHECK(GetAnchor());
-  return GetAnchor()->data().role;
+  return GetRole(GetAnchor());
+}
+
+ax::mojom::Role AXNodePosition::GetRole(AXNode* node) const {
+  return node->data().role;
 }
 
 AXNodeTextStyles AXNodePosition::GetTextStyles() const {

@@ -43,6 +43,7 @@ class CONTENT_EXPORT BrowserAccessibilityPosition
   int AnchorChildCount() const override;
   int AnchorUnignoredChildCount() const override;
   int AnchorIndexInParent() const override;
+  int AnchorSiblingCount() const override;
   base::stack<BrowserAccessibility*> GetAncestorAnchors() const override;
   BrowserAccessibility* GetLowestUnignoredAncestor() const override;
   void AnchorParent(AXTreeID* tree_id,
@@ -55,7 +56,8 @@ class CONTENT_EXPORT BrowserAccessibilityPosition
   bool IsEmbeddedObjectInParent() const override;
 
   bool IsInLineBreakingObject() const override;
-  ax::mojom::Role GetRole() const override;
+  ax::mojom::Role GetAnchorRole() const override;
+  ax::mojom::Role GetRole(BrowserAccessibility* node) const override;
   ui::AXNodeTextStyles GetTextStyles() const override;
   std::vector<int32_t> GetWordStartOffsets() const override;
   std::vector<int32_t> GetWordEndOffsets() const override;

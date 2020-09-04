@@ -104,6 +104,13 @@ int BrowserAccessibilityPosition::AnchorIndexInParent() const {
                      : AXPosition::INVALID_INDEX;
 }
 
+int BrowserAccessibilityPosition::AnchorSiblingCount() const {
+  BrowserAccessibility* parent = GetAnchor()->PlatformGetParent();
+  if (parent)
+    return static_cast<int>(parent->InternalChildCount());
+  return 0;
+}
+
 base::stack<BrowserAccessibility*>
 BrowserAccessibilityPosition::GetAncestorAnchors() const {
   base::stack<BrowserAccessibility*> anchors;
@@ -186,11 +193,16 @@ bool BrowserAccessibilityPosition::IsInLineBreakingObject() const {
          !GetAnchor()->IsInListMarker();
 }
 
-ax::mojom::Role BrowserAccessibilityPosition::GetRole() const {
+ax::mojom::Role BrowserAccessibilityPosition::GetAnchorRole() const {
   if (IsNullPosition())
     return ax::mojom::Role::kNone;
   DCHECK(GetAnchor());
-  return GetAnchor()->GetRole();
+  return GetRole(GetAnchor());
+}
+
+ax::mojom::Role BrowserAccessibilityPosition::GetRole(
+    BrowserAccessibility* node) const {
+  return node->GetRole();
 }
 
 ui::AXNodeTextStyles BrowserAccessibilityPosition::GetTextStyles() const {

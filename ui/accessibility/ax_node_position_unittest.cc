@@ -1260,6 +1260,59 @@ TEST_F(AXPositionTest, AtStartOfLineWithTextPosition) {
   EXPECT_FALSE(text_position->AtStartOfLine());
 }
 
+TEST_F(AXPositionTest, AtStartOfLineStaticTextExtraPrecedingSpace) {
+  // Consider the following web content:
+  //   <style>
+  //     .required-label::after {
+  //       content: " *";
+  //     }
+  //   </style>
+  //   <label class="required-label">Required </label>
+  //
+  // Which has the following AXTree, where the static text (#3)
+  // contains an extra preceding space compared to its inline text (#4).
+  // ++1 kRootWebArea
+  // ++++2 kLabelText
+  // ++++++3 kStaticText      name=" *"
+  // ++++++++4 kInlineTextBox name="*"
+  // This test ensures that this difference between static text and its inline
+  // text box does not cause a hang when AtStartOfLine is called on static text
+  // with text position " <*>".
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  // "kIsLineBreakingObject" is not strictly necessary but is added for
+  // completeness.
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  AXNodeData label_text;
+  label_text.id = 2;
+  label_text.role = ax::mojom::Role::kLabelText;
+
+  AXNodeData static_text1;
+  static_text1.id = 3;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetName(" *");
+
+  AXNodeData inline_text1;
+  inline_text1.id = 4;
+  inline_text1.role = ax::mojom::Role::kInlineTextBox;
+  inline_text1.SetName("*");
+
+  static_text1.child_ids = {inline_text1.id};
+  root.child_ids = {static_text1.id};
+
+  SetTree(CreateAXTree({root, static_text1, inline_text1}));
+
+  // Calling AtStartOfLine on |static_text1| with position " <*>",
+  // text_offset_=1, should not get into an infinite loop; it should be
+  // guaranteed to terminate.
+  TestPositionType text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), static_text1.id, 1 /* child_index */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(text_position->AtStartOfLine());
+}
+
 TEST_F(AXPositionTest, AtEndOfLineWithTextPosition) {
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 5 /* text_offset */,

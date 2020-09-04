@@ -968,7 +968,7 @@ class AXPosition {
   bool AtStartOfDocument() const {
     if (IsNullPosition())
       return false;
-    return IsDocument(GetRole()) && AtStartOfAnchor();
+    return IsDocument(GetAnchorRole()) && AtStartOfAnchor();
   }
 
   bool AtEndOfDocument() const {
@@ -3148,8 +3148,8 @@ class AXPosition {
     // infinite loop. However, GetAnchor()->IsIgnored() is sufficient here
     // because we know that the anchor at this position doesn't have an
     // unignored child, making this a leaf tree or text position.
-    return !GetAnchor()->IsIgnored() && !IsDocument(GetRole()) &&
-           !IsInTextObject() && !IsIframe(GetRole());
+    return !GetAnchor()->IsIgnored() && !IsDocument(GetAnchorRole()) &&
+           !IsInTextObject() && !IsIframe(GetAnchorRole());
   }
 
   bool IsInDescendantOfEmptyObject() const {
@@ -3343,6 +3343,7 @@ class AXPosition {
   // When we call the following method on TextField, it would return 1.
   virtual int AnchorUnignoredChildCount() const = 0;
   virtual int AnchorIndexInParent() const = 0;
+  virtual int AnchorSiblingCount() const = 0;
   virtual base::stack<AXNodeType*> GetAncestorAnchors() const = 0;
   virtual AXNodeType* GetLowestUnignoredAncestor() const = 0;
   virtual void AnchorParent(AXTreeID* tree_id, int32_t* parent_id) const = 0;
@@ -3366,7 +3367,8 @@ class AXPosition {
   // break in the text representation, e.g. a block level element or a <br>.
   virtual bool IsInLineBreakingObject() const = 0;
 
-  virtual ax::mojom::Role GetRole() const = 0;
+  virtual ax::mojom::Role GetAnchorRole() const = 0;
+  virtual ax::mojom::Role GetRole(AXNodeType* node) const = 0;
   virtual AXNodeTextStyles GetTextStyles() const = 0;
   virtual std::vector<int32_t> GetWordStartOffsets() const = 0;
   virtual std::vector<int32_t> GetWordEndOffsets() const = 0;
@@ -3400,12 +3402,17 @@ class AXPosition {
   // A text span is defined by a series of inline text boxes that make up a
   // single static text object.
   bool AtEndOfTextSpan() const {
-    if (GetRole() != ax::mojom::Role::kInlineTextBox || !AtEndOfAnchor())
+    if (GetAnchorRole() != ax::mojom::Role::kInlineTextBox || !AtEndOfAnchor())
       return false;
 
-    AXPositionInstance parent_position = CreateParentPosition();
-    return parent_position->GetRole() == ax::mojom::Role::kStaticText &&
-           parent_position->AtEndOfAnchor();
+    // We are at the end of text span if |this| position has
+    // role::kInlineTextBox, the parent of |this| has role::kStaticText, and the
+    // anchor node of |this| is the last child of parent's children.
+    const bool is_last_child =
+        AnchorIndexInParent() == (AnchorSiblingCount() - 1);
+
+    return is_last_child && GetRole(GetLowestUnignoredAncestor()) ==
+                                ax::mojom::Role::kStaticText;
   }
 
   // Uses depth-first pre-order traversal.
@@ -3650,8 +3657,8 @@ class AXPosition {
     }
 
     // Treat moving into or out of nodes with certain roles as a format break.
-    ax::mojom::Role from_role = move_from.GetRole();
-    ax::mojom::Role to_role = move_to.GetRole();
+    ax::mojom::Role from_role = move_from.GetAnchorRole();
+    ax::mojom::Role to_role = move_to.GetAnchorRole();
     if (from_role != to_role) {
       if (IsFormatBoundary(from_role) || IsFormatBoundary(to_role))
         return true;
@@ -3833,7 +3840,7 @@ class AXPosition {
   AXPositionInstance CreateDocumentAncestorPosition() const {
     AXPositionInstance iterator = Clone();
     while (!iterator->IsNullPosition()) {
-      if (IsDocument(iterator->GetRole()) &&
+      if (IsDocument(iterator->GetAnchorRole()) &&
           iterator->CreateParentPosition()->IsNullPosition()) {
         break;
       }
