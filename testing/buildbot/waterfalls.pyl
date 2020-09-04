@@ -3200,7 +3200,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'gpu_pool',
+          'gpu-swarming-pool',
           'android_q',
           'walleye',
         ],
@@ -3216,7 +3216,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'gpu_pool',
+          'gpu-swarming-pool',
           'android_q',
           'walleye',
         ],
@@ -3227,7 +3227,7 @@
       'Android FYI 64 Perf (Pixel 2)': {
         'os_type': 'android',
         'mixins': [
-          'gpu_pool',
+          'gpu-swarming-pool',
           'android_q',
           'walleye',
         ],
@@ -3239,7 +3239,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'gpu_pool',
+          'gpu-swarming-pool',
           'android_q',
           'walleye',
         ],
@@ -3255,7 +3255,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'gpu_pool',
+          'gpu-swarming-pool',
           'android_q',
           'walleye',
         ],
@@ -3269,7 +3269,7 @@
         'skip_merge_script': True,
         'mixins': [
           'foster',
-          'gpu_pool',
+          'gpu-swarming-pool',
           'nougat_generic',
         ],
         'test_suites': {
@@ -3283,7 +3283,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'gpu_pool',
+          'gpu-swarming-pool',
           'hammerhead',
           'lollipop_generic',
         ],
@@ -3312,7 +3312,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'gpu_pool',
+          'gpu-swarming-pool',
           'lollipop_generic',
           'shamu',
         ],
@@ -3328,7 +3328,7 @@
         'skip_merge_script': True,
         'mixins': [
           'angler',
-          'gpu_pool',
+          'gpu-swarming-pool',
           'marshmallow_generic',
         ],
         'test_suites': {
@@ -3343,7 +3343,7 @@
         'skip_merge_script': True,
         'mixins': [
           'flounder',
-          'gpu_pool',
+          'gpu-swarming-pool',
           'marshmallow_generic',
         ],
         'test_suites': {
@@ -4736,8 +4736,11 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
+          'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-xenial',
+          'no_gpu',
+          'x86-64',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_swangle_telemetry_tests',
@@ -4745,9 +4748,12 @@
       },
       'linux-swangle-tot-angle-x64' : {
         'mixins': [
+          'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-xenial',
+          'no_gpu',
           'timeout_15m',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
@@ -4755,9 +4761,12 @@
       },
       'linux-swangle-tot-angle-x86' : {
         'mixins': [
+          'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-xenial',
+          'no_gpu',
           'timeout_15m',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
@@ -4765,9 +4774,12 @@
       },
       'linux-swangle-tot-swiftshader-x64' : {
         'mixins': [
+          'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-xenial',
+          'no_gpu',
           'timeout_15m',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
@@ -4775,9 +4787,12 @@
       },
       'linux-swangle-tot-swiftshader-x86' : {
         'mixins': [
+          'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-xenial',
+          'no_gpu',
           'timeout_15m',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
@@ -4785,9 +4800,12 @@
       },
       'linux-swangle-x64' : {
         'mixins': [
+          'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-xenial',
+          'no_gpu',
           'timeout_15m',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
@@ -4795,9 +4813,12 @@
       },
       'linux-swangle-x86' : {
         'mixins': [
+          'gpu-swarming-pool',
           'isolate_profile_data',
           'linux-xenial',
+          'no_gpu',
           'timeout_15m',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
@@ -4817,6 +4838,8 @@
         'os_type': 'win',
         'browser_config': 'release',
         'mixins': [
+          'gpu-swarming-pool',
+          'no_gpu',
           'x86-64',
           'win10',
         ],
@@ -4826,6 +4849,8 @@
       },
       'win-swangle-tot-angle-x64' : {
         'mixins': [
+          'gpu-swarming-pool',
+          'no_gpu',
           'x86-64',
           'win10',
           'timeout_15m',
@@ -4836,6 +4861,8 @@
       },
       'win-swangle-tot-angle-x86' : {
         'mixins': [
+          'gpu-swarming-pool',
+          'no_gpu',
           'x86-64',
           'win10',
           'timeout_15m',
@@ -4846,6 +4873,8 @@
       },
       'win-swangle-tot-swiftshader-x64' : {
         'mixins': [
+          'gpu-swarming-pool',
+          'no_gpu',
           'x86-64',
           'win10',
           'timeout_15m',
@@ -4856,6 +4885,8 @@
       },
       'win-swangle-tot-swiftshader-x86' : {
         'mixins': [
+          'gpu-swarming-pool',
+          'no_gpu',
           'x86-64',
           'win10',
           'timeout_15m',
@@ -4866,6 +4897,8 @@
       },
       'win-swangle-x64' : {
         'mixins': [
+          'gpu-swarming-pool',
+          'no_gpu',
           'x86-64',
           'win10',
           'timeout_15m',
@@ -4876,6 +4909,8 @@
       },
       'win-swangle-x86' : {
         'mixins': [
+          'gpu-swarming-pool',
+          'no_gpu',
           'x86-64',
           'win10',
           'timeout_15m',

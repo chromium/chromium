@@ -270,7 +270,7 @@
       ],
     },
   },
-  'gpu_pool': {
+  'gpu-swarming-pool': {
     'swarming': {
       'dimensions': {
         'pool': 'chromium.tests.gpu',

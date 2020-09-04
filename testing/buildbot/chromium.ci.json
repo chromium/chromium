@@ -244739,7 +244739,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "idempotent": false,
@@ -244769,7 +244772,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "idempotent": false,
@@ -244796,7 +244802,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -244821,7 +244830,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -244847,7 +244859,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -244873,7 +244888,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -244899,7 +244917,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -244924,7 +244945,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -244949,7 +244973,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -244974,7 +245001,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245004,7 +245034,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245029,7 +245062,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245055,7 +245091,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245081,7 +245120,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245107,7 +245149,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245132,7 +245177,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245157,7 +245205,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245182,7 +245233,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245212,7 +245266,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245237,7 +245294,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245263,7 +245323,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245289,7 +245352,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245315,7 +245381,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245340,7 +245409,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245365,7 +245437,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245390,7 +245465,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245420,7 +245498,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245445,7 +245526,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245471,7 +245555,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245497,7 +245584,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245523,7 +245613,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245548,7 +245641,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245573,7 +245669,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245598,7 +245697,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245628,7 +245730,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245653,7 +245758,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245679,7 +245787,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245705,7 +245816,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245731,7 +245845,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245756,7 +245873,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245781,7 +245901,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245806,7 +245929,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245836,7 +245962,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245861,7 +245990,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245887,7 +246019,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245913,7 +246048,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245939,7 +246077,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245964,7 +246105,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -245989,7 +246133,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -246014,7 +246161,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-16.04"
+              "cpu": "x86-64",
+              "gpu": "none",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256080,7 +256230,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "idempotent": false,
@@ -256110,7 +256262,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "idempotent": false,
@@ -256137,7 +256291,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256162,7 +256318,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256188,7 +256346,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256214,7 +256374,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256240,7 +256402,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256265,7 +256429,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256290,7 +256456,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256315,7 +256483,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256345,7 +256515,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256370,7 +256542,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256396,7 +256570,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256422,7 +256598,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256448,7 +256626,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256473,7 +256653,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256498,7 +256680,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256523,7 +256707,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256553,7 +256739,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256578,7 +256766,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256604,7 +256794,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256630,7 +256822,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256656,7 +256850,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256681,7 +256877,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256706,7 +256904,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256731,7 +256931,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256761,7 +256963,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256786,7 +256990,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256812,7 +257018,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256838,7 +257046,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256864,7 +257074,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256889,7 +257101,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256914,7 +257128,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256939,7 +257155,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256969,7 +257187,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -256994,7 +257214,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257020,7 +257242,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257046,7 +257270,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257072,7 +257298,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257097,7 +257325,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257122,7 +257352,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257147,7 +257379,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257177,7 +257411,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257202,7 +257438,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257228,7 +257466,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257254,7 +257494,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257280,7 +257522,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257305,7 +257549,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257330,7 +257576,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
@@ -257355,7 +257603,9 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "gpu": "none",
+              "os": "Windows-10-15063",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "hard_timeout": 900,
