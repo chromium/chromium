@@ -6,6 +6,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "favicon_driver_impl_test_helper.cc",
+    "favicon_driver_impl_test_helper.h",
     "mock_favicon_service.cc",
     "mock_favicon_service.h",
   ]

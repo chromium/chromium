@@ -54,6 +54,8 @@ class FaviconDriverImpl : public FaviconDriver,
   FaviconService* favicon_service() { return favicon_service_; }
 
  private:
+  friend class FaviconDriverImplTestHelper;
+
   // KeyedService used by FaviconDriverImpl. It may be null during testing,
   // but if it is defined, it must outlive the FaviconDriverImpl.
   FaviconService* favicon_service_;

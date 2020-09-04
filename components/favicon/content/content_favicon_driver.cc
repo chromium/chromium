@@ -19,21 +19,6 @@
 #include "ui/gfx/image/image.h"
 
 namespace favicon {
-namespace {
-
-void ExtractManifestIcons(
-    ContentFaviconDriver::ManifestDownloadCallback callback,
-    const GURL& manifest_url,
-    const blink::Manifest& manifest) {
-  std::vector<FaviconURL> candidates;
-  for (const auto& icon : manifest.icons) {
-    candidates.emplace_back(icon.src, favicon_base::IconType::kWebManifestIcon,
-                            icon.sizes);
-  }
-  std::move(callback).Run(candidates);
-}
-
-}  // namespace
 
 // static
 void ContentFaviconDriver::CreateForWebContents(
@@ -102,7 +87,25 @@ ContentFaviconDriver::ContentFaviconDriver(content::WebContents* web_contents,
       FaviconDriverImpl(favicon_service),
       document_on_load_completed_(false) {}
 
-ContentFaviconDriver::~ContentFaviconDriver() {
+ContentFaviconDriver::~ContentFaviconDriver() = default;
+
+void ContentFaviconDriver::OnDidDownloadManifest(
+    ManifestDownloadCallback callback,
+    const GURL& manifest_url,
+    const blink::Manifest& manifest) {
+  // ~WebContentsImpl triggers running any pending callbacks for manifests.
+  // As we're about to be destroyed ignore the request. To do otherwise may
+  // result in calling back to this and attempting to use the WebContents, which
+  // will crash.
+  if (!web_contents())
+    return;
+
+  std::vector<FaviconURL> candidates;
+  for (const auto& icon : manifest.icons) {
+    candidates.emplace_back(icon.src, favicon_base::IconType::kWebManifestIcon,
+                            icon.sizes);
+  }
+  std::move(callback).Run(candidates);
 }
 
 int ContentFaviconDriver::DownloadImage(const GURL& url,
@@ -119,7 +122,8 @@ int ContentFaviconDriver::DownloadImage(const GURL& url,
 void ContentFaviconDriver::DownloadManifest(const GURL& url,
                                             ManifestDownloadCallback callback) {
   web_contents()->GetManifest(
-      base::BindOnce(&ExtractManifestIcons, std::move(callback)));
+      base::BindOnce(&ContentFaviconDriver::OnDidDownloadManifest,
+                     base::Unretained(this), std::move(callback)));
 }
 
 bool ContentFaviconDriver::IsOffTheRecord() {

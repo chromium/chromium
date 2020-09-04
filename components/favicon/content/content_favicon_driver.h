@@ -53,6 +53,11 @@ class ContentFaviconDriver
  private:
   friend class content::WebContentsUserData<ContentFaviconDriver>;
 
+  // Callback when a manifest is downloaded.
+  void OnDidDownloadManifest(ManifestDownloadCallback callback,
+                             const GURL& manifest_url,
+                             const blink::Manifest& manifest);
+
   // FaviconHandler::Delegate implementation.
   int DownloadImage(const GURL& url,
                     int max_image_size,

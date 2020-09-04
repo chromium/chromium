@@ -9,9 +9,11 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/favicon/core/favicon_handler.h"
+#include "components/favicon/core/test/favicon_driver_impl_test_helper.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
@@ -38,15 +40,16 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
   const GURL kIconURL = GURL("http://www.google.com/favicon.ico");
 
   ContentFaviconDriverTest() {
+    ContentFaviconDriverTest* t = this;
     ON_CALL(favicon_service_, UpdateFaviconMappingsAndFetch(_, _, _, _, _, _))
-        .WillByDefault([](auto, auto, auto, auto,
-                          favicon_base::FaviconResultsCallback callback,
-                          base::CancelableTaskTracker* tracker) {
+        .WillByDefault([t](auto, auto, auto, auto,
+                           favicon_base::FaviconResultsCallback callback,
+                           base::CancelableTaskTracker* tracker) {
           return tracker->PostTask(
               base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
-              base::BindOnce(
-                  std::move(callback),
-                  std::vector<favicon_base::FaviconRawBitmapResult>()));
+              base::BindOnce(&ContentFaviconDriverTest::
+                                 OnCallUpdateFaviconMappingsAndFetch,
+                             base::Unretained(t), std::move(callback)));
         });
     ON_CALL(favicon_service_, GetFaviconForPageURL(_, _, _, _, _))
         .WillByDefault([](auto, auto, auto,
@@ -60,7 +63,7 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
         });
   }
 
-  ~ContentFaviconDriverTest() override {}
+  ~ContentFaviconDriverTest() override = default;
 
   // content::RenderViewHostTestHarness:
   void SetUp() override {
@@ -85,7 +88,21 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
+  // This is run *after* the callback posted by way of
+  // UpdateFaviconMappingsAndFetch() is run. It allows hooking processing
+  // immediately after it.
+  base::OnceClosure on_did_update_favicon_mappings_and_fetch_;
+
   testing::NiceMock<MockFaviconService> favicon_service_;
+
+ private:
+  // Callback from UpdateFaviconMappingsAndFetch().
+  void OnCallUpdateFaviconMappingsAndFetch(
+      favicon_base::FaviconResultsCallback callback) {
+    std::move(callback).Run({});
+    if (on_did_update_favicon_mappings_and_fetch_)
+      std::move(on_did_update_favicon_mappings_and_fetch_).Run();
+  }
 };
 
 // Test that a download is initiated when there isn't a favicon in the database
@@ -169,6 +186,40 @@ TEST_F(ContentFaviconDriverTest, FaviconUpdateNoLastCommittedEntry) {
 
   // Test that ContentFaviconDriver ignored the favicon url update.
   EXPECT_TRUE(driver->favicon_urls().empty());
+}
+
+// This test verifies a crash doesn't happen during deletion of the
+// WebContents. The crash occurred because ~WebContentsImpl would trigger
+// running callbacks for manifests. This mean FaviconHandler would be called
+// while ContentFaviconDriver::web_contents() was null, which is unexpected and
+// crashed. See https://crbug.com/1114237 for more.
+TEST_F(ContentFaviconDriverTest,
+       WebContentsDeletedWithInProgressManifestRequest) {
+  // Manifests are only downloaded with TOUCH_LARGEST. Force creating this
+  // handler so code path is exercised on all platforms.
+  favicon::ContentFaviconDriver* driver =
+      favicon::ContentFaviconDriver::FromWebContents(web_contents());
+  FaviconDriverImplTestHelper::RecreateHandlerForType(
+      driver, FaviconDriverObserver::TOUCH_LARGEST);
+
+  // Mimic a page load.
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kIconURL, blink::mojom::FaviconIconType::kTouchIcon, kEmptyIconSizes));
+  TestFetchFaviconForPage(kPageURL, favicon_urls);
+
+  // Trigger downloading a manifest.
+  base::RunLoop run_loop;
+  on_did_update_favicon_mappings_and_fetch_ =
+      base::BindLambdaForTesting([&] { run_loop.Quit(); });
+  static_cast<content::WebContentsObserver*>(driver)->DidUpdateWebManifestURL(
+      web_contents()->GetMainFrame(), GURL("http://bad.manifest.com"));
+  run_loop.Run();
+
+  // The request for the manifest is still pending, delete the WebContents,
+  // which should trigger notifying the callback for the manifest and *not*
+  // crash.
+  DeleteContents();
 }
 
 }  // namespace
