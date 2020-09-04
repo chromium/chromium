@@ -215,11 +215,19 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
 
     // Abstract methods:
 
-    /** Returns the email for the current user. */
+    /**
+     * Called to get the email for the current user.
+     * The default is null, but some embedder-specific specializations may override this method to
+     * facilitate showing the owner's contact card at the top of the picker.
+     * @return the email address of the current user/owner.
+     */
+    @Nullable
     protected abstract String findOwnerEmail();
 
     /**
-     * Adds an entry which represents the current user to the given list.
+     * Called to add an entry which represents the current user to the given list.
+     * As with {@link #findOwnerEmail}, embedders may override this to make sure the current user's
+     * contact card is shown, or may no-op.
      * @param contacts the list which is missing an entry for the active user, and to which such an
      *         entry should be pre-pended.
      */

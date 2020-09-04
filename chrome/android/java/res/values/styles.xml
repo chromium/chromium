@@ -582,12 +582,6 @@
         <item name="android:windowExitAnimation">@null</item>
     </style>
 
-    <!-- Contacts Dialog -->
-    <style name="SuggestionChipContacts" parent="SuggestionChip">
-        <item name="iconWidth">16dp</item>
-        <item name="iconHeight">16dp</item>
-    </style>
-
     <!-- Content and Site Suggestions -->
     <style name="SuggestionCardModern" parent="Card">
         <item name="android:layout_marginBottom">@dimen/content_suggestions_card_modern_margin</item>

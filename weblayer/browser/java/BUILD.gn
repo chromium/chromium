@@ -157,6 +157,7 @@ android_library("java") {
     "//components/autofill/android/provider:java",
     "//components/browser_ui/banners/android:java",
     "//components/browser_ui/client_certificate/android:java",
+    "//components/browser_ui/contacts_picker/android:java",
     "//components/browser_ui/display_cutout/android:java",
     "//components/browser_ui/http_auth/android:java",
     "//components/browser_ui/media/android:java",

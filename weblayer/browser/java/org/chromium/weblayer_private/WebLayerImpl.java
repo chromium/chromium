@@ -43,6 +43,9 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
+import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
+import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
@@ -51,6 +54,8 @@ import org.chromium.components.embedder_support.application.FirebaseConfig;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
+import org.chromium.content_public.browser.ContactsPicker;
+import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.net.NetworkChangeNotifier;
@@ -264,6 +269,28 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         MediaStreamManager.onWebLayerInit();
         WebLayerNotificationChannels.updateChannelsIfNecessary();
+
+        ContactsPicker.setContactsPickerDelegate(
+                (WindowAndroid windowAndroid, ContactsPickerListener listener,
+                        boolean allowMultiple, boolean includeNames, boolean includeEmails,
+                        boolean includeTel, boolean includeAddresses, boolean includeIcons,
+                        String formattedOrigin) -> {
+                    ContactsPickerDialog dialog = new ContactsPickerDialog(windowAndroid,
+                            // TODO(estade): implement owner email.
+                            new PickerAdapter() {
+                                @Override
+                                protected String findOwnerEmail() {
+                                    return null;
+                                }
+                                @Override
+                                protected void addOwnerInfoToContacts(
+                                        ArrayList<ContactDetails> contacts) {}
+                            },
+                            listener, allowMultiple, includeNames, includeEmails, includeTel,
+                            includeAddresses, includeIcons, formattedOrigin);
+                    dialog.show();
+                    return dialog;
+                });
 
         DecoderServiceHost.setIntentSupplier(() -> { return createImageDecoderServiceIntent(); });
         SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegate() {

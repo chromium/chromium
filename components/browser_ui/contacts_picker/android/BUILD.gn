@@ -71,6 +71,7 @@ android_resources("java_resources") {
     "java/res/layout/contacts_picker_dialog.xml",
     "java/res/layout/contacts_picker_toolbar.xml",
     "java/res/layout/top_view.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",

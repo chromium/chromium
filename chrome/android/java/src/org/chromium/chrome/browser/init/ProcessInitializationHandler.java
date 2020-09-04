@@ -92,7 +92,6 @@ import org.chromium.components.viz.common.display.DeJellyUtils;
 import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
-import org.chromium.content_public.browser.ContactsPickerDelegate;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
@@ -244,27 +243,19 @@ public class ProcessInitializationHandler {
             });
         }
 
-        ContactsPicker.setContactsPickerDelegate(new ContactsPickerDelegate() {
-            private ContactsPickerDialog mDialog;
-
-            @Override
-            public void showContactsPicker(WindowAndroid windowAndroid,
-                    ContactsPickerListener listener, boolean allowMultiple, boolean includeNames,
-                    boolean includeEmails, boolean includeTel, boolean includeAddresses,
-                    boolean includeIcons, String formattedOrigin) {
-                mDialog = new ContactsPickerDialog(windowAndroid, new ChromePickerAdapter(),
-                        listener, allowMultiple, includeNames, includeEmails, includeTel,
-                        includeAddresses, includeIcons, formattedOrigin);
-                mDialog.getWindow().getAttributes().windowAnimations =
-                        R.style.PickerDialogAnimation;
-                mDialog.show();
-            }
-
-            @Override
-            public void onContactsPickerDismissed() {
-                mDialog = null;
-            }
-        });
+        ContactsPicker.setContactsPickerDelegate(
+                (WindowAndroid windowAndroid, ContactsPickerListener listener,
+                        boolean allowMultiple, boolean includeNames, boolean includeEmails,
+                        boolean includeTel, boolean includeAddresses, boolean includeIcons,
+                        String formattedOrigin) -> {
+                    ContactsPickerDialog dialog =
+                            new ContactsPickerDialog(windowAndroid, new ChromePickerAdapter(),
+                                    listener, allowMultiple, includeNames, includeEmails,
+                                    includeTel, includeAddresses, includeIcons, formattedOrigin);
+                    dialog.getWindow().getAttributes().windowAnimations =
+                            R.style.PickerDialogAnimation;
+                    return dialog;
+                });
 
         SearchWidgetProvider.initialize();
         HistoryDeletionBridge.getInstance().addObserver(

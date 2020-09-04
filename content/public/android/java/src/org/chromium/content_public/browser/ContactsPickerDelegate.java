@@ -23,13 +23,9 @@ public interface ContactsPickerDelegate {
      * @param includeIcons Whether to include icons of the shared contacts.
      * @param formattedOrigin The origin the data will be shared with, formatted for display
      *                        with the scheme omitted.
+     * @return the contacts picker object.
      */
-    void showContactsPicker(WindowAndroid windowAndroid, ContactsPickerListener listener,
+    Object showContactsPicker(WindowAndroid windowAndroid, ContactsPickerListener listener,
             boolean allowMultiple, boolean includeNames, boolean includeEmails, boolean includeTel,
             boolean includeAddresses, boolean includeIcons, String formattedOrigin);
-
-    /**
-     * Called when the contacts picker dialog has been dismissed.
-     */
-    void onContactsPickerDismissed();
 }

@@ -16,6 +16,12 @@ public final class ContactsPicker {
      */
     private static ContactsPickerDelegate sContactsPickerDelegate;
 
+    /**
+     * The object that represents the currently visible contacts picker UI, or null if none is
+     * visible.
+     */
+    private static Object sPicker;
+
     private ContactsPicker() {}
 
     /**
@@ -46,7 +52,8 @@ public final class ContactsPicker {
             boolean includeEmails, boolean includeTel, boolean includeAddresses,
             boolean includeIcons, String formattedOrigin) {
         if (sContactsPickerDelegate == null) return false;
-        sContactsPickerDelegate.showContactsPicker(windowAndroid, listener, allowMultiple,
+        assert sPicker == null;
+        sPicker = sContactsPickerDelegate.showContactsPicker(windowAndroid, listener, allowMultiple,
                 includeNames, includeEmails, includeTel, includeAddresses, includeIcons,
                 formattedOrigin);
         return true;
@@ -56,7 +63,7 @@ public final class ContactsPicker {
      * Called when the contacts picker dialog has been dismissed.
      */
     public static void onContactsPickerDismissed() {
-        if (sContactsPickerDelegate == null) return;
-        sContactsPickerDelegate.onContactsPickerDismissed();
+        assert sPicker != null;
+        sPicker = null;
     }
 }
