@@ -16,10 +16,22 @@ AXEventCounter::~AXEventCounter() = default;
 
 void AXEventCounter::OnViewEvent(views::View*, ax::mojom::Event event_type) {
   ++event_counts_[event_type];
+  if (run_loop_ && event_type == wait_for_event_type_) {
+    wait_for_event_type_ = ax::mojom::Event::kNone;
+    run_loop_->Quit();
+  }
 }
 
 int AXEventCounter::GetCount(ax::mojom::Event event_type) {
   return event_counts_[event_type];
+}
+
+void AXEventCounter::WaitForEvent(ax::mojom::Event event_type) {
+  wait_for_event_type_ = event_type;
+  base::RunLoop run_loop;
+  run_loop_ = &run_loop;
+  run_loop_->Run();
+  run_loop_ = nullptr;
 }
 
 }  // namespace test
