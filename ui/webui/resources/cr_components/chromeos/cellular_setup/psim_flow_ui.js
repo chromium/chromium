@@ -181,10 +181,10 @@ cr.define('cellularSetup', function() {
     initSubflow() {
       this.state_ = PSimUIState.STARTING_ACTIVATION;
       this.set('buttonState', {
-        backward: cellularSetup.ButtonState.HIDDEN,
+        backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
         cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
         finish: cellularSetup.ButtonState.HIDDEN,
-        next: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+        next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
         tryAgain: cellularSetup.ButtonState.HIDDEN
       });
     },

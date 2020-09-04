@@ -9,11 +9,6 @@
 <dom-module id="sim-detect-page">
   <template>
     <style include="iron-flex cr-hidden-style">
-      paper-spinner-lite {
-        height: 200px;
-        width: 200px;
-      }
-
       #error-icon-container {
         background-image: -webkit-image-set(
             url(error_1x.png) 1x,
@@ -23,11 +18,18 @@
         height: 100%;
         width: 100%;
       }
+
+      #network-connection-message {
+        text-align: center;
+      }
     </style>
     <base-page title="[[getTitle_(showError)]]"
         message="[[getMessage_(showError)]]">
       <div slot="page-body" class="layout horizontal center-center">
-        <paper-spinner-lite active hidden$="[[showError]]"></paper-spinner-lite>
+        <!-- TODO(crbug.com/1093185): Conditionally show spinner when setup is added in OOBE -->
+        <div id="network-connection-message" hidden$="[[showError]]">
+          [[i18n('establishNetworkConnectionMessage')]]
+        </div>
         <div id="error-icon-container" hidden$="[[!showError]]"></div>
       </div>
     </base-page>

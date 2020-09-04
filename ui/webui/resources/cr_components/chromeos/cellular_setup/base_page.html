@@ -1,6 +1,7 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="../../../cr_elements/shared_vars_css.html">
+<link rel="import" href="../../../html/i18n_behavior.html">
 
 <dom-module id="base-page">
   <template>
@@ -23,7 +24,7 @@
         width: 100%;
       }
     </style>
-    <h1 id="title">[[title]]</h1>
+    <h1 id="title">[[getTitle_(title)]]</h1>
     <div id="message">[[message]]</div>
     <slot name="page-body"></slot>
   </template>

@@ -13,9 +13,14 @@
     <style include="iron-flex">
       :host {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-end;
         padding: 10px 0;
       }
+
+      #flex {
+        flex: 1;
+      }
+
     </style>
     <cr-button id="backward"
         class="cancel-button"
@@ -24,13 +29,7 @@
         hidden$="[[isButtonHidden_(Button.BACKWARD, buttonState.*)]]">
       [[i18n('back')]]
     </cr-button>
-    <cr-button id="cancel"
-        class="cancel-button"
-        on-click="onBackwardButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.CANCEL, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.CANCEL, buttonState.*)]]">
-      [[i18n('cancel')]]
-    </cr-button>
+    <div id="flex"></div>
     <cr-button id="tryAgain"
         class="action-button"
         on-click="onTryAgainButtonClicked_"
@@ -44,6 +43,13 @@
         disabled="[[isButtonDisabled_(Button.FINISH, buttonState.*)]]"
         hidden$="[[isButtonHidden_(Button.FINISH, buttonState.*)]]">
       [[i18n('finish')]]
+    </cr-button>
+    <cr-button id="cancel"
+        class="cancel-button"
+        on-click="onBackwardButtonClicked_"
+        disabled="[[isButtonDisabled_(Button.CANCEL, buttonState.*)]]"
+        hidden$="[[isButtonHidden_(Button.CANCEL, buttonState.*)]]">
+      [[i18n('cancel')]]
     </cr-button>
     <cr-button id="next"
         class="action-button"

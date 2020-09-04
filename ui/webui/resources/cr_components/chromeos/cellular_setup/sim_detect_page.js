@@ -27,8 +27,7 @@ Polymer({
    * @private
    */
   getTitle_(showError) {
-    return this.i18n(
-        showError ? 'simDetectPageErrorTitle' : 'simDetectPageTitle');
+    return showError ? this.i18n('simDetectPageErrorTitle') : '';
   },
 
   /**

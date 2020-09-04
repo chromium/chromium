@@ -32,6 +32,7 @@ js_library("button_bar") {
 }
 
 js_library("base_page") {
+  deps = [ "//ui/webui/resources/js:i18n_behavior" ]
 }
 
 js_library("sim_detect_page") {
@@ -127,16 +128,16 @@ js_type_check("closure_compile_module") {
   deps = [
     ":base_page.m",
     ":button_bar.m",
-    ":cellular_types.m",
     ":cellular_setup.m",
+    ":cellular_types.m",
     ":esim_flow_ui.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
     ":provisioning_page.m",
     ":psim_flow_ui.m",
+    ":setup_selection_flow.m",
     ":sim_detect_page.m",
     ":subflow_behavior.m",
-    ":setup_selection_flow.m",
     ":webview_post_util.m",
   ]
 }
@@ -256,7 +257,7 @@ js_library("setup_selection_flow.m") {
     ":subflow_behavior.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-   extra_deps = [ ":setup_selection_flow_module" ]
+  extra_deps = [ ":setup_selection_flow_module" ]
 }
 
 js_library("cellular_setup.m") {
@@ -269,14 +270,14 @@ js_library("cellular_setup.m") {
     ":setup_selection_flow.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-   extra_deps = [ ":cellular_setup_module" ]
+  extra_deps = [ ":cellular_setup_module" ]
 }
 
 group("polymer3_elements") {
   public_deps = [
-    ":cellular_setup_module",
     ":base_page_module",
     ":button_bar_module",
+    ":cellular_setup_module",
     ":esim_flow_ui_module",
     ":final_page_module",
     ":modulize",
