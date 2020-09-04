@@ -15,6 +15,7 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/system_logs/command_line_log_source.h"
 #include "chrome/browser/chromeos/system_logs/dbus_log_source.h"
 #include "chrome/browser/chromeos/system_logs/debug_daemon_log_source.h"
@@ -24,13 +25,23 @@
 #include "chrome/browser/chromeos/system_logs/shill_log_source.h"
 #include "chrome/browser/chromeos/system_logs/touch_log_source.h"
 #include "chrome/browser/chromeos/system_logs/ui_hierarchy_log_source.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
-#if BUILDFLAG(IS_LACROS)
-#include "chrome/browser/lacros/system_logs/user_log_files_log_source.h"
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#include "chrome/browser/feedback/system_logs/log_sources/user_log_files_log_source.h"
 #endif
 
 namespace system_logs {
+
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+namespace {
+
+constexpr char kDefaultLogPath[] = "/home/chronos/user/lacros/lacros.log";
+constexpr char kLacrosUserLogKey[] = "lacros_user_log";
+
+}  // namespace
+#endif
 
 SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   SystemLogsFetcher* fetcher = new SystemLogsFetcher(
@@ -56,8 +67,17 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
 #endif
 
 #if BUILDFLAG(IS_LACROS)
-  fetcher->AddSource(std::make_unique<UserLogFilesLogSource>());
+  fetcher->AddSource(std::make_unique<UserLogFilesLogSource>(
+      base::FilePath(kDefaultLogPath), kLacrosUserLogKey));
 #endif
+
+#if defined(OS_CHROMEOS)
+  if (chromeos::features::IsLacrosSupportEnabled() &&
+      crosapi::browser_util::IsLacrosAllowed()) {
+    fetcher->AddSource(std::make_unique<UserLogFilesLogSource>(
+        base::FilePath(kDefaultLogPath), kLacrosUserLogKey));
+  }
+#endif  // OS_CHROMEOS
 
   return fetcher;
 }

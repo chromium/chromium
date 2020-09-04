@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/system_logs/user_log_files_log_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/user_log_files_log_source.h"
 
 #include "base/files/file_path.h"
 #include "base/task/post_task.h"
@@ -14,9 +14,6 @@ namespace system_logs {
 
 namespace {
 
-constexpr char kDefaultLogPath[] = "/home/chronos/user/lacros/lacros.log";
-constexpr char kLogKey[] = "lacros_user_log";
-
 // Maximum buffer size for user logs in bytes.
 const int64_t kMaxLogSize = 1024 * 1024;
 constexpr char kLogTruncated[] = "<earlier logs truncated>\n";
@@ -24,8 +21,12 @@ constexpr char kNotAvailable[] = "<not available>";
 
 }  // namespace
 
-UserLogFilesLogSource::UserLogFilesLogSource()
-    : SystemLogsSource("UserLoggedFiles") {}
+UserLogFilesLogSource::UserLogFilesLogSource(
+    const base::FilePath& log_file_path,
+    const std::string& log_key)
+    : SystemLogsSource("UserLoggedFiles"),
+      log_file_path_(log_file_path),
+      log_key_(log_key) {}
 
 UserLogFilesLogSource::~UserLogFilesLogSource() = default;
 
@@ -35,11 +36,10 @@ void UserLogFilesLogSource::Fetch(SysLogsSourceCallback callback) {
 
   auto response = std::make_unique<SystemLogsResponse>();
   auto* response_ptr = response.get();
-  const base::FilePath log_file_path = base::FilePath(kDefaultLogPath);
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&UserLogFilesLogSource::ReadFile,
-                     weak_ptr_factory_.GetWeakPtr(), log_file_path, kLogKey,
+                     weak_ptr_factory_.GetWeakPtr(), log_file_path_, log_key_,
                      response_ptr),
       base::BindOnce(std::move(callback), std::move(response)));
 }

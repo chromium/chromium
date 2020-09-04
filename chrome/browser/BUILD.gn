@@ -4115,14 +4115,19 @@ static_library("browser") {
     ]
   }
 
+  if (is_chromeos || chromeos_is_browser_only) {
+    sources += [
+      "feedback/system_logs/log_sources/user_log_files_log_source.cc",
+      "feedback/system_logs/log_sources/user_log_files_log_source.h",
+    ]
+  }
+
   # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
   if (chromeos_is_browser_only) {
     assert(enable_native_notifications)
     sources += [
       "lacros/lacros_chrome_service_delegate_impl.cc",
       "lacros/lacros_chrome_service_delegate_impl.h",
-      "lacros/system_logs/user_log_files_log_source.cc",
-      "lacros/system_logs/user_log_files_log_source.h",
       "metrics/lacros_metrics_provider.cc",
       "metrics/lacros_metrics_provider.h",
       "notifications/notification_platform_bridge_chromeos.cc",
