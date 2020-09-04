@@ -47,8 +47,6 @@ void ExtensionMessageBubbleBrowserTest::SetUpCommandLine(
           true));
   ExtensionMessageBubbleFactory::set_override_for_tests(
       ExtensionMessageBubbleFactory::OVERRIDE_ENABLED);
-  ToolbarActionsBar::set_extension_bubble_appearance_wait_time_for_testing(0);
-  ToolbarActionsBar::disable_animations_for_testing_ = true;
 }
 
 void ExtensionMessageBubbleBrowserTest::SetUpOnMainThread() {
@@ -60,7 +58,6 @@ void ExtensionMessageBubbleBrowserTest::SetUpOnMainThread() {
 void ExtensionMessageBubbleBrowserTest::TearDownOnMainThread() {
   ExtensionMessageBubbleFactory::set_override_for_tests(
       ExtensionMessageBubbleFactory::NO_OVERRIDE);
-  ToolbarActionsBar::disable_animations_for_testing_ = false;
   ExtensionBrowserTest::TearDownOnMainThread();
 }
 

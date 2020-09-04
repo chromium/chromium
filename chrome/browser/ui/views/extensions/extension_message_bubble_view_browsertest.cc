@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/extensions/extension_message_bubble_browsertest.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
@@ -146,9 +147,7 @@ void ExtensionMessageBubbleViewBrowserTest::SetUpCommandLine(
 
 std::vector<base::Feature>
 ExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable() {
-  // This suite currently relies on behavior specific to ToolbarActionsBar.
-  // TODO(devlin): Change that. https://crbug.com/1100412.
-  return {features::kExtensionsToolbarMenu};
+  return {};
 }
 
 void ExtensionMessageBubbleViewBrowserTest::CheckBubbleNative(
@@ -208,37 +207,64 @@ void ExtensionMessageBubbleViewBrowserTest::ClickDismissButton(
   bubble->CancelDialog();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+// A test suite that runs with the old toolbar UI, instead of with the
+// new Extensions Menu.
+// TODO(devlin): Isolate out the tests that fundamentally rely on the old UI
+// from the ones that can run with the extensions menu.
+// https://crbug.com/1100412.
+class LegacyExtensionMessageBubbleViewBrowserTest
+    : public ExtensionMessageBubbleViewBrowserTest {
+ public:
+  LegacyExtensionMessageBubbleViewBrowserTest() = default;
+  ~LegacyExtensionMessageBubbleViewBrowserTest() override = default;
+
+  std::vector<base::Feature> GetFeaturesToDisable() override {
+    return {features::kExtensionsToolbarMenu};
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionMessageBubbleViewBrowserTest::SetUpCommandLine(command_line);
+    ToolbarActionsBar::set_extension_bubble_appearance_wait_time_for_testing(0);
+    ToolbarActionsBar::disable_animations_for_testing_ = true;
+  }
+
+  void TearDownOnMainThread() override {
+    ToolbarActionsBar::disable_animations_for_testing_ = false;
+    ExtensionMessageBubbleViewBrowserTest::TearDownOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        ExtensionBubbleAnchoredToExtensionAction) {
   TestBubbleAnchoredToExtensionAction();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        ExtensionBubbleAnchoredToAppMenu) {
   TestBubbleAnchoredToAppMenu();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        ExtensionBubbleAnchoredToAppMenuWithOtherAction) {
   TestBubbleAnchoredToAppMenuWithOtherAction();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        PRE_ExtensionBubbleShowsOnStartup) {
   PreBubbleShowsOnStartup();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        ExtensionBubbleShowsOnStartup) {
   TestBubbleShowsOnStartup();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestUninstallDangerousExtension) {
   TestUninstallDangerousExtension();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestDevModeBubbleIsntShownTwice) {
   TestDevModeBubbleIsntShownTwice();
 }
@@ -247,20 +273,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
 // currently only shown on Windows.
 // TODO(devlin): No they're not. We should enable all of these on Mac.
 #if defined(OS_WIN)
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestControlledHomeMessageBubble) {
   TestControlledHomeBubbleShown();
 }
 
 class ControlledSearchMessageBubbleViewBrowserTest
-    : public ExtensionMessageBubbleViewBrowserTest {
+    : public LegacyExtensionMessageBubbleViewBrowserTest {
  public:
   ControlledSearchMessageBubbleViewBrowserTest() = default;
   ~ControlledSearchMessageBubbleViewBrowserTest() override = default;
 
   std::vector<base::Feature> GetFeaturesToDisable() override {
     std::vector<base::Feature> features_to_disable =
-        ExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable();
+        LegacyExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable();
     // The kExtensionSettingsOverriddenDialogs introduces a new UI for the
     // controlled search confirmation. Disable it to test the old UI.
     features_to_disable.push_back(
@@ -274,68 +300,68 @@ IN_PROC_BROWSER_TEST_F(ControlledSearchMessageBubbleViewBrowserTest,
   TestControlledSearchBubbleShown();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        PRE_TestControlledStartupMessageBubble) {
   PreTestControlledStartupBubbleShown();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestControlledStartupMessageBubble) {
   TestControlledStartupBubbleShown();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        PRE_TestControlledStartupNotShownOnRestart) {
   PreTestControlledStartupNotShownOnRestart();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestControlledStartupNotShownOnRestart) {
   TestControlledStartupNotShownOnRestart();
 }
 
 #endif  // defined(OS_WIN)
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestBubbleWithMultipleWindows) {
   TestBubbleWithMultipleWindows();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestClickingLearnMoreButton) {
   TestClickingLearnMoreButton();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestClickingActionButton) {
   TestClickingActionButton();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        TestClickingDismissButton) {
   TestClickingDismissButton();
 }
 
 // BrowserUiTest for the warning bubble that appears at startup when there are
 // extensions installed in developer mode.
-IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        InvokeUi_devmode_warning) {
   ShowAndVerifyUi();
 }
 
 class NtpExtensionBubbleViewBrowserTest
-    : public ExtensionMessageBubbleViewBrowserTest {
+    : public LegacyExtensionMessageBubbleViewBrowserTest {
  public:
   std::vector<base::Feature> GetFeaturesToDisable() override {
     std::vector<base::Feature> features_to_disable =
-        ExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable();
+        LegacyExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable();
     features_to_disable.push_back(
         features::kExtensionSettingsOverriddenDialogs);
     return features_to_disable;
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionMessageBubbleViewBrowserTest::SetUpCommandLine(command_line);
+    LegacyExtensionMessageBubbleViewBrowserTest::SetUpCommandLine(command_line);
 // The NTP bubble is only enabled by default on Mac, Windows, and CrOS.
 #if !defined(OS_WIN) && !defined(OS_MAC) && !defined(OS_CHROMEOS)
     extensions::SetNtpPostInstallUiEnabledForTesting(true);
@@ -346,7 +372,7 @@ class NtpExtensionBubbleViewBrowserTest
 #if !defined(OS_WIN) && !defined(OS_MAC) && !defined(OS_CHROMEOS)
     extensions::SetNtpPostInstallUiEnabledForTesting(false);
 #endif
-    ExtensionMessageBubbleViewBrowserTest::TearDownOnMainThread();
+    LegacyExtensionMessageBubbleViewBrowserTest::TearDownOnMainThread();
   }
 };
 
