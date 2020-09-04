@@ -31386,7 +31386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.AppLifecycle.Events"
-    enum="AppLifecycleEvent" expires_after="2020-10-01">
+    enum="AppLifecycleEvent" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31477,7 +31477,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Count" units="entries"
-    expires_after="2020-10-01">
+    expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31522,7 +31522,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.FetchPendingSpinner.Shown"
-    enum="FeedSpinnerType" expires_after="2020-12-06">
+    enum="FeedSpinnerType" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31534,7 +31534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDuration"
-    units="ms" expires_after="2020-10-01">
+    units="ms" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31547,7 +31547,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDurationWithoutCompleting"
-    units="ms" expires_after="2020-10-01">
+    units="ms" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31638,7 +31638,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.InternalError"
-    enum="FeedInternalError" expires_after="2020-12-06">
+    enum="FeedInternalError" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31656,7 +31656,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadKeysTime" units="ms"
-    expires_after="2020-10-01">
+    expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31735,7 +31735,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadTime" units="ms"
-    expires_after="2020-10-01">
+    expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31745,7 +31745,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ManageInterestsOpened" units="index"
-    expires_after="2020-10-01">
+    expires_after="M90">
   <obsolete>
     This implementation is incorrect and we are now using
     NewTabPage.ActionAndroid2 instead. Marked obsolete in 01-2020
@@ -31761,7 +31761,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.Duration" units="ms"
-    expires_after="2020-12-06">
+    expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31772,7 +31772,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestSizeKB.Compressed"
-    units="KB" expires_after="2020-12-06">
+    units="KB" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -31816,7 +31816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenDuration" units="ms"
-    expires_after="2020-12-06">
+    expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -32271,7 +32271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.VisualElement.Clicked" units="index"
-    expires_after="2020-10-01">
+    expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -32286,7 +32286,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.VisualElement.Clicked.TimeSinceElementFetched"
-    units="ms" expires_after="2020-10-01">
+    units="ms" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -32299,7 +32299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.VisualElement.Viewed" units="index"
-    expires_after="2021-02-14">
+    expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -32315,7 +32315,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.VisualElement.Viewed.TimeSinceElementFetched"
-    units="ms" expires_after="2020-10-01">
+    units="ms" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -32329,7 +32329,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.ContentCount"
-    units="count" expires_after="2020-10-01">
+    units="count" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -32341,7 +32341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.TokenCount"
-    units="count" expires_after="2020-10-01">
+    units="count" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -32353,7 +32353,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ZeroStateShown.Reason"
-    enum="FeedZeroStateShowReason" expires_after="2020-12-06">
+    enum="FeedZeroStateShowReason" expires_after="M90">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -111254,15 +111254,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.ArtificialDelay" enum="Boolean"
-    expires_after="M85">
+    expires_after="M90">
   <owner>skym@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>Android: Loading of Zine was artifically delayed</summary>
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.BackgroundFetchTrigger"
-    enum="BackgroundFetchTrigger" expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    enum="BackgroundFetchTrigger" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The type of trigger that caused a background fetch of NTP content
     suggestions from a suggestion server. Every background fetch is recorded.
@@ -111373,8 +111375,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.CategoryDismissed"
-    enum="ContentSuggestionsCategory" expires_after="M85">
-  <owner>treib@chromium.org</owner>
+    enum="ContentSuggestionsCategory" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: A category of content suggestions that was dismissed (by swiping
     away its empty state card).
@@ -111398,8 +111402,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible"
-    units="units" expires_after="M85">
-  <owner>vitaliii@chromium.org</owner>
+    units="units" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The number of suggestion cards that were available at the time an
     NTP was opened. Only visible categories (i.e. which can be seen by the user
@@ -111428,8 +111434,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible.Articles.Prefetched.Offline2"
-    units="suggestions" expires_after="M85">
-  <owner>vitaliii@chromium.org</owner>
+    units="suggestions" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The number of prefetched suggestion cards that were available in
     Articles category if it was visible at the time an NTP was opened and the
@@ -111440,8 +111448,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.DismissedUnvisited"
-    units="index" expires_after="M85">
-  <owner>treib@chromium.org</owner>
+    units="index" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The position of a suggestion card on the NTP that is dismissed,
     typically by swiping it away. The suggestion had a URL that was NOT visited
@@ -111453,8 +111463,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.DismissedVisited" units="index"
-    expires_after="M85">
-  <owner>treib@chromium.org</owner>
+    expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The position of a suggestion card on the NTP that is dismissed,
     typically by swiping it away. The suggestion had a URL that was visited
@@ -111476,8 +111488,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.MenuOpenedAge" units="ms"
-    expires_after="M85">
-  <owner>treib@chromium.org</owner>
+    expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The age of a suggestion card on the NTP whose long-press menu was
     opened, analogous to NewTabPage.ContentSuggestions.OpenedAge.
@@ -111585,8 +111599,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.OpenDisposition"
-    enum="WindowOpenDisposition" expires_after="M85">
-  <owner>treib@chromium.org</owner>
+    enum="WindowOpenDisposition" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: How an article linked from a suggestion card on the NTP was opened
     (e.g. plain click, open in new tab, open in incognito).
@@ -111609,8 +111625,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="NewTabPage.ContentSuggestions.Opened.Articles.Prefetched.Offline"
-    units="index" expires_after="M85">
-  <owner>vitaliii@chromium.org</owner>
+    units="index" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The position of the prefetched suggestion card on the NTP, that is
     clicked through to the host website of the content, when the user is
@@ -111623,8 +111641,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.OpenedAge" units="ms"
-    expires_after="M85">
-  <owner>treib@chromium.org</owner>
+    expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The age of a suggestion card on the NTP that is clicked through to
     the host website of the content. The age is measured from the moment the
@@ -111672,10 +111692,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.Preferences.RemoteSuggestions"
-    enum="BooleanEnabled" expires_after="M85">
-  <owner>fgorski@chromium.org</owner>
-  <owner>finkm@chromium.org</owner>
-  <owner>google-on-content-chrome@google.com</owner>
+    enum="BooleanEnabled" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Whether content suggestions from the remote service are enabled. It is
     recored at startup. Note: This histogram is not specific to the New Tab
@@ -111732,8 +111752,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="NewTabPage.ContentSuggestions.Shown.Articles.Prefetched.Offline2"
-    units="index" expires_after="M85">
-  <owner>vitaliii@chromium.org</owner>
+    units="index" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The position of a prefetched suggestion card that was shown on the
     NTP when offline. Analogous to NewTabPage.ContentSuggestions.Shown. That is
@@ -111800,8 +111822,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.TimeSinceSuggestionFetched"
-    units="ms" expires_after="M85">
-  <owner>markusheintz@chromium.org</owner>
+    units="ms" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time since the displayed content suggestions was fetched.
     Recorded when the user looks at content suggestions on the NTP. The metric
@@ -111811,8 +111835,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="NewTabPage.ContentSuggestions.TimeUntilFirstShownTrigger" units="ms"
-    expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time since the last fetch, recorded upon the first on-shown
     fetch trigger. The first on-shown trigger does not necessarily cause a fetch
@@ -111845,8 +111871,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="NewTabPage.ContentSuggestions.TimeUntilFirstStartupTrigger"
-    units="ms" expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    units="ms" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time since the last fetch, recorded upon the first startup
     fetch trigger. The first startup trigger does not necessarily cause a fetch
@@ -111860,8 +111888,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="NewTabPage.ContentSuggestions.TimeUntilPersistentFetch" units="ms"
-    expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time since the last fetch, recorded upon a persistent fetch.
     This is used to understand what are the real persistent fetching intervals
@@ -111870,8 +111900,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="NewTabPage.ContentSuggestions.TimeUntilSoftFetch"
-    units="ms" expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    units="ms" expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time since the last fetch, recorded upon a soft fetch. This is
     used to understand what are the real soft fetching intervals in the wild.
@@ -111880,8 +111912,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="NewTabPage.ContentSuggestions.TimeUntilStartupFetch" units="ms"
-    expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time since the last fetch, recorded upon a startup fetch. This
     is used to understand what are the real soft fetching intervals in the wild.
@@ -111928,8 +111962,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.UsageTimeLocal" units="units"
-    expires_after="M85">
-  <owner>markusheintz@chromium.org</owner>
+    expires_after="M90">
+  <owner>carlosk@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time of day (in the local timezone) when the user used content
     suggestions. Recorded for example when the user scrolls to the articles
