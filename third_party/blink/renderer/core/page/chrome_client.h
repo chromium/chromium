@@ -148,9 +148,15 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void ScheduleAnimation(const LocalFrameView*,
                                  base::TimeDelta = base::TimeDelta()) = 0;
 
-  // The specified rectangle is adjusted for the minimum window size and the
-  // screen, then setWindowRect with the adjusted rectangle is called.
-  void SetWindowRectWithAdjustment(const IntRect&, LocalFrame&);
+  // Adjusts |pending_rect| for the minimum window size and |frame|'s screen,
+  // then calls SetWindowRect on |frame| with the adjusted rectangle.
+  // Cross-screen window placements are passed on without same-screen clamping
+  // if the |requesting_frame| (i.e. the opener or |frame| itself) has
+  // experimental window placement features enabled. The browser will check
+  // permissions before actually supporting cross-screen placement requests.
+  void SetWindowRectWithAdjustment(const IntRect& pending_rect,
+                                   LocalFrame& frame,
+                                   LocalFrame& requesting_frame);
 
   // This gives the rect of the top level window that the given LocalFrame is a
   // part of.
