@@ -139,7 +139,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // caller can "fire and forget" it (|completion_cb| allows to verify that
   // record has been successfully enqueued). If file is going to become too
   // large, it is closed and new file is created.
-  // Helper methods: AssignLastFile, WriteHeaderAndBlock.
+  // Helper methods: AssignLastFile, WriteHeaderAndBlock, OpenNewWriteableFile,
+  // WriteMetadata, DeleteOutdatedMetadata.
   void Write(Record record, base::OnceCallback<void(Status)> completion_cb);
 
   // Confirms acceptance of the records up to |seq_number| (inclusively).
@@ -247,8 +248,13 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Must be called once and only once after construction.
   // Returns OK or error status, if anything failed to initialize.
   // Called once, during initialization.
-  // Helper methods: EnumerateDataFiles, ScanLastFile.
+  // Helper methods: EnumerateDataFiles, ScanLastFile, RestoreMetadata.
   Status Init();
+
+  // Attaches last record digest to the given record (does not exist at a
+  // generation start). Calculates the given record digest and stores it
+  // as the last one for the next record.
+  void UpdateRecordDigest(WrappedRecord* wrapped_record);
 
   // Helper method for Init(): enumerates all data files in the directory.
   // Valid file names are <prefix>.<seq_number>, any other names are ignored.
@@ -269,6 +275,23 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Helper method for Write() and Read(): creates and opens a new empty
   // writeable file, adding it to |files_|.
   StatusOr<scoped_refptr<SingleFile>> OpenNewWriteableFile();
+
+  // Helper method for Write(): stores a file with metadata to match the
+  // incoming new record. Synchronously composes metadata to record, then
+  // asynchronously writes it into a file with next sequencing number and then
+  // notifies the Write operation that it can now complete. After that it
+  // asynchronously deletes all other files with lower sequencing number
+  // (multiple Writes can see the same files and attempt to delete them, and
+  // that is not an error).
+  Status WriteMetadata();
+
+  // Helper method for Init(): locates file with metadata that matches the
+  // last sequencing number and loads metadat from it.
+  Status RestoreMetadata();
+
+  // Helper method for Write(): deletes meta files up to, but not including
+  // |seq_number_to_keep|. Any errors are ignored.
+  void DeleteOutdatedMetadata(uint64_t seq_number_to_keep);
 
   // Helper method for Write(): composes record header and writes it to the
   // file, followed by data.
@@ -295,6 +318,16 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Immutable options, stored at the time of creation.
   const Options options_;
+
+  // Current generation id, unique per device and queue.
+  // Set up once during initialization by reading from the 'gen_id.NNNN' file
+  // matching the last seq number, or generated anew as a random number if no
+  // such file found (files do not match the id).
+  uint64_t generation_id_ = 0;
+
+  // Digest of the last written record (loaded at queue initialization, absent
+  // if the new generation has just started, and no records where stored yet).
+  base::Optional<std::string> last_record_digest_;
 
   // Next sequencing number to store (not assigned yet).
   uint64_t next_seq_number_ = 0;

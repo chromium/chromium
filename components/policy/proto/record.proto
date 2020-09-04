@@ -75,13 +75,11 @@ message SequencingInformation {
   // (what to do with that is a decision that the caller needs to make).
   optional uint64 sequencing_id = 1;
 
-  // Generation ID (required)
-  // UUID of the last boot that did not find the public key cached - can
-  // happen after powerwash.
+  // Generation ID (required). Unique per device and priority. Generated anew
+  // when previous record digest is not found at startup (e.g. after powerwash).
   optional uint64 generation_id = 2;
 
-  // Priority (required)
-  // Generation IDs are per Priority.
+  // Priority (required).
   optional Priority priority = 3;
 }
 

@@ -79,7 +79,6 @@ class ReportQueue {
   void SendRecordToStorage(base::StringPiece record, EnqueueCallback callback);
 
   reporting::Record AugmentRecord(base::StringPiece record_data);
-  StatusOr<std::string> GetLastRecordDigest();
 
   std::unique_ptr<ReportQueueConfiguration> config_;
   scoped_refptr<StorageModule> storage_;

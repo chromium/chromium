@@ -9,6 +9,9 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/optional.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
@@ -16,7 +19,7 @@
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
-
+#include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,6 +90,44 @@ class MockUploadClient : public Storage::UploaderInterface {
     WrappedRecord wrapped_record;
     ASSERT_TRUE(wrapped_record.ParseFromString(
         encrypted_record.ValueOrDie().encrypted_wrapped_record()));
+    // Verify generation match.
+    if (generation_id_.has_value() &&
+        generation_id_.value() != encrypted_record.ValueOrDie()
+                                      .sequencing_information()
+                                      .generation_id()) {
+      std::move(processed_cb)
+          .Run(UploadRecordFailure(Status(
+              error::DATA_LOSS,
+              base::StrCat({"Generation id mismatch, expected=",
+                            base::NumberToString(generation_id_.value()),
+                            " actual=",
+                            base::NumberToString(encrypted_record.ValueOrDie()
+                                                     .sequencing_information()
+                                                     .generation_id())}))));
+      return;
+    }
+    if (!generation_id_.has_value()) {
+      generation_id_ = encrypted_record.ValueOrDie()
+                           .sequencing_information()
+                           .generation_id();
+    }
+
+    // Verify digest and its match.
+    // Last record digest is not verified yet, since duplicate records are
+    // accepted in this test.
+    {
+      std::string serialized_record;
+      wrapped_record.record().SerializeToString(&serialized_record);
+      const auto record_digest = crypto::SHA256HashString(serialized_record);
+      DCHECK_EQ(record_digest.size(), crypto::kSHA256Length);
+      if (record_digest != wrapped_record.record_digest()) {
+        std::move(processed_cb)
+            .Run(UploadRecordFailure(
+                Status(error::DATA_LOSS, "Record digest mismatch")));
+        return;
+      }
+    }
+
     std::move(processed_cb)
         .Run(UploadRecord(
             encrypted_record.ValueOrDie().sequencing_information().priority(),
@@ -163,6 +204,7 @@ class MockUploadClient : public Storage::UploaderInterface {
   };
 
  private:
+  base::Optional<uint64_t> generation_id_;
   Sequence test_upload_sequence_;
 };
 

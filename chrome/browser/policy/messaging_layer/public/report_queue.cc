@@ -101,10 +101,4 @@ Record ReportQueue::AugmentRecord(base::StringPiece record_data) {
   return record;
 }
 
-StatusOr<std::string> ReportQueue::GetLastRecordDigest() {
-  // TODO(b/153659559) Getting the actual last record digest will come later.
-  // For now we just set to a string.
-  return "LastRecordDigest";
-}
-
 }  // namespace reporting
