@@ -432,42 +432,6 @@ bool LayoutTheme::ShouldDrawDefaultFocusRing(const Node* node,
   return true;
 }
 
-bool LayoutTheme::IsChecked(const Node* node) {
-  if (auto* input = DynamicTo<HTMLInputElement>(node))
-    return input->ShouldAppearChecked();
-  return false;
-}
-
-bool LayoutTheme::IsIndeterminate(const Node* node) {
-  if (auto* input = DynamicTo<HTMLInputElement>(node))
-    return input->ShouldAppearIndeterminate();
-  return false;
-}
-
-bool LayoutTheme::IsEnabled(const Node* node) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return true;
-  return !element->IsDisabledFormControl();
-}
-
-bool LayoutTheme::IsPressed(const Node* node) {
-  if (!node)
-    return false;
-  return node->IsActive();
-}
-
-bool LayoutTheme::IsReadOnlyControl(const Node* node) {
-  auto* form_control_element = DynamicTo<HTMLFormControlElement>(node);
-  return form_control_element && form_control_element->IsReadOnly();
-}
-
-bool LayoutTheme::IsHovered(const Node* node) {
-  if (!node)
-    return false;
-  return node->IsHovered();
-}
-
 void LayoutTheme::AdjustCheckboxStyle(ComputedStyle& style) const {
   // A summary of the rules for checkbox designed to match WinIE:
   // width/height - honored (WinIE actually scales its control for small widths,

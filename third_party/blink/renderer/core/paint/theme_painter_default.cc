@@ -47,12 +47,38 @@ namespace {
 
 const unsigned kDefaultButtonBackgroundColor = 0xffdddddd;
 
+bool IsDisabled(const Node* node) {
+  if (const auto* element = DynamicTo<Element>(node))
+    return element->IsDisabledFormControl();
+  return false;
+}
+
+bool IsPressed(const Node* node) {
+  return node && node->IsActive();
+}
+
+bool IsHovered(const Node* node) {
+  return node && node->IsHovered();
+}
+
+bool IsIndeterminate(const Node* node) {
+  if (const auto* element = DynamicTo<HTMLInputElement>(node))
+    return element->ShouldAppearIndeterminate();
+  return false;
+}
+
+bool IsChecked(const Node* node) {
+  if (auto* input = DynamicTo<HTMLInputElement>(node))
+    return input->ShouldAppearChecked();
+  return false;
+}
+
 WebThemeEngine::State GetWebThemeState(const Node* node) {
-  if (!LayoutTheme::IsEnabled(node))
+  if (IsDisabled(node))
     return WebThemeEngine::kStateDisabled;
-  if (LayoutTheme::IsPressed(node))
+  if (IsPressed(node))
     return WebThemeEngine::kStatePressed;
-  if (LayoutTheme::IsHovered(node))
+  if (IsHovered(node))
     return WebThemeEngine::kStateHover;
 
   return WebThemeEngine::kStateNormal;
@@ -146,8 +172,8 @@ bool ThemePainterDefault::PaintCheckbox(const Node* node,
   WebThemeEngine::ExtraParams extra_params;
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
   extra_params.button = WebThemeEngine::ButtonExtraParams();
-  extra_params.button.checked = LayoutTheme::IsChecked(node);
-  extra_params.button.indeterminate = LayoutTheme::IsIndeterminate(node);
+  extra_params.button.checked = IsChecked(node);
+  extra_params.button.indeterminate = IsIndeterminate(node);
 
   float zoom_level = style.EffectiveZoom();
   extra_params.button.zoom = zoom_level;
@@ -176,7 +202,7 @@ bool ThemePainterDefault::PaintRadio(const Node* node,
   WebThemeEngine::ExtraParams extra_params;
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
   extra_params.button = WebThemeEngine::ButtonExtraParams();
-  extra_params.button.checked = LayoutTheme::IsChecked(node);
+  extra_params.button.checked = IsChecked(node);
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartRadio, GetWebThemeState(node), WebRect(rect),
@@ -395,7 +421,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Node* node,
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
   extra_params.slider.vertical =
       style.EffectiveAppearance() == kSliderThumbVerticalPart;
-  extra_params.slider.in_drag = LayoutTheme::IsPressed(node);
+  extra_params.slider.in_drag = IsPressed(node);
 
   float zoom_level = style.EffectiveZoom();
   extra_params.slider.zoom = zoom_level;
@@ -429,8 +455,12 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Node* node,
       spin_up = node->IsHovered() || node->IsActive();
   }
 
+  bool read_only = false;
+  if (const auto* element = DynamicTo<HTMLFormControlElement>(node))
+    read_only = element->IsReadOnly();
+
   extra_params.inner_spin.spin_up = spin_up;
-  extra_params.inner_spin.read_only = LayoutTheme::IsReadOnlyControl(node);
+  extra_params.inner_spin.read_only = read_only;
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartInnerSpinButton, GetWebThemeState(node),
@@ -523,11 +553,10 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
   Image* color_scheme_adjusted_cancel_pressed_image =
       color_scheme == kLight ? cancel_pressed_image
                              : cancel_pressed_image_dark_mode;
-  paint_info.context.DrawImage(
-      LayoutTheme::IsPressed(cancel_button_object.GetNode())
-          ? color_scheme_adjusted_cancel_pressed_image
-          : color_scheme_adjusted_cancel_image,
-      Image::kSyncDecode, FloatRect(painting_rect));
+  paint_info.context.DrawImage(IsPressed(cancel_button_object.GetNode())
+                                   ? color_scheme_adjusted_cancel_pressed_image
+                                   : color_scheme_adjusted_cancel_image,
+                               Image::kSyncDecode, FloatRect(painting_rect));
   return false;
 }
 

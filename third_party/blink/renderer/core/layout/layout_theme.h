@@ -216,16 +216,6 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual void AdjustSearchFieldStyle(ComputedStyle&) const;
   virtual void AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const;
 
- public:
-  // Methods for state querying
-  static bool IsChecked(const Node*);
-  static bool IsIndeterminate(const Node*);
-  static bool IsEnabled(const Node*);
-  static bool IsPressed(const Node*);
-  static bool IsHovered(const Node*);
-  static bool IsReadOnlyControl(const Node*);
-
- protected:
   bool HasCustomFocusRingColor() const;
   Color GetCustomFocusRingColor() const;
 
