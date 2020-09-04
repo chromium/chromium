@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -408,14 +409,17 @@ const char kNTPHelpURL[] =
 
 - (void)handleFeedManageActivityTapped {
   [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
+  [self.discoverFeedMetrics recordHeaderMenuManageActivityTapped];
 }
 
 - (void)handleFeedManageInterestsTapped {
   [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
+  [self.discoverFeedMetrics recordHeaderMenuManageInterestsTapped];
 }
 
 - (void)handleFeedLearnMoreTapped {
   [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
+  [self.discoverFeedMetrics recordHeaderMenuLearnMoreTapped];
 }
 
 - (void)handleLearnMoreTapped {

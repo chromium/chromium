@@ -34,6 +34,7 @@ class Browser;
 @protocol LogoVendor;
 @protocol NTPHomeConsumer;
 @class NTPHomeMetrics;
+@class DiscoverFeedMetricsRecorder;
 @protocol OmniboxCommands;
 class TemplateURLService;
 @protocol SnackbarCommands;
@@ -72,6 +73,9 @@ class VoiceSearchAvailability;
     ContentSuggestionsMetricsRecorder* metricsRecorder;
 // Recorder for the metrics related to the NTP.
 @property(nonatomic, strong, nullable) NTPHomeMetrics* NTPMetrics;
+// Recorder for the metrics related to the Discover feed.
+@property(nonatomic, strong, nullable)
+    DiscoverFeedMetricsRecorder* discoverFeedMetrics;
 // View Controller displaying the suggestions.
 @property(nonatomic, weak, nullable)
     ContentSuggestionsViewController* suggestionsViewController;
