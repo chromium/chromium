@@ -260,7 +260,7 @@ class CONTENT_EXPORT ChildThreadImpl
   // An interface to the browser's process host object.
   mojo::SharedRemote<mojom::ChildProcessHost> child_process_host_;
 
-  // ChlidThreadImpl state which lives on the IO thread, including its
+  // ChildThreadImpl state which lives on the IO thread, including its
   // implementation of the mojom ChildProcess interface.
   scoped_refptr<IOThreadState> io_thread_state_;
 
