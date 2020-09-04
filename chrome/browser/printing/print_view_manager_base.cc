@@ -357,8 +357,8 @@ void PrintViewManagerBase::OnGetDefaultPrintSettings(
   NOTREACHED() << "should be handled by printing::PrintingMessageFilter";
 }
 
-void PrintViewManagerBase::OnPrintingFailed(int cookie) {
-  PrintManager::OnPrintingFailed(cookie);
+void PrintViewManagerBase::PrintingFailed(int32_t cookie) {
+  PrintManager::PrintingFailed(cookie);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   ShowPrintErrorDialog();

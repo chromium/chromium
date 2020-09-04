@@ -785,12 +785,6 @@ class MAYBE_PrintRenderFrameHelperPreviewTest
     }
   }
 
-  void VerifyPrintFailed(bool expect_fail) {
-    bool print_failed = !!render_thread_->sink().GetUniqueMessageMatching(
-        PrintHostMsg_PrintingFailed::ID);
-    EXPECT_EQ(expect_fail, print_failed);
-  }
-
   void VerifyPrintPreviewInvalidPrinterSettings(bool expect_invalid_settings) {
     EXPECT_EQ(expect_invalid_settings, preview_ui()->invalid_printer_setting());
   }

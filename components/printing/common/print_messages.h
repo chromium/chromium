@@ -353,13 +353,7 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_CheckForCancel,
 IPC_MESSAGE_ROUTED2(PrintHostMsg_MetafileReadyForPrinting,
                     printing::mojom::DidPreviewDocumentParams /* params */,
                     printing::mojom::PreviewIds /* ids */)
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-// Tell the browser printing failed.
-IPC_MESSAGE_ROUTED1(PrintHostMsg_PrintingFailed,
-                    int /* document cookie */)
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Run a nested run loop in the renderer until print preview for
 // window.print() finishes.
 IPC_SYNC_MESSAGE_ROUTED0_0(PrintHostMsg_SetupScriptedPrintPreview)

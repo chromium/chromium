@@ -259,7 +259,7 @@ void HeadlessPrintManager::ShowInvalidPrinterSettingsError() {
   ReleaseJob(INVALID_PRINTER_SETTINGS);
 }
 
-void HeadlessPrintManager::OnPrintingFailed(int cookie) {
+void HeadlessPrintManager::PrintingFailed(int32_t cookie) {
   ReleaseJob(PRINTING_FAILED);
 }
 

@@ -285,4 +285,7 @@ interface PrintManagerHost {
 
   // Tells the browser that there are invalid printer settings.
   ShowInvalidPrinterSettingsError();
+
+  // Tells the browser printing failed.
+  PrintingFailed(int32 cookie);
 };

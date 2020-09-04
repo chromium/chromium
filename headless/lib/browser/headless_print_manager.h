@@ -70,6 +70,7 @@ class HeadlessPrintManager
 
   // printing::mojom::PrintManagerHost:
   void ShowInvalidPrinterSettingsError() override;
+  void PrintingFailed(int32_t cookie) override;
 
   static std::string PrintResultToString(PrintResult result);
   // Exported for tests.
@@ -104,7 +105,6 @@ class HeadlessPrintManager
       std::unique_ptr<DelayedFrameDispatchHelper> helper) override;
   void OnGetDefaultPrintSettings(content::RenderFrameHost* render_frame_host,
                                  IPC::Message* reply_msg) override;
-  void OnPrintingFailed(int cookie) override;
   void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
                        const printing::mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg) override;
