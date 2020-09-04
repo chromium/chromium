@@ -9,11 +9,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 #include "chrome/browser/media/router/test/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -35,6 +37,7 @@ class DialURLFetcherTest : public testing::Test {
         base::BindOnce(&DialURLFetcherTest::OnSuccess, base::Unretained(this)),
         base::BindOnce(&DialURLFetcherTest::OnError, base::Unretained(this)),
         &loader_factory_);
+    fetcher_->SetSavedRequestForTest(&request_);
     fetcher_->Get(url_);
     base::RunLoop().RunUntilIdle();
   }
@@ -47,6 +50,7 @@ class DialURLFetcherTest : public testing::Test {
   network::TestURLLoaderFactory loader_factory_;
   const GURL url_;
   std::unique_ptr<TestDialURLFetcher> fetcher_;
+  network::ResourceRequest request_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DialURLFetcherTest);
@@ -60,6 +64,16 @@ TEST_F(DialURLFetcherTest, FetchSuccessful) {
   loader_factory_.AddResponse(url_, network::mojom::URLResponseHead::New(),
                               body, status);
   StartGetRequest();
+
+  // Verify the request parameters.
+  EXPECT_EQ(request_.url, url_);
+  EXPECT_EQ(request_.method, "GET");
+  std::string origin_header;
+  EXPECT_TRUE(request_.headers.GetHeader("Origin", &origin_header));
+  EXPECT_TRUE(base::StartsWith(origin_header, "package:"));
+  EXPECT_TRUE(request_.load_flags & net::LOAD_BYPASS_PROXY);
+  EXPECT_TRUE(request_.load_flags & net::LOAD_DISABLE_CACHE);
+  EXPECT_EQ(request_.credentials_mode, network::mojom::CredentialsMode::kOmit);
 }
 
 TEST_F(DialURLFetcherTest, FetchFailsOnMissingAppInfo) {

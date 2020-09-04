@@ -21,12 +21,13 @@ struct RedirectInfo;
 }
 
 namespace network {
+struct ResourceRequest;
 class SimpleURLLoader;
 }  // namespace network
 
 namespace media_router {
 
-// Used to make a single HTTP GET request with |url| to fetch a response
+// Used to make a single HTTP request with |url| to fetch a response
 // from a DIAL device.  If successful, |success_cb| is invoked with the result;
 // otherwise, |error_cb| is invoked with an error reason.
 // This class is not sequence safe.
@@ -58,6 +59,13 @@ class DialURLFetcher {
   // nullptr if this function is called before |loader_| has informed the caller
   // of completion.
   const network::mojom::URLResponseHead* GetResponseHead() const;
+
+  // If a non-nullptr |request| is passed, a copy of the resource request will
+  // be stored in it when the request is started.  |request| must outlive the
+  // call to Get(), Delete() or Post().
+  void SetSavedRequestForTest(network::ResourceRequest* request) {
+    saved_request_for_test_ = request;
+  }
 
  private:
   friend class TestDialURLFetcher;
@@ -93,6 +101,7 @@ class DialURLFetcher {
 
   // The HTTP method that was started on the fetcher (e.g., "GET").
   std::string method_;
+  network::ResourceRequest* saved_request_for_test_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(DialURLFetcher);

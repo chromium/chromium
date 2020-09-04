@@ -5,9 +5,12 @@
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -71,6 +74,16 @@ void BindURLLoaderFactoryReceiverOnUIThread(
   factory->Clone(std::move(receiver));
 }
 
+std::string GetFakeOriginForDialLaunch() {
+  // Syntax: package:Google-Chrome.87.Mac-OS-X
+  std::string product_name(version_info::GetProductName());
+  base::ReplaceChars(product_name, " ", "-", &product_name);
+  std::string os_type(version_info::GetOSType());
+  base::ReplaceChars(os_type, " ", "-", &os_type);
+  return base::StrCat({"package:", product_name, ".",
+                       version_info::GetMajorVersionNumber(), ".", os_type});
+}
+
 }  // namespace
 
 DialURLFetcher::DialURLFetcher(DialURLFetcher::SuccessCallback success_cb,
@@ -112,6 +125,10 @@ void DialURLFetcher::Start(const GURL& url,
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   request->method = method;
+  // As a security mitigation, DIAL launch requests now require a fake origin
+  // which cannot be spoofed by the drive-by Web.  Rather than attempt to
+  // coerce this fake origin into a url::Origin, set the header directly.
+  request->headers.SetHeader("Origin", GetFakeOriginForDialLaunch());
   method_ = method;
 
   // net::LOAD_BYPASS_PROXY: Proxies almost certainly hurt more cases than they
@@ -119,6 +136,9 @@ void DialURLFetcher::Start(const GURL& url,
   // net::LOAD_DISABLE_CACHE: The request should not touch the cache.
   request->load_flags = net::LOAD_BYPASS_PROXY | net::LOAD_DISABLE_CACHE;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (saved_request_for_test_) {
+    *saved_request_for_test_ = *request;
+  }
 
   loader_ = network::SimpleURLLoader::Create(std::move(request),
                                              kDialUrlFetcherTrafficAnnotation);
