@@ -68,7 +68,15 @@ class CORE_EXPORT StyleColor {
 
   Color Resolve(Color current_color, WebColorScheme color_scheme) const;
 
-  bool IsNumeric() const { return color_keyword_ == CSSValueID::kInvalid; }
+  // Resolve and override the resolved color's alpha channel as specified by
+  // |alpha|.
+  Color ResolveWithAlpha(Color current_color,
+                         WebColorScheme color_scheme,
+                         int alpha) const;
+
+  bool IsNumeric() const {
+    return EffectiveColorKeyword() == CSSValueID::kInvalid;
+  }
 
   static Color ColorFromKeyword(CSSValueID, WebColorScheme color_scheme);
   static bool IsColorKeyword(CSSValueID);

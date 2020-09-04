@@ -1562,13 +1562,6 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
       value, Color(), state.Style()->UsedColorScheme(), for_visited_link));
 }
 
-CSSValueID StyleBuilderConverter::ConvertCSSValueID(StyleResolverState& state,
-                                                    const CSSValue& value) {
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  DCHECK(identifier_value);
-  return identifier_value->GetValueID();
-}
-
 StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
     StyleResolverState& state,
     const CSSValue& value,

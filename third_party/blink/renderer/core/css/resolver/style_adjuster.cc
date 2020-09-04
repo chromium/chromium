@@ -86,23 +86,6 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
   return touch_action;
 }
 
-void AdjustBackgroundForForcedColorsMode(StyleResolverState& state,
-                                         ComputedStyle& style,
-                                         Element* element) {
-  if (!element || !element->GetDocument().InForcedColorsMode() ||
-      style.ForcedColorAdjust() == EForcedColorAdjust::kNone)
-    return;
-
-  int bg_color_alpha =
-      LayoutObject::ResolveColor(style, GetCSSPropertyBackgroundColor())
-          .Alpha();
-  Color bg_color_rbg = StyleColor::ColorFromKeyword(
-      style.InternalForcedBackgroundColorRgb(), WebColorScheme::kLight);
-  StyleColor bg_color(Color(bg_color_rbg.Red(), bg_color_rbg.Green(),
-                            bg_color_rbg.Blue(), bg_color_alpha));
-  style.SetBackgroundColor(bg_color);
-}
-
 bool HostIsInputFile(const Element* element) {
   if (!element || !element->IsInUserAgentShadowRoot())
     return false;
@@ -805,7 +788,5 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         (element && element->GetDocument().Printing()))
       style.SetInsideNGFragmentationContext(true);
   }
-
-  AdjustBackgroundForForcedColorsMode(state, style, element);
 }
 }  // namespace blink

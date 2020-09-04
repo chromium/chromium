@@ -5961,21 +5961,6 @@
       converter: "ConvertInternalEmptyLineHeight",
     },
 
-    // Stores the RGB portion of the background-color used during forced colors
-    // mode. The corresponding alpha channel is retrieved from the
-    // author-defined background-color.
-    {
-      name: "-internal-forced-background-color-rgb",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "external",
-      default_value: "CSSValueID::kCanvas",
-      type_name: "CSSValueID",
-      converter: "ConvertCSSValueID",
-      valid_for_first_letter: true,
-      valid_for_cue: true,
-    },
-
     // Aliases; these map to the same CSSPropertyID
     {
       name: "-epub-caption-side",

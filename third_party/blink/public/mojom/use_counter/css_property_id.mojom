@@ -16,7 +16,6 @@ enum CSSSampleId {
     // These internal properties exist but are mapped to 0 to ensure they don't get
     // reported in use counter.
     kInternalEmptyLineHeight = 0,
-    kInternalForcedBackgroundColorRgb = 0,
     kInternalVisitedBackgroundColor = 0,
     kInternalVisitedBorderBlockEndColor = 0,
     kInternalVisitedBorderBlockStartColor = 0,

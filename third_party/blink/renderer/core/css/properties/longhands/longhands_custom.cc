@@ -3312,23 +3312,6 @@ const CSSValue* InsetInlineStart::ParseSingleValue(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid);
 }
 
-const CSSValue*
-InternalForcedBackgroundColorRgb::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const SVGComputedStyle&,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.InternalForcedBackgroundColorRgb());
-}
-
-const CSSValue* InternalForcedBackgroundColorRgb::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeInternalForcedBackgroundColor(range,
-                                                                 context);
-}
-
 const blink::Color InternalVisitedBackgroundColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {

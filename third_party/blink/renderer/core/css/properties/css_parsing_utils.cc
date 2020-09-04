@@ -1295,15 +1295,6 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
   return cssvalue::CSSColorValue::Create(color);
 }
 
-CSSValue* ConsumeInternalForcedBackgroundColor(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context) {
-  CSSValueID id = range.Peek().Id();
-  if (!StyleColor::IsColorKeyword(id))
-    return nullptr;
-  return ConsumeIdent(range);
-}
-
 CSSValue* ConsumeLineWidth(CSSParserTokenRange& range,
                            const CSSParserContext& context,
                            UnitlessQuirk unitless) {

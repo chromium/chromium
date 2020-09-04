@@ -72,7 +72,6 @@ ALIGNMENT_ORDER = [
     'StyleColor',
     'StyleAutoColor',
     'Color',
-    'CSSValueID',
     'LayoutUnit',
     'LineClampValue',
     'OutlineValue',

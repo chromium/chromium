@@ -206,6 +206,11 @@ class CORE_EXPORT StyleCascade {
                                    CascadePriority,
                                    CascadeResolver&);
 
+  // Update the ComputedStyle to use the colors specified in Forced Colors Mode.
+  // https://www.w3.org/TR/css-color-adjust-1/#forced
+  void ForceColors();
+  const CSSValue* GetForcedColorValue(CSSPropertyName name);
+
   // Whether or not we are calculating the style for the root element.
   // We need to know this to detect cycles with 'rem' units.
   // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles

@@ -18,6 +18,13 @@ Color StyleColor::Resolve(Color current_color,
   return color_;
 }
 
+Color StyleColor::ResolveWithAlpha(Color current_color,
+                                   WebColorScheme color_scheme,
+                                   int alpha) const {
+  Color color = Resolve(current_color, color_scheme);
+  return Color(color.Red(), color.Green(), color.Blue(), alpha);
+}
+
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    WebColorScheme color_scheme) {
   if (const char* value_name = getValueName(keyword)) {

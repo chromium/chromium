@@ -182,6 +182,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
     if (resolver.AuthorFlags() & CSSProperty::kBorder)
       state_.Style()->SetHasAuthorBorder();
   }
+  ForceColors();
 }
 
 std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
@@ -542,6 +543,41 @@ void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
   const auto& entry = map.find(handle);
   DCHECK_NE(entry, map.end());
   ApplyInterpolation(property, priority, *entry->value, resolver);
+}
+
+void StyleCascade::ForceColors() {
+  // TODO(almaher): Return if the color is already a system color.
+  if (!GetDocument().InForcedColorsMode() ||
+      state_.Style()->ForcedColorAdjust() == EForcedColorAdjust::kNone)
+    return;
+
+  int bg_color_alpha =
+      state_.Style()
+          ->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+          .Alpha();
+
+  // TODO(almaher): Do this for all Forced Colors Mode properties.
+  CSSPropertyName name(CSSPropertyID::kBackgroundColor);
+  CSSPropertyRef ref(name, state_.GetDocument());
+  DCHECK(ref.IsValid());
+
+  StyleBuilder::ApplyProperty(ref.GetProperty(), state_,
+                              *GetForcedColorValue(name));
+
+  // Preserve the author/user defined background alpha channel.
+  state_.Style()->SetBackgroundColor(
+      StyleColor(state_.Style()->BackgroundColor().ResolveWithAlpha(
+          state_.Style()->GetCurrentColor(), WebColorScheme::kLight,
+          bg_color_alpha)));
+}
+
+const CSSValue* StyleCascade::GetForcedColorValue(CSSPropertyName name) {
+  CascadePriority* p = map_.Find(name, CascadeOrigin::kUserAgent);
+  if (p)
+    return ValueAt(match_result_, p->GetPosition());
+  if (name.Id() == CSSPropertyID::kBackgroundColor)
+    return CSSIdentifierValue::Create(CSSValueID::kCanvas);
+  return cssvalue::CSSUnsetValue::Create();
 }
 
 bool StyleCascade::IsRootElement() const {
