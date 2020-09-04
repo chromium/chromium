@@ -1321,7 +1321,6 @@ if (!is_android) {
       "../browser/ui/exclusive_access/fullscreen_controller_browsertest.cc",
       "../browser/ui/exclusive_access/mouse_lock_controller_browsertest.cc",
       "../browser/ui/extensions/application_launch_browsertest.cc",
-      "../browser/ui/extensions/blocked_action_bubble_browsertest.cc",
       "../browser/ui/extensions/extension_enable_flow_browsertest.cc",
       "../browser/ui/extensions/extension_enable_flow_test_delegate.cc",
       "../browser/ui/extensions/extension_enable_flow_test_delegate.h",
