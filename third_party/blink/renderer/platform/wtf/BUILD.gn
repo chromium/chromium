@@ -242,7 +242,7 @@ component("wtf") {
     sources -= [ "text/atomic_string_cf.cc" ]
   }
 
-  if (!is_debug && !optimize_for_size) {
+  if (!is_debug && (!optimize_for_size || is_android)) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }

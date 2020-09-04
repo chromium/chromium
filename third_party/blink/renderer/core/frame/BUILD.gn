@@ -223,6 +223,11 @@ blink_core_sources("frame") {
     "window_or_worker_global_scope.h",
   ]
 
+  if (is_android && !is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
   deps = [
     "//skia",
     "//ui/accessibility:ax_base",

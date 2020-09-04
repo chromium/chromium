@@ -648,6 +648,11 @@ blink_core_sources("layout") {
     ]
   }
 
+  if (is_android && !is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
   if (is_fuchsia) {
     sources += [ "layout_theme_fuchsia.cc" ]
   }

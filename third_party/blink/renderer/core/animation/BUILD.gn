@@ -276,6 +276,11 @@ blink_core_sources("animation") {
     "worklet_animation_controller.h",
   ]
 
+  if (is_android && !is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
   deps = [ ":buildflags" ]
 }
 

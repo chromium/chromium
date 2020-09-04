@@ -598,6 +598,11 @@ blink_core_sources("html") {
     "window_name_collection.h",
   ]
 
+  if (is_android && !is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
   deps = [
     "//services/metrics/public/cpp:metrics_cpp",
     "//skia:skcms",

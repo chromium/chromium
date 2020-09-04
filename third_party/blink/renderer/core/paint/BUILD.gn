@@ -265,4 +265,8 @@ blink_core_sources("paint") {
     "view_painter.cc",
     "view_painter.h",
   ]
+  if (!is_debug && is_android) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
 }
