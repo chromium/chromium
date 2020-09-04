@@ -16,7 +16,6 @@
 <translation id="1105960400813249514">Λήψη οθόνης</translation>
 <translation id="1111673857033749125">Οι σελιδοδείκτες που είναι αποθηκευμένοι σε άλλες συσκευές θα εμφανίζονται εδώ.</translation>
 <translation id="1113597929977215864">Εμφάνιση απλοποιημένης προβολής</translation>
-<translation id="1122278879166832009">Πατήστε εδώ, για γρήγορη πρόσβαση στην αρχική σας σελίδα από όπου και αν βρίσκεστε</translation>
 <translation id="1126809382673880764">Δεν σας προστατεύει από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Θα εξακολουθείτε να λαμβάνετε προστασία από την Ασφαλή περιήγηση, όπου είναι διαθέσιμη, σε άλλες Υπηρεσίες Google, όπως το Gmail και η Αναζήτηση.</translation>
 <translation id="1129510026454351943">Λεπτομέρειες: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα.}other{# λήψεις σε εκκρεμότητα.}}</translation>
@@ -39,7 +38,6 @@
 <translation id="123724288017357924">Επαναφ. τρέχ.σελ. αγνοώντας το περιεχ. κρυφ.μνήμης</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1260236875608242557">Αναζήτηση και εξερεύνηση</translation>
 <translation id="1266864766717917324">Δεν ήταν δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Πατήστε για ανάπτυξη</translation>
 <translation id="1291207594882862231">Διαγραφή ιστορικού, cookie, δεδομένων ιστότοπου, κρυφής μνήμης…</translation>
@@ -588,7 +586,6 @@
 <translation id="5683547024293500885">Το Chrome δεν μπορεί να ελέγξει για ενημερώσεις.</translation>
 <translation id="5686790454216892815">Το όνομα του αρχείου είναι πολύ μεγάλο</translation>
 <translation id="5687809546194252819">Η εφαρμογή <ph name="APP_NAME" /> θα χρησιμοποιεί <ph name="LANGUAGE" /> μετά την επανεκκίνηση.</translation>
-<translation id="5694049548840660018">Επιστρέψτε εύκολα στην αρχική σελίδα</translation>
 <translation id="569536719314091526">Μεταφράστε αυτήν τη σελίδα σε οποιαδήποτε γλώσσα από το κουμπί "Περισσότερες επιλογές"</translation>
 <translation id="5696597120588531049">Το Chrome μπορεί να σας προστατέψει από παραβιάσεις δεδομένων, μη ασφαλείς ιστοτόπους κ.α.</translation>
 <translation id="5697688514913266141">Το αρχείο σας θα αποθηκευτεί στον κατάλογο <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Επεξεργασία<ph name="END_LINK2" />.</translation>
@@ -685,7 +682,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
 <translation id="6364438453358674297">Κατάργηση πρότασης από το ιστορικό;</translation>
 <translation id="6366047038980456022">Η εφαρμογή <ph name="APP_NAME" /> σας προσφέρει τις έξυπνες λειτουργίες και την ταχύτητα που χρειάζεστε για να κάνετε αυτό που θέλετε, να δημιουργήσετε και να εξερευνήσετε στο διαδίκτυο.</translation>
-<translation id="6369229450655021117">Από εδώ, μπορείτε να αναζητήσετε στον ιστό, να μοιραστείτε με φίλους και να δείτε ανοικτές σελίδες</translation>
 <translation id="6378173571450987352">Λεπτομέρειες: Ταξινομήθηκαν βάσει του όγκου των δεδομένων που χρησιμοποιήθηκαν</translation>
 <translation id="6379829913050047669">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">Μείωση φωτισμού ιστοτόπων</translation>
@@ -997,7 +993,6 @@
 <translation id="8636825310635137004">Για να εμφανίζονται οι καρτέλες από τις άλλες συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="8641930654639604085">Δοκιμάστε να αποκλείσετε τους ιστοτόπους με περιεχόμενο για ενηλίκους</translation>
 <translation id="8655129584991699539">Μπορείτε να διαγράψετε τα δεδομένα στις ρυθμίσεις του Chrome</translation>
-<translation id="8655599981421006542">Πατήστε εδώ, για να δημιουργήσετε νέες καρτέλες και να μεταβείτε στις προηγούμενες</translation>
 <translation id="8662811608048051533">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους.</translation>
 <translation id="8664979001105139458">Το αρχείο υπάρχει ήδη</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Επίπεδο ισχύος σήματος: # γραμμή}other{Επίπεδο ισχύος σήματος: # γραμμές}}</translation>
@@ -1005,7 +1000,6 @@
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8748850008226585750">Κρυφό περιεχόμενο</translation>
-<translation id="8758557275681689734">Δείτε όλες τις ανοιχτές καρτέλες</translation>
 <translation id="8788265440806329501">Το Ιστορικό πλοήγηση έκλεισε</translation>
 <translation id="8788968922598763114">Εκ νέου άνοιγμα της καρτέλας που έκλεισε τελευταία</translation>
 <translation id="8812260976093120287">Σε ορισμένους ιστοτόπους, μπορείτε να πληρώσετε χρησιμοποιώντας τις παραπάνω υποστηριζόμενες εφαρμογές πληρωμών στη συσκευή σας.</translation>

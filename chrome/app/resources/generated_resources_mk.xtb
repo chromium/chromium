@@ -3342,7 +3342,6 @@
 <translation id="5039696241953571917">Прегледувајте ги и управувајте со зачуваните лозинки во вашата сметка на Google</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040823038948176460">Дополнителни поставки за содржини</translation>
-<translation id="5042282098504489593">Отворете „Поставки“ за да го поврзете <ph name="USB_DEVICE_NAME" /> со Linux</translation>
 <translation id="5043913660911154449">Или одредете го PPD на вашиот печатач <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
 <translation id="504561833207953641">Се отвора во постојната сесија на прелистувачот.</translation>
@@ -5627,7 +5626,6 @@
     <ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> системот ќе се рестартира во текот на процесот.</translation>
 <translation id="7828731929332799387">Ова ќе ги избрише сите колачиња и податоците за сајтовите што се достапни во контексти на трета страна. Дали сакате да продолжите?</translation>
 <translation id="7829877209233347340">Побарај од родителот да се најави за да даде дозвола за додавање училишна сметка</translation>
-<translation id="7830594666202422257">Поврзи се со Linux</translation>
 <translation id="7831491651892296503">Грешка при конфигурирање на мрежата</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Време на завршување</translation>

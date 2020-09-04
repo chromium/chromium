@@ -3338,7 +3338,6 @@
 <translation id="5039696241953571917">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5040823038948176460">അധിക ഉള്ളടക്ക ക്രമീകരണം</translation>
-<translation id="5042282098504489593"><ph name="USB_DEVICE_NAME" /> Linux-ലേക്ക് കണക്റ്റ് ചെയ്യാൻ ക്രമീകരണം തുറക്കുക</translation>
 <translation id="5043913660911154449">അല്ലെങ്കിൽ നിങ്ങളുടെ പ്രിന്റർ PPD വ്യക്തമാക്കുക <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
 <translation id="504561833207953641">നിലവിലുള്ള ബ്രൗസര്‍ സെഷനില്‍ തുറക്കുന്നു.</translation>
@@ -5625,7 +5624,6 @@
     <ph name="BEGIN_BOLD" />കുറിപ്പ്:<ph name="END_BOLD" />  പ്രോസസ് വേളയിൽ സിസ്റ്റം റീബൂട്ട് ചെയ്യും.</translation>
 <translation id="7828731929332799387">മൂന്നാം കക്ഷികളുമായി ബന്ധപ്പെട്ട സന്ദർഭങ്ങളിൽ ലഭ്യമായ എല്ലാ സൈറ്റ് ഡാറ്റയും കുക്കികളും ഇത് ഇല്ലാതാക്കും. തുടരാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?</translation>
 <translation id="7829877209233347340">സ്‌കൂൾ അക്കൗണ്ട് ചേർക്കുന്നതിന് അനുമതി നൽകാൻ രക്ഷിതാവിനോട് സൈൻ ഇൻ ചെയ്യാൻ ആവശ്യപ്പെടുക</translation>
-<translation id="7830594666202422257">Linux-ലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7831491651892296503">നെറ്റ്‍വര്‍ക്ക് കോണ്‍ഫിഗര്‍ ചെയ്യുന്നതിൽ പിശക്</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">അവസാനിക്കുന്ന സമയം</translation>

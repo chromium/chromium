@@ -1447,11 +1447,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       A string pode conter variáveis <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> que serão substituídas por valores no dispositivo antes de serem usadas como nome do host. A substituição resultante precisa ser um nome de host válido (em conformidade com a RFC 1035, seção 3.1).
 
       Se esta política não for definida ou o valor depois da substituição não for um nome de host válido, nenhum nome de host será definido na solicitação de DHCP. </translation>
-<translation id="3051089299923124309">Definir a política como "Ativada" permite que o subconteúdo de terceiros em uma página abra uma janela pop-up de autenticação HTTP básica.
-
-       Definir a política como "Desativada" ou deixá-la sem definição faz com que o subconteúdo de terceiros não possa abrir uma janela pop-up de autenticação HTTP básica.
-
-      Normalmente, essa política fica desativada como defesa contra phishing.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Permite que usuários afiliados deste dispositivo usem sideload com adb</translation>
 <translation id="3069958900488014740">Permite desativar a otimização da descoberta automática de proxies da Web (WPAD, na sigla em inglês) no <ph name="PRODUCT_NAME" />.
@@ -4162,7 +4157,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a sinalização de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a sinalização de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
 
-      Para ver mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts).</translation>
+      Para ver mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
 <translation id="7037812781389976160">Controlar a posição da estante <ph name="PRODUCT_OS_NAME" />.
 
       Se esta política estiver definida como "Parte inferior", a estante será colocada na parte inferior da tela.

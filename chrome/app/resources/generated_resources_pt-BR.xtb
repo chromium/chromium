@@ -3343,7 +3343,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5039696241953571917">Ver e gerenciar as senhas salvas na sua Conta do Google</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040823038948176460">Mais configurações de conteúdo</translation>
-<translation id="5042282098504489593">Abra as configurações para conectar o <ph name="USB_DEVICE_NAME" /> ao Linux</translation>
 <translation id="5043913660911154449">Ou especifique a impressora PPD <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="504561833207953641">Abrindo em uma sessão de navegador existente.</translation>
@@ -5630,7 +5629,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
     <ph name="BEGIN_BOLD" />Observação:<ph name="END_BOLD" /> o sistema será reinicializado durante o processo.</translation>
 <translation id="7828731929332799387">Essa ação excluirá todos os cookies e dados de sites disponíveis em contextos de terceiros. Quer continuar?</translation>
 <translation id="7829877209233347340">Peça a um pai/mãe para se conectar e permitir a adição de uma conta escolar</translation>
-<translation id="7830594666202422257">Conectar ao Linux</translation>
 <translation id="7831491651892296503">Erro ao configurar a rede</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Horário de término</translation>

@@ -433,6 +433,7 @@
 <translation id="576453121877257266">Գիշերային ռեժիմը միացված է</translation>
 <translation id="5769373120130404283">Գաղտնիության էկրան</translation>
 <translation id="5777841717266010279">Դադարեցնե՞լ էկրանի համօգտագործումը:</translation>
+<translation id="5790085346892983794">Հաջողվեց</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
@@ -529,6 +530,7 @@
 <translation id="6818242057446442178">Մեկ բառով հետ</translation>
 <translation id="6820676911989879663">Ընդմիջեք</translation>
 <translation id="6857811139397017780">Ակտիվացնել <ph name="NETWORKSERVICE" /> ցանցը</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Մնաց 1 թիվ}one{Մնաց # թիվ}other{Մնաց # թիվ}}</translation>
 <translation id="6878400149835617132">Դյուրանցումն անջատված է</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6910714959251846841">Այս թարմացումը տեղադրելու համար անհրաժեշտ է վերակայել սարքի կարգավորումները գործարանային տարբերակով։ Իմանալ ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին։</translation>

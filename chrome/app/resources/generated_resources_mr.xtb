@@ -893,7 +893,7 @@
 <translation id="2046702855113914483">रामेन</translation>
 <translation id="204706822916043810">व्हर्च्युअल मशीन तपासत आहे</translation>
 <translation id="2048182445208425546">तुमच्या नेटवर्क रहदारी ॲक्सेस करा</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> च्‍या '<ph name="DEVICE_NAME" />' या डिव्‍हाइससाठी Nearby सह शेअरिंग याची सेटिंग्ज.</translation>
+<translation id="2048243703055695889"><ph name="USER_EMAIL" /> च्‍या '<ph name="DEVICE_NAME" />' या डिव्‍हाइससाठी Nearby सह शेअरिंग ची सेटिंग्ज.</translation>
 <translation id="2048653237708779538">कृती उपलब्ध नाही</translation>
 <translation id="204914487372604757">शॉर्टकट तयार करा </translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -3339,7 +3339,6 @@
 <translation id="5039696241953571917">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5040823038948176460">अतिरिक्त आशय सेटिंग्ज</translation>
-<translation id="5042282098504489593">Linux शी <ph name="USB_DEVICE_NAME" /> कनेक्ट करण्यासाठी सेटिंग्ज उघडा</translation>
 <translation id="5043913660911154449">किंवा तुमची PPD नमूद करा <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="504561833207953641">अस्तित्वात असलेल्या ब्राउझर सेशनमध्ये उघडत आहे.</translation>
@@ -5623,7 +5622,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BEGIN_BOLD" />सूचना:<ph name="END_BOLD" /> प्रक्रियेदरम्यान सिस्टम रीबूट होईल.</translation>
 <translation id="7828731929332799387">हे तृतीय पक्ष संदर्भात उपलब्ध असलेल्या कुकी आणि साइट हटवेल. तुम्हाला पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="7829877209233347340">शाळा खाते जोडण्याची परवानगी देण्यासाठी, पालकाला साइन इन करण्यास सांगा</translation>
-<translation id="7830594666202422257">Linux शी कनेक्ट करा</translation>
 <translation id="7831491651892296503">नेटवर्क कॉन्फिगर करताना एरर आली</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">संपण्याची वेळ</translation>

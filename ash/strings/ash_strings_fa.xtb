@@ -30,7 +30,7 @@
 <translation id="1252999807265626933">در حال شارژ شدن از <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">‏?‎What's the weather (آب‌وهوا چطور است؟)</translation>
 <translation id="1267032506238418139">تغییر میان‌بر</translation>
-<translation id="1270290102613614947">صفحه‌کلید روی صفحه غیرفعال شد</translation>
+<translation id="1270290102613614947">صفحه‌کلید مجازی غیرفعال شد</translation>
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1275285675049378717">درحال تأمین برق <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
@@ -76,7 +76,7 @@
 <translation id="1709762881904163296">«تنظیمات شبکه»</translation>
 <translation id="1743570585616704562">شناسایی نشد</translation>
 <translation id="1746730358044914197">روش‌های ورودی توسط سرپرستتان پیکربندی می‌شوند.</translation>
-<translation id="1747827819627189109">صفحه‌کلید روی صفحه فعال شد</translation>
+<translation id="1747827819627189109">صفحه‌کلید مجازی فعال شد</translation>
 <translation id="1761222317188459878">تغییر وضعیت اتصال شبکه. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">پیمایش به راست</translation>
 <translation id="1776485282219497802">«حالت تاریک» روشن است.</translation>
@@ -148,7 +148,7 @@
 <translation id="2473177541599297363">تأیید وضوح</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
-<translation id="2484513351006226581">برای تغییر طرح‌بندی صفحه‌کلید، <ph name="KEYBOARD_SHORTCUT" /> را فشار دهید.</translation>
+<translation id="2484513351006226581">برای تغییر جانمایی صفحه‌کلید، <ph name="KEYBOARD_SHORTCUT" /> را فشار دهید.</translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
 <translation id="2509468283778169019">‏CAPS LOCK روشن است</translation>
 <translation id="2517829236324128850">نمایش تنظیمات حالت تاریک</translation>
@@ -433,6 +433,7 @@
 <translation id="576453121877257266">«نور شب» روشن است.</translation>
 <translation id="5769373120130404283">صفحه حریم‌خصوصی</translation>
 <translation id="5777841717266010279">هم‌رسانی صفحه‌نمایش متوقف شود؟</translation>
+<translation id="5790085346892983794">موفق شدید</translation>
 <translation id="5820394555380036790">‏سیستم‌عامل Chromium </translation>
 <translation id="5837036133683224804">توقف <ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">خاموش</translation>
@@ -465,7 +466,7 @@
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
 <translation id="607652042414456612">رایانه شما توسط دستگاه‌های بلوتوث نزدیک قابل شناسایی است و با نام «<ph name="NAME" />» و آدرس <ph name="ADDRESS" /> نشان داده می‌شود</translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
-<translation id="615957422585914272">نمایش صفحه‌کلید روی صفحه</translation>
+<translation id="615957422585914272">نمایش صفحه‌کلید مجازی</translation>
 <translation id="6164005077879661055">با حذف این کاربر نظارت‌شده، کلیه فایل‌ها و داده‌های محلی مربوط به کاربر نظارت‌شده برای همیشه حذف خواهند شد. وب‌سایت‌های بازدید شده و تنظیمات این کاربر نظارت‌شده همچنان برای مدیر در <ph name="MANAGEMENT_URL" /> قابل مشاهده خواهد بود.</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="622484624075952240">پیکان پایین</translation>
@@ -564,7 +565,7 @@
 <translation id="7262906531272962081">ایجاد یادآوری</translation>
 <translation id="7303365578352795231">درحال پاسخ دادن در دستگاه دیگر.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7348093485538360975">صفحه‌کلید روی صفحه</translation>
+<translation id="7348093485538360975">صفحه‌کلید مجازی</translation>
 <translation id="735745346212279324">‏VPN قطع است</translation>
 <translation id="7377169924702866686">‏Caps Lock روشن است.</translation>
 <translation id="7378594059915113390">کنترل‌های رسانه</translation>

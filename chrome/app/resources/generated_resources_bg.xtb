@@ -3341,7 +3341,6 @@
 <translation id="5039696241953571917">Преглеждайте и управлявайте запазените пароли в профила си в Google</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5040823038948176460">Допълнителни настройки за съдържанието</translation>
-<translation id="5042282098504489593">Отворете настройките, за да свържете <ph name="USB_DEVICE_NAME" /> с Linux</translation>
 <translation id="5043913660911154449">Или посочете PPD файла за принтера си. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="504561833207953641">Отваря се в съществуваща сесия на браузъра.</translation>
@@ -5627,7 +5626,6 @@
     <ph name="BEGIN_BOLD" />Забележка:<ph name="END_BOLD" />  Системата ще се рестартира по време на процеса.</translation>
 <translation id="7828731929332799387">Така ще бъдат изтрити всички „бисквитки“ и данни за сайтове, налични в контексти на трети страни. Искате ли да продължите?</translation>
 <translation id="7829877209233347340">Поискайте от родител да влезе в профила си, за да разреши добавянето на училищен профил</translation>
-<translation id="7830594666202422257">Свързване с Linux</translation>
 <translation id="7831491651892296503">Грешка при конфигурирането на мрежата</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Краен час</translation>

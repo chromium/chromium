@@ -1457,11 +1457,6 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
       La string puede contener las variables <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> o <ph name="LOCATION_PLACEHOLDER" />, que se reemplazarán con valores del dispositivo antes de usarse como nombre de host. La sustitución resultante debe ser un nombre de host válido (según RFC 1035, sección 3.1).
 
       Si no se establece esta política, o si el valor que se obtiene después de la sustitución no es un nombre de host válido, no se establecerá ningún nombre de host en la solicitud de DHCP. </translation>
-<translation id="3051089299923124309">Si habilitas la política, se permitirá que el subcontenido de terceros de una página abra una ventana emergente de autenticación básica de HTTP.
-
-       Si la inhabilitas o no la estableces, el subcontenido de terceros no podrá abrir una ventana emergente de autenticación básica de HTTP.
-
-      Esta política suele estar inhabilitada para ofrecer protección frente a la suplantación de identidad (phishing).</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo apliquen la transferencia de ADB</translation>
 <translation id="3069958900488014740">Permite desactivar la optimización de WPAD (Web Proxy Auto-Discovery) en <ph name="PRODUCT_NAME" />.

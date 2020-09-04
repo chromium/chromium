@@ -1440,11 +1440,6 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
       De tekenreeks kan de variabelen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> en <ph name="LOCATION_PLACEHOLDER" /> bevatten, die worden vervangen door waarden op het apparaat voordat deze hostnaam wordt gebruikt. Deze vervanging moet een geldige hostnaam opleveren (volgens RFC 1035, artikel 3.1).
 
       Als dit beleid niet is ingesteld of als de vervanging geen geldige hostnaam oplevert, wordt er geen hostnaam ingesteld in het DHCP-verzoek. </translation>
-<translation id="3051089299923124309">Als je het beleid inschakelt, wordt subcontent van derden op een pagina toegestaan om een pop-upvenster voor algemene HTTP-verificatie te openen.
-
-       Als je het beleid uitschakelt of niet instelt, kan subcontent van derden geen pop-upvenster voor algemene HTTP-verificatie openen.
-
-      Dit beleid is meestal uitgeschakeld als beveiliging tegen phishing.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Toestaan dat gekoppelde gebruikers van dit apparaat ADB-sideloading gebruiken</translation>
 <translation id="3069958900488014740">Hiermee kan WPAD-optimalisatie (Web Proxy Auto-Discovery) worden uitgeschakeld in <ph name="PRODUCT_NAME" />.

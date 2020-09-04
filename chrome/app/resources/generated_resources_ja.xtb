@@ -894,6 +894,7 @@
 <translation id="2046702855113914483">ラーメン</translation>
 <translation id="204706822916043810">仮想マシンを確認しています</translation>
 <translation id="2048182445208425546">ユーザーのネットワーク トラフィックへのアクセス</translation>
+<translation id="2048243703055695889"><ph name="USER_EMAIL" /> さんのデバイス「<ph name="DEVICE_NAME" />」のニアバイシェア設定</translation>
 <translation id="2048653237708779538">操作できません</translation>
 <translation id="204914487372604757">ショートカットを作成</translation>
 <translation id="2050339315714019657">縦</translation>
@@ -1180,6 +1181,7 @@
 <translation id="2384436799579181135">エラーが発生しました。プリンタを確認してもう一度お試しください。</translation>
 <translation id="2387052489799050037">ホームに移動</translation>
 <translation id="2387458720915042159">プロキシ接続タイプ</translation>
+<translation id="2390347491606624519">プロキシに接続できません。もう一度ログインしてください</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2391419135980381625">標準フォント</translation>
 <translation id="2392163307141705938">保護者が設定した <ph name="IDS_SHORT_PRODUCT_NAME" /> の利用時間の上限に達しました。</translation>
@@ -3325,6 +3327,7 @@
 <translation id="5017643436812738274">テキスト カーソルを使ってページ間を移動できます。オフにするには Ctrl+検索+7 キーを押します。</translation>
 <translation id="5018207570537526145">拡張機能のウェブサイトを開く</translation>
 <translation id="5018526990965779848">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
+<translation id="5019392775062123007">付近のデバイスに「<ph name="DEVICE_NAME" />」として表示されています</translation>
 <translation id="5021750053540820849">まだ更新されていません</translation>
 <translation id="5026806129670917316">Wi-Fi をオンにする</translation>
 <translation id="5026874946691314267">今後このメッセージを表示しない</translation>
@@ -3339,7 +3342,6 @@
 <translation id="5039696241953571917">Google アカウントでの保存パスワードの表示と管理</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5040823038948176460">その他のコンテンツの設定</translation>
-<translation id="5042282098504489593"><ph name="USB_DEVICE_NAME" /> を Linux に接続する設定を開きます</translation>
 <translation id="5043913660911154449">または、プリンタの PPD を指定してください（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="504561833207953641">既存のブラウザ セッションで開いています。</translation>
@@ -3414,6 +3416,7 @@
 <translation id="5133483819862530305">日の入りから日の出まで</translation>
 <translation id="5135085122826131075">「OK Google」と話すとアシスタントにアクセスできます。</translation>
 <translation id="5135533361271311778">ブックマークの項目を作成できませんでした。</translation>
+<translation id="5136343472380336530">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">このアイテムを削除</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />、<ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 検索</translation>
 <translation id="5139823398361067371">セキュリティ キーの PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットする必要があります。</translation>
@@ -4421,6 +4424,7 @@
 <translation id="6342069812937806050">たった今</translation>
 <translation id="6344170822609224263">ネットワーク接続のリストにアクセスする</translation>
 <translation id="6344576354370880196">保存済みのプリンタ</translation>
+<translation id="6345418402353744910">管理者がネットワークを設定できるよう、プロキシ「<ph name="PROXY" />」のユーザー名とパスワードを指定してください</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
 <translation id="6349170655202535379">同期が機能していません。ログアウトして再度ログインしてみてください。</translation>
 <translation id="6351063337294363751">このメニューで閲覧データを削除できます</translation>
@@ -4778,6 +4782,7 @@
 <translation id="6810613314571580006">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能が無効になっている場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="6810768462515084623">パスワードの有効期限が切れているようです。別のデバイスで新しいパスワードを設定して、もう一度お試しください。</translation>
 <translation id="6811034713472274749">ページを表示できます</translation>
+<translation id="6811332638216701903">DHCP ホスト名</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> を root で実行することはできません。</translation>
 <translation id="6812841287760418429">変更を保持</translation>
 <translation id="6817174620439930047">サイトがシステム エクスクルーシブ メッセージを使用して MIDI デバイスにアクセスする際に確認する（推奨）</translation>
@@ -4855,6 +4860,7 @@
 <translation id="6903907808598579934">同期を有効にする</translation>
 <translation id="6904344821472985372">ファイル アクセス権を取り消す</translation>
 <translation id="6904655473976120856">終了するには [アプリ] ボタンを押します</translation>
+<translation id="6909422577741440844">このデバイスから受信しますか？</translation>
 <translation id="6910211073230771657">削除済み</translation>
 <translation id="691024665142758461">複数ファイルのダウンロード</translation>
 <translation id="691106080621596509"><ph name="SITE_GROUP_NAME" /> とその下位のすべてのサイトにより保存されたすべてのデータと Cookie、インストールされたアプリが削除されます</translation>
@@ -5620,7 +5626,6 @@
     <ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> この処理中、システムの再起動が行われます。</translation>
 <translation id="7828731929332799387">サードパーティのコンテキストで使用される Cookie とサイトデータがすべて削除されます。続行しますか？</translation>
 <translation id="7829877209233347340">保護者の方に、ログインして学校用アカウントの追加を許可してもらってください。</translation>
-<translation id="7830594666202422257">Linux に接続</translation>
 <translation id="7831491651892296503">ネットワークの設定中にエラーが発生しました</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">終了時間</translation>

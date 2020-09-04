@@ -1445,11 +1445,6 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
       Dize; <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> değişkenlerini içerebilir. Ana makine adı olarak kullanılmadan önce cihazda bu değişkenlerin yerine değerler getirilir. Bu işlemin sonucunda ortaya çıkan değişikliğin geçerli bir ana makine adı olması gerekir (RFC 1035, bölüm 3.1 uyarınca).
 
       Bu politika ayarlanmazsa veya değişiklikten sonraki değer, geçerli bir ana makine adı değilse DHCP isteğinde ana makine adı ayarlanmaz. </translation>
-<translation id="3051089299923124309">Politikanın Etkin değerine ayarlanması, sayfadaki üçüncü taraf alt içeriğinin bir HTTP Basic Auth pop-up'ı açmasına izin verir.
-
-       Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf alt içeriğinin, HTTP Basic Auth pop-up'ı açması engellenir.
-
-      Genellikle bu politika kimlik avına karşı bir savunma olarak Devre dışıdır.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Bu cihazın ilişkili kullanıcılarının ADB başka cihazdan yükleme işlevini kullanmalarına izin verir</translation>
 <translation id="3069958900488014740"><ph name="PRODUCT_NAME" /> ürününde WPAD (Otomatik Web Proxy Keşfi) optimizasyonunu kapatmanıza olanak verir.
@@ -4183,6 +4178,11 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bu politikalar, kullanıcı belirli bir süre boyunca hiçbir şey yapmadığında <ph name="PRODUCT_OS_NAME" /> sisteminin çalışma biçimini yapılandırmanıza olanak verir.</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS modunu devre dışı bırak</translation>
+<translation id="7033778618670823541">Bu politika ayarlanırsa güvenli olmayan kaynaklarda güvenlik kısıtlamalarının geçerli olmayacağı kaynakların (URL'ler) veya ana makine adı kalıplarının (örneğin, *.example.com) bir listesi belirtilir. Kuruluşlar, TLS dağıtamayan eski uygulamalar için kaynak ayarlayabilir veya dahili web geliştirme için hazırlık sunucusu kurulumu yapabilir. Böylece geliştiriciler hazırlık sunucusunda TLS dağıtmak zorunda kalmadan güvenli içerik gerektiren özellikleri test edebilir. Bu politika, kaynağın adres çubuğunda "Güvenli Değil" olarak etiketlenmesini de önler.
+
+      Bu politikada bir URL listesi ayarlamakla, aynı URL'lerin virgülle ayrılmış bir listesine --unsafely-treat-insecure-origin-as-secure komut satırı işaretini ayarlamak aynı sonucu verir. Bu politika ayarlanırsa komut satırı işaretini ve UnsafelyTreatInsecureOriginAsSecure politikasını geçersiz kılar.
+
+      Güvenli içerikler hakkında daha fazla bilgi için Secure Contexts sayfasına (https://www.w3.org/TR/secure-contexts) bakabilirsiniz.</translation>
 <translation id="7037812781389976160"><ph name="PRODUCT_OS_NAME" /> rafının konumunu kontrol eder.
 
       Bu politika "Alt" olarak ayarlanırsa raf ekranın alt tarafına yerleştirilir.

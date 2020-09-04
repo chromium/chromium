@@ -388,6 +388,7 @@
 <translation id="5433691172869980887">பயனர்பெயர் நகலெடுக்கப்பட்டது</translation>
 <translation id="54401264925851789">பக்க பாதுகாப்புத் தகவல்</translation>
 <translation id="5443952882982198570">கிரெடிட் கார்டுகள்</translation>
+<translation id="5457226814769348910">ஆஃப்லைன் பதிப்பைத் திற</translation>
 <translation id="5457907402803865181">கடவுச்சொற்களை ஒத்திசைப்பதில் பிழை.</translation>
 <translation id="5489208564673669003">அனைத்துத் தளங்களுக்குமான குக்கீகளையும் நிர்வகிக்க, <ph name="BEGIN_LINK" />குக்கீ அமைப்புகளைப்<ph name="END_LINK" /> பார்க்கவும்.</translation>
 <translation id="5490005495580364134">அனைத்து குக்கீகளையும் தடு (பரிந்துரைக்கப்படவில்லை)</translation>
@@ -458,6 +459,7 @@
 <translation id="6187302354554850004">கடைசியாக ஒத்திசைத்தது: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">படிக்காதவை</translation>
 <translation id="6196207969502475924">குரல் தேடல்</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} தாவலை மூடு}other{{COUNT} தாவல்களை மூடு}}</translation>
 <translation id="6219688215832490856">எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="6254066287920239840">உலாவியில் திறப்பதற்குப் பதிலாக இணைப்புகளைப் பயன்பாட்டில் திற.</translation>
 <translation id="6255097610484507482">கடன் அட்டையைத் திருத்துக</translation>
@@ -691,7 +693,7 @@
 <translation id="8756969031206844760">கடவுச்சொல்லைப் புதுப்பிக்கவா?</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
 <translation id="8803639129939845298">பாதுகாப்பானது</translation>
-<translation id="8820817407110198400">புக்மார்க்குகள்</translation>
+<translation id="8820817407110198400">புத்தகக்குறிகள்</translation>
 <translation id="8840513115188359703">உங்கள் Google கணக்கிலிருந்து வெளியேறமாட்டீர்கள்.</translation>
 <translation id="8870413625673593573">சமீபத்தில் மூடியவை</translation>
 <translation id="8881801611828450202">இந்தப் படத்தை <ph name="SEARCH_ENGINE" /> இல் தேடு</translation>

@@ -894,6 +894,7 @@
 <translation id="2046702855113914483">رامن</translation>
 <translation id="204706822916043810">جارٍ التحقُّق من الآلة الافتراضية</translation>
 <translation id="2048182445208425546">الدخول إلى عدد زيارات شبكتك</translation>
+<translation id="2048243703055695889">إعدادات المشاركة عن قرب للجهاز "<ph name="DEVICE_NAME" />" الخاص بمستخدم حساب <ph name="USER_EMAIL" /></translation>
 <translation id="2048653237708779538">الإجراء غير متاح</translation>
 <translation id="204914487372604757">إنشاء اختصار</translation>
 <translation id="2050339315714019657">رأسي</translation>
@@ -1180,6 +1181,7 @@
 <translation id="2384436799579181135">حدث خطأ ما. يُرجى التحقق من الطابعة وإعادة المحاولة.</translation>
 <translation id="2387052489799050037">الانتقال إلى الشاشة الرئيسية</translation>
 <translation id="2387458720915042159">نوع الاتصال بالخادم الوكيل</translation>
+<translation id="2390347491606624519">يُرجى تسجيل الدخول مرة أخرى بسبب تعذُّر الاتصال بالخادم الوكيل</translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
 <translation id="2391419135980381625">الخط العادي</translation>
 <translation id="2392163307141705938">لقد وصلت إلى الحدّ الزمني الذي ضبطه أحد الوالدَين لمنتج <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3322,6 +3324,7 @@
 <translation id="5017643436812738274">‏يمكنك التنقُّل بين الصفحات باستخدام مؤشر النص، ويمكنك الضغط على Ctrl+Search+7 لإيقافه.</translation>
 <translation id="5018207570537526145">فتح الموقع الإلكتروني الخاص بالإضافة</translation>
 <translation id="5018526990965779848">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يمكنك المساعدة في تحسين تجربة نظام التشغيل Android من خلال إرسال بيانات استخدام التطبيق وبيانات الجهاز وبيانات التشخيص تلقائيًا إلى Google. وسيساعد ذلك في تعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. وسيستفيد أيضًا مطوّرو التطبيقات والشركاء في Google، مثل مطوّري البرامج المتوافقة مع Android، من بعض البيانات المجمّعة. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google.</translation>
+<translation id="5019392775062123007">مرئي للأجهزة القريبة باسم <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">لم يتم تحديثه بعد</translation>
 <translation id="5026806129670917316">‏تفعيل شبكة Wi-Fi</translation>
 <translation id="5026874946691314267">عدم إظهار هذه الإشعارات مرة أخرى</translation>
@@ -3336,7 +3339,6 @@
 <translation id="5039696241953571917">‏يمكنك الاطّلاع على كلمات المرور المحفوظة وإدارتها في حسابك على Google.</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5040823038948176460">إعدادات المحتوى الإضافية</translation>
-<translation id="5042282098504489593">‏يُرجى الانتقال إلى "الإعدادات" لربط <ph name="USB_DEVICE_NAME" /> بنظام التشغيل Linux.</translation>
 <translation id="5043913660911154449">‏أو حدِّد ملف PPD للطابعة <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">كلمة مرور غير صحيحة</translation>
 <translation id="504561833207953641">جارٍ الفتح في جلسة المتصفِّح الحالي.</translation>
@@ -3411,6 +3413,7 @@
 <translation id="5133483819862530305">من غروب الشمس إلى شروقها</translation>
 <translation id="5135085122826131075">‏الوصول إلى "مساعد Google" عند قول "Ok Google"</translation>
 <translation id="5135533361271311778">تعذر إنشاء عنصر إشارة.</translation>
+<translation id="5136343472380336530">تأكَّد من فتح قفل كلا الجهازَين وقرِّبهما من بعضهما وفعِّل البلوتوث فيهما. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">حذف هذا العنصر</translation>
 <translation id="5139112070765735680">البحث عن <ph name="QUERY_NAME" /> في <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">يُرجى إدخال رقم التعريف الشخصي لمفتاح الأمان. في حال كنت لا تعرف رقم التعريف الشخصي، عليك إعادة ضبط مفتاح الأمان.</translation>
@@ -4420,6 +4423,7 @@
 <translation id="6342069812937806050">الآن</translation>
 <translation id="6344170822609224263">قائمة الدخول لاتصالات الشبكة</translation>
 <translation id="6344576354370880196">الطابعات المحفوظة</translation>
+<translation id="6345418402353744910">يطلب الخادم الوكيل <ph name="PROXY" /> اسم المستخدم وكلمة المرور الخاصَّين بك حتى يتمكّن المشرف من إعداد الشبكة.</translation>
 <translation id="6349101878882523185">تثبيت <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">المزامنة لا تعمل. جرّب الخروج وتسجيل الدخول مرة أخرى.</translation>
 <translation id="6351063337294363751">يمكنك محو بيانات التصفح من هذه القائمة</translation>
@@ -4777,6 +4781,7 @@
 <translation id="6810613314571580006">يمكنك تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية باستخدام بيانات الاعتماد المخزّنة. وعندما تكون هذه الميزة غير مفعّلة، سيُطلب منك التحقّق من بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني.</translation>
 <translation id="6810768462515084623">عفوًا، يبدو أن كلمة المرور منتهية الصلاحية. يُرجى تجديدها على جهاز آخر وإعادة المحاولة.</translation>
 <translation id="6811034713472274749">الصفحة جاهزة للعرض</translation>
+<translation id="6811332638216701903">‏اسم مضيف DHCP</translation>
 <translation id="6812349420832218321">لا يمكن تشغيل <ph name="PRODUCT_NAME" /> كجذر.</translation>
 <translation id="6812841287760418429">الإبقاء على التغييرات</translation>
 <translation id="6817174620439930047">‏طلب الإذن عند محاولة أحد المواقع استخدام رسائل حصرية للنظام للوصول إلى أجهزة MIDI (موصى به)</translation>
@@ -4854,6 +4859,7 @@
 <translation id="6903907808598579934">تفعيل المزامنة</translation>
 <translation id="6904344821472985372">إلغاء الوصول إلى الملف</translation>
 <translation id="6904655473976120856">اضغط زر التطبيق للخروج</translation>
+<translation id="6909422577741440844">هل تريد استلام الملفات من هذا الجهاز؟</translation>
 <translation id="6910211073230771657">تم الحذف</translation>
 <translation id="691024665142758461">تنزيل ملفات متعددة</translation>
 <translation id="691106080621596509">سيؤدي هذا الإجراء إلى محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="SITE_GROUP_NAME" /> وتطبيقه المثبّت وأيّ مواقع إلكترونية ضمن النطاق.</translation>
@@ -5619,7 +5625,6 @@
     <ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" />  ستتم إعادة تشغيل النظام أثناء العملية.</translation>
 <translation id="7828731929332799387">سيؤدي هذا إلى حذف جميع ملفات تعريف الارتباط وبيانات الموقع الإلكتروني المتوفرة في سياقات تابعة لجهات خارجية. هل تريد المواصلة؟</translation>
 <translation id="7829877209233347340">اطلب من أحد الوالدَين تسجيل الدخول لمنح إذن إضافة حساب المدرسة.</translation>
-<translation id="7830594666202422257">‏الربط بنظام التشغيل Linux</translation>
 <translation id="7831491651892296503">حدث خطأ أثناء تهيئة الشبكة</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">وقت الانتهاء</translation>

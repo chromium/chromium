@@ -433,6 +433,7 @@
 <translation id="576453121877257266">야간 조명이 켜졌습니다.</translation>
 <translation id="5769373120130404283">개인정보 보호 화면</translation>
 <translation id="5777841717266010279">화면 공유를 중단하시겠습니까?</translation>
+<translation id="5790085346892983794">완료</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
 <translation id="5860033963881614850">사용 안함</translation>
@@ -529,6 +530,7 @@
 <translation id="6818242057446442178">한 단어 뒤로 이동</translation>
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> 활성화</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{1자리 남음}other{#자리 남음}}</translation>
 <translation id="6878400149835617132">바로가기 사용 중지됨</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6910714959251846841">업데이트하려면 기기에서 파워워시를 실행해야 합니다. 최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>

@@ -3340,7 +3340,6 @@
 <translation id="5039696241953571917">Находите сохраненные пароли и управляйте ими в аккаунте Google.</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5040823038948176460">Дополнительные настройки контента</translation>
-<translation id="5042282098504489593">Откройте настройки, чтобы подключить устройство <ph name="USB_DEVICE_NAME" /> к Linux</translation>
 <translation id="5043913660911154449">Или укажите PPD-файл для принтера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="504561833207953641">Окно или вкладка откроются в текущем сеансе браузера.</translation>
@@ -5625,7 +5624,6 @@
     <ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Система перезагрузится во время этого процесса.</translation>
 <translation id="7828731929332799387">Все сторонние файлы cookie и данные сайтов будут удалены. Продолжить?</translation>
 <translation id="7829877209233347340">Попросите родителя войти в систему, чтобы дать вам разрешение на добавление учебного аккаунта.</translation>
-<translation id="7830594666202422257">Подключить к Linux</translation>
 <translation id="7831491651892296503">Ошибка при настройке сети</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Время окончания</translation>

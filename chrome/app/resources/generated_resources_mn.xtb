@@ -3336,7 +3336,6 @@
 <translation id="5039696241953571917">Google Бүртгэлдээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5040823038948176460">Контентын нэмэлт тохиргоо</translation>
-<translation id="5042282098504489593"><ph name="USB_DEVICE_NAME" />-г Linux-д холбохын тулд Тохиргоог нээнэ үү</translation>
 <translation id="5043913660911154449">Эсвэл хэвлэгчийнхээ PPD-г заах <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Буруу нууц үг</translation>
 <translation id="504561833207953641">Ашиглалтад байгаа хөтчийн харилцан үйлдэлд нээж байна.</translation>
@@ -5620,7 +5619,6 @@
     <ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" />  Системийг боловсруулалтын үед дахин асаах болно.</translation>
 <translation id="7828731929332799387">Энэ нь гуравдагч талын хам сэдэв дээр боломжтой бүх күүки, сайтын өгөгдлийг устгана. Та үргэлжлүүлмээр байна уу?</translation>
 <translation id="7829877209233347340">Эцэг эхээсээ нэвтэрч, сургуулийн бүртгэл нэмэх зөвшөөрөл олгохыг хүснэ үү</translation>
-<translation id="7830594666202422257">Linux-д холбогдох</translation>
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Дуусах цаг</translation>

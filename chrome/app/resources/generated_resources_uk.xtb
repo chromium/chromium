@@ -3342,7 +3342,6 @@
 <translation id="5039696241953571917">Переглядайте збережені паролі й керуйте ними в обліковому записі Google</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5040823038948176460">Додаткові налаштування контенту</translation>
-<translation id="5042282098504489593">Відкрийте налаштування, щоб під’єднати <ph name="USB_DEVICE_NAME" /> до Linux</translation>
 <translation id="5043913660911154449">Або виберіть файл PPD принтера <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="504561833207953641">Відкривається в наявному сеансі веб-переглядача.</translation>
@@ -5627,7 +5626,6 @@
     <ph name="BEGIN_BOLD" />Примітка.<ph name="END_BOLD" /> Під час процедури система перезавантажиться.</translation>
 <translation id="7828731929332799387">Буде видалено всі файли cookie та дані із сайтів, доступні в ресурсах третіх сторін. Продовжити?</translation>
 <translation id="7829877209233347340">Щоб додати обліковий запис закладу освіти, попросіть когось із батьків увійти в їхній обліковий запис</translation>
-<translation id="7830594666202422257">Підключити до Linux</translation>
 <translation id="7831491651892296503">Помилка налаштування мережі</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Час завершення</translation>

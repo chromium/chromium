@@ -894,6 +894,7 @@
 <translation id="2046702855113914483">라면</translation>
 <translation id="204706822916043810">가상 머신 확인 중</translation>
 <translation id="2048182445208425546">네트워크 트래픽에 액세스</translation>
+<translation id="2048243703055695889"><ph name="USER_EMAIL" />님의 기기 '<ph name="DEVICE_NAME" />'에 관한 Nearby Share 설정</translation>
 <translation id="2048653237708779538">실행할 수 없는 작업</translation>
 <translation id="204914487372604757">바로가기 만들기</translation>
 <translation id="2050339315714019657">세로 방향</translation>
@@ -1180,6 +1181,7 @@
 <translation id="2384436799579181135">오류가 발생했습니다. 프린터를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="2387052489799050037">홈으로 이동</translation>
 <translation id="2387458720915042159">프록시 연결 유형</translation>
+<translation id="2390347491606624519">프록시에 연결할 수 없음: 다시 로그인해 주세요</translation>
 <translation id="2391082728065870591">의견 보고서 보내기</translation>
 <translation id="2391419135980381625">표준 글꼴</translation>
 <translation id="2392163307141705938">부모님이 설정한 <ph name="IDS_SHORT_PRODUCT_NAME" /> 사용 제한 시간에 도달했습니다.</translation>
@@ -3323,6 +3325,7 @@
 <translation id="5017643436812738274">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 Ctrl+Search+7을 누르세요.</translation>
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
 <translation id="5018526990965779848">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
+<translation id="5019392775062123007">주변 기기에 표시되는 이름: <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">아직 업데이트되지 않음</translation>
 <translation id="5026806129670917316">Wi-Fi 사용</translation>
 <translation id="5026874946691314267">이 메시지를 다시 표시하지 않음</translation>
@@ -3337,7 +3340,6 @@
 <translation id="5039696241953571917">Google 계정에 저장된 비밀번호 보기 및 관리</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040823038948176460">추가 콘텐츠 설정</translation>
-<translation id="5042282098504489593"><ph name="USB_DEVICE_NAME" />을(를) Linux에 연결하려면 설정으로 이동하세요.</translation>
 <translation id="5043913660911154449">또는 프린터 PPD 지정 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
@@ -3412,6 +3414,7 @@
 <translation id="5133483819862530305">일몰에서 일출까지</translation>
 <translation id="5135085122826131075">"Ok Google"이라고 말하여 어시스턴트에 액세스합니다.</translation>
 <translation id="5135533361271311778">북마크 항목을 만들지 못했습니다.</translation>
+<translation id="5136343472380336530">두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 사용 설정되어 있어야 합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">이 항목 삭제</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 검색</translation>
 <translation id="5139823398361067371">보안 키의 PIN을 입력하세요. PIN을 모른다면 보안 키를 재설정해야 합니다.</translation>
@@ -4419,6 +4422,7 @@
 <translation id="6342069812937806050">완료됨</translation>
 <translation id="6344170822609224263">네트워크 연결 목록에 액세스</translation>
 <translation id="6344576354370880196">저장한 프린터</translation>
+<translation id="6345418402353744910">관리자가 네트워크를 구성할 수 있도록 <ph name="PROXY" /> 프록시의 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6349170655202535379">동기화가 작동하지 않습니다. 로그아웃한 후 다시 로그인하세요.</translation>
 <translation id="6351063337294363751">이 메뉴에서 인터넷 사용 기록을 삭제할 수 있습니다.</translation>
@@ -4776,6 +4780,7 @@
 <translation id="6810613314571580006">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="6810768462515084623">죄송합니다. 비밀번호가 만료된 것 같습니다. 다른 기기에서 비밀번호를 갱신한 후 다시 시도해 보세요.</translation>
 <translation id="6811034713472274749">페이지를 볼 수 있음</translation>
+<translation id="6811332638216701903">DHCP 호스트 이름</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />은(는) 루트로 실행할 수 없습니다.</translation>
 <translation id="6812841287760418429">변경사항 유지</translation>
 <translation id="6817174620439930047">사이트에서 시스템 전용 메시지를 사용하여 MIDI 기기에 액세스하려고 할 때 확인(권장)</translation>
@@ -4853,6 +4858,7 @@
 <translation id="6903907808598579934">동기화 사용 설정</translation>
 <translation id="6904344821472985372">파일 액세스 취소</translation>
 <translation id="6904655473976120856">앱 버튼을 눌러 종료하세요.</translation>
+<translation id="6909422577741440844">이 기기에서 파일을 수신하시겠습니까?</translation>
 <translation id="6910211073230771657">삭제됨</translation>
 <translation id="691024665142758461">여러 파일 다운로드</translation>
 <translation id="691106080621596509"><ph name="SITE_GROUP_NAME" />, 모든 하위 사이트, 설치된 앱에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
@@ -5618,7 +5624,6 @@
     <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 시스템이 절차 진행 중에 재부팅됩니다.</translation>
 <translation id="7828731929332799387">타사와 관련하여 제공되는 모든 쿠키 및 사이트 데이터가 삭제됩니다. 계속하시겠습니까?</translation>
 <translation id="7829877209233347340">부모님에게 로그인하여 학교 계정을 추가할 권한을 부여해 달라고 요청하세요.</translation>
-<translation id="7830594666202422257">Linux에 연결</translation>
 <translation id="7831491651892296503">네트워크를 설정하는 중에 오류가 발생했습니다</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">종료 시간</translation>

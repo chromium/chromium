@@ -434,6 +434,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="576453121877257266">Luz nocturna activada.</translation>
 <translation id="5769373120130404283">Pantalla de privacidad</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
+<translation id="5790085346892983794">Completado correctamente</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -530,7 +531,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6818242057446442178">Retroceder por palabra</translation>
 <translation id="6820676911989879663">Haz una pausa</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígito}other{Faltan # dígitos}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta 1 dígito}other{Faltan # dígitos}}</translation>
 <translation id="6878400149835617132">Combinación de teclas desactivada</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta actualización le hará un Powerwash a tu dispositivo. Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>

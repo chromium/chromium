@@ -16,7 +16,6 @@
 <translation id="1105960400813249514">ସ୍କ୍ରିନ୍ କ୍ୟାପ୍‍ଚର୍‌</translation>
 <translation id="1111673857033749125">ଏଠାରେ, ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ସେଭ୍‌ ହୋ‍ଇଥିବା ବୁକ୍‌ମାର୍କ ଦେଖାଯିବ।</translation>
 <translation id="1113597929977215864">ସରଳୀକୃତ ଭ୍ୟୁ ଦେଖାନ୍ତୁ</translation>
-<translation id="1122278879166832009">ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ମୂଳ‌ପୃଷ୍ଠାକୁ ଶୀଘ୍ର ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଏଠାରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1126809382673880764">ବିପଦଜନକ ୱେବସାଇଟ୍, ଡାଉନଲୋଡ୍ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକ ଠାରୁ ଆପଣଙ୍କୁ ରକ୍ଷା କରେ ନାହିଁ। Gmail ଏବଂ Search ପରି ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକରେ ସେଫ୍ ବ୍ରାଉଜିଂ ସୁବିଧା ଉପଲବ୍ଧ ଥିଲେ, ଆପଣ ଏବେ ବି ଏହି ସୁରକ୍ଷା ପାଇବେ।</translation>
 <translation id="1129510026454351943">ବିବରଣୀ: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1ଟି ଡାଉନ୍‍‍ଲୋଡ୍ ବାକି ଅଛି।}other{#ଟି ଡାଉନ୍‍‍ଲୋଡ୍ ବାକି ଅଛି।}}</translation>
@@ -39,7 +38,6 @@
 <translation id="123724288017357924">କ୍ୟାଶ୍ ବିଷୟବସ୍ତୁ ଏଡ଼ାଇ ବର୍ତ୍ତମାନ ପୃଷ୍ଠା ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="124678866338384709">ସାମ୍ପ୍ରତିକ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1258753120186372309">Google ଡୁଡଲ୍: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1260236875608242557">ସନ୍ଧାନ ଓ ଏକ୍ସପ୍ଲୋର୍‌</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ସେୟାର୍ କରିହେଲା ନାହିଁ</translation>
 <translation id="1283039547216852943">ପ୍ରସାରଣ କରିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1291207594882862231">ଇତିବୃତ୍ତି, କୁକୀ, ସାଇଟ୍ ଡାଟା, କ୍ୟାଚିକୁ ଖାଲି କରନ୍ତୁ…</translation>
@@ -588,7 +586,6 @@
 <translation id="5683547024293500885">ଅପଡେଟଗୁଡ଼ିକ ଅଛି ନା ନାହିଁ ତାହା Chrome ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="5686790454216892815">ଫାଇଲ୍‍ର ନାମ ବହୁତ ଲମ୍ବା ଅଟେ</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> ରିଷ୍ଟାର୍ଟ ହେବା ପରେ <ph name="LANGUAGE" /> ବ୍ୟବହାର କରିବ।</translation>
-<translation id="5694049548840660018">ମୂଳପୃଷ୍ଠାକୁ ସହଜରେ ଫେରନ୍ତୁ</translation>
 <translation id="569536719314091526">ଅଧିକ ବିକଳ୍ପ ବଟନ୍‍ରୁ ଏହି ପୃଷ୍ଠାର ଅନୁବାଦ ଯେକୌଣସି ଭାଷାରେ କରନ୍ତୁ</translation>
 <translation id="5696597120588531049">ଡାଟା ଉଲ୍ଲଙ୍ଘନ, ଅସୁରକ୍ଷିତ ୱେବସାଇଟ୍ କିମ୍ବା ଆହୁରି ଅନେକ କିଛିରୁ Chrome ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିପାରିବ</translation>
 <translation id="5697688514913266141">ଆପଣଙ୍କ ଫାଇଲ୍ <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />ରେ ସେଭ୍ କରାଯିବ। <ph name="BEGIN_LINK2" />ସମ୍ପାଦନ କରନ୍ତୁ<ph name="END_LINK2" />।</translation>
@@ -685,7 +682,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ଅଧିକ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ଅଧିକ}}</translation>
 <translation id="6364438453358674297">ଇତିବୃତ୍ତିରୁ ପ୍ରସ୍ତାବକୁ କାଢ଼ି ଦେବେକି?</translation>
 <translation id="6366047038980456022">ଆପଣ ସୁରକ୍ଷିତ ଭାବେ କାମ କରିବା, ତିଆରି କରିବା ଏବଂ ଅନଲାଇନରେ ଏକ୍ସପ୍ଲୋର୍ କରିବା ପାଇଁ ଆବଶ୍ୟକ କରୁଥିବା ସ୍ମାର୍ଟନେସ୍ ଏବଂ ବେଗ <ph name="APP_NAME" />ରେ ଅଛି</translation>
-<translation id="6369229450655021117">ଆପଣ ଏଠାରୁ, ୱେବ୍‌ରେ ସନ୍ଧାନ କରିପାରିବେ, ସାଙ୍ଗମାନଙ୍କ ସହିତ ସେୟାର୍ କରିପାରିବେ ଏବଂ ଖୋଲା ପୃଷ୍ଠାଗୁଡ଼ିକ ଦେଖିପାରିବେ</translation>
 <translation id="6378173571450987352">ବିବରଣୀ: ବ୍ୟବହାର କରାଯାଇଥିବା ଡାଟାର ପରିମାଣ ଅନୁସାରେ କ୍ରମବଦ୍ଧ କରାଯାଇଛି</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖିବା ଦ୍ୱାରା, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ Chrome OS ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" /> ସହିତ ସହମତ ହେଉଛନ୍ତି।</translation>
 <translation id="6381421346744604172">ଡାର୍କ କରାଯାଇଥିବା ୱେବ୍‌ସାଇଟ୍</translation>
@@ -997,7 +993,6 @@
 <translation id="8636825310635137004">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‍ରୁ ନିଜର ଟାବ୍‍ଗୁଡ଼ିକୁ ପ୍ରାପ୍ତ କରିବାକୁ, ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="8641930654639604085">ଅଶ୍ଳୀଳ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8655129584991699539">ଆପଣା Chrome ସେଟିଂସ୍‌ରେ ଡାଟା ଖାଲି କରିପାରିବେ</translation>
-<translation id="8655599981421006542">ନୂଆ ଟାବ୍‌ଗୁଡ଼ିକ ତିଆରି କରିବାକୁ ଏବଂ ପୂର୍ବବର୍ତ୍ତୀ ଟାବ୍‌ଗୁଡ଼ିକୁ ଫେରିବା ପାଇଁ ଏଠାରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="8662811608048051533">ଆପଣଙ୍କୁ ଅଧିକାଂଶ ସାଇଟ୍‌ରୁ ସାଇନ୍ ଆଉଟ୍ କରିଦିଏ।</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}other{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}}</translation>
@@ -1005,7 +1000,6 @@
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8748850008226585750">ଲୁଚାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>
-<translation id="8758557275681689734">ଆପଣଙ୍କର ଖୋଲା ଥିବା ସମସ୍ତ ଟାବ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="8788265440806329501">ନାଭିଗେସନ୍ ଇତିହାସ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="8788968922598763114">ଶେଷରେ ବନ୍ଦ କରାଯାଇଥିବା ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8812260976093120287">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ଥିବା ଉପରୋକ୍ତ ସମର୍ଥିତ ପେମେଣ୍ଟ୍ ଆପ୍ସ ସାହାଯ୍ୟରେ ଆପଣ କେତେକ ୱେବସାଇଟ୍‌ରେ ପେମେଣ୍ଟ କରିପାରିବେ।</translation>

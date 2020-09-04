@@ -3341,7 +3341,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5039696241953571917">Mentett jelszavait megtekintheti és kezelheti Google-fiókjában</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5040823038948176460">További tartalombeállítások</translation>
-<translation id="5042282098504489593">Ha csatlakoztatni szeretné a(z) <ph name="USB_DEVICE_NAME" /> eszközt a Linux rendszerhez, nyissa meg a Beállítások menüt</translation>
 <translation id="5043913660911154449">Vagy adja meg a nyomtatóhoz tartozó PPD-fájlt – <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
 <translation id="504561833207953641">Megnyitás meglévő böngésző-munkamenetben.</translation>
@@ -5628,7 +5627,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
     <ph name="BEGIN_BOLD" />Megjegyzés:<ph name="END_BOLD" /> A rendszer újraindul a folyamat során.</translation>
 <translation id="7828731929332799387">Ezzel törli a harmadik felek kontextusaiban rendelkezésre álló cookie-kat és webhelyadatokat. Biztosan folytatja?</translation>
 <translation id="7829877209233347340">Kérd meg az egyik szülődet, hogy jelentkezzen be, és adjon engedélyt iskolai fiók hozzáadásához</translation>
-<translation id="7830594666202422257">Csatlakoztatás Linuxhoz</translation>
 <translation id="7831491651892296503">Hiba történt a hálózat konfigurálásakor</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Befejezés ideje</translation>

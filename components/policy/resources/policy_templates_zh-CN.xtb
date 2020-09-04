@@ -1433,11 +1433,6 @@
       该字符串可以包含变量 <ph name="ASSET_ID_PLACEHOLDER" />、<ph name="SERIAL_NUM_PLACEHOLDER" />、<ph name="MAC_ADDR_PLACEHOLDER" />、<ph name="MACHINE_NAME_PLACEHOLDER" />、<ph name="LOCATION_PLACEHOLDER" />。系统会先将这些变量替换为设备上的相应值，然后再将该字符串用作主机名。替换后的字符串应是有效的主机名（符合 RFC 1035 第 3.1 节中的规定）。
 
       如果此政策未设置，或替换后的值不是有效的主机名，系统将不会在 DHCP 请求中设置任何主机名。 </translation>
-<translation id="3051089299923124309">如果此政策已启用，系统会允许网页中的第三方子内容打开“HTTP 基本身份验证”弹出式窗口。
-
-       如果此政策已停用或未设置，第三方子内容将无法打开“HTTP 基本身份验证”弹出式窗口。
-
-      通常，为防御网上诱骗攻击，系统会将此政策停用。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">允许此设备的关联用户使用 ADB 旁加载</translation>
 <translation id="3069958900488014740">允许停用 <ph name="PRODUCT_NAME" /> 中的 WPAD（网络代理自动发现）优化设置。
@@ -4145,6 +4140,11 @@
 
       这些政策可让您配置在用户停止操作一定时间后<ph name="PRODUCT_OS_NAME" />的行为。</translation>
 <translation id="7032813174556919004">停用 DNS-over-HTTPS</translation>
+<translation id="7033778618670823541">通过设置此政策，您能以列表形式指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名格式（例如 *.example.com）。组织可为无法部署传输层安全协议 (TLS) 的旧版应用指定来源，或设置用于内部网络开发的临时服务器，这样开发者无需在临时服务器上部署 TLS 就能测试需要安全上下文的功能。此政策还可防止来源被在地址栏中标记为“不安全”。
+
+      在此政策中设置一系列网址的效果等同于将 --unsafely-treat-insecure-origin-as-secure 命令行标记设为包含同一系列网址的逗号分隔列表。此政策会覆盖该命令行标记和 UnsafelyTreatInsecureOriginAsSecure（若存在）。
+
+      如需详细了解安全上下文，请参阅“安全上下文”( https://www.w3.org/TR/secure-contexts )。</translation>
 <translation id="7037812781389976160">控制 <ph name="PRODUCT_OS_NAME" />工具栏的位置。
 
       如果此政策设为“底部”，工具栏将放置在屏幕底部。

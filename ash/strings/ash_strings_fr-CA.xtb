@@ -433,6 +433,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="576453121877257266">Le mode Éclairage nocturne est activé.</translation>
 <translation id="5769373120130404283">Écran de confidentialité</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran?</translation>
+<translation id="5790085346892983794">Opération réussie</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -529,6 +530,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6910714959251846841">Cette mise à jour nécessite une réinitialisation de votre appareil. En savoir plus sur la dernière mise à jour de <ph name="SYSTEM_APP_NAME" />.</translation>

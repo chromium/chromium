@@ -891,6 +891,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Po kontrollon pajisjen virtuale</translation>
 <translation id="2048182445208425546">Qasu te trafiku i rrjetit</translation>
+<translation id="2048243703055695889">Cilësimet e "Ndarjes në afërsi" për pajisjen "<ph name="DEVICE_NAME" />" të <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Veprimi nuk ofrohet</translation>
 <translation id="204914487372604757">Krijo shkurtore</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
@@ -1177,6 +1178,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2384436799579181135">Ka ndodhur një gabim. Kontrollo printerin dhe provo sërish.</translation>
 <translation id="2387052489799050037">Shko tek ekrani bazë</translation>
 <translation id="2387458720915042159">Lloji i lidhjes së përfaqësuesit</translation>
+<translation id="2390347491606624519">Nuk mund të lidhet me përfaqësuesin. Identifikohu përsëri</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
 <translation id="2391419135980381625">Stili standard i shkrimit</translation>
 <translation id="2392163307141705938">Ke arritur kufirin kohor që ka caktuar prindi yt për <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3322,6 +3324,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5017643436812738274">Mund t'i navigosh faqet me një kursor teksti. Shtyp "Ctrl+Kërko+7" për ta çaktivizuar.</translation>
 <translation id="5018207570537526145">Hap sajtin e uebit të shtesës</translation>
 <translation id="5018526990965779848">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google".</translation>
+<translation id="5019392775062123007">E dukshme për pajisjet në afërsi si <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Nuk është përditësuar ende</translation>
 <translation id="5026806129670917316">Aktivizo Wi-Fi</translation>
 <translation id="5026874946691314267">Mos e trego më këtë</translation>
@@ -3336,7 +3339,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5039696241953571917">Shfaq dhe menaxho fjalëkalimet e ruajtura në "Llogarinë tënde të Google"</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5040823038948176460">Cilësimet shtesë të përmbajtjeve</translation>
-<translation id="5042282098504489593">Hap "Cilësimet" për ta lidhur <ph name="USB_DEVICE_NAME" /> me Linux</translation>
 <translation id="5043913660911154449">Ose specifiko skedarin PPD të printerit <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="504561833207953641">Po hapet në sesionin ekzistues të shfletuesit.</translation>
@@ -3411,6 +3413,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5133483819862530305">Nga perëndimi në agim</translation>
 <translation id="5135085122826131075">Hap "Asistentin" kur thua "Ok Google".</translation>
 <translation id="5135533361271311778">Artikulli i faqeshënuesve nuk mund të krijohej.</translation>
+<translation id="5136343472380336530">Sigurohu që të dyja pajisjet të jenë të shkyçura, pranë njëra-tjetrës, si dhe të kenë të aktivizuar Bluetooth-in. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Fshije këtë artikull</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, kërko në <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Fut kodin PIN për çelësin e sigurisë. Nëse nuk e di kodin PIN, do të duhet ta rivendosësh çelësin e sigurisë.</translation>
@@ -4418,6 +4421,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6342069812937806050">Vetëm tani</translation>
 <translation id="6344170822609224263">Qasu te lista e lidhjeve të rrjetit</translation>
 <translation id="6344576354370880196">Printerët e ruajtur</translation>
+<translation id="6345418402353744910">Emri i përdoruesit dhe fjalëkalimi yt kërkohen për përfaqësuesin <ph name="PROXY" /> që administratori të mund të konfigurojë rrjetin</translation>
 <translation id="6349101878882523185">Instalo <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinkronizimi nuk funksionoi. Provo të dalësh dhe të identifikohesh sërish.</translation>
 <translation id="6351063337294363751">Mund t'i pastrosh të dhënat e shfletimit nga kjo meny</translation>
@@ -4775,6 +4779,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6810613314571580006">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë konfirmimi përpara se të identifikohesh në një sajt uebi.</translation>
 <translation id="6810768462515084623">Mos! Duket sikur fjalëkalimi ka skaduar. Përtërije në një pajisje tjetër dhe provo sërish.</translation>
 <translation id="6811034713472274749">Faqja është gati për ta shikuar</translation>
+<translation id="6811332638216701903">Emri i pritësit të DHCP-së</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> nuk mund të ekzekutohet si një rrënjë.</translation>
 <translation id="6812841287760418429">Mbaji ndryshimet</translation>
 <translation id="6817174620439930047">Pyet kur një faqe kërkon të përdorë mesazhe ekskluzive të sistemit për t'u qasur në pajisjet MIDI (rekomandohet)</translation>
@@ -4852,6 +4857,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
 <translation id="6904344821472985372">Revoko qasjen në skedar</translation>
 <translation id="6904655473976120856">Shtyp butonin e aplikacionit për të dalë</translation>
+<translation id="6909422577741440844">Të merret nga kjo pajisje?</translation>
 <translation id="6910211073230771657">Fshirë</translation>
 <translation id="691024665142758461">Shkarko shumë skedarë</translation>
 <translation id="691106080621596509">Kjo do të pastrojë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="SITE_GROUP_NAME" />, çdo sajt në të dhe aplikacionin e tij të instaluar</translation>
@@ -5616,7 +5622,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
     <ph name="BEGIN_BOLD" />Shënim:<ph name="END_BOLD" />  Sistemi do të rifillojë punën gjatë procesit.</translation>
 <translation id="7828731929332799387">Kjo do të fshijë të gjitha kukit dhe të dhënat e sajtit që ofrohen në kontekstet e palëve të treta. Dëshiron të vazhdosh?</translation>
 <translation id="7829877209233347340">Kërkoji prindit që të të japë leje për të shtuar një llogari shkolle</translation>
-<translation id="7830594666202422257">Lidhe me Linux</translation>
 <translation id="7831491651892296503">Gabim gjatë konfigurimit të rrjetit</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Koha e përfundimit</translation>

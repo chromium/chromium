@@ -2084,7 +2084,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3487007233252413104">funtzio anonimoa</translation>
 <translation id="348780365869651045">Aplikazio-cachearen zain…</translation>
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
-<translation id="3491669675709357988">Haurraren kontua ez dago konfiguratuta Family Link-eko gurasoen murriztapenetan. Konfiguratzen amaitzen duzunean gehi ditzakezu gurasoen murriztapenak. Arakatu aplikazioan aurkituko duzu gurasoen murriztapenei buruzko informazioa.</translation>
+<translation id="3491669675709357988">Haurraren kontua ez dago konfiguratuta Family Link-en gurasoen murriztapenetan. Konfiguratzen amaitzen duzunean gehi ditzakezu gurasoen murriztapenak. Arakatu aplikazioan aurkituko duzu gurasoen murriztapenei buruzko informazioa.</translation>
 <translation id="3492788708641132712">Sinkronizazioa ez dabil. Hasi berriro saioa.</translation>
 <translation id="3493486281776271508">Interneteko konexioa behar da</translation>
 <translation id="3493881266323043047">Balio-aldia</translation>
@@ -3342,7 +3342,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5039696241953571917">Ikusi eta kudeatu Google-ko kontuan gordetako pasahitzak</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5040823038948176460">Edukiaren ezarpen gehigarriak</translation>
-<translation id="5042282098504489593">Ireki Ezarpenak atala <ph name="USB_DEVICE_NAME" /> gailua Linux-era konektatzeko</translation>
 <translation id="5043913660911154449">Edo zehaztu inprimagailuaren PPD fitxategia <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
 <translation id="504561833207953641">Dagoen arakatze-saioan irekitzen.</translation>
@@ -5627,7 +5626,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
     <ph name="BEGIN_BOLD" />Oharra:<ph name="END_BOLD" /> sistema berrabiarazi egingo da prozesuan zehar.</translation>
 <translation id="7828731929332799387">Cookie eta webguneen datu guztiak ezabatuko ditu hirugarrenen testuinguruetatik. Aurrera egin nahi duzu?</translation>
 <translation id="7829877209233347340">Eskatu guraso bati saioa hasteko, ikastetxeko kontu bat gehitzeko baimena eman diezazun</translation>
-<translation id="7830594666202422257">Konektatu Linux-era</translation>
 <translation id="7831491651892296503">Errore bat gertatu da sarea konfiguratzean</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Amaiera-ordua</translation>

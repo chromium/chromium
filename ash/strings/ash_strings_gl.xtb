@@ -434,6 +434,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="576453121877257266">A función Luz nocturna está activada.</translation>
 <translation id="5769373120130404283">Pantalla de privacidade</translation>
 <translation id="5777841717266010279">Queres deter o uso compartido da pantalla?</translation>
+<translation id="5790085346892983794">Correcto</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Non</translation>
@@ -530,6 +531,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta actualización require executar a función Powerwash do dispositivo. Consulta máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>

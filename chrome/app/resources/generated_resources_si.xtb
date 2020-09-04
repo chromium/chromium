@@ -891,6 +891,7 @@
 <translation id="2046702855113914483">රාමෙන්</translation>
 <translation id="204706822916043810">අතත්‍ය යන්ත්‍රය පරීක්ෂා කිරීම</translation>
 <translation id="2048182445208425546">ඔබගේ ජාල ගමනාගමනය ප්‍රවේශ කරන්න</translation>
+<translation id="2048243703055695889"><ph name="USER_EMAIL" />ගේ උපාංගය, '<ph name="DEVICE_NAME" />' සඳහා ළඟ බෙදා ගැනීමේ සැකසීම්.</translation>
 <translation id="2048653237708779538">ක්‍රියාව ලබා ගත නොහැක</translation>
 <translation id="204914487372604757">කෙටිමඟ තනන්න</translation>
 <translation id="2050339315714019657">සිරස්</translation>
@@ -1177,6 +1178,7 @@
 <translation id="2384436799579181135">දෝෂයක් සිදු විය. ඔබේ මුද්‍රකය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="2387052489799050037">මුල් පිටුවට යන්න</translation>
 <translation id="2387458720915042159">ප්‍රොක්සි සබැඳුම් වර්ගය</translation>
+<translation id="2390347491606624519">ප්‍රොක්සි වෙත සම්බන්ධ විය නොහැකි ය, කරුණාකර නැවත පුරන්න</translation>
 <translation id="2391082728065870591">ප්‍රතිපෝෂණ වාර්තාව යවන්න</translation>
 <translation id="2391419135980381625">සම්මත ‍අකුරු වර්ගය</translation>
 <translation id="2392163307141705938">ඔබ ඔබේ මාපියන් <ph name="IDS_SHORT_PRODUCT_NAME" /> සඳහා සකසා ඇති කාල සීමාවට ළඟා විය.</translation>
@@ -3323,6 +3325,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5017643436812738274">ඔබට පෙළ කර්සරයක් සමගින් පිටුවල සංචාලනය කළ හැකිය. ක්‍රියාවිරහිත කිරීමට Ctrl+Search+7 ඔබන්න.</translation>
 <translation id="5018207570537526145">දිගු වෙබ් අඩවිය විවෘත කරන්න</translation>
 <translation id="5018526990965779848">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබගේ Android අත්දැකීම වැඩි දියුණු කර ගැනීමට උපකාරී වන්න. මෙය පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් වැඩිදියුණු කිරීම්වලට උදවු කරයි. සමහර එකතු කළ දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරති. ඔබේ අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය නම්, මෙම දත්ත ඔබේ Google ගිණුුමට සුරකිනු ලැබේ.</translation>
+<translation id="5019392775062123007">අවට උපාංගවලට <ph name="DEVICE_NAME" /> ලෙස දෘශ්‍යමානයි</translation>
 <translation id="5021750053540820849">තවමත් යාවත්කාලීන නොකළ</translation>
 <translation id="5026806129670917316">Wi-Fi සබල කරන්න</translation>
 <translation id="5026874946691314267">නැවත මෙය පෙන්වන්න එපා</translation>
@@ -3337,7 +3340,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5039696241953571917">ඔබේ Google ගිණුමේ සුරකින ලද මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
 <translation id="5040823038948176460">අමතර අන්තර්ගත සැකසීම්</translation>
-<translation id="5042282098504489593">ලිනක්ස් වෙත <ph name="USB_DEVICE_NAME" /> සම්බන්ධ කිරීමට සැකසීම් විවෘත කරන්න</translation>
 <translation id="5043913660911154449">නැති නම්, ඔබේ මුද්‍රක PPD සඳහන් කරන්න <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">රහස්වචනය වැරදියි</translation>
 <translation id="504561833207953641">පවතින බ්‍රවුසර සැසිය තුළ විවෘත කිරීම.</translation>
@@ -3412,6 +3414,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5133483819862530305">හිරු නැගීමේ සිට හිරු බැසීම</translation>
 <translation id="5135085122826131075">ඔබ "Ok Google" යැයි කියන විට වේලාවක ඔබේ සහකරු වෙත ප්‍රවේශ වන්න</translation>
 <translation id="5135533361271311778">පිටු සලකුණු අයිතමය සෑදිය නොහැකි විය.</translation>
+<translation id="5136343472380336530">උපාංග දෙකම අගුලු හැර, එකිනෙකට ළංව සහ බ්ලූටූත් ක්‍රියාත්මක කර ඇති බව සහතික කර ගන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">මෙම අයිතමය මකන්න</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> සෙවීම</translation>
 <translation id="5139823398361067371">ඔබේ ආරක්‍ෂක යතුර සඳහා රහස් අංකය ඇතුළත් කරන්න. ඔබ රහස් අංකය නොදනී නම්, ඔබට ආරක්‍ෂක යතුරු යළි සැකසීමට අවශ්‍ය වෙයි.</translation>
@@ -4420,6 +4423,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6342069812937806050">මේ දැන්</translation>
 <translation id="6344170822609224263">ජාල සබැඳුම් ලැයිස්තුව ප්‍රවේශ වන්න</translation>
 <translation id="6344576354370880196">සුරැකි මුද්‍රක</translation>
+<translation id="6345418402353744910"><ph name="PROXY" /> ප්‍රොක්සි සඳහා ඔබගේ පරිශීලක නම සහ මුරපදය අවශ්‍යයි, එවිට පරිපාලකට ඔබගේ ජාලය වින්‍යාස කළ හැකිය</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ස්ථාපන කරන්න</translation>
 <translation id="6349170655202535379">සමමුහුර්ත කිරීම ක්‍රියා නොකරයි. වරා නැවත පැමිණීම උත්සාහ කරන්න.</translation>
 <translation id="6351063337294363751">ඔබට මෙම මෙනුවෙන් ඔබගේ බ්‍රවුස් කිරීමේ දත්ත හිස් කළ හැකිය</translation>
@@ -4775,6 +4779,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6810613314571580006">ගබඩා කළ අක්තපත්‍ර භාවිතයෙන් වෙබ් අඩවි වෙත ස්වයංක්‍රීයව පුරන්න. විශේෂාංගය අබල කර ඇති විට, ඔබ වෙබ් අඩවියකට පිරීමට පෙර සෑම විටම ඔබට තහවුරු කිරීමට පවසනු ඇත.</translation>
 <translation id="6810768462515084623">අපොයි! ඔබේ මුරපදය කල් ඉකුත් වූ බව පෙනේ. වෙනත් උපාංගයක එය අලුත් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6811034713472274749">පිටුව බැලීමට සූදානම්</translation>
+<translation id="6811332638216701903">DHCP සත්කාරක නම</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> හට මූලය ලෙස ධාවනය විය නොහැක.</translation>
 <translation id="6812841287760418429">වෙනස්කම් තබාගන්න</translation>
 <translation id="6817174620439930047">MIDI උපාංග වෙත පිවිසීමට පද්ධති අනන්‍ය පණිවිඩ භාවිත කිරීමට අඩවියකට අවශ්‍ය විට ඉල්ලන්න (නිර්දේශිතයි)</translation>
@@ -4852,6 +4857,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6903907808598579934">සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="6904344821472985372">ගොනු ප්‍රවේශය අහෝසි කරන්න</translation>
 <translation id="6904655473976120856">පිට වීමට යෙදුම් බොත්තම ඔබන්න</translation>
+<translation id="6909422577741440844">මෙම උපාංගයෙන් ලබා ගන්නද?</translation>
 <translation id="6910211073230771657">මකාදැමූ</translation>
 <translation id="691024665142758461">ගොනු කිහිපයක් බාගන්න</translation>
 <translation id="691106080621596509">මෙය <ph name="SITE_GROUP_NAME" />, සහ එය යටතේ ඇති කිසියම් වෙබ් අඩවි, සහ එහි ස්ථාපිත යෙදුම විසින් ගබඩා කරනු ලැබූ සියලුම දත්ත සහ කුකී ඉවත් කරයි</translation>
@@ -5616,7 +5622,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     <ph name="BEGIN_BOLD" />සටහන:<ph name="END_BOLD" />  ක්‍රියාවලිය අතරතුරේදී පද්ධතිය නැවත ආරම්භ වනු ඇත.</translation>
 <translation id="7828731929332799387">මෙය තෙවන පාර්ශ්ව සන්දර්භ තුළ තිබෙන සියලුම කුකී සහ වෙබ් අඩවි දත්ත මකා දමයි. ඔබට ඉදිරියට යාමට අවශ්‍යද?</translation>
 <translation id="7829877209233347340">පාසල් ගිණුමක් එක් කිරීමට අවසර දීමට මාපියෙකුට පුරන්නට කියන්න</translation>
-<translation id="7830594666202422257">ලිනක්ස් වෙත සම්බන්ධ කරන්න</translation>
 <translation id="7831491651892296503">ජාලය වින්‍යාස කිරීමේ දෝෂයකි</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">අවසන් වන වේලාව</translation>

@@ -3340,7 +3340,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5039696241953571917">Zobrazit a spravovat uložená hesla v účtu Google</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5040823038948176460">Další nastavení obsahu</translation>
-<translation id="5042282098504489593">Chcete-li zařízení <ph name="USB_DEVICE_NAME" /> připojit k Linuxu, otevřete Nastavení</translation>
 <translation id="5043913660911154449">Případně zadejte PPD tiskárny <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
 <translation id="504561833207953641">Otevírání v existující relaci prohlížeče.</translation>
@@ -5625,7 +5624,6 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> Systém se během tohoto procesu restartuje.</translation>
 <translation id="7828731929332799387">Tímto vymažete všechny soubory cookie a data webu dostupná v kontextech třetích stran. Chcete pokračovat?</translation>
 <translation id="7829877209233347340">Požádej rodiče, aby se přihlásil a udělil oprávnění k přidání školního účtu</translation>
-<translation id="7830594666202422257">Připojit k Linuxu</translation>
 <translation id="7831491651892296503">Chyba při konfiguraci sítě</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Čas ukončení</translation>

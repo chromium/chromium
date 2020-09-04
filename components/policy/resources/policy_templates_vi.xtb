@@ -1463,11 +1463,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Chuỗi này có thể chứa các biến <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> mà sẽ được thay thế bằng các giá trị trên thiết bị trước khi dùng làm tên máy chủ. Giá trị thay thế thu được sẽ là tên máy chủ hợp lệ (theo RFC 1035, mục 3.1).
 
       Nếu bạn không đặt chính sách này hoặc giá trị sau khi thay thế không phải là tên máy chủ hợp lệ, thì tên máy chủ sẽ không được đặt trong yêu cầu DHCP. </translation>
-<translation id="3051089299923124309">Nếu bạn đặt chính sách này thành Bật, thì nội dung con của bên thứ ba có trên một trang sẽ được phép mở cửa sổ bật lên Xác thực cơ bản HTTP.
-
-       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì nội dung con của bên thứ ba sẽ không thể mở cửa sổ bật lên Xác thực cơ bản HTTP.
-
-      Thông thường, chính sách này bị tắt để chống lừa đảo.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Cho phép người dùng đã liên kết của thiết bị này sử dụng tính năng cài đặt không qua cửa hàng của Cầu gỡ lỗi Android (ADB)</translation>
 <translation id="3069958900488014740">Cho phép tắt tối ưu hóa WPAD (Tự động phát hiện proxy web) trong <ph name="PRODUCT_NAME" />.
@@ -4219,6 +4214,11 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Những chính sách này cho phép bạn định cấu hình cách <ph name="PRODUCT_OS_NAME" /> hoạt động khi người dùng duy trì chế độ rảnh trong một khoảng thời gian.</translation>
 <translation id="7032813174556919004">Tắt chế độ DNS qua HTTPS</translation>
+<translation id="7033778618670823541">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách nguồn gốc (URL) hoặc mẫu tên máy chủ (chẳng hạn như *.example.com) mà các hạn chế về bảo mật đối với nguồn gốc không an toàn sẽ không áp dụng. Các tổ chức có thể chỉ định những nguồn gốc cho các ứng dụng cũ không thể triển khai TLS (Bảo mật tầng truyền tải), hoặc thiết lập một máy chủ thử nghiệm để phát triển web nội bộ. Nhờ vậy, các nhà phát triển có thể thử nghiệm những tính năng cần có bối cảnh bảo mật mà không phải triển khai TLS trên máy chủ thử nghiệm này. Ngoài ra, chính sách này cũng không cho gắn nhãn nguồn gốc này là "Không bảo mật" trong thanh địa chỉ.
+
+      Việc lập danh sách URL trong chính sách này có tác dụng tương tự như việc đặt cờ hiệu dòng lệnh --unsafely-treat-insecure-origin-as-secure thành một danh sách được phân tách bằng dấu phẩy gồm các URL tương tự. Chính sách này ghi đè cờ hiệu dòng lệnh và UnsafelyTreatInsecureOriginAsSecure, nếu có.
+
+      Để biết thêm thông tin về bối cảnh bảo mật, hãy xem trang Bối cảnh bảo mật (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="7037812781389976160">Kiểm soát vị trí của giá <ph name="PRODUCT_OS_NAME" />.
 
       Nếu bạn đặt chính sách này thành 'Dưới cùng', thì giá sẽ được đặt ở cuối màn hình.

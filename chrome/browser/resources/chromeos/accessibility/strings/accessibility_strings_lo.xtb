@@ -345,6 +345,7 @@
 <translation id="3549141990712742152">ຕັດ <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">ໃຊ້ 2 ນິ້ວມືລາກເພື່ອຢຸດການເວົ້າໄວ້ຊົ່ວຄາວ</translation>
 <translation id="3564729643041517261">ຮູບແບບການສະແດງຜົນປັດຈຸບັນເປັນການສະແດງຄູ່ກັນ</translation>
+<translation id="3587482841069643663">ທັງໝົດ</translation>
 <translation id="3589661172894441357">ປະມວນຄຳສັບ</translation>
 <translation id="3591784666823501596">ສີຟ້າໂຣຢານບລູ</translation>
 <translation id="3594207934078151302">ສີຂຽວທະເລປານກາງ</translation>
@@ -842,6 +843,7 @@
 <translation id="7684431668231950609">ດັດ​ແກ້​ຂໍ້​ຄວາມ​, ການປ້ອນເຂົ້າ URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ປຸ່ມ​ວິ​ທະ​ຍຸ​ຜ່ານ​ມາ​</translation>
+<translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">ບໍ່ມີກ່ອງຄອມໂບຖັດໄປ</translation>
 <translation id="772146615414628379">ຂໍສະແດງຄວາມຍິນດີ! ທ່ານໄດ້ຮຽນຮູ້ສິ່ງສຳຄັນໃນການນຳໃຊ້ ChromeVox ສຳເລັດແລ້ວ. ຈື່ວ່າທ່ານສາມາດເປີດເມນູຄຳສັ່ງຂອງ ChromeVox ໄດ້ທຸກເວລາໂດຍການກົດປຸ່ມຊອກຫາ+ໝາຍຈໍ້າ. ເພື່ອຮຽນຮູ້ເພີ່ມເຕີມອີກກ່ຽວກັບ ChromeVox ແລະ Chrome OS, ກະລຸນາເຂົ້າເບິ່ງບົດຄວາມຕໍ່ໄປນີ້.

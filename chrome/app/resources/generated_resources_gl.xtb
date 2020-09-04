@@ -893,6 +893,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Comprobando máquina virtual</translation>
 <translation id="2048182445208425546">Acceso ao tráfico da rede</translation>
+<translation id="2048243703055695889">Configuración de Compartir por Nearby para o dispositivo de <ph name="USER_EMAIL" />, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">Acción non dispoñible</translation>
 <translation id="204914487372604757">Crear atallo</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -1179,6 +1180,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2384436799579181135">Produciuse un erro. Comproba a túa impresora e téntao de novo.</translation>
 <translation id="2387052489799050037">Ir á páxina de inicio</translation>
 <translation id="2387458720915042159">Tipo de conexión mediante proxy</translation>
+<translation id="2390347491606624519">Non se puido establecer conexión co proxy. Inicia sesión de novo</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
 <translation id="2391419135980381625">Fonte estándar</translation>
 <translation id="2392163307141705938">Chegaches ao límite que definiu teu pai ou túa nai para <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -3324,6 +3326,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5017643436812738274">Podes navegar polas páxinas cun cursor de texto. Preme Control+Buscar+7 para desactivar esta función.</translation>
 <translation id="5018207570537526145">Abrir sitio web da extensión</translation>
 <translation id="5018526990965779848">Enviar datos de uso e diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
+<translation id="5019392775062123007">Visible para os dispositivos próximos como <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Aínda non se actualizou</translation>
 <translation id="5026806129670917316">Activar wifi</translation>
 <translation id="5026874946691314267">Non volver mostrar</translation>
@@ -3338,7 +3341,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5039696241953571917">Para consultar e xestionar os contrasinais gardados, accede á túa Conta de Google</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040823038948176460">Configuración de contido adicional</translation>
-<translation id="5042282098504489593">Para conectar o dispositivo <ph name="USB_DEVICE_NAME" /> con Linux, abre Configuración</translation>
 <translation id="5043913660911154449">Tamén podes especificar o PPD da túa impresora <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="504561833207953641">Abrindo nunha sesión xa aberta do navegador.</translation>
@@ -3413,6 +3415,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5133483819862530305">Do solpor ao amencer</translation>
 <translation id="5135085122826131075">Accede ao teu Asistente cando digas "Ok Google".</translation>
 <translation id="5135533361271311778">Non se puido crear o elemento do marcador.</translation>
+<translation id="5136343472380336530">Asegúrate de que os dous dispositivos estean desbloqueados, preto un do outro e co Bluetooth activado. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Eliminar este elemento</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, busca con <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Escribe o PIN da túa chave de seguranza. Se non o sabes, terás que restablecela.</translation>
@@ -4420,6 +4423,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6342069812937806050">Só agora</translation>
 <translation id="6344170822609224263">Acceder á lista de conexións de rede</translation>
 <translation id="6344576354370880196">Impresoras gardadas</translation>
+<translation id="6345418402353744910">O proxy <ph name="PROXY" /> necesita o teu nome de usuario e contrasinal para que o administrador poida configurar a rede</translation>
 <translation id="6349101878882523185">Instalar a aplicación <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">A sincronización non funciona. Proba a pechar sesión e volver iniciala.</translation>
 <translation id="6351063337294363751">Podes borrar os datos do navegador desde este menú</translation>
@@ -4777,6 +4781,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6810613314571580006">Iniciar sesión automaticamente nos sitios web coas credenciais almacenadas. Se se desactiva a función, solicitaráseche sempre a confirmación antes de iniciar sesión nun sitio web.</translation>
 <translation id="6810768462515084623">Parece que o teu contrasinal caducou. Renóvao noutro dispositivo e téntao de novo.</translation>
 <translation id="6811034713472274749">A páxina está lista para vela</translation>
+<translation id="6811332638216701903">Nome do host de DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non se pode executar como raíz.</translation>
 <translation id="6812841287760418429">Manter os cambios</translation>
 <translation id="6817174620439930047">Preguntar cando un sitio queira utilizar mensaxes exclusivas do sistema para acceder aos dispositivos MIDI (recomendado)</translation>
@@ -4854,6 +4859,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6904344821472985372">Revogar o acceso aos ficheiros</translation>
 <translation id="6904655473976120856">Preme o botón Aplicación para saír</translation>
+<translation id="6909422577741440844">Queres recibir o que está compartindo este dispositivo?</translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="691024665142758461">Descargar varios ficheiros</translation>
 <translation id="691106080621596509">Ao realizar esta acción, borraranse todos os datos e as cookies que almacenase <ph name="SITE_GROUP_NAME" />, todos os sitios que formen parte dese grupo e a súa aplicación instalada</translation>
@@ -5619,7 +5625,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
     <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> O sistema reiniciarase durante o proceso.</translation>
 <translation id="7828731929332799387">Ao realizar esta acción, eliminaranse todas as cookies e os datos dos sitios de terceiros. Queres continuar?</translation>
 <translation id="7829877209233347340">Pídelle a teu pai ou a túa nai que inicie sesión e che dea permiso para engadir unha conta de centro educativo</translation>
-<translation id="7830594666202422257">Conectar a Linux</translation>
 <translation id="7831491651892296503">Produciuse un erro ao configurar a rede</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Hora de finalización</translation>

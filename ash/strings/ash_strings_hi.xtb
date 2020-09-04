@@ -434,6 +434,7 @@
 <translation id="576453121877257266">नाइट लाइट चालू है.</translation>
 <translation id="5769373120130404283">निजता स्क्रीन</translation>
 <translation id="5777841717266010279">स्‍क्रीन साझाकरण बंद करें?</translation>
+<translation id="5790085346892983794">सफलता</translation>
 <translation id="5820394555380036790">क्रोमियम OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
 <translation id="5860033963881614850">बंद</translation>
@@ -530,6 +531,7 @@
 <translation id="6818242057446442178">एक शब्द पीछे जाएं</translation>
 <translation id="6820676911989879663">आज के लिए इतना ही!</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> को सक्रिय करें</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 अंक डालना बाकी है}one{# अंक डालना बाकी है}other{# अंक डालने बाकी हैं}}</translation>
 <translation id="6878400149835617132">शॉर्टकट बंद किया गया</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6910714959251846841">इस अपडेट के लिए आपके डिवाइस को पावरवॉश करना ज़रूरी है. <ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें.</translation>

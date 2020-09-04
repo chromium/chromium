@@ -3342,7 +3342,6 @@
 <translation id="5039696241953571917">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5040823038948176460">Επιπλέον ρυθμίσεις περιεχομένου</translation>
-<translation id="5042282098504489593">Ανοίξτε τις Ρυθμίσεις για να συνδέσετε τη συσκευή <ph name="USB_DEVICE_NAME" /> στα Linux</translation>
 <translation id="5043913660911154449">Εναλλακτικά, καθορίστε το PPD του εκτυπωτή σας <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Λανθασμένος κωδικός πρόσβασης</translation>
 <translation id="504561833207953641">Άνοιγμα σε υπάρχουσα περίοδο σύνδεσης προγράμματος περιήγησης.</translation>
@@ -5628,7 +5627,6 @@
     <ph name="BEGIN_BOLD" />Σημείωση:<ph name="END_BOLD" />  Θα γίνει επανεκκίνηση του συστήματος κατά τη διάρκεια της διαδικασίας.</translation>
 <translation id="7828731929332799387">Με αυτή την ενέργεια θα διαγραφούν όλα τα cookie και τα δεδομένα ιστοτόπων που διατίθενται σε περιβάλλοντα τρίτου μέρους. Θέλετε να συνεχίσετε;</translation>
 <translation id="7829877209233347340">Ζήτα από έναν γονέα να συνδεθεί για να εκχωρήσει δικαίωμα προσθήκης ενός λογαριασμού σχολείου.</translation>
-<translation id="7830594666202422257">Σύνδεση σε Linux</translation>
 <translation id="7831491651892296503">Σφάλμα κατά τη διαμόρφωση του δικτύου</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Ώρα λήξης</translation>

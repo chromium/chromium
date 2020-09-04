@@ -1428,11 +1428,6 @@
       字串可包含 <ph name="ASSET_ID_PLACEHOLDER" />、<ph name="SERIAL_NUM_PLACEHOLDER" />、<ph name="MAC_ADDR_PLACEHOLDER" />、<ph name="MACHINE_NAME_PLACEHOLDER" />、<ph name="LOCATION_PLACEHOLDER" /> 變數，這些變數會先替換成裝置的值，再做為主機名稱使用。請注意，替換後的值必須是有效的主機名稱 (根據 RFC 1035 文件第 3.1 條的規定)。
 
       如果不設定這項政策，或是替換後的值不是有效的主機名稱，系統將不會設定 DHCP 要求中的主機名稱。 </translation>
-<translation id="3051089299923124309">如果將這項政策設為啟用，網頁上的第三方次要內容將可開啟 HTTP 基本驗證彈出式視窗。
-
-       如果將這項政策設為停用或不設定，第三方次要內容將無法開啟 HTTP 基本驗證彈出式視窗。
-
-      通常會停用這項政策以防範網路詐騙。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">允許這部裝置的相關使用者採用 ADB 側載</translation>
 <translation id="3069958900488014740">允許關閉 <ph name="PRODUCT_NAME" /> 的 WPAD (Web Proxy Auto Discovery) 最佳化設定。
@@ -4150,6 +4145,11 @@
 
       這些政策可讓你設定當使用者閒置一段時間後，要讓 <ph name="PRODUCT_OS_NAME" /> 採取的動作。</translation>
 <translation id="7032813174556919004">停用 DNS-over-HTTPS</translation>
+<translation id="7033778618670823541">你可以透過這項政策建立清單，指定針對不安全來源所設的安全性限制不適用於哪些來源 (網址) 或主機名稱模式 (例如 *.example.com)。機構可以為無法部署傳輸層安全標準 (TLS) 的舊版應用程式指定來源，或設定內部網頁開發所需的暫存伺服器。這樣一來，開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
+
+      如果在這項政策中設定網址清單，效果等同於將「--unsafely-treat-insecure-origin-as-secure」指令列旗標設定為相同網址的清單 (以逗號分隔)。這項政策會覆寫前述指令列旗標與 UnsafelyTreatInsecureOriginAsSecure 政策 (如已設定)。
+
+      如要進一步瞭解安全內容，請參閱「安全內容」：https://www.w3.org/TR/secure-contexts。</translation>
 <translation id="7037812781389976160">控管 <ph name="PRODUCT_OS_NAME" />檔案櫃的位置。
 
       如果將這項政策設為 [置底]，檔案櫃會顯示在畫面底部。

@@ -16,7 +16,6 @@
 <translation id="1105960400813249514">ეკრანის აღბეჭდვა</translation>
 <translation id="1111673857033749125">თქვენს სხვა მოწყობილობებზე შენახული ჩანართები აქ გამოჩნდება.</translation>
 <translation id="1113597929977215864">გამარტივებული ხედის ჩვენება</translation>
-<translation id="1122278879166832009">შეეხეთ აქ მთავარ გვერდზე ნებისმიერი ადგილიდან წვდომისთვის</translation>
 <translation id="1126809382673880764">არ დაგიცავთ სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა თუ გაფართოებებისგან. Safe Browsing-ის დაცვით (ხელმისაწვდომობის მიხედვით) მაინც ისარგებლებთ სხვა Google სერვისებში, როგორიცაა Gmail თუ Search.</translation>
 <translation id="1129510026454351943">დეტალები: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა მოლოდინის რეჟიმშია.}other{# ჩამოტვირთვა მოლოდინის რეჟიმშია.}}</translation>
@@ -39,7 +38,6 @@
 <translation id="123724288017357924">გვერდის გადატვირთვა ქეშირ. კონტენტის იგნორირებით</translation>
 <translation id="124678866338384709">მიმდინარე ჩანართის დახურვა</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1260236875608242557">ძიება და გაცნობა</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ვერ გაზიარდა</translation>
 <translation id="1283039547216852943">შეეხეთ გასაშლელად</translation>
 <translation id="1291207594882862231">ისტორიის, ქუქი-ჩანაწერების, საიტის მონაცემების, ქეშის გასუფთავება…</translation>
@@ -588,7 +586,6 @@
 <translation id="5683547024293500885">Chrome ვერ ახერხებს განახლებების შემოწმებას</translation>
 <translation id="5686790454216892815">ფაილის სახელი მეტისმეტად გრძელია</translation>
 <translation id="5687809546194252819">გადატვირთვის შემდეგ <ph name="APP_NAME" />-ის მიერ გამოყენებული იქნება <ph name="LANGUAGE" />.</translation>
-<translation id="5694049548840660018">მარტივად დაბრუნდით მთავარ გვერდზე</translation>
 <translation id="569536719314091526">თარგმნეთ ეს გვერდი ნებისმიერ ენაზე „სხვა ვარიანტების“ ღილაკის მეშვეობით</translation>
 <translation id="5696597120588531049">Chromium დაგიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არაუსაფრთხო ვებსაიტებისა და სხვა უსიამოვნებისგან</translation>
 <translation id="5697688514913266141">თქვენი ფაილი შეინახება „<ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />“-ში. <ph name="BEGIN_LINK2" />რედაქტირება<ph name="END_LINK2" />.</translation>
@@ -685,7 +682,6 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="6364438453358674297">ამოიშალოს შემოთავაზება ისტორიიდან?</translation>
 <translation id="6366047038980456022"><ph name="APP_NAME" /> გთავაზობთ იმ ფუნქციებსა და სიჩქარეს, რომელიც ვების უსაფრთხო დათვალიერებისთვის და ონლაინ-საქმიანობისთვის გჭირდებათ</translation>
-<translation id="6369229450655021117">აქედან შეგიძლიათ მოიძიოთ ვებში, გაუზიაროთ კონტენტი მეგობრებს და იხილოთ გახსნილი გვერდები</translation>
 <translation id="6378173571450987352">დეტალები: დალაგებულია გამოყენებული მონაცემების მიხედვით</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და Chrome OS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">ვებსაიტების გამუქება</translation>
@@ -997,7 +993,6 @@
 <translation id="8636825310635137004">თქვენს სხვა მოწყობილობებზე არსებულ ჩანართებზე წვდომის მისაღებად, ჩართეთ სინქრონიზაცია.</translation>
 <translation id="8641930654639604085">შეძლებისდაგვარად, უფროსებისთვის განკუთვნილი საიტების დაბლოკვა</translation>
 <translation id="8655129584991699539">მონაცემების გასუფთავება შეგიძლიათ Chrome-ის პარამეტრებიდან</translation>
-<translation id="8655599981421006542">შეეხეთ აქ ახალი ჩანართების შესაქმნელად და ძველებზე გადასასვლელად</translation>
 <translation id="8662811608048051533">თქვენ გამოხვალთ სისტემიდან საიტების უმეტესობაზე.</translation>
 <translation id="8664979001105139458">ამ სახელის მქონე ფაილი უკვე არსებობს</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{სიგნალის სიძლიერის დონე: # ხაზი}other{სიგნალის სიძლიერის დონე: # ხაზი}}</translation>
@@ -1005,7 +1000,6 @@
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>
 <translation id="8748850008226585750">შიგთავსი დამალულია</translation>
-<translation id="8758557275681689734">ყველა გახსნილი ჩანართის ნახვა</translation>
 <translation id="8788265440806329501">ნავიგაციის ისტორია დახურულია</translation>
 <translation id="8788968922598763114">ბოლოს დახურული ჩანართის ხელახლა გახსნა</translation>
 <translation id="8812260976093120287">ზოგიერთ ვებსაიტზე თქვენი მოწყობილობით გადახდა შესაძლებელია ზემოჩამოთვლილი აპების მეშვეობით.</translation>

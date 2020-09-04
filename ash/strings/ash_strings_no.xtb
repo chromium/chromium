@@ -433,6 +433,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="576453121877257266">Nattlys er på.</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
+<translation id="5790085346892983794">Fullført</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
@@ -529,6 +530,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6818242057446442178">Ett ord tilbake</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
 <translation id="6857811139397017780">Aktiver <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ett siffer gjenstår}other{# sifre gjenstår}}</translation>
 <translation id="6878400149835617132">Snarveien er avslått</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6910714959251846841">Denne oppdateringen krever en powerwash av enheten din. Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen.</translation>

@@ -388,6 +388,7 @@
 <translation id="5433691172869980887">사용자 이름 복사됨</translation>
 <translation id="54401264925851789">페이지 보안 정보</translation>
 <translation id="5443952882982198570">신용카드</translation>
+<translation id="5457226814769348910">오프라인 버전 열기</translation>
 <translation id="5457907402803865181">비밀번호 동기화 중에 오류가 발생했습니다.</translation>
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>
@@ -458,6 +459,7 @@
 <translation id="6187302354554850004">최근 동기화: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">읽지않음</translation>
 <translation id="6196207969502475924">음성 검색</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{탭 {COUNT}개 닫기}other{탭 {COUNT}개 닫기}}</translation>
 <translation id="6219688215832490856">번역 안함</translation>
 <translation id="6254066287920239840">브라우저 대신 앱에서 링크 열기</translation>
 <translation id="6255097610484507482">신용카드 수정</translation>

@@ -1443,11 +1443,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       La stringa può contenere variabili <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> che verrebbero sostituite con valori sul dispositivo prima di usare la stringa come nome host. La sostituzione finale dovrebbe essere eseguita con un nome host valido (come da RFC 1035, sezione 3.1).
 
       Se questo criterio non è impostato o se il valore ottenuto in seguito alla sostituzione non è un nome host valido, non verrà impostato alcun nome host nella richiesta DHCP. </translation>
-<translation id="3051089299923124309">Se il criterio viene impostato su Attivato, i contenuti secondari di terze parti in una pagina possono aprirsi in un popup Autorizzazione di base HTTP.
-
-       Se il criterio viene impostato su Disattivato o se non viene configurato, i contenuti secondari di terze parti non possono aprirsi in un popup Autorizzazione di base HTTP.
-
-      In genere, questo criterio è disattivato per difendere gli utenti da tentativi di phishing.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Consenti agli utenti affiliati di questo dispositivo di utilizzare il processo sideload ADB</translation>
 <translation id="3069958900488014740">Consente di disattivare l'ottimizzazione WPAD (Web Proxy Auto-Discovery) in <ph name="PRODUCT_NAME" />.

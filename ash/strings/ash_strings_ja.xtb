@@ -433,6 +433,7 @@
 <translation id="576453121877257266">夜間モードはオンです。</translation>
 <translation id="5769373120130404283">プライバシー スクリーン</translation>
 <translation id="5777841717266010279">画面の共有を解除しますか？</translation>
+<translation id="5790085346892983794">完了</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5860033963881614850">オフ</translation>
@@ -529,6 +530,7 @@
 <translation id="6818242057446442178">1 語戻る</translation>
 <translation id="6820676911989879663">休憩の時間です！</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> を有効にする</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{残り 1 桁}other{残り # 桁}}</translation>
 <translation id="6878400149835617132">ショートカットがオフになっています</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6910714959251846841">このアップデートを適用するにはデバイスで Powerwash を実行する必要があります。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>

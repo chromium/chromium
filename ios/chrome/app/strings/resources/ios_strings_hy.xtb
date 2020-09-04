@@ -388,6 +388,7 @@
 <translation id="5433691172869980887">Օգտանունը պատճենվեց</translation>
 <translation id="54401264925851789">Տեղեկություններ էջի հուսալիության մասին</translation>
 <translation id="5443952882982198570">Վարկային քարտեր</translation>
+<translation id="5457226814769348910">Բացել օֆլյան տարբերակը</translation>
 <translation id="5457907402803865181">Չհաջողվեց համաժամացնել գաղտնաբառերը։</translation>
 <translation id="5489208564673669003">Բոլոր կայքերի քուքիները կարող եք կառավարել <ph name="BEGIN_LINK" />Քուքիների կարգավորումներ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="5490005495580364134">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
@@ -458,6 +459,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Չկարդացված</translation>
 <translation id="6196207969502475924">Ձայնային որոնում</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{Փակել {COUNT} ներդիր}one{Փակել {COUNT} ներդիր}other{Փակել {COUNT} ներդիր}}</translation>
 <translation id="6219688215832490856">Երբեք չթարգմանել</translation>
 <translation id="6254066287920239840">Հղումները դիտարկիչի փոխարեն բացել հավելվածում:</translation>
 <translation id="6255097610484507482">Փոխել վարկային քարտը</translation>

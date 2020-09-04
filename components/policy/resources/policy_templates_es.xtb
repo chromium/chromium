@@ -1463,11 +1463,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       La cadena puede incluir las variables <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> y <ph name="LOCATION_PLACEHOLDER" />, las cuales se sustituyen por valores del dispositivo antes de que se utilice como nombre de host. El valor que se obtenga de la sustitución debe ser un nombre de host válido (según la sección 3.1 de la RFC 1035).
 
       Si no se asigna ningún valor a esta política o si el valor que se obtiene de la sustitución no es un nombre de host válido, no se establece ningún nombre de host en la solicitud DHCP. </translation>
-<translation id="3051089299923124309">Si se asigna el valor "Enabled" a esta política, se permitirá que el subcontenido de terceros de una página abra una ventana emergente de autenticación básica de HTTP.
-
-       Si se le asigna el valor "Disabled" o no se le asigna ninguno, el subcontenido de terceros no podrá abrir una ventana emergente de autenticación básica de HTTP.
-
-      Esta política suele estar inhabilitada para ofrecer protección frente a los ataques de phishing.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo usen la instalación de fuente desconocida adb</translation>
 <translation id="3069958900488014740">Permite desactivar la optimización de WPAD (detección automática de proxy web) en <ph name="PRODUCT_NAME" />.
@@ -4214,9 +4209,9 @@ Si la política está establecida en False, no se informará sobre los usuarios.
 
 Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante un periodo de tiempo determinado.</translation>
 <translation id="7032813174556919004">Inhabilitar DNS-over-HTTPS</translation>
-<translation id="7033778618670823541">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes no seguros. Las organizaciones pueden especificar orígenes para aplicaciones antiguas que no pueden implementar TLS o para configurar un servidor provisional para el desarrollo interno de webs, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
+<translation id="7033778618670823541">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes no seguros. Las organizaciones pueden especificar orígenes para aplicaciones antiguas que no pueden implementar TLS o configurar un servidor staging para el desarrollo web interno, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
 
-      Definir la lista de URLs de esta política tiene el mismo resultado que asignar la instrucción de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto instrucción de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
+      Definir la lista de URLs de esta política tiene el mismo resultado que asignar la instrucción de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto la instrucción de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
 
       Para obtener más información sobre los contextos seguros, consulta la página Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="7037812781389976160">Controlar la posición de la estantería de <ph name="PRODUCT_OS_NAME" />.
@@ -5581,7 +5576,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       La intención es permitir que las organizaciones definan orígenes incluidos
       en listas blancas para aplicaciones antiguas que no pueden implementar
-      TLS, o bien configuren un servidor provisional para desarrollar web internas
+      TLS, o bien configuren un servidor staging para desarrollo web interno
       y conseguir que los desarrolladores puedan probar las funciones que
       necesiten en contextos seguros sin tener que implementar TLS en el
       servidor provisional. Esta política también evita que el origen aparezca con
@@ -5598,8 +5593,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       política.
 
       Para obtener más información sobre contextos seguros, consulta la página
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
+      https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="8942616385591203339">Esta política controla si se muestra Sync Consent al usuario durante el primer inicio de sesión. Se le debería asignar el valor "False" si no es necesario mostrar Sync Consent al usuario en ningún caso.
       Si se le asigna el valor "False", Sync Consent no se mostrará.
       Si se le asigna el valor "True" o no se le asigna ningún valor, Sync Consent no se puede mostrar.</translation>

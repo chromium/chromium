@@ -388,6 +388,7 @@
 <translation id="5433691172869980887">បានចម្លង​ឈ្មោះ​អ្នកប្រើប្រាស់</translation>
 <translation id="54401264925851789">ព័ត៌មានសុវត្ថិភាពទំព័រ</translation>
 <translation id="5443952882982198570">បណ្ណឥណទាន</translation>
+<translation id="5457226814769348910">បើកកំណែគ្មានអ៊ីនធឺណិត</translation>
 <translation id="5457907402803865181">មានបញ្ហា​ក្នុងការ​ធ្វើសមកាលកម្ម​ពាក្យសម្ងាត់​។</translation>
 <translation id="5489208564673669003">ដើម្បីគ្រប់គ្រងខូគីសម្រាប់គេហទំព័រទាំងអស់ សូមមើល<ph name="BEGIN_LINK" />ការកំណត់ខូគី<ph name="END_LINK" />។</translation>
 <translation id="5490005495580364134">ទប់ស្កាត់​ខូគី​ទាំងអស់ (មិនណែនាំ)</translation>
@@ -458,6 +459,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6187302354554850004">សមកម្មចុងក្រោយ: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">មិន​ទាន់​អាន</translation>
 <translation id="6196207969502475924">ស្វែងរកដោយសម្លេង</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{បិទផ្ទាំង {COUNT}}other{បិទផ្ទាំង {COUNT}}}</translation>
 <translation id="6219688215832490856">កុំ​បកប្រែ​ឱ្យសោះ</translation>
 <translation id="6254066287920239840">បើកតំណនៅក្នុងកម្មវិធីនេះ ជំនួយឲ្យការបើកនៅក្នុងកម្មវិធីរុករក។</translation>
 <translation id="6255097610484507482">កែប្រែកាតឥណទាន</translation>
