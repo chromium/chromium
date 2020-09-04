@@ -2152,7 +2152,7 @@ bool PrintRenderFrameHelper::CalculateNumberOfPages(blink::WebLocalFrame* frame,
   bool fit_to_paper_size = !IsPrintingNodeOrPdfFrame(frame, node);
   if (!InitPrintSettings(fit_to_paper_size)) {
     notify_browser_of_print_failure_ = false;
-    Send(new PrintHostMsg_ShowInvalidPrinterSettingsError(routing_id()));
+    GetPrintManagerHost()->ShowInvalidPrinterSettingsError();
     return false;
   }
 

@@ -379,7 +379,7 @@ void PrintViewManagerBase::OnScriptedPrint(
   NOTREACHED() << "should be handled by printing:: PrintingMessageFilter";
 }
 
-void PrintViewManagerBase::OnShowInvalidPrinterSettingsError() {
+void PrintViewManagerBase::ShowInvalidPrinterSettingsError() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&ShowWarningMessageBox,
                                 l10n_util::GetStringUTF16(
@@ -428,18 +428,6 @@ void PrintViewManagerBase::SystemDialogCancelled() {
       content::NotificationService::NoDetails());
 }
 #endif
-
-bool PrintViewManagerBase::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(PrintViewManagerBase, message)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_ShowInvalidPrinterSettingsError,
-                        OnShowInvalidPrinterSettingsError)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled || PrintManager::OnMessageReceived(message, render_frame_host);
-}
 
 void PrintViewManagerBase::Observe(
     int type,

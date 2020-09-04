@@ -282,4 +282,7 @@ interface PrintManagerHost {
 
   // Tells the browser that the print dialog has been shown.
   DidShowPrintDialog();
+
+  // Tells the browser that there are invalid printer settings.
+  ShowInvalidPrinterSettingsError();
 };

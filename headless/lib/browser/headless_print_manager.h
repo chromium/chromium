@@ -68,6 +68,9 @@ class HeadlessPrintManager
 
   ~HeadlessPrintManager() override;
 
+  // printing::mojom::PrintManagerHost:
+  void ShowInvalidPrinterSettingsError() override;
+
   static std::string PrintResultToString(PrintResult result);
   // Exported for tests.
   HEADLESS_EXPORT static PageRangeStatus PageRangeTextToPages(
@@ -106,7 +109,6 @@ class HeadlessPrintManager
                        const printing::mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg) override;
 
-  void OnShowInvalidPrinterSettingsError();
 
   void Reset();
   void ReleaseJob(PrintResult result);

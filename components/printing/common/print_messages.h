@@ -355,9 +355,6 @@ IPC_MESSAGE_ROUTED2(PrintHostMsg_MetafileReadyForPrinting,
                     printing::mojom::PreviewIds /* ids */)
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-// This is sent when there are invalid printer settings.
-IPC_MESSAGE_ROUTED0(PrintHostMsg_ShowInvalidPrinterSettingsError)
-
 // Tell the browser printing failed.
 IPC_MESSAGE_ROUTED1(PrintHostMsg_PrintingFailed,
                     int /* document cookie */)

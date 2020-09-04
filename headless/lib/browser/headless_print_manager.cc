@@ -214,13 +214,7 @@ bool HeadlessPrintManager::OnMessageReceived(
     return true;
   }
 
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(HeadlessPrintManager, message)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_ShowInvalidPrinterSettingsError,
-                        OnShowInvalidPrinterSettingsError)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled || PrintManager::OnMessageReceived(message, render_frame_host);
+  return PrintManager::OnMessageReceived(message, render_frame_host);
 }
 
 void HeadlessPrintManager::OnGetDefaultPrintSettings(
@@ -261,7 +255,7 @@ void HeadlessPrintManager::OnScriptedPrint(
   }
 }
 
-void HeadlessPrintManager::OnShowInvalidPrinterSettingsError() {
+void HeadlessPrintManager::ShowInvalidPrinterSettingsError() {
   ReleaseJob(INVALID_PRINTER_SETTINGS);
 }
 

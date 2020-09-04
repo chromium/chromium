@@ -73,6 +73,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
   // mojom::PrintManagerHost:
   void DidGetPrintedPagesCount(int32_t cookie, int32_t number_pages) override;
+  void ShowInvalidPrinterSettingsError() override;
 
  protected:
   explicit PrintViewManagerBase(content::WebContents* web_contents);
@@ -88,8 +89,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
   // content::WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
 
   // Creates a new empty print job. It has no settings loaded. If there is
   // currently a print job, safely disconnect from it. Returns false if it is
@@ -127,8 +126,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
   void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
                        const mojom::ScriptedPrintParams& params,
                        IPC::Message* reply_msg) override;
-
-  void OnShowInvalidPrinterSettingsError();
 
   // IPC message handlers for service.
   void OnComposePdfDone(const gfx::Size& page_size,
