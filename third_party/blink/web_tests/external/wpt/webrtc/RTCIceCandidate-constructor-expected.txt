@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS new RTCIceCandidate()
+PASS new RTCIceCandidate({})
+PASS new RTCIceCandidate({ ... }) with manually filled default values
+PASS new RTCIceCandidate({ sdpMid: null, sdpMLineIndex: null })
+PASS new RTCIceCandidate({ candidate: '' })
+PASS new RTCIceCandidate({ candidate: null })
+PASS new RTCIceCandidate({ ... }) with valid candidate string only
+PASS new RTCIceCandidate({ sdpMid: 'audio' })
+PASS new RTCIceCandidate({ sdpMLineIndex: 0 })
+PASS new RTCIceCandidate({ sdpMid: 'audio', sdpMLineIndex: 0 })
+PASS new RTCIceCandidate({ candidate: '', sdpMid: 'audio' }
+PASS new RTCIceCandidate({ candidate: '', sdpMLineIndex: 0 }
+PASS new RTCIceCandidate({ ... }) with valid candidate string and sdpMid
+PASS new RTCIceCandidate({ ... }) with invalid candidate string and sdpMid
+FAIL new RTCIceCandidate({ ... }) with nondefault values for all fields assert_equals: tcpType expected (object) null but got (string) ""
+PASS new RTCIceCandidate({ ... }) with nondefault values for all fields, tcp candidate
+PASS new RTCIceCandidate({ ... }) with invalid sdpMid
+PASS new RTCIceCandidate({ ... }) with invalid sdpMLineIndex
+Harness: the test ran to completion.
+

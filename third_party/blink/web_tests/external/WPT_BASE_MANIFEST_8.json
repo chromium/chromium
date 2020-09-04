@@ -84255,6 +84255,32 @@
        ],
        {}
       ]
+     ],
+     "vertical-rl-viewport-size-change-000.html": [
+      "ee367b1c9718e6d353dbaaaa922f9e13546a7734",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-rl-viewport-size-change-001.html": [
+      "0e58a1e63b10d68e0aae1ff0ba6ec0c7b1f726e9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-scroll-snap": {
@@ -150359,6 +150385,32 @@
         {}
        ]
       ],
+      "mo-not-in-dictionary-lspace-rspace.html": [
+       "3437450dfb27af5f4e3f076e405c96fbff3e5b61",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/mo-not-in-dictionary-lspace-rspace-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mo-not-in-dictionary-movablelimits.html": [
+       "e50f118f8fd04da5d70bedd1a8876c5eac3131d7",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/mo-not-in-dictionary-movablelimits-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "mo-paint-lspace-rspace.html": [
        "0c387f5656505cdb74a35cc97358895cbda17e07",
        [
@@ -184247,7 +184299,17 @@
      "nested-overflow-subtree-layout-ref.html": [
       "77b0de7f0ba16a35398c3a8d583c5bda32bf16af",
       []
-     ]
+     ],
+     "support": {
+      "flexbox-scrolling-vertical-rl.html": [
+       "1a2d02d5c71d7026c783e5215452ee7333308658",
+       []
+      ],
+      "scrolling-vertical-rl.html": [
+       "1273469dab2f53683669cc2103c0ede6e210bdc1",
+       []
+      ]
+     }
     },
     "css-scroll-snap": {
      "META.yml": [
@@ -203836,7 +203898,7 @@
        []
       ],
       "post-to-owner.py": [
-       "c5ee11653ef2a8d291aceac3ae97670463fda7fe",
+       "4890c49acbdfb557b9ef679b0a3cc82952305c0f",
        []
       ],
       "record-header.py": [
@@ -220633,6 +220695,14 @@
        "cb868d2400e8b8e536e3103a06a5d4502b1dbfba",
        []
       ],
+      "mo-not-in-dictionary-lspace-rspace-ref.html": [
+       "3938db19a7018537c4c7e9f0395ffdd724a6136a",
+       []
+      ],
+      "mo-not-in-dictionary-movablelimits-ref.html": [
+       "e7ffc78994702450fd9fec106e026aa2259547e1",
+       []
+      ],
       "mo-paint-lspace-rspace-ref.html": [
        "da0b79ff9a67cbe53daeb141aaa2efd4f2eb96ad",
        []
@@ -223770,7 +223840,11 @@
       "163c42e655d6aa69a8ba8ccfb8474072eac9d349",
       []
      ],
-     "portal-host-post-message.sub.html": [
+     "portal-host-post-message-x-origin.html": [
+      "eb390e8b539d1b901bbe571f0b19f6eaa9c8d0bb",
+      []
+     ],
+     "portal-host-post-message.html": [
       "3c49d560f4b7f3b41d463dec1dc8ce621f47c0d3",
       []
      ],
@@ -223800,6 +223874,10 @@
      ],
      "portal-post-message-portal.html": [
       "26f62839af5ed8ea7a50535f411780bdf7fd6e03",
+      []
+     ],
+     "portal-post-message-x-origin-portal.html": [
+      "57631f385c16e9ef709f7bb0f06bb2eaa82046a5",
       []
      ],
      "portal-repeated-activate-window.html": [
@@ -223843,7 +223921,7 @@
       []
      ],
      "stash-utils.sub.js": [
-      "8d3b84f09ada6bc75e64863792793f8d89a03f04",
+      "30efe836331c66f3baa8d6f75c89caefbad6840a",
       []
      ]
     },
@@ -240027,6 +240105,10 @@
      "85676f29ff5806a32ac6713e601fdcb71dd03777",
      []
     ],
+    "utils.js": [
+     "940c2c28b962f326fa94f509ddb1468902f5b150",
+     []
+    ],
     "vp9.mp4": [
      "7553e5cae9202c0f144126910e9471658038b455",
      []
@@ -240705,6 +240787,10 @@
     ],
     "RTCDataChannel-send-expected.txt": [
      "fcb6811ea6b852e43f3ff9de78571bb9f5eea06f",
+     []
+    ],
+    "RTCIceCandidate-constructor-expected.txt": [
+     "1a0d2a84913a0c8571ad6948d4fa57749eaf3199",
      []
     ],
     "RTCIceTransport-expected.txt": [
@@ -317012,7 +317098,7 @@
       ]
      ],
      "portal.https.sub.html": [
-      "8403a296fe12786bf75675cde47f4d41b684cdaf",
+      "55b555a1b8ec4498f9dc897e3f64f09a2d61df93",
       [
        null,
        {
@@ -369520,7 +369606,7 @@
      ]
     ],
     "portals-host-post-message.sub.html": [
-     "e547642c9f27e91a1bd911214fba7750f136ed8d",
+     "aa4893cb904d29087ea5413c90eddf7dc317a216",
      [
       null,
       {
@@ -369543,7 +369629,7 @@
      ]
     ],
     "portals-post-message.sub.html": [
-     "2f6b25d97dab30d1b8ae86a6ab27526393dad3eb",
+     "19803f686969678f72030d6a6ddce4b0d361b275",
      [
       null,
       {
@@ -404803,35 +404889,35 @@
    },
    "webcodecs": {
     "audio-decoder.html": [
-     "af82b2cd3f75efa2d10b88a7d3e5c0ff314f1ed4",
+     "e6bc81d35cba86a63d68cb0635e10e3c3d627cfe",
      [
       null,
       {}
      ]
     ],
     "video-decoder.html": [
-     "7a37fed5007580273afc73e3059b07c0120f4284",
+     "33c478d0090775bee319c6f30710bfdedad7bc86",
      [
       null,
       {}
      ]
     ],
     "video-encoder.html": [
-     "368789b9ad08fb74b364b6506818d0b37f789938",
+     "ea9ebdb63e11a875c50a9cc7f381817b7498ee5e",
      [
       null,
       {}
      ]
     ],
     "video-frame-serialization.html": [
-     "142cec190323fcc09b9b3dd83e0b903237b33ae0",
+     "8c111488e7c959a8844583ae2117f9abb8ffd8a1",
      [
       null,
       {}
      ]
     ],
     "video-frame.html": [
-     "52f0d2d2040148fa3d4fba4ba3c650c1e2e2dcbb",
+     "aa97099e0815a924a4d265fa0c2c4d4d64397f13",
      [
       null,
       {}
@@ -405933,7 +406019,7 @@
      ]
     ],
     "RTCIceCandidate-constructor.html": [
-     "6c208e887f473a031e0e9ee07658b53bfbe5935a",
+     "66d696207962f8669dd6d3c28800241e80f4ab4a",
      [
       null,
       {}
