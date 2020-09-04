@@ -60,6 +60,7 @@
 #include "chrome/browser/translate/translate_ranker_metrics_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -712,8 +713,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<ChromeOSMetricsProvider>(
           metrics::MetricsLogUploader::UMA));
 
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<CrosHealthdMetricsProvider>());
+  if (base::FeatureList::IsEnabled(::features::kUmaStorageDimensions)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<CrosHealthdMetricsProvider>());
+  }
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<SigninStatusMetricsProviderChromeOS>());
