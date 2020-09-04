@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -141,20 +142,22 @@ class CrosUsbNotificationDelegate
  public:
   explicit CrosUsbNotificationDelegate(
       const std::string& notification_id,
-      device::mojom::UsbDeviceInfoPtr device_info)
+      device::mojom::UsbDeviceInfoPtr device_info,
+      std::vector<std::string> vm_names,
+      std::string settings_sub_page)
       : notification_id_(notification_id),
         device_info_(std::move(device_info)),
+        vm_names_(std::move(vm_names)),
+        settings_sub_page_(std::move(settings_sub_page)),
         disposition_(CrosUsbNotificationClosed::kUnknown) {}
 
   void Click(const base::Optional<int>& button_index,
              const base::Optional<base::string16>& reply) override {
     disposition_ = CrosUsbNotificationClosed::kUnknown;
-    if (button_index && button_index.value() == 0) {
-      HandleConnectToVm(crostini::kCrostiniDefaultVmName);
-    } else if (button_index && button_index.value() == 1) {
-      HandleConnectToVm(plugin_vm::kPluginVmName);
+    if (button_index && *button_index < static_cast<int>(vm_names_.size())) {
+      HandleConnectToVm(vm_names_[*button_index]);
     } else {
-      HandleShowSettings();
+      HandleShowSettings(settings_sub_page_);
     }
   }
 
@@ -177,15 +180,16 @@ class CrosUsbNotificationDelegate
     Close(false);
   }
 
-  void HandleShowSettings() {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile(),
-        chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath);
+  void HandleShowSettings(const std::string& sub_page) {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile(),
+                                                                 sub_page);
     Close(false);
   }
 
   std::string notification_id_;
   device::mojom::UsbDeviceInfoPtr device_info_;
+  std::vector<std::string> vm_names_;
+  std::string settings_sub_page_;
   CrosUsbNotificationClosed disposition_;
   base::WeakPtrFactory<CrosUsbNotificationDelegate> weak_ptr_factory_{this};
 
@@ -227,28 +231,56 @@ device::mojom::UsbDeviceFilterPtr UsbFilterByClassCode(
 
 void ShowNotificationForDevice(device::mojom::UsbDeviceInfoPtr device_info) {
   message_center::RichNotificationData rich_notification_data;
+  std::vector<std::string> vm_names;
+  std::string settings_sub_page;
+  base::string16 vm_name;
   rich_notification_data.small_image = gfx::Image(
       gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
   rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
-  rich_notification_data.buttons.emplace_back(
-      message_center::ButtonInfo(l10n_util::GetStringUTF16(
-          IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_LINUX)));
-  rich_notification_data.buttons.emplace_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
+
+  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile())) {
+    vm_name = l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX);
+    rich_notification_data.buttons.emplace_back(
+        message_center::ButtonInfo(l10n_util::GetStringFUTF16(
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
+    vm_names.emplace_back(crostini::kCrostiniDefaultVmName);
+    settings_sub_page =
+        chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
+  }
+  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
+    vm_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
+    rich_notification_data.buttons.emplace_back(
+        message_center::ButtonInfo(l10n_util::GetStringFUTF16(
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
+    vm_names.emplace_back(plugin_vm::kPluginVmName);
+    settings_sub_page =
+        chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
+  }
+
+  base::string16 message;
+  if (vm_names.size() == 1) {
+    message = l10n_util::GetStringFUTF16(
+        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION,
+        ProductLabelFromDevice(device_info), vm_name);
+  } else {
+    message = l10n_util::GetStringFUTF16(
+        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_MULTI_VM,
+        ProductLabelFromDevice(device_info));
+    settings_sub_page = std::string();
+  }
 
   std::string notification_id =
       CrosUsbDetector::MakeNotificationId(device_info->guid);
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_MULTIPLE, notification_id,
       l10n_util::GetStringUTF16(IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE),
-      l10n_util::GetStringFUTF16(IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION,
-                                 ProductLabelFromDevice(device_info)),
-      gfx::Image(), base::string16(), GURL(),
+      message, gfx::Image(), base::string16(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierUsb),
       rich_notification_data,
       base::MakeRefCounted<CrosUsbNotificationDelegate>(
-          notification_id, std::move(device_info)));
+          notification_id, std::move(device_info), std::move(vm_names),
+          std::move(settings_sub_page)));
   SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
@@ -382,7 +414,8 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 bool CrosUsbDetector::ShouldShowNotification(
     const device::mojom::UsbDeviceInfo& device_info,
     uint32_t allowed_interfaces_mask) {
-  if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile())) {
+  if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
+      !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
     return false;
   }
   if (device::UsbDeviceFilterMatches(*adb_device_filter_, device_info) ||

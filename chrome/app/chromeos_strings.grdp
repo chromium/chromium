@@ -4542,6 +4542,9 @@
     Bluetooth
   </message>
 
+  <message name="IDS_CROSTINI_LINUX" desc="Name shown for crostini Linux. Do not translate.">
+    Linux
+  </message>
   <message name="IDS_CROSTINI_TERMINAL_APP_NAME" desc="Name of the Terminal app, which provides access to a Linux virtual machine.">
     Terminal
   </message>

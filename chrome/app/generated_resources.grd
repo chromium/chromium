@@ -9886,13 +9886,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <if expr="chromeos">
       <!-- CrOSUsb Notification -->
       <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
-        Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> to Linux
+          Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> to <ph name="USB_VM_NAME">$2<ex>Linux</ex></ph>
+      </message>
+      <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_MULTI_VM" desc="Content for notification shown to the user when a USB device gets plugged in.">
+          Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>
       </message>
       <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE" desc="Title for notification shown to the user when a USB device gets plugged in.">
         USB device detected
       </message>
-      <message name="IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_LINUX" desc="Label for notification button shown to the user when a USB device gets plugged in to allowed Linux to use the device">
-        Connect to Linux
+      <message name="IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM" desc="Label for notification button shown to the user when a USB device gets plugged in to allow a virtual machine to use the device">
+          Connect to <ph name="USB_VM_NAME">$1<ex>Linux</ex></ph>
       </message>
       <message name="IDS_CROSUSB_UNKNOWN_DEVICE_FROM_MANUFACTURER" desc="String describing an unknown device in notification shown when a USB device gets plugged in.">
         USB device from <ph name="MANUFACTURER_NAME">$1<ex>Google</ex></ph>
