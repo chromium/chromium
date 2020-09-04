@@ -32,8 +32,9 @@ namespace {
 base::ScopedCFTypeRef<CFMutableDictionaryRef> DefaultKeychainQuery(
     const AuthenticatorConfig& config,
     const std::string& rp_id) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0, nullptr, nullptr));
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(query, kSecAttrAccessGroup,
                        base::SysUTF8ToNSString(config.keychain_access_group));
@@ -79,8 +80,9 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
   // keychain access group.
   std::vector<base::ScopedCFTypeRef<CFDictionaryRef>> result;
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0, nullptr, nullptr));
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(query, kSecAttrAccessGroup,
                        base::SysUTF8ToNSString(keychain_access_group));
@@ -178,7 +180,9 @@ bool DoDeleteWebAuthnCredentials(const std::string& keychain_access_group,
       continue;
     }
     base::ScopedCFTypeRef<CFMutableDictionaryRef> delete_query(
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0, nullptr, nullptr));
+        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                  &kCFTypeDictionaryKeyCallBacks,
+                                  &kCFTypeDictionaryValueCallBacks));
     CFDictionarySetValue(delete_query, kSecClass, kSecClassKey);
     CFDictionarySetValue(delete_query, kSecAttrApplicationLabel,
                          sec_attr_app_label);
@@ -233,7 +237,9 @@ TouchIdCredentialStore::CreateCredential(
       CredentialMetadata::FromPublicKeyCredentialUserEntity(user, is_resident));
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> params(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0, nullptr, nullptr));
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(params, kSecAttrKeySizeInBits, @256);

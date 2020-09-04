@@ -54,12 +54,13 @@ const std::vector<uint8_t> kUserId = {10, 11, 12, 13, 14, 15};
 // credentials in the non-legacy keychain that are tagged with the keychain
 // access group used in this test.
 base::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0, nullptr, nullptr));
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   base::ScopedCFTypeRef<CFStringRef> access_group_ref(
       base::SysUTF8ToCFStringRef(kKeychainAccessGroup));
-  CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref.release());
+  CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref);
   CFDictionarySetValue(query, kSecAttrNoLegacy, @YES);
   CFDictionarySetValue(query, kSecReturnAttributes, @YES);
   CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
