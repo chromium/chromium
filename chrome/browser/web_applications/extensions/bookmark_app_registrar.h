@@ -74,6 +74,11 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   syncer::StringOrdinal GetUserLaunchOrdinal(
       const web_app::AppId& app_id) const;
 
+  // This is the same as GetAppUserDisplayMode above except it doesn't take
+  // BookmarkAppIsLocallyInstalled() flag into consideration.
+  web_app::DisplayMode GetAppUserDisplayModeForMigration(
+      const web_app::AppId& app_id) const;
+
   // ExtensionRegistryObserver:
   // OnExtensionInstalled is not handled here.
   // AppRegistrar::NotifyWebAppInstalled is triggered by

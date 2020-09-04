@@ -227,7 +227,7 @@ std::unique_ptr<WebApp> WebAppMigrationManager::MigrateBookmarkApp(
   web_app->SetDisplayMode(bookmark_app_registrar_.GetAppDisplayMode(app_id));
 
   DisplayMode user_display_mode =
-      bookmark_app_registrar_.GetAppUserDisplayMode(app_id);
+      bookmark_app_registrar_.GetAppUserDisplayModeForMigration(app_id);
   if (user_display_mode != DisplayMode::kUndefined)
     web_app->SetUserDisplayMode(user_display_mode);
 
