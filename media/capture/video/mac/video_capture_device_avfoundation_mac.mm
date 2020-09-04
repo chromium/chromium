@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/video_types.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video_capture_types.h"
@@ -176,6 +177,83 @@ void ExtractBaseAddressAndLength(char** base_address,
 }
 
 }  // anonymous namespace
+
+namespace media {
+
+// Find the best capture format from |formats| for the specified dimensions and
+// frame rate. Returns an element of |formats|, or nil.
+AVCaptureDeviceFormat* FindBestCaptureFormat(
+    NSArray<AVCaptureDeviceFormat*>* formats,
+    int width,
+    int height,
+    float frame_rate) {
+  AVCaptureDeviceFormat* bestCaptureFormat = nil;
+  VideoPixelFormat bestPixelFormat = VideoPixelFormat::PIXEL_FORMAT_UNKNOWN;
+  bool bestMatchesFrameRate = false;
+  Float64 bestMaxFrameRate = 0;
+
+  for (AVCaptureDeviceFormat* captureFormat in formats) {
+    const FourCharCode fourcc =
+        CMFormatDescriptionGetMediaSubType([captureFormat formatDescription]);
+    VideoPixelFormat pixelFormat = FourCCToChromiumPixelFormat(fourcc);
+    CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(
+        [captureFormat formatDescription]);
+    Float64 maxFrameRate = 0;
+    bool matchesFrameRate = false;
+    for (AVFrameRateRange* frameRateRange in
+         [captureFormat videoSupportedFrameRateRanges]) {
+      maxFrameRate = std::max(maxFrameRate, [frameRateRange maxFrameRate]);
+      matchesFrameRate |= [frameRateRange minFrameRate] <= frame_rate &&
+                          frame_rate <= [frameRateRange maxFrameRate];
+    }
+
+    // If the pixel format is unsupported by our code, then it is not useful.
+    if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)
+      continue;
+
+    // If our CMSampleBuffers will have a different size than the native
+    // capture, then we will not be the fast path.
+    if (dimensions.width != width || dimensions.height != height)
+      continue;
+
+    // Prefer a capture format that handles the requested framerate to one
+    // that doesn't.
+    if (bestCaptureFormat) {
+      if (bestMatchesFrameRate && !matchesFrameRate)
+        continue;
+      if (matchesFrameRate && !bestMatchesFrameRate)
+        bestCaptureFormat = nil;
+    }
+
+    // Prefer a capture format with a lower maximum framerate, under the
+    // assumption that that may have lower power consumption.
+    if (bestCaptureFormat) {
+      if (bestMaxFrameRate < maxFrameRate)
+        continue;
+      if (maxFrameRate < bestMaxFrameRate)
+        bestCaptureFormat = nil;
+    }
+
+    // Finally, compare according to Chromium preference.
+    if (bestCaptureFormat) {
+      if (VideoCaptureFormat::ComparePixelFormatPreference(bestPixelFormat,
+                                                           pixelFormat)) {
+        continue;
+      }
+    }
+
+    bestCaptureFormat = captureFormat;
+    bestPixelFormat = pixelFormat;
+    bestMaxFrameRate = maxFrameRate;
+    bestMatchesFrameRate = matchesFrameRate;
+  }
+
+  VLOG(1) << "Selecting AVCaptureDevice format "
+          << VideoPixelFormatToString(bestPixelFormat);
+  return bestCaptureFormat;
+}
+
+}  // namespace media
 
 @implementation VideoCaptureDeviceAVFoundation
 
@@ -345,17 +423,15 @@ void ExtractBaseAddressAndLength(char** base_address,
   _frameWidth = width;
   _frameHeight = height;
   _frameRate = frameRate;
+  _bestCaptureFormat.reset(
+      media::FindBestCaptureFormat([_captureDevice formats], width, height,
+                                   frameRate),
+      base::scoped_policy::RETAIN);
 
   FourCharCode best_fourcc = kCMPixelFormat_422YpCbCr8;
-  for (AVCaptureDeviceFormat* format in [_captureDevice formats]) {
-    const FourCharCode fourcc =
-        CMFormatDescriptionGetMediaSubType([format formatDescription]);
-    // Compare according to Chromium preference.
-    if (media::VideoCaptureFormat::ComparePixelFormatPreference(
-            FourCCToChromiumPixelFormat(fourcc),
-            FourCCToChromiumPixelFormat(best_fourcc))) {
-      best_fourcc = fourcc;
-    }
+  if (_bestCaptureFormat) {
+    best_fourcc = CMFormatDescriptionGetMediaSubType(
+        [_bestCaptureFormat formatDescription]);
   }
 
   if (best_fourcc == kCMVideoCodecType_JPEG_OpenDML) {
@@ -414,6 +490,16 @@ void ExtractBaseAddressAndLength(char** base_address,
              name:AVCaptureSessionRuntimeErrorNotification
            object:_captureSession];
   [_captureSession startRunning];
+
+  // Update the active capture format once the capture session is running.
+  // Setting it before the capture session is running has no effect.
+  if (_bestCaptureFormat) {
+    if ([_captureDevice lockForConfiguration:nil]) {
+      [_captureDevice setActiveFormat:_bestCaptureFormat];
+      [_captureDevice unlockForConfiguration];
+    }
+  }
+
   return YES;
 }
 

@@ -370,6 +370,7 @@ test("capture_unittests") {
     "video/linux/v4l2_capture_delegate_unittest.cc",
     "video/linux/video_capture_device_factory_linux_unittest.cc",
     "video/mac/video_capture_device_factory_mac_unittest.mm",
+    "video/mac/video_capture_device_mac_unittest.mm",
     "video/mock_gpu_memory_buffer_manager.cc",
     "video/mock_gpu_memory_buffer_manager.h",
     "video/video_capture_device_client_unittest.cc",
@@ -410,6 +411,13 @@ test("capture_unittests") {
     sources += [
       "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
       "video/fuchsia/video_capture_device_fuchsia_test.cc",
+    ]
+  }
+
+  if (is_mac) {
+    frameworks = [
+      "AVFoundation.framework",
+      "CoreMedia.framework",
     ]
   }
 
