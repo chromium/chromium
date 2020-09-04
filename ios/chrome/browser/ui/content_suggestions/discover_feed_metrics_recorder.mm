@@ -45,8 +45,10 @@ enum class FeedLoadStreamStatus {
 // renumbered and numeric values should never be reused. This must be kept
 // in sync with FeedUserActionType in enums.xml.
 enum class FeedUserActionType {
+  // User tapped on card, opening the article in the same tab.
   kTappedOnCard = 0,
   kShownCard = 1,
+  // User tapped on 'Send Feedback' in the back of card menu.
   kTappedSendFeedback = 2,
   // Discover feed header menu 'Learn More' tapped.
   kTappedLearnMore = 3,
@@ -55,9 +57,11 @@ enum class FeedUserActionType {
   // Discover feed header menu 'Manage Interests' tapped.
   kTappedManageInterests = 6,
   kTappedDownload = 7,
+  // User opened the article in a new tab from the back of card menu.
   kTappedOpenInNewTab = 8,
   kOpenedContextMenu = 9,
   kOpenedFeedSurface = 10,
+  // User opened the article in an incognito tab from the back of card menu.
   kTappedOpenInNewIncognitoTab = 11,
   kEphemeralChange = 12,
   kEphemeralChangeRejected = 13,
@@ -66,8 +70,10 @@ enum class FeedUserActionType {
   kTappedTurnOff = 15,
   // Discover feed header menu 'Manage Activity' tapped.
   kTappedManageActivity = 16,
+  // User added article to 'Read Later' list.
+  kAddedToReadLater = 17,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kTappedManageActivity,
+  kMaxValue = kAddedToReadLater,
 };
 
 namespace {
@@ -76,8 +82,7 @@ const char kDiscoverFeedInfiniteFeedTriggered[] =
     "ContentSuggestions.Feed.LoadStreamStatus.LoadMore";
 
 // Histogram name for the feed header items.
-const char kDiscoverFeedHeaderItemTapped[] =
-    "ContentSuggestions.Feed.UserActions";
+const char kDiscoverFeedUserAction[] = "ContentSuggestions.Feed.UserActions";
 
 }  // namespace
 
@@ -89,28 +94,53 @@ const char kDiscoverFeedHeaderItemTapped[] =
 }
 
 - (void)recordHeaderMenuLearnMoreTapped {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedHeaderItemTapped,
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
                             FeedUserActionType::kTappedLearnMore);
 }
 
 - (void)recordHeaderMenuManageActivityTapped {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedHeaderItemTapped,
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
                             FeedUserActionType::kTappedManageActivity);
 }
 
 - (void)recordHeaderMenuManageInterestsTapped {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedHeaderItemTapped,
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
                             FeedUserActionType::kTappedManageInterests);
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
   if (visible) {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedHeaderItemTapped,
+    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
                               FeedUserActionType::kTappedTurnOn);
   } else {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedHeaderItemTapped,
+    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
                               FeedUserActionType::kTappedTurnOff);
   }
+}
+
+- (void)recordOpenURLInSameTab {
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
+                            FeedUserActionType::kTappedOnCard);
+}
+
+- (void)recordOpenURLInNewTab {
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
+                            FeedUserActionType::kTappedOpenInNewTab);
+}
+
+- (void)recordOpenURLInIncognitoTab {
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
+                            FeedUserActionType::kTappedOpenInNewIncognitoTab);
+}
+
+- (void)recordAddURLToReadLater {
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
+                            FeedUserActionType::kAddedToReadLater);
+}
+
+- (void)recordTapSendFeedback {
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
+                            FeedUserActionType::kTappedSendFeedback);
 }
 
 @end

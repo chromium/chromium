@@ -30,6 +30,21 @@
 // header menu.
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible;
 
+// Records metrics for when a user opens an article in the same tab.
+- (void)recordOpenURLInSameTab;
+
+// Records metrics for when a user opens an article in a new tab.
+- (void)recordOpenURLInNewTab;
+
+// Records metrics for when a user opens an article in an incognito tab.
+- (void)recordOpenURLInIncognitoTab;
+
+// Records metrics for when a user adds an article to Read Later.
+- (void)recordAddURLToReadLater;
+
+// Records metrics for when a user opens the Send Feedback form.
+- (void)recordTapSendFeedback;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_
