@@ -22,6 +22,14 @@ struct PhysicalOffsetRectUniteTestData {
     {"b empty", {1, 2, 3, 4}, {}, {1, 2, 3, 4}},
     {"a larger", {100, 50, 300, 200}, {200, 50, 200, 200}, {100, 50, 300, 200}},
     {"b larger", {200, 50, 200, 200}, {100, 50, 300, 200}, {100, 50, 300, 200}},
+    {"saturated width",
+     {-1000, 0, 200, 200},
+     {33554402, 500, 30, 100},
+     {0, 0, 99999999.0f, 600}},
+    {"saturated height",
+     {0, -1000, 200, 200},
+     {0, 33554402, 100, 30},
+     {0, 0, 200, 99999999.0f}},
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -42,7 +50,20 @@ TEST_P(PhysicalRectUniteTest, Data) {
   const auto& data = GetParam();
   PhysicalRect actual = data.a;
   actual.Unite(data.b);
-  EXPECT_EQ(data.expected, actual);
+  auto expected = data.expected;
+  constexpr int kExtraForSaturation = 2000;
+  // On arm, you cannot actually get the true saturated value just by
+  // setting via LayoutUnit constructor. Instead, add to the expected
+  // value to actually get a saturated expectation (which is what happens in
+  // the Unite operation).
+  if (data.expected.size.width == GetMaxSaturatedSetResultForTesting()) {
+    expected.size.width += kExtraForSaturation;
+  }
+
+  if (data.expected.size.height == GetMaxSaturatedSetResultForTesting()) {
+    expected.size.height += kExtraForSaturation;
+  }
+  EXPECT_EQ(expected, actual);
 }
 
 TEST(PhysicalRectTest, InclusiveIntersect) {

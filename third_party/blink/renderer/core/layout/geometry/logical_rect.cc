@@ -34,8 +34,10 @@ void LogicalRect::Unite(const LogicalRect& other) {
   }
 
   LogicalOffset new_end_offset(Max(EndOffset(), other.EndOffset()));
-  offset = Min(offset, other.offset);
-  size = new_end_offset - offset;
+  LogicalOffset new_start_offset(Min(offset, other.offset));
+  size = new_end_offset - new_start_offset;
+  offset = {new_end_offset.inline_offset - size.inline_size,
+            new_end_offset.block_offset - size.block_size};
 }
 
 String LogicalRect::ToString() const {

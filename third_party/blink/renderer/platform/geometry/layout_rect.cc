@@ -121,8 +121,8 @@ void LayoutRect::UniteEvenIfEmpty(const LayoutRect& other) {
   LayoutPoint new_max_point(std::max(MaxX(), other.MaxX()),
                             std::max(MaxY(), other.MaxY()));
 
-  location_ = new_location;
   size_ = new_max_point - new_location;
+  location_ = new_max_point - size_;
 }
 
 void LayoutRect::Scale(float s) {
