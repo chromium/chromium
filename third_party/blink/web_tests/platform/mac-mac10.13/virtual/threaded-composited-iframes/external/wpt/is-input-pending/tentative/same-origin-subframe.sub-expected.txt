@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS can detect same-origin iframe events in parent
+FAIL can detect same-origin iframe events in subframe assert_equals: detected discrete input expected true but got false
+Harness: the test ran to completion.
+

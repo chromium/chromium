@@ -92,7 +92,56 @@
       }
     });
     assert_true(tried, 'VP8 video codec was found and tried');
-  }, `setCodecPreferences() with only one video codec should succeed`);
+  }, `setCodecPreferences() with only VP8 should succeed`);
+
+  test(() => {
+    const pc = new RTCPeerConnection();
+    const transceiver = pc.addTransceiver('video');
+    const capabilities = RTCRtpSender.getCapabilities('video');
+    const { codecs } = capabilities;
+    // This test verifies that the mandatory H264 codec is present
+    // and can be set.
+    let tried = false;
+    codecs.forEach(codec => {
+      if (codec.mimeType.toLowerCase() === 'video/h264') {
+        transceiver.setCodecPreferences([codecs[0]]);
+        tried = true;
+      }
+    });
+    assert_true(tried, 'VP8 video codec was found and tried');
+  }, `setCodecPreferences() with only H264 should succeed`);
+
+  async function getRTPMapLinesWithCodecAsFirst(firstCodec)
+  {
+     const capabilities = RTCRtpSender.getCapabilities('video').codecs;
+     capabilities.forEach((codec, idx) => {
+       if (codec.mimeType === firstCodec) {
+          capabilities.splice(idx, 1);
+          capabilities.unshift(codec);
+       }
+     });
+
+     const pc = new RTCPeerConnection();
+     const transceiver = pc.addTransceiver('video');
+     transceiver.setCodecPreferences(capabilities);
+     const offer = await pc.createOffer();
+
+     return offer.sdp.split('\r\n').filter(line => line.indexOf("a=rtpmap") === 0);
+  }
+
+  promise_test(async () => {
+    const lines = await getRTPMapLinesWithCodecAsFirst('video/H264');
+
+    assert_greater_than(lines.length, 1);
+    assert_true(lines[0].indexOf("H264") !== -1, "H264 should be the first codec");
+  }, `setCodecPreferences() should allow setting H264 as first codec`);
+
+  promise_test(async () => {
+    const lines = await getRTPMapLinesWithCodecAsFirst('video/VP8');
+
+    assert_greater_than(lines.length, 1);
+    assert_true(lines[0].indexOf("VP8") !== -1, "VP8 should be the first codec");
+  }, `setCodecPreferences() should allow setting VP8 as first codec`);
 
   test(() => {
     const pc = new RTCPeerConnection();

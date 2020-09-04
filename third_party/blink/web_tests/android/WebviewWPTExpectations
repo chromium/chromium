@@ -3038,7 +3038,6 @@ crbug.com/1050754 external/wpt/mathml/presentation-markup/scripts/underover-1.ht
 crbug.com/1050754 external/wpt/mathml/presentation-markup/scripts/underover-parameters-1.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/presentation-markup/scripts/underover-parameters-2.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/presentation-markup/scripts/underover-parameters-3.html [ Failure ]
-crbug.com/1050754 external/wpt/mathml/presentation-markup/scripts/underover-parameters-4.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/presentation-markup/spaces/space-1.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]

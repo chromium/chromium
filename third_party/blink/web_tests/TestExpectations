@@ -1250,7 +1250,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-dynamic
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-minus-plus.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-paint-lspace-rspace.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/underover-parameters-4.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-003.html [ Failure ]

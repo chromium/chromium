@@ -4,7 +4,10 @@ FAIL setCodecPreferences() on video transceiver with codecs returned from RTCRtp
 FAIL setCodecPreferences() with both sender receiver codecs combined should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setCodecPreferences([]) should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setCodecPreferences() with reordered codecs should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
-FAIL setCodecPreferences() with only one video codec should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
+FAIL setCodecPreferences() with only VP8 should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
+FAIL setCodecPreferences() with only H264 should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
+FAIL setCodecPreferences() should allow setting H264 as first codec promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL setCodecPreferences() should allow setting VP8 as first codec promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL setCodecPreferences() on audio transceiver with codecs returned from getCapabilities('video') should throw InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setCodecPreferences() with user defined codec with invalid mimeType should throw InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setCodecPreferences() with user defined codec should throw InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.

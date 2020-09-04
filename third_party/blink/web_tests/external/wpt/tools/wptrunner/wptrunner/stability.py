@@ -340,7 +340,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
                     output_results=True, **kwargs):
     kwargs_extras = [{}]
     if chaos_mode and kwargs["product"] == "firefox":
-        kwargs_extras.append({"chaos_mode_flags": 3})
+        kwargs_extras.append({"chaos_mode_flags": "0xfb"})
 
     steps = get_steps(logger, repeat_loop, repeat_restart, kwargs_extras)
 
