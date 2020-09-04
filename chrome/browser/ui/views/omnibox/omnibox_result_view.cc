@@ -75,7 +75,7 @@ OmniboxResultView::OmniboxResultView(
     : AnimationDelegateViews(this),
       popup_contents_view_(popup_contents_view),
       model_index_(model_index),
-      animation_(new gfx::SlideAnimation(this)),
+      keyword_slide_animation_(new gfx::SlideAnimation(this)),
       // Using base::Unretained is correct here. 'this' outlives the callback.
       mouse_enter_exit_handler_(
           base::BindRepeating(&OmniboxResultView::UpdateHoverState,
@@ -150,7 +150,7 @@ SkColor OmniboxResultView::GetColor(OmniboxPart part) const {
 
 void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   match_ = match.GetMatchWithContentsAndDescriptionPossiblySwapped();
-  animation_->Reset();
+  keyword_slide_animation_->Reset();
 
   suggestion_view_->OnMatchUpdate(this, match_);
   keyword_view_->OnMatchUpdate(this, match_);
@@ -190,11 +190,11 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   InvalidateLayout();
 }
 
-void OmniboxResultView::ShowKeyword(bool show_keyword) {
+void OmniboxResultView::ShowKeywordSlideAnimation(bool show_keyword) {
   if (show_keyword)
-    animation_->Show();
+    keyword_slide_animation_->Show();
   else
-    animation_->Hide();
+    keyword_slide_animation_->Hide();
 }
 
 void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
@@ -280,11 +280,12 @@ void OmniboxResultView::OnSelectionStateChanged() {
       popup_contents_view_->FireAXEventsForNewActiveDescendant(this);
     }
 
-    // TODO(orinj): Eventually the deep digging in this class should get
-    //  replaced with a single local point of access to all selection state.
-    ShowKeyword(selection_state == OmniboxPopupModel::KEYWORD_MODE);
+    // The slide animation is not used in the new suggestion button row UI.
+    ShowKeywordSlideAnimation(
+        !OmniboxFieldTrial::IsKeywordSearchButtonEnabled() &&
+        selection_state == OmniboxPopupModel::KEYWORD_MODE);
   } else {
-    ShowKeyword(false);
+    ShowKeywordSlideAnimation(false);
   }
   ApplyThemeAndRefreshIcons();
 }
@@ -360,7 +361,8 @@ void OmniboxResultView::Layout() {
   if (keyword_view_->GetVisible()) {
     const int max_kw_x =
         suggestion_width - OmniboxMatchCellView::GetTextIndent();
-    suggestion_width = animation_->CurrentValueBetween(max_kw_x, 0);
+    suggestion_width =
+        keyword_slide_animation_->CurrentValueBetween(max_kw_x, 0);
     keyword_view_->SetBounds(suggestion_width, 0, width() - suggestion_width,
                              height());
   }
@@ -592,7 +594,8 @@ const char* OmniboxResultView::GetClassName() const {
 }
 
 void OmniboxResultView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(width() / 4));
+  keyword_slide_animation_->SetSlideDuration(
+      base::TimeDelta::FromMilliseconds(width() / 4));
   InvalidateLayout();
 }
 

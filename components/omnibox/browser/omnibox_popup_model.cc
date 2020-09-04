@@ -48,8 +48,7 @@ bool OmniboxPopupModel::Selection::operator<(const Selection& b) const {
 }
 
 bool OmniboxPopupModel::Selection::IsChangeToKeyword(Selection from) const {
-  return (state == KEYWORD_MODE || state == FOCUSED_BUTTON_KEYWORD) &&
-         !(from.state == KEYWORD_MODE || from.state == FOCUSED_BUTTON_KEYWORD);
+  return state == KEYWORD_MODE && from.state != KEYWORD_MODE;
 }
 
 bool OmniboxPopupModel::Selection::IsButtonFocused() const {
@@ -350,18 +349,13 @@ OmniboxPopupModel::GetAllAvailableSelectionsSorted(Direction direction,
 
     all_states.push_back(NORMAL);
 
-    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-      // The keyword button experiment makes things simple. We no longer access
-      // keyword mode via pressing tab in this case.
-      all_states.push_back(FOCUSED_BUTTON_KEYWORD);
-    } else {
-      // Keyword mode is only accessible by Tabbing forward.
-      if (direction == kForward) {
-        if (step == kStateOrLine) {
-          all_states.push_back(KEYWORD_MODE);
-        }
-      }
+    // Keyword mode is accessible if the keyword search button is enabled. If
+    // not, then keyword mode is only accessible by tabbing forward.
+    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled() ||
+        (direction == kForward && step == kStateOrLine)) {
+      all_states.push_back(KEYWORD_MODE);
     }
+
     all_states.push_back(FOCUSED_BUTTON_TAB_SWITCH);
     if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled())
       all_states.push_back(FOCUSED_BUTTON_PEDAL);
@@ -458,16 +452,19 @@ OmniboxPopupModel::Selection OmniboxPopupModel::StepSelection(
     Direction direction,
     Step step) {
   // This block steps the popup model, with special consideration
-  // for existing keyword logic in the edit model, where AcceptKeyword and
-  // ClearKeyword must be called before changing the selected line.
+  // for existing keyword logic in the edit model, where ClearKeyword must be
+  // called before changing the selected line.
+  // AcceptKeyword should be called after changing the selected line so we don't
+  // accept keyword on the wrong suggestion when stepping backwards.
   const auto old_selection = selection();
   const auto new_selection = GetNextSelection(direction, step);
-  if (new_selection.IsChangeToKeyword(old_selection)) {
-    edit_model()->AcceptKeyword(metrics::OmniboxEventProto::TAB);
-  } else if (old_selection.IsChangeToKeyword(new_selection)) {
+  if (old_selection.IsChangeToKeyword(new_selection)) {
     edit_model()->ClearKeyword();
   }
   SetSelection(new_selection);
+  if (new_selection.IsChangeToKeyword(old_selection)) {
+    edit_model()->AcceptKeyword(metrics::OmniboxEventProto::TAB);
+  }
   return selection_;
 }
 
@@ -500,11 +497,7 @@ bool OmniboxPopupModel::IsControlPresentOnMatch(Selection selection) const {
     case NORMAL:
       return true;
     case KEYWORD_MODE:
-      return !OmniboxFieldTrial::IsKeywordSearchButtonEnabled() &&
-             match.associated_keyword != nullptr;
-    case FOCUSED_BUTTON_KEYWORD:
-      return OmniboxFieldTrial::IsKeywordSearchButtonEnabled() &&
-             match.associated_keyword != nullptr;
+      return match.associated_keyword != nullptr;
     case FOCUSED_BUTTON_TAB_SWITCH:
       // Buttons are suppressed for matches with an associated keyword, unless
       // dedicated button row is enabled.
@@ -553,21 +546,6 @@ bool OmniboxPopupModel::TriggerSelectionAction(Selection selection,
           pref_service_, match.suggestion_group_id.value(), new_value);
       break;
     }
-    case FOCUSED_BUTTON_KEYWORD:
-      // TODO(yoangela): Merge logic with mouse/gesture events in
-      // OmniboxSuggestionButtonRowView::ButtonPressed - This case currently
-      // is only reached by the call in OmniboxViewViews::HandleKeyEvent.
-      if (edit_model()->is_keyword_hint()) {
-        // TODO(yoangela): Rename once tab to keyword search is deprecated
-        // Accept/ClearKeyword() has special conditions to handle searches
-        // initiated by pressing Tab. Since tab+enter on this button behaves
-        // more similar to a Tab than a Keyboard shortcut, it's easier
-        // for now to treat it as a Tab entry method, otherwise the
-        // autocomplete results will reset, leaving us in an unknown state.
-        edit_model()->AcceptKeyword(metrics::OmniboxEventProto::TAB);
-      }
-      break;
-
     case FOCUSED_BUTTON_TAB_SWITCH:
       DCHECK(timestamp != base::TimeTicks());
       edit_model()->OpenMatch(match, WindowOpenDisposition::SWITCH_TO_TAB,
@@ -621,7 +599,7 @@ base::string16 OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
         additional_message_id = IDS_ACC_TAB_SWITCH_SUFFIX;
         available_actions_count++;
       }
-      if (IsControlPresentOnMatch(Selection(line, FOCUSED_BUTTON_KEYWORD))) {
+      if (IsControlPresentOnMatch(Selection(line, KEYWORD_MODE))) {
         additional_message_id = IDS_ACC_KEYWORD_SUFFIX;
         available_actions_count++;
       }
@@ -630,7 +608,7 @@ base::string16 OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
             match.pedal->GetLabelStrings().id_accessibility_suffix;
         available_actions_count++;
       }
-      DCHECK_EQ(LINE_STATE_MAX_VALUE, 7);
+      DCHECK_EQ(LINE_STATE_MAX_VALUE, 6);
       if (available_actions_count > 1)
         additional_message_id = IDS_ACC_MULTIPLE_ACTIONS_SUFFIX;
 
@@ -639,11 +617,11 @@ base::string16 OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
       break;
     }
     case KEYWORD_MODE:
+      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
+        additional_message_id = IDS_ACC_KEYWORD_BUTTON;
+      }
       // TODO(tommycli): Investigate whether the accessibility messaging for
-      // Keyword mode belongs here.
-      break;
-    case FOCUSED_BUTTON_KEYWORD:
-      additional_message_id = IDS_ACC_KEYWORD_BUTTON;
+      // (non-button row) Keyword mode belongs here.
       break;
     case FOCUSED_BUTTON_TAB_SWITCH:
       additional_message_id = IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX;

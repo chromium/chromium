@@ -63,7 +63,8 @@ class OmniboxResultView : public views::View,
   // model has changed.
   void SetMatch(const AutocompleteMatch& match);
 
-  void ShowKeyword(bool show_keyword);
+  // Sets the visibility of the keyword mode slide animation.
+  void ShowKeywordSlideAnimation(bool show_keyword);
 
   // Applies the current theme to the current text and widget colors.
   // Also refreshes the icons which may need to be re-colored as well.
@@ -146,7 +147,7 @@ class OmniboxResultView : public views::View,
   base::string16 accessible_name_;
 
   // For sliding in the keyword search.
-  std::unique_ptr<gfx::SlideAnimation> animation_;
+  std::unique_ptr<gfx::SlideAnimation> keyword_slide_animation_;
 
   // Weak pointers for easy reference.
   OmniboxMatchCellView* suggestion_view_;  // The leading (or left) view.

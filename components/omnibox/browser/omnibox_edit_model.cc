@@ -954,10 +954,11 @@ bool OmniboxEditModel::AcceptKeyword(
     original_user_text_with_keyword_ = user_text_;
   user_text_ = MaybeStripKeyword(user_text_);
 
-  if (PopupIsOpen())
+  if (PopupIsOpen()) {
     popup_model()->SetSelectedLineState(OmniboxPopupModel::KEYWORD_MODE);
-  else
+  } else {
     StartAutocomplete(false, true);
+  }
 
   // When entering keyword mode via tab, the new text to show is whatever the
   // newly-selected match in the dropdown is.  When entering via space, however,

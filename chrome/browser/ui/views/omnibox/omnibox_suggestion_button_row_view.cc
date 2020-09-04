@@ -137,7 +137,7 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
   keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
       this, base::string16(), vector_icons::kSearchIcon, popup_contents_view_,
       OmniboxPopupModel::Selection(model_index_,
-                                   OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD)));
+                                   OmniboxPopupModel::KEYWORD_MODE)));
   tab_switch_button_ =
       AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
           this, l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
@@ -155,8 +155,7 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
 OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
 
 void OmniboxSuggestionButtonRowView::UpdateFromModel() {
-  SetPillButtonVisibility(keyword_button_,
-                          OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD);
+  SetPillButtonVisibility(keyword_button_, OmniboxPopupModel::KEYWORD_MODE);
   if (keyword_button_->GetVisible()) {
     const OmniboxEditModel* edit_model = model()->edit_model();
     base::string16 keyword;
@@ -215,7 +214,7 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(views::Button* button,
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
     popup_model->SetSelection(OmniboxPopupModel::Selection(
-        model_index_, OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD));
+        model_index_, OmniboxPopupModel::KEYWORD_MODE));
     if (model()->edit_model()->is_keyword_hint()) {
       auto method = metrics::OmniboxEventProto::INVALID;
       if (event.IsMouseEvent()) {
@@ -267,6 +266,13 @@ const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
     OmniboxSuggestionRowButton* button,
     OmniboxPopupModel::LineState state) {
-  button->SetVisible(model()->IsControlPresentOnMatch(
-      OmniboxPopupModel::Selection(model_index_, state)));
+  // If the keyword button flag is not enabled, the classic keyword UI is
+  // used instead, so do not show the keyword button
+  if (button == keyword_button_ &&
+      !OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
+    button->SetVisible(false);
+  } else {
+    button->SetVisible(model()->IsControlPresentOnMatch(
+        OmniboxPopupModel::Selection(model_index_, state)));
+  }
 }

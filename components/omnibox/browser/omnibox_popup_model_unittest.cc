@@ -483,9 +483,10 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
   }
   // Make match index 1 deletable to verify we can step to that.
   matches[1].deletable = true;
+  // Make match index 2 only have an associated keyword to verify we can step
+  // backwards into keyword search mode.
   matches[2].associated_keyword =
       std::make_unique<AutocompleteMatch>(matches.back());
-  matches[2].has_tab_match = true;
   // Make match index 3 have an associated keyword, tab match, and deletable to
   // verify keyword mode doesn't override tab match and remove suggestion
   // buttons (as it does with button row disabled)
@@ -523,10 +524,9 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
            Selection(1, OmniboxPopupModel::NORMAL),
            Selection(1, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(2, OmniboxPopupModel::NORMAL),
-           Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD),
-           Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
+           Selection(2, OmniboxPopupModel::KEYWORD_MODE),
            Selection(3, OmniboxPopupModel::NORMAL),
-           Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD),
+           Selection(3, OmniboxPopupModel::KEYWORD_MODE),
            Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
            Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(4, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
@@ -545,10 +545,9 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
            Selection(4, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
            Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
-           Selection(3, OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD),
+           Selection(3, OmniboxPopupModel::KEYWORD_MODE),
            Selection(3, OmniboxPopupModel::NORMAL),
-           Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
-           Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD),
+           Selection(2, OmniboxPopupModel::KEYWORD_MODE),
            Selection(2, OmniboxPopupModel::NORMAL),
            Selection(1, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(1, OmniboxPopupModel::NORMAL),

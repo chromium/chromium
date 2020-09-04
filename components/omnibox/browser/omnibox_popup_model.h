@@ -61,26 +61,22 @@ class OmniboxPopupModel {
     // NORMAL means the row is focused, and Enter key navigates to the match.
     NORMAL = 1,
 
-    // FOCUSED_BUTTON_KEYWORD is used when the keyword button is in focus, not
-    // actually in Keyword Mode. This is currently only used if deciated button
-    // row is enabled
-    FOCUSED_BUTTON_KEYWORD = 2,
-
-    // KEYWORD_MODE state means actually in keyword mode, as distinct from the
-    // FOCUSED_BUTTON_KEYWORD state, which is only for button focus.
-    KEYWORD_MODE = 3,
+    // KEYWORD_MODE state is used when in Keyword mode.  If the keyword search
+    // button is enabled, keyword mode is entered when the keyword button is
+    // focused.
+    KEYWORD_MODE = 2,
 
     // FOCUSED_BUTTON_TAB_SWITCH state means the Switch Tab button is focused.
     // Pressing enter will switch to the tab match.
-    FOCUSED_BUTTON_TAB_SWITCH = 4,
+    FOCUSED_BUTTON_TAB_SWITCH = 3,
 
     // FOCUSED_BUTTON_PEDAL state means a Pedal button is in focus. This is
     // currently only used when dedicated button row and pedals are enabled.
-    FOCUSED_BUTTON_PEDAL = 5,
+    FOCUSED_BUTTON_PEDAL = 4,
 
     // FOCUSED_BUTTON_REMOVE_SUGGESTION state means the Remove Suggestion (X)
     // button is focused. Pressing enter will attempt to remove this suggestion.
-    FOCUSED_BUTTON_REMOVE_SUGGESTION = 6,
+    FOCUSED_BUTTON_REMOVE_SUGGESTION = 5,
 
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
