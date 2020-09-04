@@ -492,17 +492,12 @@
       },
     },
   },
-  'mac_mini_7,1': {
+  'mac_mini_10.14': {
     'swarming': {
-      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
-      # used in conjunction with 'mac_pro_11,5' to trigger tests on multiple
-      # configurations.
-      'dimension_sets': [
-        {
-          'gpu': '8086:0a2e',
-          'os': 'Mac',
-        },
-      ],
+      'dimensions': {
+        'gpu': '8086:0a2e',
+        'os': 'Mac-10.14.6',
+      },
     },
   },
   'mac_mini_intel_gpu_experimental': {
@@ -521,18 +516,16 @@
       },
     },
   },
-  'mac_pro_11,5': {
+  # Version of mac_mini_intel_gpu_stable that uses 'dimension_sets'
+  # instead of 'dimensions' so it can be used to trigger tests on multiple
+  # configurations.
+  'mac_mini_intel_gpu_stable_dimension_set': {
     'swarming': {
-      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
-      # used in conjunction with 'mac_mini_7,1' to trigger tests on multiple
-      # configurations.
       'dimension_sets': [
         {
-          'gpu': '1002:6821',
-          'hidpi': '1',
-          'os': 'Mac',
-          'pool': 'chromium.tests.gpu',
-        }
+          'gpu': '8086:0a2e',
+          'os': 'Mac-10.15.5',
+        },
       ],
     },
   },
@@ -564,6 +557,21 @@
         'os': 'Mac-10.14.6',
         'pool': 'chromium.tests.gpu',
       },
+    },
+  },
+  # Version of mac_retina_amd_gpu_stable that uses 'dimension_sets'
+  # instead of 'dimensions' so it can be used to trigger tests on multiple
+  # configurations.
+  'mac_retina_amd_gpu_stable_dimension_set': {
+    'swarming': {
+      'dimension_sets': [
+        {
+          'gpu': '1002:6821',
+          'hidpi': '1',
+          'os': 'Mac-10.14.6',
+          'pool': 'chromium.tests.gpu',
+        },
+      ],
     },
   },
   'mac_retina_nvidia_gpu_experimental': {

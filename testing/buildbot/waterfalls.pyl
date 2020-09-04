@@ -2449,8 +2449,7 @@
       },
       'mac10.14-blink-rel-dummy': {
         'mixins': [
-          'mac_mini_7,1',
-          'mac_10.14',
+          'mac_mini_10.14',
         ],
         'swarming': {
           'hard_timeout': 900,
@@ -3681,9 +3680,8 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
-          'mac_mini_7,1',
-          'mac_pro_11,5',
-          'mac_10.14',
+          'mac_mini_intel_gpu_stable_dimension_set',
+          'mac_retina_amd_gpu_stable_dimension_set',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
