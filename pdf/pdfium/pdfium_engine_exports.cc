@@ -391,12 +391,10 @@ bool PDFiumEngineExports::GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
   if (max_page_width) {
     *max_page_width = 0;
     for (int page_number = 0; page_number < page_count_local; page_number++) {
-      double page_width = 0;
-      double page_height = 0;
-      FPDF_GetPageSizeByIndex(doc.get(), page_number, &page_width,
-                              &page_height);
-      if (page_width > *max_page_width) {
-        *max_page_width = page_width;
+      FS_SIZEF page_size;
+      if (FPDF_GetPageSizeByIndexF(doc.get(), page_number, &page_size) &&
+          page_size.width > *max_page_width) {
+        *max_page_width = page_size.width;
       }
     }
   }
@@ -446,9 +444,16 @@ bool PDFiumEngineExports::GetPDFPageSizeByIndex(
     double* width,
     double* height) {
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
-  if (!doc)
+  if (!doc || !width || !height)
     return false;
-  return FPDF_GetPageSizeByIndex(doc.get(), page_number, width, height) != 0;
+
+  FS_SIZEF size;
+  if (!FPDF_GetPageSizeByIndexF(doc.get(), page_number, &size))
+    return false;
+
+  *width = size.width;
+  *height = size.height;
+  return true;
 }
 
 }  // namespace chrome_pdf

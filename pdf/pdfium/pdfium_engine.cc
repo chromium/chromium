@@ -2941,33 +2941,28 @@ gfx::Size PDFiumEngine::GetPageSize(int index) {
 gfx::Size PDFiumEngine::GetPageSizeForLayout(
     int index,
     const DocumentLayout::Options& layout_options) {
-  gfx::Size size;
-  double width_in_points = 0;
-  double height_in_points = 0;
-  int rv = FPDF_GetPageSizeByIndex(doc(), index, &width_in_points,
-                                   &height_in_points);
+  FS_SIZEF size_in_points;
+  if (!FPDF_GetPageSizeByIndexF(doc(), index, &size_in_points))
+    return gfx::Size();
 
-  if (rv) {
-    int width_in_pixels = static_cast<int>(
-        ConvertUnitDouble(width_in_points, kPointsPerInch, kPixelsPerInch));
-    int height_in_pixels = static_cast<int>(
-        ConvertUnitDouble(height_in_points, kPointsPerInch, kPixelsPerInch));
+  int width_in_pixels = static_cast<int>(
+      ConvertUnitDouble(size_in_points.width, kPointsPerInch, kPixelsPerInch));
+  int height_in_pixels = static_cast<int>(
+      ConvertUnitDouble(size_in_points.height, kPointsPerInch, kPixelsPerInch));
 
-    switch (layout_options.default_page_orientation()) {
-      case PageOrientation::kOriginal:
-      case PageOrientation::kClockwise180:
-        // No axis swap needed.
-        break;
-      case PageOrientation::kClockwise90:
-      case PageOrientation::kClockwise270:
-        // Rotated 90 degrees: swap axes.
-        std::swap(width_in_pixels, height_in_pixels);
-        break;
-    }
-
-    size = gfx::Size(width_in_pixels, height_in_pixels);
+  switch (layout_options.default_page_orientation()) {
+    case PageOrientation::kOriginal:
+    case PageOrientation::kClockwise180:
+      // No axis swap needed.
+      break;
+    case PageOrientation::kClockwise90:
+    case PageOrientation::kClockwise270:
+      // Rotated 90 degrees: swap axes.
+      std::swap(width_in_pixels, height_in_pixels);
+      break;
   }
-  return size;
+
+  return gfx::Size(width_in_pixels, height_in_pixels);
 }
 
 draw_utils::PageInsetSizes PDFiumEngine::GetInsetSizes(
