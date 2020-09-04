@@ -141,13 +141,17 @@ sk_sp<PaintFilter> FilterEffect::CreateTransparentBlack() const {
 }
 
 PaintFilter::CropRect FilterEffect::GetCropRect() const {
-  if (!FilterPrimitiveSubregion().IsEmpty()) {
-    FloatRect rect =
-        GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
-    return PaintFilter::CropRect(rect);
-  } else {
+  if (!ClipsToBounds())
     return PaintFilter::CropRect(SkRect::MakeEmpty(), 0);
-  }
+  FloatRect computed_bounds = FilterPrimitiveSubregion();
+  // This and the filter region check is a workaround for crbug.com/512453.
+  if (computed_bounds.IsEmpty())
+    return PaintFilter::CropRect(SkRect::MakeEmpty(), 0);
+  FloatRect filter_region = GetFilter()->FilterRegion();
+  if (!filter_region.IsEmpty())
+    computed_bounds.Intersect(filter_region);
+  return PaintFilter::CropRect(
+      GetFilter()->MapLocalRectToAbsoluteRect(computed_bounds));
 }
 
 static int GetImageFilterIndex(InterpolationSpace interpolation_space,
