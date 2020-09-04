@@ -35,11 +35,9 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
 
   space_builder.SetIsShrinkToFit(child_style.LogicalWidth().IsAuto());
 
-  // TODO(rbuis): add target stretch sizes.
-
+  // TODO(crbug.com/1124301): add target stretch sizes.
+  // TODO(crbug.com/1125137): add ink metrics.
   space_builder.SetTextDirection(child_style.Direction());
-
-  // TODO(rbuis): add ink baselines?
   space_builder.SetNeedsBaseline(true);
   return space_builder.ToConstraintSpace();
 }

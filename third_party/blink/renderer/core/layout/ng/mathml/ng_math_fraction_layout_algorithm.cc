@@ -31,9 +31,7 @@ FractionParameters GetFractionParameters(const ComputedStyle& style) {
   bool has_display_style = HasDisplayStyle(style);
 
   // We try and read constants to draw the fraction from the OpenType MATH and
-  // use fallback values otherwise.
-  // The MATH table specification suggests default rule thickness or (in
-  // displaystyle) 3 times default rule thickness for the gaps.
+  // use fallback values suggested in the MathML Core specification otherwise.
   parameters.numerator_gap_min = LayoutUnit(
       MathConstant(
           style,
@@ -52,8 +50,6 @@ FractionParameters GetFractionParameters(const ComputedStyle& style) {
               : OpenTypeMathSupport::MathConstants::kFractionDenominatorGapMin)
           .value_or(parameters.numerator_gap_min));
 
-  // TODO(crbug.com/1058369): The MATH table specification does not suggest
-  // any values for shifts, so we leave them at zero for now.
   parameters.numerator_min_shift_up = LayoutUnit(
       MathConstant(
           style,

@@ -69,6 +69,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     LayoutUnit ascent = margins.block_start + fragment.BaselineOrSynthesize();
     *max_row_block_baseline = std::max(*max_row_block_baseline, ascent);
 
+    // TODO(crbug.com/1125136): take into account italic correction.
     // TODO(rbuis): Operators can add lspace and rspace.
 
     children->emplace_back(
@@ -152,6 +153,7 @@ MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
     depends_on_percentage_block_size |=
         child_result.depends_on_percentage_block_size;
 
+    // TODO(crbug.com/1125136): take into account italic correction.
     // TODO(rbuis): Operators can add lspace and rspace.
   }
 

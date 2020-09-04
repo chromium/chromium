@@ -19,7 +19,7 @@ bool MathMLRadicalElement::HasIndex() const {
 LayoutObject* MathMLRadicalElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  // TODO(rbuis): legacy check should be removed.
+  // TODO(crbug.com/1125133): legacy check should be removed.
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
       legacy == LegacyLayout::kForce || !style.IsDisplayMathType())
     return MathMLElement::CreateLayoutObject(style, legacy);

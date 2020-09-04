@@ -141,7 +141,7 @@ void NGMathMLPainter::Paint(const PaintInfo& info,
     return;
   }
 
-  // TODO(rbuis): paint operator
+  // TODO(crbug.com/1124301): paint operator
   PaintRadicalSymbol(info, paint_offset);
 }
 

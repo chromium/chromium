@@ -320,7 +320,7 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
       content_start_offset.block_offset;
   LayoutUnit descent =
       std::max(base_metrics.descent, metrics.descent + metrics.sub_shift);
-  // TODO(rbuis): take into account italic correction.
+  // TODO(crbug.com/1125136): take into account italic correction.
   LayoutUnit inline_offset = content_start_offset.inline_offset;
 
   LayoutUnit space = GetSpaceAfterScript(Style());
@@ -436,7 +436,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
     case MathScriptType::kUnder:
     case MathScriptType::kOver:
     case MathScriptType::kSuper: {
-      // TODO(fwang): Take italic correction into account.
+      // TODO(crbug.com/1125136): Take italic correction into account.
       NGBlockNode sub = sub_sup_pairs[0].sub;
       NGBlockNode sup = sub_sup_pairs[0].sup;
       auto first_post_script = sub ? sub : sup;
@@ -454,7 +454,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
     case MathScriptType::kSubSup:
     case MathScriptType::kUnderOver:
     case MathScriptType::kMultiscripts: {
-      // TODO(fwang): Take italic correction into account.
+      // TODO(crbug.com/1125136): Take italic correction into account.
       MinMaxSizes sub_sup_pair_size;
       unsigned index = 0;
       do {

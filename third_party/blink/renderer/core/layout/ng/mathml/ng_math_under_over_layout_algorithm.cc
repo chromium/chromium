@@ -95,8 +95,6 @@ UnderOverVerticalParameters GetUnderOverVerticalParameters(
     return parameters;
   }
 
-  // TODO(crbug.com/1124285): Handle accent/accentunder attributes.
-  // TODO(crbug.com/1124289): Implement AccentBaseHeight.
   const float default_rule_thickness = RuleThicknessFallback(style);
   parameters.under_gap_min = LayoutUnit(
       MathConstant(style,
@@ -216,6 +214,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   UnderOverVerticalParameters parameters = GetUnderOverVerticalParameters(
       Style(), is_base_large_operator, is_base_stretchy_in_inline_axis);
   // TODO(crbug.com/1124301): handle stretchy operators.
+  // TODO(crbug.com/1125136): take into account italic correction.
 
   auto base_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), ConstraintSpace(), base);
@@ -343,6 +342,7 @@ MinMaxSizesResult NGMathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned())
       continue;
+    // TODO(crbug.com/1125136): take into account italic correction.
     auto child_result = ComputeMinAndMaxContentContribution(
         Style(), To<NGBlockNode>(child), child_input);
     NGBoxStrut margins = ComputeMinMaxMargins(Style(), child);
