@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_number_list.h"
 
-#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -65,12 +64,10 @@ SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
 
 void SVGNumberList::Add(SVGPropertyBase* other, SVGElement* context_element) {
   auto* other_list = To<SVGNumberList>(other);
-
   if (length() != other_list->length())
     return;
-
   for (uint32_t i = 0; i < length(); ++i)
-    at(i)->SetValue(at(i)->Value() + other_list->at(i)->Value());
+    at(i)->Add(other_list->at(i), context_element);
 }
 
 void SVGNumberList::CalculateAnimatedValue(
@@ -83,6 +80,10 @@ void SVGNumberList::CalculateAnimatedValue(
     SVGElement* context_element) {
   auto* from_list = To<SVGNumberList>(from_value);
   auto* to_list = To<SVGNumberList>(to_value);
+
+  if (!AdjustFromToListValues(from_list, to_list, percentage))
+    return;
+
   auto* to_at_end_of_duration_list =
       To<SVGNumberList>(to_at_end_of_duration_value);
 
@@ -91,20 +92,16 @@ void SVGNumberList::CalculateAnimatedValue(
   uint32_t to_at_end_of_duration_list_size =
       to_at_end_of_duration_list->length();
 
-  if (!AdjustFromToListValues(from_list, to_list, percentage))
-    return;
-
+  const bool needs_neutral_element =
+      !from_list_size || to_list_size != to_at_end_of_duration_list_size;
+  SVGNumber* neutral = needs_neutral_element ? CreatePaddingItem() : nullptr;
   for (uint32_t i = 0; i < to_list_size; ++i) {
-    float effective_from = from_list_size ? from_list->at(i)->Value() : 0;
-    float effective_to = to_list_size ? to_list->at(i)->Value() : 0;
-    float effective_to_at_end = i < to_at_end_of_duration_list_size
-                                    ? to_at_end_of_duration_list->at(i)->Value()
-                                    : 0;
-
-    float animated = at(i)->Value();
-    AnimateAdditiveNumber(parameters, percentage, repeat_count, effective_from,
-                          effective_to, effective_to_at_end, animated);
-    at(i)->SetValue(animated);
+    SVGNumber* from = from_list_size ? from_list->at(i) : neutral;
+    SVGNumber* to_at_end = i < to_at_end_of_duration_list_size
+                               ? to_at_end_of_duration_list->at(i)
+                               : neutral;
+    at(i)->CalculateAnimatedValue(parameters, percentage, repeat_count, from,
+                                  to_list->at(i), to_at_end, context_element);
   }
 }
 

@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 
-#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -86,15 +85,10 @@ SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
 
 void SVGLengthList::Add(SVGPropertyBase* other, SVGElement* context_element) {
   auto* other_list = To<SVGLengthList>(other);
-
   if (length() != other_list->length())
     return;
-
-  SVGLengthContext length_context(context_element);
   for (uint32_t i = 0; i < length(); ++i)
-    at(i)->SetValue(
-        at(i)->Value(length_context) + other_list->at(i)->Value(length_context),
-        length_context);
+    at(i)->Add(other_list->at(i), context_element);
 }
 
 SVGLength* SVGLengthList::CreatePaddingItem() const {
@@ -111,44 +105,28 @@ void SVGLengthList::CalculateAnimatedValue(
     SVGElement* context_element) {
   auto* from_list = To<SVGLengthList>(from_value);
   auto* to_list = To<SVGLengthList>(to_value);
-  auto* to_at_end_of_duration_list =
-      To<SVGLengthList>(to_at_end_of_duration_value);
-
-  SVGLengthContext length_context(context_element);
-
-  uint32_t from_length_list_size = from_list->length();
-  uint32_t to_length_list_size = to_list->length();
-  uint32_t to_at_end_of_duration_list_size =
-      to_at_end_of_duration_list->length();
 
   if (!AdjustFromToListValues(from_list, to_list, percentage))
     return;
 
-  for (uint32_t i = 0; i < to_length_list_size; ++i) {
-    // TODO(shanmuga.m): Support calc for SVGLengthList animation
-    float animated_number = at(i)->Value(length_context);
-    const SVGLength* length_for_unit_type = to_list->at(i);
-    float effective_from = 0;
-    if (from_length_list_size) {
-      if (percentage < 0.5)
-        length_for_unit_type = from_list->at(i);
-      effective_from = from_list->at(i)->Value(length_context);
-    }
-    float effective_to = to_list->at(i)->Value(length_context);
-    float effective_to_at_end =
-        i < to_at_end_of_duration_list_size
-            ? to_at_end_of_duration_list->at(i)->Value(length_context)
-            : 0;
+  auto* to_at_end_of_duration_list =
+      To<SVGLengthList>(to_at_end_of_duration_value);
 
-    AnimateAdditiveNumber(parameters, percentage, repeat_count, effective_from,
-                          effective_to, effective_to_at_end, animated_number);
-    // |animated_number| is in user units.
-    CSSPrimitiveValue::UnitType unit_type =
-        length_for_unit_type->IsCalculated()
-            ? CSSPrimitiveValue::UnitType::kUserUnits
-            : length_for_unit_type->NumericLiteralType();
-    at(i)->SetUnitType(unit_type);
-    at(i)->SetValue(animated_number, length_context);
+  uint32_t from_list_size = from_list->length();
+  uint32_t to_list_size = to_list->length();
+  uint32_t to_at_end_of_duration_list_size =
+      to_at_end_of_duration_list->length();
+
+  const bool needs_neutral_element =
+      !from_list_size || to_list_size != to_at_end_of_duration_list_size;
+  SVGLength* neutral = needs_neutral_element ? CreatePaddingItem() : nullptr;
+  for (uint32_t i = 0; i < to_list_size; ++i) {
+    SVGLength* from = from_list_size ? from_list->at(i) : neutral;
+    SVGLength* to_at_end = i < to_at_end_of_duration_list_size
+                               ? to_at_end_of_duration_list->at(i)
+                               : neutral;
+    at(i)->CalculateAnimatedValue(parameters, percentage, repeat_count, from,
+                                  to_list->at(i), to_at_end, context_element);
   }
 }
 
