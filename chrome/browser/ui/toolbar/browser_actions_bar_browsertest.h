@@ -39,9 +39,6 @@ class BrowserActionsBarBrowserTest : public extensions::ExtensionBrowserTest {
   // extension_[a|b|c]().
   void LoadExtensions();
 
-  // Returns a list of features to disable.
-  virtual std::vector<base::Feature> GetFeaturesToDisable();
-
   const extensions::Extension* extension_a() const {
     return extension_a_.get();
   }

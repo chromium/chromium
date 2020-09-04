@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/extensions/extension_message_bubble_browsertest.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
@@ -91,8 +94,13 @@ class ExtensionMessageBubbleViewBrowserTest
   ExtensionMessageBubbleViewBrowserTest() {}
   ~ExtensionMessageBubbleViewBrowserTest() override {}
 
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
   // TestBrowserDialog:
   void ShowUi(const std::string& name) override;
+
+  // Returns a list of features to disable.
+  virtual std::vector<base::Feature> GetFeaturesToDisable();
 
  private:
   // ExtensionMessageBubbleBrowserTest:
@@ -103,6 +111,8 @@ class ExtensionMessageBubbleViewBrowserTest
   void ClickLearnMoreButton(Browser* browser) override;
   void ClickActionButton(Browser* browser) override;
   void ClickDismissButton(Browser* browser) override;
+
+  base::test::ScopedFeatureList feature_list_;
 
   // Whether to ignore requests from ExtensionMessageBubbleBrowserTest to
   // CloseBubble().
@@ -123,6 +133,22 @@ void ExtensionMessageBubbleViewBrowserTest::ShowUi(const std::string& name) {
     // TODO(tapted): Add cases for all bubble types.
     ADD_FAILURE() << "Unknown dialog: " << name;
   }
+}
+
+void ExtensionMessageBubbleViewBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  // Note: The ScopedFeatureList needs to be instantiated before the rest of
+  // set up happens.
+  feature_list_.InitWithFeatures({}, GetFeaturesToDisable());
+
+  ExtensionMessageBubbleBrowserTest::SetUpCommandLine(command_line);
+}
+
+std::vector<base::Feature>
+ExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable() {
+  // This suite currently relies on behavior specific to ToolbarActionsBar.
+  // TODO(devlin): Change that. https://crbug.com/1100412.
+  return {features::kExtensionsToolbarMenu};
 }
 
 void ExtensionMessageBubbleViewBrowserTest::CheckBubbleNative(

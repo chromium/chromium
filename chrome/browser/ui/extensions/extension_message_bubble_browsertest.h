@@ -9,14 +9,16 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/toolbar/browser_actions_bar_browsertest.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 
 namespace extensions {
 class TestExtensionDir;
 }
 
+class ToolbarActionsModel;
+
 class ExtensionMessageBubbleBrowserTest
-    : public BrowserActionsBarBrowserTest {
+    : public extensions::ExtensionBrowserTest {
  public:
   enum AnchorPosition {
     ANCHOR_BROWSER_ACTION,
@@ -26,8 +28,9 @@ class ExtensionMessageBubbleBrowserTest
   ExtensionMessageBubbleBrowserTest();
   ~ExtensionMessageBubbleBrowserTest() override;
 
-  // BrowserActionsBarBrowserTest:
+  // extensions::ExtensionBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Checks the position of the bubble present in the given |browser|, when the
@@ -134,6 +137,8 @@ class ExtensionMessageBubbleBrowserTest
   void TestClickingActionButton();
   void TestClickingDismissButton();
 
+  ToolbarActionsModel* toolbar_model() { return toolbar_model_; }
+
  private:
   std::unique_ptr<extensions::FeatureSwitch::ScopedOverride>
       dev_mode_bubble_override_;
@@ -141,6 +146,8 @@ class ExtensionMessageBubbleBrowserTest
   // The backing directory for a custom extension loaded during a test. Null if
   // no custom extension is loaded.
   std::unique_ptr<extensions::TestExtensionDir> custom_extension_dir_;
+
+  ToolbarActionsModel* toolbar_model_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleBrowserTest);
 };

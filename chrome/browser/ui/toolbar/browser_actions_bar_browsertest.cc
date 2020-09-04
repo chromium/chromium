@@ -100,7 +100,9 @@ void BrowserActionsBarBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   // Note: The ScopedFeatureList needs to be instantiated before the rest of
   // set up happens.
-  feature_list_.InitWithFeatures({}, GetFeaturesToDisable());
+  // This suite relies on behavior specific to ToolbarActionsBar. See
+  // ExtensionsMenuViewBrowserTest and ExtensionsMenuViewUnitTest for new tests.
+  feature_list_.InitAndDisableFeature(features::kExtensionsToolbarMenu);
 
   extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   ToolbarActionsBar::disable_animations_for_testing_ = true;
@@ -139,13 +141,6 @@ void BrowserActionsBarBrowserTest::LoadExtensions() {
     EXPECT_EQ(static_cast<int>(i + 1),
               browser_actions_bar()->VisibleBrowserActions());
   }
-}
-
-std::vector<base::Feature>
-BrowserActionsBarBrowserTest::GetFeaturesToDisable() {
-  // This suite relies on behavior specific to ToolbarActionsBar. See
-  // ExtensionsMenuViewBrowserTest and ExtensionsMenuViewUnitTest for new tests.
-  return {features::kExtensionsToolbarMenu};
 }
 
 // Test the basic functionality.
