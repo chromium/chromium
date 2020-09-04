@@ -625,8 +625,6 @@ void RenderThreadImpl::Init() {
   unfreezable_message_filter_ = new UnfreezableMessageFilter(this);
   AddFilter(unfreezable_message_filter_.get());
 
-  audio_input_ipc_factory_.emplace(main_thread_runner(), GetIOTaskRunner());
-
   audio_output_ipc_factory_.emplace(GetIOTaskRunner());
 
   GetContentClient()->renderer()->RenderThreadStarted();

@@ -29,13 +29,9 @@ class BLINK_MODULES_EXPORT WebAudioInputIPCFactory {
   WebAudioInputIPCFactory(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
-
   ~WebAudioInputIPCFactory();
 
-  static WebAudioInputIPCFactory* get() {
-    DCHECK(instance_);
-    return instance_;
-  }
+  static WebAudioInputIPCFactory& GetInstance();
 
   const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner() const {
     return io_task_runner_;
@@ -49,9 +45,6 @@ class BLINK_MODULES_EXPORT WebAudioInputIPCFactory {
  private:
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  // Global instance, set in constructor and unset in destructor.
-  static WebAudioInputIPCFactory* instance_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAudioInputIPCFactory);
 };

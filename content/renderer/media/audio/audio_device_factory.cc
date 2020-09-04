@@ -181,8 +181,8 @@ AudioDeviceFactory::NewAudioCapturerSource(
   }
 
   return base::MakeRefCounted<media::AudioInputDevice>(
-      blink::WebAudioInputIPCFactory::get()->CreateAudioInputIPC(frame_token,
-                                                                 params),
+      blink::WebAudioInputIPCFactory::GetInstance().CreateAudioInputIPC(
+          frame_token, params),
       media::AudioInputDevice::Purpose::kUserInput,
       media::AudioInputDevice::DeadStreamDetection::kEnabled);
 }

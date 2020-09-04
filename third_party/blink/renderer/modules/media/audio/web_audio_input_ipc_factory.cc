@@ -15,9 +15,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/modules/media/audio/mojo_audio_input_ipc.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -75,21 +78,20 @@ void AssociateInputAndOutputForAec(
 }
 }  // namespace
 
-WebAudioInputIPCFactory* WebAudioInputIPCFactory::instance_ = nullptr;
+WebAudioInputIPCFactory& WebAudioInputIPCFactory::GetInstance() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WebAudioInputIPCFactory, instance,
+                                  (Thread::MainThread()->GetTaskRunner(),
+                                   Platform::Current()->GetIOTaskRunner()));
+  return instance;
+}
 
 WebAudioInputIPCFactory::WebAudioInputIPCFactory(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : main_task_runner_(std::move(main_task_runner)),
-      io_task_runner_(std::move(io_task_runner)) {
-  DCHECK(!instance_);
-  instance_ = this;
-}
+      io_task_runner_(std::move(io_task_runner)) {}
 
-WebAudioInputIPCFactory::~WebAudioInputIPCFactory() {
-  DCHECK_EQ(instance_, this);
-  instance_ = nullptr;
-}
+WebAudioInputIPCFactory::~WebAudioInputIPCFactory() = default;
 
 std::unique_ptr<media::AudioInputIPC>
 WebAudioInputIPCFactory::CreateAudioInputIPC(

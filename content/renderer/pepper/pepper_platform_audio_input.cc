@@ -173,7 +173,7 @@ void PepperPlatformAudioInput::InitializeOnIOThread(
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   if (ipc_startup_state_ != kStopped)
-    ipc_ = blink::WebAudioInputIPCFactory::get()->CreateAudioInputIPC(
+    ipc_ = blink::WebAudioInputIPCFactory::GetInstance().CreateAudioInputIPC(
         render_frame_token_, media::AudioSourceParameters(session_id));
   if (!ipc_)
     return;
