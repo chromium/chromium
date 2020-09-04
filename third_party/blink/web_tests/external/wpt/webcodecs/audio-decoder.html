@@ -3,70 +3,14 @@
 <title>Test the AudioDecoder API.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/webcodecs/utils.js"></script>
 <script>
 
-// Calls done after giving async output/error callbacks a final chance to run.
-async function asyncDone(test) {
-  test.step_timeout(test.step_func_done(), 0);
-}
-
-async_test(async (t) => {
-  // AudioDecoderInit lacks required fields.
-  assert_throws_js(TypeError, () => { new AudioDecoder({}); });
-
-  // AudioDecoderInit has required fields.
-  let decoder = new AudioDecoder({
-    output(chunk) { t.unreached_func("Unexpected output").call(); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
-
-  asyncDone(t);
-}, 'Test AudioDecoder construction');
-
-async_test(async (t) => {
-  let decoder = new AudioDecoder({
-    output(chunk) { t.unreached_func("Unexpected output").call(); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
-
-  let config = {
-    sampleRate: 48000,
-    numberOfChannels: 2
-  }
-
-  assert_equals(decoder.state, "unconfigured");
-
-  // Empty codec rejected.
-  config.codec = '';
-  assert_throws_js(TypeError, () => { decoder.configure(config); });
-
-  // Invalid codec rejected.
-  config.codec = 'bogus';
-  assert_throws_js(TypeError, () => { decoder.configure(config); });
-
-  // Video codec rejected.
-  config.codec = 'vp8';
-  assert_throws_js(TypeError, () => { decoder.configure(config); });
-
-  // Codec with mime type rejected.
-  config.codec = 'audio/webm; codecs="opus"';
-  assert_throws_js(TypeError, () => { decoder.configure(config); });
-
-  // Valid audio codec accepted.
-  config.codec = 'opus';
-  decoder.configure(config);
-
-  assert_equals(decoder.state, "configured");
-
-  // Test we can configure after a reset.
-  decoder.reset()
-  assert_equals(decoder.state, "unconfigured");
-
-  decoder.configure(config);
-  assert_equals(decoder.state, "configured");
-
-  asyncDone(t);
-}, 'Test AudioDecoder.configure() codec validity');
+const defaultConfig = {
+  codec: "opus",
+  sampleRate: 48000,
+  numberOfChannels: 2
+};
 
 function getFakeChunk() {
   return new EncodedAudioChunk({
@@ -77,79 +21,44 @@ function getFakeChunk() {
 }
 
 promise_test(t => {
-  let decoder = new AudioDecoder({
-    output(frame) {
-      t.step(() => {
-        throw "unexpected output";
-      });
-    },
-    error(e) {
-      t.step(() => {
-        throw "unexpected error";
-      });
-    }
-  });
+  // AudioDecoderInit lacks required fields.
+  assert_throws_js(TypeError, () => { new AudioDecoder({}); });
 
+  // AudioDecoderInit has required fields.
+  let decoder = new AudioDecoder(getDefaultCodecInit(t));
+
+  assert_equals(decoder.state, "unconfigured");
   decoder.close();
 
-  assert_equals(decoder.state, "closed");
-
-  let config = {
-    sampleRate: 48000,
-    numberOfChannels: 2,
-    codec: 'opus'
-  }
-
-  let fakeChunk = getFakeChunk();
-
-  assert_throws_dom("InvalidStateError",
-                    () => decoder.configure(config),
-                    "configure");
-  assert_throws_dom("InvalidStateError",
-                    () => decoder.decode(fakeChunk),
-                    "decode");
-  assert_throws_dom("InvalidStateError",
-                    () => decoder.reset(),
-                    "reset");
-  assert_throws_dom("InvalidStateError",
-                    () => decoder.close(),
-                    "close");
-  return promise_rejects_dom(t, 'InvalidStateError', decoder.flush(), 'flush');
-}, 'Closed decoder');
+  return endAfterEventLoopTurn();
+}, 'Test AudioDecoder construction');
 
 promise_test(t => {
-  let decoder = new AudioDecoder({
-    output(frame) {
-      t.step(() => {
-        throw "unexpected output";
-      });
-    },
-    error(e) {
-      t.step(() => {
-        throw "unexpected error";
-      });
-    }
-  });
+  let decoder = new AudioDecoder(getDefaultCodecInit(t));
 
-  assert_equals(decoder.state, "unconfigured");
+  let badCodecsList = [
+    '',                         // Empty codec
+    'bogus',                    // Non exsitent codec
+    'vp8',                      // Video codec
+    'audio/webm; codecs="opus"' // Codec with mime type
+  ]
 
-  // Reseting an unconfigured encoder is a no-op.
-  decoder.reset();
-  assert_equals(decoder.state, "unconfigured");
+  testConfigurations(decoder, defaultConfig, badCodecsList);
 
-  let config = {
-    sampleRate: 48000,
-    numberOfChannels: 2,
-    codec: 'opus'
-  }
+  return endAfterEventLoopTurn();
+}, 'Test AudioDecoder.configure()');
 
-  let fakeChunk = getFakeChunk();
+promise_test(t => {
+  let decoder = new AudioDecoder(getDefaultCodecInit(t));
 
-  assert_throws_dom("InvalidStateError",
-                    () => decoder.decode(fakeChunk),
-                    "decode");
-  return promise_rejects_dom(t, 'InvalidStateError', decoder.flush(), 'flush');
-}, 'Unconfigured decoder');
+  return testClosedCodec(t, decoder, defaultConfig, getFakeChunk());
+}, 'Verify closed AudioDecoder operations');
+
+promise_test(t => {
+  let decoder = new AudioDecoder(getDefaultCodecInit(t));
+
+  return testUnconfiguredCodec(t, decoder, getFakeChunk());
+}, 'Verify unconfigured AudioDecoder operations');
 
 
 </script>

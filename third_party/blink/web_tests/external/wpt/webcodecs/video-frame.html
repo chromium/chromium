@@ -4,16 +4,8 @@
 <body></body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/webcodecs/utils.js"></script>
 <script>
-function makeImageBitmap(width, height) {
-  let canvas = new OffscreenCanvas(width, height);
-
-  let ctx = canvas.getContext('2d');
-  ctx.fillStyle = 'rgba(50, 100, 150, 255)';
-  ctx.fillRect(0, 0, width, height);
-
-  return canvas.transferToImageBitmap();
-}
 
 test(t => {
   let image = makeImageBitmap(32, 16);

@@ -5,33 +5,22 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/media.js"></script>
+<script src="/webcodecs/utils.js"></script>
 <script>
-
-function makeImageBitmap(width, height) {
-  let canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-
-  let ctx = canvas.getContext('2d');
-  ctx.fillStyle = 'rgba(50, 100, 150, 255)';
-  ctx.fillRect(0, 0, width, height);
-
-  return createImageBitmap(canvas);
-}
 
 var defaultInit = {
   timestamp : 100,
   duration : 33,
 }
 
-async function createDefaultVideoFrame() {
-  let image = await makeImageBitmap(32,16);
+function createDefaultVideoFrame() {
+  let image = makeImageBitmap(32,16);
 
   return new VideoFrame(image, defaultInit);
 }
 
-async_test(async function(t) {
-  let frame = await createDefaultVideoFrame();
+test(t => {
+  let frame = createDefaultVideoFrame();
 
   let clone = frame.clone();
 
@@ -44,12 +33,10 @@ async_test(async function(t) {
 
   frame.destroy();
   clone.destroy();
-
-  t.done();
 }, 'Test we can clone a VideoFrame.');
 
-async_test(async function(t) {
-  let frame = await createDefaultVideoFrame();
+test(t => {
+  let frame = createDefaultVideoFrame();
 
   let copy = frame;
   let clone = frame.clone();
@@ -60,24 +47,20 @@ async_test(async function(t) {
   assert_equals(clone.timestamp, defaultInit.timestamp);
 
   clone.destroy();
-
-  t.done();
 }, 'Verify destroying a frame doesn\'t affect its clones.');
 
-async_test(async function(t) {
-  let frame = await createDefaultVideoFrame();
+test(t => {
+  let frame = createDefaultVideoFrame();
 
   frame.destroy();
 
   assert_throws_dom("InvalidStateError", () => {
     let clone = frame.clone();
   });
-
-  t.done();
 }, 'Verify cloning a destroyed frame throws.');
 
-async_test(async function(t) {
-  let localFrame = await createDefaultVideoFrame();
+async_test(t => {
+  let localFrame = createDefaultVideoFrame();
 
   let channel = new MessageChannel();
   let localPort = channel.port1;
@@ -97,8 +80,8 @@ async_test(async function(t) {
 
 }, 'Verify destroying frames propagates accross contexts.');
 
-async_test(async function(t) {
-  let localFrame = await createDefaultVideoFrame();
+async_test(t => {
+  let localFrame = createDefaultVideoFrame();
 
   let channel = new MessageChannel();
   let localPort = channel.port1;
@@ -119,8 +102,8 @@ async_test(async function(t) {
 
 }, 'Verify destroying cloned frames doesn\'t propagate accross contexts.');
 
-async_test(async function(t) {
-  let localFrame = await createDefaultVideoFrame();
+async_test(t => {
+  let localFrame = createDefaultVideoFrame();
 
   let channel = new MessageChannel();
   let localPort = channel.port1;

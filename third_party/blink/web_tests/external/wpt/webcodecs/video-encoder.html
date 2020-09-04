@@ -7,6 +7,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/media.js"></script>
+<script src="/webcodecs/utils.js"></script>
 <script>
 
 const defaultConfig = {
@@ -27,113 +28,42 @@ async function createVideoFrame(width, height, timestamp) {
   return new VideoFrame(bitmap, { timestamp: timestamp });
 }
 
-// Calls done after giving async output/error callbacks a final chance to run.
-async function asyncDone(test) {
-  test.step_timeout(test.done.bind(test), 0);
-}
-
-async_test(async (t) => {
+promise_test(t => {
   // VideoEncoderInit lacks required fields.
   assert_throws_js(TypeError, () => { new VideoEncoder({}); });
 
   // VideoEncoderInit has required fields.
-  let encoder = new VideoEncoder({
-    output(chunk) { t.unreached_func("Unexpected output").call(); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
+  let encoder = new VideoEncoder(getDefaultCodecInit(t));
 
   assert_equals(encoder.state, "unconfigured");
 
   encoder.close();
 
-  asyncDone(t);
+  return endAfterEventLoopTurn();
 }, 'Test VideoEncoder construction');
 
-async_test(async (t) => {
-  let encoder = new VideoEncoder({
-    output(chunk) { t.unreached_func("Unexpected output").call(); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
+promise_test(t => {
+  let encoder = new VideoEncoder(getDefaultCodecInit(t));
 
-  const requiredConfigPairs = defaultConfig;
-  let incrementalConfig = {};
+  let badCodecsList = [
+    '',                         // Empty codec
+    'bogus',                    // Non exsitent codec
+    'vorbis',                   // Audio codec
+    'vp9',                      // Ambiguous codec
+    'video/webm; codecs="vp9"'  // Codec with mime type
+  ]
 
-  for (let key in requiredConfigPairs) {
-    // Configure should fail while required keys are missing.
-    assert_throws_js(TypeError, () => { encoder.configure(incrementalConfig); });
-    incrementalConfig[key] = requiredConfigPairs[key];
-    assert_equals(encoder.state, "unconfigured");
-  }
+  testConfigurations(encoder, defaultConfig, badCodecsList);
 
-  // Configure should pass once incrementalConfig meets all requirements.
-  encoder.configure(incrementalConfig);
-  assert_equals(encoder.state, "configured");
-
-  // We should be able to reconfigure the encoder.
-  encoder.configure(incrementalConfig);
-  assert_equals(encoder.state, "configured");
-
-  let config = incrementalConfig;
-
-  // Bogus codec rejected.
-  config.codec = 'bogus';
-  assert_throws_js(TypeError, () => { encoder.configure(config); });
-
-  // Audio codec rejected.
-  config.codec = 'vorbis';
-  assert_throws_js(TypeError, () => { encoder.configure(config); });
-
-  // Ambiguous codec rejected.
-  config.codec = 'vp9';
-  assert_throws_js(TypeError, () => { encoder.configure(config); });
-
-  // Codec with mime type rejected.
-  config.codec = 'video/webm; codecs="vp9"';
-  assert_throws_js(TypeError, () => { encoder.configure(config); });
-
-  // The failed configures should not affect the current config.
-  assert_equals(encoder.state, "configured");
-
-  // Test we can configure after a reset.
-  encoder.reset()
-  assert_equals(encoder.state, "unconfigured");
-
-  encoder.configure(defaultConfig);
-  assert_equals(encoder.state, "configured");
-
-  encoder.close();
-
-  asyncDone(t);
+  return endAfterEventLoopTurn();
 }, 'Test VideoEncoder.configure()');
 
-async_test(async (t) => {
-  let encoder = new VideoEncoder({
-    output(chunk) { t.unreached_func("Unexpected output").call(); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
-
-  let videoFrame = await createVideoFrame(640, 480, 0);
-
-  assert_throws_dom('InvalidStateError',
-                    () => { encoder.encode(videoFrame); },
-                    'first encode');
-
-  // Once more for good measure.
-  assert_throws_dom('InvalidStateError',
-                    () => { encoder.encode(videoFrame); },
-                    'second encode');
-
-  encoder.close();
-
-  asyncDone(t);
-}, 'Test encode() before configure() throws InvalidStateError.');
-
-async_test(async (t) => {
+promise_test(async t => {
   let output_chunks = [];
-  let encoder = new VideoEncoder({
-    output(chunk) { output_chunks.push(chunk); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
+  let codecInit = getDefaultCodecInit(t);
+  codecInit.output = chunk => output_chunks.push(chunk);
+
+  let encoder = new VideoEncoder(codecInit);
 
   // No encodes yet.
   assert_equals(encoder.encodeQueueSize, 0);
@@ -161,18 +91,14 @@ async_test(async (t) => {
   assert_equals(output_chunks.length, 2);
   assert_equals(output_chunks[0].timestamp, frame1.timestamp);
   assert_equals(output_chunks[1].timestamp, frame2.timestamp);
-
-  encoder.close();
-
-  asyncDone(t);
 }, 'Test successful configure(), encode(), and flush()');
 
-async_test(async (t) => {
+promise_test(async t => {
   let output_chunks = [];
-  let encoder = new VideoEncoder({
-    output(chunk) { output_chunks.push(chunk); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
+  let codecInit = getDefaultCodecInit(t);
+  codecInit.output = chunk => output_chunks.push(chunk);
+
+  let encoder = new VideoEncoder(codecInit);
 
   // No encodes yet.
   assert_equals(encoder.encodeQueueSize, 0);
@@ -217,8 +143,9 @@ async_test(async (t) => {
   encoder.encode(frame3.clone());
 
   // Verify that a failed call to configure does not change the encoder's state.
-  config.codec = 'bogus';
-  assert_throws_js(TypeError, () => encoder.configure(config));
+  let badConfig = {...defaultConfig};
+  badConfig.codec = 'bogus';
+  assert_throws_js(TypeError, () => encoder.configure(badConfig));
 
   encoder.encode(frame4.clone());
 
@@ -226,101 +153,47 @@ async_test(async (t) => {
 
   assert_equals(output_chunks[0].timestamp, frame3.timestamp);
   assert_equals(output_chunks[1].timestamp, frame4.timestamp);
-
-  encoder.close();
-
-  asyncDone(t);
 }, 'Test successful encode() after re-configure().');
 
-async_test(async (t) => {
+promise_test(async t => {
   let output_chunks = [];
-  let encoder = new VideoEncoder({
-    output(chunk) { output_chunks.push(chunk); },
-    error(error) { t.unreached_func("Unexpected error:" + error).call(); },
-  });
+  let codecInit = getDefaultCodecInit(t);
+  codecInit.output = chunk => output_chunks.push(chunk);
+
+  let encoder = new VideoEncoder(codecInit);
 
   let timestamp = 33333;
   let frame = await createVideoFrame(640, 480, timestamp);
 
-  t.step(() => {
-    // No encodes yet.
-    assert_equals(encoder.encodeQueueSize, 0);
+  encoder.configure(defaultConfig);
+  assert_equals(encoder.state, "configured");
 
-    encoder.configure(defaultConfig);
+  encoder.encode(frame);
 
-    encoder.encode(frame);
-
-    assert_not_equals(frame.timestamp, timestamp);
-    assert_throws_dom("InvalidStateError", () => frame.clone());
-
-    encoder.close();
-  });
-
-  asyncDone(t);
-}, 'Test encoder consumes (destroys) frames.');
-
-promise_test(async t => {
-  let encoder = new VideoEncoder({
-    output(frame) {
-      t.step(() => {
-        throw "unexpected output";
-      });
-    },
-    error(e) {
-      t.step(() => {
-        throw "unexpected error";
-      });
-    }
-  });
+  // |frame| is not longer valid since it has been destroyed.
+  assert_not_equals(frame.timestamp, timestamp);
+  assert_throws_dom("InvalidStateError", () => frame.clone());
 
   encoder.close();
 
-  assert_equals(encoder.state, "closed")
-
-  let frame = await createVideoFrame(640, 480, 0);
-
-  assert_throws_dom("InvalidStateError",
-                    () => encoder.configure(defaultConfig),
-                    "configure");
-  assert_throws_dom("InvalidStateError",
-                    () => encoder.encode(frame),
-                    "encode");
-  assert_throws_dom("InvalidStateError",
-                    () => encoder.reset(),
-                    "reset");
-  assert_throws_dom("InvalidStateError",
-                    () => encoder.close(),
-                    "close");
-  return promise_rejects_dom(t, 'InvalidStateError', encoder.flush(), 'flush');
-}, 'Closed encoder');
+  return endAfterEventLoopTurn();
+}, 'Test encoder consumes (destroys) frames.');
 
 promise_test(async t => {
-  let encoder = new VideoEncoder({
-    output(frame) {
-      t.step(() => {
-        throw "unexpected output";
-      });
-    },
-    error(e) {
-      t.step(() => {
-        throw "unexpected error";
-      });
-    }
-  });
-
-  assert_equals(encoder.state, "unconfigured");
+  let encoder = new VideoEncoder(getDefaultCodecInit(t));
 
   let frame = await createVideoFrame(640, 480, 0);
 
-  // Resetting an unconfigured encoder is a no-op.
-  encoder.reset();
-  assert_equals(encoder.state, "unconfigured");
+  return testClosedCodec(t, encoder, defaultConfig, frame);
+}, 'Verify closed VideoEncoder operations');
 
-  assert_throws_dom("InvalidStateError",
-                    () => encoder.encode(frame),
-                    "encode");
-  return promise_rejects_dom(t, 'InvalidStateError', encoder.flush(), 'flush');
-}, 'Unconfigured encoder');
+promise_test(async t => {
+  let encoder = new VideoEncoder(getDefaultCodecInit(t));
+
+  let frame = await createVideoFrame(640, 480, 0);
+
+  return testUnconfiguredCodec(t, encoder, frame);
+}, 'Verify unconfigured VideoEncoder operations');
 
 </script>
 </html>
