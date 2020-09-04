@@ -683,17 +683,6 @@ Polymer({
           this.spellCheckLanguages_[0].language.code,
           !!this.getPref('browser.enable_spellchecking').value);
     }
-
-    // <if expr="_google_chrome">
-    // When spell check is disabled, automatically disable using the spelling
-    // service. This resets the spell check option to 'Use basic spell check'
-    // when spell check is turned off. This check is in an observer so that it
-    // can also correct any users who land on the Settings page and happen
-    // to have spelling service enabled but spell check disabled.
-    if (!this.getPref('browser.enable_spellchecking').value) {
-      this.setPrefValue('spellcheck.use_spelling_service', false);
-    }
-    // </if>
   },
 
   /**

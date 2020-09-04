@@ -323,6 +323,18 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(SpellcheckServiceHostBrowserTest);
 };
 
+// Disable spell check should disable spelling service
+IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
+                       DisableSpellcheckDisableSpellingService) {
+  InitSpellcheck(true, "", "en-US");
+  GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckUseSpellingService,
+                         true);
+
+  EnableSpellcheck(false);
+  EXPECT_FALSE(
+      GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckUseSpellingService));
+}
+
 // Removing a spellcheck language from accept languages should remove it from
 // spellcheck languages list as well.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,

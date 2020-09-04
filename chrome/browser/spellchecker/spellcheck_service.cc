@@ -391,6 +391,10 @@ void SpellcheckService::InitForRenderer(content::RenderProcessHost* host) {
 
     custom_words.assign(custom_dictionary_->GetWords().begin(),
                         custom_dictionary_->GetWords().end());
+  } else {
+    // Disabling spell check should also disable spelling service.
+    user_prefs::UserPrefs::Get(context)->SetBoolean(
+        spellcheck::prefs::kSpellCheckUseSpellingService, false);
   }
 
   GetSpellCheckerForProcess(host)->Initialize(std::move(dictionaries),
