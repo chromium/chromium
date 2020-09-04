@@ -37,6 +37,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/display/types/display_constants.h"
 
+class PrefChangeRegistrar;
 class PrefRegistrySimple;
 
 namespace ui {
@@ -393,6 +394,10 @@ class ASH_EXPORT AppListControllerImpl
   void UpdateItemNotificationBadge(const std::string& app_id,
                                    apps::mojom::OptionalBool has_badge);
 
+  // Checks the notification badging pref and then updates whether a
+  // notification badge is shown for each AppListItem.
+  void UpdateAppBadging();
+
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)
   // * being hidden (either through an animation or a drag)
@@ -476,6 +481,12 @@ class ASH_EXPORT AppListControllerImpl
 
   // Whether the notification indicator flag is enabled.
   const bool is_notification_indicator_enabled_;
+
+  // Observes user profile prefs for the app list.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Whether the pref for notification badging is enabled.
+  base::Optional<bool> notification_badging_pref_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImpl);
 };

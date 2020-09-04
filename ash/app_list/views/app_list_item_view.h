@@ -228,7 +228,7 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // AppListItemObserver overrides:
   void ItemIconChanged(AppListConfigType config_type) override;
   void ItemNameChanged() override;
-  void ItemBadgeVisibilityChanged(bool is_badge_visible) override;
+  void ItemBadgeVisibilityChanged() override;
   void ItemBeingDestroyed() override;
 
   // ui::ImplicitAnimationObserver:

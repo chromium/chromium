@@ -42,6 +42,9 @@ void MessageCenterController::RegisterProfilePrefs(
       prefs::kMessageCenterLockScreenMode,
       prefs::kMessageCenterLockScreenModeHide,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAppNotificationBadgingEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 namespace {

@@ -21,7 +21,7 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver {
   virtual void ItemNameChanged() {}
 
   // Invoked when the item's notification badge visibility is changed.
-  virtual void ItemBadgeVisibilityChanged(bool is_badge_visible) {}
+  virtual void ItemBadgeVisibilityChanged() {}
 
   // Invoked when the item is about to be destroyed.
   virtual void ItemBeingDestroyed() {}

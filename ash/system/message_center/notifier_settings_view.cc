@@ -10,9 +10,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -26,6 +28,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_service.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -466,6 +469,15 @@ NotifierSettingsView::NotifierSettingsView() {
         TrayPopupUtils::CreateToggleButton(
             this, IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP));
     app_badging_toggle_ = app_badging_toggle.get();
+
+    SessionControllerImpl* session_controller =
+        Shell::Get()->session_controller();
+    PrefService* prefs = session_controller->GetLastActiveUserPrefService();
+    if (prefs) {
+      app_badging_toggle_->SetIsOn(
+          prefs->GetBoolean(prefs::kAppNotificationBadgingEnabled));
+    }
+
     auto app_badging_view = CreateToggleButtonRow(
         std::move(app_badging_icon), std::move(app_badging_label),
         std::move(app_badging_toggle));
@@ -659,8 +671,13 @@ bool NotifierSettingsView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 void NotifierSettingsView::ButtonPressed(views::Button* sender,
                                          const ui::Event& event) {
   if (sender == app_badging_toggle_) {
-    // TODO(tengs): Call the appropriate controller to toggle app badging once
-    // it is available.
+    SessionControllerImpl* session_controller =
+        Shell::Get()->session_controller();
+    PrefService* prefs = session_controller->GetLastActiveUserPrefService();
+    if (prefs) {
+      prefs->SetBoolean(prefs::kAppNotificationBadgingEnabled,
+                        app_badging_toggle_->GetIsOn());
+    }
     return;
   }
 

@@ -60,11 +60,17 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   // ShelfModelObserver:
   void ShelfItemAdded(int index) override;
 
+  // Updates whether an app badge is shown for the shelf items in the model.
+  void UpdateAppBadging();
+
   // The shelf model shared by all shelf instances.
   ShelfModel model_;
 
   // Whether notification indicators are enabled for app icons in the shelf.
   const bool is_notification_indicator_enabled_;
+
+  // Whether the pref for notification badging is enabled.
+  base::Optional<bool> notification_badging_pref_enabled_;
 
   // Observes user profile prefs for the shelf.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

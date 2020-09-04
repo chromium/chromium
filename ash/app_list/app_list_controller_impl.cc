@@ -59,6 +59,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -503,7 +504,8 @@ bool AppListControllerImpl::IsVisible(
 void AppListControllerImpl::OnAppListItemAdded(AppListItem* item) {
   client_->OnItemAdded(profile_id_, item->CloneMetadata());
 
-  if (is_notification_indicator_enabled_ && cache_) {
+  if (is_notification_indicator_enabled_ && cache_ &&
+      notification_badging_pref_enabled_.value_or(false)) {
     // Update the notification badge indicator for the newly added app list
     // item.
     cache_->ForOneApp(item->id(), [item](const apps::AppUpdate& update) {
@@ -513,8 +515,16 @@ void AppListControllerImpl::OnAppListItemAdded(AppListItem* item) {
 }
 
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
-    PrefService* /* pref_service */) {
+    PrefService* pref_service) {
   if (is_notification_indicator_enabled_) {
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(pref_service);
+
+    pref_change_registrar_->Add(
+        prefs::kAppNotificationBadgingEnabled,
+        base::BindRepeating(&AppListControllerImpl::UpdateAppBadging,
+                            base::Unretained(this)));
+
     // Observe AppRegistryCache for the current active account to get
     // notification updates.
     AccountId account_id =
@@ -523,12 +533,10 @@ void AppListControllerImpl::OnActiveUserPrefServiceChanged(
         apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
     Observe(cache_);
 
-    if (cache_) {
-      // Update the notification badge indicator for all apps in the app list.
-      cache_->ForEachApp([this](const apps::AppUpdate& update) {
-        UpdateItemNotificationBadge(update.AppId(), update.HasBadge());
-      });
-    }
+    // Resetting the recorded pref forces the next call to UpdateAppBadging()
+    // to update notification badging for every app item.
+    notification_badging_pref_enabled_.reset();
+    UpdateAppBadging();
   }
 
   if (!IsTabletMode()) {
@@ -1839,7 +1847,8 @@ gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(
 }
 
 void AppListControllerImpl::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.HasBadgeChanged()) {
+  if (update.HasBadgeChanged() &&
+      notification_badging_pref_enabled_.value_or(false)) {
     UpdateItemNotificationBadge(update.AppId(), update.HasBadge());
   }
 }
@@ -1872,6 +1881,31 @@ void AppListControllerImpl::UpdateItemNotificationBadge(
   AppListItem* item = model_->FindItem(app_id);
   if (item)
     item->UpdateBadge(has_badge == apps::mojom::OptionalBool::kTrue);
+}
+
+void AppListControllerImpl::UpdateAppBadging() {
+  DCHECK(pref_change_registrar_);
+  PrefService* prefs = pref_change_registrar_->prefs();
+
+  bool new_badging_enabled =
+      prefs->GetBoolean(prefs::kAppNotificationBadgingEnabled);
+  if (notification_badging_pref_enabled_.has_value() &&
+      notification_badging_pref_enabled_.value() == new_badging_enabled) {
+    return;
+  }
+  notification_badging_pref_enabled_ = new_badging_enabled;
+
+  if (cache_) {
+    cache_->ForEachApp([this](const apps::AppUpdate& update) {
+      // Set the app notification badge hidden when the pref is disabled.
+      apps::mojom::OptionalBool has_badge =
+          notification_badging_pref_enabled_.value() &&
+                  (update.HasBadge() == apps::mojom::OptionalBool::kTrue)
+              ? apps::mojom::OptionalBool::kTrue
+              : apps::mojom::OptionalBool::kFalse;
+      UpdateItemNotificationBadge(update.AppId(), has_badge);
+    });
+  }
 }
 
 }  // namespace ash

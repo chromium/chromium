@@ -86,6 +86,8 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   }
   bool is_page_break() const { return metadata_->is_page_break; }
 
+  bool has_notification_badge() const { return has_notification_badge_; }
+
  protected:
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
@@ -134,6 +136,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   // A shortened name for the item, used for display.
   std::string short_name_;
+
+  // Whether this item currently has a notification badge that should be shown.
+  bool has_notification_badge_ = false;
 
   base::ObserverList<AppListItemObserver>::Unchecked observers_;
 

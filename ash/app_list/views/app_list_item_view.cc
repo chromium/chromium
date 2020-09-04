@@ -363,7 +363,7 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
         std::make_unique<AppNotificationIndicatorView>(kDefaultIndicatorColor));
     notification_indicator_->SetPaintToLayer();
     notification_indicator_->layer()->SetFillsBoundsOpaquely(false);
-    notification_indicator_->SetVisible(false);
+    notification_indicator_->SetVisible(item->has_notification_badge());
   }
 
   title_ = AddChildView(std::move(title));
@@ -1117,9 +1117,9 @@ void AppListItemView::ItemNameChanged() {
               base::UTF8ToUTF16(item_weak_->name()));
 }
 
-void AppListItemView::ItemBadgeVisibilityChanged(bool is_badge_visible) {
+void AppListItemView::ItemBadgeVisibilityChanged() {
   if (is_notification_indicator_enabled_ && notification_indicator_ && icon_)
-    notification_indicator_->SetVisible(is_badge_visible);
+    notification_indicator_->SetVisible(item_weak_->has_notification_badge());
 }
 
 void AppListItemView::ItemBeingDestroyed() {

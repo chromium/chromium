@@ -583,6 +583,11 @@ const char kDarkModeEnabled[] = "cros.system.dark_mode_enabled";
 // background color will be calculated based on extracted wallpaper color.
 const char kColorModeThemed[] = "cros.system.color_mode_themed";
 
+// A boolean pref that indicates whether app badging is shown in launcher and
+// shelf.
+const char kAppNotificationBadgingEnabled[] =
+    "ash.app_notification_badging_enabled";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
