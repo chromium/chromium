@@ -1253,11 +1253,9 @@ bool SourceBuffer::EvictCodedFrames(double media_time, size_t new_data_size) {
   DCHECK(source_);
   DCHECK(source_->MediaElement());
 
-  // Nothing to do if the mediaElement does not yet have frames to evict.
-  if (source_->MediaElement()->getReadyState() <
-      HTMLMediaElement::kHaveMetadata) {
+  // Nothing to do if this SourceBuffer does not yet have frames to evict.
+  if (!first_initialization_segment_received_)
     return true;
-  }
 
   bool result = web_source_buffer_->EvictCodedFrames(media_time, new_data_size);
   if (!result) {
