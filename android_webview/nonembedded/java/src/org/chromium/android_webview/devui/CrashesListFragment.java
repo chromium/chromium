@@ -29,8 +29,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
@@ -61,10 +63,12 @@ public class CrashesListFragment extends DevUiBaseFragment {
     private static final String TAG = "WebViewDevTools";
 
     // Max number of crashes to show in the crashes list.
-    private static final int MAX_CRASHES_NUMBER = 20;
+    public static final int MAX_CRASHES_NUMBER = 20;
 
     private CrashListExpandableAdapter mCrashListViewAdapter;
     private Context mContext;
+
+    private static @Nullable Runnable sCrashInfoLoadedListener;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -390,13 +394,15 @@ public class CrashesListFragment extends DevUiBaseFragment {
                 protected void onPostExecute(List<CrashInfo> result) {
                     mCrashInfoList = result;
                     notifyDataSetChanged();
+                    if (sCrashInfoLoadedListener != null) sCrashInfoLoadedListener.run();
                 }
             };
             asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
-    private static String uploadStateString(UploadState uploadState) {
+    @VisibleForTesting
+    public static String uploadStateString(UploadState uploadState) {
         switch (uploadState) {
             case UPLOADED:
                 return "Uploaded";
@@ -509,6 +515,15 @@ public class CrashesListFragment extends DevUiBaseFragment {
             dialog.dismiss();
         });
         return dialogBuilder.create();
+    }
+
+    /**
+     * Notifies the caller when all CrashInfo is reloaded in the ListView.
+     */
+    @MainThread
+    @VisibleForTesting
+    public static void setCrashInfoLoadedListenerForTesting(@Nullable Runnable listener) {
+        sCrashInfoLoadedListener = listener;
     }
 
     @Override
