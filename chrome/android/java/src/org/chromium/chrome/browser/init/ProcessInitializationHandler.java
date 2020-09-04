@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ChromeBackupAgent;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
@@ -89,10 +88,11 @@ import org.chromium.components.viz.common.VizSwitches;
 import org.chromium.components.viz.common.display.DeJellyUtils;
 import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
+import org.chromium.content_public.browser.ContactsPicker;
+import org.chromium.content_public.browser.ContactsPickerDelegate;
+import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.ui.ContactsPickerListener;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
 import org.chromium.ui.base.PhotoPickerDelegate;
@@ -237,19 +237,17 @@ public class ProcessInitializationHandler {
             });
         }
 
-        UiUtils.setContactsPickerDelegate(new UiUtils.ContactsPickerDelegate() {
+        ContactsPicker.setContactsPickerDelegate(new ContactsPickerDelegate() {
             private ContactsPickerDialog mDialog;
 
             @Override
-            public void showContactsPicker(Context context, ContactsPickerListener listener,
-                    boolean allowMultiple, boolean includeNames, boolean includeEmails,
-                    boolean includeTel, boolean includeAddresses, boolean includeIcons,
-                    String formattedOrigin) {
-                // TODO(crbug.com/1117536): remove this cast.
-                ChromeActivity activity = (ChromeActivity) context;
-                mDialog = new ContactsPickerDialog(activity.getWindowAndroid(),
-                        new ChromePickerAdapter(), listener, allowMultiple, includeNames,
-                        includeEmails, includeTel, includeAddresses, includeIcons, formattedOrigin);
+            public void showContactsPicker(WindowAndroid windowAndroid,
+                    ContactsPickerListener listener, boolean allowMultiple, boolean includeNames,
+                    boolean includeEmails, boolean includeTel, boolean includeAddresses,
+                    boolean includeIcons, String formattedOrigin) {
+                mDialog = new ContactsPickerDialog(windowAndroid, new ChromePickerAdapter(),
+                        listener, allowMultiple, includeNames, includeEmails, includeTel,
+                        includeAddresses, includeIcons, formattedOrigin);
                 mDialog.getWindow().getAttributes().windowAnimations =
                         R.style.PickerDialogAnimation;
                 mDialog.show();

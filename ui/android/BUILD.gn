@@ -205,19 +205,15 @@ java_group("ui_java") {
 # unused JNI functions.
 android_library("ui_utils_java") {
   sources = [
-    "java/src/org/chromium/ui/ContactsPickerListener.java",
     "java/src/org/chromium/ui/KeyboardVisibilityDelegate.java",
     "java/src/org/chromium/ui/UiUtils.java",
   ]
   deps = [
     "//base:base_java",
-    "//components/payments/mojom:mojom_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
     "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
-    "//third_party/blink/public/mojom:mojom_platform_java",
   ]
 }
 

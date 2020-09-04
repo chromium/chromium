@@ -11,8 +11,8 @@ import android.text.TextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.ui.ContactsPickerListener;
-import org.chromium.ui.UiUtils;
+import org.chromium.content_public.browser.ContactsPicker;
+import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.nio.ByteBuffer;
@@ -53,8 +53,8 @@ public class ContactsDialogHost implements ContactsPickerListener {
         }
 
         if (mWindowAndroid.hasPermission(Manifest.permission.READ_CONTACTS)) {
-            if (!UiUtils.showContactsPicker(mWindowAndroid.getActivity().get(), this, multiple,
-                        includeNames, includeEmails, includeTel, includeAddresses, includeIcons,
+            if (!ContactsPicker.showContactsPicker(mWindowAndroid, this, multiple, includeNames,
+                        includeEmails, includeTel, includeAddresses, includeIcons,
                         formattedOrigin)) {
                 ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
             }
@@ -71,9 +71,9 @@ public class ContactsDialogHost implements ContactsPickerListener {
                     if (permissions.length == 1 && grantResults.length == 1
                             && TextUtils.equals(permissions[0], Manifest.permission.READ_CONTACTS)
                             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        if (!UiUtils.showContactsPicker(mWindowAndroid.getActivity().get(), this,
-                                    multiple, includeNames, includeEmails, includeTel,
-                                    includeAddresses, includeIcons, formattedOrigin)) {
+                        if (!ContactsPicker.showContactsPicker(mWindowAndroid, this, multiple,
+                                    includeNames, includeEmails, includeTel, includeAddresses,
+                                    includeIcons, formattedOrigin)) {
                             ContactsDialogHostJni.get().endWithPermissionDenied(
                                     mNativeContactsProviderAndroid);
                         }

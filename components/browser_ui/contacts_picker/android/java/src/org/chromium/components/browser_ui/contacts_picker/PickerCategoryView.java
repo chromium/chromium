@@ -28,8 +28,8 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content.browser.contacts.ContactsPickerPropertiesRequested;
-import org.chromium.ui.ContactsPickerListener;
-import org.chromium.ui.UiUtils;
+import org.chromium.content_public.browser.ContactsPicker;
+import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.OptimizedFrameLayout;
@@ -449,7 +449,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         mListener.onContactsPickerUserAction(
                 action, contacts, percentageShared, propertiesRequested);
         mDialog.dismiss();
-        UiUtils.onContactsPickerDismissed();
+        ContactsPicker.onContactsPickerDismissed();
         recordFinalUmaStats(
                 umaId, contactCount, selectCount, percentageShared, propertiesRequested);
     }
