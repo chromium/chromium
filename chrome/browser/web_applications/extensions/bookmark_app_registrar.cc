@@ -180,6 +180,37 @@ DisplayMode BookmarkAppRegistrar::GetAppUserDisplayMode(
   }
 }
 
+DisplayMode BookmarkAppRegistrar::GetAppUserDisplayModeForMigration(
+    const web_app::AppId& app_id) const {
+  const Extension* extension = GetBookmarkAppDchecked(app_id);
+  if (!extension)
+    return DisplayMode::kStandalone;
+
+  LaunchType launch_type = LAUNCH_TYPE_WINDOW;
+  int launch_type_value = GetLaunchTypePrefValue(
+      extensions::ExtensionPrefs::Get(profile()), app_id);
+  if (launch_type_value >= LAUNCH_TYPE_FIRST &&
+      launch_type_value < NUM_LAUNCH_TYPES) {
+    launch_type = static_cast<LaunchType>(launch_type_value);
+  }
+
+  DisplayMode user_display_mode = DisplayMode::kStandalone;
+  switch (launch_type) {
+    case LAUNCH_TYPE_PINNED:
+    case LAUNCH_TYPE_REGULAR:
+      user_display_mode = DisplayMode::kBrowser;
+      break;
+    case LAUNCH_TYPE_FULLSCREEN:
+    case LAUNCH_TYPE_WINDOW:
+    case LAUNCH_TYPE_INVALID:
+    case NUM_LAUNCH_TYPES:
+      user_display_mode = DisplayMode::kStandalone;
+      break;
+  }
+
+  return user_display_mode;
+}
+
 base::Time BookmarkAppRegistrar::GetAppLastLaunchTime(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);
