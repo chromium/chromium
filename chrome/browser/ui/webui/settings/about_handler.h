@@ -28,6 +28,7 @@ namespace base {
 class DictionaryValue;
 class FilePath;
 class ListValue;
+class Clock;
 }  // namespace base
 
 class Profile;
@@ -51,6 +52,10 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Returns the browser version as a string.
   static base::string16 BuildBrowserVersionString();
+
+ protected:
+  // Used to test the EOL string displayed in the About details page.
+  void set_clock(base::Clock* clock) { clock_ = clock; }
 
  private:
   void OnDeviceAutoUpdatePolicyChanged(const base::Value* previous_policy,
@@ -181,6 +186,9 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // If true changes to UpgradeObserver are applied, if false they are ignored.
   bool apply_changes_from_upgrade_observer_;
+
+  // Override to test the EOL string displayed in the About details page.
+  base::Clock* clock_;
 
   // Used for callbacks.
   base::WeakPtrFactory<AboutHandler> weak_factory_{this};

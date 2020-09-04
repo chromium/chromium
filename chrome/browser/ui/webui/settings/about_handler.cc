@@ -22,7 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
+#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -252,7 +252,9 @@ std::string UpdateStatusToString(VersionUpdater::Status status) {
 namespace settings {
 
 AboutHandler::AboutHandler(Profile* profile)
-    : profile_(profile), apply_changes_from_upgrade_observer_(false) {
+    : profile_(profile),
+      apply_changes_from_upgrade_observer_(false),
+      clock_(base::DefaultClock::GetInstance()) {
   UpgradeDetector::GetInstance()->AddObserver(this);
 }
 
@@ -630,7 +632,7 @@ void AboutHandler::OnGetEndOfLifeInfo(
     chromeos::UpdateEngineClient::EolInfo eol_info) {
   base::Value response(base::Value::Type::DICTIONARY);
   if (!eol_info.eol_date.is_null()) {
-    bool has_eol_passed = eol_info.eol_date <= base::Time::Now();
+    bool has_eol_passed = eol_info.eol_date <= clock_->Now();
     response.SetBoolKey("hasEndOfLife", has_eol_passed);
     int eol_string_id =
         has_eol_passed ? IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 
+#include "base/test/simple_test_clock.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -20,6 +21,9 @@ class TestAboutHandler : public ::settings::AboutHandler {
  public:
   explicit TestAboutHandler(Profile* profile) : AboutHandler(profile) {}
   ~TestAboutHandler() override = default;
+
+  // Make public for testing.
+  using AboutHandler::set_clock;
 
   // Make public for testing.
   using AboutHandler::set_web_ui;
@@ -42,6 +46,9 @@ class AboutHandlerTest : public testing::Test {
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
+
+    clock_ = std::make_unique<base::SimpleTestClock>();
+    handler_->set_clock(clock_.get());
   }
 
   void TearDown() override {
@@ -72,35 +79,38 @@ class AboutHandlerTest : public testing::Test {
     return call_data.arg3()->FindKey("aboutPageEndOfLifeMessage")->GetString();
   }
 
+  void SetCurrentTimeToUtc(const char* utc_date_string) {
+    base::Time utc_time;
+    ASSERT_TRUE(base::Time::FromUTCString(utc_date_string, &utc_time));
+    clock_->SetNow(utc_time);
+  }
+
+  void SetEolDateUtc(const char* utc_date_string) {
+    base::Time utc_date;
+    ASSERT_TRUE(base::Time::FromUTCString(utc_date_string, &utc_date));
+    fake_update_engine_client_->set_eol_date(utc_date);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestAboutHandler> handler_;
   FakeUpdateEngineClient* fake_update_engine_client_;
+  std::unique_ptr<base::SimpleTestClock> clock_;
 };
 
-// Deterministic fail on CHROMEOS, crbug.com/1122584.
-#if defined(OS_CHROMEOS)
-#define MAYBE_EndOfLifeMessageInAboutDetailsSubpage \
-  DISABLED_EndOfLifeMessageInAboutDetailsSubpage
-#else
-#define MAYBE_EndOfLifeMessageInAboutDetailsSubpage \
-  EndOfLifeMessageInAboutDetailsSubpage
-#endif
-TEST_F(AboutHandlerTest, MAYBE_EndOfLifeMessageInAboutDetailsSubpage) {
-  const base::Time eol_passed_date =
-      base::Time::Now() - base::TimeDelta::FromDays(1000);
-  fake_update_engine_client_->set_eol_date(eol_passed_date);
+TEST_F(AboutHandlerTest, EndOfLifeMessageInAboutDetailsSubpage) {
+  SetCurrentTimeToUtc("15 March 2020");
+
+  SetEolDateUtc("15 November 2017");
   EXPECT_EQ(
       "This device stopped getting automatic software and security "
       "updates in November 2017. <a target=\"_blank\" href=\"https:"
       "//www.google.com/chromebook/older/\">Learn more</a>",
       CallGetEndOfLifeInfoAndReturnString(true /*=has_eol_passed*/));
 
-  const base::Time eol_future_date =
-      base::Time::Now() + base::TimeDelta::FromDays(1000);
-  fake_update_engine_client_->set_eol_date(eol_future_date);
+  SetEolDateUtc("15 May 2023");
   EXPECT_EQ(
       "This device will get automatic software and security updates "
       "until May 2023. <a target=\"_blank\" href=\"http://support.google"
