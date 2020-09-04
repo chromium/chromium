@@ -9,6 +9,7 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
@@ -177,6 +178,31 @@ TEST_F(MenuItemViewUnitTest, UseMnemonicOnPlatform) {
     EXPECT_EQ(0, item1->GetMnemonic());
     EXPECT_EQ(0, item2->GetMnemonic());
   }
+}
+
+TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
+  views::TestMenuItemView root_menu;
+
+  // Append a MenuItemView.
+  views::MenuItemView* menu_item_view =
+      root_menu.AppendMenuItem(1, base::ASCIIToUTF16("item"));
+
+  // Verify initial selected state.
+  bool is_selected = menu_item_view->IsSelected();
+  EXPECT_FALSE(is_selected);
+
+  // Subscribe to be notified of changes to selected state.
+  auto subscription =
+      menu_item_view->AddSelectedChangedCallback(base::BindLambdaForTesting(
+          [&]() { is_selected = menu_item_view->IsSelected(); }));
+
+  // Verify we are notified when the MenuItemView becomes selected.
+  menu_item_view->SetSelected(true);
+  EXPECT_TRUE(is_selected);
+
+  // Verify we are notified when the MenuItemView becomes deselected.
+  menu_item_view->SetSelected(false);
+  EXPECT_FALSE(is_selected);
 }
 
 class MenuItemViewLayoutTest : public ViewsTestBase {

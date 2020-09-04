@@ -448,7 +448,12 @@ void MenuItemView::SetMinorIcon(const ui::ThemedVectorIcon& minor_icon) {
 
 void MenuItemView::SetSelected(bool selected) {
   selected_ = selected;
-  SchedulePaint();
+  OnPropertyChanged(&selected_, kPropertyEffectsPaint);
+}
+
+PropertyChangedSubscription MenuItemView::AddSelectedChangedCallback(
+    PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&selected_, std::move(callback));
 }
 
 void MenuItemView::SetSelectionOfActionableSubmenu(
