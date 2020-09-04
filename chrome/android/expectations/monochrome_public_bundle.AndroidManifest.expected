@@ -1140,6 +1140,13 @@
         android:name="org.chromium.chrome.browser.notifications.NotificationService">
     </service>  # DIFF-ANCHOR: 3224d309
     <service android:exported="false" android:name="org.chromium.chrome.browser.omaha.OmahaClient"/>
+    <service  # DIFF-ANCHOR: 53256720
+        android:description="@string/decoder_description"
+        android:exported="false"
+        android:isolatedProcess="true"
+        android:name="org.chromium.chrome.browser.photo_picker.DecoderService"
+        android:process=":decoder_service">
+    </service>  # DIFF-ANCHOR: 53256720
     <service  # DIFF-ANCHOR: 064aae37
         android:exported="true"
         android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
@@ -1177,13 +1184,6 @@
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
         android:permission="android.permission.BIND_JOB_SERVICE">
     </service>  # DIFF-ANCHOR: a550decc
-    <service  # DIFF-ANCHOR: f6df5542
-        android:description="@string/decoder_description"
-        android:exported="false"
-        android:isolatedProcess="true"
-        android:name="org.chromium.components.browser_ui.photo_picker.DecoderService"
-        android:process=":decoder_service">
-    </service>  # DIFF-ANCHOR: f6df5542
     <service  # DIFF-ANCHOR: 2ce68981
         android:exported="true"
         android:name="org.chromium.components.payments.PaymentDetailsUpdateService">

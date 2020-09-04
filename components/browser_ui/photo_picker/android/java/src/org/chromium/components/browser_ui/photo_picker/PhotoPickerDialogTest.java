@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.photo_picker;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
@@ -128,6 +129,10 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     public void setUp() throws Exception {
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(
                 () -> { return new ActivityWindowAndroid(getActivity()); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DecoderServiceHost.setIntentSupplier(
+                    () -> { return new Intent(getActivity(), TestImageDecoderService.class); });
+        });
         PickerVideoPlayer.setProgressCallback(this);
         PickerBitmapView.setAnimationListenerForTest(this);
         DecoderServiceHost.setStatusCallback(this);

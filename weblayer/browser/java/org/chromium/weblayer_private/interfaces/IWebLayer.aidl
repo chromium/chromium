@@ -94,4 +94,8 @@ interface IWebLayer {
   // Added in Version 85.
   void onMediaSessionServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 17;
   void onMediaSessionServiceDestroyed() = 18;
+
+  // Added in Version 86.
+  IBinder initializeImageDecoder(in IObjectWrapper appContext,
+                                 in IObjectWrapper remoteContext) = 19;
 }

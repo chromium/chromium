@@ -872,7 +872,7 @@ by a child template that "extends" this file.
         <!-- Service for decoding images in a sandboxed process. -->
         <service
             android:description="@string/decoder_description"
-            android:name="org.chromium.components.browser_ui.photo_picker.DecoderService"
+            android:name="org.chromium.chrome.browser.photo_picker.DecoderService"
             android:exported="false"
             android:isolatedProcess="true"
             android:process=":decoder_service" />

@@ -6,7 +6,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/browser_ui/photo_picker/android/photo_picker_jni_headers/DecoderService_jni.h"
+#include "components/browser_ui/photo_picker/android/photo_picker_jni_headers/ImageDecoder_jni.h"
 #include "sandbox/linux/seccomp-bpf-helpers/seccomp_starter_android.h"
 #include "sandbox/sandbox_buildflags.h"
 
@@ -14,7 +14,7 @@
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h"
 #endif
 
-void JNI_DecoderService_InitializePhotoPickerSandbox(JNIEnv* env) {
+void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
   auto* info = base::android::BuildInfo::GetInstance();
   sandbox::SeccompStarterAndroid starter(info->sdk_int(), info->device());
 

@@ -30,10 +30,10 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 
 /**
- * Tests for the out-of-process DecoderService.
+ * Tests for ImageDecoder and the aidl interfaces used for out-of-process decoding..
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class DecoderServiceTest {
+public class ImageDecoderTest {
     // By default, the test will wait for 3 seconds to create the decoder process, which (at least
     // in the emulators) brushes up against the actual time it takes to create the process, so these
     // tests are frequently flaky when run locally.
@@ -83,7 +83,7 @@ public class DecoderServiceTest {
     }
 
     private void startDecoderService() {
-        Intent intent = new Intent(mContext, DecoderService.class);
+        Intent intent = new Intent(mContext, TestImageDecoderService.class);
         intent.setAction(IDecoderService.class.getName());
         mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
@@ -95,14 +95,14 @@ public class DecoderServiceTest {
     private void decode(String filePath, FileDescriptor fd, int width,
             final DecoderServiceCallback callback) throws Exception {
         Bundle bundle = new Bundle();
-        bundle.putString(DecoderService.KEY_FILE_PATH, filePath);
+        bundle.putString(ImageDecoder.KEY_FILE_PATH, filePath);
         ParcelFileDescriptor pfd = null;
         if (fd != null) {
             pfd = ParcelFileDescriptor.dup(fd);
             Assert.assertTrue(pfd != null);
         }
-        bundle.putParcelable(DecoderService.KEY_FILE_DESCRIPTOR, pfd);
-        bundle.putInt(DecoderService.KEY_WIDTH, width);
+        bundle.putParcelable(ImageDecoder.KEY_FILE_DESCRIPTOR, pfd);
+        bundle.putInt(ImageDecoder.KEY_WIDTH, width);
 
         mIRemoteService.decodeImage(bundle, callback);
         CriteriaHelper.pollUiThread(() -> callback.resolved());
@@ -118,11 +118,10 @@ public class DecoderServiceTest {
         decode("path", null, 50, callback);
 
         Bundle bundle = callback.getBundle();
-        Assert.assertFalse(
-                "Expected decode to fail", bundle.getBoolean(DecoderService.KEY_SUCCESS));
-        Assert.assertEquals("path", bundle.getString(DecoderService.KEY_FILE_PATH));
-        Assert.assertEquals(null, bundle.getParcelable(DecoderService.KEY_IMAGE_BITMAP));
-        Assert.assertEquals(0, bundle.getLong(DecoderService.KEY_DECODE_TIME));
+        Assert.assertFalse("Expected decode to fail", bundle.getBoolean(ImageDecoder.KEY_SUCCESS));
+        Assert.assertEquals("path", bundle.getString(ImageDecoder.KEY_FILE_PATH));
+        Assert.assertEquals(null, bundle.getParcelable(ImageDecoder.KEY_IMAGE_BITMAP));
+        Assert.assertEquals(0, bundle.getLong(ImageDecoder.KEY_DECODE_TIME));
     }
 
     @Test
@@ -140,12 +139,12 @@ public class DecoderServiceTest {
 
         Bundle bundle = callback.getBundle();
         Assert.assertTrue(
-                "Expecting success being returned", bundle.getBoolean(DecoderService.KEY_SUCCESS));
-        Assert.assertEquals(file.getPath(), bundle.getString(DecoderService.KEY_FILE_PATH));
+                "Expecting success being returned", bundle.getBoolean(ImageDecoder.KEY_SUCCESS));
+        Assert.assertEquals(file.getPath(), bundle.getString(ImageDecoder.KEY_FILE_PATH));
         Assert.assertFalse("Decoding should take a non-zero amount of time",
-                0 == bundle.getLong(DecoderService.KEY_DECODE_TIME));
+                0 == bundle.getLong(ImageDecoder.KEY_DECODE_TIME));
 
-        Bitmap decodedBitmap = bundle.getParcelable(DecoderService.KEY_IMAGE_BITMAP);
+        Bitmap decodedBitmap = bundle.getParcelable(ImageDecoder.KEY_IMAGE_BITMAP);
         Assert.assertFalse("Decoded bitmap should not be null", null == decodedBitmap);
         Assert.assertEquals(50, decodedBitmap.getWidth());
         Assert.assertEquals(50, decodedBitmap.getHeight());

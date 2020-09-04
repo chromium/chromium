@@ -19,9 +19,9 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/photo_picker/BitmapScalerTask.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/BitmapUtils.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/DecodeVideoTask.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/DecoderService.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/DecoderServiceHost.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/FileEnumWorkerTask.java",
+    "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoder.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerDialog.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerToolbar.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerAdapter.java",
@@ -53,7 +53,7 @@ android_library("java") {
 }
 
 generate_jni("photo_picker_jni_headers") {
-  sources = [ "java/src/org/chromium/components/browser_ui/photo_picker/DecoderService.java" ]
+  sources = [ "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoder.java" ]
 }
 
 android_aidl("photo_picker_aidl") {
@@ -128,8 +128,9 @@ android_library("javatests") {
 
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/DecoderServiceHostTest.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/DecoderServiceTest.java",
+    "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoderTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerDialogTest.java",
+    "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java",
   ]
   deps = [
     ":java",

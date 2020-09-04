@@ -56,6 +56,12 @@
         <activity android:name="org.chromium.ui.test.util.DummyUiActivity"
             android:theme="@style/Theme.Chromium.Activity"
             android:exported="true"/>
+
+        <service
+            android:name="org.chromium.components.browser_ui.photo_picker.TestImageDecoderService"
+            android:exported="false"
+            android:isolatedProcess="true"
+            android:process=":decoder_service" />
 {% endblock %}
 
 {% block extra_application_attributes %}

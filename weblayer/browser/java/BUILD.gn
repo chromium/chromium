@@ -162,6 +162,7 @@ android_library("java") {
     "//components/browser_ui/media/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/photo_picker/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/site_settings/android:java",

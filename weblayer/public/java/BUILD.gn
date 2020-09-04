@@ -63,6 +63,7 @@ android_library("java") {
     "org/chromium/weblayer/GoogleAccountServiceType.java",
     "org/chromium/weblayer/GoogleAccountsCallback.java",
     "org/chromium/weblayer/GoogleAccountsParams.java",
+    "org/chromium/weblayer/ImageDecoderService.java",
     "org/chromium/weblayer/LoadError.java",
     "org/chromium/weblayer/MediaCaptureCallback.java",
     "org/chromium/weblayer/MediaCaptureController.java",

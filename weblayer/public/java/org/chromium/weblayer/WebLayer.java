@@ -691,6 +691,12 @@ public class WebLayer {
         }
 
         @Override
+        public Intent createImageDecoderServiceIntent() {
+            StrictModeWorkaround.apply();
+            return new Intent(WebLayer.getAppContext(), ImageDecoderService.class);
+        }
+
+        @Override
         public int getMediaSessionNotificationId() {
             StrictModeWorkaround.apply();
             // The id is part of the public library to avoid conflicts.

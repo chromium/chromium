@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +19,7 @@ import android.util.DisplayMetrics;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -88,7 +88,7 @@ public class PickerCategoryView extends RelativeLayout
     // The view containing the RecyclerView and the toolbar, etc.
     private SelectableListLayout<PickerBitmap> mSelectableListLayout;
 
-    // The {@link WindowAndroid} for the {@link Activity}.
+    // The {@link WindowAndroid} for the hosting WebContents.
     private WindowAndroid mWindowAndroid;
 
     // The ContentResolver to use to retrieve image metadata from disk.
@@ -188,7 +188,8 @@ public class PickerCategoryView extends RelativeLayout
     private ImageView mZoom;
 
     /**
-     * @param windowAndroid The window of the hosting {@link Activity}.
+     * @param windowAndroid The window of the {@link WebContents} that requested the photo
+     *         selection.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      * @param multiSelectionAllowed Whether to allow the user to select more than one image.
      */
@@ -528,15 +529,17 @@ public class PickerCategoryView extends RelativeLayout
      */
     private void calculateGridMetrics() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        Activity activity = (Activity) mWindowAndroid.getContext().get();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        Context context = mWindowAndroid.getContext().get();
+        WindowManager windowManager =
+                (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
 
         int width = displayMetrics.widthPixels;
         int minSize =
-                activity.getResources().getDimensionPixelSize(R.dimen.photo_picker_tile_min_size);
+                context.getResources().getDimensionPixelSize(R.dimen.photo_picker_tile_min_size);
         mPadding = mMagnifyingMode
                 ? 0
-                : activity.getResources().getDimensionPixelSize(R.dimen.photo_picker_tile_gap);
+                : context.getResources().getDimensionPixelSize(R.dimen.photo_picker_tile_gap);
         mColumns = mMagnifyingMode ? 1 : Math.max(1, (width - mPadding) / (minSize + mPadding));
         mImageWidth = (width - mPadding * (mColumns + 1)) / (mColumns);
         mImageHeight = mMagnifyingMode
