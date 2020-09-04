@@ -196,8 +196,6 @@ component("gpu") {
       "windows/d3d11_vp9_accelerator.h",
       "windows/d3d11_vp9_picture.cc",
       "windows/d3d11_vp9_picture.h",
-      "windows/display_helper.cc",
-      "windows/display_helper.h",
       "windows/dxva_picture_buffer_win.cc",
       "windows/dxva_picture_buffer_win.h",
       "windows/dxva_video_decode_accelerator_win.cc",
@@ -520,7 +518,6 @@ source_set("unit_tests") {
       "windows/d3d11_video_decoder_unittest.cc",
       "windows/d3d11_video_device_format_support_unittest.cc",
       "windows/d3d11_video_processor_proxy_unittest.cc",
-      "windows/display_helper_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]
     libs = [ "dxguid.lib" ]

@@ -161,7 +161,6 @@ source_set("base") {
     "format_utils.h",
     "frame_rate_estimator.cc",
     "frame_rate_estimator.h",
-    "hdr_metadata.cc",
     "hdr_metadata.h",
     "key_system_names.cc",
     "key_system_names.h",
@@ -347,6 +346,7 @@ source_set("base") {
     "//media:media_buildflags",
     "//media:shared_memory_support",
     "//ui/gfx:color_space",
+    "//ui/gl",
   ]
   deps = [
     "//base/allocator:buildflags",

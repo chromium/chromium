@@ -7,10 +7,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/macros.h"
+#include "media/base/hdr_metadata.h"
 
 namespace media {
 
-struct HDRMetadata;
 class VideoColorSpace;
 
 class JniHdrMetadata {

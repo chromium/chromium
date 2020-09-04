@@ -132,6 +132,8 @@ component("gl") {
     "gpu_switching_manager.h",
     "gpu_timing.cc",
     "gpu_timing.h",
+    "hdr_metadata.cc",
+    "hdr_metadata.h",
     "progress_reporter.h",
     "scoped_binders.cc",
     "scoped_binders.h",
@@ -321,6 +323,8 @@ component("gl") {
       "gl_surface_wgl.h",
       "gl_wgl_api_implementation.cc",
       "gl_wgl_api_implementation.h",
+      "hdr_metadata_helper_win.cc",
+      "hdr_metadata_helper_win.h",
       "swap_chain_presenter.cc",
       "swap_chain_presenter.h",
       "vsync_observer.h",
@@ -575,6 +579,7 @@ test("gl_unittests") {
       "direct_composition_surface_win_unittest.cc",
       "gl_image_d3d_unittest.cc",
       "gl_image_dxgi_unittest.cc",
+      "hdr_metadata_helper_win_unittest.cc",
       "wgl_api_unittest.cc",
     ]
   }
@@ -612,6 +617,11 @@ test("gl_unittests") {
   if (use_x11) {
     sources += [ "gl_context_glx_unittest.cc" ]
     deps += [ "//ui/gfx/x" ]
+  }
+
+  if (is_win) {
+    deps += [ "//media/base/win:test_support" ]
+    libs = [ "dxguid.lib" ]
   }
 }
 

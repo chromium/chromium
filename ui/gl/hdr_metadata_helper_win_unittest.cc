@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/display_helper.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 #include "media/base/win/d3d11_mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,37 +15,39 @@ using ::testing::Return;
 // using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 
-namespace media {
+namespace gl {
 
-class DisplayHelperTest : public ::testing::Test {
+class HDRMetadataHelperWinTest : public ::testing::Test {
  public:
   void SetUp() override {
-    mock_dxgi_factory_ = MakeComPtr<NiceMock<DXGIFactoryMock>>();
+    mock_dxgi_factory_ = media::MakeComPtr<NiceMock<media::DXGIFactoryMock>>();
     ON_CALL(*mock_dxgi_factory_.Get(), EnumAdapters(_, _))
         .WillByDefault(Return(DXGI_ERROR_NOT_FOUND));
 
-    mock_dxgi_device_ = MakeComPtr<NiceMock<DXGIDeviceMock>>();
+    mock_dxgi_device_ = media::MakeComPtr<NiceMock<media::DXGIDeviceMock>>();
 
-    mock_d3d11_device_ = MakeComPtr<NiceMock<D3D11DeviceMock>>();
+    mock_d3d11_device_ = media::MakeComPtr<NiceMock<media::D3D11DeviceMock>>();
     ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_IDXGIDevice, _))
-        .WillByDefault(SetComPointeeAndReturnOk<1>(mock_dxgi_device_.Get()));
+        .WillByDefault(
+            media::SetComPointeeAndReturnOk<1>(mock_dxgi_device_.Get()));
   }
 
-  std::unique_ptr<DisplayHelper> CreateHelper() {
+  std::unique_ptr<HDRMetadataHelperWin> CreateHelper() {
     // Set the D3D11 device's adapter to the first one, somewhat arbitrarily.
     ON_CALL(*mock_dxgi_device_.Get(), GetAdapter(_))
         .WillByDefault(
-            SetComPointeeAndReturnOk<0>(mock_dxgi_adapters_[0].Get()));
+            media::SetComPointeeAndReturnOk<0>(mock_dxgi_adapters_[0].Get()));
 
-    return std::make_unique<DisplayHelper>(mock_d3d11_device_);
+    return std::make_unique<HDRMetadataHelperWin>(mock_d3d11_device_);
   }
 
   // Adds an adapter that |mock_dxgi_factory_| will enumerate.
   void AddAdapter() {
-    Microsoft::WRL::ComPtr<DXGIAdapterMock> dxgi_adapter =
-        MakeComPtr<NiceMock<DXGIAdapterMock>>();
+    Microsoft::WRL::ComPtr<media::DXGIAdapterMock> dxgi_adapter =
+        media::MakeComPtr<NiceMock<media::DXGIAdapterMock>>();
     ON_CALL(*dxgi_adapter.Get(), GetParent(_, _))
-        .WillByDefault(SetComPointeeAndReturnOk<1>(mock_dxgi_factory_.Get()));
+        .WillByDefault(
+            media::SetComPointeeAndReturnOk<1>(mock_dxgi_factory_.Get()));
 
     // By default, the adapter has no outputs.
     ON_CALL(*dxgi_adapter.Get(), EnumOutputs(_, _))
@@ -54,7 +56,7 @@ class DisplayHelperTest : public ::testing::Test {
     // Make the factory enumerate this adapter.
     ON_CALL(*mock_dxgi_factory_.Get(),
             EnumAdapters(mock_dxgi_adapters_.size(), _))
-        .WillByDefault(SetComPointeeAndReturnOk<1>(dxgi_adapter.Get()));
+        .WillByDefault(media::SetComPointeeAndReturnOk<1>(dxgi_adapter.Get()));
 
     mock_dxgi_adapters_.push_back(std::move(dxgi_adapter));
   }
@@ -64,8 +66,8 @@ class DisplayHelperTest : public ::testing::Test {
   // an expectation for output 0.
   void AddOutput(const DXGI_OUTPUT_DESC1& desc1) {
     // Create a DXGIOutput6 that can return |desc1|.
-    Microsoft::WRL::ComPtr<DXGIOutput6Mock> output6 =
-        MakeComPtr<DXGIOutput6Mock>();
+    Microsoft::WRL::ComPtr<media::DXGIOutput6Mock> output6 =
+        media::MakeComPtr<media::DXGIOutput6Mock>();
     mock_dxgi_output6s_.push_back(output6);
     ON_CALL(*output6.Get(), GetDesc1(_))
         .WillByDefault(DoAll(SetArgPointee<0>(desc1), Return(S_OK)));
@@ -73,18 +75,20 @@ class DisplayHelperTest : public ::testing::Test {
     // Tell the current adapter to return |output6| as its 0-th output.
     auto& dxgi_adapter = mock_dxgi_adapters_[mock_dxgi_adapters_.size() - 1];
     ON_CALL(*dxgi_adapter.Get(), EnumOutputs(0, _))
-        .WillByDefault(SetComPointeeAndReturnOk<1>(output6.Get()));
+        .WillByDefault(media::SetComPointeeAndReturnOk<1>(output6.Get()));
   }
 
-  Microsoft::WRL::ComPtr<D3D11DeviceMock> mock_d3d11_device_;
-  Microsoft::WRL::ComPtr<DXGIDeviceMock> mock_dxgi_device_;
-  Microsoft::WRL::ComPtr<DXGIFactoryMock> mock_dxgi_factory_;
-  std::vector<Microsoft::WRL::ComPtr<DXGIAdapterMock>> mock_dxgi_adapters_;
-  std::vector<Microsoft::WRL::ComPtr<DXGIOutput6Mock>> mock_dxgi_output6s_;
-  std::vector<Microsoft::WRL::ComPtr<DXGIOutputMock>> mock_dxgi_outputs_;
+  Microsoft::WRL::ComPtr<media::D3D11DeviceMock> mock_d3d11_device_;
+  Microsoft::WRL::ComPtr<media::DXGIDeviceMock> mock_dxgi_device_;
+  Microsoft::WRL::ComPtr<media::DXGIFactoryMock> mock_dxgi_factory_;
+  std::vector<Microsoft::WRL::ComPtr<media::DXGIAdapterMock>>
+      mock_dxgi_adapters_;
+  std::vector<Microsoft::WRL::ComPtr<media::DXGIOutput6Mock>>
+      mock_dxgi_output6s_;
+  std::vector<Microsoft::WRL::ComPtr<media::DXGIOutputMock>> mock_dxgi_outputs_;
 };
 
-TEST_F(DisplayHelperTest, CachesMetadataIfAvailable) {
+TEST_F(HDRMetadataHelperWinTest, CachesMetadataIfAvailable) {
   // Set up two adapters with one monitor each.
   AddAdapter();
   DXGI_OUTPUT_DESC1 desc{};
@@ -136,11 +140,11 @@ TEST_F(DisplayHelperTest, CachesMetadataIfAvailable) {
   EXPECT_EQ(result->MaxFrameAverageLightLevel, desc.MaxFullFrameLuminance);
 }
 
-TEST_F(DisplayHelperTest, DoesntCacheMetadataIfNotAvailble) {
+TEST_F(HDRMetadataHelperWinTest, DoesntCacheMetadataIfNotAvailble) {
   // Add an empty adapter.
   AddAdapter();
   auto helper = CreateHelper();
   EXPECT_FALSE(helper->GetDisplayMetadata());
 }
 
-}  // namespace media
+}  // namespace gl

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/hdr_metadata.h"
+#include "ui/gl/hdr_metadata.h"
 
-namespace media {
+namespace gl {
 
 MasteringMetadata::MasteringMetadata() = default;
 MasteringMetadata::MasteringMetadata(const MasteringMetadata& rhs) = default;
@@ -12,4 +12,4 @@ MasteringMetadata::MasteringMetadata(const MasteringMetadata& rhs) = default;
 HDRMetadata::HDRMetadata() = default;
 HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
 
-}  // namespace media
+}  // namespace gl

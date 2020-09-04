@@ -2,41 +2,50 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_DISPLAY_HELPER_H_
-#define MEDIA_GPU_WINDOWS_DISPLAY_HELPER_H_
+#ifndef UI_GL_HDR_METADATA_HELPER_WIN_H_
+#define UI_GL_HDR_METADATA_HELPER_WIN_H_
+
+#include <d3d11_1.h>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
+
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "media/base/hdr_metadata.h"
-#include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
+#include "ui/gl/gl_export.h"
+#include "ui/gl/hdr_metadata.h"
 
-namespace media {
+namespace gl {
 
 // This is a very hacky way to get the display characteristics.
 // It should be replaced by something that actually knows which
 // display is going to be used for, well, display.
-class MEDIA_GPU_EXPORT DisplayHelper {
+class GL_EXPORT HDRMetadataHelperWin {
  public:
-  DisplayHelper(const ComD3D11Device& d3d11_device);
-  ~DisplayHelper();
+  explicit HDRMetadataHelperWin(
+      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device);
+  ~HDRMetadataHelperWin();
 
   // Return the metadata for the display, if available.  Must call
   // CacheDisplayMetadata first.
   base::Optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
 
   // Convert |hdr_metadata| to DXGI's metadata format.
-  static DXGI_HDR_METADATA_HDR10 HdrMetadataToDXGI(
+  static DXGI_HDR_METADATA_HDR10 HDRMetadataToDXGI(
       const HDRMetadata& hdr_metadata);
 
  private:
-  void CacheDisplayMetadata(const ComD3D11Device& d3d11_device);
+  void CacheDisplayMetadata(
+      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device);
 
   base::Optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
 
-  DISALLOW_COPY_AND_ASSIGN(DisplayHelper);
+  DISALLOW_COPY_AND_ASSIGN(HDRMetadataHelperWin);
 };
 
-}  // namespace media
+}  // namespace gl
 
-#endif  // MEDIA_GPU_WINDOWS_DISPLAY_HELPER_H_
+#endif  // UI_GL_HDR_METADATA_HELPER_WIN_H_

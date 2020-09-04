@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/display_helper.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace {
 
@@ -13,33 +13,36 @@ static constexpr int kLuminanceFixedPoint = 10000;
 
 }  // namespace
 
-namespace media {
+namespace gl {
 
-DisplayHelper::DisplayHelper(const ComD3D11Device& d3d11_device) {
+HDRMetadataHelperWin::HDRMetadataHelperWin(
+    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
   CacheDisplayMetadata(d3d11_device);
 }
 
-DisplayHelper::~DisplayHelper() = default;
+HDRMetadataHelperWin::~HDRMetadataHelperWin() = default;
 
-base::Optional<DXGI_HDR_METADATA_HDR10> DisplayHelper::GetDisplayMetadata() {
+base::Optional<DXGI_HDR_METADATA_HDR10>
+HDRMetadataHelperWin::GetDisplayMetadata() {
   return hdr_metadata_;
 }
 
-void DisplayHelper::CacheDisplayMetadata(const ComD3D11Device& d3d11_device) {
+void HDRMetadataHelperWin::CacheDisplayMetadata(
+    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
   hdr_metadata_.reset();
 
   if (!d3d11_device)
     return;
 
-  ComDXGIDevice dxgi_device;
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
   if (FAILED(d3d11_device.As(&dxgi_device)))
     return;
 
-  ComDXGIAdapter dxgi_adapter;
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter)))
     return;
 
-  ComDXGIFactory dxgi_factory;
+  Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory;
   if (FAILED(dxgi_adapter->GetParent(__uuidof(IDXGIFactory), &dxgi_factory)))
     return;
 
@@ -50,13 +53,13 @@ void DisplayHelper::CacheDisplayMetadata(const ComD3D11Device& d3d11_device) {
   // brightest monitor as the one we want, which makes no sense really.
   // TODO(liberato): figure out what monitor we're actually using, or get that
   // from the renderer.
-  ComDXGIAdapter adapter;
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
   for (unsigned int i = 0;
        dxgi_factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++) {
-    ComDXGIOutput output;
+    Microsoft::WRL::ComPtr<IDXGIOutput> output;
     for (unsigned int u = 0;
          adapter->EnumOutputs(u, &output) != DXGI_ERROR_NOT_FOUND; u++) {
-      ComDXGIOutput6 output6;
+      Microsoft::WRL::ComPtr<IDXGIOutput6> output6;
       if (FAILED(output.As(&output6)))
         continue;
 
@@ -101,7 +104,7 @@ void DisplayHelper::CacheDisplayMetadata(const ComD3D11Device& d3d11_device) {
 }
 
 // static
-DXGI_HDR_METADATA_HDR10 DisplayHelper::HdrMetadataToDXGI(
+DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
     const HDRMetadata& hdr_metadata) {
   DXGI_HDR_METADATA_HDR10 metadata{};
 
@@ -128,4 +131,4 @@ DXGI_HDR_METADATA_HDR10 DisplayHelper::HdrMetadataToDXGI(
   return metadata;
 }
 
-}  // namespace media
+}  // namespace gl

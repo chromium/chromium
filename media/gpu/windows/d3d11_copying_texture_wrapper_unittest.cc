@@ -11,9 +11,9 @@
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
-#include "media/gpu/windows/display_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 using ::testing::_;
 using ::testing::Bool;
@@ -273,7 +273,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest, HDRMetadataIsSentToVideoProcessor) {
       nullptr, gfx::ColorSpace::CreateSCRGBLinear());
 
   const DXGI_HDR_METADATA_HDR10 dxgi_metadata =
-      DisplayHelper::HdrMetadataToDXGI(metadata);
+      gl::HDRMetadataHelperWin::HDRMetadataToDXGI(metadata);
 
   wrapper->SetStreamHDRMetadata(metadata);
   EXPECT_TRUE(processor_raw->last_stream_metadata_);

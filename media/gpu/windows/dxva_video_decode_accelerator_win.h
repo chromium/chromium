@@ -29,10 +29,10 @@
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
-#include "media/gpu/windows/display_helper.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 interface IMFSample;
 interface IDirect3DSurface9;
@@ -607,7 +607,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   gfx::Rect current_visible_rect_;
   VideoColorSpace current_color_space_;
 
-  base::Optional<DisplayHelper> display_helper_;
+  base::Optional<gl::HDRMetadataHelperWin> hdr_metadata_helper_;
   bool use_empty_video_hdr_metadata_ = false;
 
   // WeakPtrFactory for posting tasks back to |this|.

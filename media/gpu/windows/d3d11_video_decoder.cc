@@ -32,11 +32,11 @@
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
-#include "media/gpu/windows/display_helper.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace media {
 
@@ -697,8 +697,8 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
   if (decoder_configurator_->TextureFormat() == DXGI_FORMAT_P010) {
     // For HDR formats, try to get the display metadata.  This may fail, which
     // is okay.  We'll just skip sending the metadata.
-    DisplayHelper display_helper(device_);
-    display_metadata = display_helper.GetDisplayMetadata();
+    gl::HDRMetadataHelperWin hdr_metadata_helper(device_);
+    display_metadata = hdr_metadata_helper.GetDisplayMetadata();
   }
 
   // Drop any old pictures.

@@ -10,7 +10,7 @@
 #include "media/base/status_codes.h"
 #include "media/base/win/hresult_status_helper.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
-#include "media/gpu/windows/display_helper.h"
+#include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace media {
 
@@ -102,7 +102,8 @@ Status CopyingTexture2DWrapper::Init(
 
 void CopyingTexture2DWrapper::SetStreamHDRMetadata(
     const HDRMetadata& stream_metadata) {
-  auto dxgi_stream_metadata = DisplayHelper::HdrMetadataToDXGI(stream_metadata);
+  auto dxgi_stream_metadata =
+      gl::HDRMetadataHelperWin::HDRMetadataToDXGI(stream_metadata);
   video_processor_->SetStreamHDRMetadata(dxgi_stream_metadata);
 }
 
