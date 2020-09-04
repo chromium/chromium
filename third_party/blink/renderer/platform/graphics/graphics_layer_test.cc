@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/testing/fake_graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/fake_graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/viewport_layers_setup.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
@@ -43,11 +42,7 @@
 
 namespace blink {
 
-class GraphicsLayerTest : public testing::Test, public PaintTestConfigurations {
- public:
-  GraphicsLayerTest() = default;
-  ~GraphicsLayerTest() = default;
-
+class GraphicsLayerTest : public testing::Test {
  protected:
   void CommitAndFinishCycle(GraphicsLayer& layer) {
     layer.GetPaintController().CommitNewDisplayItems();
@@ -71,9 +66,7 @@ class GraphicsLayerTest : public testing::Test, public PaintTestConfigurations {
   ViewportLayersSetup layers_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, GraphicsLayerTest, testing::Values(0));
-
-TEST_P(GraphicsLayerTest, Paint) {
+TEST_F(GraphicsLayerTest, Paint) {
   IntRect interest_rect(1, 2, 3, 4);
   auto& layer = layers_.graphics_layer();
   EXPECT_TRUE(layer.PaintWithoutCommitForTesting(interest_rect));
@@ -97,7 +90,7 @@ TEST_P(GraphicsLayerTest, Paint) {
   EXPECT_FALSE(layer.PaintWithoutCommitForTesting(interest_rect));
 }
 
-TEST_P(GraphicsLayerTest, PaintRecursively) {
+TEST_F(GraphicsLayerTest, PaintRecursively) {
   IntRect interest_rect(1, 2, 3, 4);
   const auto& transform_root = TransformPaintPropertyNode::Root();
   auto transform1 =
@@ -136,7 +129,7 @@ TEST_P(GraphicsLayerTest, PaintRecursively) {
   layers_.graphics_layer().GetPaintController().FinishCycle();
 }
 
-TEST_P(GraphicsLayerTest, SetDrawsContentFalse) {
+TEST_F(GraphicsLayerTest, SetDrawsContentFalse) {
   EXPECT_TRUE(layers_.graphics_layer().DrawsContent());
   layers_.graphics_layer().GetPaintController();
   EXPECT_NE(nullptr, GetInternalPaintController(layers_.graphics_layer()));
@@ -148,7 +141,7 @@ TEST_P(GraphicsLayerTest, SetDrawsContentFalse) {
   EXPECT_EQ(nullptr, GetInternalRasterInvalidator(layers_.graphics_layer()));
 }
 
-TEST_P(GraphicsLayerTest, ContentsLayer) {
+TEST_F(GraphicsLayerTest, ContentsLayer) {
   auto& graphics_layer = layers_.graphics_layer();
   auto contents_layer = cc::Layer::Create();
   graphics_layer.SetContentsToCcLayer(contents_layer, true);
@@ -157,6 +150,52 @@ TEST_P(GraphicsLayerTest, ContentsLayer) {
   graphics_layer.SetContentsToCcLayer(nullptr, true);
   EXPECT_FALSE(graphics_layer.HasContentsLayer());
   EXPECT_EQ(nullptr, graphics_layer.ContentsLayer());
+}
+
+TEST_F(GraphicsLayerTest, ShouldCreateLayersAfterPaint) {
+  FakeGraphicsLayerClient svg_root_client;
+  svg_root_client.SetIsSVGRoot(true);
+  auto svg_root_layer = std::make_unique<FakeGraphicsLayer>(svg_root_client);
+  svg_root_layer->SetDrawsContent(true);
+  svg_root_layer->SetHitTestable(true);
+  svg_root_layer->SetLayerState(PropertyTreeState::Root(), IntPoint());
+  layers_.graphics_layer().AddChild(svg_root_layer.get());
+  layers_.graphics_layer().SetDrawsContent(false);
+
+  auto effect = CreateOpacityEffect(EffectPaintPropertyNode::Root(), 1,
+                                    CompositingReason::kWillChangeOpacity);
+  svg_root_client.SetPainter([&](const GraphicsLayer* layer,
+                                 GraphicsContext& context,
+                                 GraphicsLayerPaintingPhase, const IntRect&) {
+    {
+      ScopedPaintChunkProperties properties(context.GetPaintController(),
+                                            *effect, *svg_root_layer,
+                                            kBackgroundType);
+      PaintControllerTestBase::DrawRect(context, *layer, kBackgroundType,
+                                        IntRect(0, 0, 100, 100));
+    }
+  });
+
+  svg_root_client.SetNeedsRepaint(true);
+  HashSet<const GraphicsLayer*> repainted_layers;
+  layers_.graphics_layer().PaintRecursively(repainted_layers);
+  EXPECT_TRUE(repainted_layers.Contains(svg_root_layer.get()));
+  EXPECT_TRUE(svg_root_layer->ShouldCreateLayersAfterPaint());
+  svg_root_client.SetNeedsRepaint(false);
+  svg_root_layer->GetPaintController().FinishCycle();
+
+  svg_root_layer->SetDrawsContent(false);
+  repainted_layers.clear();
+  layers_.graphics_layer().PaintRecursively(repainted_layers);
+  EXPECT_FALSE(repainted_layers.Contains(svg_root_layer.get()));
+  EXPECT_FALSE(svg_root_layer->ShouldCreateLayersAfterPaint());
+
+  svg_root_client.SetNeedsRepaint(true);
+  svg_root_layer->SetPaintsHitTest(true);
+  layers_.graphics_layer().PaintRecursively(repainted_layers);
+  EXPECT_TRUE(repainted_layers.Contains(svg_root_layer.get()));
+  EXPECT_TRUE(svg_root_layer->ShouldCreateLayersAfterPaint());
+  svg_root_layer->GetPaintController().FinishCycle();
 }
 
 }  // namespace blink

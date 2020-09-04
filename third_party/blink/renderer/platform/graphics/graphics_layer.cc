@@ -385,7 +385,6 @@ bool GraphicsLayer::PaintWithoutCommit(const IntRect* interest_rect) {
 }
 
 void GraphicsLayer::NotifyChildListChange() {
-  // cc::Layers are created in PaintArtifactCompositor.
   client_.GraphicsLayersDidChange();
 }
 
@@ -519,6 +518,11 @@ void GraphicsLayer::SetDrawsContent(bool draws_content) {
   if (draws_content == draws_content_)
     return;
 
+  // This may affect which layers the client collects.
+  client_.GraphicsLayersDidChange();
+  // This flag will be updated when the layer is repainted.
+  should_create_layers_after_paint_ = false;
+
   draws_content_ = draws_content;
   UpdateLayerIsDrawable();
 
@@ -558,9 +562,21 @@ void GraphicsLayer::SetContentsOpaqueForText(bool opaque) {
   CcLayer().SetContentsOpaqueForText(opaque);
 }
 
+void GraphicsLayer::SetPaintsHitTest(bool paints_hit_test) {
+  if (paints_hit_test_ == paints_hit_test)
+    return;
+  // This may affect which layers the client collects.
+  client_.GraphicsLayersDidChange();
+  // This flag will be updated when the layer is repainted.
+  should_create_layers_after_paint_ = false;
+  paints_hit_test_ = paints_hit_test;
+}
+
 void GraphicsLayer::SetHitTestable(bool should_hit_test) {
   if (hit_testable_ == should_hit_test)
     return;
+  // This may affect which layers the client collects.
+  client_.GraphicsLayersDidChange();
   hit_testable_ = should_hit_test;
   CcLayer().SetHitTestable(should_hit_test);
 }
