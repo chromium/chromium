@@ -76,8 +76,6 @@ proto_library("proto_internal") {
     ".",
   ]
 
-  proto_in_dir = "//"
-
   link_deps = [
     ":policy_common_definitions_compile_proto",
     "//third_party/private_membership:private_membership_proto",
