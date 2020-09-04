@@ -189,9 +189,9 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
           return;
         }
       }
-      // Step 4.
-      properties_.dictionary_category = MathMLOperatorDictionaryCategory::kNone;
     }
+    // Step 4.
+    properties_.dictionary_category = MathMLOperatorDictionaryCategory::kNone;
   }
 }
 
@@ -209,6 +209,8 @@ void MathMLOperatorElement::ComputeOperatorProperty(OperatorPropertyFlag flag) {
   } else {
     // By default, the value specified in the operator dictionary are used.
     ComputeDictionaryCategory();
+    DCHECK(properties_.dictionary_category !=
+           MathMLOperatorDictionaryCategory::kUndefined);
     if (MathMLOperatorDictionaryCategories
             [std::underlying_type_t<MathMLOperatorDictionaryCategory>(
                  properties_.dictionary_category)]

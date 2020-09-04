@@ -1249,6 +1249,7 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-axis-height-
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-minus-plus.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-not-in-dictionary-lspace-rspace.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-paint-lspace-rspace.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]

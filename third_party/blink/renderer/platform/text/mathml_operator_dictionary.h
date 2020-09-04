@@ -31,6 +31,7 @@ enum MathMLOperatorDictionaryForm { kInfix, kPrefix, kPostfix };
 // FindCategory takes a UTF-16 string and form (infix, prefix, postfix) as input
 // and returns the operator dictionary category for this pair, see:
 // https://mathml-refresh.github.io/mathml-core/#operator-dictionary
+// The returned value is never MathMLOperatorDictionaryCategory::kUndefined.
 PLATFORM_EXPORT MathMLOperatorDictionaryCategory
 FindCategory(const String& content, MathMLOperatorDictionaryForm);
 
