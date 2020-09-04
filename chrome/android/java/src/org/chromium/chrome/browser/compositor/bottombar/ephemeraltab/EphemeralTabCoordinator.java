@@ -72,9 +72,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
     private String mUrl;
     private int mCurrentMaxSheetHeight;
-    private Profile mProfile;
-    private boolean mOpened;
-    private boolean mFullStateLogged;
+    private boolean mPeeked;
+    private boolean mViewed; // Moved up from peek state by user
+    private boolean mFullyOpened;
 
     /**
      * Constructor.
@@ -114,7 +114,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * Checks if the preview tab is in open (peek) state.
      */
     public boolean isOpened() {
-        return mOpened;
+        return mPeeked;
     }
 
     /**
@@ -146,8 +146,16 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 public void onSheetContentChanged(BottomSheetContent newContent) {
                     if (newContent != mSheetContent) {
                         mMetrics.recordMetricsForClosed(mCloseReason);
-                        mOpened = false;
+                        mPeeked = false;
                         destroyWebContents();
+                    }
+                }
+
+                @Override
+                public void onSheetOpened(@StateChangeReason int reason) {
+                    if (!mViewed) {
+                        mMetrics.recordMetricsForViewed();
+                        mViewed = true;
                     }
                 }
 
@@ -156,15 +164,15 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                     if (mSheetContent == null) return;
                     switch (newState) {
                         case SheetState.PEEK:
-                            if (!mOpened) {
+                            if (!mPeeked) {
                                 mMetrics.recordMetricsForPeeked();
-                                mOpened = true;
+                                mPeeked = true;
                             }
                             break;
                         case SheetState.FULL:
-                            if (!mFullStateLogged) {
+                            if (!mFullyOpened) {
                                 mMetrics.recordMetricsForOpened();
-                                mFullStateLogged = true;
+                                mFullyOpened = true;
                             }
                             break;
                     }
@@ -190,8 +198,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             mLayoutView.addOnLayoutChangeListener(this);
         }
 
-        mOpened = false;
-        mFullStateLogged = false;
+        mPeeked = false;
+        mViewed = false;
+        mFullyOpened = false;
         mMediator.requestShowContent(url, title);
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
