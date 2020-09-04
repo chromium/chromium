@@ -25,7 +25,7 @@
 #include "media/base/audio_renderer_mixer_input.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
-#include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
 
 namespace content {
@@ -181,8 +181,8 @@ AudioDeviceFactory::NewAudioCapturerSource(
   }
 
   return base::MakeRefCounted<media::AudioInputDevice>(
-      blink::AudioInputIPCFactory::get()->CreateAudioInputIPC(frame_token,
-                                                              params),
+      blink::WebAudioInputIPCFactory::get()->CreateAudioInputIPC(frame_token,
+                                                                 params),
       media::AudioInputDevice::Purpose::kUserInput,
       media::AudioInputDevice::DeadStreamDetection::kEnabled);
 }

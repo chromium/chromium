@@ -6,11 +6,11 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("media") {
   sources = [
-    "audio/audio_input_ipc_factory.cc",
     "audio/mojo_audio_input_ipc.cc",
     "audio/mojo_audio_input_ipc.h",
     "audio/mojo_audio_output_ipc.cc",
     "audio/mojo_audio_output_ipc.h",
+    "audio/web_audio_input_ipc_factory.cc",
     "audio/web_audio_output_ipc_factory.cc",
     "webmediaplayer_util.cc",
   ]

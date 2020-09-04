@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_input_ipc_factory.h"
 
 #include <string>
 #include <utility>
@@ -75,9 +75,9 @@ void AssociateInputAndOutputForAec(
 }
 }  // namespace
 
-AudioInputIPCFactory* AudioInputIPCFactory::instance_ = nullptr;
+WebAudioInputIPCFactory* WebAudioInputIPCFactory::instance_ = nullptr;
 
-AudioInputIPCFactory::AudioInputIPCFactory(
+WebAudioInputIPCFactory::WebAudioInputIPCFactory(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : main_task_runner_(std::move(main_task_runner)),
@@ -86,12 +86,13 @@ AudioInputIPCFactory::AudioInputIPCFactory(
   instance_ = this;
 }
 
-AudioInputIPCFactory::~AudioInputIPCFactory() {
+WebAudioInputIPCFactory::~WebAudioInputIPCFactory() {
   DCHECK_EQ(instance_, this);
   instance_ = nullptr;
 }
 
-std::unique_ptr<media::AudioInputIPC> AudioInputIPCFactory::CreateAudioInputIPC(
+std::unique_ptr<media::AudioInputIPC>
+WebAudioInputIPCFactory::CreateAudioInputIPC(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& source_params) const {
   CHECK(!source_params.session_id.is_empty());

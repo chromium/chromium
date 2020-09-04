@@ -20,7 +20,7 @@
 #include "media/audio/audio_source_parameters.h"
 #include "ppapi/shared_impl/ppb_audio_config_shared.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace content {
@@ -173,7 +173,7 @@ void PepperPlatformAudioInput::InitializeOnIOThread(
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   if (ipc_startup_state_ != kStopped)
-    ipc_ = blink::AudioInputIPCFactory::get()->CreateAudioInputIPC(
+    ipc_ = blink::WebAudioInputIPCFactory::get()->CreateAudioInputIPC(
         render_frame_token_, media::AudioSourceParameters(session_id));
   if (!ipc_)
     return;
