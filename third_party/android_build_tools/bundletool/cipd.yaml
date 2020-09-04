@@ -10,4 +10,4 @@ description: Android SDK tool to manage App Bundles
 # swarming isolation works properly with symlinks.
 install_mode: copy
 data:
-  - file: bundletool-all-0.13.3.jar
+  - file: bundletool-all-1.2.0.jar

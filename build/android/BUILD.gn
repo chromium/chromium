@@ -51,7 +51,7 @@ python_library("test_runner_py") {
   data_deps = [ ":devil_chromium_py" ]
   if (build_with_chromium) {
     data += [
-      "//third_party/android_build_tools/bundletool/bundletool-all-0.13.3.jar",
+      "//third_party/android_build_tools/bundletool/bundletool-all-1.2.0.jar",
       "//tools/android/avd/proto/",
     ]
     data_deps +=
@@ -86,7 +86,7 @@ python_library("resource_sizes_py") {
 python_library("bundle_wrapper_script_py") {
   pydeps_file = "gyp/create_bundle_wrapper_script.pydeps"
   data = [
-    "//third_party/android_build_tools/bundletool/bundletool-all-0.13.3.jar",
+    "//third_party/android_build_tools/bundletool/bundletool-all-1.2.0.jar",
   ]
 }
 
