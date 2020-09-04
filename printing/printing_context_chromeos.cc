@@ -140,6 +140,13 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
     options.push_back(ConstructOption(kIppPinEncryption, kPinEncryptionNone));
   }
 
+  if (settings.dpi_horizontal() > 0 && settings.dpi_vertical() > 0) {
+    std::string dpi = base::NumberToString(settings.dpi_horizontal());
+    if (settings.dpi_horizontal() != settings.dpi_vertical())
+      dpi += "x" + base::NumberToString(settings.dpi_vertical());
+    options.push_back(ConstructOption(kIppResolution, dpi + "dpi"));
+  }
+
   if (base::FeatureList::IsEnabled(
           printing::features::kAdvancedPpdAttributes)) {
     size_t regular_attr_count = options.size();
