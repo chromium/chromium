@@ -100,37 +100,6 @@ bool MainThreadTaskQueue::IsPerFrameTaskQueue(
   return false;
 }
 
-MainThreadTaskQueue::QueueClass MainThreadTaskQueue::QueueClassForQueueType(
-    QueueType type) {
-  switch (type) {
-    case QueueType::kControl:
-    case QueueType::kDefault:
-    case QueueType::kIdle:
-    case QueueType::kTest:
-    case QueueType::kV8:
-    case QueueType::kNonWaking:
-    case QueueType::kFrameThrottleable:
-    case QueueType::kFrameDeferrable:
-    case QueueType::kFramePausable:
-    case QueueType::kFrameUnpausable:
-    case QueueType::kWebScheduling:
-      return QueueClass::kNone;
-    case QueueType::kFrameLoading:
-    case QueueType::kFrameLoadingControl:
-      return QueueClass::kLoading;
-    case QueueType::kCompositor:
-    case QueueType::kInput:
-      return QueueClass::kCompositor;
-    case QueueType::kDetached:
-    case QueueType::kOther:
-    case QueueType::kCount:
-      DCHECK(false);
-      return QueueClass::kCount;
-  }
-  NOTREACHED();
-  return QueueClass::kNone;
-}
-
 MainThreadTaskQueue::MainThreadTaskQueue(
     std::unique_ptr<internal::TaskQueueImpl> impl,
     const TaskQueue::Spec& spec,
@@ -138,7 +107,6 @@ MainThreadTaskQueue::MainThreadTaskQueue(
     MainThreadSchedulerImpl* main_thread_scheduler)
     : TaskQueue(std::move(impl), spec),
       queue_type_(params.queue_type),
-      queue_class_(QueueClassForQueueType(params.queue_type)),
       fixed_priority_(params.fixed_priority),
       queue_traits_(params.queue_traits),
       freeze_when_keep_active_(params.freeze_when_keep_active),

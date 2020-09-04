@@ -1325,7 +1325,8 @@ FrameSchedulerImpl::ThrottleableTaskQueueTraits() {
       .SetCanBeFrozen(true)
       .SetCanBeDeferred(true)
       .SetCanBePaused(true)
-      .SetCanRunWhenVirtualTimePaused(false);
+      .SetCanRunWhenVirtualTimePaused(false)
+      .SetCanBePausedForAndroidWebview(true);
 }
 
 // static
@@ -1336,7 +1337,8 @@ FrameSchedulerImpl::DeferrableTaskQueueTraits() {
       .SetCanBeFrozen(base::FeatureList::IsEnabled(
           blink::features::kStopNonTimersInBackground))
       .SetCanBePaused(true)
-      .SetCanRunWhenVirtualTimePaused(false);
+      .SetCanRunWhenVirtualTimePaused(false)
+      .SetCanBePausedForAndroidWebview(true);
 }
 
 // static
@@ -1345,7 +1347,8 @@ MainThreadTaskQueue::QueueTraits FrameSchedulerImpl::PausableTaskQueueTraits() {
       .SetCanBeFrozen(base::FeatureList::IsEnabled(
           blink::features::kStopNonTimersInBackground))
       .SetCanBePaused(true)
-      .SetCanRunWhenVirtualTimePaused(false);
+      .SetCanRunWhenVirtualTimePaused(false)
+      .SetCanBePausedForAndroidWebview(true);
 }
 
 // static

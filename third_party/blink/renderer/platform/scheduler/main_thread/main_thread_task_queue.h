@@ -92,18 +92,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the entire main thread.
   static bool IsPerFrameTaskQueue(QueueType);
 
-  // High-level category used by MainThreadScheduler to make scheduling
-  // decisions.
-  enum class QueueClass {
-    kNone = 0,
-    kLoading = 1,
-    kCompositor = 4,
-
-    kCount = 5,
-  };
-
-  static QueueClass QueueClassForQueueType(QueueType type);
-
   using QueueTraitsKeyType = int;
 
   // QueueTraits represent the deferrable, throttleable, pausable, and freezable
@@ -118,7 +106,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
           can_be_paused(false),
           can_be_frozen(false),
           can_run_in_background(true),
-          can_run_when_virtual_time_paused(true) {}
+          can_run_when_virtual_time_paused(true),
+          can_be_paused_for_android_webview(false) {}
 
     // Separate enum class for handling prioritisation decisions in task queues.
     enum class PrioritisationType {
@@ -184,6 +173,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
+    QueueTraits SetCanBePausedForAndroidWebview(bool value) {
+      can_be_paused_for_android_webview = value;
+      return *this;
+    }
+
     bool operator==(const QueueTraits& other) const {
       return can_be_deferred == other.can_be_deferred &&
              can_be_throttled == other.can_be_throttled &&
@@ -192,7 +186,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
              can_run_in_background == other.can_run_in_background &&
              can_run_when_virtual_time_paused ==
                  other.can_run_when_virtual_time_paused &&
-             prioritisation_type == other.prioritisation_type;
+             prioritisation_type == other.prioritisation_type &&
+             can_be_paused_for_android_webview ==
+                 other.can_be_paused_for_android_webview;
     }
 
     // Return a key suitable for WTF::HashMap.
@@ -207,6 +203,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       key |= can_be_frozen << (offset++);
       key |= can_run_in_background << (offset++);
       key |= can_run_when_virtual_time_paused << (offset++);
+      key |= can_be_paused_for_android_webview << (offset++);
       key |= static_cast<int>(prioritisation_type) << offset;
       offset += kPrioritisationTypeWidthBits;
       return key;
@@ -218,6 +215,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     bool can_be_frozen : 1;
     bool can_run_in_background : 1;
     bool can_run_when_virtual_time_paused : 1;
+    bool can_be_paused_for_android_webview : 1;
     PrioritisationType prioritisation_type = PrioritisationType::kRegular;
   };
 
@@ -338,8 +336,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   QueueType queue_type() const { return queue_type_; }
 
-  QueueClass queue_class() const { return queue_class_; }
-
   base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
   FixedPriority() const {
     return fixed_priority_;
@@ -350,6 +346,16 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   bool CanBeThrottled() const { return queue_traits_.can_be_throttled; }
 
   bool CanBePaused() const { return queue_traits_.can_be_paused; }
+
+  // Used for WebView's pauseTimers API. This API expects layout, parsing, and
+  // Javascript timers to be paused. Though this suggests we should pause
+  // loading (where parsing happens) as well, there are some expectations of JS
+  // still being able to run during pause. Because of this we only pause timers
+  // as well as any other pausable frame task queue.
+  // https://developer.android.com/reference/android/webkit/WebView#pauseTimers()
+  bool CanBePausedForAndroidWebview() const {
+    return queue_traits_.can_be_paused_for_android_webview;
+  }
 
   bool CanBeFrozen() const { return queue_traits_.can_be_frozen; }
 
@@ -431,7 +437,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void ClearReferencesToSchedulers();
 
   const QueueType queue_type_;
-  const QueueClass queue_class_;
   const base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
       fixed_priority_;
   const QueueTraits queue_traits_;

@@ -699,12 +699,10 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
   }
 
   auto insert_result = task_runners_.emplace(task_queue, std::move(voter));
-  auto queue_class = task_queue->queue_class();
 
-  UpdateTaskQueueState(
-      task_queue.get(), insert_result.first->second.get(), TaskQueuePolicy(),
-      main_thread_only().current_policy.GetQueuePolicy(queue_class),
-      /*should_update_priority=*/true);
+  UpdateTaskQueueState(task_queue.get(), insert_result.first->second.get(),
+                       Policy(), main_thread_only().current_policy,
+                       /*should_update_priority=*/true);
 
   // If this is a timer queue, and virtual time is enabled and paused, it should
   // be suspended by adding a fence to prevent immediate tasks from running when
@@ -722,8 +720,8 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewLoadingTaskQueue(
     MainThreadTaskQueue::QueueType queue_type,
     FrameSchedulerImpl* frame_scheduler) {
-  DCHECK_EQ(MainThreadTaskQueue::QueueClassForQueueType(queue_type),
-            MainThreadTaskQueue::QueueClass::kLoading);
+  DCHECK(queue_type == MainThreadTaskQueue::QueueType::kFrameLoading ||
+         queue_type == MainThreadTaskQueue::QueueType::kFrameLoadingControl);
   return NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(queue_type)
                           .SetCanBePaused(true)
                           .SetCanBeFrozen(true)
@@ -1458,8 +1456,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 
     case UseCase::kTouchstart:
       new_policy.rail_mode() = RAILMode::kResponse;
-      new_policy.loading_queue_policy().is_deferred = true;
-      new_policy.default_queue_policy().is_deferred = true;
+      new_policy.should_defer_task_queues() = true;
       break;
 
     case UseCase::kNone:
@@ -1489,17 +1486,15 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     new_policy.rail_mode() = RAILMode::kIdle;
 
   if (main_thread_only().renderer_pause_count != 0) {
-    new_policy.loading_queue_policy().is_paused = true;
-    new_policy.default_queue_policy().is_paused = true;
+    new_policy.should_pause_task_queues() = true;
   }
+
   if (main_thread_only().pause_timers_for_webview) {
-    new_policy.default_queue_policy().is_paused = true;
+    new_policy.should_pause_task_queues_for_android_webview() = true;
   }
 
   if (main_thread_only().use_virtual_time) {
-    new_policy.compositor_queue_policy().use_virtual_time = true;
-    new_policy.default_queue_policy().use_virtual_time = true;
-    new_policy.loading_queue_policy().use_virtual_time = true;
+    new_policy.use_virtual_time() = true;
   }
 
   if (scheduling_settings_
@@ -1570,12 +1565,8 @@ void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
       !previous_policy.has_value() ||
       ShouldUpdateTaskQueuePriorities(previous_policy.value());
   for (const auto& pair : task_runners_) {
-    MainThreadTaskQueue::QueueClass queue_class = pair.first->queue_class();
-
-    UpdateTaskQueueState(pair.first.get(), pair.second.get(),
-                         old_policy.GetQueuePolicy(queue_class),
-                         current_policy.GetQueuePolicy(queue_class),
-                         should_update_priorities);
+    UpdateTaskQueueState(pair.first.get(), pair.second.get(), old_policy,
+                         current_policy, should_update_priorities);
   }
   compositor_task_queue_enabled_voter_->SetVoteToEnable(
       !current_policy.should_freeze_compositor_task_queue());
@@ -1584,31 +1575,25 @@ void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
 void MainThreadSchedulerImpl::UpdateTaskQueueState(
     MainThreadTaskQueue* task_queue,
     TaskQueue::QueueEnabledVoter* task_queue_enabled_voter,
-    const TaskQueuePolicy& old_task_queue_policy,
-    const TaskQueuePolicy& new_task_queue_policy,
+    const Policy& old_policy,
+    const Policy& new_policy,
     bool should_update_priority) const {
   if (should_update_priority)
     task_queue->SetQueuePriority(ComputePriority(task_queue));
 
-  DCHECK(old_task_queue_policy.IsQueueEnabled(task_queue) ||
-         task_queue_enabled_voter);
   if (task_queue_enabled_voter) {
     bool is_enabled_for_agent =
         agent_scheduling_strategy_->QueueEnabledState(*task_queue)
             .value_or(true);
     task_queue_enabled_voter->SetVoteToEnable(
-        is_enabled_for_agent &&
-        new_task_queue_policy.IsQueueEnabled(task_queue));
+        is_enabled_for_agent && new_policy.IsQueueEnabled(task_queue));
   }
 
   // Make sure if there's no voter that the task queue is enabled.
-  DCHECK(task_queue_enabled_voter ||
-         old_task_queue_policy.IsQueueEnabled(task_queue));
+  DCHECK(task_queue_enabled_voter || old_policy.IsQueueEnabled(task_queue));
 
-  TimeDomainType old_time_domain_type =
-      old_task_queue_policy.GetTimeDomainType(task_queue);
-  TimeDomainType new_time_domain_type =
-      new_task_queue_policy.GetTimeDomainType(task_queue);
+  TimeDomainType old_time_domain_type = old_policy.GetTimeDomainType();
+  TimeDomainType new_time_domain_type = new_policy.GetTimeDomainType();
 
   if (old_time_domain_type != new_time_domain_type) {
     if (new_time_domain_type == TimeDomainType::kVirtual) {
@@ -2055,60 +2040,36 @@ void MainThreadSchedulerImpl::AsValueIntoLocked(
   }
 }
 
-bool MainThreadSchedulerImpl::TaskQueuePolicy::IsQueueEnabled(
+bool MainThreadSchedulerImpl::Policy::IsQueueEnabled(
     MainThreadTaskQueue* task_queue) const {
-  if (!is_enabled)
+  if (should_pause_task_queues() && task_queue->CanBePaused())
     return false;
-  if (is_paused && task_queue->CanBePaused())
+  if (should_defer_task_queues() && task_queue->CanBeDeferred())
     return false;
-  if (is_deferred && task_queue->CanBeDeferred())
+  if (should_pause_task_queues_for_android_webview() &&
+      task_queue->CanBePausedForAndroidWebview())
     return false;
   return true;
 }
 
 MainThreadSchedulerImpl::TimeDomainType
-MainThreadSchedulerImpl::TaskQueuePolicy::GetTimeDomainType(
-    MainThreadTaskQueue* task_queue) const {
-  if (use_virtual_time)
+MainThreadSchedulerImpl::Policy::GetTimeDomainType() const {
+  if (use_virtual_time())
     return TimeDomainType::kVirtual;
   return TimeDomainType::kReal;
 }
 
-void MainThreadSchedulerImpl::TaskQueuePolicy::AsValueInto(
-    base::trace_event::TracedValue* state) const {
-  state->SetBoolean("is_enabled", is_enabled);
-  state->SetBoolean("is_paused", is_paused);
-  state->SetBoolean("is_deferred", is_deferred);
-  state->SetBoolean("use_virtual_time", use_virtual_time);
-}
-
-MainThreadSchedulerImpl::Policy::Policy()
-    : rail_mode_(RAILMode::kAnimation),
-      should_disable_throttling_(false),
-      frozen_when_backgrounded_(false),
-      should_prioritize_loading_with_compositing_(false),
-      find_in_page_priority_(FindInPageBudgetPoolController::
-                                 kFindInPageBudgetNotExhaustedPriority),
-      use_case_(UseCase::kNone) {}
-
 void MainThreadSchedulerImpl::Policy::AsValueInto(
     base::trace_event::TracedValue* state) const {
-  state->BeginDictionary("compositor_queue_policy");
-  compositor_queue_policy().AsValueInto(state);
-  state->EndDictionary();
-
-  state->BeginDictionary("loading_queue_policy");
-  loading_queue_policy().AsValueInto(state);
-  state->EndDictionary();
-
-  state->BeginDictionary("default_queue_policy");
-  default_queue_policy().AsValueInto(state);
-  state->EndDictionary();
-
   state->SetString("rail_mode", RAILModeToString(rail_mode()));
   state->SetString("use_case", UseCaseToString(use_case()));
 
   state->SetBoolean("should_disable_throttling", should_disable_throttling());
+  state->SetBoolean("should_defer_task_queues", should_defer_task_queues());
+  state->SetBoolean("should_pause_task_queues", should_pause_task_queues());
+  state->SetBoolean("should_pause_task_queues_for_android_webview",
+                    should_pause_task_queues_for_android_webview());
+  state->SetBoolean("use_virtual_time", use_virtual_time());
 }
 
 void MainThreadSchedulerImpl::OnIdlePeriodStarted() {
