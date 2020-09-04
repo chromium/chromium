@@ -23,7 +23,7 @@ Polymer({
 
     /**
      * Available languages.
-     * @type {Array<{language: string, code: string, preferred: boolean,
+     * @type {!Array<!{language: string, code: string, preferred: boolean,
      *     voice: TtsHandlerVoice}>}
      */
     languagesToVoices: {
@@ -33,7 +33,7 @@ Polymer({
 
     /**
      * All voices.
-     * @type {Array<TtsHandlerVoice>}
+     * @type {!Array<!TtsHandlerVoice>}
      */
     allVoices: {
       type: Array,
@@ -93,50 +93,58 @@ Polymer({
   },
 
   /**
-   * Ticks for the Speech Rate slider. Non-linear as we expect people
-   * to want more control near 1.0.
-   * @return Array<cr_slider.SliderTick>
+   * Ticks for the Speech Rate slider. Valid rates are between 0.1 and 5.
+   * @return {!Array<!cr_slider.SliderTick>}
    * @private
    */
   speechRateTicks_() {
-    return Array.from(Array(16).keys()).map(x => {
-      return x <= 4 ?
-          // Linear from rates 0.6 to 1.0
-          this.initTick_(x / 10 + .6) :
-          // Power function above 1.0 gives more control at lower values.
-          this.initTick_(Math.pow(x - 3, 2) / 20 + 1);
-    });
+    return this.buildLinearTicks_(0.1, 5);
   },
 
   /**
-   * Ticks for the Speech Pitch slider. Valid pitches are between 0 and 2,
-   * exclusive of 0.
-   * @return Array<cr_slider.SliderTick>
+   * Ticks for the Speech Pitch slider. Valid pitches are between 0.2 and 2.
+   * @return {!Array<!cr_slider.SliderTick>}
    * @private
    */
   speechPitchTicks_() {
-    return Array.from(Array(10).keys()).map(x => {
-      return this.initTick_(x * .2 + .2);
-    });
+    return this.buildLinearTicks_(0.2, 2);
   },
 
   /**
-   * Ticks for the Speech Volume slider. Valid volumes are between 0 and
+   * Ticks for the Speech Volume slider. Valid volumes are between 0.2 and
    * 1 (100%), but volumes lower than .2 are excluded as being too quiet.
-   * The values are linear between .2 and 1.0.
-   * @return Array<cr_slider.SliderTick>
+   * @return {!Array<!cr_slider.SliderTick>}
    * @private
    */
   speechVolumeTicks_() {
-    return Array.from(Array(9).keys()).map(x => {
-      return this.initTick_(x * .1 + .2);
-    });
+    return this.buildLinearTicks_(0.2, 1);
+  },
+
+  /**
+   * A helper to build a set of ticks between |min| and |max| (inclusive) spaced
+   * evenly by 0.1.
+   * @param {number} min
+   * @param {number} max
+   * @return {!Array<!cr_slider.SliderTick>}
+   * @private
+   */
+  buildLinearTicks_(min, max) {
+    const ticks = [];
+
+    // Avoid floating point addition errors by scaling everything by 10.
+    min *= 10;
+    max *= 10;
+    const step = 1;
+    for (let tickValue = min; tickValue <= max; tickValue += step) {
+      ticks.push(this.initTick_(tickValue / 10));
+    }
+    return ticks;
   },
 
   /**
    * Initializes i18n labels for ticks arrays.
    * @param {number} tick The value to make a tick for.
-   * @return {cr_slider.SliderTick}
+   * @return {!cr_slider.SliderTick}
    * @private
    */
   initTick_(tick) {
@@ -150,7 +158,7 @@ Polymer({
 
   /**
    * Returns true if any voices are loaded.
-   * @param {!Array<TtsHandlerVoice>} voices
+   * @param {!Array<!TtsHandlerVoice>} voices
    * @return {boolean}
    * @private
    */
@@ -161,7 +169,7 @@ Polymer({
   /**
    * Returns true if voices are loaded and preview is not currently speaking and
    * there is text to preview.
-   * @param {!Array<TtsHandlerVoice>} voices
+   * @param {!Array<!TtsHandlerVoice>} voices
    * @param {boolean} isPreviewing
    * @param {boolean} previewText
    * @return {boolean}
@@ -175,7 +183,7 @@ Polymer({
 
   /**
    * Populates the list of languages and voices for the UI to use in display.
-   * @param {Array<TtsHandlerVoice>} voices
+   * @param {!Array<!TtsHandlerVoice>} voices
    * @private
    */
   populateVoiceList_(voices) {
@@ -216,9 +224,10 @@ Polymer({
   /**
    * Returns true if the language is a primary language and should be shown by
    * default, false if it should be hidden by default.
-   * @param {{language: string, code: string, preferred: boolean,
+   * @param {!{language: string, code: string, preferred: boolean,
    *     voice: TtsHandlerVoice}} language
    * @return {boolean} true if it's a primary language.
+   * @private
    */
   isPrimaryLanguage_(language) {
     return language.preferred;
@@ -227,9 +236,10 @@ Polymer({
   /**
    * Returns true if the language is a secondary language and should be hidden
    * by default, true if it should be shown by default.
-   * @param {{language: string, code: string, preferred: boolean,
+   * @param {!{language: string, code: string, preferred: boolean,
    *     voice: TtsHandlerVoice}} language
    * @return {boolean} true if it's a secondary language.
+   * @private
    */
   isSecondaryLanguage_(language) {
     return !language.preferred;
@@ -237,7 +247,7 @@ Polymer({
 
   /**
    * Sets the list of Text-to-Speech extensions for the UI.
-   * @param {Array<TtsHandlerExtension>} extensions
+   * @param {!Array<!TtsHandlerExtension>} extensions
    * @private
    */
   populateExtensionList_(extensions) {
@@ -256,8 +266,8 @@ Polymer({
 
   /**
    * A function used for sorting languages alphabetically.
-   * @param {Object} first A languageToVoices array item.
-   * @param {Object} second A languageToVoices array item.
+   * @param {!Object} first A languageToVoices array item.
+   * @param {!Object} second A languageToVoices array item.
    * @return {number} The result of the comparison.
    * @private
    */
@@ -267,7 +277,7 @@ Polymer({
 
   /**
    * Tests whether a language has just once voice.
-   * @param {Object} lang A languageToVoices array item.
+   * @param {!Object} lang A languageToVoices array item.
    * @return {boolean} True if the item has only one voice.
    * @private
    */
@@ -278,8 +288,8 @@ Polymer({
   /**
    * Returns a list of objects that can be used as drop-down menu options for a
    * language. This is a list of voices in that language.
-   * @param {Object} lang A languageToVoices array item.
-   * @return {Array<Object>} An array of menu options with a value and name.
+   * @param {!Object} lang A languageToVoices array item.
+   * @return {!Array<!Object>} An array of menu options with a value and name.
    * @private
    */
   menuOptionsForLang_(lang) {
@@ -290,8 +300,10 @@ Polymer({
 
   /**
    * Updates the preferences given the current list of voices.
-   * @param {Object<string, {language: string, code: string, preferred: boolean,
-   *     voices: Array<TtsHandlerVoice>}>} langToVoices
+   * @param {!Object<string, !{language: string,
+   *                           code: string,
+   *                           preferred: boolean,
+   *                           voices: !Array<!TtsHandlerVoice>}>} langToVoices
    * @private
    */
   updateLangToVoicePrefs_(langToVoices) {
@@ -334,8 +346,8 @@ Polymer({
   /**
    * Sets the voice to show in the preview drop-down as default, based on the
    * current locale and voice preferences.
-   * @param {Array<TtsHandlerVoice>} allVoices
-   * @param {Object<string, string>} languageCodeMap Mapping from language code
+   * @param {!Array<!TtsHandlerVoice>} allVoices
+   * @param {!Object<string, string>} languageCodeMap Mapping from language code
    *     to simple language code without locale.
    * @private
    */
@@ -374,7 +386,7 @@ Polymer({
 
   /**
    * Gets the best voice for the app locale.
-   * @param {Array<TtsHandlerVoice>} voices Voices to search through.
+   * @param {!Array<!TtsHandlerVoice>} voices Voices to search through.
    * @return {string} The ID of the best matching voice in the array.
    * @private
    */
@@ -397,7 +409,7 @@ Polymer({
   },
 
   /**
-   * @param {{model:Object}} event
+   * @param {!{model:Object}} event
    * @private
    */
   onEngineSettingsTap_(event) {

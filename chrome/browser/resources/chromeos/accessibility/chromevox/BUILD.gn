@@ -461,6 +461,7 @@ if (is_chromeos) {
       "background/output_test.js",
       "background/portals_test.js",
       "background/recovery_strategy_test.js",
+      "background/settings_test.js",
       "background/smart_sticky_mode_test.js",
       "background/user_action_monitor_test.js",
       "braille/braille_table_test.js",
