@@ -60,8 +60,8 @@ bool IsValidLink(const std::string& url) {
 
 pp::FloatRect FloatPageRectToPixelRect(FPDF_PAGE page,
                                        const pp::FloatRect& input) {
-  int output_width = FPDF_GetPageWidth(page);
-  int output_height = FPDF_GetPageHeight(page);
+  int output_width = FPDF_GetPageWidthF(page);
+  int output_height = FPDF_GetPageHeightF(page);
 
   int min_x;
   int min_y;

@@ -317,7 +317,7 @@ bool PDFiumPrint::IsSourcePdfLandscape(FPDF_DOCUMENT doc) {
   DCHECK(pdf_page);
 
   bool is_source_landscape =
-      FPDF_GetPageWidth(pdf_page.get()) > FPDF_GetPageHeight(pdf_page.get());
+      FPDF_GetPageWidthF(pdf_page.get()) > FPDF_GetPageHeightF(pdf_page.get());
   return is_source_landscape;
 }
 
@@ -423,8 +423,8 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
   ScopedFPDFDocument temp_doc(FPDF_CreateNewDocument());
   DCHECK(temp_doc);
 
-  double source_page_width = FPDF_GetPageWidth(page_to_print);
-  double source_page_height = FPDF_GetPageHeight(page_to_print);
+  float source_page_width = FPDF_GetPageWidthF(page_to_print);
+  float source_page_height = FPDF_GetPageHeightF(page_to_print);
 
   // For computing size in pixels, use a square dpi since the source PDF page
   // has square DPI.

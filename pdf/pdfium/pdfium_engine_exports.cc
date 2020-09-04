@@ -37,9 +37,9 @@ int CalculatePosition(FPDF_PAGE page,
   // settings.bounds is in terms of the max DPI. Convert page sizes to match.
   int dpi = std::max(settings.dpi_x, settings.dpi_y);
   int page_width = static_cast<int>(
-      ConvertUnitDouble(FPDF_GetPageWidth(page), kPointsPerInch, dpi));
+      ConvertUnitDouble(FPDF_GetPageWidthF(page), kPointsPerInch, dpi));
   int page_height = static_cast<int>(
-      ConvertUnitDouble(FPDF_GetPageHeight(page), kPointsPerInch, dpi));
+      ConvertUnitDouble(FPDF_GetPageHeightF(page), kPointsPerInch, dpi));
 
   // Start by assuming that we will draw exactly to the bounds rect
   // specified.
