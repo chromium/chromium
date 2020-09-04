@@ -298,6 +298,39 @@ AbstractTts.FONT_WEIGHT = 'fontWeight';
 /** TTS punctuation-echo property. @type {string} */
 AbstractTts.PUNCTUATION_ECHO = 'punctuationEcho';
 
+/**
+ * List of punctuation echoes that the user can cycle through.
+ * @type {!Array<{name:(string),
+ * msg:(string),
+ * regexp:(RegExp),
+ * clear:(boolean)}>}
+ */
+AbstractTts.PUNCTUATION_ECHOES = [
+  // Punctuation echoed for the 'none' option.
+  {
+    name: 'none',
+    msg: 'no_punctuation',
+    regexp: /[-$#"()*;:<>\n\\\/+='~`@_]/g,
+    clear: true
+  },
+
+  // Punctuation echoed for the 'some' option.
+  {
+    name: 'some',
+    msg: 'some_punctuation',
+    regexp: /[$#"*<>\\\/\{\}+=~`%\u2022]/g,
+    clear: false
+  },
+
+  // Punctuation echoed for the 'all' option.
+  {
+    name: 'all',
+    msg: 'all_punctuation',
+    regexp: /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022]/g,
+    clear: false
+  }
+];
+
 /** TTS pause property. @type {string} */
 AbstractTts.PAUSE = 'pause';
 

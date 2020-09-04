@@ -173,6 +173,56 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'AnnounceCapitalLetters', function() {
   assertEquals('A.', preprocess('A.'));
 });
 
+SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'PunctuationMode', function() {
+  const PUNCTUATION_ECHO_NONE = '0';
+  const PUNCTUATION_ECHO_SOME = '1';
+  const PUNCTUATION_ECHO_ALL = '2';
+
+  const updatePunctuationEcho = tts.updatePunctuationEcho.bind(tts);
+  let lastSpokenTextString = '';
+  tts.speakUsingQueue_ = function(utterance, _) {
+    lastSpokenTextString = utterance.textString;
+  };
+
+  // No punctuation.
+  updatePunctuationEcho(PUNCTUATION_ECHO_NONE);
+
+  tts.speak(`"That's all, folks!"`);
+  assertEquals(`That's all, folks!`, lastSpokenTextString);
+
+  tts.speak('"$1,234.56 (plus tax) for 78% of your #2 pencils?", they mused');
+  assertEquals(
+      '1,234.56 plus tax for 78% of your 2 pencils? , they mused',
+      lastSpokenTextString);
+
+  // Some punctuation.
+  updatePunctuationEcho(PUNCTUATION_ECHO_SOME);
+
+  tts.speak(`"That's all, folks!"`);
+  assertEquals(`quote That's all, folks! quote`, lastSpokenTextString);
+
+  tts.speak('"$1,234.56 (plus tax) for 78% of your #2 pencils?", they mused');
+  assertEquals(
+      'quote dollar 1,234.56 (plus tax) for 78 percent of your pound 2 ' +
+          'pencils? quote , they mused',
+      lastSpokenTextString);
+
+  // All punctuation.
+  updatePunctuationEcho(PUNCTUATION_ECHO_ALL);
+
+  tts.speak(`"That's all, folks!"`);
+  assertEquals(
+      `quote That apostrophe' s all comma folks exclamation! quote`,
+      lastSpokenTextString);
+
+  tts.speak('"$1,234.56 (plus tax) for 78% of your #2 pencils?", they mused');
+  assertEquals(
+      'quote dollar 1 comma 234 dot 56 open paren plus tax close paren for ' +
+          '78 percent of your pound 2 pencils question mark? quote comma ' +
+          'they mused',
+      lastSpokenTextString);
+});
+
 SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'NumberReadingStyle', function() {
   let lastSpokenTextString = '';
   tts.speakUsingQueue_ = function(utterance, _) {
