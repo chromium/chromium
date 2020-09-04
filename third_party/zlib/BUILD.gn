@@ -426,6 +426,7 @@ if (build_with_chromium) {
     sources = [
       "contrib/tests/infcover.cc",
       "contrib/tests/infcover.h",
+      "contrib/tests/run_all_unittests.cc",
       "contrib/tests/utils_unittest.cc",
       "google/compression_utils_portable.cc",
       "google/compression_utils_portable.h",
@@ -433,8 +434,8 @@ if (build_with_chromium) {
 
     deps = [
       ":zlib",
+      "//base/test:test_support",
       "//testing/gtest",
-      "//testing/gtest:gtest_main",
     ]
 
     include_dirs = [

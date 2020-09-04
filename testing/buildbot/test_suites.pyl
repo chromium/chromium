@@ -694,6 +694,7 @@
         },
       },
       'wtf_unittests': {},
+      'zlib_unittests': {},
     },
 
     'chromium_gtests_for_devices_with_graphical_output': {
