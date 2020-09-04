@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/win/direct_write.h"
 
@@ -261,6 +262,9 @@ void FontEnumerationCacheWin::SchedulePrepareFontEnumerationCache() {
 
 void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
   DCHECK(!enumeration_cache_built_.IsSet());
+  DCHECK(!enumeration_timer_);
+
+  enumeration_timer_ = std::make_unique<base::ElapsedTimer>();
 
   font_enumeration_table_ = std::make_unique<blink::FontEnumerationTable>();
 
@@ -317,6 +321,7 @@ void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
 
 void FontEnumerationCacheWin::FinalizeEnumerationCache() {
   DCHECK(!enumeration_cache_built_.IsSet());
+  DCHECK(enumeration_timer_);
 
   if (enumeration_errors_.size() > 0) {
     auto most_frequent_hresult = std::max_element(
@@ -346,6 +351,10 @@ void FontEnumerationCacheWin::FinalizeEnumerationCache() {
   }
 
   enumeration_cache_built_.Set();
+
+  UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
+                             enumeration_timer_->Elapsed());
+  enumeration_timer_.reset();
 
   // Respond to pending and future requests.
   StartCallbacksTaskQueue();

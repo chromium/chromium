@@ -21,6 +21,8 @@ using blink::mojom::FontEnumerationStatus;
 namespace base {
 template <typename T>
 class NoDestructor;
+
+class ElapsedTimer;
 }
 
 namespace content {
@@ -68,6 +70,7 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
   uint32_t outstanding_family_results_ = 0;
 
   std::map<HRESULT, unsigned> enumeration_errors_;
+  std::unique_ptr<base::ElapsedTimer> enumeration_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(FontEnumerationCacheWin);
 };
