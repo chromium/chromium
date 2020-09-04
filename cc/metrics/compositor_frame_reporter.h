@@ -154,7 +154,7 @@ class CC_EXPORT CompositorFrameReporter {
   CompositorFrameReporter& operator=(const CompositorFrameReporter& reporter) =
       delete;
 
-  std::unique_ptr<CompositorFrameReporter> CopyReporterAtBeginImplStage() const;
+  std::unique_ptr<CompositorFrameReporter> CopyReporterAtBeginImplStage();
 
   // Note that the started stage may be reported to UMA. If the histogram is
   // intended to be reported then the histograms.xml file must be updated too.
@@ -201,9 +201,25 @@ class CC_EXPORT CompositorFrameReporter {
   void SetDroppedFrameCounter(DroppedFrameCounter* counter) {
     dropped_frame_counter_ = counter;
   }
-  void SetHasPartialUpdate() { has_partial_update_ = true; }
+
+  bool has_partial_update() const { return has_partial_update_; }
+  void set_has_partial_update(bool has_partial_update) {
+    has_partial_update_ = has_partial_update;
+  }
 
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
+
+  // Adopts |cloned_reporter|, i.e. keeps |cloned_reporter| alive until after
+  // this reporter terminates. Note that the |cloned_reporter| must have been
+  // created from this reporter using |CopyReporterAtBeginImplStage()|.
+  void AdoptReporter(std::unique_ptr<CompositorFrameReporter> cloned_reporter);
+
+  // If this is a cloned reporter, then this returns a weak-ptr to the original
+  // reporter this was cloned from (using |CopyReporterAtBeginImplStage()|).
+  base::WeakPtr<CompositorFrameReporter> cloned_from() { return cloned_from_; }
+
+ protected:
+  base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 
  private:
   void TerminateReporter();
@@ -308,6 +324,21 @@ class CC_EXPORT CompositorFrameReporter {
   bool has_partial_update_ = false;
 
   const SmoothThread smooth_thread_;
+
+  // If this is a cloned pointer, then |cloned_from_| is a weak pointer to the
+  // original reporter this was cloned from.
+  base::WeakPtr<CompositorFrameReporter> cloned_from_;
+
+  // If this reporter was cloned, then |cloned_to_| is a weak pointer to the
+  // cloned repoter.
+  base::WeakPtr<CompositorFrameReporter> cloned_to_;
+
+  // A cloned reporter is not originally owned by the original reporter.
+  // However, it can 'adopt' it (using |AdoptReporter()| if the cloned reporter
+  // needs to stay alive until the original reporter terminates.
+  std::unique_ptr<CompositorFrameReporter> own_cloned_to_;
+
+  base::WeakPtrFactory<CompositorFrameReporter> weak_factory_{this};
 };
 
 }  // namespace cc

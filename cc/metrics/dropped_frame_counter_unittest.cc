@@ -7,6 +7,8 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "cc/animation/animation_host.h"
+#include "cc/test/fake_content_layer_client.h"
+#include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_test.h"
 
 namespace cc {
@@ -21,6 +23,18 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
 
   void InitializeSettings(LayerTreeSettings* settings) override {
     settings->commit_to_active_tree = false;
+  }
+
+  void SetupTree() override {
+    LayerTreeTest::SetupTree();
+
+    Layer* root_layer = layer_tree_host()->root_layer();
+    scroll_layer_ = FakePictureLayer::Create(&client_);
+    // Set up the layer so it always has something to paint.
+    scroll_layer_->set_always_update_resources(true);
+    scroll_layer_->SetBounds({3, 3});
+    client_.set_bounds({3, 3});
+    root_layer->AddChild(scroll_layer_);
   }
 
   void RunTest(CompositorMode mode) override {
@@ -49,13 +63,20 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
   // Compositor thread function overrides:
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
                                   const viz::BeginFrameArgs& args) override {
+    if (TestEnded())
+      return;
+
     // Request a re-draw, and set a non-empty damage region (otherwise the
     // draw is aborted with 'no damage').
     host_impl->SetNeedsRedraw();
     host_impl->SetViewportDamage(gfx::Rect(0, 0, 10, 20));
 
-    // Request update from the main-thread too.
-    host_impl->SetNeedsCommit();
+    if (skip_main_thread_next_frame_) {
+      skip_main_thread_next_frame_ = false;
+    } else {
+      // Request update from the main-thread too.
+      host_impl->SetNeedsCommit();
+    }
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
@@ -68,6 +89,10 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
     }
 
     if (wait) {
+      // When the main-thread blocks during a frame, skip the main-thread for
+      // the next frame, so that the main-thread can be in sync with the
+      // compositor thread again.
+      skip_main_thread_next_frame_ = true;
       wait->Signal();
     }
   }
@@ -92,6 +117,9 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
 
   // Main-thread function overrides:
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {
+    if (TestEnded())
+      return;
+
     bool should_wait = false;
     if (config_.should_drop_main_every > 0) {
       should_wait =
@@ -110,12 +138,14 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
         base::AutoLock lock(wait_lock_);
         wait_ = nullptr;
       }
-    } else if (!TestEnded()) {
-      // Make sure BeginMainFrame keeps being issued.
-      layer_tree_host()->SetNeedsAnimate();
-      if (config_.should_register_main_thread_animation) {
-        animation_host()->SetAnimationCounts(1, true, true);
-      }
+    }
+
+    // Make some changes so that the main-thread needs to push updates to the
+    // compositor thread (i.e. force a commit).
+    auto const bounds = scroll_layer_->bounds();
+    scroll_layer_->SetBounds({bounds.width(), bounds.height() + 1});
+    if (config_.should_register_main_thread_animation) {
+      animation_host()->SetAnimationCounts(1, true, true);
     }
   }
 
@@ -139,6 +169,12 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
   } expect_;
 
  private:
+  // Set up a dummy picture layer so that every begin-main frame requires a
+  // commit (without the dummy layer, the main-thread never has to paint, which
+  // causes an early 'no damage' abort of the main-frame.
+  FakeContentLayerClient client_;
+  scoped_refptr<FakePictureLayer> scroll_layer_;
+
   // This field is used only on the compositor thread to track how many frames
   // have been processed.
   uint32_t presented_frames_ = 0;
@@ -155,6 +191,8 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
   uint32_t dropped_main_ = 0;
   uint32_t dropped_compositor_ = 0;
   uint32_t dropped_smoothness_ = 0;
+
+  bool skip_main_thread_next_frame_ = false;
 };
 
 class DroppedFrameCounterNoDropTest : public DroppedFrameCounterTestBase {

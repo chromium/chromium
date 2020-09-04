@@ -309,7 +309,7 @@ CompositorFrameReporter::CompositorFrameReporter(
       smooth_thread_(smooth_thread) {}
 
 std::unique_ptr<CompositorFrameReporter>
-CompositorFrameReporter::CopyReporterAtBeginImplStage() const {
+CompositorFrameReporter::CopyReporterAtBeginImplStage() {
   if (stage_history_.empty() ||
       stage_history_.front().stage_type !=
           StageType::kBeginImplFrameToSendBeginMainFrame ||
@@ -327,6 +327,10 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() const {
   new_reporter->current_stage_.start_time = stage_history_.front().start_time;
   new_reporter->set_tick_clock(tick_clock_);
   new_reporter->SetDroppedFrameCounter(dropped_frame_counter_);
+  new_reporter->cloned_from_ = weak_factory_.GetWeakPtr();
+
+  DCHECK(!cloned_to_);
+  cloned_to_ = new_reporter->GetWeakPtr();
   return new_reporter;
 }
 
@@ -450,8 +454,17 @@ void CompositorFrameReporter::TerminateReporter() {
       EnableReportType(FrameReportType::kDroppedFrame);
       break;
     case FrameTerminationStatus::kDidNotProduceFrame:
-      if (!frame_skip_reason_.has_value() ||
-          frame_skip_reason() != FrameSkippedReason::kNoDamage) {
+      if (frame_skip_reason_.has_value() &&
+          frame_skip_reason() == FrameSkippedReason::kNoDamage) {
+        // If this reporter was cloned, and the cloned repoter was marked as
+        // containing 'partial update' (i.e. missing desired updates from the
+        // main-thread), but this reporter terminated with 'no damage', then
+        // reset the 'partial update' flag from the cloned reporter.
+        if (cloned_to_ && cloned_to_->has_partial_update())
+          cloned_to_->set_has_partial_update(false);
+      } else {
+        // If no frames were produced, it was not due to no-damage, then it is a
+        // dropped frame.
         EnableReportType(FrameReportType::kDroppedFrame);
       }
       break;
@@ -1072,6 +1085,16 @@ bool CompositorFrameReporter::IsDroppedFrameAffectingSmoothness() const {
   // If the frame was shown, and did not include partial updates, then this
   // frame did not hurt smoothness.
   return false;
+}
+
+base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void CompositorFrameReporter::AdoptReporter(
+    std::unique_ptr<CompositorFrameReporter> reporter) {
+  DCHECK_EQ(cloned_to_.get(), reporter.get());
+  own_cloned_to_ = std::move(reporter);
 }
 
 }  // namespace cc

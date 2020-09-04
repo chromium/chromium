@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "cc/metrics/compositor_frame_reporter.h"
+#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -215,7 +216,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
       // If the frame does not include any new updates from the main thread,
       // then flag the frame as containing only partial updates.
       if (!is_activated_frame_new)
-        reporter->SetHasPartialUpdate();
+        reporter->set_has_partial_update(true);
       impl_reporter = std::move(reporter);
     }
   }
@@ -325,9 +326,25 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       termination_status = FrameTerminationStatus::kDidNotPresentFrame;
     }
 
-    submitted_frame->reporter->SetVizBreakdown(details);
-    submitted_frame->reporter->TerminateFrame(
-        termination_status, details.presentation_feedback.timestamp);
+    auto& reporter = submitted_frame->reporter;
+    reporter->SetVizBreakdown(details);
+    reporter->TerminateFrame(termination_status,
+                             details.presentation_feedback.timestamp);
+
+    // If |reporter| was cloned from a reporter, and the original reporter is
+    // still alive, then check whether the cloned reporter has the 'partial
+    // update' flag set. It is still possible for the original reporter to
+    // terminate with 'no damage', and if that happens, then the cloned
+    // reporter's 'partial update' flag will need to be reset. To allow this to
+    // happen, keep the cloned reporter alive, and hand over its ownership to
+    // the original reporter, so that the cloned reporter stays alive until the
+    // original reporter is terminated, and the cloned reporter's 'partial
+    // update' flag can be unset if necessary.
+    if (reporter->has_partial_update()) {
+      auto orig_reporter = reporter->cloned_from();
+      if (orig_reporter)
+        orig_reporter->AdoptReporter(std::move(reporter));
+    }
     submitted_compositor_frames_.erase(submitted_frame);
   }
 }
