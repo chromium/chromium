@@ -24,7 +24,6 @@ namespace content {
 // static
 DropData DropDataBuilder::Build(const WebDragData& drag_data) {
   DropData result;
-  result.referrer_policy = drag_data.ReferrerPolicy();
 
   for (const WebDragData::Item& item : drag_data.Items()) {
     switch (item.storage_type) {
@@ -41,6 +40,7 @@ DropData DropDataBuilder::Build(const WebDragData& drag_data) {
         }
         if (base::EqualsASCII(str_type, ui::kMimeTypeDownloadURL)) {
           result.download_metadata = item.string_data.Utf16();
+          result.referrer_policy = drag_data.ReferrerPolicy();
           break;
         }
         if (base::EqualsASCII(str_type, ui::kMimeTypeHTML)) {
