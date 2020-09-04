@@ -430,6 +430,7 @@ void LocalFileWriter::OnCreateResult(Callback callback,
     SetState(FileOperations::kFailed);
     std::move(callback).Run(protocol::MakeFileTransferError(
         FROM_HERE, FileErrorToResponseErrorType(error), error));
+    return;
   }
 
   SetState(FileOperations::kReady);
