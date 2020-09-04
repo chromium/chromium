@@ -170,6 +170,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
             case DownloadLocationDialogType.NAME_TOO_LONG:
                 return mContext.getString(R.string.download_location_rename_file);
 
+            case DownloadLocationDialogType.LOCATION_SUGGESTION: // Intentional fall through.
             case DownloadLocationDialogType.DEFAULT:
                 return mContext.getString(R.string.download_location_dialog_title);
         }

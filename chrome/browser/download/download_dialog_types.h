@@ -17,7 +17,8 @@ enum class DownloadLocationDialogType {
   LOCATION_NOT_FOUND = 3,  // Error dialog, default location is not found.
   NAME_CONFLICT = 4,  // Error dialog, there is already a file with that name.
   NAME_TOO_LONG = 5,  // Error dialog, the file name is too long.
-  kMaxValue = NAME_TOO_LONG
+  LOCATION_SUGGESTION = 6,  // Dialog showing alternative location suggestion.
+  kMaxValue = LOCATION_SUGGESTION
 };
 
 // Result of download location dialog.
