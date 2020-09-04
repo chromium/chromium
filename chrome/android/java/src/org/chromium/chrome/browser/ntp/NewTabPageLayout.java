@@ -508,6 +508,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
                                 ImageView view = (ImageView) stub.inflate();
                                 view.setImageDrawable(drawable);
                                 mCryptidHolder = view;
+                                renderer.recordRenderEvent();
                             }));
                 }
 

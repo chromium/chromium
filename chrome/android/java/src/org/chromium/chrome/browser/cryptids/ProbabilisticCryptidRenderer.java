@@ -11,6 +11,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
@@ -42,6 +44,12 @@ public class ProbabilisticCryptidRenderer {
     private static final long DEFAULT_MORATORIUM_LENGTH = 4 * ONE_DAY;
     private static final long DEFAULT_RAMP_UP_LENGTH = 21 * ONE_DAY;
     private static final int DEFAULT_MAX_PROBABILITY = 20000; // 2%
+
+    // Values correspond to CryptidRenderResult in enums.xml
+    private static final int HISTOGRAM_SUCCESS = 0;
+    private static final int HISTOGRAM_FAILURE = 1;
+    private static final int HISTOGRAM_DISABLED = 2;
+    private static final int HISTOGRAM_MAX = 3;
 
     private static final String TAG = "ProbabilisticCryptid";
 
@@ -87,6 +95,8 @@ public class ProbabilisticCryptidRenderer {
      */
     public void getCryptidForLogo(Profile profile, Callback<Drawable> callback) {
         if (!shouldUseCryptidRendering(profile)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "NewTabPage.CryptidRenderResult", HISTOGRAM_DISABLED, HISTOGRAM_MAX);
             callback.onResult(null);
             return;
         }
@@ -107,6 +117,9 @@ public class ProbabilisticCryptidRenderer {
                         fetcher.destroy();
 
                         if (image == null) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "NewTabPage.CryptidRenderResult", HISTOGRAM_FAILURE,
+                                    HISTOGRAM_MAX);
                             callback.onResult(null);
                             return;
                         }
@@ -152,6 +165,9 @@ public class ProbabilisticCryptidRenderer {
 
     @VisibleForTesting
     void recordRenderEvent(long timestamp) {
+        RecordUserAction.record("CryptidRendered");
+        RecordHistogram.recordEnumeratedHistogram(
+                "NewTabPage.CryptidRenderResult", HISTOGRAM_SUCCESS, HISTOGRAM_MAX);
         SharedPreferencesManager.getInstance().writeLong(
                 ChromePreferenceKeys.CRYPTID_LAST_RENDER_TIMESTAMP, timestamp);
     }

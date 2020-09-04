@@ -111121,6 +111121,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.CryptidRenderResult" enum="CryptidRenderResult"
+    expires_after="M90">
+  <owner>tmartino@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Tracks the outcome of Probabilistic Cryptid Rendering (succeeded, failed, or
+    was disabled because preconditions were not met).
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.CustomizationAvailability.Backgrounds"
     enum="NTPBackgroundCustomizationAvailability" expires_after="M90">
   <obsolete>

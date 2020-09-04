@@ -14368,6 +14368,19 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="15" label="Proximity periodic"/>
 </enum>
 
+<enum name="CryptidRenderResult">
+  <int value="0" label="Success">
+    The asset was successfully fetched and rendered.
+  </int>
+  <int value="1" label="Failure">
+    Rendering was attempted but the asset could not be fetched.
+  </int>
+  <int value="2" label="Disabled">
+    Rendering was not attempted because the flag was disabled or the
+    probabilistic check failed.
+  </int>
+</enum>
+
 <enum name="CryptohomeChecksumStatus">
   <int value="0" label="Checksum OK"/>
   <int value="1" label="Checksum does not exist"/>
