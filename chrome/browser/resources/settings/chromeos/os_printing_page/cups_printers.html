@@ -114,45 +114,46 @@
         </settings-cups-saved-printers>
       </div>
     </template>
-
-    <div class="padded first" id="nearbyPrinters">
-      <div aria-label$="[[nearbyPrintersAriaLabel_]]">
+    <template is="dom-if" if="[[attemptedLoadingPrinters_]]">
+      <div class="padded first" id="nearbyPrinters">
+        <div aria-label$="[[nearbyPrintersAriaLabel_]]">
           $i18n{nearbyPrintersListTitle}
-      </div>
-      <settings-localized-link class="secondary"
-          localized-string="$i18n{nearbyPrintersListDescription}"
-          link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
-      </settings-localized-link>
-      <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
-          prefs.native_printing.user_native_printers_allowed.value)]]">
-        <cr-policy-pref-indicator
-            pref="[[prefs.native_printing.user_native_printers_allowed]]"
-            icon-aria-label="$i18n{printingPageTitle}">
-        </cr-policy-pref-indicator>
-      </template>
-    </div>
-
-    <div id="addPrinterSection" class="list-frame">
-      <div class="layout horizontal center custom-list-item">
-        <div id="addPrinterText" aria-hidden="true">
-          $i18n{addCupsPrinter}
         </div>
-        <cr-icon-button class="action-button" id="addManualPrinterIcon"
-            iron-icon="settings20:printer-add"
-            on-click="onAddPrinterTap_"
-            disabled="[[!addPrinterButtonActive_(canAddPrinter,
-                prefs.native_printing.user_native_printers_allowed.value)]]"
-            title="$i18n{addCupsPrinter}"
-            deep-link-focus-id$="[[Setting.kAddPrinter]]">
-        </cr-icon-button>
+        <settings-localized-link class="secondary"
+            localized-string="$i18n{nearbyPrintersListDescription}"
+            link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
+        </settings-localized-link>
+        <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
+          prefs.native_printing.user_native_printers_allowed.value)]]">
+          <cr-policy-pref-indicator
+              pref="[[prefs.native_printing.user_native_printers_allowed]]"
+              icon-aria-label="$i18n{printingPageTitle}">
+          </cr-policy-pref-indicator>
+        </template>
       </div>
-    </div>
 
-    <template is="dom-if" if="[[canAddPrinter]]" restamp>
-      <settings-cups-nearby-printers search-term="[[searchTerm]]"
-          active-printer="{{activePrinter}}"
-          printers-count="{{nearbyPrinterCount_}}">
-      </settings-cups-nearby-printers>
+      <div id="addPrinterSection" class="list-frame">
+        <div class="layout horizontal center custom-list-item">
+          <div id="addPrinterText" aria-hidden="true">
+            $i18n{addCupsPrinter}
+          </div>
+          <cr-icon-button class="action-button" id="addManualPrinterIcon"
+              iron-icon="settings20:printer-add"
+              on-click="onAddPrinterTap_"
+              disabled="[[!addPrinterButtonActive_(canAddPrinter,
+                  prefs.native_printing.user_native_printers_allowed.value)]]"
+              title="$i18n{addCupsPrinter}"
+              deep-link-focus-id$="[[Setting.kAddPrinter]]">
+          </cr-icon-button>
+        </div>
+      </div>
+
+      <template is="dom-if" if="[[canAddPrinter]]" restamp>
+        <settings-cups-nearby-printers search-term="[[searchTerm]]"
+            active-printer="{{activePrinter}}"
+            printers-count="{{nearbyPrinterCount_}}">
+        </settings-cups-nearby-printers>
+      </template>
     </template>
 
     <settings-cups-add-printer-dialog id="addPrinterDialog"

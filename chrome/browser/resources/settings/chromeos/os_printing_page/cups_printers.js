@@ -60,6 +60,12 @@ Polymer({
     },
 
     /** @private */
+    attemptedLoadingPrinters_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
     showCupsEditPrinterDialog_: Boolean,
 
     /**@private */
@@ -283,6 +289,9 @@ Polymer({
         printer => /** @type {!PrinterListEntry} */ (
             {printerInfo: printer, printerType: PrinterType.SAVED}));
     this.entryManager_.setSavedPrintersList(this.savedPrinters_);
+    // Used to delay rendering nearby and add printer sections to prevent
+    // "Add Printer" flicker when clicking "Printers" in settings page.
+    this.attemptedLoadingPrinters_ = true;
   },
 
   /** @private */
