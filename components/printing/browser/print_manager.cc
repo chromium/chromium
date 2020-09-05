@@ -113,6 +113,12 @@ void PrintManager::DidGetDocumentCookie(int32_t cookie) {
   cookie_ = cookie;
 }
 
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+void PrintManager::SetAccessibilityTree(
+    int32_t cookie,
+    const ui::AXTreeUpdate& accessibility_tree) {}
+#endif
+
 void PrintManager::DidShowPrintDialog() {}
 
 void PrintManager::ShowInvalidPrinterSettingsError() {}

@@ -45,6 +45,10 @@ mojom("mojo_interfaces") {
   if (enable_print_preview) {
     enabled_features = [ "enable_print_preview" ]
   }
+  if (enable_tagged_pdf) {
+    public_deps += [ "//ui/accessibility/mojom" ]
+    enabled_features += [ "enable_tagged_pdf" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -54,6 +58,7 @@ source_set("unit_tests") {
     ":common",
     "//ipc:test_support",
     "//printing/mojom",
+    "//skia",
     "//testing/gtest",
     "//ui/gfx/geometry",
   ]

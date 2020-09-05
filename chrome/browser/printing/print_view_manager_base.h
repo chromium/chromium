@@ -23,6 +23,10 @@
 #include "content/public/browser/notification_registrar.h"
 #include "printing/buildflags/buildflags.h"
 
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+#include "ui/accessibility/ax_tree_update_forward.h"
+#endif
+
 namespace base {
 class RefCountedMemory;
 }
@@ -73,6 +77,11 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
   // mojom::PrintManagerHost:
   void DidGetPrintedPagesCount(int32_t cookie, int32_t number_pages) override;
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  void SetAccessibilityTree(
+      int32_t cookie,
+      const ui::AXTreeUpdate& accessibility_tree) override;
+#endif
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 

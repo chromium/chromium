@@ -77,22 +77,6 @@ PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
 
 PrintCompositeClient::~PrintCompositeClient() {}
 
-bool PrintCompositeClient::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(PrintCompositeClient, message,
-                                   render_frame_host)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_AccessibilityTree, OnAccessibilityTree)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-#else
-  return false;
-#endif
-}
-
 void PrintCompositeClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   if (document_cookie_ == 0) {
@@ -160,7 +144,7 @@ void PrintCompositeClient::OnDidPrintFrameContent(
 }
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
-void PrintCompositeClient::OnAccessibilityTree(
+void PrintCompositeClient::SetAccessibilityTree(
     int document_cookie,
     const ui::AXTreeUpdate& accessibility_tree) {
   if (!IsDocumentCookieValid(document_cookie))

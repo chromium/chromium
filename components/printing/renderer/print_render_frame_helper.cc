@@ -71,6 +71,10 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+#include "ui/accessibility/ax_tree_update.h"
+#endif
+
 using content::WebPreferences;
 
 namespace printing {
@@ -2522,9 +2526,8 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   if (snapshotter_ && page_number == 0) {
     ui::AXTreeUpdate accessibility_tree;
     snapshotter_->Snapshot(ui::AXMode::kPDF, 0, &accessibility_tree);
-    Send(new PrintHostMsg_AccessibilityTree(
-        routing_id(), print_pages_params_->params->document_cookie,
-        accessibility_tree));
+    GetPrintManagerHost()->SetAccessibilityTree(
+        print_pages_params_->params->document_cookie, accessibility_tree);
   }
 #endif
 

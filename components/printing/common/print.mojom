@@ -11,6 +11,9 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "printing/mojom/print.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+[EnableIf=enable_tagged_pdf]
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+
 // Preview Ids, the id of the preview request and the print preview ui
 // associated with this request.
 [EnableIf=enable_print_preview]
@@ -279,6 +282,11 @@ interface PrintManagerHost {
 
   // Sends the document cookie of the current printer query to the browser.
   DidGetDocumentCookie(int32 cookie);
+
+  // Sends the accessibility tree corresponding to a document being
+  // printed, needed for a tagged (accessible) PDF.
+  [EnableIf=enable_tagged_pdf]
+  SetAccessibilityTree(int32 cookie, ax.mojom.AXTreeUpdate accessibility_tree);
 
   // Tells the browser that the print dialog has been shown.
   DidShowPrintDialog();

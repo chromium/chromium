@@ -13,9 +13,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "printing/buildflags/buildflags.h"
 
 #if defined(OS_ANDROID)
 #include "base/callback.h"
+#endif
+
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+#include "ui/accessibility/ax_tree_update_forward.h"
 #endif
 
 namespace IPC {
@@ -42,6 +47,11 @@ class PrintManager : public content::WebContentsObserver,
   // printing::mojom::PrintManagerHost:
   void DidGetPrintedPagesCount(int32_t cookie, int32_t number_pages) override;
   void DidGetDocumentCookie(int32_t cookie) override;
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  void SetAccessibilityTree(
+      int32_t cookie,
+      const ui::AXTreeUpdate& accessibility_tree) override;
+#endif
   void DidShowPrintDialog() override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;

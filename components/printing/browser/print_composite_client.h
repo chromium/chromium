@@ -18,7 +18,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
 #include "ui/accessibility/ax_tree_update_forward.h"
+#endif
 
 namespace printing {
 
@@ -36,14 +39,11 @@ class PrintCompositeClient
   ~PrintCompositeClient() override;
 
   // content::WebContentsObserver
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
-  // IPC message handler.
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
-  void OnAccessibilityTree(int document_cookie,
-                           const ui::AXTreeUpdate& accessibility_tree);
+  void SetAccessibilityTree(int document_cookie,
+                            const ui::AXTreeUpdate& accessibility_tree);
 #endif
 
   // Instructs the specified subframe to print.
