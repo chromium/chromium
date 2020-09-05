@@ -4,6 +4,7 @@
 
 #include "chrome/common/qr_code_generator/qr_code_generator.h"
 
+#include <math.h>
 #include <string.h>
 
 #include <ostream>
