@@ -13,7 +13,6 @@
 #include "components/services/quarantine/quarantine.h"
 
 #if defined(OS_WIN)
-#include "base/win/scoped_com_initializer.h"
 #include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #endif  // OS_WIN
 
@@ -53,8 +52,6 @@ void QuarantineImpl::QuarantineFile(
   if (base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine)) {
     // In out of process case, we are running in a utility process,
     // so directly call QuarantineFile and send the result.
-    base::win::ScopedCOMInitializer com_initializer;
-
     QuarantineFileResult result = quarantine::QuarantineFile(
         full_path, source_url, referrer_url, client_guid);
 

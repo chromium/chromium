@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/services/quarantine/public/cpp/quarantine_features_win.h"
@@ -157,6 +158,9 @@ class QuarantineWinTest : public ::testing::Test {
   registry_util::RegistryOverrideManager registry_override_;
 
   base::ScopedTempDir scoped_temp_dir_;
+
+  base::win::ScopedCOMInitializer com_initializer_{
+      base::win::ScopedCOMInitializer::Uninitialization::kBlockPremature};
 
   // Due to caching, these sites zone must be set for all tests, so that the
   // order the tests are run does not matter.

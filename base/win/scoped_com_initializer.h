@@ -6,10 +6,12 @@
 #define BASE_WIN_SCOPED_COM_INITIALIZER_H_
 
 #include <objbase.h>
+#include <wrl/client.h>
 
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "base/win/com_init_balancer.h"
 #include "base/win/scoped_windows_thread_environment.h"
 
 namespace base {
@@ -17,6 +19,10 @@ namespace win {
 
 // Initializes COM in the constructor (STA or MTA), and uninitializes COM in the
 // destructor.
+//
+// It is strongly encouraged to block premature uninitialization of the COM
+// libraries in threads that execute third-party code, as a way to protect
+// against unbalanced CoInitialize/CoUninitialize pairs.
 //
 // WARNING: This should only be used once per thread, ideally scoped to a
 // similar lifetime as the thread itself.  You should not be using this in
@@ -27,21 +33,39 @@ class BASE_EXPORT ScopedCOMInitializer : public ScopedWindowsThreadEnvironment {
   // Enum value provided to initialize the thread as an MTA instead of STA.
   enum SelectMTA { kMTA };
 
-  // Constructor for STA initialization.
-  ScopedCOMInitializer();
+  // Enum values which enumerates uninitialization modes for the COM library.
+  enum class Uninitialization {
 
-  // Constructor for MTA initialization.
-  explicit ScopedCOMInitializer(SelectMTA mta);
+    // Default value. Used in threads where no third-party code is executed.
+    kAllow,
+
+    // Blocks premature uninitialization of the COM libraries before going out
+    // of scope. Used in threads where third-party code is executed.
+    kBlockPremature,
+  };
+
+  // Constructors for STA initialization.
+  explicit ScopedCOMInitializer(
+      Uninitialization uninitialization = Uninitialization::kAllow);
+
+  // Constructors for MTA initialization.
+  explicit ScopedCOMInitializer(
+      SelectMTA mta,
+      Uninitialization uninitialization = Uninitialization::kAllow);
 
   ~ScopedCOMInitializer() override;
 
   // ScopedWindowsThreadEnvironment:
   bool Succeeded() const override;
 
- private:
-  void Initialize(COINIT init);
+  // Used for testing. Returns the COM balancer's apartment thread ref count.
+  DWORD GetCOMBalancerReferenceCountForTesting() const;
 
-  HRESULT hr_;
+ private:
+  void Initialize(COINIT init, Uninitialization uninitialization);
+
+  HRESULT hr_ = S_OK;
+  Microsoft::WRL::ComPtr<internal::ComInitBalancer> com_balancer_;
   THREAD_CHECKER(thread_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(ScopedCOMInitializer);
