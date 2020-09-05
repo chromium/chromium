@@ -1350,6 +1350,7 @@ void ContentSettingGeolocationBubbleModel::OnManageButtonClicked() {
 void ContentSettingGeolocationBubbleModel::
     InitializeSystemGeolocationPermissionBubble() {
   set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
+  clear_message();
   AddListItem(ContentSettingBubbleModel::ListItem(
       &vector_icons::kLocationOnIcon,
       l10n_util::GetStringUTF16(IDS_GEOLOCATION),

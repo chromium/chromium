@@ -240,6 +240,7 @@ class ContentSettingBubbleModel {
   void set_message(const base::string16& message) {
     bubble_content_.message = message;
   }
+  void clear_message() { bubble_content_.message.clear(); }
   void AddListItem(const ListItem& item);
   void RemoveListItem(int index);
   void set_radio_group(const RadioGroup& radio_group) {
