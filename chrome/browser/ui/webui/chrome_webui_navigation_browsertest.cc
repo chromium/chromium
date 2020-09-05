@@ -8,8 +8,6 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
-#include "content/common/frame.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -19,19 +17,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_constants.h"
-
-namespace {
-
-content::mojom::OpenURLParamsPtr CreateOpenURLParams(const GURL& url) {
-  auto params = content::mojom::OpenURLParams::New();
-  params->url = url;
-  params->disposition = WindowOpenDisposition::CURRENT_TAB;
-  params->should_replace_current_entry = false;
-  params->user_gesture = true;
-  return params;
-}
-
-}  // namespace
 
 // Tests embedder specific behavior of WebUIs.
 class ChromeWebUINavigationBrowserTest : public InProcessBrowserTest {
@@ -76,9 +61,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUINavigationBrowserTest,
   EXPECT_EQ("about:blank", child->GetLastCommittedURL());
 
   content::TestNavigationObserver observer(web_contents);
-  static_cast<content::RenderFrameHostImpl*>(child)->OpenURL(
-      CreateOpenURLParams(
-          content::GetWebUIURL("web-ui/title1.html?noxfo=true")));
+  content::PwnMessageHelper::OpenURL(
+      child, content::GetWebUIURL("web-ui/title1.html?noxfo=true"));
   observer.Wait();
 
   // Retrieve the RenderFrameHost again since it might have been swapped.
@@ -115,9 +99,8 @@ IN_PROC_BROWSER_TEST_F(
   content::AddUntrustedDataSource(browser()->profile(), "test-iframe-host",
                                   csp);
 
-  static_cast<content::RenderFrameHostImpl*>(child)->OpenURL(
-      CreateOpenURLParams(
-          content::GetChromeUntrustedUIURL("test-iframe-host/title1.html")));
+  content::PwnMessageHelper::OpenURL(
+      child, content::GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
   observer.Wait();
 
   // Retrieve the RenderFrameHost again since it might have been swapped.

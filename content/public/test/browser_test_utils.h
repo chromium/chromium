@@ -1644,11 +1644,11 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   std::vector<Message> messages_;
 };
 
-// Static methods that inject particular IPCs into the message pipe as if they
-// came from |process|. Used to simulate a compromised renderer.
+// Static methods that simulates Mojo methods as if they were called by a
+// renderer. Used to simulate a compromised renderer.
 class PwnMessageHelper {
  public:
-  // Sends FileSystemHostMsg_Create
+  // Calls Create method in FileSystemHost Mojo interface.
   static void FileSystemCreate(RenderProcessHost* process,
                                int request_id,
                                GURL path,
@@ -1656,12 +1656,15 @@ class PwnMessageHelper {
                                bool is_directory,
                                bool recursive);
 
-  // Sends FileSystemHostMsg_Write
+  // Calls Write method in FileSystemHost Mojo interface.
   static void FileSystemWrite(RenderProcessHost* process,
                               int request_id,
                               GURL file_path,
                               std::string blob_uuid,
                               int64_t position);
+
+  // Calls OpenURL method in FrameHost Mojo interface.
+  static void OpenURL(RenderFrameHost* render_frame_host, const GURL& url);
 
  private:
   PwnMessageHelper();  // Not instantiable.

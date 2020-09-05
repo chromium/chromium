@@ -55,6 +55,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
+#include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/input_messages.h"
 #include "content/common/widget_messages.h"
@@ -3148,6 +3149,17 @@ void PwnMessageHelper::FileSystemWrite(RenderProcessHost* process,
                              op.BindNewPipeAndPassReceiver(),
                              std::move(listener));
   waiter.WaitForOperationToFinish();
+}
+
+void PwnMessageHelper::OpenURL(RenderFrameHost* render_frame_host,
+                               const GURL& url) {
+  auto params = content::mojom::OpenURLParams::New();
+  params->url = url;
+  params->disposition = WindowOpenDisposition::CURRENT_TAB;
+  params->should_replace_current_entry = false;
+  params->user_gesture = true;
+  static_cast<content::RenderFrameHostImpl*>(render_frame_host)
+      ->OpenURL(std::move(params));
 }
 
 #if defined(USE_AURA)

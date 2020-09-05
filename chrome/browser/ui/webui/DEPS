@@ -11,10 +11,3 @@ include_rules = [
   "+third_party/brotli",      # For compressed resources.
   "+third_party/zlib/zlib.h", # For compression level constants.
 ]
-
-specific_include_rules = {
-  "chrome_webui_navigation_browsertest.cc": [
-    "+content/browser/frame_host/render_frame_host_impl.h",
-    "+content/common/frame.mojom.h",
-  ],
-}
