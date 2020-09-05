@@ -15,6 +15,7 @@
 #include "net/http/http_auth_scheme.h"
 #include "net/http/mock_allow_http_auth_preferences.h"
 #include "net/http/url_security_manager.h"
+#include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/net_buildflags.h"
@@ -239,6 +240,8 @@ TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
        "Digest"},
       {ERR_UNSUPPORTED_AUTH_SCHEME, "UNSUPPORTED realm=\"FooBar\"",
        HttpAuth::AUTH_SERVER, "UNSUPPORTED"},
+      {ERR_UNSUPPORTED_AUTH_SCHEME, "invalid\xff\x0a", HttpAuth::AUTH_SERVER,
+       "%ESCAPED:\xE2\x80\x8B invalid%FF\n"},
       {ERR_UNSUPPORTED_AUTH_SCHEME, "UNSUPPORTED2 realm=\"FooBar\"",
        HttpAuth::AUTH_PROXY, "UNSUPPORTED2"}};
 
@@ -275,7 +278,8 @@ TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
         ASSERT_EQ(nullptr, challenge);
       } else {
         ASSERT_NE(nullptr, challenge);
-        EXPECT_STREQ(test_case.challenge, challenge->data());
+        EXPECT_EQ(net::NetLogStringValue(test_case.challenge).GetString(),
+                  challenge->data());
       }
 
       test_net_log.Clear();

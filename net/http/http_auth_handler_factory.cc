@@ -19,6 +19,7 @@
 #include "net/http/http_auth_handler_ntlm.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_auth_scheme.h"
+#include "net/log/net_log_values.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 
@@ -33,9 +34,9 @@ base::Value NetLogParamsForCreateAuth(const std::string& scheme,
                                       const int net_error,
                                       net::NetLogCaptureMode capture_mode) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("scheme", scheme);
+  dict.SetKey("scheme", net::NetLogStringValue(scheme));
   if (net::NetLogCaptureIncludesSensitive(capture_mode))
-    dict.SetStringKey("challenge", challenge);
+    dict.SetKey("challenge", net::NetLogStringValue(challenge));
   if (net_error < 0)
     dict.SetIntKey("net_error", net_error);
   return dict;
