@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 
+#include <math.h>
+
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -1234,7 +1236,7 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   }
 
   wtf_size_t additional_fragment_count =
-      int(std::floorf(remaining_block_offset / fragmentainer_block_size));
+      int(floorf(remaining_block_offset / fragmentainer_block_size));
   *start_index = child_index + additional_fragment_count;
   offset->block_offset = remaining_block_offset -
                          additional_fragment_count * fragmentainer_block_size;
