@@ -76,6 +76,10 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
     gn = 'gn.bat'
     autoninja = 'autoninja.bat'
     symbol_dumper = ['dumpbin', '/symbols']
+    import shutil
+    if not shutil.which('dumpbin'):
+      logging.error('dumpbin not found. Run tools\win\setenv.bat.')
+      exit(1)
   with tempfile.TemporaryDirectory() as out_dir:
     logging.info('[%s - %s] Creating tmp out dir in %s', cpu, flavor, out_dir)
     subprocess.check_call([gn, 'gen', out_dir, '--args=' + ' '.join(gn_args)],
@@ -152,6 +156,10 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
 
 if __name__ == '__main__':
   logging.getLogger().setLevel(logging.INFO)
+
+  if sys.version_info.major == 2:
+    logging.error('This script requires Python 3.')
+    exit(1)
 
   if not os.getcwd().endswith('src') or not os.path.exists('chrome/browser'):
     logging.error('Run this script from a chromium/src/ directory.')
