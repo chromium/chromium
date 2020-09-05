@@ -74,12 +74,8 @@ class DelegatedFrameHost;
 struct DisplayFeature;
 
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
-class CONTENT_EXPORT RenderWidgetHostViewBase
-    : public RenderWidgetHostView,
-      public RenderFrameMetadataProvider::Observer {
+class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
  public:
-  ~RenderWidgetHostViewBase() override;
-
   float current_device_scale_factor() const {
     return current_device_scale_factor_;
   }
@@ -131,14 +127,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::PointF& point) override;
   gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
-
-  // RenderFrameMetadataProvider::Observer
-  void OnRenderFrameMetadataChangedBeforeActivation(
-      const cc::RenderFrameMetadata& metadata) override;
-  void OnRenderFrameMetadataChangedAfterActivation() override;
-  void OnRenderFrameSubmission() override;
-  void OnLocalSurfaceIdChanged(
-      const cc::RenderFrameMetadata& metadata) override;
 
   virtual void UpdateIntrinsicSizingInfo(
       blink::mojom::IntrinsicSizingInfoPtr sizing_info);
@@ -530,10 +518,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void reset_is_evicted() { is_evicted_ = false; }
   bool is_evicted() { return is_evicted_; }
 
-  bool is_drawing_delegated_ink_trails() const {
-    return is_drawing_delegated_ink_trails_;
-  }
-
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
 
@@ -612,6 +596,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // specific RenderWidgetHostView.
   base::Optional<DisplayFeature> display_feature_;
 
+ protected:
+  ~RenderWidgetHostViewBase() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       BrowserSideFlingBrowserTest,
@@ -647,10 +634,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
     return view_stopped_flinging_for_test_;
   }
 
-  void SetIsDrawingDelegatedInkTrailsForTest(bool b) {
-    is_drawing_delegated_ink_trails_ = b;
-  }
-
   gfx::Rect current_display_area_;
 
   base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
@@ -667,12 +650,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   bool view_stopped_flinging_for_test_ = false;
 
   bool is_evicted_ = false;
-
-  // True when points should be forwarded from the
-  // RenderWidgetHostViewEventHandler directly to viz for use in a delegated
-  // ink trail.
-  // TODO(1052145): Use this to begin forwarding the points to viz.
-  bool is_drawing_delegated_ink_trails_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewBase> weak_factory_{this};
 

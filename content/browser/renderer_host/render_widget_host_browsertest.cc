@@ -891,11 +891,20 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
   SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 10, 10, 0,
                            false);
   RunUntilInputProcessed(host());
-  EXPECT_TRUE(view()->is_drawing_delegated_ink_trails_);
+
+  {
+    const cc::RenderFrameMetadata& last_metadata =
+        host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
+    EXPECT_TRUE(last_metadata.has_delegated_ink_metadata);
+  }
 
   // Confirm that the flag is set back to false when the JS API isn't called.
   RunUntilInputProcessed(host());
-  EXPECT_FALSE(view()->is_drawing_delegated_ink_trails_);
+  {
+    const cc::RenderFrameMetadata& last_metadata =
+        host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
+    EXPECT_FALSE(last_metadata.has_delegated_ink_metadata);
+  }
 }
 
 }  // namespace content

@@ -332,6 +332,8 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
         owner_delegate->GetWebkitPreferencesForWidget()
             .double_tap_to_zoom_enabled;
   }
+
+  host()->render_frame_metadata_provider()->AddObserver(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1951,7 +1953,6 @@ void RenderWidgetHostViewAura::OnHostMovedInPixels(
 // RenderWidgetHostViewAura, RenderFrameMetadataProvider::Observer
 // implementation:
 void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation() {
-  RenderWidgetHostViewBase::OnRenderFrameMetadataChangedAfterActivation();
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
   SetContentBackgroundColor(metadata.root_background_color);
@@ -1978,6 +1979,8 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation() {
 // RenderWidgetHostViewAura, private:
 
 RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
+  host()->render_frame_metadata_provider()->RemoveObserver(this);
+
   // Ask the RWH to drop reference to us.
   host()->ViewDestroyed();
 

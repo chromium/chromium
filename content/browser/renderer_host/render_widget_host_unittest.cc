@@ -1235,15 +1235,15 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromDeletedRenderWidget) {
 #if !defined(OS_MAC)
 // Tests setting background transparency.
 TEST_F(RenderWidgetHostTest, Background) {
-  std::unique_ptr<RenderWidgetHostViewBase> view;
+  RenderWidgetHostViewBase* view;
 #if defined(USE_AURA)
-  view.reset(new RenderWidgetHostViewAura(host_.get()));
+  view = new RenderWidgetHostViewAura(host_.get());
   // TODO(derat): Call this on all platforms: http://crbug.com/102450.
   view->InitAsChild(nullptr);
 #elif defined(OS_ANDROID)
-  view.reset(new RenderWidgetHostViewAndroid(host_.get(), NULL));
+  view = new RenderWidgetHostViewAndroid(host_.get(), nullptr);
 #endif
-  host_->SetView(view.get());
+  host_->SetView(view);
 
   ASSERT_FALSE(view->GetBackgroundColor());
 
@@ -1276,7 +1276,7 @@ TEST_F(RenderWidgetHostTest, Background) {
   }
 
   host_->SetView(nullptr);
-  static_cast<RenderWidgetHostViewBase*>(view.release())->Destroy();
+  view->Destroy();
 }
 #endif
 

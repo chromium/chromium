@@ -68,6 +68,7 @@ RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
       frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
   GetHostFrameSinkManager()->SetFrameSinkDebugLabel(
       frame_sink_id_, "RenderWidgetHostViewChildFrame");
+  host()->render_frame_metadata_provider()->AddObserver(this);
 }
 
 RenderWidgetHostViewChildFrame::~RenderWidgetHostViewChildFrame() {
@@ -355,6 +356,8 @@ void RenderWidgetHostViewChildFrame::RenderProcessGone() {
 }
 
 void RenderWidgetHostViewChildFrame::Destroy() {
+  host()->render_frame_metadata_provider()->RemoveObserver(this);
+
   // FrameSinkIds registered with RenderWidgetHostInputEventRouter
   // have already been cleared when RenderWidgetHostViewBase notified its
   // observers of our impending destruction.
@@ -816,7 +819,6 @@ RenderWidgetHostViewChildFrame::GetTouchSelectionControllerClientManager() {
 
 void RenderWidgetHostViewChildFrame::
     OnRenderFrameMetadataChangedAfterActivation() {
-  RenderWidgetHostViewBase::OnRenderFrameMetadataChangedAfterActivation();
   if (selection_controller_client_) {
     const cc::RenderFrameMetadata& metadata =
         host()->render_frame_metadata_provider()->LastRenderFrameMetadata();

@@ -5723,7 +5723,7 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
     RenderViewHostImplTestHarness::SetUp();
     // Delete the current RenderWidgetHostView instance before setting
     // the RWHVA as the view.
-    delete contents()->GetRenderViewHost()->GetWidget()->GetView();
+    contents()->GetRenderViewHost()->GetWidget()->GetView()->Destroy();
     // This instance is destroyed in the TearDown method below.
     view_ = new RenderWidgetHostViewAura(
         contents()->GetRenderViewHost()->GetWidget());
@@ -6795,7 +6795,11 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
 
   // Then set it to true and confirm that the DelegatedInkPointRenderer is
   // initialized and the connection is made.
-  view_->SetIsDrawingDelegatedInkTrailsForTest(true);
+  {
+    cc::RenderFrameMetadata metadata;
+    metadata.has_delegated_ink_metadata = true;
+    view_->SetRenderFrameMetadata(metadata);
+  }
   viz::DelegatedInkPoint expected_point(gfx::PointF(10, 10),
                                         base::TimeTicks::Now());
 
@@ -6869,7 +6873,11 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
 
   // Finally, confirm that points aren't sent whenever the flag is changed back
   // to false.
-  view_->SetIsDrawingDelegatedInkTrailsForTest(false);
+  {
+    cc::RenderFrameMetadata metadata;
+    metadata.has_delegated_ink_metadata = false;
+    view_->SetRenderFrameMetadata(metadata);
+  }
 
   if (GetParam() == TestEvent::kTouchEvent) {
     ui::TouchEvent touch_event(
@@ -6904,7 +6912,11 @@ TEST_P(DelegatedInkPointTest, MojoInterfaceReboundOnDisconnect) {
   view_->GetNativeView()->layer()->SetCompositorForTesting(&compositor);
 
   // First make sure the connection exists.
-  view_->SetIsDrawingDelegatedInkTrailsForTest(true);
+  {
+    cc::RenderFrameMetadata metadata;
+    metadata.has_delegated_ink_metadata = true;
+    view_->SetRenderFrameMetadata(metadata);
+  }
   if (GetParam() == TestEvent::kTouchEvent) {
     // Touch needs a pressed event first to properly handle future move events.
     ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::PointF(15, 15),

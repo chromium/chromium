@@ -41,7 +41,6 @@ namespace content {
 
 RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
     : host_(RenderWidgetHostImpl::From(host)) {
-  host_->render_frame_metadata_provider()->AddObserver(this);
 }
 
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
@@ -59,8 +58,6 @@ RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   // so that the |text_input_manager_| will free its state.
   if (text_input_manager_)
     text_input_manager_->Unregister(this);
-  if (host_)
-    host_->render_frame_metadata_provider()->RemoveObserver(this);
 }
 
 RenderWidgetHostImpl* RenderWidgetHostViewBase::GetFocusedWidget() const {
@@ -112,21 +109,6 @@ void RenderWidgetHostViewBase::StopFlingingIfNecessary(
     view_stopped_flinging_for_test_ = true;
   }
 }
-
-void RenderWidgetHostViewBase::OnRenderFrameMetadataChangedBeforeActivation(
-    const cc::RenderFrameMetadata& metadata) {}
-
-void RenderWidgetHostViewBase::OnRenderFrameMetadataChangedAfterActivation() {
-  const cc::RenderFrameMetadata& metadata =
-      host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
-
-  is_drawing_delegated_ink_trails_ = metadata.has_delegated_ink_metadata;
-}
-
-void RenderWidgetHostViewBase::OnRenderFrameSubmission() {}
-
-void RenderWidgetHostViewBase::OnLocalSurfaceIdChanged(
-    const cc::RenderFrameMetadata& metadata) {}
 
 void RenderWidgetHostViewBase::UpdateIntrinsicSizingInfo(
     blink::mojom::IntrinsicSizingInfoPtr sizing_info) {}
@@ -666,10 +648,7 @@ bool RenderWidgetHostViewBase::HasSize() const {
 }
 
 void RenderWidgetHostViewBase::Destroy() {
-  if (host_) {
-    host_->render_frame_metadata_provider()->RemoveObserver(this);
-    host_ = nullptr;
-  }
+  host_ = nullptr;
 }
 
 bool RenderWidgetHostViewBase::CanSynchronizeVisualProperties() {

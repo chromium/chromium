@@ -81,6 +81,7 @@ class TouchSelectionControllerClientAura;
 class CONTENT_EXPORT RenderWidgetHostViewAura
     : public RenderWidgetHostViewBase,
       public RenderWidgetHostViewEventHandler::Delegate,
+      public RenderFrameMetadataProvider::Observer,
       public TextInputManager::Observer,
       public ui::TextInputClient,
       public display::DisplayObserver,
@@ -302,8 +303,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnHostMovedInPixels(aura::WindowTreeHost* host,
                            const gfx::Point& new_origin_in_pixels) override;
 
-  // RenderFrameMetadataProvider::Observer
+  // RenderFrameMetadataProvider::Observer implementation.
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override {}
   void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
 
 #if defined(OS_WIN)
   // Gets the HWND of the host window.

@@ -80,6 +80,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       public remote_cocoa::mojom::RenderWidgetHostNSViewHost,
       public BrowserCompositorMacClient,
       public TextInputManager::Observer,
+      public RenderFrameMetadataProvider::Observer,
       public ui::GestureProviderClient,
       public ui::AcceleratedWidgetMacNSView,
       public ui::AccessibilityFocusOverrider::Client,
@@ -226,7 +227,12 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void OnGestureEvent(const ui::GestureEventData& gesture) override;
 
   // RenderFrameMetadataProvider::Observer
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override {}
   void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
 
   // IPC::Sender implementation.
   bool Send(IPC::Message* message) override;

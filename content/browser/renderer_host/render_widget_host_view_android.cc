@@ -288,6 +288,8 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
 
   if (GetTextInputManager())
     GetTextInputManager()->AddObserver(this);
+
+  host()->render_frame_metadata_provider()->AddObserver(this);
 }
 
 RenderWidgetHostViewAndroid::~RenderWidgetHostViewAndroid() {
@@ -596,7 +598,6 @@ void RenderWidgetHostViewAndroid::
     ime_adapter_android_->OnRenderFrameMetadataChangedAfterActivation(
         metadata.scrollable_viewport_size);
   }
-  RenderWidgetHostViewBase::OnRenderFrameMetadataChangedAfterActivation();
 }
 
 void RenderWidgetHostViewAndroid::OnRootScrollOffsetChanged(
@@ -990,6 +991,7 @@ void RenderWidgetHostViewAndroid::RenderProcessGone() {
 }
 
 void RenderWidgetHostViewAndroid::Destroy() {
+  host()->render_frame_metadata_provider()->RemoveObserver(this);
   host()->ViewDestroyed();
   UpdateNativeViewTree(nullptr);
   delegated_frame_host_.reset();

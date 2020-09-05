@@ -50,12 +50,12 @@ class TouchSelectionControllerClientChildFrame;
 class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     : public RenderWidgetHostViewBase,
       public TouchSelectionControllerClientManager::Observer,
+      public RenderFrameMetadataProvider::Observer,
       public viz::HostFrameSinkClient {
  public:
   static RenderWidgetHostViewChildFrame* Create(
       RenderWidgetHost* widget,
       const blink::ScreenInfo& screen_info);
-  ~RenderWidgetHostViewChildFrame() override;
 
   void SetFrameConnectorDelegate(FrameConnectorDelegate* frame_connector);
 
@@ -134,14 +134,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       const gfx::PointF& point) override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
-  void OnRenderFrameMetadataChangedAfterActivation() override;
   void UpdateIntrinsicSizingInfo(
       blink::mojom::IntrinsicSizingInfoPtr sizing_info) override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
-
   bool IsRenderWidgetHostViewChildFrame() override;
-
   void WillSendScreenRects() override;
 
 #if defined(OS_MAC)
@@ -163,6 +160,14 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void DisableAutoResize(const gfx::Size& new_size) override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
+
+  // RenderFrameMetadataProvider::Observer implementation.
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override {}
+  void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
@@ -233,6 +238,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   base::WeakPtr<RenderWidgetHostViewChildFrame> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+ protected:
+  ~RenderWidgetHostViewChildFrame() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,

@@ -215,6 +215,8 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
 
   if (GetTextInputManager())
     GetTextInputManager()->AddObserver(this);
+
+  host()->render_frame_metadata_provider()->AddObserver(this);
 }
 
 RenderWidgetHostViewMac::~RenderWidgetHostViewMac() {
@@ -679,7 +681,6 @@ void RenderWidgetHostViewMac::OnRenderFrameMetadataChangedAfterActivation() {
                                           ->render_frame_metadata_provider()
                                           ->LastRenderFrameMetadata()
                                           .root_background_color;
-  RenderWidgetHostViewBase::OnRenderFrameMetadataChangedAfterActivation();
 }
 
 void RenderWidgetHostViewMac::RenderProcessGone() {
@@ -687,6 +688,8 @@ void RenderWidgetHostViewMac::RenderProcessGone() {
 }
 
 void RenderWidgetHostViewMac::Destroy() {
+  host()->render_frame_metadata_provider()->RemoveObserver(this);
+
   // Unlock the mouse in the NSView's process before destroying our bridge to
   // it.
   if (mouse_locked_) {

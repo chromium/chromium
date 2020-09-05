@@ -66,7 +66,8 @@ struct ContextMenuParams;
 class CONTENT_EXPORT RenderWidgetHostViewAndroid
     : public RenderWidgetHostViewBase,
       public StylusTextSelectorClient,
-      public content::TextInputManager::Observer,
+      public TextInputManager::Observer,
+      public RenderFrameMetadataProvider::Observer,
       public ui::EventHandlerAndroid,
       public ui::GestureProviderClient,
       public ui::TouchSelectionControllerClient,
@@ -75,7 +76,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
  public:
   RenderWidgetHostViewAndroid(RenderWidgetHostImpl* widget,
                               gfx::NativeView parent_native_view);
-  ~RenderWidgetHostViewAndroid() override;
 
   // Interface used to observe the destruction of a RenderWidgetHostViewAndroid.
   class DestructionObserver {
@@ -314,10 +314,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void GotFocus();
   void LostFocus();
 
-  // RenderFrameMetadataProvider::Observer
+  // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(
       const cc::RenderFrameMetadata& metadata) override;
   void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
   void OnRootScrollOffsetChanged(
       const gfx::Vector2dF& root_scroll_offset) override;
 
@@ -373,6 +376,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   friend class RenderWidgetHostViewAndroidTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            GestureManagerListensToChildFrames);
+
+  ~RenderWidgetHostViewAndroid() override;
 
   bool ShouldReportAllRootScrolls();
 
