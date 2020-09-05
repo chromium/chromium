@@ -296,7 +296,11 @@ static_library("test_support") {
   }
 
   if (is_win) {
-    sources += [ "//chrome/app/chrome_crash_reporter_client_win.cc" ]
+    sources += [
+      "../browser/webshare/win/fake_data_transfer_manager.cc",
+      "../browser/webshare/win/fake_data_transfer_manager.h",
+      "//chrome/app/chrome_crash_reporter_client_win.cc",
+    ]
     public_deps += [
       "//chrome/install_static/test:test_support",
       "//components/crash/core/app",
@@ -5544,6 +5548,7 @@ test("unit_tests") {
       "../browser/notifications/win/notification_image_retainer_unittest.cc",
       "../browser/notifications/win/notification_template_builder_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
+      "../browser/webshare/win/fake_data_transfer_manager_unittest.cc",
     ]
     deps += [
       "//chrome:other_version",
