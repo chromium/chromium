@@ -185509,6 +185509,14 @@
         "ba2371f8b00287d22bd5d576e962ac78f5678d7d",
         []
        ],
+       "utf8-bom-http-windows-1251.css": [
+        "1dbf5cf2fceebcdc60611b356b425fa23dc26040",
+        []
+       ],
+       "utf8-bom-http-windows-1251.css.headers": [
+        "9a67b0fea443211f162c0a35b7ee24556594732c",
+        []
+       ],
        "utf8-bom.css": [
         "1dbf5cf2fceebcdc60611b356b425fa23dc26040",
         []
@@ -283927,6 +283935,13 @@
       ],
       "page-windows-1251-css-utf8-bom.html": [
        "2c32f091510cfec8e80297ab35d68c3a0487f448",
+       [
+        null,
+        {}
+       ]
+      ],
+      "page-windows-1252-http-windows-1251-css-utf8-bom.html": [
+       "6a65942e16ef3b312c78b763158d94953ef5e3c7",
        [
         null,
         {}
