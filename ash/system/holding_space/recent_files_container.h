@@ -9,6 +9,8 @@
 
 namespace ash {
 
+class HoldingSpaceItemChipsContainer;
+
 // Container for the recent files (Screenshots, downloads etc).
 class RecentFilesContainer : public views::View {
  public:
@@ -22,6 +24,7 @@ class RecentFilesContainer : public views::View {
 
  private:
   views::View* screenshots_container_ = nullptr;
+  HoldingSpaceItemChipsContainer* recent_downloads_container_ = nullptr;
 };
 
 }  // namespace ash

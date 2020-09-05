@@ -35,6 +35,9 @@ PinnedFilesContainer::PinnedFilesContainer() {
 
   item_chips_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
+
+  // TODO(crbug.com/1125254): Populate containers if and when holding space
+  // model is attached, below is a temporary solution.
   for (const auto& item : HoldingSpaceController::Get()->model()->items()) {
     if (item->type() == HoldingSpaceItem::Type::kPinnedFile)
       item_chips_container_->AddItemChip(item.get());
