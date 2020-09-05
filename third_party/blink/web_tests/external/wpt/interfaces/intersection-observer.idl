@@ -3,7 +3,7 @@
 // (https://github.com/w3c/webref)
 // Source: Intersection Observer (https://w3c.github.io/IntersectionObserver/)
 
-callback IntersectionObserverCallback = void (sequence<IntersectionObserverEntry> entries, IntersectionObserver observer);
+callback IntersectionObserverCallback = undefined (sequence<IntersectionObserverEntry> entries, IntersectionObserver observer);
 
 [Exposed=Window]
 interface IntersectionObserver {
@@ -11,9 +11,9 @@ interface IntersectionObserver {
   readonly attribute Node? root;
   readonly attribute DOMString rootMargin;
   readonly attribute FrozenArray<double> thresholds;
-  void observe(Element target);
-  void unobserve(Element target);
-  void disconnect();
+  undefined observe(Element target);
+  undefined unobserve(Element target);
+  undefined disconnect();
   sequence<IntersectionObserverEntry> takeRecords();
 };
 
