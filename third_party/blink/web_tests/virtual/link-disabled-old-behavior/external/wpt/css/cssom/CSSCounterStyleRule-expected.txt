@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL CSSCounterStyleRule.cssText doesn't serialize with newlines Cannot read property 'cssText' of undefined
+Harness: the test ran to completion.
+

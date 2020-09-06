@@ -195113,6 +195113,10 @@
       "fbafc62ea5a11b93bf2255ab79277c4e86f5fe68",
       []
      ],
+     "CSSCounterStyleRule-expected.txt": [
+      "525f5da12305d001d26d00cfff1e3c8f6ebcf7d7",
+      []
+     ],
      "CSSGroupingRule-insertRule-expected.txt": [
       "44e8aaa155eef7b2f14b1d86cee6ec9de789162a",
       []
@@ -292126,6 +292130,20 @@
      ],
      "CSS.html": [
       "ba048c58acaac5cd2550fb21cb9b6e9ee8fb0bb1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "CSSCounterStyleRule.html": [
+      "afae84b0b25f4aebf2461179cf5a5a2b769cce4f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "CSSFontFaceRule.html": [
+      "438c30df9ebcf456dce9a36a90facb7f8e3296e6",
       [
        null,
        {}
