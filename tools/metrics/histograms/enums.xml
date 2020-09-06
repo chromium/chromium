@@ -58488,6 +58488,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Open new window after profile deletion"/>
 </enum>
 
+<enum name="ProfilePickerPages">
+  <int value="0" label="mainView"/>
+  <int value="1" label="profileTypeChoice"/>
+  <int value="2" label="localProfileCustomization"/>
+  <int value="3" label="loadSignIn"/>
+</enum>
+
 <enum name="ProfileResetRequestOriginEnum">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Unknown"/>

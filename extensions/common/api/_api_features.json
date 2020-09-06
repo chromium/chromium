@@ -320,7 +320,8 @@
       "chrome://sync-confirmation/*",
       "chrome://tab-search/*",
       "chrome://tab-strip/*",
-      "chrome://welcome/*"
+      "chrome://welcome/*",
+      "chrome://profile-picker/*"
     ]
   }, {
     "channel": "stable",

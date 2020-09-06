@@ -104,6 +104,7 @@ Polymer({
     if (!isProfileCreationAllowed()) {
       return;
     }
+    chrome.metricsPrivate.recordUserAction('ProfilePicker_AddClicked');
     navigateTo(Routes.NEW_PROFILE);
   },
 
