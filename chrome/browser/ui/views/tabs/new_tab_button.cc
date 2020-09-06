@@ -186,7 +186,9 @@ void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
   if (bg_id.has_value()) {
     float x_scale = scale;
     const gfx::Rect& contents_bounds = GetContentsBounds();
-    int x = GetMirroredX() + contents_bounds.x() +
+    gfx::RectF bounds_in_tab_strip(GetLocalBounds());
+    View::ConvertRectToTarget(this, tab_strip_, &bounds_in_tab_strip);
+    int x = bounds_in_tab_strip.x() + contents_bounds.x() +
             tab_strip_->GetBackgroundOffset();
     if (base::i18n::IsRTL()) {
       // The new tab background is mirrored in RTL mode, but the theme
