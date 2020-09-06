@@ -19,6 +19,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_tracks.h"
+#include "media/base/mock_media_log.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/text_track_config.h"
@@ -445,13 +446,18 @@ class WebmMuxerTestUnparametrized : public testing::Test {
       : environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         webm_muxer_(std::make_unique<WebmMuxer>(
             kCodecOpus,
-            /*has_audio=*/1,
-            /*has_video=*/1,
+            /*has_audio=*/true,
+            /*has_video=*/true,
             base::BindRepeating(
                 &WebmMuxerTestUnparametrized::SaveChunkAndInvokeWriteCallback,
                 base::Unretained(this)))) {}
 
   bool Parse() {
+    if (got_video_) {
+      // Add one more video buffer to force WebMStreamParser to not hold back
+      // the last added video buffer due to missing duration of it.
+      AddVideoAtOffset(kSentinelVideoBufferTimestampMs, /*is_key_frame=*/false);
+    }
     // Force any final flushes.
     webm_muxer_ = nullptr;
     media::WebMStreamParser parser;
@@ -470,12 +476,37 @@ class WebmMuxerTestUnparametrized : public testing::Test {
                             base::Unretained(this)),
         base::BindRepeating(&WebmMuxerTestUnparametrized::OnEndMediaSegment,
                             base::Unretained(this)),
-        nullptr);
+        &media_log_);
     return parser.Parse(muxed_data_.data(), muxed_data_.size());
+  }
+
+  void AddVideoAtOffset(int system_timestamp_offset_ms, bool is_key_frame) {
+    WebmMuxer::VideoParameters params(gfx::Size(1, 1), 0, media::kCodecVP8,
+                                      gfx::ColorSpace());
+    webm_muxer_->OnEncodedVideo(
+        params, "video_at_offset", "",
+        base::TimeTicks() +
+            base::TimeDelta::FromMilliseconds(system_timestamp_offset_ms),
+        is_key_frame);
+    got_video_ = true;
+  }
+
+  void AddAudioAtOffsetWithDuration(int system_timestamp_offset_ms,
+                                    int duration_ms) {
+    int frame_rate_hz = 48000;
+    int frames_per_buffer = frame_rate_hz * duration_ms / 1000;
+    media::AudioParameters audio_params(
+        media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
+        media::CHANNEL_LAYOUT_MONO, frame_rate_hz, frames_per_buffer);
+    webm_muxer_->OnEncodedAudio(
+        audio_params, "audio_at_offset",
+        base::TimeTicks() +
+            base::TimeDelta::FromMilliseconds(system_timestamp_offset_ms));
   }
 
   base::test::TaskEnvironment environment_;
   std::unique_ptr<WebmMuxer> webm_muxer_;
+  std::map<int, std::vector<int>> buffer_timestamps_ms_;
 
  protected:
   // media::StreamParser callbacks.
@@ -484,12 +515,24 @@ class WebmMuxerTestUnparametrized : public testing::Test {
                    const media::StreamParser::TextTrackConfigMap&) {
     return true;
   }
-  MOCK_METHOD1(OnNewBuffers, bool(const media::StreamParser::BufferQueueMap&));
+  bool OnNewBuffers(const media::StreamParser::BufferQueueMap& map) {
+    for (const auto& kv : map) {
+      int track_id = kv.first;
+      const media::StreamParser::BufferQueue& queue = kv.second;
+      for (const auto& stream_parser_buffer : queue) {
+        buffer_timestamps_ms_[track_id].push_back(
+            stream_parser_buffer->timestamp().InMilliseconds());
+      }
+    }
+    return true;
+  }
   void OnEncryptedMediaInitData(EmeInitDataType, const std::vector<uint8_t>&) {}
   void OnNewMediaSegment() {}
   void OnEndMediaSegment() {}
 
  private:
+  static constexpr int kSentinelVideoBufferTimestampMs = 1000000;
+
   void SaveChunkAndInvokeWriteCallback(base::StringPiece chunk) {
     std::copy(chunk.begin(), chunk.end(), std::back_inserter(muxed_data_));
   }
@@ -497,166 +540,65 @@ class WebmMuxerTestUnparametrized : public testing::Test {
   // Muxed data gets saved here. The content is guaranteed to be finalized first
   // when webm_muxer_ has been destroyed.
   std::vector<unsigned char> muxed_data_;
+
+  // Mock media log for WebM parser.
+  media::MockMediaLog media_log_;
+
+  // True after a call to AddVideoAtOffset.
+  bool got_video_ = false;
 };
 
 TEST_F(WebmMuxerTestUnparametrized, MuxerCompensatesForPausedTimeWithVideo) {
-  WebmMuxer::VideoParameters params(gfx::Size(1, 1), 0, media::kCodecVP8,
-                                    gfx::ColorSpace());
-  const std::string encoded("oranges are delicious");
-  auto first_frame_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(123);
-  webm_muxer_->OnEncodedVideo(params, encoded, "", first_frame_timestamp, true);
+  AddVideoAtOffset(123, /*is_key_frame=*/true);
   webm_muxer_->Pause();
   environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
   webm_muxer_->Resume();
-  webm_muxer_->OnEncodedVideo(
-      params, encoded, "",
-      first_frame_timestamp + base::TimeDelta::FromMilliseconds(266), false);
-  // Add one more buffer to force WebMStreamParser to not hold back the above
-  // important one due to missing duration.
-  webm_muxer_->OnEncodedVideo(
-      params, encoded, "",
-      first_frame_timestamp + base::TimeDelta::FromMilliseconds(1000), false);
-
-  EXPECT_CALL(
-      *this,
-      OnNewBuffers(ElementsAre(Pair(
-          1, ElementsAre(Pointee(Property(&DecoderBuffer::timestamp,
-                                          base::TimeDelta())),
-                         Pointee(Property(&DecoderBuffer::timestamp,
-                                          base::TimeDelta::FromMilliseconds(
-                                              66))))))))  // 266 - 200
-      .WillRepeatedly(Return(true));
+  AddVideoAtOffset(123 + 266, /*is_key_frame=*/false);
   EXPECT_TRUE(Parse());
+  EXPECT_THAT(buffer_timestamps_ms_,
+              ElementsAre(Pair(1, ElementsAre(0, /*266 - 200=*/66))));
 }
 
 TEST_F(WebmMuxerTestUnparametrized, MuxerCompensatesForPausedTimeWithAudio) {
-  const int sample_rate = 48000;
-  const int frames_per_buffer = 480;
-  media::AudioParameters audio_params(
-      media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, sample_rate, frames_per_buffer);
-  const std::string encoded("apples too");
-  auto first_frame_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(234);
-  webm_muxer_->OnEncodedAudio(audio_params, encoded, first_frame_timestamp);
+  AddAudioAtOffsetWithDuration(234, 10);
   webm_muxer_->Pause();
   environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(666));
   webm_muxer_->Resume();
-  webm_muxer_->OnEncodedAudio(
-      audio_params, encoded,
-      first_frame_timestamp + base::TimeDelta::FromMilliseconds(686));
-
-  EXPECT_CALL(
-      *this,
-      OnNewBuffers(ElementsAre(Pair(
-          1, ElementsAre(Pointee(Property(&DecoderBuffer::timestamp,
-                                          base::TimeDelta())),
-                         Pointee(Property(&DecoderBuffer::timestamp,
-                                          base::TimeDelta::FromMilliseconds(
-                                              20))))))))  // 686 - 666
-      .WillRepeatedly(Return(true));
+  AddAudioAtOffsetWithDuration(234 + 686, 10);
   EXPECT_TRUE(Parse());
+  EXPECT_THAT(buffer_timestamps_ms_,
+              ElementsAre(Pair(1, ElementsAre(0, /*686 - 666=*/20))));
 }
 
 TEST_F(WebmMuxerTestUnparametrized,
        MuxerCompensatesForPausedTimeWithAudioAndVideo) {
-  WebmMuxer::VideoParameters params(gfx::Size(1, 1), 0, media::kCodecVP8,
-                                    gfx::ColorSpace());
-  const std::string encoded_video("even bananas");
-  const int sample_rate = 48000;
-  const int frames_per_buffer = 480;
-  media::AudioParameters audio_params(
-      media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, sample_rate, frames_per_buffer);
-  const std::string encoded_audio("and plums");
-  auto first_frame_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(234);
-  webm_muxer_->OnEncodedAudio(audio_params, encoded_audio,
-                              first_frame_timestamp);
-  webm_muxer_->OnEncodedVideo(
-      params, encoded_video, "",
-      first_frame_timestamp + base::TimeDelta::FromMilliseconds(1), false);
+  AddAudioAtOffsetWithDuration(234, 10);
+  AddVideoAtOffset(234 + 1, /*is_key_frame=*/true);
   webm_muxer_->Pause();
   environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(300));
   webm_muxer_->Resume();
-  webm_muxer_->OnEncodedAudio(
-      audio_params, encoded_audio,
-      first_frame_timestamp + base::TimeDelta::FromMilliseconds(321));
-  webm_muxer_->OnEncodedVideo(
-      params, encoded_video, "",
-      first_frame_timestamp + base::TimeDelta::FromMilliseconds(315), false);
-  // Add one more buffer to force WebMStreamParser to not hold back the above
-  // important one due to missing duration.
-  webm_muxer_->OnEncodedVideo(
-      params, encoded_video, "",
-      first_frame_timestamp + base::TimeDelta::FromMilliseconds(1000), false);
-
-  EXPECT_CALL(
-      *this,
-      OnNewBuffers(UnorderedElementsAre(
-          Pair(1, ElementsAre(
-                      Pointee(Property(&DecoderBuffer::timestamp,
-                                       base::TimeDelta())),
-                      Pointee(Property(
-                          &DecoderBuffer::timestamp,
-                          base::TimeDelta::FromMilliseconds(21))))  // 321 - 300
-               ),
-          Pair(
-              2, ElementsAre(Pointee(Property(&DecoderBuffer::timestamp,
-                                              base::TimeDelta())),
-                             Pointee(Property(&DecoderBuffer::timestamp,
-                                              base::TimeDelta::FromMilliseconds(
-                                                  14))))  // 315 - 300 - 1
-              ))))
-      .WillRepeatedly(Return(true));
+  AddAudioAtOffsetWithDuration(234 + 321, 10);
+  AddVideoAtOffset(234 + 315, /*is_key_frame=*/false);
   EXPECT_TRUE(Parse());
+  EXPECT_THAT(
+      buffer_timestamps_ms_,
+      UnorderedElementsAre(Pair(1, ElementsAre(0, /*321 - 300=*/21)),
+                           Pair(2, ElementsAre(0, /*315 - 300 - 1=*/14))));
 }
 
 TEST_F(WebmMuxerTestUnparametrized,
        MuxerCompensatesForPausedTimeBeforeAudioVideo) {
-  const int sample_rate = 48000;
-  const int frames_per_buffer = 480;
-  media::AudioParameters audio_params(
-      media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, sample_rate, frames_per_buffer);
-  const std::string encoded("audio");
-  WebmMuxer::VideoParameters params(gfx::Size(1, 1), 0, media::kCodecVP8,
-                                    gfx::ColorSpace());
-  const std::string encoded_video("video");
   webm_muxer_->Pause();
   environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
   webm_muxer_->Resume();
-  webm_muxer_->OnEncodedAudio(
-      audio_params, encoded,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(50));
-  webm_muxer_->OnEncodedVideo(
-      params, encoded_video, "",
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(65), true);
-  webm_muxer_->OnEncodedAudio(
-      audio_params, encoded,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(60));
-  // Add one more buffer to force WebMStreamParser to not hold back the above
-  // important one due to missing duration.
-  webm_muxer_->OnEncodedVideo(
-      params, encoded_video, "",
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(70), false);
-
-  EXPECT_CALL(
-      *this,
-      OnNewBuffers(UnorderedElementsAre(
-          Pair(1, ElementsAre(Pointee(Property(&DecoderBuffer::timestamp,
-                                               base::TimeDelta())),
-                              Pointee(Property(
-                                  &DecoderBuffer::timestamp,
-                                  base::TimeDelta::FromMilliseconds(15))))),
-          Pair(2, ElementsAre(Pointee(Property(&DecoderBuffer::timestamp,
-                                               base::TimeDelta())),
-                              Pointee(Property(
-                                  &DecoderBuffer::timestamp,
-                                  base::TimeDelta::FromMilliseconds(5))))))))
-      .WillRepeatedly(Return(true));
+  AddAudioAtOffsetWithDuration(50, 10);
+  AddVideoAtOffset(65, /*is_key_frame=*/true);
+  AddAudioAtOffsetWithDuration(60, 10);
+  AddVideoAtOffset(70, /*is_key_frame=*/false);
   EXPECT_TRUE(Parse());
+  EXPECT_THAT(buffer_timestamps_ms_,
+              UnorderedElementsAre(Pair(1, ElementsAre(0, 10)),
+                                   Pair(2, ElementsAre(0, 5))));
 }
 
 }  // namespace media

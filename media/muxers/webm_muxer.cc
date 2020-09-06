@@ -222,6 +222,7 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
     if (first_frame_timestamp_video_.is_null()) {
       // Compensate for time in pause spent before the first frame.
       first_frame_timestamp_video_ = timestamp - total_time_in_pause_;
+      last_frame_timestamp_video_ = first_frame_timestamp_video_;
     }
   }
 
@@ -250,6 +251,7 @@ bool WebmMuxer::OnEncodedAudio(const media::AudioParameters& params,
     if (first_frame_timestamp_audio_.is_null()) {
       // Compensate for time in pause spent before the first frame.
       first_frame_timestamp_audio_ = timestamp - total_time_in_pause_;
+      last_frame_timestamp_audio_ = first_frame_timestamp_audio_;
     }
   }
 
@@ -437,7 +439,6 @@ bool WebmMuxer::FlushNextFrame() {
     force_one_libwebm_error_ = false;
     return false;
   }
-
   DCHECK(frame.data.data());
   bool result =
       frame.alpha_data.empty()
