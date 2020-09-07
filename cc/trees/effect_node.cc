@@ -36,6 +36,7 @@ EffectNode::EffectNode()
       subtree_has_copy_request(false),
       is_fast_rounded_corner(false),
       node_or_ancestor_has_filters(false),
+      affected_by_backdrop_effect(false),
       render_surface_reason(RenderSurfaceReason::kNone),
       transform_id(0),
       clip_id(0),
@@ -61,6 +62,7 @@ bool EffectNode::operator==(const EffectNode& other) const {
          rounded_corner_bounds == other.rounded_corner_bounds &&
          is_fast_rounded_corner == other.is_fast_rounded_corner &&
          node_or_ancestor_has_filters == other.node_or_ancestor_has_filters &&
+         affected_by_backdrop_effect == other.affected_by_backdrop_effect &&
          // The specific reason is just for tracing/testing/debugging, so just
          // check whether a render surface is needed.
          HasRenderSurface() == other.HasRenderSurface() &&
@@ -188,6 +190,7 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
                     closest_ancestor_with_cached_render_surface_id);
   value->SetInteger("closest_ancestor_with_copy_request_id",
                     closest_ancestor_with_copy_request_id);
+  value->SetBoolean("affected_by_backdrop_effect", affected_by_backdrop_effect);
 }
 
 }  // namespace cc
