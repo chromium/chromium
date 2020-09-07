@@ -10,8 +10,8 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
+#include "components/password_manager/core/browser/ui/compromised_credentials_reader.h"
 
 class PrefService;
 
@@ -20,7 +20,7 @@ namespace password_manager {
 class PasswordStore;
 
 // Helps to choose a compromised credential bubble after a password was saved.
-class PostSaveCompromisedHelper : public CompromisedCredentialsConsumer {
+class PostSaveCompromisedHelper {
  public:
   enum class BubbleType {
     // No follow-up bubble should be shown.
@@ -44,7 +44,7 @@ class PostSaveCompromisedHelper : public CompromisedCredentialsConsumer {
   PostSaveCompromisedHelper(
       base::span<const CompromisedCredentials> compromised,
       const base::string16& current_username);
-  ~PostSaveCompromisedHelper() override;
+  ~PostSaveCompromisedHelper();
 
   PostSaveCompromisedHelper(const PostSaveCompromisedHelper&) = delete;
   PostSaveCompromisedHelper& operator=(const PostSaveCompromisedHelper&) =
@@ -60,8 +60,8 @@ class PostSaveCompromisedHelper : public CompromisedCredentialsConsumer {
   size_t compromised_count() const { return compromised_count_; }
 
  private:
-  void OnGetCompromisedCredentials(
-      std::vector<CompromisedCredentials> compromised_credentials) override;
+  void OnGetAllCompromisedCredentials(
+      std::vector<CompromisedCredentials> compromised_credentials);
 
   // Contains the entry for the currently leaked credentials if it was leaked.
   base::Optional<CompromisedCredentials> current_leak_;
@@ -73,6 +73,8 @@ class PostSaveCompromisedHelper : public CompromisedCredentialsConsumer {
   BubbleType bubble_type_ = BubbleType::kNoBubble;
   // Count of compromised credentials after the callback was executed.
   size_t compromised_count_ = 0;
+
+  std::unique_ptr<CompromisedCredentialsReader> compromised_credentials_reader_;
 };
 
 }  // namespace password_manager
