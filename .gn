@@ -278,7 +278,6 @@ no_check_targets = [
   "//third_party/blink/renderer/platform/loader:*",  # 180 errors
   "//third_party/blink/renderer/platform/network:*",  # 15 errors
   "//third_party/blink/renderer/platform/scheduler:*",  # 45 errors
-  "//third_party/blink/renderer/platform/wtf:*",  # 2 errors
   "//third_party/blink/renderer/platform:*",  # 72 errors
 
   "//third_party/breakpad:*",  # 34 errors
