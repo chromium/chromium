@@ -510,23 +510,6 @@ void ThrottlingURLLoader::StartNow() {
         net::HTTP_TEMPORARY_REDIRECT,
         throttle_will_start_redirect_url_.spec().c_str());
 
-    // This is only needed when CORS is running in the renderer.
-    // TODO(crbug.com/1001450): Remove following code once OOR-CORS is fully
-    // enabled.
-    std::string http_origin;
-    if (start_info_->url_request.headers.GetHeader("Origin", &http_origin)) {
-      // If this redirect is used in a cross-origin request, add CORS headers
-      // to make sure that the redirect gets through. Note that the
-      // destination URL is still subject to the usual CORS policy, i.e. the
-      // resource will only be available to web pages if the server serves the
-      // response with the required CORS response headers.
-      header_string += base::StringPrintf(
-          "\n"
-          "Access-Control-Allow-Origin: %s\n"
-          "Access-Control-Allow-Credentials: true",
-          http_origin.c_str());
-    }
-
     response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(header_string));
     response_head->encoded_data_length = header_string.size();
