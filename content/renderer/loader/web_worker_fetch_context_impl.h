@@ -10,18 +10,14 @@
 
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
-#include "content/common/child_process.mojom.h"
 #include "content/common/content_export.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/blink/public/mojom/blob/blob_registry.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
@@ -38,15 +34,10 @@ namespace blink {
 class WebFrameRequestBlocker;
 }  // namespace blink
 
-namespace IPC {
-class Message;
-}  // namespace IPC
-
 namespace content {
 
 class ResourceDispatcher;
 class ServiceWorkerProviderContext;
-class ThreadSafeSender;
 class URLLoaderThrottleProvider;
 class WebSocketHandshakeThrottleProvider;
 
@@ -218,8 +209,6 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
       std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
       std::unique_ptr<WebSocketHandshakeThrottleProvider>
           websocket_handshake_throttle_provider,
-      ThreadSafeSender* thread_safe_sender,
-      mojo::SharedRemote<mojom::ChildProcessHost> process_host,
       const std::vector<std::string>& cors_exempt_header_list,
       mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>
           pending_resource_load_info_notifier);
@@ -240,8 +229,6 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
       mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
           pending_subresource_loader_updater,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  bool Send(IPC::Message* message);
 
   // Resets the service worker url loader factory of a URLLoaderFactoryImpl
   // which was passed to Blink. The url loader factory is connected to the
@@ -321,11 +308,6 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   mojo::Receiver<blink::mojom::SubresourceLoaderUpdater>
       subresource_loader_updater_{this};
 
-  // Initialized on the worker thread when InitializeOnWorkerThread() is called.
-  scoped_refptr<base::RefCountedData<mojo::Remote<blink::mojom::BlobRegistry>>>
-      blob_registry_;
-
-  scoped_refptr<ThreadSafeSender> thread_safe_sender_;
   std::unique_ptr<blink::WebDocumentSubresourceFilter::Builder>
       subresource_filter_builder_;
   // For dedicated workers, this is the ancestor frame (the parent frame for
@@ -363,8 +345,6 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   std::unique_ptr<URLLoaderThrottleProvider> throttle_provider_;
   std::unique_ptr<WebSocketHandshakeThrottleProvider>
       websocket_handshake_throttle_provider_;
-
-  mojo::SharedRemote<mojom::ChildProcessHost> process_host_;
 
   std::vector<std::string> cors_exempt_header_list_;
 

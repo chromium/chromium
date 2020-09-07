@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-forward.h"
-#include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
@@ -256,8 +255,6 @@ class CONTENT_EXPORT ServiceWorkerContextClient
 
   // Must be accessed on the initiator thread only.
   EmbeddedWorkerInstanceClientImpl* owner_;
-
-  mojo::Remote<blink::mojom::BlobRegistry> blob_registry_;
 
   // Initialized on the worker thread in WorkerContextStarted and
   // destructed on the worker thread in WillDestroyWorkerContext.
