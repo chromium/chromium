@@ -25,7 +25,8 @@
     delegate;
 
 // Dispatcher for this ViewController.
-@property(nonatomic, weak) id<ApplicationCommands> commandsDispatcher;
+@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands>
+    commandsHandler;
 
 // Module containing the reauthentication mechanism for interactions
 // with password.
