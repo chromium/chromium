@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
-#include "third_party/blink/renderer/core/layout/layout_slider_container.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "ui/base/ui_base_features.h"
 
@@ -335,9 +334,10 @@ HTMLInputElement* SliderContainerElement::HostInput() const {
   return To<HTMLInputElement>(OwnerShadowHost());
 }
 
-LayoutObject* SliderContainerElement::CreateLayoutObject(const ComputedStyle&,
-                                                         LegacyLayout) {
-  return new LayoutSliderContainer(this);
+LayoutObject* SliderContainerElement::CreateLayoutObject(
+    const ComputedStyle& style,
+    LegacyLayout legacy) {
+  return LayoutObjectFactory::CreateFlexibleBox(*this, style, legacy);
 }
 
 void SliderContainerElement::DefaultEventHandler(Event& event) {

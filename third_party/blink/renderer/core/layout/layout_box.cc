@@ -4231,9 +4231,23 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
 
   // For quirks mode, we skip most auto-height containing blocks when computing
   // percentages.
-  return containing_block->GetDocument().InQuirksMode() &&
-         containing_block->StyleRef().LogicalHeight().IsAuto() &&
-         !containing_block->IsTableCell() &&
+  if (!containing_block->GetDocument().InQuirksMode() ||
+      !containing_block->StyleRef().LogicalHeight().IsAuto())
+    return false;
+
+  const Node* node = containing_block->GetNode();
+  if (UNLIKELY(node->IsInUserAgentShadowRoot())) {
+    const Element* host = node->OwnerShadowHost();
+    if (const auto* input = DynamicTo<HTMLInputElement>(host)) {
+      // In web_tests/fast/forms/range/range-thumb-height-percentage.html, a
+      // percent height for the slider thumb element should refer to the height
+      // of the INPUT box.
+      if (input->type() == input_type_names::kRange)
+        return true;
+    }
+  }
+
+  return !containing_block->IsTableCell() &&
          !containing_block->IsOutOfFlowPositioned() &&
          !containing_block->HasOverridePercentageResolutionBlockSize() &&
          !containing_block->IsLayoutGrid() &&

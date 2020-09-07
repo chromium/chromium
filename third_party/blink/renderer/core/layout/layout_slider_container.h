@@ -32,15 +32,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_SLIDER_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_SLIDER_CONTAINER_H_
 
-#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
-class SliderContainerElement;
+class SliderTrackElement;
 
-class LayoutSliderContainer final : public LayoutFlexibleBox {
+// This class should be renamed.
+class LayoutSliderContainer final : public LayoutBlockFlow {
  public:
-  explicit LayoutSliderContainer(SliderContainerElement*);
+  explicit LayoutSliderContainer(SliderTrackElement*);
 
  private:
   void UpdateLayout() override;

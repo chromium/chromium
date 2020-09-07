@@ -34,13 +34,14 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
+#include "third_party/blink/renderer/core/html/forms/slider_track_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 
 namespace blink {
 
-LayoutSliderContainer::LayoutSliderContainer(SliderContainerElement* element)
-    : LayoutFlexibleBox(element) {}
+LayoutSliderContainer::LayoutSliderContainer(SliderTrackElement* element)
+    : LayoutBlockFlow(element) {}
 
 inline static Decimal SliderPosition(HTMLInputElement* element) {
   const StepRange step_range(element->CreateStepRange(kRejectAny));
@@ -55,29 +56,25 @@ void LayoutSliderContainer::UpdateLayout() {
 
   Element* thumb_element = input->UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdSliderThumb);
-  Element* track_element = input->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::kIdSliderTrack);
   LayoutBox* thumb = thumb_element ? thumb_element->GetLayoutBox() : nullptr;
-  LayoutBox* track = track_element ? track_element->GetLayoutBox() : nullptr;
 
   SubtreeLayoutScope layout_scope(*this);
   // Force a layout to reset the position of the thumb so the code below doesn't
   // move the thumb to the wrong place.
-  // FIXME: Make a custom layout class for the track and move the thumb
-  // positioning code there.
-  if (track)
-    layout_scope.SetChildNeedsLayout(track);
+  // This is necessary for |web_tests/media/controls/
+  // progress-bar-repaint-on-size-change.html|.
+  if (thumb)
+    layout_scope.SetChildNeedsLayout(thumb);
 
-  LayoutFlexibleBox::UpdateLayout();
+  LayoutBlockFlow::UpdateLayout();
 
   // These should always exist, unless someone mutates the shadow DOM (e.g., in
   // the inspector).
-  if (!thumb || !track)
+  if (!thumb)
     return;
 
   double percentage_offset = SliderPosition(input).ToDouble();
-  LayoutUnit available_extent =
-      is_vertical ? track->ContentHeight() : track->ContentWidth();
+  LayoutUnit available_extent = is_vertical ? ContentHeight() : ContentWidth();
   available_extent -=
       is_vertical ? thumb->Size().Height() : thumb->Size().Width();
   LayoutUnit offset(percentage_offset * available_extent);
@@ -96,7 +93,7 @@ void LayoutSliderContainer::UpdateLayout() {
   // Instead it has a custom implementation in C++ code.
   // Therefore the style system cannot understand when it needs to be paint
   // invalidated.
-  SetShouldDoFullPaintInvalidation();
+  Parent()->SetShouldDoFullPaintInvalidation();
 }
 
 }  // namespace blink
