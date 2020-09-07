@@ -21,12 +21,14 @@
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
 #include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
@@ -54,6 +56,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -986,6 +989,61 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionTimerExpiredOnLogin, DeadlinePassed) {
             session_manager::SessionState::LOGIN_PRIMARY);
   chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
+ public:
+  MinimumVersionPolicyChildUser() = default;
+  ~MinimumVersionPolicyChildUser() override = default;
+
+  void LoginChildUser() {
+    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    user_policy_mixin_.RequestPolicyUpdate();
+    login_manager_.LoginAsNewChildUser();
+    login_manager_.WaitForActiveSession();
+    EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 1u);
+    EXPECT_EQ(user_manager::UserManager::Get()->GetActiveUser()->GetType(),
+              user_manager::USER_TYPE_CHILD);
+    EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
+              session_manager::SessionState::ACTIVE);
+  }
+
+ private:
+  const chromeos::LoginManagerMixin::TestUserInfo child_user{
+      AccountId::FromUserEmailGaiaId(chromeos::test::kTestEmail,
+                                     chromeos::test::kTestGaiaId)};
+  chromeos::UserPolicyMixin user_policy_mixin_{&mixin_host_,
+                                               child_user.account_id};
+  chromeos::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  chromeos::LoginManagerMixin login_manager_{&mixin_host_, {}, &fake_gaia_};
+};
+
+IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,
+                       CriticalUpdateInSessionChild) {
+  LoginChildUser();
+
+  // Child user is not enterprise managed and should not be signed out as
+  // unmanaged users are not restricted by policy.
+  base::Value requirement_list(base::Value::Type::LIST);
+  requirement_list.Append(
+      CreateRequirement(kNewVersion, kNoWarning, kNoWarning));
+  base::Value policy_value(CreatePolicyValue(
+      std::move(requirement_list), false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(policy_value);
+  EXPECT_FALSE(chrome::IsAttemptingShutdown());
+
+  // Reset the policy so that it can be applied again.
+  base::Value empty_policy(base::Value::Type::DICTIONARY);
+  SetDevicePolicyAndWaitForSettingChange(empty_policy);
+
+  // Child user should be signout out as policy now restricts unmanaged users.
+  base::Value requirement_list2(base::Value::Type::LIST);
+  requirement_list2.Append(
+      CreateRequirement(kNewVersion, kNoWarning, kNoWarning));
+  base::Value policy_value2(CreatePolicyValue(
+      std::move(requirement_list2), true /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(policy_value2);
+  EXPECT_TRUE(chrome::IsAttemptingShutdown());
 }
 
 }  // namespace policy
