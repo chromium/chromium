@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/sharesheet/share_action.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/common/chrome_features.h"
@@ -88,6 +89,9 @@ void SharesheetService::OnTargetSelected(uint32_t delegate_id,
     delegate->OnActionLaunched();
     share_action->LaunchAction(delegate, share_action_view, std::move(intent));
   } else if (type == TargetType::kApp) {
+    // TODO(crbug.com/1097623) Update this when we support more app types.
+    sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
+        sharesheet::SharesheetMetrics::UserAction::kArc);
     auto launch_source = apps::mojom::LaunchSource::kFromSharesheet;
     app_service_proxy_->LaunchAppWithIntent(
         base::UTF16ToUTF8(target_name),
@@ -184,6 +188,8 @@ void SharesheetService::ShowBubbleWithDelegate(
 
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       app_service_proxy_->GetAppsForIntent(intent);
+  sharesheet::SharesheetMetrics::RecordSharesheetAppCount(
+      intent_launch_info.size());
   LoadAppIcons(std::move(intent_launch_info), std::move(targets), 0,
                base::BindOnce(&SharesheetService::OnAppIconsLoaded,
                               weak_factory_.GetWeakPtr(), std::move(delegate),

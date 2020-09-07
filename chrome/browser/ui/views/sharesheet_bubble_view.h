@@ -39,6 +39,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble();
 
+ private:
   // views::ButtonListener overrides
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
@@ -50,8 +51,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetDestroyed(views::Widget* widget) override;
 
- private:
   void CreateBubble();
+  void OnDialogClosed();
   void UpdateAnchorPosition();
   void SetToDefaultBubbleSizing();
 
@@ -62,6 +63,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   apps::mojom::IntentPtr intent_;
   int width_ = 0;
   int height_ = 0;
+  bool user_cancelled = true;
 
   views::View* root_view_ = nullptr;
   views::View* main_view_ = nullptr;

@@ -10,6 +10,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -240,6 +241,7 @@ void SharesheetBubbleView::ButtonPressed(views::Button* sender,
   delegate_->OnTargetSelected(targets_[sender->tag()].launch_name, type,
                               std::move(intent_), share_action_view_);
   intent_.reset();
+  user_cancelled = false;
 }
 
 std::unique_ptr<views::NonClientFrameView>
@@ -255,6 +257,12 @@ SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 void SharesheetBubbleView::OnWidgetDestroyed(views::Widget* widget) {
+  // If there is no active_target_ value, the user cancelled without making a
+  // selection and we will record this.
+  if (user_cancelled) {
+    sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
+        sharesheet::SharesheetMetrics::UserAction::kCancelled);
+  }
   delegate_->OnBubbleClosed(active_target_);
 }
 
