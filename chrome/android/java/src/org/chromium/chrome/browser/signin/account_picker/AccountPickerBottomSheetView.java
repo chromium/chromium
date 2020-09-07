@@ -178,12 +178,12 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_general_error_subtitle);
         mAccountPickerSubtitle.setVisibility(View.VISIBLE);
-        mSpinnerView.setVisibility(View.INVISIBLE);
         mContinueAsButton.setText(R.string.signin_account_picker_general_error_button);
         mContinueAsButton.setVisibility(View.VISIBLE);
 
         mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
+        mSpinnerView.setVisibility(View.GONE);
     }
 
     /**
@@ -193,12 +193,12 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_auth_error_subtitle);
         mAccountPickerSubtitle.setVisibility(View.VISIBLE);
-        mSpinnerView.setVisibility(View.INVISIBLE);
         mContinueAsButton.setText(R.string.auth_error_card_button);
         mContinueAsButton.setVisibility(View.VISIBLE);
 
         mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
+        mSpinnerView.setVisibility(View.GONE);
     }
 
     @Override
