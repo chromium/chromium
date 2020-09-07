@@ -96,12 +96,6 @@
 
     function testReleaseObjectIsCalled(next) {
       // If failed, this test will time out.
-      TestRunner.addSniffer(TestRunner.RuntimeAgent, 'releaseObject', async () => {
-        await ConsoleTestRunner.dumpConsoleMessages();
-        next();
-      });
-      // Temporarily install sniffer on both methods until TS migration for RemoteObject.js is done.
-      // TODO(crbug.com/1011811): Remove once RemoteObject.js is TypeScript-ified.
       TestRunner.addSniffer(TestRunner.RuntimeAgent, 'invoke_releaseObject', async () => {
         await ConsoleTestRunner.dumpConsoleMessages();
         next();
