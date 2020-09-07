@@ -85,7 +85,7 @@ class MemoryKillsMonitor : public base::DelegateSimpleThread::Delegate,
   void LogLowMemoryKillImpl(const std::string& type, int estimated_freed_kb);
 
   // Logs OOM kill event.
-  void LogOOMKill(int64_t time_stamp, int oom_badness);
+  void LogOOMKill();
 
   // A flag set when StartMonitoring() is called to indicate that monitoring has
   // been started.

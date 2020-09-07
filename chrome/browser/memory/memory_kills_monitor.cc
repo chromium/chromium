@@ -112,14 +112,12 @@ void MemoryKillsMonitor::TryMatchOomKillLine(const std::string& line) {
   // Sample OOM log line:
   // 3,1362,97646497541,-;Out of memory: Kill process 29582 (android.vending)
   // score 961 or sacrifice child.
-  int oom_badness;
 
   // Precompile the regex object since the pattern is constant.
   static const LazyRE2 kOomKillPattern = {
-      R"(Out of memory: Kill process .* score (\d+))"};
-  if (RE2::PartialMatch(line, *kOomKillPattern, &oom_badness)) {
-    int64_t time_stamp = GetTimestamp(line);
-    g_memory_kills_monitor_instance.Get().LogOOMKill(time_stamp, oom_badness);
+      R"(Out of memory: Kill process .* score \d+)"};
+  if (RE2::PartialMatch(line, *kOomKillPattern)) {
+    g_memory_kills_monitor_instance.Get().LogOOMKill();
   }
 }
 
@@ -214,7 +212,7 @@ void MemoryKillsMonitor::LogLowMemoryKillImpl(const std::string& type,
   UMA_HISTOGRAM_MEMORY_KB("Arc.LowMemoryKiller.FreedSize", estimated_freed_kb);
 }
 
-void MemoryKillsMonitor::LogOOMKill(int64_t time_stamp, int oom_badness) {
+void MemoryKillsMonitor::LogOOMKill() {
   if (!monitoring_started_.IsSet()) {
     LOG(WARNING) << "LogOOMKill before monitoring started, "
                     "skipped this log.";
@@ -239,27 +237,6 @@ void MemoryKillsMonitor::LogOOMKill(int64_t time_stamp, int oom_badness) {
   // are not guaranteed to be executed.
   UMA_HISTOGRAM_CUSTOM_COUNTS("Arc.OOMKills.Count", oom_kills_count_, 1, 1000,
                               1001);
-
-  // In practice most process has oom_badness < 1000, but
-  // strictly speaking the number could be [1, 2000]. What it really
-  // means is the baseline, proportion of memory used (normalized to
-  // [0, 1000]), plus an adjustment score oom_score_adj [-1000, 1000],
-  // truncated to 1 if negative (0 means never kill).
-  // Ref: https://lwn.net/Articles/396552/
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Arc.OOMKills.Score", oom_badness, 1, 2000, 2001);
-
-  if (time_stamp > 0) {
-    // Sets to |kMaxMemoryKillTimeDelta| for the first kill event.
-    const TimeDelta time_delta =
-        last_oom_kill_time_ < 0
-            ? kMaxMemoryKillTimeDelta
-            : TimeDelta::FromMicroseconds(time_stamp - last_oom_kill_time_);
-
-    last_oom_kill_time_ = time_stamp;
-
-    UMA_HISTOGRAM_MEMORY_KILL_TIME_INTERVAL("Arc.OOMKills.TimeDelta",
-                                            time_delta);
-  }
 }
 
 MemoryKillsMonitor* MemoryKillsMonitor::GetForTesting() {

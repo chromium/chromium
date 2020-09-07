@@ -9250,7 +9250,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OOMKills.Score" units="badness score"
-    expires_after="2021-02-07">
+    expires_after="2020-09-03">
+  <obsolete>
+    Removed 09/2020 for Issue 1124182.
+  </obsolete>
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>
@@ -9259,6 +9262,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OOMKills.TimeDelta" units="ms" expires_after="M82">
+  <obsolete>
+    Removed 09/2020 for Issue 1124182.
+  </obsolete>
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>The elapsed time since last OOM kill event.</summary>

@@ -133,30 +133,6 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
     EXPECT_EQ(1, count_samples->GetCount(3));
   }
 
-  {
-    auto* histogram_score =
-        base::StatisticsRecorder::FindHistogram("Arc.OOMKills.Score");
-    ASSERT_TRUE(histogram_score);
-    auto score_samples = histogram_score->SnapshotSamples();
-    EXPECT_EQ(3, score_samples->TotalCount());
-    EXPECT_EQ(1, score_samples->GetCount(674));
-    EXPECT_EQ(1, score_samples->GetCount(652));
-    EXPECT_EQ(1, score_samples->GetCount(653));
-  }
-
-  {
-    auto* histogram_time_delta =
-        base::StatisticsRecorder::FindHistogram("Arc.OOMKills.TimeDelta");
-    ASSERT_TRUE(histogram_time_delta);
-    auto time_delta_samples = histogram_time_delta->SnapshotSamples();
-    EXPECT_EQ(3, time_delta_samples->TotalCount());
-    // First time delta is set to kMaxMemoryKillTimeDelta.
-    EXPECT_EQ(1, time_delta_samples->GetCount(
-                     kMaxMemoryKillTimeDelta.InMilliseconds()));
-    EXPECT_EQ(1, time_delta_samples->GetCount(11));
-    EXPECT_EQ(1, time_delta_samples->GetCount(13));
-  }
-
   // Call StartMonitoring multiple times.
   base::DelegateSimpleThread* thread1 = g_memory_kills_monitor_unittest_instance
                                             ->non_joinable_worker_thread_.get();
