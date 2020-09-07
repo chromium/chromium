@@ -209146,6 +209146,12 @@
         []
        ]
       },
+      "images": {
+       "image.py": [
+        "1aec081926317c158503e36a6ce073f51d6eb59a",
+        []
+       ]
+      },
       "requirements-relating-to-bidirectional-algorithm-formatting-characters": {
        "reference": {
         "dir-isolation-001-ref.html": [
@@ -240824,10 +240830,6 @@
     ],
     "RTCDataChannel-send-expected.txt": [
      "fcb6811ea6b852e43f3ff9de78571bb9f5eea06f",
-     []
-    ],
-    "RTCIceCandidate-constructor-expected.txt": [
-     "1a0d2a84913a0c8571ad6948d4fa57749eaf3199",
      []
     ],
     "RTCIceTransport-expected.txt": [
@@ -317561,7 +317563,7 @@
       ]
      ],
      "stale-image.html": [
-      "f90e293bc40c9fd2a06dc8e346080ef682bb5423",
+      "d86bdfbde2cf84ba6ec5b7410adba0497b0ba3cc",
       [
        null,
        {}
@@ -339681,6 +339683,15 @@
        ],
        "translate-enumerated-ascii-case-insensitive.html": [
         "dedf559b98f84861ff087976a2303302ed874846",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
+      "images": {
+       "bypass-cache-revalidation.html": [
+        "38cdd876da1b188c6cf276b1e7c8ef3eb57d4bb1",
         [
          null,
          {}
@@ -406657,7 +406668,7 @@
      ]
     ],
     "RTCRtpTransceiver-setCodecPreferences.html": [
-     "a0282467d83cde245264c990370f9b286bc21a09",
+     "3c8a59bc1751eb1e5e90ae97218b12effd43db95",
      [
       null,
       {}
