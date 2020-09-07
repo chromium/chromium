@@ -485,6 +485,10 @@ test.util.sync.unload = contentWindow => {
 test.util.sync.getBreadcrumbPath = contentWindow => {
   const breadcrumb =
       contentWindow.document.querySelector('#location-breadcrumbs');
+  if (!breadcrumb) {
+    return '';
+  }
+
   let path = '';
 
   if (util.isFilesNg()) {

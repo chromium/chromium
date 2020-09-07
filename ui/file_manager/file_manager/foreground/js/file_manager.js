@@ -1252,10 +1252,8 @@ class FileManager extends cr.EventTarget {
             nextCurrentDirEntry = inEntry;
           }
 
-          // If this dialog attempts to open file(s) and the selection is a
-          // directory, the selection should be the current directory.
-          if (DialogType.isOpenFileDialog(this.dialogType) &&
-              inEntry.isDirectory) {
+          // If the |selectionURL| is a directory make it the current directory.
+          if (inEntry.isDirectory) {
             nextCurrentDirEntry = inEntry;
           }
 
