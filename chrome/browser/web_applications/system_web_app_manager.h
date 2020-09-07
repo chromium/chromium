@@ -78,8 +78,9 @@ struct SystemAppInfo {
   SystemAppInfo(const SystemAppInfo& other);
   ~SystemAppInfo();
 
-  // A developer-friendly name for reporting metrics. Should follow UMA naming
-  // conventions.
+  // A developer-friendly name for, among other things, reporting metrics and
+  // interacting with tast tests. It should follow PascalCase convention. It
+  // shouldn't be changed afterwards.
   std::string internal_name;
 
   // The URL that the System App will be installed from.
