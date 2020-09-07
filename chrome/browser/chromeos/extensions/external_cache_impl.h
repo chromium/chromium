@@ -21,6 +21,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class DictionaryValue;
@@ -64,12 +65,13 @@ class ExternalCacheImpl : public ExternalCache,
   void UpdateExtensionsList(
       std::unique_ptr<base::DictionaryValue> prefs) override;
   void OnDamagedFileDetected(const base::FilePath& path) override;
-  void RemoveExtensions(const std::vector<std::string>& ids) override;
-  bool GetExtension(const std::string& id,
+  void RemoveExtensions(
+      const std::vector<extensions::ExtensionId>& ids) override;
+  bool GetExtension(const extensions::ExtensionId& id,
                     base::FilePath* file_path,
                     std::string* version) override;
-  bool ExtensionFetchPending(const std::string& id) override;
-  void PutExternalExtension(const std::string& id,
+  bool ExtensionFetchPending(const extensions::ExtensionId& id) override;
+  void PutExternalExtension(const extensions::ExtensionId& id,
                             const base::FilePath& crx_file_path,
                             const std::string& version,
                             PutExternalExtensionCallback callback) override;
@@ -80,7 +82,7 @@ class ExternalCacheImpl : public ExternalCache,
                const content::NotificationDetails& details) override;
 
   // Implementation of ExtensionDownloaderDelegate:
-  void OnExtensionDownloadFailed(const std::string& id,
+  void OnExtensionDownloadFailed(const extensions::ExtensionId& id,
                                  Error error,
                                  const PingResult& ping_result,
                                  const std::set<int>& request_ids,
@@ -91,8 +93,8 @@ class ExternalCacheImpl : public ExternalCache,
                                    const PingResult& ping_result,
                                    const std::set<int>& request_ids,
                                    InstallCallback callback) override;
-  bool IsExtensionPending(const std::string& id) override;
-  bool GetExtensionExistingVersion(const std::string& id,
+  bool IsExtensionPending(const extensions::ExtensionId& id) override;
+  bool GetExtensionExistingVersion(const extensions::ExtensionId& id,
                                    std::string* version) override;
 
   void set_flush_on_put(bool flush_on_put) { flush_on_put_ = flush_on_put; }
@@ -106,13 +108,13 @@ class ExternalCacheImpl : public ExternalCache,
   void CheckCache();
 
   // Invoked on the UI thread when a new entry has been installed in the cache.
-  void OnPutExtension(const std::string& id,
+  void OnPutExtension(const extensions::ExtensionId& id,
                       const base::FilePath& file_path,
                       bool file_ownership_passed);
 
   // Invoked on the UI thread when the external extension has been installed
   // in the local cache by calling PutExternalExtension.
-  void OnPutExternalExtension(const std::string& id,
+  void OnPutExternalExtension(const extensions::ExtensionId& id,
                               PutExternalExtensionCallback callback,
                               const base::FilePath& file_path,
                               bool file_ownership_passed);
