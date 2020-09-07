@@ -60,10 +60,18 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
   const base::DictionaryValue* provided_prefs() { return prefs_.get(); }
+  const std::set<extensions::ExtensionId>& deleted_extension_files() const {
+    return deleted_extension_files_;
+  }
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override {
     prefs_.reset(prefs->DeepCopy());
+  }
+
+  void OnCachedExtensionFileDeleted(
+      const extensions::ExtensionId& id) override {
+    deleted_extension_files_.insert(id);
   }
 
   base::FilePath CreateCacheDir(bool initialized) {
@@ -127,6 +135,7 @@ class ExternalCacheImplTest : public testing::Test,
   base::ScopedTempDir cache_dir_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::DictionaryValue> prefs_;
+  std::set<extensions::ExtensionId> deleted_extension_files_;
 
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
@@ -238,12 +247,15 @@ TEST_F(ExternalCacheImplTest, Basic) {
       base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId4, "4")));
 
   // Damaged file should be removed from disk.
+  EXPECT_EQ(0ul, deleted_extension_files().size());
   external_cache.OnDamagedFileDetected(
       GetExtensionFile(cache_dir, kTestExtensionId2, "2"));
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(provided_prefs()->size(), 3ul);
+  EXPECT_EQ(3ul, provided_prefs()->size());
   EXPECT_FALSE(
       base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId2, "2")));
+  EXPECT_EQ(1ul, deleted_extension_files().size());
+  EXPECT_EQ(1ul, deleted_extension_files().count(kTestExtensionId2));
 
   // Shutdown with callback OnExtensionListsUpdated that clears prefs.
   std::unique_ptr<base::DictionaryValue> empty(new base::DictionaryValue);
