@@ -22,11 +22,41 @@ struct DelayAsyncScriptExecutionHints {
   DelayAsyncScriptExecutionDelayType delay_type;
 };
 
+// Enumerates the milestones at which competing low priority requests can be
+// delayed until.
+enum DelayCompetingLowPriorityRequestsDelayType {
+  // No delay (default behavior).
+  kUnknown,
+
+  // Delay until first paint.
+  kFirstPaint,
+
+  // Delay until first contentful paint.
+  kFirstContentfulPaint,
+};
+
+// Enumerates the different request priorities that the resource scheduler will
+// consider "important". For example, low priority requests will be queued
+// behind in-flight medium priority requests, when the threshold is kMedium,
+// etc.
+enum DelayCompetingLowPriorityRequestsPriorityThreshold {
+  kUnknown,
+  kMedium,
+  kHigh,
+};
+
+// Hints for delay competing low priority requests optimization.
+struct DelayCompetingLowPriorityRequestsHints {
+  DelayCompetingLowPriorityRequestsDelayType delay_type;
+  DelayCompetingLowPriorityRequestsPriorityThreshold priority_threshold;
+};
+
 // The set of optimization hints for Blink provided by the optimization guide
 // service in the browser process.
 //
-// Each hint is optional as only a part of them might be populated. For now
-// |delay_async_script_execution_hints| is the only hints.
+// Each hint is optional as only a part of them might be populated.
 struct BlinkOptimizationGuideHints {
   DelayAsyncScriptExecutionHints? delay_async_script_execution_hints;
+  DelayCompetingLowPriorityRequestsHints?
+      delay_competing_low_priority_requests_hints;
 };

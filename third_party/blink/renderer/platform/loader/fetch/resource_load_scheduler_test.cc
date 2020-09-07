@@ -828,6 +828,12 @@ class ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests
       case features::DelayCompetingLowPriorityRequestsDelayType::kAlways:
         NOTREACHED();
         break;
+      case features::DelayCompetingLowPriorityRequestsDelayType::
+          kUseOptimizationGuide:
+        // TODO(https://crbug.com/1112515): Plumb the optimization hints into
+        // the scheduler and add tests.
+        NOTREACHED();
+        break;
     }
 
     switch (priority_threshold_) {

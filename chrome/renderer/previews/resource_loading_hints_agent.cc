@@ -90,11 +90,23 @@ void ResourceLoadingHintsAgent::DidCreateNewDocument() {
   // TODO(https://crbug.com/1113980): Onion-soupify the optimization guide for
   // Blink so that we can directly pass the hints without mojom variant
   // conversion.
-  if (blink_optimization_guide_hints_ &&
-      blink_optimization_guide_hints_->delay_async_script_execution_hints) {
-    web_frame->SetOptimizationGuideHints(
-        blink_optimization_guide_hints_->delay_async_script_execution_hints
-            ->delay_type);
+  if (blink_optimization_guide_hints_) {
+    blink::WebOptimizationGuideHints hints;
+    if (blink_optimization_guide_hints_->delay_async_script_execution_hints) {
+      hints.delay_async_script_execution_delay_type =
+          blink_optimization_guide_hints_->delay_async_script_execution_hints
+              ->delay_type;
+    }
+    if (blink_optimization_guide_hints_
+            ->delay_competing_low_priority_requests_hints) {
+      hints.delay_competing_low_priority_requests_delay_type =
+          blink_optimization_guide_hints_
+              ->delay_competing_low_priority_requests_hints->delay_type;
+      hints.delay_competing_low_priority_requests_priority_threshold =
+          blink_optimization_guide_hints_
+              ->delay_competing_low_priority_requests_hints->priority_threshold;
+    }
+    web_frame->SetOptimizationGuideHints(hints);
   }
   // Once the hints are sent to the local frame, clear the local copy to prevent
   // accidental reuse.

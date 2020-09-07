@@ -197,6 +197,7 @@ enum class DelayCompetingLowPriorityRequestsDelayType {
   kFirstPaint,
   kFirstContentfulPaint,
   kAlways,
+  kUseOptimizationGuide,
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     DelayCompetingLowPriorityRequestsDelayType>

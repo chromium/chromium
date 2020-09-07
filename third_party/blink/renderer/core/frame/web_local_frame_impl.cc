@@ -629,7 +629,7 @@ bool WebLocalFrameImpl::ConsumeTransientUserActivation(
 }
 
 void WebLocalFrameImpl::SetOptimizationGuideHints(
-    mojom::blink::DelayAsyncScriptExecutionDelayType delay_type) {
+    const WebOptimizationGuideHints& web_hints) {
   if (!GetFrame())
     return;
   // Re-build the optimization hints.
@@ -637,8 +637,19 @@ void WebLocalFrameImpl::SetOptimizationGuideHints(
   // Blink so that we can directly pass the hints without mojom variant
   // conversion.
   auto hints = mojom::blink::BlinkOptimizationGuideHints::New();
-  hints->delay_async_script_execution_hints =
-      mojom::blink::DelayAsyncScriptExecutionHints::New(delay_type);
+  if (web_hints.delay_async_script_execution_delay_type) {
+    hints->delay_async_script_execution_hints =
+        mojom::blink::DelayAsyncScriptExecutionHints::New(
+            *web_hints.delay_async_script_execution_delay_type);
+  }
+  if (web_hints.delay_competing_low_priority_requests_delay_type &&
+      web_hints.delay_competing_low_priority_requests_priority_threshold) {
+    hints->delay_competing_low_priority_requests_hints =
+        mojom::blink::DelayCompetingLowPriorityRequestsHints::New(
+            *web_hints.delay_competing_low_priority_requests_delay_type,
+            *web_hints
+                 .delay_competing_low_priority_requests_priority_threshold);
+  }
   GetFrame()->SetOptimizationGuideHints(std::move(hints));
 }
 

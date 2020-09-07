@@ -594,7 +594,9 @@ const base::FeatureParam<DelayCompetingLowPriorityRequestsDelayType>::Option
          "first_paint"},
         {DelayCompetingLowPriorityRequestsDelayType::kFirstContentfulPaint,
          "first_contentful_paint"},
-        {DelayCompetingLowPriorityRequestsDelayType::kAlways, "always"}};
+        {DelayCompetingLowPriorityRequestsDelayType::kAlways, "always"},
+        {DelayCompetingLowPriorityRequestsDelayType::kUseOptimizationGuide,
+         "use_optimization_guide"}};
 const base::FeatureParam<DelayCompetingLowPriorityRequestsDelayType>
     kDelayCompetingLowPriorityRequestsDelayParam{
         &kDelayCompetingLowPriorityRequests, "until",
