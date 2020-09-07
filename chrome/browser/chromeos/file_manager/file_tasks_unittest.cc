@@ -266,6 +266,38 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackTextApp) {
   EXPECT_TRUE(tasks[1].is_default());
 }
 
+// Test that browser is chosen as default for HTML files instead of the Text
+// app even if nothing is set in the preferences.
+TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackHtmlTextApp) {
+  TestingPrefServiceSimple pref_service;
+  RegisterDefaultTaskPreferences(&pref_service);
+
+  // Define the browser handler of the Files app for "foo.html".
+  TaskDescriptor files_app_task(
+      kFileManagerAppId, TASK_TYPE_FILE_BROWSER_HANDLER, "view-in-browser");
+  // Define the text editor app for "foo.html".
+  TaskDescriptor text_app_task(kTextEditorAppId, TASK_TYPE_FILE_HANDLER,
+                               "Text");
+  std::vector<FullTaskDescriptor> tasks;
+  tasks.emplace_back(
+      files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
+      GURL("http://example.com/some_icon.png"), false /* is_default */,
+      false /* is_generic_file_handler */, false /* is_file_extension_match */);
+  tasks.emplace_back(
+      text_app_task, "Text", Verb::VERB_OPEN_WITH,
+      GURL("chrome://extension-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/16/1"),
+      false /* is_default */, false /* is_generic_file_handler */,
+      false /* is_file_extension_match */);
+  std::vector<extensions::EntryInfo> entries;
+  entries.emplace_back(base::FilePath::FromUTF8Unsafe("foo.html"), "text/html",
+                       false);
+
+  // The internal file browser handler should be chosen as default,
+  // as it's a fallback file browser handler.
+  ChooseAndSetDefaultTask(pref_service, entries, &tasks);
+  EXPECT_TRUE(tasks[0].is_default());
+}
+
 // Test that Audio Player is chosen as default even if nothing is set in the
 // preferences.
 TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackAudioPlayer) {

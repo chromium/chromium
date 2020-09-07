@@ -346,6 +346,9 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
 // using MimeTypeCollector. TODO(crbug/1030935): Remove this.
 bool IsRawImage(const base::FilePath& path);
 
+// Returns whether |path| is an HTML file according to its extension.
+bool IsHtmlFile(const base::FilePath& path);
+
 }  // namespace file_tasks
 }  // namespace file_manager
 

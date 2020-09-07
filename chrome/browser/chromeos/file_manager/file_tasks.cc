@@ -881,10 +881,17 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   }
 
   // Prefer a fallback app over viewing in the browser (crbug.com/1111399).
+  // Unless it's HTML which should open in the browser (crbug.com/1121396).
   for (size_t i = 0; i < tasks->size(); ++i) {
     FullTaskDescriptor& task = (*tasks)[i];
     if (IsFallbackFileHandler(task) &&
         task.task_descriptor().action_id != "view-in-browser") {
+      const extensions::EntryInfo entry = entries[0];
+      const base::FilePath& file_path = entry.path;
+
+      if (IsHtmlFile(file_path)) {
+        break;
+      }
       task.set_is_default(true);
       return;
     }
@@ -906,6 +913,16 @@ bool IsRawImage(const base::FilePath& path) {
   constexpr const char* kRawExtensions[] = {".arw", ".cr2", ".dng", ".nef",
                                             ".nrw", ".orf", ".raf", ".rw2"};
   for (const char* extension : kRawExtensions) {
+    if (path.MatchesExtension(extension))
+      return true;
+  }
+  return false;
+}
+
+bool IsHtmlFile(const base::FilePath& path) {
+  constexpr const char* kHtmlExtensions[] = {".htm", ".html", ".mhtml",
+                                             ".xht", ".xhtm", ".xhtml"};
+  for (const char* extension : kHtmlExtensions) {
     if (path.MatchesExtension(extension))
       return true;
   }
