@@ -183,6 +183,11 @@ class WaylandWindow : public PlatformWindow, public PlatformEventDispatcher {
   // Returns true iff this window is opaque.
   bool IsOpaqueWindow() const;
 
+  // Says if the current window is set as active by the Wayland server. This
+  // only applies to toplevel surfaces (surfaces such as popups, subsurfaces do
+  // not support that).
+  virtual bool IsActive() const;
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
@@ -192,9 +197,6 @@ class WaylandWindow : public PlatformWindow, public PlatformEventDispatcher {
 
   // Sets bounds in dip.
   void SetBoundsDip(const gfx::Rect& bounds_dip);
-
-  // Gets a parent window for this window.
-  WaylandWindow* GetParentWindow(gfx::AcceleratedWidget parent_widget);
 
   void set_ui_scale(int32_t ui_scale) { ui_scale_ = ui_scale; }
 
