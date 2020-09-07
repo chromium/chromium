@@ -95,6 +95,7 @@ std::string URLDataSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::ImgSrc:
     case network::mojom::CSPDirectiveName::ManifestSrc:
     case network::mojom::CSPDirectiveName::MediaSrc:
+    case network::mojom::CSPDirectiveName::PluginTypes:
     case network::mojom::CSPDirectiveName::PrefetchSrc:
     case network::mojom::CSPDirectiveName::ReportURI:
     case network::mojom::CSPDirectiveName::Sandbox:

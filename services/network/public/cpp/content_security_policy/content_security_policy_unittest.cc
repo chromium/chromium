@@ -39,6 +39,16 @@ struct TestData {
   ExpectedResult expected_result = ExpectedResult();
 };
 
+std::vector<mojom::ContentSecurityPolicyPtr> ParseCSP(std::string expression) {
+  scoped_refptr<net::HttpResponseHeaders> headers(
+      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+  headers->SetHeader("Content-Security-Policy", expression);
+  std::vector<mojom::ContentSecurityPolicyPtr> policies;
+  AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+                                      &policies);
+  return policies;
+}
+
 static void TestFrameAncestorsCSPParser(const std::string& header,
                                         const ExpectedResult* expected_result) {
   scoped_refptr<net::HttpResponseHeaders> headers(
@@ -566,6 +576,51 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     EXPECT_EQ(frame_ancestors->sources[0]->is_port_wildcard, false);
     EXPECT_EQ(frame_ancestors->allow_self, false);
     EXPECT_EQ(frame_ancestors->allow_star, false);
+  }
+}
+
+TEST(ContentSecurityPolicy, ParsePluginTypes) {
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("plugin-types    application/pdf text/plain  invalid a/a/a");
+    EXPECT_EQ(policies[0]->directives.size(), 0u);
+    EXPECT_TRUE(policies[0]->plugin_types.has_value());
+    EXPECT_EQ(policies[0]->plugin_types.value().size(), 2u);
+    EXPECT_EQ(policies[0]->plugin_types.value()[0], "application/pdf");
+    EXPECT_EQ(policies[0]->plugin_types.value()[1], "text/plain");
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 2u);
+    EXPECT_EQ(policies[0]->parsing_errors[0],
+              "Invalid plugin type in 'plugin-types' Content Security Policy "
+              "directive: 'invalid'.");
+    EXPECT_EQ(policies[0]->parsing_errors[1],
+              "Invalid plugin type in 'plugin-types' Content Security Policy "
+              "directive: 'a/a/a'.");
+  }
+
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("plugin-types ; default-src 'self'");
+    EXPECT_TRUE(policies[0]->plugin_types.has_value());
+    EXPECT_EQ(policies[0]->plugin_types.value().size(), 0u);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
+  }
+
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("plugin-types 'self' ; default-src 'self'");
+    EXPECT_TRUE(policies[0]->plugin_types.has_value());
+    EXPECT_EQ(policies[0]->plugin_types.value().size(), 0u);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 1u);
+    EXPECT_EQ(policies[0]->parsing_errors[0],
+              "Invalid plugin type in 'plugin-types' Content Security Policy "
+              "directive: ''self''.");
+  }
+
+  {
+    std::vector<mojom::ContentSecurityPolicyPtr> policies =
+        ParseCSP("default-src 'self'");
+    EXPECT_FALSE(policies[0]->plugin_types.has_value());
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
   }
 }
 

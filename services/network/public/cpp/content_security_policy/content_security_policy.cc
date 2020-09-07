@@ -92,6 +92,7 @@ static CSPDirectiveName CSPFallback(CSPDirectiveName directive,
     case CSPDirectiveName::FormAction:
     case CSPDirectiveName::FrameAncestors:
     case CSPDirectiveName::NavigateTo:
+    case CSPDirectiveName::PluginTypes:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
@@ -140,6 +141,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::ManifestSrc:
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::ObjectSrc:
+    case CSPDirectiveName::PluginTypes:
     case CSPDirectiveName::PrefetchSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
@@ -637,6 +639,41 @@ mojom::CSPSourceListPtr ParseSourceList(
   return directive;
 }
 
+// Checks whether |expression| is a plugin type matching the regex:
+// [^\s/]+\/[^\s/]+
+// We assume |expression| does not contain any whitespaces.
+bool IsPluginType(base::StringPiece expression) {
+  auto* it = expression.begin();
+  auto* end = expression.end();
+
+  int count_1 = EatChar(&it, end, [](char c) { return c != '/'; });
+  if (it == end || *it != '/')
+    return false;
+  ++it;
+  int count_2 = EatChar(&it, end, [](char c) { return c != '/'; });
+
+  return count_1 >= 1 && count_2 >= 1 && it == end;
+}
+
+std::vector<std::string> ParsePluginTypes(
+    base::StringPiece value,
+    std::vector<std::string>& parsing_errors) {
+  std::vector<std::string> out;
+  for (const auto expression : base::SplitStringPiece(
+           value, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    if (IsPluginType(expression))
+      out.emplace_back(expression.as_string());
+    else {
+      parsing_errors.emplace_back(base::StringPrintf(
+          "Invalid plugin type in 'plugin-types' Content Security Policy "
+          "directive: '%s'.",
+          expression.as_string().c_str()));
+    }
+  }
+  return out;
+}
+
 // Parses a reporting directive.
 // https://w3c.github.io/webappsec-csp/#directives-reporting
 // TODO(lfg): The report-to should be treated as a single token according to the
@@ -770,6 +807,13 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
               "directive has been applied, and the value ignored.",
               directive.second.as_string().c_str()));
         }
+        break;
+      case CSPDirectiveName::PluginTypes:
+        // If the plugin-types directive is present, then always initialize
+        // `out->plugin_types` to be non-null, since only the plugin types
+        // explicitly listed will be allowed..
+        out->plugin_types =
+            ParsePluginTypes(directive.second, out->parsing_errors);
         break;
 
         // We check the following three directives so that we do not trigger a
@@ -1070,6 +1114,8 @@ CSPDirectiveName ToCSPDirectiveName(const std::string& name) {
     return CSPDirectiveName::MediaSrc;
   if (name == "object-src")
     return CSPDirectiveName::ObjectSrc;
+  if (name == "plugin-types")
+    return CSPDirectiveName::PluginTypes;
   if (name == "prefetch-src")
     return CSPDirectiveName::PrefetchSrc;
   if (name == "report-uri")
@@ -1134,6 +1180,8 @@ std::string ToString(CSPDirectiveName name) {
       return "media-src";
     case CSPDirectiveName::ObjectSrc:
       return "object-src";
+    case CSPDirectiveName::PluginTypes:
+      return "plugin-types";
     case CSPDirectiveName::PrefetchSrc:
       return "prefetch-src";
     case CSPDirectiveName::ReportURI:

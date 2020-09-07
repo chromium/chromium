@@ -129,6 +129,10 @@ blink::ContentSecurityPolicyPtr ConvertToBlink(
       policy_in->sandbox, ConvertToBlink(std::move(policy_in->header)),
       policy_in->use_reporting_api,
       ConvertToBlink(std::move(policy_in->report_endpoints)),
+      policy_in->plugin_types.has_value()
+          ? base::Optional<WTF::Vector<WTF::String>>(
+                ConvertToBlink(std::move(policy_in->plugin_types.value())))
+          : base::nullopt,
       ConvertToBlink(std::move(policy_in->parsing_errors)));
 }
 
