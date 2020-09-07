@@ -26,12 +26,18 @@ promise_test(async t => {
   const screenLock1 = await navigator.wakeLock.request('screen');
   const screenLock2 = await navigator.wakeLock.request('screen');
 
+  assert_false(screenLock1.released);
+  assert_false(screenLock2.released);
+
   const wait1 = new EventWatcher(t, screenLock1, 'release').wait_for('release');
   const wait2 = new EventWatcher(t, screenLock2, 'release').wait_for('release');
 
   await setMainWindowHidden(true);
 
-  return Promise.all([wait1, wait2]);
+  await Promise.all([wait1, wait2]);
+
+  assert_true(screenLock1.released);
+  assert_true(screenLock2.released);
 }, "Screen wake locks are released when the document the page is hidden");
 </script>
 </body>

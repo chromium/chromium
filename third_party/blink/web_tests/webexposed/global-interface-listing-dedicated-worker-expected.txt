@@ -1687,6 +1687,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface WakeLockSentinel : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter onrelease
+[Worker]     getter released
 [Worker]     getter type
 [Worker]     method constructor
 [Worker]     method release

@@ -51,6 +51,23 @@ TEST(WakeLockSentinelTest, SentinelType) {
   EXPECT_EQ("system", sentinel->type());
 }
 
+TEST(WakeLockSentinelTest, SentinelReleased) {
+  MockWakeLockService wake_lock_service;
+  WakeLockTestingContext context(&wake_lock_service);
+
+  auto* manager = MakeGarbageCollected<WakeLockManager>(context.DomWindow(),
+                                                        WakeLockType::kScreen);
+  auto* sentinel = MakeGarbageCollected<WakeLockSentinel>(
+      context.GetScriptState(), WakeLockType::kScreen, manager);
+  EXPECT_FALSE(sentinel->released());
+
+  manager = MakeGarbageCollected<WakeLockManager>(context.DomWindow(),
+                                                  WakeLockType::kSystem);
+  sentinel = MakeGarbageCollected<WakeLockSentinel>(
+      context.GetScriptState(), WakeLockType::kSystem, manager);
+  EXPECT_FALSE(sentinel->released());
+}
+
 TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
@@ -65,6 +82,7 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   auto* sentinel =
       ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(promise);
   ASSERT_NE(nullptr, sentinel);
+  EXPECT_FALSE(sentinel->released());
 
   base::RunLoop run_loop;
   auto* event_listener =
@@ -75,12 +93,14 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   sentinel->removeEventListener(event_type_names::kRelease, event_listener);
 
   EXPECT_EQ(nullptr, sentinel->manager_);
+  EXPECT_TRUE(sentinel->released());
 
   event_listener = MakeGarbageCollected<SyncEventListener>(WTF::Bind([]() {
     EXPECT_TRUE(false) << "This event handler should not be reached.";
   }));
   sentinel->addEventListener(event_type_names::kRelease, event_listener);
   sentinel->release(context.GetScriptState());
+  EXPECT_TRUE(sentinel->released());
 }
 
 TEST(WakeLockSentinelTest, ContextDestruction) {

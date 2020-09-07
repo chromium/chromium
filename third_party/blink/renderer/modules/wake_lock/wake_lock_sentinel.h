@@ -36,6 +36,7 @@ class MODULES_EXPORT WakeLockSentinel final
   // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(release, kRelease)
   ScriptPromise release(ScriptState*);
+  bool released() const;
   String type() const;
 
   // EventTarget overrides.
@@ -60,7 +61,10 @@ class MODULES_EXPORT WakeLockSentinel final
   // where |script_state_|'s context is no longer valid.
   void DoRelease();
 
+  void DispatchReleaseEvent();
+
   Member<WakeLockManager> manager_;
+  bool released_ = false;
   const WakeLockType type_;
 
   FRIEND_TEST_ALL_PREFIXES(WakeLockSentinelTest, MultipleReleaseCalls);

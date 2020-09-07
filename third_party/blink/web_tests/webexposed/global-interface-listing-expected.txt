@@ -8919,6 +8919,7 @@ interface WakeLock
 interface WakeLockSentinel : EventTarget
     attribute @@toStringTag
     getter onrelease
+    getter released
     getter type
     method constructor
     method release

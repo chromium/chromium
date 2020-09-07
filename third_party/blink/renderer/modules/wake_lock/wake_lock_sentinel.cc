@@ -34,6 +34,10 @@ ScriptPromise WakeLockSentinel::release(ScriptState* script_state) {
   return ScriptPromise::CastUndefined(script_state);
 }
 
+bool WakeLockSentinel::released() const {
+  return released_;
+}
+
 String WakeLockSentinel::type() const {
   // https://w3c.github.io/wake-lock/#dom-wakelocksentinel-type
   // The type attribute corresponds to the WakeLockSentinel's wake lock type.
@@ -90,7 +94,19 @@ void WakeLockSentinel::DoRelease() {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 
-  // 6. Queue a task to fire an event named "release" at lock.
+  // 6. Queue a task to run the following steps:
+  GetExecutionContext()
+      ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+      ->PostTask(FROM_HERE, WTF::Bind(&WakeLockSentinel::DispatchReleaseEvent,
+                                      WrapWeakPersistent(this)));
+}
+
+void WakeLockSentinel::DispatchReleaseEvent() {
+  // https://w3c.github.io/wake-lock/#release-wake-lock-algorithm
+  // 6.1. Set lock.released to true.
+  DCHECK(!released_);
+  released_ = true;
+  // 6.2. Fire an event named "release" at lock.
   DispatchEvent(*Event::Create(event_type_names::kRelease));
 }
 
