@@ -117,9 +117,6 @@ class CancellingNavigationSimulatorTest
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
     did_finish_navigation_ = true;
-    if (handle->GetResponseHeaders()) {
-      response_headers_ = handle->GetResponseHeaders()->raw_headers();
-    }
   }
 
   void OnWillFailRequestCalled() { will_fail_request_called_ = true; }
@@ -129,7 +126,6 @@ class CancellingNavigationSimulatorTest
   std::unique_ptr<NavigationSimulator> simulator_;
   bool did_finish_navigation_ = false;
   bool will_fail_request_called_ = false;
-  std::string response_headers_;
   base::WeakPtrFactory<CancellingNavigationSimulatorTest> weak_ptr_factory_{
       this};
 
@@ -165,6 +161,28 @@ class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
   bool is_post_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MethodCheckingNavigationSimulatorTest);
+};
+
+class ResponseHeadersCheckingNavigationSimulatorTest
+    : public NavigationSimulatorTest,
+      public WebContentsObserver {
+ public:
+  ResponseHeadersCheckingNavigationSimulatorTest() = default;
+  ~ResponseHeadersCheckingNavigationSimulatorTest() override = default;
+
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    Observe(RenderViewHostImplTestHarness::web_contents());
+  }
+
+  void DidFinishNavigation(content::NavigationHandle* handle) override {
+    if (handle->GetResponseHeaders()) {
+      response_headers_ = handle->GetResponseHeaders();
+    }
+  }
+
+  const net::HttpResponseHeaders* response_headers_;
 };
 
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {
@@ -223,6 +241,22 @@ TEST_F(MethodCheckingNavigationSimulatorTest, SetMethodPost) {
 
   ASSERT_TRUE(did_finish_navigation());
   EXPECT_TRUE(is_post());
+}
+
+TEST_F(ResponseHeadersCheckingNavigationSimulatorTest, CheckResponseHeaders) {
+  std::unique_ptr<NavigationSimulator> simulator =
+      NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.test/"), main_rfh());
+  simulator->Start();
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("My-Test-Header", "my-test-value");
+  simulator->SetResponseHeaders(response_headers);
+  simulator->ReadyToCommit();
+  simulator->Commit();
+  EXPECT_TRUE(
+      response_headers_->HasHeaderValue("My-Test-Header", "my-test-value"));
 }
 
 // Stress test the navigation simulator by having a navigation throttle cancel
@@ -287,21 +321,6 @@ TEST_P(NavigationSimulatorTestCancelFail, Fail) {
   EXPECT_TRUE(will_fail_request_called_);
   EXPECT_EQ(NavigationThrottle::CANCEL,
             simulator_->GetLastThrottleCheckResult());
-}
-
-// Test canceling the simulated navigation with response headers.
-TEST_P(NavigationSimulatorTestCancelFail, FailWithResponseHeaders) {
-  simulator_->Start();
-
-  using std::string_literals::operator""s;
-  std::string header =
-      "HTTP/1.1 404 Not Found\0"
-      "content-encoding: gzip\0\0"s;
-
-  simulator_->FailWithResponseHeaders(
-      net::ERR_CERT_DATE_INVALID,
-      base::MakeRefCounted<net::HttpResponseHeaders>(header));
-  EXPECT_EQ(response_headers_, header);
 }
 
 INSTANTIATE_TEST_SUITE_P(

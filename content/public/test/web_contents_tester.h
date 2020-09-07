@@ -92,11 +92,8 @@ class WebContentsTester {
       ui::PageTransition transition = ui::PAGE_TRANSITION_LINK) = 0;
 
   // Creates a pending navigation to the given URL with the default parameters
-  // and then aborts it with the given |error_code| and |response_headers|.
-  virtual void NavigateAndFail(
-      const GURL& url,
-      int error_code,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
+  // and then aborts it with the given |error_code|.
+  virtual void NavigateAndFail(const GURL& url, int error_code) = 0;
 
   // Sets the loading state to the given value.
   virtual void TestSetIsLoading(bool value) = 0;

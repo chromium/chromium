@@ -77,10 +77,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       const GURL& url,
       ui::PageTransition transition = ui::PAGE_TRANSITION_LINK) override;
 
-  void NavigateAndFail(
-      const GURL& url,
-      int error_code,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) override;
+  void NavigateAndFail(const GURL& url, int error_code) override;
   void TestSetIsLoading(bool value) override;
   void TestDidNavigate(RenderFrameHost* render_frame_host,
                        int nav_entry_id,

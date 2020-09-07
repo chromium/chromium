@@ -306,13 +306,10 @@ void TestWebContents::NavigateAndCommit(const GURL& url,
   navigation->Commit();
 }
 
-void TestWebContents::NavigateAndFail(
-    const GURL& url,
-    int error_code,
-    scoped_refptr<net::HttpResponseHeaders> response_headers) {
+void TestWebContents::NavigateAndFail(const GURL& url, int error_code) {
   std::unique_ptr<NavigationSimulator> navigation =
       NavigationSimulator::CreateBrowserInitiated(url, this);
-  navigation->FailWithResponseHeaders(error_code, std::move(response_headers));
+  navigation->Fail(error_code);
 }
 
 void TestWebContents::TestSetIsLoading(bool value) {

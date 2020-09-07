@@ -71,9 +71,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void Commit() override;
   void AbortCommit() override;
   void AbortFromRenderer() override;
-  void FailWithResponseHeaders(
-      int error_code,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void Fail(int error_code) override;
   void CommitErrorPage() override;
   void CommitSameDocument() override;

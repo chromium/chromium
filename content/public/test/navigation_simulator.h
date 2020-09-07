@@ -203,12 +203,6 @@ class NavigationSimulator {
   // Note: this is only valid for renderer-initiated navigations.
   virtual void AbortFromRenderer() = 0;
 
-  // Simulates the navigation failing with the error code |error_code| and
-  // response headers |response_headers|.
-  virtual void FailWithResponseHeaders(
-      int error_code,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
-
   // Simulates the navigation failing with the error code |error_code|.
   // IMPORTANT NOTE: This is simulating a network connection error and implies
   // we do not get a response. Error codes like 204 are not properly managed.

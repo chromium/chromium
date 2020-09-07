@@ -68,9 +68,8 @@ TEST_F(SyncEncryptionKeysTabHelperTest, ShouldNotExposeMojoApiIfNavigatedAway) {
 
 TEST_F(SyncEncryptionKeysTabHelperTest,
        ShouldNotExposeMojoApiIfNavigationFailed) {
-  web_contents_tester()->NavigateAndFail(
-      GaiaUrls::GetInstance()->gaia_url(), net::ERR_ABORTED,
-      base::MakeRefCounted<net::HttpResponseHeaders>("some_headers"));
+  web_contents_tester()->NavigateAndFail(GaiaUrls::GetInstance()->gaia_url(),
+                                         net::ERR_ABORTED);
   EXPECT_THAT(frame_receiver_set(), IsNull());
 }
 
@@ -78,9 +77,8 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
        ShouldNotExposeMojoApiIfNavigatedAwayToErrorPage) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_THAT(frame_receiver_set(), NotNull());
-  web_contents_tester()->NavigateAndFail(
-      GURL("http://page.com"), net::ERR_ABORTED,
-      base::MakeRefCounted<net::HttpResponseHeaders>("some_headers"));
+  web_contents_tester()->NavigateAndFail(GURL("http://page.com"),
+                                         net::ERR_ABORTED);
   EXPECT_THAT(frame_receiver_set(), IsNull());
 }
 
