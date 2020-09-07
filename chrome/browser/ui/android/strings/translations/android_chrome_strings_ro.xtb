@@ -582,7 +582,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5659593005791499971">Adresă de e-mail</translation>
 <translation id="5665379678064389456">Creează un eveniment în <ph name="APP_NAME" /></translation>
 <translation id="5668404140385795438">Ignoră solicitarea unui site de a împiedica mărirea</translation>
-<translation id="568275469169136466">Pentru conectare temporară</translation>
 <translation id="5683547024293500885">Chrome nu poate căuta actualizări</translation>
 <translation id="5686790454216892815">Numele fișierului este prea lung</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> va folosi <ph name="LANGUAGE" /> după repornire.</translation>
@@ -1043,7 +1042,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="9100610230175265781">Este necesară o expresie de acces</translation>
 <translation id="9102803872260866941">Fila de previzualizare este deschisă</translation>
 <translation id="9104217018994036254">Lista de dispozitive pe care să trimiți o filă.</translation>
-<translation id="9104402662006063371">Intră în modul incognito</translation>
 <translation id="9108312223223904744">Compatibilitatea folosirii telefonului ca pe o cheie de securitate</translation>
 <translation id="9108808586816295166">Este posibil să nu fie disponibil oricând un DNS securizat</translation>
 <translation id="9133397713400217035">Explorează offline</translation>

@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Srednje močna vijoličastordeča</translation>
 <translation id="3104705064753753826">okn opoz</translation>
 <translation id="3109724472072898302">Strnjeno</translation>
+<translation id="311015743332597320">S štirimi prsti povlecite v desno</translation>
 <translation id="3112457281078985179">Če želite vklopiti ali izklopiti ChromeVox, uporabite kombinacijo tipk Control in Alt ter črke Z.</translation>
 <translation id="3131002934070407451">Preberi številke kot:</translation>
 <translation id="3134461040845705080">samo br</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">izreži <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Dotaknite se z dvema prstoma, če želite začasno ustaviti govor</translation>
 <translation id="3564729643041517261">Trenutno je izbran vzporedni slog prikaza</translation>
-<translation id="3587482841069643663">Vse</translation>
 <translation id="3589661172894441357">Glosar</translation>
 <translation id="3591784666823501596">Kraljevsko modra</translation>
 <translation id="3594207934078151302">Srednje močna morsko zelena</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">Urejanje besedila, vnos URL-ja</translation>
 <translation id="7685589220304187312">orvrs</translation>
 <translation id="7693840228159394336">Prejšnji izbirni gumb</translation>
-<translation id="7701040980221191251">Nič</translation>
 <translation id="7701196182766842984">samosez</translation>
 <translation id="7714340021005120797">Ni naslednjega kombiniranega polja</translation>
 <translation id="772146615414628379">Čestitamo! Naučili ste se osnovne stvari, ki jih morate vedeti, če želite uspešno uporabljati ChromeVox. Ukazni meni ChromeVoxa lahko kadar koli odprete, tako da pritisnete tipko za iskanje in piko. Če želite izvedeti še več o ChromeVoxu in operacijskem sistemu Chrome OS, si oglejte te članke.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726">Prenos je ustavljen (<ph name="FILE_NAME" />)</translation>
 <translation id="8129445297241948503">Ni celice zgoraj</translation>
 <translation id="8138880386467279117">Dotik</translation>
+<translation id="8173092779156526980">S štirimi prsti povlecite v levo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podčrtaj}one{# podčrtaj}two{# podčrtaja}few{# podčrtaji}other{# podčrtajev}}</translation>
 <translation id="8184828902145951186">vrstica</translation>
 <translation id="8186185314313222077">preklop celozaslonskega načina</translation>

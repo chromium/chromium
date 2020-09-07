@@ -511,6 +511,7 @@
 <translation id="158849752021629804">Потрібна домашня мережа</translation>
 <translation id="1588870296199743671">Відкрити посилання за допомогою...</translation>
 <translation id="1589055389569595240">Показати опцію "Правопис і граматика"</translation>
+<translation id="1591679663873027990">Надати додатку Parallels Desktop доступ до пристроїв USB. Додаток Parallels Desktop не зберігатиме дані про пристрій USB після його вилучення.</translation>
 <translation id="1593594475886691512">Форматування…</translation>
 <translation id="159359590073980872">Кеш зображень</translation>
 <translation id="1593926297800505364">Зберегти спосіб оплати</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">Помилка підключення спільного доступу. Перевірте облікові дані та повторіть спробу.</translation>
 <translation id="1956050014111002555">Файл містив декілька сертифікатів, жоден із яких не було імпортовано:</translation>
 <translation id="1956390763342388273">Буде завантажено всі файли з папки "<ph name="FOLDER_PATH" />". Робіть це, лише якщо вважаєте сайт надійним.</translation>
+<translation id="196040970347962278">Спершу підключіться до Інтернету</translation>
 <translation id="1962233722219655970">На цій сторінці використовується програма Native Client, яка не працює на вашому комп’ютері.</translation>
 <translation id="1963227389609234879">Видалити всі</translation>
 <translation id="1963976881984600709">Стандартний захист</translation>
@@ -1865,6 +1867,7 @@
 <translation id="321834671654278338">Файл видалення Linux</translation>
 <translation id="3220586366024592812">Відбулося аварійне завершення процесу для функції підключення  <ph name="CLOUD_PRINT_NAME" />. Перезапустити?</translation>
 <translation id="3222066309010235055">Візуалізатор: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Підключитися до машини <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Кнопка "Скинути"</translation>
 <translation id="3225084153129302039">Стандартний фіолетовий аватар</translation>
 <translation id="3225319735946384299">Підписування коду</translation>
@@ -1877,6 +1880,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Оновіть пристрій протягом дня}one{Оновіть пристрій протягом # дня}few{Оновіть пристрій протягом # днів}many{Оновіть пристрій протягом # днів}other{Оновіть пристрій протягом # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – помилка мережі</translation>
 <translation id="3248902735035392926">Безпека важлива. <ph name="BEGIN_LINK" />Перевірте свої розширення<ph name="END_LINK" />.</translation>
+<translation id="325036368918787455">Вийти з анонімного режиму</translation>
 <translation id="3251759466064201842">&lt;Не є частиною сертифіката&gt;</translation>
 <translation id="3253225298092156258">Недоступно</translation>
 <translation id="3253448572569133955">Невідомий обліковий запис</translation>
@@ -2116,6 +2120,7 @@
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3528498924003805721">Цілі ярликів</translation>
 <translation id="3532273508346491126">Керування синхронізацією</translation>
+<translation id="3532521178906420528">Встановлення з'єднання з мережею…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – звук вимкнено</translation>
 <translation id="3537881477201137177">Це можна змінити пізніше в налаштуваннях</translation>
 <translation id="3538066758857505094">Не вдалося встановити Linux. Повторіть спробу.</translation>
@@ -3125,6 +3130,7 @@
 <translation id="4750394297954878236">Пропозиції</translation>
 <translation id="475088594373173692">Перший користувач</translation>
 <translation id="4751476147751820511">Датчики руху та світла</translation>
+<translation id="4752124003533492687">Щоб підключити пристрій <ph name="USB_DEVICE_NAME" />, відкрийте налаштування</translation>
 <translation id="4756378406049221019">Зупинити/оновити</translation>
 <translation id="4756388243121344051">&amp;Історія</translation>
 <translation id="4759238208242260848">Завантаження</translation>
@@ -4642,6 +4648,7 @@
 <translation id="6630752851777525409">Розширенню <ph name="EXTENSION_NAME" /> потрібен постійний доступ до сертифіката, щоб проходити автентифікацію від вашого імені.</translation>
 <translation id="6635944431854494329">Власник може керувати цією функцією в меню "Налаштування &gt; Розширені &gt; Автоматично надсилати в Google дані про діагностику та використання".</translation>
 <translation id="6635956300022133031">Вибрати й налаштувати голоси для синтезу мовлення</translation>
+<translation id="6636588250634969791">Спершу вставте SIM-карту</translation>
 <translation id="6639554308659482635">Пам'ять SQLite</translation>
 <translation id="6641138807883536517">Немає навмання згенерованого пароля для модуля безпеки. Це нормально після використання функції Powerwash.</translation>
 <translation id="6642720633335369752">Щоб побачити всі відкриті вікна додатків, проведіть пальцем знизу вгору й утримуйте.</translation>
@@ -5184,6 +5191,7 @@
 <translation id="7303900363563182677">Цьому сайту заборонено переглядати тексти й зображення в буфері обміну</translation>
 <translation id="7305123176580523628">USB-принтер підключено</translation>
 <translation id="730515362922783851">Обмінюватися даними з будь-яким пристроєм у локальній мережі чи Інтернеті</translation>
+<translation id="7306521477691455105">Щоб підключити пристрій <ph name="USB_DEVICE_NAME" /> до машини <ph name="USB_VM_NAME" />, відкрийте налаштування</translation>
 <translation id="7307129035224081534">Призупинено</translation>
 <translation id="7308002049209013926">Швидко переходьте до нових додатків і дій за допомогою панелі запуску. Щоб відкрити панель запуску з клавіатури, натисніть Alt+Shift+L.</translation>
 <translation id="7309257895202129721">Показати &amp;елементи керування</translation>
@@ -6807,6 +6815,7 @@
 <translation id="947329552760389097">&amp;Перевірити елементи</translation>
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="952992212772159698">Не активовано</translation>
+<translation id="956444359529327203">Вийти з гостьового режиму</translation>
 <translation id="956500788634395331">Пристрій захищено від потенційно шкідливих розширень</translation>
 <translation id="957960681186851048">Цей сайт намагався автоматично завантажити декілька файлів</translation>
 <translation id="9580706199804957">Не вдалося під’єднатися до служб Google</translation>

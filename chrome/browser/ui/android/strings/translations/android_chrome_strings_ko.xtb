@@ -582,7 +582,6 @@
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5665379678064389456"><ph name="APP_NAME" />에 일정 만들기</translation>
 <translation id="5668404140385795438">웹사이트의 확대 방지 요청 무시</translation>
-<translation id="568275469169136466">임시로 로그인</translation>
 <translation id="5683547024293500885">Chrome에서 업데이트를 확인할 수 없음</translation>
 <translation id="5686790454216892815">파일 이름이 너무 깁니다.</translation>
 <translation id="5687809546194252819">다시 시작하면 <ph name="APP_NAME" />에서 <ph name="LANGUAGE" />를 사용합니다.</translation>
@@ -1043,7 +1042,6 @@
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>
 <translation id="9102803872260866941">미리보기 탭 열림</translation>
 <translation id="9104217018994036254">탭을 공유할 기기 목록입니다.</translation>
-<translation id="9104402662006063371">시크릿 모드 시작</translation>
 <translation id="9108312223223904744">휴대전화를 보안 키로 사용 지원</translation>
 <translation id="9108808586816295166">보안 DNS가 항상 제공되지는 않을 수도 있습니다.</translation>
 <translation id="9133397713400217035">오프라인 탐색</translation>

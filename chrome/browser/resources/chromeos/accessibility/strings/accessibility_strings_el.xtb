@@ -281,6 +281,7 @@
 <translation id="3103579948980282461">Μεσαίο βιολετί κόκκινο</translation>
 <translation id="3104705064753753826">παράθυρο διαλόγου ειδοποιήσεων</translation>
 <translation id="3109724472072898302">Συμπτυγμένο</translation>
+<translation id="311015743332597320">Σύρετε με τέσσερα δάχτυλα προς τα δεξιά.</translation>
 <translation id="3112457281078985179">Για ενεργοποίηση ή απενεργοποίηση του ChromeVox, χρησιμοποιήστε τον συνδυασμό Control+Alt+Z.</translation>
 <translation id="3131002934070407451">Ανάγνωση αριθμών ως:</translation>
 <translation id="3134461040845705080">μόνο για ανάγνωση</translation>
@@ -346,7 +347,6 @@
 <translation id="3549141990712742152">αποκοπή <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Πατήστε με δύο δάκτυλα για να διακόψετε προσωρινά την ομιλία</translation>
 <translation id="3564729643041517261">Το τρέχον στιλ προβολής είναι η παράθεση.</translation>
-<translation id="3587482841069643663">Όλες</translation>
 <translation id="3589661172894441357">Γλωσσάρι</translation>
 <translation id="3591784666823501596">Μπλε ρουά</translation>
 <translation id="3594207934078151302">Μεσαίο πράσινο μαρέν</translation>
@@ -845,7 +845,6 @@
 <translation id="7684431668231950609">Επεξεργασία κειμένου, καταχώριση διεύθυνσης URL</translation>
 <translation id="7685589220304187312">γραμμή εργαλείων</translation>
 <translation id="7693840228159394336">Προηγούμενο κουμπί επιλογής</translation>
-<translation id="7701040980221191251">Καμία</translation>
 <translation id="7701196182766842984">αυτόματη συμπλήρωση λίστας</translation>
 <translation id="7714340021005120797">Δεν υπάρχει επόμενο σύνθετο πλαίσιο.</translation>
 <translation id="772146615414628379">Συγχαρητήρια! Μάθατε τα βασικά για να χρησιμοποιήσετε με επιτυχία το ChromeVox. Μην ξεχνάτε ότι μπορείτε να ανοίξετε το μενού εντολών του ChromeVox ανά πάσα στιγμή πατώντας Search+τελεία. Για να μάθετε περισσότερα σχετικά με το ChromeVox και το Chrome OS, επισκεφτείτε τα παρακάτω άρθρα.
@@ -904,6 +903,7 @@
 <translation id="812886159861361726">Η λήψη του αρχείου <ph name="FILE_NAME" /> σταμάτησε</translation>
 <translation id="8129445297241948503">Δεν υπάρχει κελί επάνω.</translation>
 <translation id="8138880386467279117">Άγγιγμα</translation>
+<translation id="8173092779156526980">Σύρετε με τέσσερα δάχτυλα προς τα αριστερά.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{σύμβολο υπογράμμισης}other{# σύμβολα υπογράμμισης}}</translation>
 <translation id="8184828902145951186">σειρά</translation>
 <translation id="8186185314313222077">εναλλαγή πλήρους οθόνης</translation>

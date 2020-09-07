@@ -511,6 +511,7 @@
 <translation id="158849752021629804">Հարկավոր է ներքին ցանց</translation>
 <translation id="1588870296199743671">Բացել հղումը, օգտագործելով…</translation>
 <translation id="1589055389569595240">Ցույց տալ ուղղագրությունն ու քերականությունը</translation>
+<translation id="1591679663873027990">Հասանելի դարձրեք USB սարքերը Parallels Desktop-ին։ Երբ USB սարքը հեռացվի, Parallels Desktop-ը չի պահի այն։</translation>
 <translation id="1593594475886691512">Ձևաչափում…</translation>
 <translation id="159359590073980872">Պատկերների քեշ</translation>
 <translation id="1593926297800505364">Պահել վճարման եղանակը</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">Ընդհանուր միացման սխալ կա։ Ստուգեք ձեր տվյալներն ու նորից փորձեք:</translation>
 <translation id="1956050014111002555">Ֆայլը պարունակում է մի քանի վկայագիր, նրանցից ոչ մեկը չի ներմուծվել`</translation>
 <translation id="1956390763342388273">Դուք պատրաստվում եք վերբեռնել «<ph name="FOLDER_PATH" />» պանակի բոլոր ֆայլերը։ Մի՛ արեք դա, եթե կայքը վստահելի չեք համարում։</translation>
+<translation id="196040970347962278">Նախ միացեք համացանցին</translation>
 <translation id="1962233722219655970">Այս էջն օգտագործում է Native Client հավելված, որը ձեր համակարգիչը չի աջակցում:</translation>
 <translation id="1963227389609234879">Հեռացնել բոլորը</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
@@ -894,7 +896,7 @@
 <translation id="2046702855113914483">Ռամեն</translation>
 <translation id="204706822916043810">Վիրտուալ մեքենան ստուգվում է</translation>
 <translation id="2048182445208425546">Դիտել ձեր ցանցի տվյալների հոսքը</translation>
-<translation id="2048243703055695889">Մոտակա սարքերի հետ փոխանակման կարգավորումներ <ph name="USER_EMAIL" />-ի «<ph name="DEVICE_NAME" />» սարքի համար։</translation>
+<translation id="2048243703055695889">Մոտակա սարքերի հետ փոխանակման կարգավորումներ <ph name="USER_EMAIL" /> օգտատիրոջ «<ph name="DEVICE_NAME" />» սարքի համար։</translation>
 <translation id="2048653237708779538">Գործողությունը հասանելի չէ</translation>
 <translation id="204914487372604757">Ստեղծել դյուրանցում</translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
@@ -1181,7 +1183,7 @@
 <translation id="2384436799579181135">Սխալ առաջացավ: Ստուգեք ձեր տպիչը և նորից փորձեք:</translation>
 <translation id="2387052489799050037">Անցնել Գլխավոր էջ</translation>
 <translation id="2387458720915042159">Միջնորդ սերվերի միացման տեսակը</translation>
-<translation id="2390347491606624519">Չհաջողվեց միանալ պրոքսի-սերվերին։ Նորից մուտք գործեք։</translation>
+<translation id="2390347491606624519">Չհաջողվեց միանալ պրոքսի սերվերին։ Նորից մուտք գործեք։</translation>
 <translation id="2391082728065870591">Ուղարկել կարծիքների վերաբերյալ հաշվետվություն</translation>
 <translation id="2391419135980381625">Ստանդարտ տառատեսակ</translation>
 <translation id="2392163307141705938">Դուք սպառել եք ձեր ծնողի կողմից <ph name="IDS_SHORT_PRODUCT_NAME" />-ի համար սահմանված ժամանակը։</translation>
@@ -1865,6 +1867,7 @@
 <translation id="321834671654278338">Լինուքսի ապատեղադրիչ</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" />-ի կապակցման գործընթացը խափանվեց: Վերագործարկե՞լ:</translation>
 <translation id="3222066309010235055">Նախնական մշակում՝ <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Միացնել վիրտուալ մեքենային (<ph name="USB_VM_NAME" />)</translation>
 <translation id="3223531857777746191">«Զրոյացնել» կոճակ</translation>
 <translation id="3225084153129302039">Կանխադրված մանուշակագույն ավատար</translation>
 <translation id="3225319735946384299">Կոդի ստորագրում</translation>
@@ -1877,6 +1880,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Թարմացրեք սարքը մեկ օրվա ընթացքում}one{Թարմացրեք սարքը # օրվա ընթացքում}other{Թարմացրեք սարքը # օրվա ընթացքում}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Ցանցի սխալ</translation>
 <translation id="3248902735035392926">Անվտանգությունը կարևոր է: <ph name="BEGIN_LINK" />Ստուգեք ձեր ընդլայնումները<ph name="END_LINK" />:</translation>
+<translation id="325036368918787455">Փակել ինկոգնիտո պատուհանները</translation>
 <translation id="3251759466064201842">&lt;Վկայագրի մաս չի կազմում&gt;</translation>
 <translation id="3253225298092156258">Հասանելի չէ</translation>
 <translation id="3253448572569133955">Անհայտ հաշիվ</translation>
@@ -2116,6 +2120,7 @@
 <translation id="3527085408025491307">Պանակ</translation>
 <translation id="3528498924003805721">Դյուրանցումների վերջնակետեր</translation>
 <translation id="3532273508346491126">Համաժամացման կառավարում</translation>
+<translation id="3532521178906420528">Կապի հաստատում...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Ձայնն անջատված է</translation>
 <translation id="3537881477201137177">Ավելի ուշ կարող եք սա կարգավորումներում փոխել</translation>
 <translation id="3538066758857505094">Չհաջողվեց ապատեղադրել Linux-ը: Նորից փորձեք:</translation>
@@ -2304,7 +2309,7 @@
 <translation id="3732530910372558017">PIN կոդը պետք է կազմված լինի առավելագույնը 63 նիշից</translation>
 <translation id="3732857534841813090">Google Օգնականին առնչվող տեղեկություններ</translation>
 <translation id="3733127536501031542">SSL սերվեր՝ նոր տարբերակին անցնելու հնարավորությամբ</translation>
-<translation id="3735740477244556633">Տեսակավորել ըստ</translation>
+<translation id="3735740477244556633">Դասավորել ըստ</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> սարքի տվյալները 24 ժամ հետո կջնջվեն</translation>
 <translation id="3738924763801731196"><ph name="OID" />՝</translation>
 <translation id="3739254215541673094">Բացե՞լ <ph name="APPLICATION" /> հավելվածը</translation>
@@ -3125,6 +3130,7 @@
 <translation id="4750394297954878236">Առաջարկներ</translation>
 <translation id="475088594373173692">Առաջին օգտատեր</translation>
 <translation id="4751476147751820511">Շարժման և լուսավորության տվիչներ</translation>
+<translation id="4752124003533492687">Բացեք կարգավորումները՝ <ph name="USB_DEVICE_NAME" /> սարքը միացնելու համար</translation>
 <translation id="4756378406049221019">Դադարեցնել/թարմացնել</translation>
 <translation id="4756388243121344051">&amp;Պատմություն</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
@@ -4427,7 +4433,7 @@
 <translation id="6342069812937806050">Հենց նոր</translation>
 <translation id="6344170822609224263">Մտնել ցանցային կապակցումների ցանկ</translation>
 <translation id="6344576354370880196">Պահված տպիչներ</translation>
-<translation id="6345418402353744910">Ձեր օգտանունը և գաղտնաբառն անհրաժեշտ են <ph name="PROXY" /> պրոքսի-սերվերի համար, որպեսզի ադմինիստրատորը կարողանա կարգավորել ձեր ցանցը։</translation>
+<translation id="6345418402353744910">Ձեր օգտանունն ու գաղտնաբառը անհրաժեշտ են <ph name="PROXY" /> պրոքսի սերվերի համար, որպեսզի ադմինիստրատորը կարողանա կարգավորել ձեր ցանցը։</translation>
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6349170655202535379">Համաժամացումը չի աշխատում։ Դուրս եկեք հաշվից ու նորից մուտք գործեք։</translation>
 <translation id="6351063337294363751">Ձեր այցելությունների պատմությունը կարող եք ջնջել այս ընտրացանկից</translation>
@@ -4645,6 +4651,7 @@
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />-ը վկայագրի մշտական մուտք է հայցում՝ ձեր անունից իսկորոշման համար:</translation>
 <translation id="6635944431854494329">Սեփականատերը կարող է կառավարել այս գործառույթը՝ անցնելով Կարգավորումներ &gt; Լրացուցիչ &gt; Ավտոմատ ուղարկել ախտորոշման և օգտագործման տվյալները Google-ին։</translation>
 <translation id="6635956300022133031">Ձայնի ընտրություն և կարգավորում</translation>
+<translation id="6636588250634969791">Նախքան շարունակելը տեղադրեք SIM քարտը</translation>
 <translation id="6639554308659482635">SQLite հիշողություն</translation>
 <translation id="6641138807883536517">Պատահական ստեղծված անվտանգության մոդուլի գաղտնաբառը հասանելի չէ: Սա նորմալ երևույթ է Powerwash-ից հետո:</translation>
 <translation id="6642720633335369752">Հավելվածների բոլոր բաց պատուհանները տեսնելու համար մատը սահեցրեք ներքևից վերև և պահեք։</translation>
@@ -4796,7 +4803,7 @@
 <translation id="6823506025919456619">Ձեր սարքերը տեսնելու համար պետք է մուտք գործեք Chrome</translation>
 <translation id="6824564591481349393">Պատճենել &amp;էլփոստի հասցեն</translation>
 <translation id="6824584962142919697">&amp;Ստուգել տարրերը</translation>
-<translation id="6825184156888454064">Տեսակավորել ըստ անվան</translation>
+<translation id="6825184156888454064">Դասավորել ըստ անվան</translation>
 <translation id="6826872289184051766">Հաստատել USB-ի միջոցով</translation>
 <translation id="6827487342470222762">Կոնտակտներ չեն գտնվել։ Ձեր կոնտակտների հետ ֆայլերով փոխանակվելու համար ավելացրեք նրանց Google հաշիվների հետ կապված էլ․ հասցեները ձեր կոնտակտներում։</translation>
 <translation id="6827623133556594466">Google Cloud Print-ը դեկտեմբերի 31-ից հետո այլևս չի աջակցվի։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -5187,6 +5194,7 @@
 <translation id="7303900363563182677">Այս կայքին արգելված է տեսնել սեղմատախտակին պատճենված տեքստը կամ պատկերները</translation>
 <translation id="7305123176580523628">USB տպիչը միացված է</translation>
 <translation id="730515362922783851">Տվյալներ փոխանակել տեղային ցանցի կամ համացանցի ցանկացած սարքի հետ</translation>
+<translation id="7306521477691455105">Բացեք կարգավորումները՝ <ph name="USB_DEVICE_NAME" /> սարքը վիրտուալ մեքենային (<ph name="USB_VM_NAME" />) միացնելու համար</translation>
 <translation id="7307129035224081534">Դադարեցված է</translation>
 <translation id="7308002049209013926">Օգտագործեք գործարկիչի վահանակը՝ նոր հավելվածների ու գործողությունների ցանկ արագ անցնելու համար: Ստեղնաշարի միջոցով վահանակը բացելու համար սեղմեք Alt + Shift + L:</translation>
 <translation id="7309257895202129721">Ցույց տալ &amp;կառավարները</translation>
@@ -6808,6 +6816,7 @@
 <translation id="947329552760389097">&amp;Ստուգել տարրերը</translation>
 <translation id="951991426597076286">Մերժել</translation>
 <translation id="952992212772159698">Ակտիվացված չէ</translation>
+<translation id="956444359529327203">Փակել հյուրերի պատուհանները</translation>
 <translation id="956500788634395331">Դուք պաշտպանված եք վտանգավոր ընդլայնումներից</translation>
 <translation id="957960681186851048">Այս կայքը փորձում էր ավտոմատ մի քանի ֆայլ ներբեռնել</translation>
 <translation id="9580706199804957">Չհաջողվեց միանալ Google-ի ծառայություններին</translation>

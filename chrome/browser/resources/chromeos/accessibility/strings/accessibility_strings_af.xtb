@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Medium persrooi</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Ingevou</translation>
+<translation id="311015743332597320">Swiep vier vingers na regs</translation>
 <translation id="3112457281078985179">Gebruik Control+Alt+Z om ChromeVox aan of af te skakel.</translation>
 <translation id="3131002934070407451">Lees getalle as:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">knip <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Tik met 2 vingers om spraak tydelik te stop</translation>
 <translation id="3564729643041517261">Huidige vertoonstyl is sy-aan-sy</translation>
-<translation id="3587482841069643663">Alles</translation>
 <translation id="3589661172894441357">Woordelys</translation>
 <translation id="3591784666823501596">Koningsblou</translation>
 <translation id="3594207934078151302">Medium seegroen</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">Wysig teks, URL-inskrywing</translation>
 <translation id="7685589220304187312">nutsbalk</translation>
 <translation id="7693840228159394336">Vorige radioknoppie</translation>
-<translation id="7701040980221191251">Geen</translation>
 <translation id="7701196182766842984">outolys</translation>
 <translation id="7714340021005120797">Geen volgende kombinasiekassie nie</translation>
 <translation id="772146615414628379">Geluk! Jy het die noodsaaklike dinge geleer om ChromeVox suksesvol te kan gebruik. Onthou dat jy op enige tydstip Search+Punt kan druk om die ChromeVox-bevelkieslys oop te maak. Lees die volgende artikels om selfs nog meer oor ChromeVox en Chrome-bedryfstelsel te wete te kom.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726">Aflaai is gestaak <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Geen sel hierbo nie</translation>
 <translation id="8138880386467279117">Raak</translation>
+<translation id="8173092779156526980">Swiep vier vingers na links</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{onderstreep}other{# onderstrepe}}</translation>
 <translation id="8184828902145951186">ry</translation>
 <translation id="8186185314313222077">wissel volskerm</translation>

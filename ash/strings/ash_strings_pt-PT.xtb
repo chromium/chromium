@@ -116,6 +116,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2127372758936585790">Carregador de baixo consumo</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
 <translation id="2144487987174258011">Reinicie para atualizar o Adobe Flash Player</translation>
+<translation id="2180011262286780504">O seu administrador desativou a capacidade de efetuar capturas de ecrã.</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2222338659135520253">É necessário iniciar sessão.</translation>
@@ -239,6 +240,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3428447136709161042">Desligar da rede <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Deslize rapidamente a partir da direita para retroceder.</translation>
 <translation id="343571671045587506">Editar lembrete</translation>
+<translation id="3435967511775410570">Impressão digital reconhecida</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">A sua ligação mudou para uma rede mais segura.</translation>
 <translation id="3465223694362104965">Foi ligado outro teclado a este dispositivo desde o seu último acesso. Certifique-se de que confia neste teclado antes de o utilizar.</translation>
@@ -600,6 +602,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7654687942625752712">Prima sem soltar ambas as teclas de volume durante cinco segundos para desativar os feedback de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Efetue a autenticação com a impressão digital</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}other{# notificações}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
@@ -617,6 +620,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7886277072580235377">Quando terminar sessão, a sua sessão de Internet será apagada. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar um email</translation>
 <translation id="7897375687985782769">Premiu o atalho de teclado da rotação do ecrã. Pretende rodar o ecrã?</translation>
+<translation id="7901405293566323524">Centro do telemóvel</translation>
 <translation id="7904094684485781019">O gestor desta conta removeu a permissão de início de sessão integrado.</translation>
 <translation id="7933084174919150729">O Assistente Google está disponível apenas no perfil principal.</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
@@ -627,6 +631,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7984197416080286869">Demasiadas tentativas de introdução da impressão digital</translation>
 <translation id="7994370417837006925">Início de sessão integrado</translation>
+<translation id="7995804128062002838">Falha ao capturar o ecrã.</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8029629653277878342">É necessário um PIN ou uma palavra-passe para uma maior segurança.</translation>
@@ -714,6 +719,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8843682306134542540">Ativar/desativar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível validar o seu PIN ou palavra-passe. Nota: se alterou a sua palavra-passe recentemente, utilize a palavra-passe antiga. A nova palavra-passe será aplicada quando terminar sessão.</translation>
+<translation id="885387440427703469">Captura de ecrã desativada</translation>
 <translation id="8870509716567206129">A aplicação não é compatível com o ecrã dividido.</translation>
 <translation id="8874184842967597500">Sem ligação</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>

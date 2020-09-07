@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Vermelho-violeta-médio</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Recolhido</translation>
+<translation id="311015743332597320">Deslize para a direita usando quatro dedos</translation>
 <translation id="3112457281078985179">Para ativar ou desativar o ChromeVox, use Control+Alt+Z.</translation>
 <translation id="3131002934070407451">Ler números como:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">Cortar <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Toque com dois dedos para interromper temporariamente a fala</translation>
 <translation id="3564729643041517261">O estilo de exibição atual está definido como lado a lado</translation>
-<translation id="3587482841069643663">Tudo</translation>
 <translation id="3589661172894441357">Glossário</translation>
 <translation id="3591784666823501596">Azul-real</translation>
 <translation id="3594207934078151302">Verde-mar-médio</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">Editar texto, entrada de URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botão de opção anterior</translation>
-<translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Nenhuma caixa de combinação a seguir</translation>
 <translation id="772146615414628379">Parabéns! Você aprendeu as noções básicas do ChromeVox. Você pode abrir o menu de comandos do ChromeVox a qualquer momento pressionando a tecla de pesquisa mais ponto. Para saber mais sobre o ChromeVox e o Chrome OS, acesse os artigos a seguir.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726">Download de <ph name="FILE_NAME" /> interrompido</translation>
 <translation id="8129445297241948503">Nenhuma célula acima</translation>
 <translation id="8138880386467279117">Tocar</translation>
+<translation id="8173092779156526980">Deslize para a esquerda usando quatro dedos</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{sublinhado}one{# sublinhados}other{# sublinhados}}</translation>
 <translation id="8184828902145951186">linha</translation>
 <translation id="8186185314313222077">alternar para o modo tela cheia</translation>

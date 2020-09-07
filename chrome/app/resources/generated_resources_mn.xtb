@@ -507,6 +507,7 @@
 <translation id="158849752021629804">Гэрийн сүлжээ хэрэгтэй</translation>
 <translation id="1588870296199743671">Холбоосыг хэрхэн нээх...</translation>
 <translation id="1589055389569595240">Үг үсэг болон дүрмийн алдааг харуул</translation>
+<translation id="1591679663873027990">USB төхөөрөмжид хандах зөвшөөрлийг Parallels Desktop-д өгөх. USB төхөөрөмжийг салгасны дараа Parallels Desktop үүнийг санахгүй.</translation>
 <translation id="1593594475886691512">Хэлбэршүүлж байна...</translation>
 <translation id="159359590073980872">Зургийн кэш</translation>
 <translation id="1593926297800505364">Төлбөрийн хэрэгслийг хадгалах</translation>
@@ -823,6 +824,7 @@
 <translation id="1954813140452229842">Хуваалцлыг залгаж чадсангүй. Мандат үнэмлэхээ шалгаад дахин оролдоно уу.</translation>
 <translation id="1956050014111002555">Файл нь олон тооны гэрчилгээнүүд агуулсан байсан бөгөөд тэдгээрээс алийг нь ч импортолж аваагүй байна:</translation>
 <translation id="1956390763342388273">Энэ нь "<ph name="FOLDER_PATH" />"-н бүх файлыг байршуулна. Та тэдгээр файлыг зөвхөн энэ сайтад итгэдэг тохиолдолд байршуулна уу.</translation>
+<translation id="196040970347962278">Эхлээд интернэт холболт үүсгэнэ үү</translation>
 <translation id="1962233722219655970">Энэ хуудас нь таны компьютер дээр ажиллах боломжгүй Native Client аппликейшнийг ашиглаж байна.</translation>
 <translation id="1963227389609234879">Бүгдийг устгах</translation>
 <translation id="1963976881984600709">Стандарт хамгаалалт</translation>
@@ -1860,6 +1862,7 @@
 <translation id="321834671654278338">Linuх устгагч</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> холбогчийн ажиллагаа гэмтсэн байна. Дахин эхлүүлэх үү?</translation>
 <translation id="3222066309010235055">Компьютер графикжуулах: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989"><ph name="USB_VM_NAME" />-д холбогдох</translation>
 <translation id="3223531857777746191">Шинэчлэх товчлуур</translation>
 <translation id="3225084153129302039">Өгөгдмөл нил ягаан аватар</translation>
 <translation id="3225319735946384299">Код баталгаажуулалт</translation>
@@ -1872,6 +1875,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Төхөөрөмжийг нэг хоногийн дотор шинэчилнэ үү}other{Төхөөрөмжийг # хоногийн дотор шинэчилнэ үү}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Сүлжээний алдаа</translation>
 <translation id="3248902735035392926">Аюулгүй байдал чухал билээ. <ph name="BEGIN_LINK" />Одоо өргөтгөлүүдээ шалгахын<ph name="END_LINK" /> тулд хэсэг хором зарцуулаарай</translation>
+<translation id="325036368918787455">Нууцлалтай цонхыг хаах</translation>
 <translation id="3251759466064201842">&lt;Сертификатын хэсэг биш&gt;</translation>
 <translation id="3253225298092156258">Боломжгүй байна</translation>
 <translation id="3253448572569133955">Тодорхойгүй бүртгэл</translation>
@@ -2111,6 +2115,7 @@
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
 <translation id="3532273508346491126">Синк хийх удирдлага</translation>
+<translation id="3532521178906420528">Сүлжээний холболтыг үүсгэж байна ...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Аудионы дууг хаасан</translation>
 <translation id="3537881477201137177">Үүнийг дараа нь Тохиргоо хэсэгт өөрчлөх боломжтой</translation>
 <translation id="3538066758857505094">Linux-г устгахад алдаа гарлаа. Дахин оролдоно уу.</translation>
@@ -3119,6 +3124,7 @@
 <translation id="4750394297954878236">Санал зөвлөмж</translation>
 <translation id="475088594373173692">Анхны хэрэглэгч</translation>
 <translation id="4751476147751820511">Хөдөлгөөн эсвэл гэрэл мэдрэгч</translation>
+<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" />-г холбохын тулд Тохиргоог нээнэ үү</translation>
 <translation id="4756378406049221019">Зогсоох/Дахин ачааллах</translation>
 <translation id="4756388243121344051">&amp; Түүх</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
@@ -4636,6 +4642,7 @@
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> нь таны өмнөөс өөрийгөө таниулах сертификат хандалт хийхийг хүсч байна.</translation>
 <translation id="6635944431854494329">Эзэмшигч нь энэ онцлогийг Тохиргоо &gt; Дэвшилтэт &gt; Оношилгоо, ашиглалтын өгөгдлийг Google-д автоматаар илгээх хэсэгт хянах боломжтой.</translation>
 <translation id="6635956300022133031">Текстийг яриа болгохыг сонгох, өөрчлөх</translation>
+<translation id="6636588250634969791">Үргэлжлүүлэхээсээ өмнө SIM карт оруулна уу</translation>
 <translation id="6639554308659482635">SQLite санах ой</translation>
 <translation id="6641138807883536517">Санамсаргүй үүсгэсэн аюулгүй байдлын модулийн нууц үг боломжгүй байна. Үйлдвэрийн тохиргоонд буцааж оруулсны дараа энэ нь хэвийн үзэгдэл юм.</translation>
 <translation id="6642720633335369752">Нээлттэй бүх аппын цонхыг харахын тулд доороос дээш шудраад удаан дарна уу.</translation>
@@ -5178,6 +5185,7 @@
 <translation id="7303900363563182677">Энэ сайтыг түр санах ойд хуулсан текст, зураг харахыг хориглосон</translation>
 <translation id="7305123176580523628">USB хэвлэгч холбогдсон байна</translation>
 <translation id="730515362922783851">Суурин сүлжээ болон интернэтээр ямар ч төхөөрөмж ашиглан мэдээлэл солилцоорой</translation>
+<translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />-г <ph name="USB_VM_NAME" />-д холбохын тулд Тохиргоог нээнэ үү</translation>
 <translation id="7307129035224081534">Түр зогсоосон</translation>
 <translation id="7308002049209013926">Шинэ апп, үйл ажиллагаанд хурдан хандахын тулд Эхлүүлэгчийг ашиглана уу. Энд гараар очихын тулд  Alt + Shift + L-г дарна уу.</translation>
 <translation id="7309257895202129721">Хяналтыг харуул</translation>
@@ -6795,6 +6803,7 @@
 <translation id="947329552760389097">&amp;Элементүүдийг шалгах</translation>
 <translation id="951991426597076286">Татгалзах</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
+<translation id="956444359529327203">Зочны цонхыг хаах</translation>
 <translation id="956500788634395331">Таныг аюултай байж болзошгүй өргөтгөлөөс хамгаалж байна</translation>
 <translation id="957960681186851048">Энэ сайт автоматаар олон файл татахаар оролдсон</translation>
 <translation id="9580706199804957">Google-н үйлчилгээнд холбогдож чадсангүй</translation>

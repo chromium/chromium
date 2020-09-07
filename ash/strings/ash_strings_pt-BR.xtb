@@ -116,6 +116,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2127372758936585790">Carregador de baixa potência</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
 <translation id="2144487987174258011">Reinicie para atualizar o Adobe Flash Player</translation>
+<translation id="2180011262286780504">A captura de tela foi desativada pelo administrador.</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222338659135520253">É necessário fazer login</translation>
@@ -239,6 +240,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3428447136709161042">Desconectar da rede <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Deslize da direita para voltar</translation>
 <translation id="343571671045587506">Editar lembrete</translation>
+<translation id="3435967511775410570">Impressão digital reconhecida</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">Sua conexão foi alterada para uma rede mais segura</translation>
 <translation id="3465223694362104965">Outro teclado foi conectado a este dispositivo desde seu último acesso. Verifique se esse teclado é confiável antes de usá-lo.</translation>
@@ -601,6 +603,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7654687942625752712">Pressione as duas teclas de volumes e as mantenha pressionadas por cinco segundos para desativar o feedback falado.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Autenticação com impressão digital</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}one{# notificação}other{# notificações}}</translation>
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
@@ -618,6 +621,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7886277072580235377">Sua sessão de Internet será limpa quando você sair. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar um e-mail</translation>
 <translation id="7897375687985782769">Você pressionou o atalho de teclado para a rotação da tela. Gostaria de girar a tela?</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">O administrador desta conta bloqueou o login múltiplo.</translation>
 <translation id="7933084174919150729">O Google Assistente só está disponível para o perfil principal.</translation>
 <translation id="79341161159229895">Conta gerenciada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
@@ -628,6 +632,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7984197416080286869">Muitas tentativas de usar impressão digital</translation>
 <translation id="7994370417837006925">Login múltiplo</translation>
+<translation id="7995804128062002838">Falha na captura de tela</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8029629653277878342">O PIN ou a senha são necessários para aumentar a segurança</translation>
@@ -715,6 +720,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="8843682306134542540">Alternar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível verificar seu PIN ou sua senha. Observação: se você mudou a senha recentemente, use a antiga. A nova senha será aplicada depois que você sair.</translation>
+<translation id="885387440427703469">Captura de tela desativada</translation>
 <translation id="8870509716567206129">O app não é compatível com a divisão de tela.</translation>
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>

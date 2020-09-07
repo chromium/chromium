@@ -116,6 +116,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2127372758936585790">Punjač male snage</translation>
 <translation id="2135456203358955318">Usidreno povećalo</translation>
 <translation id="2144487987174258011">Ponovno pokrenite da biste ažurirali Adobe Flash Player</translation>
+<translation id="2180011262286780504">Administrator je onemogućio snimanje zaslona.</translation>
 <translation id="2208323208084708176">Način jedinstvene radne površine</translation>
 <translation id="2220572644011485463">PIN ili zaporka</translation>
 <translation id="2222338659135520253">Obavezna prijava</translation>
@@ -239,6 +240,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3428447136709161042">Želite li prekinuti vezu s mrežom <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Prijeđite prstom zdesna da biste se vratili</translation>
 <translation id="343571671045587506">Uređivanje podsjetnika</translation>
+<translation id="3435967511775410570">Otisak prsta je prepoznat</translation>
 <translation id="3445925074670675829">USB-C uređaj</translation>
 <translation id="3454224730401036106">Sada ste povezani sa sigurnijom mrežom</translation>
 <translation id="3465223694362104965">Još je jedna tipkovnica povezana s ovim uređajem otkad ste se posljednji put prijavili. Provjerite je li riječ o pouzdanoj tipkovnici prije nego što je upotrijebite.</translation>
@@ -600,6 +602,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7654687942625752712">Pritisnite i zadržite tipke za glasnoću pet sekundi da biste onemogućili govorne povratne informacije.</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Autentifikacija otiskom prsta</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obavijest}one{# obavijest}few{# obavijesti}other{# obavijesti}}</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7749443890790263709">Dosegnut je maksimalan broj radnih površina.</translation>
@@ -617,6 +620,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7886277072580235377">Vaša će se internetska sesija izbrisati kada se odjavite. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Pošalji e-poruku</translation>
 <translation id="7897375687985782769">Pritisnuli ste tipkovni prečac za zakretanje zaslona. Želite li zakrenuti zaslon?</translation>
+<translation id="7901405293566323524">Telefonsko središte</translation>
 <translation id="7904094684485781019">Administrator ovog računa onemogućio je višestruku prijavu.</translation>
 <translation id="7933084174919150729">Google asistent dostupan je samo za primarni profil.</translation>
 <translation id="79341161159229895">Računom upravljaju <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
@@ -627,6 +631,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7984197416080286869">Previše pokušaja otključavanja otiskom prsta</translation>
 <translation id="7994370417837006925">Višestruka prijava</translation>
+<translation id="7995804128062002838">Snimanje zaslona nije uspjelo</translation>
 <translation id="8000066093800657092">Nema mreže</translation>
 <translation id="8004512796067398576">Pomak unaprijed</translation>
 <translation id="8029629653277878342">Radi dodatne sigurnosti potrebni su PIN ili zaporka</translation>
@@ -714,6 +719,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8843682306134542540">Prebacivanje zaključavanja rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pretraživanje + Esc</translation>
 <translation id="8853703225951107899">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Napomena: ako ste nedavno promijenili zaporku, upotrijebite staru zaporku. Vaša nova zaporka primijenit će se nakon što se odjavite.</translation>
+<translation id="885387440427703469">Snimanje zaslona onemogućeno</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
 <translation id="8874184842967597500">Niste povezani</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>

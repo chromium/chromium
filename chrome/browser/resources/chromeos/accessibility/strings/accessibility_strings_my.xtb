@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">ခရမ်းပြာနီ မနုမရင့်</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">ခေါက်ထား</translation>
+<translation id="311015743332597320">ညာဘက်သို့ လက်လေးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="3112457281078985179">ChromeVox ကို အဖွင့်အပိတ်ပြုလုပ်ရန် Control+Alt+Z ကို အသုံးပြုပါ။</translation>
 <translation id="3131002934070407451">အောက်ပါအဖြစ် နံပါတ်များကို ဖတ်ရန်-</translation>
 <translation id="3134461040845705080">ဖတ်ရန်သာ</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> ကို ဖြတ်ယူပါ။</translation>
 <translation id="3549680091535286226">စကားသံကို ခဏရပ်ရန် လက် ၂ ချောင်းဖြင့် တို့ပါ</translation>
 <translation id="3564729643041517261">လက်ရှိ မျက်နှာပြင်ပြသမှုပုံစံသည် ဘေးချင်းကပ်ဖြစ်သည်</translation>
-<translation id="3587482841069643663">အားလုံး</translation>
 <translation id="3589661172894441357">ခက်ဆစ်</translation>
 <translation id="3591784666823501596">တော်ဝင်ပြာ</translation>
 <translation id="3594207934078151302">ပင်လယ်အစိမ်း မနုမရင့်</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">စာသား၊ URL ရိုက်ထည့်မှု တည်းဖြတ်ရန်</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ယခင် ရေဒီယို ခလုတ်</translation>
-<translation id="7701040980221191251">မရှိ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">နောက်ထပ် ပူးပေါင်းအကွက် မရှိပါ</translation>
 <translation id="772146615414628379">ဂုဏ်ယူပါသည်။ ChromeVox သုံးရန်အတွက် သိထားသင့်သည့်အရာများကို အောင်မြင်စွာ လေ့လာသင်ယူပြီးပါပြီ။ Search+Period ကိုနှိပ်၍ ChromeVox ကွန်မန်းမီနူးကို အချိန်မရွေး ဖွင့်နိုင်ပါသည်။ ChromeVox နှင့် Chrome OS အကြောင်း ပိုမိုလေ့လာရန် အောက်ပါဆောင်းပါးများကို ဝင်ကြည့်ပါ။
@@ -903,6 +902,7 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" /> ဒေါင်းလုဒ် ရပ်ထားသည်</translation>
 <translation id="8129445297241948503">အပေါ်တွင် ဆဲလ် မရှိပါ</translation>
 <translation id="8138880386467279117">ထိပါ</translation>
+<translation id="8173092779156526980">ဘယ်ဘက်သို့ လက်လေးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{မျဉ်းသားမှု}other{# မျဉ်းသားမှုများ}}</translation>
 <translation id="8184828902145951186">လိုင်း</translation>
 <translation id="8186185314313222077">မျက်နှာပြင်အပြည့် ကစားကြည့်ပါ</translation>

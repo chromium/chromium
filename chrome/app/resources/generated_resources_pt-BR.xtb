@@ -511,6 +511,7 @@
 <translation id="158849752021629804">Rede doméstica ausente</translation>
 <translation id="1588870296199743671">Abrir link com...</translation>
 <translation id="1589055389569595240">Mostrar ortografia e gramática</translation>
+<translation id="1591679663873027990">Conceder permissão ao Parallels Desktop para acessar dispositivos USB. O Parallels Desktop não se lembrará de um dispositivo USB depois que ele for removido.</translation>
 <translation id="1593594475886691512">Formatando...</translation>
 <translation id="159359590073980872">Cache de imagem</translation>
 <translation id="1593926297800505364">Salvar forma de pagamento</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">Erro ao ativar o compartilhamento. Verifique suas credenciais e tente novamente.</translation>
 <translation id="1956050014111002555">O arquivo continha muitos certificados e nenhum deles foi importado:</translation>
 <translation id="1956390763342388273">Essa ação fará o upload de todos os arquivos de "<ph name="FOLDER_PATH" />". Faça isso apenas se você confiar no site.</translation>
+<translation id="196040970347962278">É necessário ter uma conexão de Internet</translation>
 <translation id="1962233722219655970">Esta página usa um aplicativo de cliente nativo que não funciona em seu computador.</translation>
 <translation id="1963227389609234879">Remover tudo</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
@@ -1865,6 +1867,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="321834671654278338">Desinstalador do Linux</translation>
 <translation id="3220586366024592812">Houve uma falha no processo de conexão de <ph name="CLOUD_PRINT_NAME" />. Quer reiniciá-lo?</translation>
 <translation id="3222066309010235055">Pré-processar: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Conectar à VM <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Botão "Redefinir"</translation>
 <translation id="3225084153129302039">Avatar roxo padrão</translation>
 <translation id="3225319735946384299">Assinatura do código</translation>
@@ -1877,6 +1880,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3246107497225150582">{0,plural, =1{Atualize o dispositivo em 1 dia}one{Atualize o dispositivo em # dia}other{Atualize o dispositivo em # dias}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Erro de rede</translation>
 <translation id="3248902735035392926">A segurança é importante. Aproveite e <ph name="BEGIN_LINK" />verifique suas extensões agora<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">Fechar navegação anônima</translation>
 <translation id="3251759466064201842">&lt;Não faz parte do certificado&gt;</translation>
 <translation id="3253225298092156258">Indisponível</translation>
 <translation id="3253448572569133955">Conta desconhecida</translation>
@@ -2117,6 +2121,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3527085408025491307">Pasta</translation>
 <translation id="3528498924003805721">Alvos dos atalhos</translation>
 <translation id="3532273508346491126">Gerenciamento de sincronização</translation>
+<translation id="3532521178906420528">Conectando à rede…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Áudio desativado</translation>
 <translation id="3537881477201137177">Você pode mudar isso mais tarde nas Configurações</translation>
 <translation id="3538066758857505094">Erro ao instalar o Linux. Tente novamente.</translation>
@@ -3126,6 +3131,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4750394297954878236">Sugestões</translation>
 <translation id="475088594373173692">Primeiro usuário</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
+<translation id="4752124003533492687">Abra as configurações para conectar o <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Parar/Recarregar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -4645,6 +4651,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> deseja acesso permanente a um certificado para autenticar-se no seu nome.</translation>
 <translation id="6635944431854494329">O proprietário pode controlar esse recurso em "Config. &gt; Avançado &gt; Enviar automaticamente dados de uso e diagnóstico ao Google".</translation>
 <translation id="6635956300022133031">Selecionar e personalizar as vozes da conversão de texto em voz</translation>
+<translation id="6636588250634969791">Para continuar, insira o chip</translation>
 <translation id="6639554308659482635">Memória SQLite</translation>
 <translation id="6641138807883536517">A senha do módulo de segurança gerada aleatoriamente não está disponível. Isso é normal após um Powerwash.</translation>
 <translation id="6642720633335369752">Para ver todas as janelas de apps abertos, deslize de baixo para cima e mantenha a tela pressionada.</translation>
@@ -5187,6 +5194,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7303900363563182677">Este site foi impedido de ver textos e imagens copiados para a área de transferência</translation>
 <translation id="7305123176580523628">Impressora USB conectada</translation>
 <translation id="730515362922783851">Trocar dados com qualquer dispositivo da rede local ou Internet</translation>
+<translation id="7306521477691455105">Abra as configurações para conectar o <ph name="USB_DEVICE_NAME" /> à VM <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Pausada</translation>
 <translation id="7308002049209013926">Use a tela de início para acessar rapidamente os novos apps e atividades. Para chegar aqui com o teclado, pressione Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Mostrar &amp;controles</translation>
@@ -6810,6 +6818,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="947329552760389097">&amp;Inspecionar elementos</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952992212772159698">Desativado</translation>
+<translation id="956444359529327203">Fechar modo de visitante</translation>
 <translation id="956500788634395331">Você tem proteção contra extensões possivelmente nocivas</translation>
 <translation id="957960681186851048">Este site tentou fazer o download de vários arquivos automaticamente</translation>
 <translation id="9580706199804957">Não foi possível conectar-se aos serviços do Google</translation>

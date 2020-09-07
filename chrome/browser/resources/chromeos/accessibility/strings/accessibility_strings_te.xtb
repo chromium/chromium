@@ -281,6 +281,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3103579948980282461">మధ్యస్థ ఊదా ఎరుపు</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">కుదించబడింది</translation>
+<translation id="311015743332597320">నాలుగు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
 <translation id="3112457281078985179">ChromeVoxని ఆన్ లేదా ఆఫ్ చేయడానికి, Control+Alt+Z ఉపయోగించండి.</translation>
 <translation id="3131002934070407451">సంఖ్యలను ఇలా చదవాలి:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -346,7 +347,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3549141990712742152"><ph name="TEXT" />ని కత్తిరించండి.</translation>
 <translation id="3549680091535286226">తాత్కాలికంగా ప్రసంగాన్ని ఆపడం కోసం 2 వేళ్లతో నొక్కండి</translation>
 <translation id="3564729643041517261">ప్రస్తుత ప్రదర్శన శైలి పక్కపక్కకు ఉంది</translation>
-<translation id="3587482841069643663">మొత్తం</translation>
 <translation id="3589661172894441357">పదకోశం</translation>
 <translation id="3591784666823501596">దివ్యమైన నీలం రంగు</translation>
 <translation id="3594207934078151302">మధ్యస్థ సముద్ర ఆకుపచ్చ</translation>
@@ -845,7 +845,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7684431668231950609">వచనం, URL నమోదును సవరించండి</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">మునుపటి రేడియో బటన్</translation>
-<translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">తర్వాత కాంబో పెట్టె లేదు</translation>
 <translation id="772146615414628379">అభినందనలు! ChromeVoxను ఉపయోగించడానికి అవసరమైన ముఖ్యమైన అంశాలను మీరు నేర్చుకున్నారు. మీరు 'Search+Period' నొక్కడం ద్వారా ChromeVox ఆదేశం మెనూను ఎప్పుడైనా తెరవవచ్చని గుర్తుంచుకోండి. ChromeVox, Chrome OS గురించి మరింత తెలుసుకోవడానికి, కింది కథనాలను సందర్శించండి.
@@ -904,6 +903,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="812886159861361726"><ph name="FILE_NAME" /> డౌన్‌లోడ్ ఆపివేయబడింది</translation>
 <translation id="8129445297241948503">పైన సెల్ లేదు</translation>
 <translation id="8138880386467279117">స్పర్శ</translation>
+<translation id="8173092779156526980">నాలుగు వేళ్లతో ఎడమవైపునకు స్వైప్ చేయండి</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{అండర్‌స్కోర్ గుర్తు}other{# అండర్‌స్కోర్ గుర్తులు}}</translation>
 <translation id="8184828902145951186">అడ్డు</translation>
 <translation id="8186185314313222077">పూర్తి స్క్రీన్‌ను టోగుల్ చేస్తుంది</translation>

@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Помірний фіолетово-червоний</translation>
 <translation id="3104705064753753826">вікно сповіщення</translation>
 <translation id="3109724472072898302">Згорнуто</translation>
+<translation id="311015743332597320">Проведіть чотирма пальцями праворуч</translation>
 <translation id="3112457281078985179">Щоб увімкнути чи вимкнути ChromeVox, натисніть комбінацію клавіш Control+Alt+Z.</translation>
 <translation id="3131002934070407451">Зачитувати числа як:</translation>
 <translation id="3134461040845705080">лише читання</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">вирізати <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Торкніться 2 пальцями, щоб тимчасово припинити озвучення</translation>
 <translation id="3564729643041517261">Поточний стиль дисплея – паралельний перегляд</translation>
-<translation id="3587482841069643663">Все</translation>
 <translation id="3589661172894441357">Глосарій</translation>
 <translation id="3591784666823501596">Королівський синій</translation>
 <translation id="3594207934078151302">Помірний зелене море</translation>
@@ -843,7 +843,6 @@
 <translation id="7684431668231950609">Редагування введеного тексту, URL-адреси</translation>
 <translation id="7685589220304187312">панель інструментів</translation>
 <translation id="7693840228159394336">Попередній перемикач</translation>
-<translation id="7701040980221191251">Немає</translation>
 <translation id="7701196182766842984">список автозавершення</translation>
 <translation id="7714340021005120797">Немає наступного поля зі списком</translation>
 <translation id="772146615414628379">Вітаємо! Ви дізналися про основні функції ChromeVox. Ви завжди можете відкрити командне меню ChromeVox, натиснувши клавішу пошуку й клавішу крапки. Щоб дізнатися більше про ChromeVox і ОС Chrome, перегляньте статті нижче.
@@ -902,6 +901,7 @@
 <translation id="812886159861361726">Завантаження файлу <ph name="FILE_NAME" /> припинено</translation>
 <translation id="8129445297241948503">Немає клітинки вище</translation>
 <translation id="8138880386467279117">Торкнутися</translation>
+<translation id="8173092779156526980">Проведіть чотирма пальцями ліворуч</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{підкреслення}one{# підкреслення}few{# підкреслення}many{# підкреслень}other{# underscores}}</translation>
 <translation id="8184828902145951186">рядок</translation>
 <translation id="8186185314313222077">увімкнути або вимкнути повноекранний режим</translation>

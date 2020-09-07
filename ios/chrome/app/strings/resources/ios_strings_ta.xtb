@@ -459,7 +459,7 @@
 <translation id="6187302354554850004">கடைசியாக ஒத்திசைத்தது: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">படிக்காதவை</translation>
 <translation id="6196207969502475924">குரல் தேடல்</translation>
-<translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} தாவலை மூடு}other{{COUNT} தாவல்களை மூடு}}</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} தாவலை மூடுக}other{{COUNT} தாவல்களை மூடுக}}</translation>
 <translation id="6219688215832490856">எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="6254066287920239840">உலாவியில் திறப்பதற்குப் பதிலாக இணைப்புகளைப் பயன்பாட்டில் திற.</translation>
 <translation id="6255097610484507482">கடன் அட்டையைத் திருத்துக</translation>

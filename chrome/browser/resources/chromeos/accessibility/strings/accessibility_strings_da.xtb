@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Rødviolet</translation>
 <translation id="3104705064753753826">advar.dlg</translation>
 <translation id="3109724472072898302">Skjult</translation>
+<translation id="311015743332597320">Stryg til højre med fire fingre</translation>
 <translation id="3112457281078985179">Tryk på Ctrl+Alt+Z for at slå ChromeVox til eller fra.</translation>
 <translation id="3131002934070407451">Læs tal som:</translation>
 <translation id="3134461040845705080">skrv.bsk</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">klip <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Tryk med to fingre for midlertidigt at stoppe tale</translation>
 <translation id="3564729643041517261">Det aktuelle visningsformat er side om side</translation>
-<translation id="3587482841069643663">Alle</translation>
 <translation id="3589661172894441357">Ordliste</translation>
 <translation id="3591784666823501596">Kongeblå</translation>
 <translation id="3594207934078151302">Mellemlys havgrøn</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">Rediger tekst, webadresseindtastning</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Forrige alternativknap</translation>
-<translation id="7701040980221191251">Ingen</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Der er ikke flere kombifelter</translation>
 <translation id="772146615414628379">Tillykke! Nu har du lært det vigtigste om ChromeVox. Husk, at du til enhver tid kan åbne ChromeVox-kommandomenuen ved at trykke på Søg+punktum. Du kan få flere oplysninger om ChromeVox og Chrome OS i følgende artikler.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726">Download af <ph name="FILE_NAME" /> er stoppet</translation>
 <translation id="8129445297241948503">Der er ingen celle ovenfor</translation>
 <translation id="8138880386467279117">Berøring</translation>
+<translation id="8173092779156526980">Stryg til venstre med fire fingre</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understregning}one{# understregninger}other{# understregninger}}</translation>
 <translation id="8184828902145951186">rk</translation>
 <translation id="8186185314313222077">slå fuld skærm til eller fra</translation>

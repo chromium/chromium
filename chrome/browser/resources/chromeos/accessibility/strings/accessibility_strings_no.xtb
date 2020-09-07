@@ -280,6 +280,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3103579948980282461">Middels lillarød</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Skjult</translation>
+<translation id="311015743332597320">Sveip fire fingre til høyre</translation>
 <translation id="3112457281078985179">For å slå ChromeVox på eller av, trykk på Control+Alt+Z.</translation>
 <translation id="3131002934070407451">Les tall som:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -345,7 +346,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3549141990712742152">klipp ut <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Trykk med to fingre for å stoppe høytlesningen midlertidig</translation>
 <translation id="3564729643041517261">Nåværende visningsstil er side om side</translation>
-<translation id="3587482841069643663">Alle</translation>
 <translation id="3589661172894441357">Ordliste</translation>
 <translation id="3591784666823501596">Kongeblå</translation>
 <translation id="3594207934078151302">Middels sjøgrønn</translation>
@@ -844,7 +844,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7684431668231950609">Rediger tekst – nettadresseoppføring</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Forrige alternativknapp</translation>
-<translation id="7701040980221191251">Ingen</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Det finnes ingen flere kombinasjonsfelt</translation>
 <translation id="772146615414628379">Gratulerer! Du har lært det grunnleggende som trengs for å bruke ChromeVox. Husk at du kan åpne kommandomenyen i ChromeVox når som helst ved å trykke på Søk+punktum. For å finne ut enda mer om ChromeVox og Chrome OS, les artiklene nedenfor.
@@ -903,6 +902,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="812886159861361726">Nedlastingen av <ph name="FILE_NAME" /> er stanset</translation>
 <translation id="8129445297241948503">Det finnes ingen celler ovenfor</translation>
 <translation id="8138880386467279117">Berøring</translation>
+<translation id="8173092779156526980">Sveip fire fingre til venstre</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understrek}other{# understreker}}</translation>
 <translation id="8184828902145951186">rad</translation>
 <translation id="8186185314313222077">slå av/på fullskjerm</translation>

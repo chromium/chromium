@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Średni fioletowoczerwony</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Zwinięty</translation>
+<translation id="311015743332597320">Przesuń 4 palcami w prawo</translation>
 <translation id="3112457281078985179">Aby włączyć lub wyłączyć czytnik ChromeVox, naciśnij Ctrl + Alt + Z.</translation>
 <translation id="3131002934070407451">Odczytuj numery jako:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">wytnij <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Kliknij dwoma palcami, by tymczasowo wyłączyć głos</translation>
 <translation id="3564729643041517261">Bieżący styl wyświetlania to Obok siebie</translation>
-<translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3589661172894441357">Słownik</translation>
 <translation id="3591784666823501596">Królewski niebieski</translation>
 <translation id="3594207934078151302">Średni zielony morski</translation>
@@ -843,7 +843,6 @@
 <translation id="7684431668231950609">Edytowanie tekstu, podanie URL-a</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Poprzedni przycisk opcji</translation>
-<translation id="7701040980221191251">Brak</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Nie ma następnego pola wyboru</translation>
 <translation id="772146615414628379">Gratulacje! Znasz już podstawy korzystania z czytnika ChromeVox. Pamiętaj, że menu poleceń ChromeVoxa możesz otworzyć w każdej chwili, naciskając Wyszukaj + kropkę. Aby dowiedzieć się więcej o czytniku ChromeVox i systemie operacyjnym Chrome, przeczytaj poniższe artykuły.
@@ -902,6 +901,7 @@
 <translation id="812886159861361726">Zatrzymano pobieranie pliku <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nie ma komórki powyżej</translation>
 <translation id="8138880386467279117">Kliknij</translation>
+<translation id="8173092779156526980">Przesuń 4 palcami w lewo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podkreślenie}few{# znaki podkreślenia}many{# znaków podkreślenia}other{# underscores}}</translation>
 <translation id="8184828902145951186">wiersz</translation>
 <translation id="8186185314313222077">przełącz pełny ekran</translation>

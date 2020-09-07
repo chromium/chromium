@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">મધ્યમ જાંબુડિયો લાલ</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">સંકુચિત</translation>
+<translation id="311015743332597320">ચાર આંગળીઓ વડે જમણે સ્વાઇપ કરો</translation>
 <translation id="3112457281078985179">ChromeVox ને ચાલુ કે બંધ કરવા માટે, Control+Alt+Z નો ઉપયોગ કરો.</translation>
 <translation id="3131002934070407451">નંબરને આ તરીકે વાંચો:</translation>
 <translation id="3134461040845705080">ફક્ત વાંચવા માટે</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> કાપો.</translation>
 <translation id="3549680091535286226">હંગામી રૂપે સ્પીચને રોકવા માટે 2 આંગળીઓથી ટૅપ કરો</translation>
 <translation id="3564729643041517261">વર્તમાન ડિસ્પ્લે શૈલી 'સાથેસાથે' છે</translation>
-<translation id="3587482841069643663">બધા</translation>
 <translation id="3589661172894441357">શબ્દાવલી</translation>
 <translation id="3591784666823501596">રૉયલ બ્લૂ</translation>
 <translation id="3594207934078151302">મધ્યમ દરિયાઈ લીલો</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">ટેક્સ્ટ, URL એન્ટ્રીમાં ફેરફાર કરો</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">પાછલું રેડિયો બટન</translation>
-<translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">કોઈ આગલું કૉમ્બો બૉક્સ નથી</translation>
 <translation id="772146615414628379">અભિનંદન! તમે ChromeVoxનો સફળતાપૂર્વક ઉપયોગ કરવા માટેની જરૂરી વસ્તુઓ શીખી લીધી છે. યાદ રાખો કે તમે Search+Period દબાવીને કોઈપણ સમયે ChromeVox આદેશ મેનૂ ખોલી શકો છો. ChromeVox અને Chrome OS વિશે હજી વધુ જાણવા માટે, નીચે આપેલા લેખો વાંચો.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" />નું ડાઉનલોડ રોક્યું</translation>
 <translation id="8129445297241948503">ઉપર કોઈ સેલ નથી</translation>
 <translation id="8138880386467279117">ટચ કરો</translation>
+<translation id="8173092779156526980">ચાર આંગળીઓ વડે ડાબે સ્વાઇપ કરો</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{અંડરસ્કોર}one{# અંડરસ્કોર}other{# અંડરસ્કોર}}</translation>
 <translation id="8184828902145951186">પંક્તિ</translation>
 <translation id="8186185314313222077">પૂર્ણ સ્ક્રીન ટોગલ કરો</translation>

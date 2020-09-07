@@ -511,6 +511,7 @@
 <translation id="158849752021629804">Heimanet nauðsynlegt</translation>
 <translation id="1588870296199743671">Opna tengil með...</translation>
 <translation id="1589055389569595240">Sýna stafsetningu og málfræði</translation>
+<translation id="1591679663873027990">Veita Parallels Desktop aðgang að USB-tækjum. Parallels Desktop man ekki eftir USB- tæki þegar það hefur verið fjarlægt.</translation>
 <translation id="1593594475886691512">Sníður...</translation>
 <translation id="159359590073980872">Skyndiminni mynda</translation>
 <translation id="1593926297800505364">Vista greiðslumáta</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">Villa við að tengja deilt efni. Athugaðu innskráningarupplýsingarnar og reyndu aftur.</translation>
 <translation id="1956050014111002555">Skráin inniheldur mörg vottorð og engin þeirra voru flutt inn:</translation>
 <translation id="1956390763342388273">Öllum skrám í „<ph name="FOLDER_PATH" />“ verður hlaðið upp. Gerðu þetta aðeins ef þú treystir vefsvæðinu.</translation>
+<translation id="196040970347962278">Settu upp internettengingu fyrst</translation>
 <translation id="1962233722219655970">Þessi síða notast við sérforritað forrit sem virkar ekki í tölvunni þinni.</translation>
 <translation id="1963227389609234879">Fjarlægja allt</translation>
 <translation id="1963976881984600709">Hefðbundin vörn</translation>
@@ -1865,6 +1867,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="321834671654278338">Linux-fjarlægingarforrit</translation>
 <translation id="3220586366024592812">Tengiferli <ph name="CLOUD_PRINT_NAME" /> hrundi. Endurræsa?</translation>
 <translation id="3222066309010235055">Forteikna: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Tengjast <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Hnappur til að endurstilla</translation>
 <translation id="3225084153129302039">Sjálfgefin fjólublá notandamynd</translation>
 <translation id="3225319735946384299">Kóðaundirritun</translation>
@@ -1877,6 +1880,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3246107497225150582">{0,plural, =1{Uppfærðu tækið innan eins dags}one{Uppfærðu tækið innan # dags}other{Uppfærðu tækið innan # daga}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – netvilla</translation>
 <translation id="3248902735035392926">Öryggi skiptir máli. Gefðu þér tíma til að <ph name="BEGIN_LINK" />athuga með viðbæturnar þínar núna<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">Loka huliðsgluggum</translation>
 <translation id="3251759466064201842">&lt;Ekki hluti af vottorði&gt;</translation>
 <translation id="3253225298092156258">Ekki tiltækt</translation>
 <translation id="3253448572569133955">Óþekktur reikningur</translation>
@@ -2116,6 +2120,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3528498924003805721">Áfangastaðir flýtileiða</translation>
 <translation id="3532273508346491126">Stjórnun samstillinga</translation>
+<translation id="3532521178906420528">Kemur á nettengingu…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – slökkt á hljóði</translation>
 <translation id="3537881477201137177">Hægt er að breyta þessu síðar í stillingum</translation>
 <translation id="3538066758857505094">Villa við að fjarlægja Linux. Reyndu aftur.</translation>
@@ -3125,6 +3130,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4750394297954878236">Tillögur</translation>
 <translation id="475088594373173692">Fyrsti notandi</translation>
 <translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
+<translation id="4752124003533492687">Opnaðu stillingarnar til að tengja <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Stöðva/endurhlaða</translation>
 <translation id="4756388243121344051">Ferill</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
@@ -4642,6 +4648,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> vill varanlegan aðgang að vottorði til að sannvotta sig sjálft fyrir þína hönd.</translation>
 <translation id="6635944431854494329">Eigandinn getur stjórnað þessum eiginleika í Stillingar &gt; Ítarlegt &gt; Senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
 <translation id="6635956300022133031">Velja og sérstilla raddir talgervla</translation>
+<translation id="6636588250634969791">Settu SIM-kort í áður en þú heldur áfram</translation>
 <translation id="6639554308659482635">SQLite-minni</translation>
 <translation id="6641138807883536517">Aðgangsorð öruggrar einingar sem útbúið var af handahófi er ekki tiltækt. Þetta er eðlilegt eftir djúphreinsun.</translation>
 <translation id="6642720633335369752">Strjúktu upp frá neðsta hluta skjásins og haltu fingrinum niðri til að sjá alla opna forritaglugga.</translation>
@@ -5184,6 +5191,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7303900363563182677">Komið var í veg fyrir að þetta vefsvæði sjái texta og myndir sem þú afritar á klippiborðið</translation>
 <translation id="7305123176580523628">USB-prentari er tengdur</translation>
 <translation id="730515362922783851">Skiptast á gögnum við hvaða tæki sem er á staðarneti eða internetinu</translation>
+<translation id="7306521477691455105">Opnaðu stillingarnar til að tengja <ph name="USB_DEVICE_NAME" /> við <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Hlé</translation>
 <translation id="7308002049209013926">Notaðu ræsiforritið til að fá ný forrit og aðgerðir með hraði. Ýttu á Alt + Shift + L til að gera þetta með lyklaborðinu.</translation>
 <translation id="7309257895202129721">Sýna stýringar</translation>
@@ -6806,6 +6814,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="947329552760389097">&amp;Kanna einingar</translation>
 <translation id="951991426597076286">Hafna</translation>
 <translation id="952992212772159698">Ekki virkjuð</translation>
+<translation id="956444359529327203">Loka gesti</translation>
 <translation id="956500788634395331">Tækið er varið gegn viðbótum sem gætu verið hættulegar</translation>
 <translation id="957960681186851048">Þetta vefsvæði reyndi að sækja margar skrár sjálfkrafa</translation>
 <translation id="9580706199804957">Ekki tókst að tengjast þjónustu Google</translation>

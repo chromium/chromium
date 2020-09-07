@@ -116,6 +116,7 @@
 <translation id="2127372758936585790">Бага эрчим хүчээр цэнэглэгч</translation>
 <translation id="2135456203358955318">Суурилуулсан томруулагч</translation>
 <translation id="2144487987174258011">Adobe Flash Player-г шинэчлэхийн тулд дахин эхлүүлнэ үү</translation>
+<translation id="2180011262286780504">Дэлгэцийн зураг авах боломжийг танай администратор идэвхгүй болгосон байна.</translation>
 <translation id="2208323208084708176">Компьютерийн нэгдмэл горим</translation>
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="2222338659135520253">Нэвтрэх шаардлагатай</translation>
@@ -239,6 +240,7 @@
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-с салгах</translation>
 <translation id="3430396595145920809">Буцахын тулд баруун талаас шударна уу</translation>
 <translation id="343571671045587506">Сануулагчийг засах</translation>
+<translation id="3435967511775410570">Хурууны хээг таньсан</translation>
 <translation id="3445925074670675829">USB-C төхөөрөмж</translation>
 <translation id="3454224730401036106">Таны холболтыг илүү аюулгүй сүлжээнд сэлгэсэн</translation>
 <translation id="3465223694362104965">Таныг сүүлд нэвтэрснээс хойш энэ төхөөрөмжид өөр гар холбогдсон байна. Энэ гарыг ашиглахаасаа өмнө та итгэж болох эсэхээ шалгана уу.</translation>
@@ -601,6 +603,7 @@
 <translation id="7654687942625752712">Хэлсэн саналыг идэвхгүй болгохын тулд дууны түвшингийн хоёр товчлуурыг дараад хүлээнэ үү.</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Хурууны хээгээр баталгаажуулах</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 мэдэгдэл}other{# мэдэгдэл}}</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
@@ -618,6 +621,7 @@
 <translation id="7886277072580235377">Таныг гарсны дараа таны интернэтийн харилцан үйлдлийг устгана. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Имэйл илгээх</translation>
 <translation id="7897375687985782769">Та дэлгэц эргүүлэх товчлуурын шууд холбоосыг дарсан байна. Дэлгэцийг эргүүлэх үү?</translation>
+<translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>
 <translation id="7933084174919150729">Google Туслах зөвхөн үндсэн профайлд боломжтой.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> болон <ph name="SECOND_PARENT_EMAIL" />-н удирддаг бүртгэл</translation>
@@ -628,6 +632,7 @@
 <translation id="7982789257301363584">Сүлжээ</translation>
 <translation id="7984197416080286869">Хурууны хээг хэт олон удаа амжилтгүй орууллаа</translation>
 <translation id="7994370417837006925">Олон тооны нэвтрэлт</translation>
+<translation id="7995804128062002838">Дэлгэцийн зургийг авч чадсангүй</translation>
 <translation id="8000066093800657092">Ямар ч сүлжээ алга байна</translation>
 <translation id="8004512796067398576">Тоон өсөлт</translation>
 <translation id="8029629653277878342">Нэмэлт аюулгүй байдлын үүднээс ПИН эсвэл нууц үг шаардлагатай</translation>
@@ -716,6 +721,7 @@
 <translation id="8843682306134542540">Эргүүлэлтийн түгжээг унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
+<translation id="885387440427703469">Дэлгэцийн зураг авах горим идэвхгүй болсон</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8877788021141246043">Сануулагч тохируулах</translation>

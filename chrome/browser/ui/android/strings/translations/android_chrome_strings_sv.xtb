@@ -582,7 +582,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5665379678064389456">Skapa händelse i <ph name="APP_NAME" /></translation>
 <translation id="5668404140385795438">Åsidosätt en webbplats begäran att hindra inzoomning</translation>
-<translation id="568275469169136466">För tillfällig inloggning</translation>
 <translation id="5683547024293500885">Chrome kan inte söka efter uppdateringar</translation>
 <translation id="5686790454216892815">Filnamnet är för långt</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> använder <ph name="LANGUAGE" /> efter omstart.</translation>
@@ -1043,7 +1042,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9100610230175265781">Lösenfras krävs</translation>
 <translation id="9102803872260866941">Fliken Förhandsgranskning har öppnats</translation>
 <translation id="9104217018994036254">Lista över enheter som fliken kan delas med.</translation>
-<translation id="9104402662006063371">Använd inkognitoläge</translation>
 <translation id="9108312223223904744">Telefonen som säkerhetsnyckel</translation>
 <translation id="9108808586816295166">Säker DNS kanske inte alltid är tillgänglig</translation>
 <translation id="9133397713400217035">Utforska offline</translation>

@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Srednja ljubičastocrvena</translation>
 <translation id="3104705064753753826">dij upoz</translation>
 <translation id="3109724472072898302">Sažeto</translation>
+<translation id="311015743332597320">Prijeđite s četiri prsta udesno</translation>
 <translation id="3112457281078985179">ChromeVox možete uključiti ili isključiti pritiskom tipki Control + Alt + Z.</translation>
 <translation id="3131002934070407451">Čitaj brojeve kao:</translation>
 <translation id="3134461040845705080">samozačitanje</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">Izreži <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Dodirnite s dva prsta da biste privremeno zaustavili govor</translation>
 <translation id="3564729643041517261">Trenutačni je stil prikaza usporedan</translation>
-<translation id="3587482841069643663">Sve</translation>
 <translation id="3589661172894441357">Pojmovnik</translation>
 <translation id="3591784666823501596">Kraljevskoplava</translation>
 <translation id="3594207934078151302">Srednja morskozelena</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">Uređivanje teksta, unos URL-a</translation>
 <translation id="7685589220304187312">alttrk</translation>
 <translation id="7693840228159394336">Prethodni izborni gumb</translation>
-<translation id="7701040980221191251">Nema ih</translation>
 <translation id="7701196182766842984">autopop</translation>
 <translation id="7714340021005120797">Nema sljedećeg kombiniranog okvira</translation>
 <translation id="772146615414628379">Čestitamo! Svladali ste osnove potrebne za uspješnu upotrebu ChromeVoxa. Zapamtite da ChromeVoxov izbornik za naredbe možete otvoriti u bilo kojem trenutku tako što ćete pritisnuti tipku za pretraživanje i točku. Još više o ChromeVoxu i OS-u Chrome možete saznati u sljedećim člancima.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726">Zaustavljeno je preuzimanje datoteke <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Iznad nema ćelije</translation>
 <translation id="8138880386467279117">Dodir</translation>
+<translation id="8173092779156526980">Prijeđite s četiri prsta ulijevo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{donja crta}one{# donja crta}few{# donje crte}other{# donjih crta}}</translation>
 <translation id="8184828902145951186">redak</translation>
 <translation id="8186185314313222077">prebacivanje na cijeli zaslon</translation>

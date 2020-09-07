@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Vermell violaci mitjà</translation>
 <translation id="3104705064753753826">diàleg d'alerta</translation>
 <translation id="3109724472072898302">Reduït</translation>
+<translation id="311015743332597320">Fes lliscar quatre dits cap a la dreta</translation>
 <translation id="3112457281078985179">Per activar o desactivar ChromeVox, fes servir Control+Alt+Z.</translation>
 <translation id="3131002934070407451">Llegeix números com a:</translation>
 <translation id="3134461040845705080">només de lectura</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">retalla <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Toca amb 2 dits per aturar temporalment la veu</translation>
 <translation id="3564729643041517261">L'estil de pantalla actual és paral·lel</translation>
-<translation id="3587482841069643663">Tots</translation>
 <translation id="3589661172894441357">Glossari</translation>
 <translation id="3591784666823501596">Blau reial</translation>
 <translation id="3594207934078151302">Verd marí mitjà</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">Edició de text, entrada d'URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botó d'opció anterior</translation>
-<translation id="7701040980221191251">Cap</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">No hi ha cap quadre combinat més</translation>
 <translation id="772146615414628379">Enhorabona! Has après els aspectes bàsics per fer servir ChromeVox correctament. Recorda que pots obrir el menú d'ordres de ChromeVox en qualsevol moment prement Cerca+punt. Per obtenir encara més informació sobre ChromeVox i Chrome OS, consulta els articles següents.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726">S'ha aturat la baixada del fitxer <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No hi ha cap cel·la més amunt</translation>
 <translation id="8138880386467279117">Tàctil</translation>
+<translation id="8173092779156526980">Fes lliscar quatre dits cap a l'esquerra</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ratlla baixa}other{# ratlles baixes}}</translation>
 <translation id="8184828902145951186">fila</translation>
 <translation id="8186185314313222077">activa la pantalla completa</translation>

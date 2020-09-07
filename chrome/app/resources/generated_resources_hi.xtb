@@ -894,7 +894,7 @@
 <translation id="2046702855113914483">रेमन</translation>
 <translation id="204706822916043810">वर्चुअल मशीन की जांच हो रही है</translation>
 <translation id="2048182445208425546">अपने नेटवर्क ट्रैफ़िक को ऐक्‍सेस करें</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> के डिवाइस के लिए, आस-पास शेयर करने की सेटिंग, '<ph name="DEVICE_NAME" />'.</translation>
+<translation id="2048243703055695889"><ph name="USER_EMAIL" /> के डिवाइस- '<ph name="DEVICE_NAME" />'के लिए, आस-पास शेयर करने की सेटिंग.</translation>
 <translation id="2048653237708779538">कार्रवाई उपलब्ध नहीं है</translation>
 <translation id="204914487372604757">शॉर्टकट बनाएं</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -4859,7 +4859,7 @@
 <translation id="6903907808598579934">समन्वयन चालू करें</translation>
 <translation id="6904344821472985372">फ़ाइल एक्सेस रद्द करें</translation>
 <translation id="6904655473976120856">बाहर निकलने के लिए ऐप्लिकेशन बटन दबाएं</translation>
-<translation id="6909422577741440844">क्या आप इस डिवाइस से, शेयर की गई फ़ाइल पाना चाहते हैं?</translation>
+<translation id="6909422577741440844">क्या आप इस डिवाइस से फ़ाइल पाना चाहते हैं?</translation>
 <translation id="6910211073230771657">हटाया गया</translation>
 <translation id="691024665142758461">एकाधिक फ़ाइलें डाउनलोड करें</translation>
 <translation id="691106080621596509">इससे वे सभी डेटा और कुकी मिट जाएंगे जिन्हें <ph name="SITE_GROUP_NAME" />, इसके तहत आने वाली साइटों, और इंस्टॉल किए गए ऐप्लिकेशन ने सेव किया है</translation>

@@ -511,6 +511,7 @@
 <translation id="158849752021629804">Benodig tuisnetwerk</translation>
 <translation id="1588870296199743671">Maak skakel oop met …</translation>
 <translation id="1589055389569595240">Wys spelling en grammatika</translation>
+<translation id="1591679663873027990">Gee Parallels Desktop toegang tot USB-toestelle. Parallels Desktop sal nie 'n USB-toestel onthou nadat dit verwyder is nie.</translation>
 <translation id="1593594475886691512">Formateer tans …</translation>
 <translation id="159359590073980872">Prentkas</translation>
 <translation id="1593926297800505364">Stoor betaalmetode</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">Kon nie deling monteer nie. Gaan asseblief jou eiebewyse na en probeer weer.</translation>
 <translation id="1956050014111002555">Die lêer bevat veelvuldige sertifikate, waarvan nie een ingevoer is nie:</translation>
 <translation id="1956390763342388273">Dit sal alle lêers van "<ph name="FOLDER_PATH" />" af oplaai. Doen dit net as jy die werf vertrou.</translation>
+<translation id="196040970347962278">Vestig eers 'n internetverbinding</translation>
 <translation id="1962233722219655970">Hierdie bladsy gebruik 'n plaaslike kliëntprogram wat nie op jou rekenaar werk nie.</translation>
 <translation id="1963227389609234879">Verwyder almal</translation>
 <translation id="1963976881984600709">Standaardbeskerming</translation>
@@ -1865,6 +1867,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="321834671654278338">Linux-deïnstalleerder</translation>
 <translation id="3220586366024592812">Die <ph name="CLOUD_PRINT_NAME" />-koppelingproses het omgeval. Herbegin?</translation>
 <translation id="3222066309010235055">Lewer vooraf: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Koppel aan <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Stel knoppie terug</translation>
 <translation id="3225084153129302039">Verstek- pers avatar</translation>
 <translation id="3225319735946384299">Kode-ondertekening</translation>
@@ -1877,6 +1880,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3246107497225150582">{0,plural, =1{Dateer toestel binne 'n dag op}other{Dateer toestel binne # dae op}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netwerkfout</translation>
 <translation id="3248902735035392926">Veiligheid is belangrik. Vat 'n oomblik om <ph name="BEGIN_LINK" />jou uitbreidings nou na te gaan<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">Maak incognito toe</translation>
 <translation id="3251759466064201842">&lt;Nie deel van sertifikaat nie&gt;</translation>
 <translation id="3253225298092156258">Nie beskikbaar nie</translation>
 <translation id="3253448572569133955">Onbekende rekening</translation>
@@ -2116,6 +2120,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3527085408025491307">Vouer</translation>
 <translation id="3528498924003805721">Kortpadteikens</translation>
 <translation id="3532273508346491126">Bestuur sinkronisering</translation>
+<translation id="3532521178906420528">Vestig tans netwerkverbinding …</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Oudio is gedemp</translation>
 <translation id="3537881477201137177">Dit kan later in Instellings gewysig word</translation>
 <translation id="3538066758857505094">Kon nie Linux deïnstalleer nie. Probeer asseblief weer.</translation>
@@ -3125,6 +3130,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4750394297954878236">Voorstelle</translation>
 <translation id="475088594373173692">Eerste gebruiker</translation>
 <translation id="4751476147751820511">Beweging- of ligsensors</translation>
+<translation id="4752124003533492687">Maak Instellings oop om <ph name="USB_DEVICE_NAME" /> te koppel</translation>
 <translation id="4756378406049221019">Stop/Herlaai</translation>
 <translation id="4756388243121344051">Geskiedenis</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
@@ -4643,6 +4649,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> wil permanente toegang hê tot 'n sertifikaat om hom namens jou te staaf.</translation>
 <translation id="6635944431854494329">Die eienaar kan hierdie kenmerk beheer vanaf Instellings &gt; Gevorderd &gt; Stuur diagnostiese en gebruiksdata outomaties na Google toe.</translation>
 <translation id="6635956300022133031">Kies en pasmaak teks-na-spraak-stemme</translation>
+<translation id="6636588250634969791">Sit SIM in voortdat jy voortgaan</translation>
 <translation id="6639554308659482635">SQLite-geheue</translation>
 <translation id="6641138807883536517">Die veiligemodule-wagwoord wat lukraak gegenereer is, is nie beskikbaar nie. Dit is normaal na 'n Powerwash.</translation>
 <translation id="6642720633335369752">Swiep op van die onderkant af en hou om alle oop programvensters te sien.</translation>
@@ -4861,7 +4868,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6903907808598579934">Skakel sinkronisering aan</translation>
 <translation id="6904344821472985372">Trek lêertoegang terug</translation>
 <translation id="6904655473976120856">Druk Program-knoppie om uit te gaan</translation>
-<translation id="6909422577741440844">Van hierdie toestel af ontvang?</translation>
+<translation id="6909422577741440844">Ontvang van hierdie toestel af?</translation>
 <translation id="6910211073230771657">Uitgevee</translation>
 <translation id="691024665142758461">Veelvuldige lêers aflaai</translation>
 <translation id="691106080621596509">Dit sal alle data en webkoekies uitvee wat deur <ph name="SITE_GROUP_NAME" />, enige werwe daaronder en die geïnstalleerde program daarvan geberg word</translation>
@@ -5185,6 +5192,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7303900363563182677">Hierdie werf is geblokkeer om teks en prente wat na die knipbord gekopieer is, te sien</translation>
 <translation id="7305123176580523628">USB-drukker is gekoppel</translation>
 <translation id="730515362922783851">Ruil data uit met enige toestel in die plaaslike netwerk of internet</translation>
+<translation id="7306521477691455105">Maak Instellings oop om <ph name="USB_DEVICE_NAME" /> aan <ph name="USB_VM_NAME" /> te koppel</translation>
 <translation id="7307129035224081534">Wag tans</translation>
 <translation id="7308002049209013926">Gebruik die lanseerder om vinnig na nuwe programme en aktiwiteite toe te gaan. Druk Alt + Shift + L om met die sleutelbord hierheen te kom.</translation>
 <translation id="7309257895202129721">Wys kontroles</translation>
@@ -6807,6 +6815,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="947329552760389097">&amp;Ondersoek elemente</translation>
 <translation id="951991426597076286">Weier</translation>
 <translation id="952992212772159698">Nie geaktiveer nie</translation>
+<translation id="956444359529327203">Maak gas toe</translation>
 <translation id="956500788634395331">Jy word teen potensieel skadelike uitbreidings beskerm</translation>
 <translation id="957960681186851048">Hierdie werf het probeer om veelvuldige lêers outomaties af te laai</translation>
 <translation id="9580706199804957">Kon nie aan Google-dienste koppel nie</translation>

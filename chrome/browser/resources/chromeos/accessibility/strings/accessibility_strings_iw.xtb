@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">אדום סגלגל בינוני</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">מכווץ</translation>
+<translation id="311015743332597320">החלקה ימינה עם ארבע אצבעות</translation>
 <translation id="3112457281078985179">‏כדי להפעיל או לכבות את ChromeVox, הקש על Control+Alt+Z.</translation>
 <translation id="3131002934070407451">יש לקרוא מספרים בתור:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152">גזירה של <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">מקישים עם 2 אצבעות כדי להפסיק את הדיבור באופן זמני</translation>
 <translation id="3564729643041517261">התצוגה הנוכחית היא זה לצד זה</translation>
-<translation id="3587482841069643663">הכל</translation>
 <translation id="3589661172894441357">מילון מונחים</translation>
 <translation id="3591784666823501596">כחול מלכותי</translation>
 <translation id="3594207934078151302">ירוק ים בינוני</translation>
@@ -844,7 +844,6 @@
 <translation id="7684431668231950609">ערוך טקסט, רשומת כתובת אתר</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">לחצן הבחירה הקודם</translation>
-<translation id="7701040980221191251">אין</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">אין עוד תיבות משולבות</translation>
 <translation id="772146615414628379">‏מזל טוב! למדת את כל המידע הבסיסי שיאפשר לך להשתמש ב-ChromeVox. חשוב לזכור שאפשר לפתוח את תפריט הפקודות של ChromeVox בכל שלב על ידי הקשה על Search+מקש הנקודה. כדי לקבל מידע נוסף על ChromeVox ו-Chrome OS, אפשר לעיין במאמרים הבאים.
@@ -903,6 +902,7 @@
 <translation id="812886159861361726">ההורדה של <ph name="FILE_NAME" /> נפסקה</translation>
 <translation id="8129445297241948503">אין תא מלמעלה</translation>
 <translation id="8138880386467279117">מגע</translation>
+<translation id="8173092779156526980">החלקה שמאלה עם ארבע אצבעות</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{קו תחתון}two{# סימני קו תחתון}many{# סימני קו תחתון}other{# סימני קו תחתון}}</translation>
 <translation id="8184828902145951186">שורה</translation>
 <translation id="8186185314313222077">החלפה של מצב מסך מלא</translation>

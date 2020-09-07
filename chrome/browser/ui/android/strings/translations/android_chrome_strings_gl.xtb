@@ -582,7 +582,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5665379678064389456">Crea un evento en <ph name="APP_NAME" /></translation>
 <translation id="5668404140385795438">Anular a solicitude dun sitio web para evitar ampliar a imaxe</translation>
-<translation id="568275469169136466">Para iniciar sesión temporalmente</translation>
 <translation id="5683547024293500885">Chrome non puido buscar actualizacións</translation>
 <translation id="5686790454216892815">O nome do ficheiro é demasiado longo</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> usará o <ph name="LANGUAGE" /> despois do reinicio.</translation>
@@ -1043,7 +1042,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="9100610230175265781">Contrasinal obrigatorio</translation>
 <translation id="9102803872260866941">Abriuse a pestana de vista previa</translation>
 <translation id="9104217018994036254">Lista de dispositivos cos que compartir unha pestana.</translation>
-<translation id="9104402662006063371">Ir ao modo de incógnito</translation>
 <translation id="9108312223223904744">Asistencia relativa ao uso do teléfono como chave de seguranza</translation>
 <translation id="9108808586816295166">O DNS seguro pode non estar dispoñible continuamente</translation>
 <translation id="9133397713400217035">Explorar sen conexión</translation>

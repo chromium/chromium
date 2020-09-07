@@ -116,6 +116,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2127372758936585790">Carga lenta</translation>
 <translation id="2135456203358955318">Lupa fijada</translation>
 <translation id="2144487987174258011">Reinicia para actualizar Adobe Flash Player</translation>
+<translation id="2180011262286780504">El administrador ha inhabilitado la función de captura de pantalla.</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222338659135520253">Debes iniciar sesión</translation>
@@ -239,6 +240,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3428447136709161042">Desconectar de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Desliza el dedo desde la derecha para volver</translation>
 <translation id="343571671045587506">Editar recordatorio</translation>
+<translation id="3435967511775410570">Huella digital correcta</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">La conexión ha cambiado a una red más segura</translation>
 <translation id="3465223694362104965">Se ha conectado otro teclado a este dispositivo desde la última vez que iniciaste sesión. Antes de usarlo, asegúrate de que sea de confianza.</translation>
@@ -601,6 +603,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7654687942625752712">Mantén pulsadas ambas teclas de volumen durante cinco segundos para inhabilitar los mensajes de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Autenticar con huella digital</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7749443890790263709">Has alcanzado el número máximo de escritorios.</translation>
@@ -618,6 +621,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7886277072580235377">Tu sesión de Internet se borrará cuando la cierres. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo electrónico</translation>
 <translation id="7897375687985782769">Has pulsado la combinación de teclas que gira la pantalla. ¿Quieres girar la pantalla?</translation>
+<translation id="7901405293566323524">Panel del teléfono</translation>
 <translation id="7904094684485781019">El administrador de esta cuenta ha inhabilitado el inicio de sesión múltiple.</translation>
 <translation id="7933084174919150729">El Asistente de Google solo está disponible en el perfil principal.</translation>
 <translation id="79341161159229895">Cuenta gestionada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>
@@ -628,6 +632,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984197416080286869">Demasiados intentos con huella digital</translation>
 <translation id="7994370417837006925">Inicio de sesión múltiple</translation>
+<translation id="7995804128062002838">No se ha podido hacer una captura de pantalla</translation>
 <translation id="8000066093800657092">Ninguna red</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8029629653277878342">Debes introducir el PIN o la contraseña como medida de seguridad adicional</translation>
@@ -715,6 +720,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Buscar+Esc</translation>
 <translation id="8853703225951107899">Todavía no se ha podido verificar tu PIN o contraseña. Nota: Si has cambiado la contraseña recientemente, utiliza la contraseña anterior. La nueva contraseña se aplicará cuando hayas cerrado la sesión.</translation>
+<translation id="885387440427703469">Captura de pantalla inhabilitada</translation>
 <translation id="8870509716567206129">La aplicación no admite la pantalla dividida.</translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8877788021141246043">Añadir un recordatorio</translation>

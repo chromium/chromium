@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Middenvioletrood</translation>
 <translation id="3104705064753753826">waarschuwingsvenster</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
+<translation id="311015743332597320">Swipe met vier vingers naar rechts</translation>
 <translation id="3112457281078985179">Gebruik Ctrl + Alt + Z om ChromVox in of uit te schakelen.</translation>
 <translation id="3131002934070407451">Nummers lezen als:</translation>
 <translation id="3134461040845705080">alleen-lezen</translation>
@@ -345,7 +346,6 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> knippen.</translation>
 <translation id="3549680091535286226">Tik met twee vingers om spraak tijdelijk te stoppen</translation>
 <translation id="3564729643041517261">De huidige weergavestijl is naast elkaar</translation>
-<translation id="3587482841069643663">Alles</translation>
 <translation id="3589661172894441357">Woordenlijst</translation>
 <translation id="3591784666823501596">Koningsblauw</translation>
 <translation id="3594207934078151302">Middenzeegroen</translation>
@@ -843,7 +843,6 @@
 <translation id="7684431668231950609">Tekst bewerken, URL-invoer</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Vorig keuzerondje</translation>
-<translation id="7701040980221191251">Geen</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Geen volgende keuzelijst met invoervak</translation>
 <translation id="772146615414628379">Je hebt de basisprincipes voor het gebruik van ChromeVox geleerd. Je kunt het ChromeVox-opdrachtmenu op elk gewenst moment openen door op Zoeken + punt te drukken. Ga naar de volgende artikelen voor nog meer informatie over ChromeVox en Chrome OS.
@@ -902,6 +901,7 @@
 <translation id="812886159861361726">Download van <ph name="FILE_NAME" /> is gestopt</translation>
 <translation id="8129445297241948503">Geen cel hierboven beschikbaar</translation>
 <translation id="8138880386467279117">Touch</translation>
+<translation id="8173092779156526980">Swipe met vier vingers naar links</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
 <translation id="8184828902145951186">rij</translation>
 <translation id="8186185314313222077">volledig scherm in- of uitschakelen</translation>
