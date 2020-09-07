@@ -74,8 +74,7 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
       source_.reset();
     } else {
       data_ = *data;
-      if (!source_)
-        source_ = manager_->CreateSource(this);
+      source_ = manager_->CreateSource(this);
       source_->Offer(GetMimeTypes());
       GetDevice()->SetSelectionSource(source_.get());
     }
