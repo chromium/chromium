@@ -471,7 +471,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
               entry->DistilledPath(), item.entryURL, entry->DistilledURL());
           [menuElements
               addObject:[actionFactory
-                            actionToViewOfflineVersionInInNewTabWithBlock:^{
+                            actionToOpenOfflineVersionInNewTabWithBlock:^{
                               [weakSelf loadEntryURL:item.entryURL
                                       withOfflineURL:offlineURL
                                             inNewTab:YES

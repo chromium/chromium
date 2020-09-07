@@ -105,8 +105,7 @@ API_AVAILABLE(ios(13.0))
 // Creates a UIAction instance whose title and icon are configured for viewing
 // an offline version of an URL in a new tab. When triggered, the action will
 // invoke the |block| when executed.
-- (UIAction*)actionToViewOfflineVersionInInNewTabWithBlock:
-    (ProceduralBlock)block;
+- (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:(ProceduralBlock)block;
 
 @end
 

@@ -364,12 +364,12 @@ TEST_F(ActionFactoryTest, viewOfflineVersion) {
         [[ActionFactory alloc] initWithBrowser:test_browser_.get()
                                       scenario:kTestMenuScenario];
 
-    UIImage* expectedImage = nil;
+    UIImage* expectedImage = [UIImage imageNamed:@"offline"];
 
     NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE);
+        l10n_util::GetNSString(IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON);
 
-    UIAction* action = [factory actionToViewOfflineVersionInInNewTabWithBlock:^{
+    UIAction* action = [factory actionToOpenOfflineVersionInNewTabWithBlock:^{
     }];
 
     EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
