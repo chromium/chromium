@@ -120,10 +120,16 @@ void AudioManagerWin::ShutdownOnAudioThread() {
 }
 
 bool AudioManagerWin::HasAudioOutputDevices() {
+  if (CoreAudioUtil::IsSupported())
+    return CoreAudioUtil::NumberOfActiveDevices(eRender) > 0;
+
   return (::waveOutGetNumDevs() != 0);
 }
 
 bool AudioManagerWin::HasAudioInputDevices() {
+  if (CoreAudioUtil::IsSupported())
+    return CoreAudioUtil::NumberOfActiveDevices(eCapture) > 0;
+
   return (::waveInGetNumDevs() != 0);
 }
 
