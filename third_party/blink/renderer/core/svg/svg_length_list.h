@@ -73,7 +73,7 @@ class SVGLengthList final
   SVGLength* CreatePaddingItem() const override;
 
   template <typename CharType>
-  SVGParsingError ParseInternal(const CharType*& ptr, const CharType* end);
+  SVGParsingError ParseInternal(const CharType* ptr, const CharType* end);
 
   SVGLengthMode mode_;
 };

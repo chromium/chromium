@@ -65,7 +65,7 @@ class SVGPointList final
 
  private:
   template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
+  SVGParsingError Parse(const CharType* ptr, const CharType* end);
 };
 
 template <>

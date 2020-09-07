@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
@@ -62,14 +63,9 @@ SVGViewSpec* SVGViewSpec::CreateForViewElement(const SVGViewElement& view) {
 bool SVGViewSpec::ParseViewSpec(const String& spec) {
   if (spec.IsEmpty())
     return false;
-  if (spec.Is8Bit()) {
-    const LChar* ptr = spec.Characters8();
-    const LChar* end = ptr + spec.length();
-    return ParseViewSpecInternal(ptr, end);
-  }
-  const UChar* ptr = spec.Characters16();
-  const UChar* end = ptr + spec.length();
-  return ParseViewSpecInternal(ptr, end);
+  return WTF::VisitCharacters(spec, [&](const auto* chars, unsigned length) {
+    return ParseViewSpecInternal(chars, chars + length);
+  });
 }
 
 namespace {

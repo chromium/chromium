@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -47,7 +48,7 @@ SVGPoint* SVGPoint::Clone() const {
 }
 
 template <typename CharType>
-SVGParsingError SVGPoint::Parse(const CharType*& ptr, const CharType* end) {
+SVGParsingError SVGPoint::Parse(const CharType* ptr, const CharType* end) {
   float x = 0;
   float y = 0;
   if (!ParseNumber(ptr, end, x) ||
@@ -75,15 +76,9 @@ SVGParsingError SVGPoint::SetValueAsString(const String& string) {
     value_ = FloatPoint(0.0f, 0.0f);
     return SVGParseStatus::kNoError;
   }
-
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    return Parse(ptr, end);
-  }
-  const UChar* ptr = string.Characters16();
-  const UChar* end = ptr + string.length();
-  return Parse(ptr, end);
+  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+    return Parse(chars, chars + length);
+  });
 }
 
 String SVGPoint::ValueAsString() const {

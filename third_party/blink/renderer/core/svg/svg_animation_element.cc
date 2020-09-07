@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -107,11 +108,9 @@ fail:
 }
 
 template <typename CharType>
-static bool ParseKeySplinesInternal(const String& string,
+static bool ParseKeySplinesInternal(const CharType* ptr,
+                                    const CharType* end,
                                     Vector<gfx::CubicBezier>& result) {
-  const CharType* ptr = string.GetCharacters<CharType>();
-  const CharType* end = ptr + string.length();
-
   SkipOptionalSVGSpaces(ptr, end);
 
   while (ptr < end) {
@@ -153,11 +152,10 @@ static bool ParseKeySplines(const String& string,
   result.clear();
   if (string.IsEmpty())
     return true;
-  bool parsed = true;
-  if (string.Is8Bit())
-    parsed = ParseKeySplinesInternal<LChar>(string, result);
-  else
-    parsed = ParseKeySplinesInternal<UChar>(string, result);
+  bool parsed =
+      WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+        return ParseKeySplinesInternal(chars, chars + length, result);
+      });
   if (!parsed) {
     result.clear();
     return false;

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -163,14 +164,9 @@ SVGParsingError SVGPreserveAspectRatio::SetValueAsString(const String& string) {
   if (string.IsEmpty())
     return SVGParseStatus::kNoError;
 
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    return ParseInternal(ptr, end, true);
-  }
-  const UChar* ptr = string.Characters16();
-  const UChar* end = ptr + string.length();
-  return ParseInternal(ptr, end, true);
+  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+    return ParseInternal(chars, chars + length, true);
+  });
 }
 
 bool SVGPreserveAspectRatio::Parse(const LChar*& ptr,

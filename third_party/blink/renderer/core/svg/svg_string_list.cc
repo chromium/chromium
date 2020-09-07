@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_string_list.h"
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -48,7 +49,7 @@ void SVGStringListBase::Replace(uint32_t index, const String& new_item) {
 }
 
 template <typename CharType>
-void SVGStringListBase::ParseInternal(const CharType*& ptr,
+void SVGStringListBase::ParseInternal(const CharType* ptr,
                                       const CharType* end,
                                       char list_delimiter) {
   while (ptr < end) {
@@ -71,15 +72,9 @@ SVGParsingError SVGStringListBase::SetValueAsStringWithDelimiter(
   if (data.IsEmpty())
     return SVGParseStatus::kNoError;
 
-  if (data.Is8Bit()) {
-    const LChar* ptr = data.Characters8();
-    const LChar* end = ptr + data.length();
-    ParseInternal(ptr, end, list_delimiter);
-  } else {
-    const UChar* ptr = data.Characters16();
-    const UChar* end = ptr + data.length();
-    ParseInternal(ptr, end, list_delimiter);
-  }
+  WTF::VisitCharacters(data, [&](const auto* chars, unsigned length) {
+    ParseInternal(chars, chars + length, list_delimiter);
+  });
   return SVGParseStatus::kNoError;
 }
 

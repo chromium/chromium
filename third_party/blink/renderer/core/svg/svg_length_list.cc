@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -42,7 +43,7 @@ SVGPropertyBase* SVGLengthList::CloneForAnimation(const String& value) const {
 }
 
 template <typename CharType>
-SVGParsingError SVGLengthList::ParseInternal(const CharType*& ptr,
+SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
                                              const CharType* end) {
   const CharType* list_start = ptr;
   while (ptr < end) {
@@ -73,14 +74,9 @@ SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
   if (value.IsEmpty())
     return SVGParseStatus::kNoError;
 
-  if (value.Is8Bit()) {
-    const LChar* ptr = value.Characters8();
-    const LChar* end = ptr + value.length();
-    return ParseInternal(ptr, end);
-  }
-  const UChar* ptr = value.Characters16();
-  const UChar* end = ptr + value.length();
-  return ParseInternal(ptr, end);
+  return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
+    return ParseInternal(chars, chars + length);
+  });
 }
 
 void SVGLengthList::Add(SVGPropertyBase* other, SVGElement* context_element) {

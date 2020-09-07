@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -33,7 +34,7 @@ SVGPointList::SVGPointList() = default;
 SVGPointList::~SVGPointList() = default;
 
 template <typename CharType>
-SVGParsingError SVGPointList::Parse(const CharType*& ptr, const CharType* end) {
+SVGParsingError SVGPointList::Parse(const CharType* ptr, const CharType* end) {
   if (!SkipOptionalSVGSpaces(ptr, end))
     return SVGParseStatus::kNoError;
 
@@ -67,14 +68,9 @@ SVGParsingError SVGPointList::SetValueAsString(const String& value) {
   if (value.IsEmpty())
     return SVGParseStatus::kNoError;
 
-  if (value.Is8Bit()) {
-    const LChar* ptr = value.Characters8();
-    const LChar* end = ptr + value.length();
-    return Parse(ptr, end);
-  }
-  const UChar* ptr = value.Characters16();
-  const UChar* end = ptr + value.length();
-  return Parse(ptr, end);
+  return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
+    return Parse(chars, chars + length);
+  });
 }
 
 void SVGPointList::Add(SVGPropertyBase* other, SVGElement* context_element) {

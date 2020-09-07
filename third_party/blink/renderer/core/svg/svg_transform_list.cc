@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/svg_transform_distance.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -156,25 +157,19 @@ SVGTransformList::SVGTransformList() = default;
 
 SVGTransformList::SVGTransformList(SVGTransformType transform_type,
                                    const String& value) {
+  if (value.IsEmpty())
+    return;
   TransformArguments arguments;
-  bool at_end_of_value = false;
-  SVGParseStatus status = SVGParseStatus::kParsingFailed;
-  if (value.IsEmpty()) {
-  } else if (value.Is8Bit()) {
-    const LChar* ptr = value.Characters8();
-    const LChar* end = ptr + value.length();
-    status =
-        ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
-    at_end_of_value = !SkipOptionalSVGSpaces(ptr, end);
-  } else {
-    const UChar* ptr = value.Characters16();
-    const UChar* end = ptr + value.length();
-    status =
-        ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
-    at_end_of_value = !SkipOptionalSVGSpaces(ptr, end);
-  }
-
-  if (at_end_of_value && status == SVGParseStatus::kNoError)
+  bool success =
+      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
+        const auto* ptr = chars;
+        const auto* end = chars + length;
+        SVGParseStatus status =
+            ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
+        return status == SVGParseStatus::kNoError &&
+               !SkipOptionalSVGSpaces(ptr, end);
+      });
+  if (success)
     Append(CreateTransformFromValues(transform_type, arguments));
 }
 
@@ -371,14 +366,9 @@ bool SVGTransformList::Parse(const LChar*& ptr, const LChar* end) {
 SVGTransformType ParseTransformType(const String& string) {
   if (string.IsEmpty())
     return SVGTransformType::kUnknown;
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    return ParseAndSkipTransformType(ptr, end);
-  }
-  const UChar* ptr = string.Characters16();
-  const UChar* end = ptr + string.length();
-  return ParseAndSkipTransformType(ptr, end);
+  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+    return ParseAndSkipTransformType(chars, chars + length);
+  });
 }
 
 SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
@@ -386,21 +376,12 @@ SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
     Clear();
     return SVGParseStatus::kNoError;
   }
-
-  SVGParsingError parse_error;
-  if (value.Is8Bit()) {
-    const LChar* ptr = value.Characters8();
-    const LChar* end = ptr + value.length();
-    parse_error = ParseInternal(ptr, end);
-  } else {
-    const UChar* ptr = value.Characters16();
-    const UChar* end = ptr + value.length();
-    parse_error = ParseInternal(ptr, end);
-  }
-
+  SVGParsingError parse_error =
+      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
+        return ParseInternal(chars, chars + length);
+      });
   if (parse_error != SVGParseStatus::kNoError)
     Clear();
-
   return parse_error;
 }
 

@@ -73,7 +73,7 @@ class SVGNumber : public SVGPropertyHelper<SVGNumber> {
 
  protected:
   template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
+  SVGParsingError Parse(const CharType* ptr, const CharType* end);
 
   float value_;
 };

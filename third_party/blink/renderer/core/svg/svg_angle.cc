@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -192,20 +193,17 @@ String SVGAngle::ValueAsString() const {
 }
 
 template <typename CharType>
-static SVGParsingError ParseValue(const String& value,
+static SVGParsingError ParseValue(const CharType* start,
+                                  const CharType* end,
                                   float& value_in_specified_units,
                                   SVGAngle::SVGAngleType& unit_type) {
-  const CharType* ptr = value.GetCharacters<CharType>();
-  const CharType* end = ptr + value.length();
-
+  const CharType* ptr = start;
   if (!ParseNumber(ptr, end, value_in_specified_units, kAllowLeadingWhitespace))
-    return SVGParsingError(SVGParseStatus::kExpectedAngle,
-                           ptr - value.GetCharacters<CharType>());
+    return SVGParsingError(SVGParseStatus::kExpectedAngle, ptr - start);
 
   unit_type = StringToAngleType(ptr, end);
   if (unit_type == SVGAngle::kSvgAngletypeUnknown)
-    return SVGParsingError(SVGParseStatus::kExpectedAngle,
-                           ptr - value.GetCharacters<CharType>());
+    return SVGParsingError(SVGParseStatus::kExpectedAngle, ptr - start);
 
   return SVGParseStatus::kNoError;
 }
@@ -230,11 +228,11 @@ SVGParsingError SVGAngle::SetValueAsString(const String& value) {
   float value_in_specified_units = 0;
   SVGAngleType unit_type = kSvgAngletypeUnknown;
 
-  SVGParsingError error;
-  if (value.Is8Bit())
-    error = ParseValue<LChar>(value, value_in_specified_units, unit_type);
-  else
-    error = ParseValue<UChar>(value, value_in_specified_units, unit_type);
+  SVGParsingError error =
+      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
+        return ParseValue(chars, chars + length, value_in_specified_units,
+                          unit_type);
+      });
   if (error != SVGParseStatus::kNoError)
     return error;
 

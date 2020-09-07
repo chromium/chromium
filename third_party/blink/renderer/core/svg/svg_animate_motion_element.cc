@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -124,10 +125,9 @@ void SVGAnimateMotionElement::UpdateAnimationPath() {
 }
 
 template <typename CharType>
-static bool ParsePointInternal(const String& string, FloatPoint& point) {
-  const CharType* ptr = string.GetCharacters<CharType>();
-  const CharType* end = ptr + string.length();
-
+static bool ParsePointInternal(const CharType* ptr,
+                               const CharType* end,
+                               FloatPoint& point) {
   if (!SkipOptionalSVGSpaces(ptr, end))
     return false;
 
@@ -148,9 +148,9 @@ static bool ParsePointInternal(const String& string, FloatPoint& point) {
 static bool ParsePoint(const String& string, FloatPoint& point) {
   if (string.IsEmpty())
     return false;
-  if (string.Is8Bit())
-    return ParsePointInternal<LChar>(string, point);
-  return ParsePointInternal<UChar>(string, point);
+  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+    return ParsePointInternal(chars, chars + length, point);
+  });
 }
 
 void SVGAnimateMotionElement::ResetAnimatedType() {

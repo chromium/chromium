@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -47,7 +48,7 @@ String SVGNumber::ValueAsString() const {
 }
 
 template <typename CharType>
-SVGParsingError SVGNumber::Parse(const CharType*& ptr, const CharType* end) {
+SVGParsingError SVGNumber::Parse(const CharType* ptr, const CharType* end) {
   float value = 0;
   const CharType* start = ptr;
   if (!ParseNumber(ptr, end, value, kAllowLeadingAndTrailingWhitespace))
@@ -64,14 +65,9 @@ SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   if (string.IsEmpty())
     return SVGParseStatus::kNoError;
 
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    return Parse(ptr, end);
-  }
-  const UChar* ptr = string.Characters16();
-  const UChar* end = ptr + string.length();
-  return Parse(ptr, end);
+  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+    return Parse(chars, chars + length);
+  });
 }
 
 void SVGNumber::Add(SVGPropertyBase* other, SVGElement*) {
@@ -128,16 +124,10 @@ SVGParsingError SVGNumberAcceptPercentage::SetValueAsString(
     return SVGParseStatus::kExpectedNumberOrPercentage;
 
   float number = 0;
-  SVGParsingError error;
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    error = ParseNumberOrPercentage(ptr, end, number);
-  } else {
-    const UChar* ptr = string.Characters16();
-    const UChar* end = ptr + string.length();
-    error = ParseNumberOrPercentage(ptr, end, number);
-  }
+  SVGParsingError error =
+      WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+        return ParseNumberOrPercentage(chars, chars + length, number);
+      });
   if (error == SVGParseStatus::kNoError)
     value_ = number;
   return error;
