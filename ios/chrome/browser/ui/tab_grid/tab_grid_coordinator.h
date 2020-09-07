@@ -15,6 +15,7 @@
 class Browser;
 @protocol BrowsingDataCommands;
 @protocol TabGridCoordinatorDelegate;
+@protocol ThumbStripAttacher;
 
 @interface TabGridCoordinator : ChromeRootCoordinator
 
@@ -44,6 +45,11 @@ class Browser;
 // |showTabViewController:completion:| will present the given view controllers
 // without animation.  This should only be used by unittests.
 @property(nonatomic, readwrite, assign) BOOL animationsDisabledForTesting;
+
+// Weak references to the regular and incognito browser view controllers,
+// used to set up the thumb strip.
+@property(nonatomic, weak) id<ThumbStripAttacher> regularThumbStripAttacher;
+@property(nonatomic, weak) id<ThumbStripAttacher> incognitoThumbStripAttacher;
 
 // Stops all child coordinators then calls |completion|. |completion| is called
 // whether or not child coordinators exist.

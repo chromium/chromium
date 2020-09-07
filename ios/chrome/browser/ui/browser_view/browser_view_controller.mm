@@ -622,8 +622,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)displayWebState:(web::WebState*)webState;
 // Initializes the bookmark interaction controller if not already initialized.
 - (void)initializeBookmarkInteractionController;
-// Sets up the thumb strip.
-- (void)setUpThumbStrip;
 
 // UI Configuration, update and Layout
 // -----------------------------------
@@ -691,6 +689,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @end
 
 @implementation BrowserViewController
+
+@synthesize thumbStripPanHandler = _thumbStripPanHandler;
 
 #pragma mark - Object lifecycle
 
@@ -1435,10 +1435,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [tapRecognizer setDelegate:self];
   [tapRecognizer setCancelsTouchesInView:NO];
   [self.contentArea addGestureRecognizer:tapRecognizer];
-
-  if (IsThumbStripEnabled()) {
-    [self setUpThumbStrip];
-  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1945,16 +1941,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.infobarContainerCoordinator.syncPresenter = self;
     [self.infobarContainerCoordinator start];
   }
-}
-
-// Sets up the thumb strip pan gesture handler.
-- (void)setUpThumbStrip {
-  [self.thumbStripPanHandler
-      addAnimatee:self.primaryToolbarCoordinator.animatee];
-  [self.thumbStripPanHandler addAnimatee:self];
-
-  self.primaryToolbarCoordinator.panGestureHandler = self.thumbStripPanHandler;
-  self.tabStripCoordinator.panGestureHandler = self.thumbStripPanHandler;
 }
 
 // Called by NSNotificationCenter when the view's window becomes key to account
@@ -2720,7 +2706,27 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                          IDS_IOS_READING_LIST_SNACKBAR_MESSAGE)];
 }
 
+#pragma mark - Private Methods: Thumb Strip
+
+// Sets up the thumb strip pan gesture handler.
+- (void)setUpThumbStrip {
+  [self.thumbStripPanHandler
+      addAnimatee:self.primaryToolbarCoordinator.animatee];
+  [self.thumbStripPanHandler addAnimatee:self];
+
+  self.primaryToolbarCoordinator.panGestureHandler = self.thumbStripPanHandler;
+  self.tabStripCoordinator.panGestureHandler = self.thumbStripPanHandler;
+}
+
 #pragma mark - ** Protocol Implementations and Helpers **
+
+#pragma mark - ThumbStripAttacher
+
+- (void)setThumbStripPanHandler:
+    (ViewRevealingVerticalPanHandler*)thumbStripPanHandler {
+  _thumbStripPanHandler = thumbStripPanHandler;
+  [self setUpThumbStrip];
+}
 
 #pragma mark - ViewRevealingAnimatee
 

@@ -251,6 +251,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                      regularBrowser:self.mainInterface.browser
                    incognitoBrowser:self.incognitoInterface.browser];
     _mainCoordinator = tabGridCoordinator;
+    tabGridCoordinator.regularThumbStripAttacher = self.mainInterface.bvc;
+    tabGridCoordinator.incognitoThumbStripAttacher =
+        self.incognitoInterface.bvc;
   }
   return _mainCoordinator;
 }

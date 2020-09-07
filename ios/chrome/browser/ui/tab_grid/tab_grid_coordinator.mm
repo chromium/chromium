@@ -37,6 +37,9 @@
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/tab_grid_transition_handler.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_attacher.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -77,6 +80,8 @@
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
 // Coordinator for history, which can be started from recent tabs.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
+// Coordinator for the thumb strip.
+@property(nonatomic, strong) ThumbStripCoordinator* thumbStripCoordinator;
 // YES if the TabViewController has never been shown yet.
 @property(nonatomic, assign) BOOL firstPresentation;
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
@@ -335,6 +340,15 @@
     [self.remoteTabsMediator refreshSessionsView];
   }
 
+  if (IsThumbStripEnabled()) {
+    self.thumbStripCoordinator = [[ThumbStripCoordinator alloc]
+        initWithBaseViewController:baseViewController
+                           browser:self.browser];
+    [self.thumbStripCoordinator start];
+
+    [self setUpThumbStripAttachers];
+  }
+
   // Once the mediators are set up, stop keeping pointers to the browsers used
   // to initialize them.
   _regularBrowser = nil;
@@ -365,6 +379,9 @@
   self.remoteTabsMediator = nil;
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
+
+  [self.thumbStripCoordinator stop];
+  self.thumbStripCoordinator = nil;
 }
 
 #pragma mark - TabPresentationDelegate
@@ -528,6 +545,15 @@
     (NSInteger)sectionIdentifier {
   return [self.baseViewController.remoteTabsViewController
       sessionForSectionIdentifier:sectionIdentifier];
+}
+
+#pragma mark - Private methods
+
+- (void)setUpThumbStripAttachers {
+  self.incognitoThumbStripAttacher.thumbStripPanHandler =
+      self.thumbStripCoordinator.panHandler;
+  self.regularThumbStripAttacher.thumbStripPanHandler =
+      self.thumbStripCoordinator.panHandler;
 }
 
 @end
