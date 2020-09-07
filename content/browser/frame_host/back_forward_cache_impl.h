@@ -21,6 +21,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -86,10 +87,9 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
     // unwittingly iterating over RenderViewHostImpls that are in the cache.
     std::set<RenderViewHostImpl*> render_view_hosts;
 
-    // Timestamp of the start of the navigation restoring this entry from the
-    // back-forward cache. Set when the entry is restored from back-forward
-    // cache.
-    base::TimeTicks restore_navigation_start;
+    // Additional parameters to send with SetPageLifecycleState calls when we're
+    // restoring a page from the back-forward cache.
+    blink::mojom::PageRestoreParamsPtr page_restore_params;
 
     DISALLOW_COPY_AND_ASSIGN(Entry);
   };
@@ -133,11 +133,15 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   Entry* GetEntry(int navigation_entry_id);
 
   // During a history navigation, moves an entry out of the BackForwardCache
-  // knowing its |navigation_entry_id|. Here |navigation_start| refers to the
-  // start time of navigation to restored entry in cache. Returns nullptr when
-  // none is found.
-  std::unique_ptr<Entry> RestoreEntry(int navigation_entry_id,
-                                      base::TimeTicks navigation_start);
+  // knowing its |navigation_entry_id|. |page_restore_params| includes
+  // information that is needed by the entry's page after getting restored,
+  // which includes the latest history information (offset, length) and the
+  // timestamp corresponding to the start of the back-forward cached navigation,
+  // which would be communicated to the page to allow it to record the latency
+  // of this navigation.
+  std::unique_ptr<Entry> RestoreEntry(
+      int navigation_entry_id,
+      blink::mojom::PageRestoreParamsPtr page_restore_params);
 
   // Evict all entries from the BackForwardCache.
   void Flush();

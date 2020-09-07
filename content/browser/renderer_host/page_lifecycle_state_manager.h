@@ -42,7 +42,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
       blink::mojom::PageVisibilityState visibility_state);
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
-      base::Optional<base::TimeTicks> navigation_start);
+      blink::mojom::PageRestoreParamsPtr page_restore_params);
 
   // Called when we're committing main-frame same-site navigations where we did
   // a proactive BrowsingInstance swap and we're reusing the old page's renderer
@@ -77,7 +77,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   // Send mojo message to renderer if the effective (page) lifecycle state has
   // changed.
   void SendUpdatesToRendererIfNeeded(
-      base::Optional<base::TimeTicks> navigation_start);
+      blink::mojom::PageRestoreParamsPtr page_restore_params);
 
   void OnPageLifecycleChangedAck(
       blink::mojom::PageLifecycleStatePtr acknowledged_state);

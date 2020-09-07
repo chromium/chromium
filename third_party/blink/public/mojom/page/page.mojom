@@ -27,6 +27,20 @@ struct PageLifecycleState {
   PagehideDispatch pagehide_dispatch;
 };
 
+// Additional parameters to send with SetPageLifecycleState calls when we're
+// restoring a page from the back-forward cache.
+struct PageRestoreParams {
+  // Timestamp of the start of the navigation restoring this entry from the
+  // back-forward cache.
+  mojo_base.mojom.TimeTicks navigation_start;
+
+  // The offset in the session history list for the page to be restored.
+  int32 pending_history_list_offset;
+
+  // Total size of the session history list.
+  int32 current_history_list_length;
+};
+
 // Used for broadcast messages from browser to renderer for messages that need
 // to go to all blink::WebViewImpls for a given content::WebContents. There may
 // be multiple blink::WebViewImpls when there are out-of-process iframes.
@@ -34,7 +48,7 @@ interface PageBroadcast {
   // Notifies the renderer about a change in the lifecycle state of the page.
   SetPageLifecycleState(
       PageLifecycleState state,
-      mojo_base.mojom.TimeTicks? navigation_start) => ();
+      PageRestoreParams? page_restore_params) => ();
 
   // Notifies the renderer when audio is started or stopped.
   AudioStateChanged(bool is_audio_playing);

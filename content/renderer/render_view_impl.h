@@ -237,6 +237,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
   void ZoomLevelChanged() override;
+  void OnSetHistoryOffsetAndLength(int history_offset,
+                                   int history_length) override;
 
   // RenderView implementation -------------------------------------------------
 
@@ -384,7 +386,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       const gfx::Size& disable_scrollbars_size_limit);
   void OnMoveOrResizeStarted();
   void OnExitFullscreen();
-  void OnSetHistoryOffsetAndLength(int history_offset, int history_length);
   void OnSetRendererPrefs(
       const blink::mojom::RendererPreferences& renderer_prefs);
   void OnSuppressDialogsUntilSwapOut();
