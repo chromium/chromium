@@ -378,13 +378,6 @@ void TestWebContents::SetHistoryOffsetAndLength(int history_offset,
             history_length);
 }
 
-void TestWebContents::SetHttpResponseHeaders(
-    NavigationHandle* navigation_handle,
-    scoped_refptr<net::HttpResponseHeaders> response_headers) {
-  NavigationRequest::From(navigation_handle)
-      ->set_response_headers_for_testing(response_headers);
-}
-
 RenderFrameHostDelegate* TestWebContents::CreateNewWindow(
     RenderFrameHost* opener,
     const mojom::CreateNewWindowParams& params,

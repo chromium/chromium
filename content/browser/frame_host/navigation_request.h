@@ -555,11 +555,6 @@ class CONTENT_EXPORT NavigationRequest
   // default value if |timeout| is zero.
   static void SetCommitTimeoutForTesting(const base::TimeDelta& timeout);
 
-  void set_response_headers_for_testing(
-      scoped_refptr<net::HttpResponseHeaders> response_headers) {
-    response_headers_for_testing_ = response_headers;
-  }
-
   RenderFrameHostImpl* rfh_restored_from_back_forward_cache() {
     return rfh_restored_from_back_forward_cache_;
   }
@@ -1350,10 +1345,6 @@ class CONTENT_EXPORT NavigationRequest
   // Set of headers to remove during the redirect phase. This can only be
   // modified during the redirect phase.
   std::vector<std::string> removed_request_headers_;
-
-  // Allows to override response_headers_ in tests.
-  // TODO(clamy): Clean this up once the architecture of unit tests is better.
-  scoped_refptr<net::HttpResponseHeaders> response_headers_for_testing_;
 
   // The RenderFrameHost that was restored from the back-forward cache. This
   // will be null except for navigations that are restoring a page from the

@@ -23,14 +23,9 @@ namespace gfx {
 class Size;
 }
 
-namespace net {
-class HttpResponseHeaders;
-}
-
 namespace content {
 
 class BrowserContext;
-class NavigationHandle;
 class RenderFrameHost;
 
 // This interface allows embedders of content/ to write tests that depend on a
@@ -112,11 +107,6 @@ class WebContentsTester {
                                bool did_create_new_entry,
                                const GURL& url,
                                ui::PageTransition transition) = 0;
-
-  // Sets HttpResponseData on |navigation_handle|.
-  virtual void SetHttpResponseHeaders(
-      NavigationHandle* navigation_handle,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
 
   // Simulate this WebContents' main frame having an opener that points to the
   // main frame of |opener|.

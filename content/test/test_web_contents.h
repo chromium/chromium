@@ -33,13 +33,8 @@ namespace gfx {
 class Size;
 }
 
-namespace net {
-class HttpResponseHeaders;
-}
-
 namespace content {
 
-class NavigationHandle;
 struct Referrer;
 class RenderViewHost;
 class TestRenderViewHost;
@@ -93,9 +88,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                                          bool was_within_same_document,
                                          int item_sequence_number,
                                          int document_sequence_number);
-  void SetHttpResponseHeaders(
-      NavigationHandle* navigation_handle,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void SetOpener(WebContents* opener) override;
   const std::string& GetSaveFrameHeaders() override;
   const base::string16& GetSuggestedFileName() override;

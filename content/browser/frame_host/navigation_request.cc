@@ -4397,8 +4397,6 @@ void NavigationRequest::SetCorsExemptRequestHeader(
 }
 
 const net::HttpResponseHeaders* NavigationRequest::GetResponseHeaders() {
-  if (response_headers_for_testing_)
-    return response_headers_for_testing_.get();
   return response_head_.get() ? response_head_->headers.get() : nullptr;
 }
 
