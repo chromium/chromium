@@ -200,6 +200,8 @@ component("core") {
     "//third_party/blink/renderer/platform/wtf",
   ]
 
+  allow_circular_includes_from = [ "//third_party/blink/renderer/core/xml:xml" ]
+
   public_configs = [ ":core_include_dirs" ]
 
   if (is_mac) {

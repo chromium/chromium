@@ -250,7 +250,6 @@ no_check_targets = [
   "//third_party/blink/renderer/core/typed_arrays:*",  # 24 errors
   "//third_party/blink/renderer/core/url:*",  # 7 errors
   "//third_party/blink/renderer/core/workers:*",  # 289 errors
-  "//third_party/blink/renderer/core/xml:*",  # 119 errors
   "//third_party/blink/renderer/core/xmlhttprequest:*",  # 49 errors
   "//third_party/blink/renderer/core:*",  # 823 errors
   "//third_party/blink/renderer/modules/accessibility:*",  # 7 errors

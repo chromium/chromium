@@ -5,7 +5,6 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("xml") {
-  deps = [ ":xpath_generated" ]
   sources = [
     "document_xml_tree_viewer.cc",
     "document_xml_tree_viewer.h",
@@ -64,6 +63,25 @@ blink_core_sources("xml") {
     "xslt_unicode_sort.cc",
     "xslt_unicode_sort.h",
   ]
+
+  deps = [
+    ":xpath_generated",
+    "//third_party/blink/renderer/core:core_generated",
+    "//third_party/blink/renderer/core/css:css",
+    "//third_party/blink/renderer/core/dom:dom",
+    "//third_party/blink/renderer/core/editing:editing",
+    "//third_party/blink/renderer/core/execution_context:execution_context",
+    "//third_party/blink/renderer/core/frame:frame",
+    "//third_party/blink/renderer/core/html:html",
+    "//third_party/blink/renderer/core/html/parser:parser",
+    "//third_party/blink/renderer/core/inspector:inspector",
+    "//third_party/blink/renderer/core/loader:loader",
+    "//third_party/blink/renderer/core/probe:probe",
+    "//third_party/blink/renderer/core/script:script",
+    "//third_party/blink/renderer/core/svg:svg",
+  ]
+
+  allow_circular_includes_from = [ ":xpath_generated" ]
 }
 
 # Chromium-style plugin produces an error for xpath_grammar_generated.h.
