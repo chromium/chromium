@@ -368,14 +368,17 @@ ResourceFetcherInit::ResourceFetcherInit(
     DetachableResourceFetcherProperties& properties,
     FetchContext* context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    ResourceFetcher::LoaderFactory* loader_factory)
+    ResourceFetcher::LoaderFactory* loader_factory,
+    ContextLifecycleNotifier* context_lifecycle_notifier)
     : properties(&properties),
       context(context),
       task_runner(std::move(task_runner)),
-      loader_factory(loader_factory) {
+      loader_factory(loader_factory),
+      context_lifecycle_notifier(context_lifecycle_notifier) {
   DCHECK(context);
   DCHECK(this->task_runner);
   DCHECK(loader_factory || properties.IsDetached());
+  DCHECK(context_lifecycle_notifier || properties.IsDetached());
 }
 
 mojom::RequestContextType ResourceFetcher::DetermineRequestContext(
@@ -601,7 +604,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
           init.frame_or_worker_scheduler
               ? init.frame_or_worker_scheduler->GetWeakPtr()
               : nullptr),
-      blob_registry_remote_(nullptr),
+      blob_registry_remote_(init.context_lifecycle_notifier),
       auto_load_images_(true),
       images_enabled_(true),
       allow_stale_resources_(false),

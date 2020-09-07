@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/resource/mock_image_resource_observer.h"
@@ -66,6 +67,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
@@ -213,7 +215,8 @@ ResourceFetcher* CreateFetcher() {
   return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
       properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
       base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      MakeGarbageCollected<TestLoaderFactory>()));
+      MakeGarbageCollected<TestLoaderFactory>(),
+      MakeGarbageCollected<MockContextLifecycleNotifier>()));
 }
 
 TEST_F(ImageResourceTest, MultipartImage) {
@@ -921,7 +924,8 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
       MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable();
   auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
       ResourceFetcherInit(properties, context, task_runner,
-                          MakeGarbageCollected<TestLoaderFactory>()));
+                          MakeGarbageCollected<TestLoaderFactory>(),
+                          page_holder->GetFrame().DomWindow()));
   auto frame_scheduler = std::make_unique<scheduler::FakeFrameScheduler>();
   auto* scheduler = MakeGarbageCollected<ResourceLoadScheduler>(
       ResourceLoadScheduler::ThrottlingPolicy::kNormal,

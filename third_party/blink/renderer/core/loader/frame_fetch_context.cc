@@ -241,7 +241,8 @@ ResourceFetcher* FrameFetchContext::CreateFetcherForCommittedDocument(
       properties,
       MakeGarbageCollected<FrameFetchContext>(loader, document, properties),
       frame->GetTaskRunner(TaskType::kNetworking),
-      MakeGarbageCollected<LoaderFactoryForFrame>(loader, *frame->DomWindow()));
+      MakeGarbageCollected<LoaderFactoryForFrame>(loader, *frame->DomWindow()),
+      frame->DomWindow());
   init.use_counter =
       MakeGarbageCollected<DetachableUseCounter>(frame->DomWindow());
   init.console_logger = MakeGarbageCollected<DetachableConsoleLogger>(

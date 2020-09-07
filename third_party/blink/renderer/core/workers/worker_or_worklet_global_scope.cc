@@ -315,7 +315,8 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
     ResourceFetcherInit init(properties, worker_fetch_context,
                              GetTaskRunner(TaskType::kNetworking),
                              MakeGarbageCollected<LoaderFactoryForWorker>(
-                                 *this, web_worker_fetch_context_));
+                                 *this, web_worker_fetch_context_),
+                             this);
     init.use_counter = MakeGarbageCollected<DetachableUseCounter>(this);
     init.console_logger = MakeGarbageCollected<DetachableConsoleLogger>(this);
 
@@ -343,9 +344,10 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
         *MakeGarbageCollected<DetachableResourceFetcherProperties>(
             *MakeGarbageCollected<NullResourceFetcherProperties>());
     // This code path is for unittests.
-    fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties, &FetchContext::NullInstance(),
-        GetTaskRunner(TaskType::kNetworking), nullptr /* loader_factory */));
+    fetcher = MakeGarbageCollected<ResourceFetcher>(
+        ResourceFetcherInit(properties, &FetchContext::NullInstance(),
+                            GetTaskRunner(TaskType::kNetworking),
+                            nullptr /* loader_factory */, this));
   }
   if (IsContextPaused())
     fetcher->SetDefersLoading(true);

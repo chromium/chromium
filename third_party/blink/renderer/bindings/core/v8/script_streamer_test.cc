@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -121,7 +122,8 @@ class ScriptStreamingTest : public testing::Test {
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, loading_task_runner_,
-        MakeGarbageCollected<NoopLoaderFactory>()));
+        MakeGarbageCollected<NoopLoaderFactory>(),
+        MakeGarbageCollected<MockContextLifecycleNotifier>()));
 
     ResourceRequest request(url_);
     request.SetRequestContext(mojom::RequestContextType::SCRIPT);

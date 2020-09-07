@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 namespace blink {
@@ -146,7 +147,8 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
         MakeGarbageCollected<MockFetchContext>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<DeferTestLoaderFactory>(
-            &web_url_loader_defers_, process_code_cache_request_callback_)));
+            &web_url_loader_defers_, process_code_cache_request_callback_),
+        MakeGarbageCollected<MockContextLifecycleNotifier>()));
   }
 
   void SetCodeCacheProcessFunction(ProcessCodeCacheRequestCallback callback) {

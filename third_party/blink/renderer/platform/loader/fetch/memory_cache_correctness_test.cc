@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 namespace blink {
@@ -124,10 +125,11 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     auto* properties =
         MakeGarbageCollected<TestResourceFetcherProperties>(security_origin_);
     properties->SetShouldBlockLoadingSubResource(true);
-    fetcher_ = MakeGarbageCollected<ResourceFetcher>(
-        ResourceFetcherInit(properties->MakeDetachable(), context,
-                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                            MakeGarbageCollected<TestLoaderFactory>()));
+    fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+        properties->MakeDetachable(), context,
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+        MakeGarbageCollected<TestLoaderFactory>(),
+        MakeGarbageCollected<MockContextLifecycleNotifier>()));
     Resource::SetClockForTesting(platform_->test_task_runner()->GetMockClock());
   }
   void TearDown() override {

@@ -134,10 +134,11 @@ class BaseFetchContextTest : public testing::Test {
     auto& properties = resource_fetcher_properties_->MakeDetachable();
     fetch_context_ = MakeGarbageCollected<MockBaseFetchContext>(
         properties, execution_context_);
-    resource_fetcher_ = MakeGarbageCollected<ResourceFetcher>(
-        ResourceFetcherInit(properties, fetch_context_,
-                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                            MakeGarbageCollected<TestLoaderFactory>()));
+    resource_fetcher_ =
+        MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+            properties, fetch_context_,
+            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+            MakeGarbageCollected<TestLoaderFactory>(), execution_context_));
   }
 
   const FetchClientSettingsObject& GetFetchClientSettingsObject() const {

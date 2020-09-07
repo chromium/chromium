@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -188,11 +189,12 @@ void ModuleScriptLoaderTest::InitializeForDocument() {
   auto* fetch_context = MakeGarbageCollected<MockFetchContext>();
   auto* properties =
       MakeGarbageCollected<TestResourceFetcherProperties>(security_origin_);
-  fetcher_ = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(properties->MakeDetachable(), fetch_context,
-                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                          MakeGarbageCollected<TestLoaderFactory>(
-                              platform_->GetURLLoaderMockFactory())));
+  fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), fetch_context,
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      MakeGarbageCollected<TestLoaderFactory>(
+          platform_->GetURLLoaderMockFactory()),
+      MakeGarbageCollected<MockContextLifecycleNotifier>()));
   modulator_ = MakeGarbageCollected<ModuleScriptLoaderTestModulator>(
       ToScriptStateForMainWorld(&GetFrame()));
 }
@@ -201,11 +203,12 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
   auto* fetch_context = MakeGarbageCollected<MockFetchContext>();
   auto* properties =
       MakeGarbageCollected<TestResourceFetcherProperties>(security_origin_);
-  fetcher_ = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(properties->MakeDetachable(), fetch_context,
-                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                          MakeGarbageCollected<TestLoaderFactory>(
-                              platform_->GetURLLoaderMockFactory())));
+  fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), fetch_context,
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      MakeGarbageCollected<TestLoaderFactory>(
+          platform_->GetURLLoaderMockFactory()),
+      MakeGarbageCollected<MockContextLifecycleNotifier>()));
   reporting_proxy_ = std::make_unique<MockWorkerReportingProxy>();
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       url_, mojom::blink::ScriptType::kModule, "GlobalScopeName", "UserAgent",

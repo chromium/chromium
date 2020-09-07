@@ -508,12 +508,14 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
   ResourceFetcherInit(DetachableResourceFetcherProperties& properties,
                       FetchContext* context,
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                      ResourceFetcher::LoaderFactory* loader_factory);
+                      ResourceFetcher::LoaderFactory* loader_factory,
+                      ContextLifecycleNotifier* context_lifecycle_notifier);
 
   DetachableResourceFetcherProperties* const properties;
   FetchContext* const context;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner;
   ResourceFetcher::LoaderFactory* const loader_factory;
+  ContextLifecycleNotifier* const context_lifecycle_notifier;
   DetachableUseCounter* use_counter = nullptr;
   DetachableConsoleLogger* console_logger = nullptr;
   ResourceLoadScheduler::ThrottlingPolicy initial_throttling_policy =

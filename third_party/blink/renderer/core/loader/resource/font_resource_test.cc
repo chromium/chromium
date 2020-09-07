@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -65,10 +66,11 @@ TEST_F(FontResourceTest,
 
   MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(properties->MakeDetachable(), context,
-                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                          MakeGarbageCollected<TestLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context,
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      MakeGarbageCollected<TestLoaderFactory>(),
+      MakeGarbageCollected<MockContextLifecycleNotifier>()));
 
   // Fetch to cache a resource.
   ResourceRequest request1(url);
