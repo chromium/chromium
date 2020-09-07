@@ -87,6 +87,7 @@ source_set("prerequisites") {
     "//third_party/ots",
     "//third_party/snappy",
     "//third_party/zlib",
+    "//ui/accessibility/mojom:mojom_blink",
     "//ui/base:features",
     "//ui/base/ime/mojom",
     "//ui/display/mojom:mojom_blink",
