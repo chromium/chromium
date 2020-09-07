@@ -28,8 +28,24 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
   return ui::IMEBridge::Get()->GetInputContextHandler();
 }
 
-bool ShouldEngineUseMojo(const std::string& engine_id) {
+bool ShouldUseRuleBasedMojoEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
+}
+
+bool ShouldUseFstMojoEngine(const std::string& engine_id) {
+  return base::FeatureList::IsEnabled(
+             chromeos::features::kSystemLatinPhysicalTyping) &&
+         base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
+}
+
+std::string NormalizeEngineId(const std::string engine_id) {
+  // For legacy reasons, |engine_id| starts with "vkd_" in the input method
+  // manifest, but the InputEngineManager expects the prefix "m17n:".
+  // TODO(https://crbug.com/1012490): Migrate to m17n prefix and remove this.
+  if (base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE)) {
+    return "m17n:" + engine_id.substr(4);
+  }
+  return engine_id;
 }
 
 std::string NormalizeString(const std::string& str) {
@@ -114,7 +130,8 @@ NativeInputMethodEngine::ImeObserver::~ImeObserver() = default;
 
 void NativeInputMethodEngine::ImeObserver::OnActivate(
     const std::string& engine_id) {
-  if (ShouldEngineUseMojo(engine_id)) {
+  if (ShouldUseRuleBasedMojoEngine(engine_id) ||
+      ShouldUseFstMojoEngine(engine_id)) {
     if (!remote_manager_.is_bound()) {
       auto* ime_manager = input_method::InputMethodManager::Get();
       const auto start = base::Time::Now();
@@ -127,10 +144,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
       LogEvent(ImeServiceEvent::kInitSuccess);
     }
 
-    // For legacy reasons, |engine_id| starts with "vkd_" in the input method
-    // manifest, but the InputEngineManager expects the prefix "m17n:".
-    // TODO(https://crbug.com/1012490): Migrate to m17n prefix and remove this.
-    const auto new_engine_id = "m17n:" + engine_id.substr(4);
+    const auto new_engine_id = NormalizeEngineId(engine_id);
 
     // Deactivate any existing engine.
     remote_to_engine_.reset();
@@ -174,7 +188,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
       return;
     }
   }
-  if (ShouldEngineUseMojo(engine_id) && remote_to_engine_.is_bound()) {
+  if (ShouldUseRuleBasedMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
     remote_to_engine_->ProcessKeypressForRulebased(
         ime::mojom::PhysicalKeyEvent::New(
             event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
@@ -189,7 +203,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
 
 void NativeInputMethodEngine::ImeObserver::OnReset(
     const std::string& engine_id) {
-  if (ShouldEngineUseMojo(engine_id) && remote_to_engine_.is_bound()) {
+  if (ShouldUseRuleBasedMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
     remote_to_engine_->ResetForRulebased();
   }
   base_observer_->OnReset(engine_id);
@@ -197,7 +211,7 @@ void NativeInputMethodEngine::ImeObserver::OnReset(
 
 void NativeInputMethodEngine::ImeObserver::OnDeactivated(
     const std::string& engine_id) {
-  if (ShouldEngineUseMojo(engine_id)) {
+  if (ShouldUseRuleBasedMojoEngine(engine_id)) {
     remote_to_engine_.reset();
   }
   base_observer_->OnDeactivated(engine_id);
