@@ -47,7 +47,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
-#include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -140,7 +140,7 @@ LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
                                              const ComputedStyle& style,
                                              LegacyLayout legacy) {
   bool disable_ng_for_type = !RuntimeEnabledFeatures::MathMLCoreEnabled();
-  if (IsA<MathMLOperatorElement>(node)) {
+  if (IsA<MathMLElement>(node) && To<MathMLElement>(node).IsTokenElement()) {
     return CreateObject<LayoutBlockFlow, LayoutNGMathMLBlockFlow,
                         LayoutBlockFlow>(node, style, legacy,
                                          disable_ng_for_type);

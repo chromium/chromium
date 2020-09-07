@@ -131,7 +131,8 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
     } else if (IsA<MathMLPaddedElement>(element)) {
       CreateAlgorithmAndRun<NGMathPaddedLayoutAlgorithm>(params, callback);
       return;
-    } else if (IsA<MathMLOperatorElement>(element)) {
+    } else if (IsA<MathMLElement>(element) &&
+               To<MathMLElement>(*element).IsTokenElement()) {
       CreateAlgorithmAndRun<NGBlockLayoutAlgorithm>(params, callback);
       return;
     } else if (IsA<MathMLScriptsElement>(element) &&

@@ -33,6 +33,8 @@ class CORE_EXPORT MathMLElement : public Element {
   bool IsMathMLElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
+  bool IsTokenElement() const;
+
  protected:
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

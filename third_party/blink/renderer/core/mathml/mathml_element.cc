@@ -137,4 +137,11 @@ base::Optional<Length> MathMLElement::AddMathLengthToComputedStyle(
   return parsed_value->ConvertToLength(conversion_data);
 }
 
+bool MathMLElement::IsTokenElement() const {
+  return HasTagName(mathml_names::kMiTag) || HasTagName(mathml_names::kMoTag) ||
+         HasTagName(mathml_names::kMnTag) ||
+         HasTagName(mathml_names::kMtextTag) ||
+         HasTagName(mathml_names::kMsTag);
+}
+
 }  // namespace blink
