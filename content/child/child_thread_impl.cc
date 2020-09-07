@@ -45,7 +45,6 @@
 #include "build/build_config.h"
 #include "content/child/browser_exposed_child_interfaces.h"
 #include "content/child/child_process.h"
-#include "content/child/thread_safe_sender.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -593,8 +592,6 @@ void ChildThreadImpl::Init(const Options& options) {
   }
 
   sync_message_filter_ = channel_->CreateSyncMessageFilter();
-  thread_safe_sender_ =
-      new ThreadSafeSender(main_thread_runner_, sync_message_filter_.get());
 
   // In single process mode, browser-side tracing and memory will cover the
   // whole process including renderers.

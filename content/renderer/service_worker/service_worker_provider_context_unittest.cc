@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "content/child/thread_safe_sender.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/web_service_worker_provider_impl.h"

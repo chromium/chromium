@@ -31,7 +31,6 @@
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/child/child_process.h"
-#include "content/child/thread_safe_sender.h"
 #include "content/common/frame_messages.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"

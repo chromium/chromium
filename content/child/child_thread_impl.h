@@ -62,7 +62,6 @@ class BackgroundTracingAgentProviderImpl;
 
 namespace content {
 class InProcessChildThreadParams;
-class ThreadSafeSender;
 
 // The main thread of a child process derives from this class.
 class CONTENT_EXPORT ChildThreadImpl
@@ -116,13 +115,6 @@ class CONTENT_EXPORT ChildThreadImpl
 
   IPC::SyncMessageFilter* sync_message_filter() const {
     return sync_message_filter_.get();
-  }
-
-  // The getter should only be called on the main thread, however the
-  // IPC::Sender it returns may be safely called on any thread including
-  // the main thread.
-  ThreadSafeSender* thread_safe_sender() const {
-    return thread_safe_sender_.get();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner() const {
@@ -228,8 +220,6 @@ class CONTENT_EXPORT ChildThreadImpl
 
   // Allows threads other than the main thread to send sync messages.
   scoped_refptr<IPC::SyncMessageFilter> sync_message_filter_;
-
-  scoped_refptr<ThreadSafeSender> thread_safe_sender_;
 
   // Implements message routing functionality to the consumers of
   // ChildThreadImpl.

@@ -43,7 +43,9 @@ struct PortId;
 // two:
 // 1) A content::WorkerThreadMessageFilter, so that we can receive IPC directly
 // on worker thread.
-// 2) A content::ThreadSafeSender, so we can safely send IPC from worker thread.
+// 2) A thread-safe version of IPC::Sender, so we can safely send IPC from
+// worker thread (this TODO formerly referred to content::ThreadSafeSender
+// which no longer exists).
 class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                public IPC::Sender {
  public:
