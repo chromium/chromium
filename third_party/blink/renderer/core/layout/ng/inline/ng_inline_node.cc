@@ -522,7 +522,8 @@ class NGInlineNodeDataEditor final {
         block_flow_->NeedsLayout() ||
         block_flow_->GetDocument().NeedsLayoutTreeUpdate() ||
         !block_flow_->GetNGInlineNodeData() ||
-        block_flow_->GetNGInlineNodeData()->text_content.IsNull())
+        block_flow_->GetNGInlineNodeData()->text_content.IsNull() ||
+        block_flow_->GetNGInlineNodeData()->HasGeneratedBreakOpportunity())
       return nullptr;
 
     // Because of current text content has secured text, e.g. whole text is

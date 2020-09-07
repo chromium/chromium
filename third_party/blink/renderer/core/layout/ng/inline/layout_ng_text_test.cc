@@ -238,6 +238,21 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetDeleteWithBidiControl) {
             GetItemsAsString(*text.GetLayoutObject()));
 }
 
+// http://crbug.com/1125262
+TEST_F(LayoutNGTextTest, SetTextWithOffsetDeleteWithGeneratedBreakOpportunity) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  InsertStyleElement("#target { white-space:nowrap; }");
+  SetBodyInnerHTML(u"<p><b><i id=target>ab\n</i>\n</b>\n</div>");
+  // We have two ZWS for "</i>\n" and "</b>\n".
+  Text& text = To<Text>(*GetElementById("target")->firstChild());
+  text.deleteData(2, 1, ASSERT_NO_EXCEPTION);  // remove "\n"
+
+  EXPECT_EQ("LayoutText has NeedsCollectInlines",
+            GetItemsAsString(*text.GetLayoutObject()));
+}
+
 // http://crbug.com/1123251
 TEST_F(LayoutNGTextTest, SetTextWithOffsetEditingTextCollapsedSpace) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())

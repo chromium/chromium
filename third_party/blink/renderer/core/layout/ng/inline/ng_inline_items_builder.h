@@ -56,6 +56,11 @@ class NGInlineItemsBuilderTemplate {
   // Returns whether the items contain any Bidi controls.
   bool HasBidiControls() const { return has_bidi_controls_; }
 
+  // Returns whether the items contain any generated break opportunity.
+  bool HasGeneratedBreakOpportunity() const {
+    return has_generated_break_opportunity_;
+  }
+
   // Returns if the inline node has no content. For example:
   // <span></span> or <span><float></float></span>.
   bool IsEmptyInline() const { return is_empty_inline_; }
@@ -182,6 +187,7 @@ class NGInlineItemsBuilderTemplate {
 
   bool has_bidi_controls_ = false;
   bool has_ruby_ = false;
+  bool has_generated_break_opportunity_ = false;
   bool is_empty_inline_ = true;
   bool is_block_level_ = true;
   bool changes_may_affect_earlier_lines_ = false;
