@@ -11,6 +11,7 @@
 #include "url/gurl.h"
 
 namespace blink {
+namespace network_utils {
 
 // Returns true if the headers indicate that this resource should always be
 // revalidated or not cached.
@@ -26,6 +27,7 @@ BLINK_COMMON_EXPORT bool AlwaysAccessNetwork(
 // handled by the network stack when the Network Service is disabled.
 BLINK_COMMON_EXPORT bool IsURLHandledByNetworkService(const GURL& url);
 
+}  // namespace network_utils
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_NETWORK_UTILS_H_

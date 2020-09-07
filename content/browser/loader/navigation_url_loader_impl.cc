@@ -482,8 +482,9 @@ void NavigationURLLoaderImpl::Restart() {
   // their use or disuse of the network service loader.
   if (!default_loader_used_ ||
       (url_chain_.size() > 1 &&
-       blink::IsURLHandledByNetworkService(url_chain_[url_chain_.size() - 1]) !=
-           blink::IsURLHandledByNetworkService(
+       blink::network_utils::IsURLHandledByNetworkService(
+           url_chain_[url_chain_.size() - 1]) !=
+           blink::network_utils::IsURLHandledByNetworkService(
                url_chain_[url_chain_.size() - 2]))) {
     if (url_loader_)
       url_loader_->ResetForFollowRedirect();
@@ -622,7 +623,8 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
   // further refactor the factory getters to avoid this.
   scoped_refptr<network::SharedURLLoaderFactory> factory;
 
-  if (!blink::IsURLHandledByNetworkService(resource_request_->url)) {
+  if (!blink::network_utils::IsURLHandledByNetworkService(
+          resource_request_->url)) {
     if (known_schemes_.find(resource_request_->url.scheme()) ==
         known_schemes_.end()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;

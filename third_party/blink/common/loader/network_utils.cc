@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
+namespace network_utils {
 
 bool AlwaysAccessNetwork(
     const scoped_refptr<net::HttpResponseHeaders>& headers) {
@@ -34,4 +35,5 @@ bool IsURLHandledByNetworkService(const GURL& url) {
   return false;
 }
 
+}  // namespace network_utils
 }  // namespace blink

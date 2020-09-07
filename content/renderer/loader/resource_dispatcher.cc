@@ -100,8 +100,8 @@ int GetInitialRequestID() {
 bool RedirectRequiresLoaderRestart(const GURL& original_url,
                                    const GURL& redirect_url) {
   // Restart is needed if the URL is no longer handled by network service.
-  if (blink::IsURLHandledByNetworkService(original_url))
-    return !blink::IsURLHandledByNetworkService(redirect_url);
+  if (blink::network_utils::IsURLHandledByNetworkService(original_url))
+    return !blink::network_utils::IsURLHandledByNetworkService(redirect_url);
 
   // If URL wasn't originally handled by network service, restart is needed if
   // schemes are different.

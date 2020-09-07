@@ -1317,7 +1317,8 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
     pending_url_loader_factory =
         CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
             std::make_unique<DataURLLoaderFactory>(params->url()));
-  } else if (rfh && !blink::IsURLHandledByNetworkService(params->url())) {
+  } else if (rfh && !blink::network_utils::IsURLHandledByNetworkService(
+                        params->url())) {
     ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
         non_network_uniquely_owned_factories;
     ContentBrowserClient::NonNetworkURLLoaderFactoryMap

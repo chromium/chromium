@@ -124,7 +124,7 @@ void NotifyResourceRedirectReceived(
   net_redirect_info->network_info->network_accessed =
       redirect_response->network_accessed;
   net_redirect_info->network_info->always_access_network =
-      blink::AlwaysAccessNetwork(redirect_response->headers);
+      blink::network_utils::AlwaysAccessNetwork(redirect_response->headers);
   net_redirect_info->network_info->remote_endpoint =
       redirect_response->remote_endpoint;
   resource_load_info->redirect_info_chain.push_back(
@@ -154,7 +154,7 @@ void NotifyResourceResponseReceived(
   resource_load_info->network_info->network_accessed =
       response_head->network_accessed;
   resource_load_info->network_info->always_access_network =
-      blink::AlwaysAccessNetwork(response_head->headers);
+      blink::network_utils::AlwaysAccessNetwork(response_head->headers);
   resource_load_info->network_info->remote_endpoint =
       response_head->remote_endpoint;
 
