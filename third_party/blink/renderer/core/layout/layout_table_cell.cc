@@ -447,6 +447,17 @@ void LayoutTableCell::UpdateStyleWritingModeFromRow(const LayoutObject* row) {
                                      LayoutObject::ApplyStyleChanges::kNo);
   SetHorizontalWritingMode(StyleRef().IsHorizontalWritingMode());
   UnmarkOrthogonalWritingModeRoot();
+
+  for (LayoutObject* child = FirstChild(); child;
+       child = child->NextSibling()) {
+    if (child->IsBox()) {
+      LayoutBox* box_child = ToLayoutBox(child);
+      if (box_child->IsOrthogonalWritingModeRoot())
+        box_child->MarkOrthogonalWritingModeRoot();
+      else
+        box_child->UnmarkOrthogonalWritingModeRoot();
+    }
+  }
 }
 
 void LayoutTableCell::StyleDidChange(StyleDifference diff,
