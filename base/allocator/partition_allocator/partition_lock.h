@@ -7,7 +7,6 @@
 
 #include <atomic>
 
-#include "base/allocator/partition_allocator/spin_lock.h"
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
@@ -39,13 +38,12 @@ class SCOPED_LOCKABLE ScopedGuard {
   MaybeSpinLock<thread_safe>& lock_;
 };
 
-#if DCHECK_IS_ON()
 template <>
 class LOCKABLE MaybeSpinLock<true> {
  public:
   MaybeSpinLock() : lock_() {}
   void Lock() EXCLUSIVE_LOCK_FUNCTION() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
     // instance, a DCHECK() triggers in external code (such as
     // base::Lock). DCHECK() error message formatting allocates, which triggers
@@ -82,7 +80,7 @@ class LOCKABLE MaybeSpinLock<true> {
   }
 
   void Unlock() UNLOCK_FUNCTION() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
     owning_thread_ref_.store(PlatformThreadRef(), std::memory_order_relaxed);
 #endif
     lock_->Release();
@@ -101,25 +99,10 @@ class LOCKABLE MaybeSpinLock<true> {
   // library, and the destructor is a no-op.
   base::NoDestructor<base::Lock> lock_;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
   std::atomic<PlatformThreadRef> owning_thread_ref_ GUARDED_BY(lock_);
 #endif
 };
-
-#else   // DCHECK_IS_ON()
-template <>
-class LOCKABLE MaybeSpinLock<true> {
- public:
-  void Lock() EXCLUSIVE_LOCK_FUNCTION() { lock_.lock(); }
-  void Unlock() UNLOCK_FUNCTION() { lock_.unlock(); }
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
-    // Not supported by subtle::SpinLock.
-  }
-
- private:
-  subtle::SpinLock lock_;
-};
-#endif  // DCHECK_IS_ON()
 
 template <>
 class LOCKABLE MaybeSpinLock<false> {

@@ -1782,8 +1782,6 @@ component("base") {
         "allocator/partition_allocator/partition_tag_bitmap.h",
         "allocator/partition_allocator/random.cc",
         "allocator/partition_allocator/random.h",
-        "allocator/partition_allocator/spin_lock.cc",
-        "allocator/partition_allocator/spin_lock.h",
       ]
       if (is_win) {
         sources +=
@@ -2437,10 +2435,7 @@ test("base_perftests") {
   ]
   if (!is_ios) {
     # iOS doesn't use the partition allocator, therefore it can't run this test.
-    sources += [
-      "allocator/partition_allocator/partition_alloc_perftest.cc",
-      "allocator/partition_allocator/spin_lock_perftest.cc",
-    ]
+    sources += [ "allocator/partition_allocator/partition_alloc_perftest.cc" ]
   }
   deps = [
     ":base",
@@ -3208,7 +3203,6 @@ test("base_unittests") {
       "allocator/partition_allocator/memory_reclaimer_unittest.cc",
       "allocator/partition_allocator/page_allocator_unittest.cc",
       "allocator/partition_allocator/partition_alloc_unittest.cc",
-      "allocator/partition_allocator/spin_lock_unittest.cc",
     ]
   }
 
