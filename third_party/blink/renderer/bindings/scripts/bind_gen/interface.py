@@ -4792,6 +4792,9 @@ def _make_property_entries_and_callback_defs(
 
     def process_attribute(attribute, is_context_dependent,
                           exposure_conditional, world):
+        if "CSSProperty" in attribute.extended_attributes:
+            return  # [CSSProperty] will be installed in a special manner.
+
         cgc_attr = cg_context.make_copy(attribute=attribute, for_world=world)
         cgc = cgc_attr.make_copy(attribute_get=True)
         attr_get_callback_name = callback_function_name(cgc)
@@ -5225,6 +5228,29 @@ def make_install_interface_template(cg_context, function_name, class_name,
         supplemental_install_node,
         EmptyNode(),
     ])
+
+    if class_like.identifier == "CSSStyleDeclaration":
+        css_properties = filter(
+            lambda attr: "CSSProperty" in attr.extended_attributes,
+            class_like.attributes)
+        if css_properties:
+            prop_name_list = "".join(
+                map(lambda attr: "\"{}\", ".format(attr.identifier),
+                    css_properties))
+            body.append(
+                T("""\
+// CSSStyleDeclaration-specific settings
+// [CSSProperty]
+{
+  static constexpr const char* kCssProperties[] = {
+""" + prop_name_list + """
+  };
+  bindings::InstallCSSPropertyAttributes(
+      ${isolate}, ${world},
+      ${instance_template}, ${prototype_template}, ${interface_template},
+      ${signature}, kCssProperties);
+}
+"""))
 
     if class_like.identifier == "DOMException":
         body.append(

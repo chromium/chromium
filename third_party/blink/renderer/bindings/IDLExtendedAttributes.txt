@@ -35,6 +35,7 @@ ActiveScriptWrappable
 Affects=Nothing
 AllowShared
 CEReactions
+CSSProperty
 CachedAccessor=*
 CachedAttribute=*
 CallWith=ExecutionContext|Isolate|ScriptState|ThisValue

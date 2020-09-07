@@ -789,6 +789,12 @@ When applied to an interface, the generated code for the relevant global object 
 
 Note that `[ContextEnabled]` is not mututally exclusive to `[RuntimeEnabled]`, and a feature which may be enabled by either mechanism will be enabled if the appropriate `[RuntimeEnabled]` feature is enabled; _or_ if the appropriate `[ContextEnabled]` feature is enabled; _or_ if both are enabled.
 
+### [CSSProperty] _(a)_
+
+Summary: `[CSSProperty]` indicates that the attribute implements a CSS property and Blink optimizes the property installation accordingly.
+
+`[CSSProperty]` must be applied only at `CSSStyleDeclaration`'s IDL attributes implementing CSS properties ([camel-cased attributes](https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-camel_cased_attribute), [webkit-cased attributes](https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-camel_cased_attribute), [dashed attributes](https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-dashed_attribute)).
+
 ### [Custom] _(i, m, s, a, f)_
 
 Summary: They allow you to write bindings code manually as you like: full bindings for methods and attributes, certain functions for interfaces.
