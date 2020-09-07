@@ -63,6 +63,10 @@ class DriveQuickAccessProvider : public SearchProvider,
   // Whether the suggested files experiment is enabled.
   const bool suggested_files_enabled_;
 
+  // Whether we have sent at least one request to ItemSuggest to warm up the
+  // results cache.
+  bool have_warmed_up_cache_ = false;
+
   // Stores the last-returned results from the QuickAccess API.
   std::vector<drive::QuickAccessItem> results_cache_;
 

@@ -6743,6 +6743,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.DriveQuickAccessProvider.CacheWarmed"
+    units="Boolean" expires_after="2021-01-03">
+  <owner>tby@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
+  <summary>
+    Whether or not the cache of Drive file results has already been warmed with
+    a request to ItemSuggest. Emitted each time we decide whether to warm the
+    cache, ie. each time Drive FS is mounted.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.DriveQuickAccessProvider.DriveFSMounted"
     enum="Boolean" expires_after="2021-02-07">
   <owner>tby@chromium.org</owner>
