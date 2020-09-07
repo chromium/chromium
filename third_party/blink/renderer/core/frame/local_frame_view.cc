@@ -2206,7 +2206,6 @@ bool LocalFrameView::UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
 }
 
 // TODO(schenney): add a scrolling update lifecycle phase.
-// TODO(schenney): Pass a LifecycleUpdateReason in here
 bool LocalFrameView::UpdateLifecycleToCompositingCleanPlusScrolling(
     DocumentUpdateReason reason) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -2221,7 +2220,6 @@ bool LocalFrameView::UpdateLifecycleToPrePaintClean(
       DocumentLifecycle::kPrePaintClean, reason);
 }
 
-// TODO(schenney): Pass a LifecycleUpdateReason in here
 bool LocalFrameView::UpdateLifecycleToCompositingInputsClean(
     DocumentUpdateReason reason) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -2230,7 +2228,6 @@ bool LocalFrameView::UpdateLifecycleToCompositingInputsClean(
       DocumentLifecycle::kCompositingInputsClean, reason);
 }
 
-// TODO(schenney): Pass a LifecycleUpdateReason in here
 bool LocalFrameView::UpdateAllLifecyclePhasesExceptPaint(
     DocumentUpdateReason reason) {
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
@@ -2263,7 +2260,6 @@ void LocalFrameView::UpdateLifecyclePhasesForPrinting() {
       DocumentUpdateReason::kPrinting);
 }
 
-// TODO(schenney): Pass a LifecycleUpdateReason in here
 bool LocalFrameView::UpdateLifecycleToLayoutClean(DocumentUpdateReason reason) {
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
       DocumentLifecycle::kLayoutClean, reason);
@@ -2271,15 +2267,16 @@ bool LocalFrameView::UpdateLifecycleToLayoutClean(DocumentUpdateReason reason) {
 
 void LocalFrameView::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
   LocalFrame& local_frame_root = GetFrame().LocalFrameRoot();
+  // We need a full lifecycle update to clear pending paint invalidations.
   if (local_frame_root.View()->current_update_lifecycle_phases_target_state_ <
-          DocumentLifecycle::kPrePaintClean ||
+          DocumentLifecycle::kPaintClean ||
       Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean) {
     // Schedule visual update to process the paint invalidation in the next
     // cycle.
     local_frame_root.ScheduleVisualUpdateUnlessThrottled();
   }
-  // Otherwise the paint invalidation will be handled in the pre-paint
-  // phase of this cycle.
+  // Otherwise the paint invalidation will be handled in the pre-paint and paint
+  // phase of this full lifecycle update.
 }
 
 bool LocalFrameView::NotifyResizeObservers(

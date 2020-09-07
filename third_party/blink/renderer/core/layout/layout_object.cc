@@ -4108,12 +4108,9 @@ void LayoutObject::SetShouldDoFullPaintInvalidationWithoutGeometryChange(
     PaintInvalidationReason reason) {
   // Only full invalidation reasons are allowed.
   DCHECK(IsFullPaintInvalidationReason(reason));
-  // This is before the early return to ensure visual update is always scheduled
-  // in case that this is called not during a document lifecycle update.
-  GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
-
   if (ShouldDoFullPaintInvalidation())
     return;
+
   SetShouldCheckForPaintInvalidationWithoutGeometryChange();
   if (reason == PaintInvalidationReason::kFull) {
     reason = DocumentLifecycleBasedPaintInvalidationReason(

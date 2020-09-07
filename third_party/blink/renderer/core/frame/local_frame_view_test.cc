@@ -91,6 +91,17 @@ TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
   EXPECT_FALSE(GetAnimationMockChromeClient().has_scheduled_animation_);
 }
 
+TEST_F(LocalFrameViewTest,
+       SetPaintInvalidationDuringUpdateLifecyclePhasesToPrePaintClean) {
+  SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
+  GetDocument().getElementById("a")->setAttribute(html_names::kStyleAttr,
+                                                  "color: green");
+  GetAnimationMockChromeClient().has_scheduled_animation_ = false;
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(GetAnimationMockChromeClient().has_scheduled_animation_);
+}
+
 TEST_F(LocalFrameViewTest, SetPaintInvalidationOutOfUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
@@ -100,6 +111,7 @@ TEST_F(LocalFrameViewTest, SetPaintInvalidationOutOfUpdateAllLifecyclePhases) {
       ->SetShouldDoFullPaintInvalidation();
   EXPECT_TRUE(GetAnimationMockChromeClient().has_scheduled_animation_);
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
+  UpdateAllLifecyclePhasesForTest();
   GetDocument()
       .getElementById("a")
       ->GetLayoutObject()
