@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -31,9 +32,9 @@ namespace apps {
 // This class is not thread-safe.
 //
 // See //components/services/app_service/README.md for more details.
-class AppRegistryCache {
+class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  public:
-  class Observer : public base::CheckedObserver {
+  class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {
    public:
     // The apps::AppUpdate argument shouldn't be accessed after OnAppUpdate
     // returns.

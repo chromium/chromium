@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -42,7 +43,7 @@ namespace apps {
 // remain valid for the lifetime of the AppUpdate.
 //
 // See //components/services/app_service/README.md for more details.
-class AppUpdate {
+class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
  public:
   // Modifies |state| by copying over all of |delta|'s known fields: those
   // fields whose values aren't "unknown". The |state| may not be nullptr.

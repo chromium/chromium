@@ -7,6 +7,8 @@
 
 #include <map>
 
+#include "base/component_export.h"
+
 class AccountId;
 
 namespace apps {
@@ -15,7 +17,7 @@ class AppRegistryCache;
 
 // Wraps AppRegistryCache to get all AppRegistryCaches independently. Provides
 // the method to get the AppRegistryCache per |account_id|.
-class AppRegistryCacheWrapper {
+class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCacheWrapper {
  public:
   // Returns the global AppRegistryCacheWrapper object.
   static AppRegistryCacheWrapper& Get();
