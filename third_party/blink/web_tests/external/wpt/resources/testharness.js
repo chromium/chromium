@@ -2069,7 +2069,7 @@ policies and contribution forms [3].
                 func();
             } else {
                 if(remaining === 0) {
-                    assert(false, "wait_for", description,
+                    assert(false, "step_wait_func", description,
                            "Timed out waiting on condition");
                 }
                 remaining--;
