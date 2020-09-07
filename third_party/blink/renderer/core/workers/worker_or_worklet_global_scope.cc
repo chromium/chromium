@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 
+#include "base/threading/thread_checker.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -58,40 +59,37 @@ class OutsideSettingsCSPDelegate final
  public:
   OutsideSettingsCSPDelegate(
       const FetchClientSettingsObject& outside_settings_object,
+      UseCounter& use_counter,
       WorkerOrWorkletGlobalScope& global_scope_for_logging)
       : outside_settings_object_(&outside_settings_object),
-        global_scope_for_logging_(&global_scope_for_logging) {
-    DCHECK(global_scope_for_logging_->IsContextThread());
-  }
+        use_counter_(use_counter),
+        global_scope_for_logging_(&global_scope_for_logging) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(global_scope_for_logging_);
+    visitor->Trace(use_counter_);
     visitor->Trace(outside_settings_object_);
   }
 
   const KURL& Url() const override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     return outside_settings_object_->GlobalObjectUrl();
   }
 
   const SecurityOrigin* GetSecurityOrigin() override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     return outside_settings_object_->GetSecurityOrigin();
   }
 
   // We don't have to do anything here, as we don't want to update
   // SecurityContext of either parent context or WorkerOrWorkletGlobalScope.
-  // TODO(hiroshige): Revisit the relationship of ContentSecurityPolicy,
-  // SecurityContext and FetchClientSettingsObject, e.g. when doing
-  // off-the-main-thread shared worker/service worker top-level script fetch.
-  // https://crbug.com/924041 https://crbug.com/924043
   void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) override {}
   void SetRequireTrustedTypes() override {}
   void AddInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy) override {}
   void DisableEval(const String& error_message) override {}
 
   std::unique_ptr<SourceLocation> GetSourceLocation() override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // https://w3c.github.io/webappsec-csp/#create-violation-for-global
     // Step 2. If the user agent is currently executing script, and can extract
     // a source file's URL, line number, and column number from the global, set
@@ -104,20 +102,20 @@ class OutsideSettingsCSPDelegate final
   }
 
   base::Optional<uint16_t> GetStatusCode() override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // TODO(crbug/928965): Plumb the status code of the parent Document if any.
     return base::nullopt;
   }
 
   String GetDocumentReferrer() override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // TODO(crbug/928965): Plumb the referrer from the parent context.
     return String();
   }
 
   void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,
                               Element*) override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // TODO(crbug/928964): Fire an event on the parent context.
     // Before OutsideSettingsCSPDelegate was introduced, the event had been
     // fired on WorkerGlobalScope, which had been virtually no-op because
@@ -130,17 +128,17 @@ class OutsideSettingsCSPDelegate final
                            bool is_frame_ancestors_violation,
                            const Vector<String>& report_endpoints,
                            bool use_reporting_api) override {
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // TODO(crbug/929370): Support POSTing violation reports from a Worker.
-    DCHECK(global_scope_for_logging_->IsContextThread());
   }
 
   void Count(WebFeature feature) override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
-    global_scope_for_logging_->CountUse(feature);
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+    use_counter_->CountUse(feature);
   }
 
   void AddConsoleMessage(ConsoleMessage* message) override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     global_scope_for_logging_->AddConsoleMessage(message);
   }
 
@@ -152,7 +150,7 @@ class OutsideSettingsCSPDelegate final
 
   void DidAddContentSecurityPolicies(
       WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // We do nothing here, because if the added policies should be reported to
     // LocalFrameClient, then they are already reported on the parent
     // Document.
@@ -161,16 +159,19 @@ class OutsideSettingsCSPDelegate final
   }
 
   void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) override {
-    DCHECK(global_scope_for_logging_->IsContextThread());
+    DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     global_scope_for_logging_->AddInspectorIssue(std::move(info));
   }
 
  private:
   const Member<const FetchClientSettingsObject> outside_settings_object_;
+  const Member<UseCounter> use_counter_;
 
-  // |global_scope_for_logging_| should be used only for CountUse(),
-  // AddConsoleMessage(), and AddInspectorIssue().
+  // |global_scope_for_logging_| should be used only for AddConsoleMessage() and
+  // AddInspectorIssue().
   const Member<WorkerOrWorkletGlobalScope> global_scope_for_logging_;
+
+  THREAD_CHECKER(worker_thread_checker_);
 };
 
 }  // namespace
@@ -380,7 +381,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateOutsideSettingsFetcher(
 
   OutsideSettingsCSPDelegate* csp_delegate =
       MakeGarbageCollected<OutsideSettingsCSPDelegate>(outside_settings_object,
-                                                       *this);
+                                                       *this, *this);
   content_security_policy->BindToDelegate(*csp_delegate);
 
   return CreateFetcherInternal(outside_settings_object,
