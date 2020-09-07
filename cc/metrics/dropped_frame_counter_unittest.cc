@@ -226,7 +226,8 @@ class DroppedFrameCounterMainDropsNoSmoothness
   }
 };
 
-MULTI_THREAD_TEST_F(DroppedFrameCounterMainDropsNoSmoothness);
+// TODO(crbug.com/1115376) Disabled for flakiness.
+// MULTI_THREAD_TEST_F(DroppedFrameCounterMainDropsNoSmoothness);
 
 class DroppedFrameCounterMainDropsSmoothnessTest
     : public DroppedFrameCounterTestBase {
@@ -243,7 +244,8 @@ class DroppedFrameCounterMainDropsSmoothnessTest
   }
 };
 
-MULTI_THREAD_TEST_F(DroppedFrameCounterMainDropsSmoothnessTest);
+// TODO(crbug.com/1115376) Disabled for flakiness.
+// MULTI_THREAD_TEST_F(DroppedFrameCounterMainDropsSmoothnessTest);
 
 }  // namespace
 }  // namespace cc
