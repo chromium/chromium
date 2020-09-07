@@ -149,6 +149,8 @@ js_type_check("closure_compile") {
     ":security_page_test",
 
     #":settings_animated_pages_test",
+    ":settings_category_default_radio_group_tests",
+
     #":settings_main_test",
     #":settings_menu_test",
     ":settings_page_test_util",
@@ -371,6 +373,18 @@ js_library("search_page_test") {
     ":test_search_engines_browser_proxy.m",
     "..:chai_assert",
     "//chrome/browser/resources/settings:settings",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("settings_category_default_radio_group_tests") {
+  deps = [
+    ":test_site_settings_prefs_browser_proxy",
+    ":test_util",
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/settings:lazy_load",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

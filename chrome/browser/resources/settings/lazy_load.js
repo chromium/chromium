@@ -21,6 +21,7 @@ import './site_settings/category_setting_exceptions.js';
 import './site_settings/chooser_exception_list.js';
 import './site_settings/media_picker.js';
 import './site_settings/pdf_documents.js';
+import './site_settings/settings_category_default_radio_group.js';
 import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/zoom_levels.js';

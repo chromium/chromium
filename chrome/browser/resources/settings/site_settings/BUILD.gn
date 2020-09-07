@@ -24,6 +24,7 @@ js_type_check("closure_compile_module") {
     ":media_picker",
     ":pdf_documents",
     ":protocol_handlers",
+    ":settings_category_default_radio_group",
     ":site_data",
     ":site_data_details_subpage",
     ":site_data_entry",
@@ -168,6 +169,19 @@ js_library("protocol_handlers") {
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
+}
+
+js_library("settings_category_default_radio_group") {
+  deps = [
+    ":constants",
+    ":site_settings_behavior",
+    "../controls:settings_radio_group.m",
+    "../privacy_page:collapse_radio_button",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("site_data") {
@@ -332,6 +346,7 @@ html_to_js("web_components") {
     "media_picker.js",
     "pdf_documents.js",
     "protocol_handlers.js",
+    "settings_category_default_radio_group.js",
     "site_data.js",
     "site_data_details_subpage.js",
     "site_data_entry.js",

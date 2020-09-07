@@ -39,6 +39,10 @@
         width: 100%;
       }
 
+      #buttonIcon {
+        padding-inline-end: 6px;
+      }
+
       #labelWrapper {
         --cr-radio-button-label-spacing: 0;
         padding-bottom: 6px;
@@ -67,6 +71,8 @@
         <div class="disc"></div>
       </div>
       <div id="borderWrapper">
+        <iron-icon id="buttonIcon"
+            icon="[[icon]]" hidden$="[[!icon]]"></iron-icon>
         <div id="labelWrapper">
           <div id="label" aria-hidden="true">
             [[label]]

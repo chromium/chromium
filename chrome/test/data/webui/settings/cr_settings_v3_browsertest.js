@@ -499,6 +499,10 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  ['AppearancePage', 'appearance_page_test.js'],
  ['BasicPage', 'basic_page_test.js'],
+ [
+   'SettingsCategoryDefaultRadioGroup',
+   'settings_category_default_radio_group_tests.js'
+ ],
  ['CategoryDefaultSetting', 'category_default_setting_tests.js'],
  ['CategorySettingExceptions', 'category_setting_exceptions_tests.js'],
  ['Checkbox', 'checkbox_tests.js'],

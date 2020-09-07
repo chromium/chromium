@@ -269,6 +269,7 @@ js_library("lazy_load") {
     "privacy_page:security_page",
     "site_settings:local_data_browser_proxy",
     "site_settings:protocol_handlers",
+    "site_settings:settings_category_default_radio_group",
     "site_settings:site_settings_prefs_browser_proxy",
     "site_settings_page",
   ]

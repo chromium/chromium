@@ -31,6 +31,8 @@
  * |                                                 |
  * +-------------------------------------------------+
  *
+ * TODO(crbug.com/1113642): Remove this element when content settings redesign
+ * is launched.
  */
 import '../controls/settings_toggle_button.m.js';
 import '../settings_shared_css.m.js';

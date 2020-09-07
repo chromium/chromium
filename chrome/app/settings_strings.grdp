@@ -1608,6 +1608,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_REPRESENTATION_SEPARATOR" desc="The separator used to split up the display of a URL into host and scheme/protocol, when the scheme is not HTTPS. For example, it will be used in a string that looks like 'google.co.uk — http'.">
       —
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEFAULT_BEHAVIOR" desc="Label for the site settings default behavior.">
+    Default behavior
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEFAULT_BEHAVIOR_DESCRIPTION" desc="Description for the site settings default behavior.">
+    Sites automatically follow this setting when you visit them
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS" desc="Label for the ads site settings.">
     Ads
   </message>

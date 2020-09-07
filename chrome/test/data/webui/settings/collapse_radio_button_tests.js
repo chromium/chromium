@@ -192,4 +192,11 @@ suite('CrCollapseRadioButton', function() {
     assertTrue(isChildVisible(collapseRadioButton, 'cr-policy-pref-indicator'));
     assertFalse(collapseRadioButton.disabled);
   });
+
+  test('iconVisibleWhenSet', function() {
+    assertFalse(isChildVisible(collapseRadioButton, '#buttonIcon'));
+
+    collapseRadioButton.set('icon', 'cr:location-on');
+    assertTrue(isChildVisible(collapseRadioButton, '#buttonIcon'));
+  });
 });

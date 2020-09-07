@@ -780,6 +780,10 @@
            use_base_dir="false"
            compress="false" type="BINDATA"
            preprocess="true" />
+  <include name="IDR_SETTINGS_SITE_SETTINGS_SETTINGS_CATEGORY_DEFAULT_RADIO_GROUP_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/site_settings/settings_category_default_radio_group.js"
+           use_base_dir="false"
+           compress="false" type="BINDATA" />
   <include name="IDR_SETTINGS_SITE_SETTINGS_SITE_DATA_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/site_settings/site_data.js"
            use_base_dir="false"
