@@ -34,6 +34,8 @@ const char kDefaultSenderId[] = "fake_sender_id";
 const char kSyncInvalidationsAppId[] = "com.google.chrome.sync.invalidations";
 const char kPayloadKey[] = "payload";
 
+const int kTokenValidationPeriodMinutesDefault = 60 * 24;
+
 class MockInstanceID : public InstanceID {
  public:
   MockInstanceID() : InstanceID("app_id", /*gcm_driver=*/nullptr) {}
@@ -95,7 +97,8 @@ class FCMHandlerTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   gcm::FakeGCMDriver fake_gcm_driver_;
   NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
@@ -142,6 +145,64 @@ TEST_F(FCMHandlerTest, ShouldNotifyOnTokenChange) {
 
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged());
   fcm_handler_.StartListening();
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+}
+
+TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndActOnNewToken) {
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // Check that the handler gets the token through GetToken and notifies the
+  // observer.
+  EXPECT_CALL(mock_instance_id_, GetToken(_, _, _, _, _, _))
+      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+        std::move(callback).Run("token", InstanceID::Result::SUCCESS);
+      })));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  fcm_handler_.StartListening();
+
+  // Adjust the time and check that validation will happen in time.
+  // The old token is invalid, so token observer should be informed.
+  task_environment_.FastForwardBy(
+      base::TimeDelta::FromMinutes(kTokenValidationPeriodMinutesDefault) -
+      base::TimeDelta::FromSeconds(1));
+  // When it is time, validation happens.
+  EXPECT_CALL(mock_instance_id_, GetToken(_, _, _, _, _, _))
+      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+        std::move(callback).Run("new token", InstanceID::Result::SUCCESS);
+      })));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+}
+
+TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndNotActOnSameToken) {
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // Check that the handler gets the token through GetToken and notifies the
+  // observer.
+  EXPECT_CALL(mock_instance_id_, GetToken(_, _, _, _, _, _))
+      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+        std::move(callback).Run("token", InstanceID::Result::SUCCESS);
+      })));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  fcm_handler_.StartListening();
+
+  // Adjust the time and check that validation will happen in time.
+  // The old token is valid, so token observer should not be informed.
+  task_environment_.FastForwardBy(
+      base::TimeDelta::FromMinutes(kTokenValidationPeriodMinutesDefault) -
+      base::TimeDelta::FromSeconds(1));
+  // When it is time, validation happens.
+  EXPECT_CALL(mock_instance_id_, GetToken(_, _, _, _, _, _))
+      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+        std::move(callback).Run("token", InstanceID::Result::SUCCESS);
+      })));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   fcm_handler_.RemoveTokenObserver(&mock_token_observer);
 }

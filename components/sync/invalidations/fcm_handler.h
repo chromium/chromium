@@ -10,6 +10,7 @@
 
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -78,6 +79,12 @@ class FCMHandler : public gcm::GCMAppHandler {
   // Called when a subscription token is obtained from the GCM server.
   void DidRetrieveToken(const std::string& subscription_token,
                         instance_id::InstanceID::Result result);
+  void ScheduleNextTokenValidation();
+  void StartTokenValidation();
+  void DidReceiveTokenForValidation(const std::string& new_token,
+                                    instance_id::InstanceID::Result result);
+
+  void StartTokenFetch(instance_id::InstanceID::GetTokenCallback callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -88,6 +95,8 @@ class FCMHandler : public gcm::GCMAppHandler {
 
   // Contains an FCM registration token if not empty.
   std::string fcm_registration_token_;
+
+  base::OneShotTimer token_validation_timer_;
 
   // Contains all listeners to notify about each incoming message in OnMessage
   // method.
