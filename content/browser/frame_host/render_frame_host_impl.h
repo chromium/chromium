@@ -1948,8 +1948,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            AttemptDuplicateRenderWidgetHost);
   FRIEND_TEST_ALL_PREFIXES(RenderDocumentHostUserDataTest,
                            CheckInPendingDeletionState);
-  FRIEND_TEST_ALL_PREFIXES(AncestorThrottleNavigationTest,
-                           WillStartRequestAddsSecRequiredCSPHeader);
 
   class DroppedInterfaceRequestLogger;
 
