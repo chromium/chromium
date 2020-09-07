@@ -336,6 +336,8 @@ bool HandleCall(uint32_t instance_id,
     return false;
   }
 
+  mojolpm::GetContext()->StartDeserialization();
+
   bool mojolpm_result = true;
 {%-       for param in method.parameters %}
 {%-         set name = param.name|camel_to_under %}
@@ -372,15 +374,9 @@ bool HandleCall(uint32_t instance_id,
 {%-       else -%}
 );
 {%-       endif -%}
+    mojolpm::GetContext()->EndDeserialization(Context::Rollback::kNoRollback);
   } else {
-{%-       for param in method.parameters %}
-{%-         set name = param.name|camel_to_under %}
-{%-         set kind = param.kind %}
-{%-         set param_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-         if kind|is_any_interface_kind %}
-    local_{{name}}.reset();
-{%-         endif %}
-{%-       endfor %}
+    mojolpm::GetContext()->EndDeserialization(Context::Rollback::kRollback);
     mojolpmdbg("call failed\n");
   }
 
@@ -411,6 +407,8 @@ bool HandleResponse(
   if (!mojolpm_callback) {
     return true;
   }
+
+  mojolpm::GetContext()->StartDeserialization();
 
   bool mojolpm_result = true;
 {%-         for param in method.response_parameters %}
@@ -448,7 +446,9 @@ bool HandleResponse(
 {%-           endif %}
 {%-         endfor -%}
 );
+    mojolpm::GetContext()->EndDeserialization(Context::Rollback::kNoRollback);
   } else {
+    mojolpm::GetContext()->EndDeserialization(Context::Rollback::kRollback);
     mojolpm::GetContext()->AddInstance<
       {{mojom_type}}::{{method.name}}Callback>(callback_id, std::move(*mojolpm_callback));
   }

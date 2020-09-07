@@ -44,6 +44,43 @@ void Context::EndTestcase() {
   instances_.clear();
 }
 
+void Context::StartDeserialization() {
+  rollback_.clear();
+}
+
+void Context::EndDeserialization(Rollback rollback) {
+  if (rollback == Rollback::kRollback) {
+    for (const auto& entry : rollback_) {
+      RemoveInstance(entry.first, entry.second);
+    }
+  }
+  rollback_.clear();
+}
+
+void Context::RemoveInstance(TypeId type_id, uint32_t id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto instances_iter = instances_.find(type_id);
+  if (instances_iter != instances_.end()) {
+    auto& instance_map = instances_iter->second;
+
+    // normalize id to [0, max_id]
+    if (instance_map.size() > 0 && instance_map.rbegin()->first < id) {
+      id = id % (instance_map.rbegin()->first + 1);
+    }
+
+    // choose the first valid entry after id
+    auto instance = instance_map.lower_bound(id);
+    if (instance == instance_map.end()) {
+      mojolpmdbg("failed!\n");
+      return;
+    }
+
+    instance_map.erase(instance);
+  } else {
+    mojolpmdbg("failed!\n");
+  }
+}
+
 Context* GetContext() {
   static base::NoDestructor<Context> context;
   return context.get();

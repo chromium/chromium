@@ -7,6 +7,8 @@
 
 #include <map>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -124,12 +126,34 @@ class Context {
   template <typename T>
   uint32_t NextId();
 
+  // Starts a deserialization section. This is needed because associated binding
+  // types will only become valid once they are sent over a message pipe, and
+  // this means that we need to be able to rollback any instances added if later
+  // deserialization fails.
+  void StartDeserialization();
+
+  // Enum used to make the expected behaviour of EndDeserialization calls clear
+  // from the callsites.
+  enum class Rollback {
+    kNoRollback,
+    kRollback,
+  };
+
+  // Ends a deserialization section. If `kRollback`, then any associated binding
+  // instances added since the last call to StartDeserialization will be removed
+  // from the instance storage.
+  void EndDeserialization(Rollback rollback);
+
   void StartTestcase();
   void EndTestcase();
 
   mojo::Message& message() { return message_; }
 
  private:
+  // Lookup the previously stored instance of type T using a fuzzy-match on
+  // the provided id, and remove that instance from the object storage.
+  void RemoveInstance(TypeId type_id, uint32_t id);
+
   // mojolpm::Context::Storage implements generic storage for all possible
   // object types that might be created during fuzzing. This allows the fuzzer
   // to reference objects by id, even when the possible types of those objects
@@ -230,6 +254,7 @@ class Context {
   std::map<TypeId, std::map<uint32_t, Storage>> instances_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::set<TypeId> interface_type_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<std::pair<TypeId, uint32_t>> rollback_;
 
   mojo::Message message_;
 
@@ -289,6 +314,7 @@ void Context::StorageTraits<::mojo::Remote<T>>::OnInstanceAdded(uint32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(context_->sequence_checker_);
   context_->interface_type_ids_.insert(type_id<::mojo::Remote<T>>());
   auto instance = context_->GetInstance<::mojo::Remote<T>>(id);
+  context_->rollback_.emplace_back(type_id<::mojo::Remote<T>>(), id);
   CHECK(instance);
   // Unretained is safe here since context_ owns instance.
   instance->set_disconnect_handler(
@@ -302,6 +328,7 @@ void Context::StorageTraits<::mojo::AssociatedRemote<T>>::OnInstanceAdded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(context_->sequence_checker_);
   context_->interface_type_ids_.insert(type_id<::mojo::AssociatedRemote<T>>());
   auto instance = context_->GetInstance<::mojo::AssociatedRemote<T>>(id);
+  context_->rollback_.emplace_back(type_id<::mojo::AssociatedRemote<T>>(), id);
   CHECK(instance);
   // Unretained is safe here since context_ owns instance.
   instance->set_disconnect_handler(
@@ -399,28 +426,8 @@ std::unique_ptr<T> Context::GetAndRemoveInstance(uint32_t id) {
 
 template <typename T>
 void Context::RemoveInstance(uint32_t id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojolpmdbg("RemoveInstance(%s, %u) = ", type_name<T>().c_str(), id);
-  auto instances_iter = instances_.find(type_id<T>());
-  if (instances_iter != instances_.end()) {
-    auto& instance_map = instances_iter->second;
-
-    // normalize id to [0, max_id]
-    if (instance_map.size() > 0 && instance_map.rbegin()->first < id) {
-      id = id % (instance_map.rbegin()->first + 1);
-    }
-
-    // choose the first valid entry after id
-    auto instance = instance_map.lower_bound(id);
-    if (instance == instance_map.end()) {
-      mojolpmdbg("failed!\n");
-      return;
-    }
-
-    instance_map.erase(instance);
-  } else {
-    mojolpmdbg("failed!\n");
-  }
+  RemoveInstance(type_id<T>(), id);
 }
 
 template <typename T>
