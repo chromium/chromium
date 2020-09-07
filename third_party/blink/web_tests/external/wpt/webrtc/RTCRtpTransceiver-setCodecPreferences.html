@@ -110,7 +110,7 @@
         tried = true;
       }
     });
-    assert_true(tried, 'VP8 video codec was found and tried');
+    assert_true(tried, 'H264 video codec was found and tried');
   }, `setCodecPreferences() with only H264 should succeed`);
 
   async function getRTPMapLinesWithCodecAsFirst(firstCodec)
