@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.signin;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -130,6 +132,21 @@ public class AccountPickerBottomSheetRenderTest {
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
         buildAndShowCollapsedBottomSheet();
         onView(withText(PROFILE_DATA1.getFullName())).perform(click());
+        mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testExpandedSheetShowsWhenBackpressingOnIncognitoInterstitial(
+            boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountManagerTestRule.addAccount(PROFILE_DATA2);
+        buildAndShowCollapsedBottomSheet();
+        onView(withText(PROFILE_DATA1.getFullName())).perform(click());
+        onView(withText(R.string.signin_incognito_mode_primary)).perform(click());
+        onView(isRoot()).perform(pressBack());
         mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
     }
 

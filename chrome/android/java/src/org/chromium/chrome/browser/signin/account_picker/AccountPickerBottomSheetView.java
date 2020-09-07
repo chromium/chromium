@@ -116,10 +116,16 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * Expands the account list.
      */
     void expandAccountList() {
+        mLogoImage.setImageResource(R.drawable.chrome_sync_logo);
+        mAccountPickerTitle.setText(R.string.signin_account_picker_dialog_title);
+        mAccountPickerSubtitle.setText(R.string.signin_account_picker_bottom_sheet_subtitle);
+        mAccountPickerSubtitle.setVisibility(View.VISIBLE);
+        mHorizontalDivider.setVisibility(View.VISIBLE);
         mAccountListView.setVisibility(View.VISIBLE);
 
         mSelectedAccountView.setVisibility(View.GONE);
         mContinueAsButton.setVisibility(View.GONE);
+        mIncognitoInterstitialView.setVisibility(View.GONE);
     }
 
     /**
@@ -164,7 +170,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mLogoImage.setImageResource(R.drawable.location_bar_incognito_badge);
         mIncognitoInterstitialView.setVisibility(View.VISIBLE);
 
-        mAccountPickerTitle.setVisibility(View.GONE);
         mAccountPickerSubtitle.setVisibility(View.GONE);
         mHorizontalDivider.setVisibility(View.GONE);
         mAccountListView.setVisibility(View.GONE);

@@ -185,6 +185,28 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    public void testExpandedSheetShowsWhenBackpressingOnIncognitoInterstitial() {
+        buildAndShowExpandedBottomSheet();
+        onView(withText(R.string.signin_incognito_mode_primary)).perform(click());
+        onView(isRoot()).perform(pressBack());
+
+        onView(withText(R.string.signin_account_picker_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_account_picker_bottom_sheet_subtitle))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.account_picker_horizontal_divider)).check(matches(isDisplayed()));
+        onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withText(PROFILE_DATA1.getFullName()), withEffectiveVisibility(VISIBLE)))
+                .check(matches(isDisplayed()));
+        onView(withText(PROFILE_DATA2.getAccountName())).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_continue_as_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
     public void testAccountDisappearedOnCollapsedSheet() {
         buildAndShowCollapsedBottomSheet();
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountName());
@@ -387,7 +409,7 @@ public class AccountPickerBottomSheetTest {
 
     private void checkIncognitoInterstitialSheet() {
         onView(withId(R.id.account_picker_bottom_sheet_logo)).check(matches(isDisplayed()));
-        onView(withId(R.id.account_picker_bottom_sheet_title)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_bottom_sheet_title)).check(matches(isDisplayed()));
         onView(withId(R.id.account_picker_bottom_sheet_subtitle))
                 .check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));

@@ -102,8 +102,13 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE,
                     ViewState.COLLAPSED_ACCOUNT_LIST);
             return true;
+        } else if (viewState == ViewState.INCOGNITO_INTERSTITIAL) {
+            mModel.set(
+                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.EXPANDED_ACCOUNT_LIST);
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     PropertyModel getModel() {
