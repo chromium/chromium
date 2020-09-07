@@ -126,11 +126,11 @@ RadicalHorizontalParameters GetRadicalHorizontalParameters(
   parameters.kern_before_degree = LayoutUnit(
       MathConstant(style,
                    OpenTypeMathSupport::MathConstants::kRadicalKernBeforeDegree)
-          .value_or(5 * style.FontSize() / 18));
+          .value_or(5 * style.FontSize() * kMathUnitFraction));
   parameters.kern_after_degree = LayoutUnit(
       MathConstant(style,
                    OpenTypeMathSupport::MathConstants::kRadicalKernAfterDegree)
-          .value_or(-10 * style.FontSize() / 18));
+          .value_or(-10 * style.FontSize() * kMathUnitFraction));
   return parameters;
 }
 

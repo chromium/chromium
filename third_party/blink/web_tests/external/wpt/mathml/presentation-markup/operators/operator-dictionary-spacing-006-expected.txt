@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Operator dictionary chunk 1 - lspace/rspace assert_true: expected true got false
-FAIL Operator dictionary chunk 2 - lspace/rspace assert_true: expected true got false
-FAIL Operator dictionary chunk 3 - lspace/rspace assert_true: expected true got false
-FAIL Operator dictionary chunk 4 - lspace/rspace assert_true: expected true got false
-FAIL Operator dictionary chunk 5 - lspace/rspace assert_true: expected true got false
-Harness: the test ran to completion.
-

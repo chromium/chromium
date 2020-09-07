@@ -1,12 +1,12 @@
 This is a testharness.js-based test.
-FAIL operator spacing inside Mrow assert_true: expected true got false
-FAIL operator spacing inside Sqrt assert_true: expected true got false
-FAIL operator spacing inside Style assert_true: expected true got false
-FAIL operator spacing inside Error assert_true: expected true got false
-FAIL operator spacing inside Phantom assert_true: expected true got false
-FAIL operator spacing inside Math assert_true: expected true got false
-FAIL operator spacing inside Menclose assert_true: expected true got false
-FAIL operator spacing inside Mpadded assert_true: expected true got false
-FAIL operator spacing inside Unknown assert_true: expected true got false
+PASS operator spacing inside Mrow
+PASS operator spacing inside Sqrt
+PASS operator spacing inside Style
+PASS operator spacing inside Error
+PASS operator spacing inside Phantom
+PASS operator spacing inside Math
+FAIL operator spacing inside Menclose assert_greater_than_equal: expected a number greater than or equal to 50 but got -8
+PASS operator spacing inside Mpadded
+FAIL operator spacing inside Unknown assert_greater_than_equal: expected a number greater than or equal to 50 but got -8
 Harness: the test ran to completion.
 

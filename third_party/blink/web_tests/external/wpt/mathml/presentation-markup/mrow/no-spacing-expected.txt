@@ -1,21 +1,21 @@
 This is a testharness.js-based test.
-FAIL Spacing inside <mfrac>. assert_true: expected true got false
-FAIL Spacing around <mfrac>. assert_true: expected true got false
-FAIL Spacing inside <msub>. assert_true: expected true got false
-FAIL Spacing around <msub>. assert_true: expected true got false
-FAIL Spacing inside <msup>. assert_true: expected true got false
-FAIL Spacing around <msup>. assert_true: expected true got false
-FAIL Spacing inside <msubsup>. assert_true: expected true got false
-FAIL Spacing around <msubsup>. assert_true: expected true got false
-FAIL Spacing inside <mmultiscripts>. assert_true: expected true got false
-FAIL Spacing around <mmultiscripts>. assert_true: expected true got false
-FAIL Spacing inside <munder>. assert_true: expected true got false
-FAIL Spacing around <munder>. assert_true: expected true got false
-FAIL Spacing inside <mover>. assert_true: expected true got false
-FAIL Spacing around <mover>. assert_true: expected true got false
-FAIL Spacing inside <munderover>. assert_true: expected true got false
-FAIL Spacing around <munderover>. assert_true: expected true got false
-FAIL Spacing inside <mroot>. assert_true: expected true got false
-FAIL Spacing around <mroot>. assert_true: expected true got false
+PASS Spacing inside <mfrac>.
+FAIL Spacing around <mfrac>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 27
+PASS Spacing inside <msub>.
+FAIL Spacing around <msub>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 55
+PASS Spacing inside <msup>.
+FAIL Spacing around <msup>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 55
+PASS Spacing inside <msubsup>.
+FAIL Spacing around <msubsup>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 55
+PASS Spacing inside <mmultiscripts>.
+FAIL Spacing around <mmultiscripts>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 85
+PASS Spacing inside <munder>.
+FAIL Spacing around <munder>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 25
+PASS Spacing inside <mover>.
+FAIL Spacing around <mover>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 25
+PASS Spacing inside <munderover>.
+FAIL Spacing around <munderover>. assert_greater_than_equal: expected a number greater than or equal to 200 but got 25
+FAIL Spacing inside <mroot>. assert_less_than_equal: expected a number less than or equal to 100 but got 106.9375
+FAIL Spacing around <mroot>. assert_less_than_equal: expected a number less than or equal to 100 but got 106.9375
 Harness: the test ran to completion.
 

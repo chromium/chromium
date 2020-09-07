@@ -15,6 +15,9 @@ class Document;
 
 enum class MathMLOperatorDictionaryCategory : uint8_t;
 
+// Math units are 1/18em.
+constexpr double kMathUnitFraction = 1.0 / 18.0;
+
 class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
  public:
   explicit MathMLOperatorElement(Document&);
@@ -37,6 +40,9 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
   void AddMathMinSizeIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
   void AddMathMaxSizeIfNeeded(ComputedStyle&, const CSSToLengthConversionData&);
   const OperatorContent& GetOperatorContent();
+
+  double DefaultLeadingSpace();
+  double DefaultTrailingSpace();
 
  private:
   base::Optional<OperatorContent> operator_content_;

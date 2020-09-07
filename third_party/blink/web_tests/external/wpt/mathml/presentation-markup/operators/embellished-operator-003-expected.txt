@@ -1,17 +1,17 @@
 This is a testharness.js-based test.
-FAIL maction (embellished operator) assert_true: expected true got false
-FAIL maction (embellished operator, from in-flow children) assert_true: expected true got false
-FAIL maction (not embellished operator) assert_true: expected true got false
-FAIL maction (not embellished operator, from in-flow children) assert_true: expected true got false
-FAIL maction (not embellished operator, empty) assert_true: expected true got false
-FAIL maction (embellished operator, one child) assert_true: expected true got false
-FAIL maction (embellished operator, complex) assert_true: expected true got false
-FAIL semantics (embellished operator) assert_true: expected true got false
-FAIL semantics (embellished operator, from in-flow children) assert_true: expected true got false
-FAIL semantics (not embellished operator) assert_true: expected true got false
-FAIL semantics (not embellished operator, from in-flow children) assert_true: expected true got false
-FAIL semantics (not embellished operator, empty) assert_true: expected true got false
-FAIL semantics (embellished operator, one child) assert_true: expected true got false
-FAIL semantics (embellished operator, complex) assert_true: expected true got false
+FAIL maction (embellished operator) assert_approx_equals: expected 50 +/- 1 but got 0
+FAIL maction (embellished operator, from in-flow children) assert_approx_equals: expected 50 +/- 1 but got 0
+PASS maction (not embellished operator)
+PASS maction (not embellished operator, from in-flow children)
+PASS maction (not embellished operator, empty)
+FAIL maction (embellished operator, one child) assert_approx_equals: expected 50 +/- 1 but got 0
+FAIL maction (embellished operator, complex) assert_approx_equals: expected 50 +/- 1 but got 0
+FAIL semantics (embellished operator) assert_approx_equals: expected 50 +/- 1 but got 0
+FAIL semantics (embellished operator, from in-flow children) assert_approx_equals: expected 50 +/- 1 but got 0
+PASS semantics (not embellished operator)
+PASS semantics (not embellished operator, from in-flow children)
+PASS semantics (not embellished operator, empty)
+FAIL semantics (embellished operator, one child) assert_approx_equals: expected 50 +/- 1 but got 0
+FAIL semantics (embellished operator, complex) assert_approx_equals: expected 50 +/- 1 but got 0
 Harness: the test ran to completion.
 

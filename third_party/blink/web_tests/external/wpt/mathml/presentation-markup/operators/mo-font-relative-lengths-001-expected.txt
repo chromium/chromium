@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-FAIL font-relative lspace refers to the core operator assert_approx_equals: baseSizePx * fontScalePercent * lspaceEm expected 100 +/- 1 but got 50
-FAIL font-relative rspace refers to the core operator assert_approx_equals: baseSizePx * fontScalePercent * rspaceEm expected 400 +/- 1 but got 200
+PASS font-relative lspace refers to the core operator
+PASS font-relative rspace refers to the core operator
 FAIL font-relative minsize refers to the core operator assert_approx_equals: baseSizePx * fontScalePercent * minsizeEm expected 400 +/- 1 but got 50
 PASS font-relative maxsize refers to the core operator
 Harness: the test ran to completion.

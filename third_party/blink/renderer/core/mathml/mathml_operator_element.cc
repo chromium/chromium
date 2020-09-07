@@ -279,4 +279,24 @@ void MathMLOperatorElement::AddMathMaxSizeIfNeeded(
   }
 }
 
+double MathMLOperatorElement::DefaultLeadingSpace() {
+  ComputeDictionaryCategory();
+  return static_cast<float>(
+             MathMLOperatorDictionaryCategories
+                 [std::underlying_type_t<MathMLOperatorDictionaryCategory>(
+                      properties_.dictionary_category)]
+                     .leading_space_in_math_unit) *
+         kMathUnitFraction;
+}
+
+double MathMLOperatorElement::DefaultTrailingSpace() {
+  ComputeDictionaryCategory();
+  return static_cast<float>(
+             MathMLOperatorDictionaryCategories
+                 [std::underlying_type_t<MathMLOperatorDictionaryCategory>(
+                      properties_.dictionary_category)]
+                     .trailing_space_in_math_unit) *
+         kMathUnitFraction;
+}
+
 }  // namespace blink
