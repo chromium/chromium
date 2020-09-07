@@ -76,7 +76,9 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
     port_ = c.address().port();
   }
   type_ = CandidateTypeToString(c.type());
-  tcp_type_ = String::FromUTF8(c.tcptype().data());
+  if (!c.tcptype().empty()) {
+    tcp_type_ = String::FromUTF8(c.tcptype().data());
+  }
   if (!c.related_address().IsNil()) {
     related_address_ =
         String::FromUTF8(c.related_address().HostAsURIString().data());

@@ -68,7 +68,7 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
   const String Protocol() const { return protocol_; }
   const base::Optional<uint16_t>& Port() const { return port_; }
   const String& Type() const { return type_; }
-  const String& TcpType() const { return tcp_type_; }
+  const base::Optional<String>& TcpType() const { return tcp_type_; }
   const String& RelatedAddress() const { return related_address_; }
   const base::Optional<uint16_t>& RelatedPort() const { return related_port_; }
   const String& UsernameFragment() const { return username_fragment_; }
@@ -88,7 +88,7 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
   String protocol_;
   base::Optional<uint16_t> port_;
   String type_;
-  String tcp_type_;
+  base::Optional<String> tcp_type_;
   String related_address_;
   base::Optional<uint16_t> related_port_;
   String username_fragment_;

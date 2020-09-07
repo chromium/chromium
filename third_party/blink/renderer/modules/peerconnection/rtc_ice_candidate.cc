@@ -127,7 +127,7 @@ String RTCIceCandidate::type() const {
   return platform_candidate_->Type();
 }
 
-String RTCIceCandidate::tcpType() const {
+base::Optional<String> RTCIceCandidate::tcpType() const {
   return platform_candidate_->TcpType();
 }
 

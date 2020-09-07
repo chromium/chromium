@@ -65,7 +65,7 @@ class MODULES_EXPORT RTCIceCandidate final : public ScriptWrappable {
   String protocol() const;
   base::Optional<uint16_t> port() const;
   String type() const;
-  String tcpType() const;
+  base::Optional<String> tcpType() const;
   String relatedAddress() const;
   base::Optional<uint16_t> relatedPort() const;
   String usernameFragment() const;
