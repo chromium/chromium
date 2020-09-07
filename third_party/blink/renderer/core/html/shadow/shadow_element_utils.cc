@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 
 namespace blink {
 
@@ -13,8 +14,8 @@ bool IsSliderContainer(const Element& element) {
   if (!element.IsInUserAgentShadowRoot())
     return false;
   const AtomicString& shadow_pseudo = element.ShadowPseudoId();
-  return shadow_pseudo == "-webkit-media-slider-container" ||
-         shadow_pseudo == "-webkit-slider-container";
+  return shadow_pseudo == shadow_element_names::kPseudoMediaSliderContainer ||
+         shadow_pseudo == shadow_element_names::kPseudoSliderContainer;
 }
 
 }  // namespace blink

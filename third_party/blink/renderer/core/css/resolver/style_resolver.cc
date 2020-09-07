@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_element.h"
@@ -317,7 +318,7 @@ static void MatchHostAndCustomElementRules(const Element& element,
 static void MatchSlottedRules(const Element&, ElementRuleCollector&);
 static void MatchSlottedRulesForUAHost(const Element& element,
                                        ElementRuleCollector& collector) {
-  if (element.ShadowPseudoId() != "-webkit-input-placeholder")
+  if (element.ShadowPseudoId() != shadow_element_names::kPseudoInputPlaceholder)
     return;
 
   // We allow ::placeholder pseudo element after ::slotted(). Since we are
@@ -429,7 +430,7 @@ static void MatchElementScopeRules(const Element& element,
 void StyleResolver::MatchPseudoPartRulesForUAHost(
     const Element& element,
     ElementRuleCollector& collector) {
-  if (element.ShadowPseudoId() != "-webkit-input-placeholder")
+  if (element.ShadowPseudoId() != shadow_element_names::kPseudoInputPlaceholder)
     return;
 
   // We allow ::placeholder pseudo element after ::part(). See

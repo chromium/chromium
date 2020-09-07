@@ -85,5 +85,29 @@
       name: "-webkit-details-marker",
       Symbol: "kPseudoWebKitDetailsMarker",
     },
+    {
+      name: "-webkit-input-placeholder",
+      Symbol: "kPseudoInputPlaceholder",
+    },
+    {
+      name: "-internal-input-suggested",
+      Symbol: "kPseudoInternalInputSuggested",
+    },
+    {
+      name: "-webkit-media-slider-container",
+      Symbol: "kPseudoMediaSliderContainer",
+    },
+    {
+      name: "-webkit-meter-inner-element",
+      Symbol: "kPseudoMeterInnerElement",
+    },
+    {
+      name: "-webkit-slider-container",
+      Symbol: "kPseudoSliderContainer",
+    },
+    {
+      name: "-webkit-textfield-decoration-container",
+      Symbol: "kPseudoTextFieldDecorationContainer",
+    },
   ],
 }

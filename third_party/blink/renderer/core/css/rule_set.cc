@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -231,7 +232,7 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
       if (it->FollowsPart()) {
         part_pseudo_rules_.push_back(rule_data);
       } else {
-        AddToRuleSet(AtomicString("-webkit-input-placeholder"),
+        AddToRuleSet(shadow_element_names::kPseudoInputPlaceholder,
                      EnsurePendingRules()->shadow_pseudo_element_rules,
                      rule_data);
       }

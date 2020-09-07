@@ -432,13 +432,8 @@ bool SliderContainerElement::CanSlide() {
 }
 
 const AtomicString& SliderContainerElement::ShadowPseudoId() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, media_slider_container,
-                      ("-webkit-media-slider-container"));
-  DEFINE_STATIC_LOCAL(const AtomicString, slider_container,
-                      ("-webkit-slider-container"));
-
   if (!OwnerShadowHost() || !OwnerShadowHost()->GetLayoutObject())
-    return slider_container;
+    return shadow_element_names::kPseudoSliderContainer;
 
   const ComputedStyle& slider_style =
       OwnerShadowHost()->GetLayoutObject()->StyleRef();
@@ -447,9 +442,9 @@ const AtomicString& SliderContainerElement::ShadowPseudoId() const {
     case kMediaSliderThumbPart:
     case kMediaVolumeSliderPart:
     case kMediaVolumeSliderThumbPart:
-      return media_slider_container;
+      return shadow_element_names::kPseudoMediaSliderContainer;
     default:
-      return slider_container;
+      return shadow_element_names::kPseudoSliderContainer;
   }
 }
 

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -761,8 +762,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   if (element && style.TextOverflow() == ETextOverflow::kEllipsis) {
     const AtomicString& pseudo_id = element->ShadowPseudoId();
-    if (pseudo_id == "-webkit-input-placeholder" ||
-        pseudo_id == "-internal-input-suggested") {
+    if (pseudo_id == shadow_element_names::kPseudoInputPlaceholder ||
+        pseudo_id == shadow_element_names::kPseudoInternalInputSuggested) {
       TextControlElement* text_control =
           ToTextControl(element->OwnerShadowHost());
       DCHECK(text_control);

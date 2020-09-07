@@ -314,7 +314,7 @@ void TextFieldInputType::CreateShadowSubtree() {
   auto* container = MakeGarbageCollected<HTMLDivElement>(document);
   container->SetIdAttribute(shadow_element_names::kIdTextFieldContainer);
   container->SetShadowPseudoId(
-      AtomicString("-webkit-textfield-decoration-container"));
+      shadow_element_names::kPseudoTextFieldDecorationContainer);
   shadow_root->AppendChild(container);
 
   auto* editing_view_port =
@@ -373,7 +373,7 @@ void TextFieldInputType::ListAttributeTargetChanged() {
       auto* rp_container = MakeGarbageCollected<HTMLDivElement>(document);
       rp_container->SetIdAttribute(shadow_element_names::kIdTextFieldContainer);
       rp_container->SetShadowPseudoId(
-          AtomicString("-webkit-textfield-decoration-container"));
+          shadow_element_names::kPseudoTextFieldDecorationContainer);
       Element* inner_editor = GetElement().InnerEditorElement();
       inner_editor->parentNode()->ReplaceChild(rp_container, inner_editor);
       auto* editing_view_port =
@@ -501,7 +501,8 @@ void TextFieldInputType::UpdatePlaceholderText() {
     auto* new_element =
         MakeGarbageCollected<HTMLDivElement>(GetElement().GetDocument());
     placeholder = new_element;
-    placeholder->SetShadowPseudoId(AtomicString("-webkit-input-placeholder"));
+    placeholder->SetShadowPseudoId(
+        shadow_element_names::kPseudoInputPlaceholder);
     placeholder->SetInlineStyleProperty(CSSPropertyID::kDisplay,
                                         GetElement().IsPlaceholderVisible()
                                             ? CSSValueID::kBlock

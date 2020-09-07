@@ -131,7 +131,8 @@ ControlPart AutoAppearanceFor(const Element& element) {
     // Slider container elements and -webkit-meter-inner-element don't have IDs.
     if (IsSliderContainer(element))
       return kSliderHorizontalPart;
-    if (element.ShadowPseudoId() == "-webkit-meter-inner-element")
+    if (element.ShadowPseudoId() ==
+        shadow_element_names::kPseudoMeterInnerElement)
       return kMeterPart;
   }
   return kNoControlPart;
@@ -479,20 +480,22 @@ void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&, Element*) const {}
 
 void LayoutTheme::AdjustSliderContainerStyle(ComputedStyle& style,
                                              Element* e) const {
-  if (e && (e->ShadowPseudoId() == "-webkit-media-slider-container" ||
-            e->ShadowPseudoId() == "-webkit-slider-container")) {
-    if (style.EffectiveAppearance() == kSliderVerticalPart) {
-      style.SetTouchAction(TouchAction::kPanX);
-      style.SetEffectiveAppearance(kNoControlPart);
-      style.SetWritingMode(WritingMode::kVerticalRl);
-      // It's always in RTL because the slider value increases up even in LTR.
-      style.SetDirection(TextDirection::kRtl);
-    } else {
-      style.SetTouchAction(TouchAction::kPanY);
-      style.SetEffectiveAppearance(kNoControlPart);
-      style.SetWritingMode(WritingMode::kHorizontalTb);
-    }
+  if (!e)
+    return;
+  const AtomicString& pseudo = e->ShadowPseudoId();
+  if (pseudo != shadow_element_names::kPseudoMediaSliderContainer &&
+      pseudo != shadow_element_names::kPseudoSliderContainer)
+    return;
+  if (style.EffectiveAppearance() == kSliderVerticalPart) {
+    style.SetTouchAction(TouchAction::kPanX);
+    style.SetWritingMode(WritingMode::kVerticalRl);
+    // It's always in RTL because the slider value increases up even in LTR.
+    style.SetDirection(TextDirection::kRtl);
+  } else {
+    style.SetTouchAction(TouchAction::kPanY);
+    style.SetWritingMode(WritingMode::kHorizontalTb);
   }
+  style.SetEffectiveAppearance(kNoControlPart);
 }
 
 void LayoutTheme::AdjustSliderThumbStyle(ComputedStyle& style) const {

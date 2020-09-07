@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -3458,7 +3459,7 @@ bool AXNodeObject::CanHaveChildren() const {
   // node that gets removed when it disappears, so this will only be present if
   // the placeholder is visible.
   if (GetElement() && GetElement()->ShadowPseudoId() ==
-                          AtomicString("-webkit-input-placeholder")) {
+                          shadow_element_names::kPseudoInputPlaceholder) {
     return false;
   }
 

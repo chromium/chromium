@@ -1412,7 +1412,8 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoPlaceholder:
       if (ShadowRoot* root = element.ContainingShadowRoot()) {
         return root->IsUserAgent() &&
-               element.ShadowPseudoId() == "-webkit-input-placeholder";
+               element.ShadowPseudoId() ==
+                   shadow_element_names::kPseudoInputPlaceholder;
       }
       return false;
     case CSSSelector::kPseudoWebKitCustomElement: {

@@ -1031,10 +1031,12 @@ void TextControlElement::SetSuggestedValue(const String& value) {
 
   if (suggested_value_.IsEmpty()) {
     // Reset the pseudo-id for placeholders to use the appropriated style
-    placeholder->SetShadowPseudoId(AtomicString("-webkit-input-placeholder"));
+    placeholder->SetShadowPseudoId(
+        shadow_element_names::kPseudoInputPlaceholder);
   } else {
     // Set the pseudo-id for suggested values to use the appropriated style.
-    placeholder->SetShadowPseudoId(AtomicString("-internal-input-suggested"));
+    placeholder->SetShadowPseudoId(
+        shadow_element_names::kPseudoInternalInputSuggested);
   }
 }
 
