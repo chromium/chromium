@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_api.pb.h"
@@ -447,6 +448,24 @@ TEST_F(AffiliationFetcherTest, FailOnNetworkError) {
       AffiliationFetcher::Create(test_shared_loader_factory(), &mock_delegate);
   fetcher->StartRequest(uris, {});
   WaitForResponse();
+}
+
+TEST_F(AffiliationFetcherTest, FetchTimeMetric) {
+  base::HistogramTester histogram_tester;
+  std::vector<FacetURI> requested_uris = {
+      FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)};
+
+  SetupSuccessfulResponse(
+      affiliation_pb::LookupAffiliationResponse().SerializeAsString());
+  MockAffiliationFetcherDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, OnFetchSucceededProxy());
+  auto fetcher =
+      AffiliationFetcher::Create(test_shared_loader_factory(), &mock_delegate);
+  fetcher->StartRequest(requested_uris, {});
+  WaitForResponse();
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.FetchTime", 1);
 }
 
 }  // namespace password_manager

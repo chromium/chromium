@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 
 class GURL;
@@ -92,6 +93,8 @@ class AffiliationFetcher : public AffiliationFetcherInterface {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<FacetURI> requested_facet_uris_;
   AffiliationFetcherDelegate* const delegate_;
+  // Timer to track the response time of the request.
+  base::ElapsedTimer fetch_timer_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 

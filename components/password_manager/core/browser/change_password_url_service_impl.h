@@ -32,20 +32,6 @@ extern const char kGstaticFetchErrorCodeMetricName[];
 extern const char kGstaticFetchHttpResponseCodeMetricName[];
 extern const char kGstaticFetchTimeMetricName[];
 
-// Used to record metrics for the usage and timing of the GetChangePasswordUrl
-// call. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-enum class GetChangePasswordUrlMetric {
-  // Used when GetChangePasswordUrl is called before the gstatic response
-  // arrives.
-  kNotFetchedYet = 0,
-  // Used when a url was in the gsatic file.
-  kUrlOverrideUsed = 1,
-  // Used when no override url was available
-  kNoUrlOverrideAvailable = 2,
-  kMaxValue = kNoUrlOverrideAvailable,
-};
-
 // Used to log the response of the request to the gstatic file. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.

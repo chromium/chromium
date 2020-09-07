@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -29,9 +30,16 @@ class SchemeHostPort;
 
 namespace password_manager {
 
+extern const char kGetChangePasswordURLMetricName[];
+
 class AffiliationServiceImpl : public AffiliationService,
                                public AffiliationFetcherDelegate {
  public:
+  struct ChangePasswordUrlMatch {
+    GURL change_password_url;
+    bool group_url_override;
+  };
+
   explicit AffiliationServiceImpl(
       syncer::SyncService* sync_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -80,7 +88,7 @@ class AffiliationServiceImpl : public AffiliationService,
   syncer::SyncService* sync_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<url::SchemeHostPort> requested_tuple_origins_;
-  std::map<url::SchemeHostPort, GURL> change_password_urls_;
+  std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
   // TODO(crbug.com/1117045): A vector of pending fetchers to be created.
   std::unique_ptr<AffiliationFetcherInterface> fetcher_;
 };

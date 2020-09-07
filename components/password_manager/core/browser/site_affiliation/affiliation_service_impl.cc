@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/util/ranges/algorithm.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
@@ -21,9 +22,10 @@ namespace {
 // paired with another facet's URL, which belongs to the same group. In case
 // none of the group's facets have change password URLs then those facets are
 // not inserted to the map.
-std::map<FacetURI, GURL> CreateFacetUriToChangePasswordUrlMap(
+std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
+CreateFacetUriToChangePasswordUrlMap(
     const std::vector<GroupedFacets>& groupings) {
-  std::map<FacetURI, GURL> uri_to_url;
+  std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch> uri_to_url;
   for (const auto& grouped_facets : groupings) {
     std::vector<FacetURI> uris_without_urls;
     GURL fallback_url;
@@ -32,18 +34,25 @@ std::map<FacetURI, GURL> CreateFacetUriToChangePasswordUrlMap(
         uris_without_urls.push_back(facet.uri);
         continue;
       }
-      uri_to_url[facet.uri] = facet.change_password_url;
+      uri_to_url[facet.uri] = AffiliationServiceImpl::ChangePasswordUrlMatch{
+          .change_password_url = facet.change_password_url,
+          .group_url_override = false};
       fallback_url = facet.change_password_url;
     }
     if (fallback_url.is_valid()) {
-      for (const auto& uri : uris_without_urls)
-        uri_to_url[uri] = fallback_url;
+      for (const auto& uri : uris_without_urls) {
+        uri_to_url[uri] = AffiliationServiceImpl::ChangePasswordUrlMatch{
+            .change_password_url = fallback_url, .group_url_override = true};
+      }
     }
   }
   return uri_to_url;
 }
 
 }  // namespace
+
+const char kGetChangePasswordURLMetricName[] =
+    "PasswordManager.AffiliationService.GetChangePasswordUsage";
 
 AffiliationServiceImpl::AffiliationServiceImpl(
     syncer::SyncService* sync_service,
@@ -68,20 +77,41 @@ void AffiliationServiceImpl::Clear() {
 
 GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
   auto it = change_password_urls_.find(url::SchemeHostPort(url));
-  return it != change_password_urls_.end() ? it->second : GURL();
+  if (it != change_password_urls_.end()) {
+    if (it->second.group_url_override) {
+      base::UmaHistogramEnumeration(
+          kGetChangePasswordURLMetricName,
+          metrics_util::GetChangePasswordUrlMetric::kGroupUrlOverrideUsed);
+    } else {
+      base::UmaHistogramEnumeration(
+          kGetChangePasswordURLMetricName,
+          metrics_util::GetChangePasswordUrlMetric::kUrlOverrideUsed);
+    }
+    return it->second.change_password_url;
+  }
+  if (base::Contains(requested_tuple_origins_, url::SchemeHostPort(url))) {
+    base::UmaHistogramEnumeration(
+        kGetChangePasswordURLMetricName,
+        metrics_util::GetChangePasswordUrlMetric::kNotFetchedYet);
+  } else {
+    base::UmaHistogramEnumeration(
+        kGetChangePasswordURLMetricName,
+        metrics_util::GetChangePasswordUrlMetric::kNoUrlOverrideAvailable);
+  }
+  return GURL();
 }
 
 void AffiliationServiceImpl::OnFetchSucceeded(
     std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
   fetcher_.reset();
-
-  std::map<FacetURI, GURL> uri_to_url =
-      CreateFacetUriToChangePasswordUrlMap(result->groupings);
+  std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
+      uri_to_url = CreateFacetUriToChangePasswordUrlMap(result->groupings);
   for (const url::SchemeHostPort& requested_tuple : requested_tuple_origins_) {
     auto it = uri_to_url.find(
         FacetURI::FromPotentiallyInvalidSpec(requested_tuple.Serialize()));
-    if (it != uri_to_url.end())
+    if (it != uri_to_url.end()) {
       change_password_urls_[requested_tuple] = it->second;
+    }
   }
 
   requested_tuple_origins_.clear();

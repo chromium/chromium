@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -141,7 +142,7 @@ TEST_F(ChangePasswordUrlServiceTest,
   EXPECT_EQ(GetChangePasswordUrl(GURL("https://google.com/foo")), GURL());
   histogram_tester().ExpectUniqueSample(
       kGetChangePasswordUrlMetricName,
-      GetChangePasswordUrlMetric::kNotFetchedYet, 1);
+      metrics_util::GetChangePasswordUrlMetric::kNotFetchedYet, 1);
 }
 
 TEST_F(ChangePasswordUrlServiceTest,
@@ -152,7 +153,7 @@ TEST_F(ChangePasswordUrlServiceTest,
             GURL("https://google.com/change-password"));
   histogram_tester().ExpectUniqueSample(
       kGetChangePasswordUrlMetricName,
-      GetChangePasswordUrlMetric::kUrlOverrideUsed, 1);
+      metrics_util::GetChangePasswordUrlMetric::kUrlOverrideUsed, 1);
 }
 
 TEST_F(ChangePasswordUrlServiceTest,
@@ -162,7 +163,7 @@ TEST_F(ChangePasswordUrlServiceTest,
   EXPECT_EQ(GetChangePasswordUrl(GURL("https://netflix.com")), GURL());
   histogram_tester().ExpectUniqueSample(
       kGetChangePasswordUrlMetricName,
-      GetChangePasswordUrlMetric::kNoUrlOverrideAvailable, 1);
+      metrics_util::GetChangePasswordUrlMetric::kNoUrlOverrideAvailable, 1);
 }
 
 TEST_F(ChangePasswordUrlServiceTest, NetworkMetrics_Failed) {

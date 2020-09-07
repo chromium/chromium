@@ -77,6 +77,7 @@ void AffiliationFetcher::SetFactoryForTesting(
 void AffiliationFetcher::StartRequest(const std::vector<FacetURI>& facet_uris,
                                       RequestInfo request_info) {
   DCHECK(!simple_url_loader_);
+  fetch_timer_ = base::ElapsedTimer();
   requested_facet_uris_ = facet_uris;
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -188,6 +189,8 @@ bool AffiliationFetcher::ParseResponse(
 
 void AffiliationFetcher::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
+  base::UmaHistogramTimes("PasswordManager.AffiliationFetcher.FetchTime",
+                          fetch_timer_.Elapsed());
   // Note that invoking the |delegate_| may destroy |this| synchronously, so the
   // invocation must happen last.
   std::unique_ptr<AffiliationFetcherDelegate::Result> result_data(
