@@ -338,7 +338,7 @@ base::Optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
     LayoutUnit emphasis_mark_height =
         LayoutUnit(font.EmphasisMarkHeight(style.TextEmphasisMarkString()));
-    DCHECK_GT(emphasis_mark_height, LayoutUnit());
+    DCHECK_GE(emphasis_mark_height, LayoutUnit());
     if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
       ink_overflow.ShiftYEdgeTo(
           std::min(ink_overflow.Y(), -emphasis_mark_height));
