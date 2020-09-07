@@ -130,9 +130,9 @@ void WaylandKeyboard::Key(void* data,
   WaylandKeyboard* keyboard = static_cast<WaylandKeyboard*>(data);
   DCHECK(keyboard);
 
-  keyboard->connection_->set_serial(serial);
-
   bool down = state == WL_KEYBOARD_KEY_STATE_PRESSED;
+  if (down)
+    keyboard->connection_->set_serial(serial, ET_KEY_PRESSED);
   int device_id = keyboard->device_id();
 
   keyboard->auto_repeat_handler_.UpdateKeyRepeat(

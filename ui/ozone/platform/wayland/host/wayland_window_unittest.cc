@@ -2029,7 +2029,28 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
 
   auto* test_popup = GetPopupByWindow(popup.get());
   ASSERT_TRUE(test_popup);
-  EXPECT_NE(test_popup->grab_serial(), touch_up_serial);
+
+  // Touch events are the exception. We can't use the serial that was sent
+  // before the "up" event. Otherwise, some compositors may dismiss popups.
+  // Thus, no serial must be used.
+  EXPECT_EQ(test_popup->grab_serial(), 0U);
+
+  popup->Hide();
+
+  // Send a single down event now.
+  wl_touch_send_down(server_.seat()->touch()->resource(), touch_down_serial, 0,
+                     surface_->resource(), 0 /* id */, wl_fixed_from_int(50),
+                     wl_fixed_from_int(100));
+
+  Sync();
+
+  popup->Show(false);
+
+  Sync();
+
+  test_popup = GetPopupByWindow(popup.get());
+  ASSERT_TRUE(test_popup);
+
   EXPECT_EQ(test_popup->grab_serial(), touch_down_serial);
 }
 

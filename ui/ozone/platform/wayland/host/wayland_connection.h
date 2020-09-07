@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
@@ -38,6 +39,12 @@ class GtkPrimarySelectionDeviceManager;
 
 class WaylandConnection {
  public:
+  // Stores the last serial and the event type it is associated with.
+  struct EventSerial {
+    uint32_t serial = 0;
+    EventType event_type = EventType::ET_UNKNOWN;
+  };
+
   WaylandConnection();
   WaylandConnection(const WaylandConnection&) = delete;
   WaylandConnection& operator=(const WaylandConnection&) = delete;
@@ -65,8 +72,11 @@ class WaylandConnection {
     return linux_explicit_synchronization_.get();
   }
 
-  void set_serial(uint32_t serial) { serial_ = serial; }
-  uint32_t serial() const { return serial_; }
+  void set_serial(uint32_t serial, EventType event_type) {
+    serial_ = {serial, event_type};
+  }
+  uint32_t serial() const { return serial_.serial; }
+  EventSerial event_serial() const { return serial_; }
 
   void SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
                        const gfx::Point& location);
@@ -204,7 +214,7 @@ class WaylandConnection {
 
   bool scheduled_flush_ = false;
 
-  uint32_t serial_ = 0;
+  EventSerial serial_;
 };
 
 }  // namespace ui

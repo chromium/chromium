@@ -133,7 +133,7 @@ void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
                                         const gfx::Point& location) {
   if (!cursor_)
     return;
-  cursor_->UpdateBitmap(bitmaps, location, serial_);
+  cursor_->UpdateBitmap(bitmaps, location, serial());
 }
 
 bool WaylandConnection::IsDragInProgress() const {
