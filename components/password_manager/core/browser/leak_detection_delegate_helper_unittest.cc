@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,8 +65,8 @@ class LeakDetectionDelegateHelperTest : public testing::Test {
         password_manager::features::kPasswordCheck);
     CHECK(store_->Init(nullptr));
 
-    delegate_helper_ =
-        std::make_unique<LeakDetectionDelegateHelper>(store_, callback_.Get());
+    delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
+        store_, /*account_store=*/nullptr, callback_.Get());
   }
 
   void TearDown() override {
@@ -237,6 +238,49 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
                            ASCIIToUTF16(kLeakedUsernameNonCanonicalized),
                            base::Time::Now(), CompromiseType::kLeaked}));
   InitiateGetCredentialLeakType();
+}
+
+namespace {
+class LeakDetectionDelegateHelperWithTwoStoreTest
+    : public LeakDetectionDelegateHelperTest {
+ protected:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordCheck);
+    profile_store_->Init(/*prefs=*/nullptr);
+    account_store_->Init(/*prefs=*/nullptr);
+
+    delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
+        profile_store_, account_store_, callback_.Get());
+  }
+
+  void TearDown() override {
+    account_store_->ShutdownOnUIThread();
+    profile_store_->ShutdownOnUIThread();
+    task_environment_.RunUntilIdle();
+  }
+
+  scoped_refptr<TestPasswordStore> profile_store_ =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  scoped_refptr<TestPasswordStore> account_store_ =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+};
+
+}  // namespace
+
+TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest, SavedLeakedCredentials) {
+  profile_store_->AddLogin(CreateForm(kLeakedOrigin, kLeakedUsername));
+  account_store_->AddLogin(CreateForm(kOtherOrigin, kLeakedUsername));
+
+  SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true),
+                                                CompromisedSitesCount(2));
+
+  InitiateGetCredentialLeakType();
+
+  EXPECT_EQ(base::FeatureList::IsEnabled(features::kPasswordCheck),
+            !profile_store_->compromised_credentials().empty());
+  EXPECT_EQ(base::FeatureList::IsEnabled(features::kPasswordCheck),
+            !account_store_->compromised_credentials().empty());
 }
 
 }  // namespace password_manager

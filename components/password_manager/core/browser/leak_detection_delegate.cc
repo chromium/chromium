@@ -86,7 +86,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
     // Otherwise query the helper to asynchronously determine the
     // |CredentialLeakType|.
     helper_ = std::make_unique<LeakDetectionDelegateHelper>(
-        client_->GetProfilePasswordStore(),
+        client_->GetProfilePasswordStore(), client_->GetAccountPasswordStore(),
         base::BindOnce(&LeakDetectionDelegate::OnShowLeakDetectionNotification,
                        base::Unretained(this)));
     helper_->ProcessLeakedPassword(std::move(url), std::move(username),
