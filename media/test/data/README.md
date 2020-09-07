@@ -690,6 +690,16 @@ JSON file that contains all metadata related to test-25fps.vp9_2, used by the
 video_decode_accelerator_tests. This includes the video codec, resolution and
 md5 checksums of individual video frames when converted to the I420 format.
 
+#### test-25fps.av1.ivf:
+The av1 video whose content is the same as test-25fps.h264.
+```
+ffmpeg -i test-25fps.h264 -vcodec libaom-av1 test-25fps.av1.ivf
+```
+
+#### test-25fps.av1.ivf.json:
+JSON file that contains all metadata related to test-25fps.av1.ivf, used by the
+video\_decode\_accelerator\_tests. This includes the video codec, resolution and
+md5 checksums of individual video frames when converted to the I420 format.
 
 ### VP9 video with raw vp9 frames
 
