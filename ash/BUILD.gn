@@ -1906,6 +1906,7 @@ test("ash_unittests") {
     "login/ui/login_keyboard_test_base.cc",
     "login/ui/login_keyboard_test_base.h",
     "login/ui/login_password_view_test.cc",
+    "login/ui/login_pin_input_view_unittest.cc",
     "login/ui/login_pin_view_unittest.cc",
     "login/ui/login_public_account_user_view_unittest.cc",
     "login/ui/login_test_base.cc",

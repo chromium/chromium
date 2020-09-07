@@ -88,6 +88,7 @@ class PinRequestViewTest : public LoginTestBase,
   void StartView(base::Optional<int> pin_length = 6) {
     PinRequest request;
     request.help_button_enabled = true;
+    request.obscure_pin = false;
     request.pin_length = pin_length;
     request.on_pin_request_done = base::DoNothing::Once<bool>();
     view_ = new PinRequestView(std::move(request), this);

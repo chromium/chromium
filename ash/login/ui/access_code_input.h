@@ -227,6 +227,8 @@ class FixedLengthCodeInput : public AccessCodeInput {
   // arrows.
   void SetAllowArrowNavigation(bool allowed);
 
+  int active_input_index() { return active_input_index_; }
+
  private:
   // Moves focus to the current input field.
   void FocusActiveField();
@@ -268,10 +270,15 @@ class FixedLengthCodeInput : public AccessCodeInput {
   // Value of current input, associate with AX event. The value will be the
   // concat string of input fields. i.e. [1][2][3][|][][], text_value_for_a11y_
   // = "123   ".
-  std::string text_value_for_a11y_;
+  base::string16 text_value_for_a11y_;
 
   // Whether the user can navigate the input fields with the arrow keys.
   bool arrow_navigation_allowed_ = true;
+
+  // Whether the digits should be rendered as '*' (bullets) instead of digits.
+  // This also affects the ChromeVox behaviour, preventing the digits from
+  // being read out loud.
+  bool is_obscure_pin_ = true;
 
   base::WeakPtrFactory<FixedLengthCodeInput> weak_ptr_factory_{this};
 };

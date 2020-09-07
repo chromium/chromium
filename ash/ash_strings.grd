@@ -1988,6 +1988,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME" desc="The accessible name of the pin input field used for PIN Auto-submit">
         Enter your PIN
       </message>
+      <message name="IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING" desc="Screen reader message telling the user how many digits are remaining for the PIN input field. [ICU Syntax]">
+        {NUM_DIGITS, plural,
+         =1 {One digit remaining}
+         other {# digits remaining}}
+      </message>
       <message name="IDS_ASH_LOGIN_SWITCH_TO_PASSWORD" desc="Text to display on the button that is used for switching between PIN and password authentication">
         Switch to password
       </message>

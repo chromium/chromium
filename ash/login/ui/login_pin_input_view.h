@@ -34,6 +34,17 @@ class ASH_EXPORT LoginPinInputView : public views::View {
   using OnPinSubmit = base::RepeatingCallback<void(const base::string16& pin)>;
   using OnPinChanged = base::RepeatingCallback<void(bool is_empty)>;
 
+  class ASH_EXPORT TestApi {
+   public:
+    explicit TestApi(LoginPinInputView* view);
+    ~TestApi();
+
+    views::View* code_input();
+
+   private:
+    LoginPinInputView* const view_;
+  };
+
   LoginPinInputView();
   LoginPinInputView& operator=(const LoginPinInputView&) = delete;
   LoginPinInputView(const LoginPinInputView&) = delete;
@@ -46,9 +57,6 @@ class ASH_EXPORT LoginPinInputView : public views::View {
   // `on_changed` is called upon each modification with a boolean indicating if
   // all field are empty. (Drives the visibility of 'Backspace' on the pin pad.)
   void Init(const OnPinSubmit& on_submit, const OnPinChanged& on_changed);
-
-  // The code input will call this when all digits are in.
-  void SubmitPin(const base::string16& pin);
 
   // Updates the length of the field. Used when switching users.
   void UpdateLength(const size_t pin_length);
@@ -66,6 +74,9 @@ class ASH_EXPORT LoginPinInputView : public views::View {
   void RequestFocus() override;
 
  private:
+  // The code input will call this when all digits are in.
+  void SubmitPin(const base::string16& pin);
+
   // Called by the inner view whenever the fields change.
   void OnChanged(bool is_empty);
 

@@ -52,6 +52,7 @@ class LoginPinInput : public FixedLengthCodeInput {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
+  int length_ = 0;
   LoginPinInputView::OnPinSubmit on_submit_;
   LoginPinInputView::OnPinChanged on_changed_;
 
@@ -68,6 +69,7 @@ LoginPinInput::LoginPinInput(int length,
                            /*on_enter*/ base::DoNothing(),
                            /*on_escape*/ base::DoNothing(),
                            /*obscure_pin*/ true),
+      length_(length),
       on_submit_(on_submit),
       on_changed_(on_changed) {
   // Do not allow the user to navigate to other fields. Only insertion
@@ -112,10 +114,22 @@ bool LoginPinInput::HandleGestureEvent(views::Textfield* sender,
 
 void LoginPinInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   FixedLengthCodeInput::GetAccessibleNodeData(node_data);
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kName,
-      l10n_util::GetStringUTF8(
+  const int inserted_digits = active_input_index();
+  const int remaining_digits = length_ - inserted_digits;
+  node_data->SetDescription(l10n_util::GetPluralStringFUTF16(
+      IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING, remaining_digits));
+  node_data->SetName(l10n_util::GetStringUTF8(
           IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
+}
+
+LoginPinInputView::TestApi::TestApi(LoginPinInputView* view) : view_(view) {
+  DCHECK(view_);
+}
+
+LoginPinInputView::TestApi::~TestApi() = default;
+
+views::View* LoginPinInputView::TestApi::code_input() {
+  return view_->code_input_;
 }
 
 LoginPinInputView::LoginPinInputView() : length_(kDefaultLength) {
