@@ -54,7 +54,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private static final int MAX_NUM_FAVICONS_TO_CACHE = 128;
 
     @IntDef({ChildType.NONE, ChildType.DEFAULT_CONTENT, ChildType.PERSONALIZED_SIGNIN_PROMO,
-            ChildType.SYNC_PROMO})
+            ChildType.PERSONALIZED_SYNC_PROMO, ChildType.SYNC_PROMO})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ChildType {
         // Values should be enumerated from 0 and can't have gaps.

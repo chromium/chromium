@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -65,6 +66,8 @@ public class RecentTabsManager implements AndroidSyncSettingsObserver, SignInSta
     }
 
     private static final int RECENTLY_CLOSED_MAX_TAB_COUNT = 5;
+
+    private static @Nullable @PromoState Integer sPromoStateForTests;
 
     private static RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
 
@@ -360,6 +363,10 @@ public class RecentTabsManager implements AndroidSyncSettingsObserver, SignInSta
      */
     @PromoState
     int getPromoType() {
+        if (sPromoStateForTests != null) {
+            return sPromoStateForTests;
+        }
+
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount()) {
             if (!mSignInManager.isSignInAllowed()) {
                 return PromoState.PROMO_NONE;
@@ -371,10 +378,6 @@ public class RecentTabsManager implements AndroidSyncSettingsObserver, SignInSta
                 return PromoState.PROMO_SYNC_PERSONALIZED;
             }
             return PromoState.PROMO_SIGNIN_PERSONALIZED;
-        }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            return PromoState.PROMO_SYNC_PERSONALIZED;
         }
 
         if (AndroidSyncSettings.get().isSyncEnabled()
@@ -441,6 +444,16 @@ public class RecentTabsManager implements AndroidSyncSettingsObserver, SignInSta
             updateForeignSessions();
             postUpdate();
         });
+    }
+
+    /**
+     * Forces the promo state to a particular value for testing purposes.
+     * @param promoState The promo state to which the manager will be set to.
+     * TODO(https://crbug.com/1123478): Create a different method to enforce promo state.
+     */
+    @VisibleForTesting
+    static void forcePromoStateForTests(@Nullable @PromoState Integer promoState) {
+        sPromoStateForTests = promoState;
     }
 
     @VisibleForTesting

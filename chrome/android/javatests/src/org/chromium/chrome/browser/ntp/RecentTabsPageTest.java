@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -24,8 +29,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -42,8 +51,18 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class RecentTabsPageTest {
+    // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_off badge
+    // for Sync promo.
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeProfileDataSource());
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private FakeRecentlyClosedTabManager mManager;
     private Tab mTab;
@@ -55,12 +74,12 @@ public class RecentTabsPageTest {
         RecentTabsManager.setRecentlyClosedTabManagerForTests(mManager);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
-        mPage = loadRecentTabsPage();
     }
 
     @After
     public void tearDown() {
         leaveRecentTabsPage();
+        RecentTabsManager.forcePromoStateForTests(null);
         RecentTabsManager.setRecentlyClosedTabManagerForTests(null);
     }
 
@@ -69,6 +88,7 @@ public class RecentTabsPageTest {
     @Feature({"RecentTabsPage"})
     @FlakyTest(message = "crbug.com/1075804")
     public void testRecentlyClosedTabs() throws ExecutionException {
+        mPage = loadRecentTabsPage();
         // Set a recently closed tab and confirm a view is rendered for it.
         List<RecentlyClosedTab> tabs = setRecentlyClosedTabs(1);
         Assert.assertEquals(1, mManager.getRecentlyClosedTabs(1).size());
@@ -79,6 +99,30 @@ public class RecentTabsPageTest {
         invokeContextMenu(view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         Assert.assertEquals(0, mManager.getRecentlyClosedTabs(1).size());
         waitForViewToDisappear(title);
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
+        mAccountManagerTestRule.addAccount(new ProfileDataSource.ProfileData(
+                "test@gmail.com", createAvatar(), "Full Name", "Given Name"));
+        RecentTabsManager.forcePromoStateForTests(
+                RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED);
+        mPage = loadRecentTabsPage();
+        mRenderTestRule.render(mPage.getView(), "personalized_signin_promo_recent_tabs_page");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
+        mAccountManagerTestRule.addAccount(new ProfileDataSource.ProfileData(
+                "test@gmail.com", createAvatar(), "Full Name", "Given Name"));
+        RecentTabsManager.forcePromoStateForTests(
+                RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED);
+        mPage = loadRecentTabsPage();
+        mRenderTestRule.render(mPage.getView(), "personalized_sync_promo_recent_tabs_page");
     }
 
     /**
@@ -143,5 +187,24 @@ public class RecentTabsPageTest {
                 InstrumentationRegistry.getInstrumentation(), view);
         Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
                 mActivityTestRule.getActivity(), contextMenuItemId, 0));
+    }
+
+    /**
+     * TODO(https://crbug.com/1125452): Remove this method and use test only resource.
+     */
+    private Bitmap createAvatar() {
+        final int avatarSize = 40;
+
+        Bitmap result = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+        canvas.drawColor(Color.RED);
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+
+        paint.setColor(Color.BLUE);
+        canvas.drawCircle(0, 0, avatarSize, paint);
+
+        return result;
     }
 }
