@@ -19,11 +19,7 @@ const EULA_FONTS_CSS = {
   code: `body * {
         font-family: Roboto, sans-serif !important;
         font-size: 13px !important;
-        background-color: transparent !important;
         line-height: 20px !important;}
-       body {
-        background-color: transparent !important;
-       }
        body h2 {
          font-size: 15px !important;
          line-height: 22px !important;}`
