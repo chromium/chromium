@@ -7,10 +7,12 @@
 #include "base/check.h"
 #include "chromeos/dbus/anomaly_detector_client.h"
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
+#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/dbus/arc/arc_midis_client.h"
 #include "chromeos/dbus/arc/arc_obb_mounter_client.h"
 #include "chromeos/dbus/arc/fake_arc_appfuse_provider_client.h"
+#include "chromeos/dbus/arc/fake_arc_data_snapshotd_client.h"
 #include "chromeos/dbus/arc/fake_arc_keymaster_client.h"
 #include "chromeos/dbus/arc/fake_arc_midis_client.h"
 #include "chromeos/dbus/arc/fake_arc_obb_mounter_client.h"
@@ -79,6 +81,8 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       CREATE_DBUS_CLIENT(AnomalyDetectorClient, use_real_clients);
   arc_appfuse_provider_client_ =
       CREATE_DBUS_CLIENT(ArcAppfuseProviderClient, use_real_clients);
+  arc_data_snapshotd_client_ =
+      CREATE_DBUS_CLIENT(ArcDataSnapshotdClient, use_real_clients);
   arc_keymaster_client_ =
       CREATE_DBUS_CLIENT(ArcKeymasterClient, use_real_clients);
   arc_midis_client_ = CREATE_DBUS_CLIENT(ArcMidisClient, use_real_clients);
@@ -120,6 +124,7 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
 
   anomaly_detector_client_->Init(system_bus);
   arc_appfuse_provider_client_->Init(system_bus);
+  arc_data_snapshotd_client_->Init(system_bus);
   arc_keymaster_client_->Init(system_bus);
   arc_midis_client_->Init(system_bus);
   arc_obb_mounter_client_->Init(system_bus);

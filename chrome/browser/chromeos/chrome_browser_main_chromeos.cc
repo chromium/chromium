@@ -171,6 +171,7 @@
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -644,6 +645,8 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
 
   g_browser_process->platform_part()->InitializeChromeUserManager();
 
+  arc_data_snapshotd_manager_ =
+      std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>();
   if (base::FeatureList::IsEnabled(::features::kWilcoDtc))
     wilco_dtc_supportd_manager_ = std::make_unique<WilcoDtcSupportdManager>();
 
@@ -1068,6 +1071,8 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   // This must be shut down before |arc_service_launcher_|.
   if (pre_profile_init_called_)
     NoteTakingHelper::Shutdown();
+
+  arc_data_snapshotd_manager_.reset();
 
   arc_service_launcher_->Shutdown();
 

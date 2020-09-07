@@ -104,4 +104,14 @@ void FakeUpstartClient::StopWilcoDtcService(VoidDBusMethodCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
+void FakeUpstartClient::StartArcDataSnapshotd(VoidDBusMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeUpstartClient::StopArcDataSnapshotd(VoidDBusMethodCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
 }  // namespace chromeos

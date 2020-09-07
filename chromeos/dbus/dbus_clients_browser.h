@@ -18,6 +18,7 @@ namespace chromeos {
 
 class AnomalyDetectorClient;
 class ArcAppfuseProviderClient;
+class ArcDataSnapshotdClient;
 class ArcKeymasterClient;
 class ArcMidisClient;
 class ArcObbMounterClient;
@@ -57,6 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
 
   std::unique_ptr<AnomalyDetectorClient> anomaly_detector_client_;
   std::unique_ptr<ArcAppfuseProviderClient> arc_appfuse_provider_client_;
+  std::unique_ptr<ArcDataSnapshotdClient> arc_data_snapshotd_client_;
   std::unique_ptr<ArcKeymasterClient> arc_keymaster_client_;
   std::unique_ptr<ArcMidisClient> arc_midis_client_;
   std::unique_ptr<ArcObbMounterClient> arc_obb_mounter_client_;

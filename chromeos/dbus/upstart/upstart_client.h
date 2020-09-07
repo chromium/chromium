@@ -89,6 +89,12 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
   // Stops wilco DTC services.
   virtual void StopWilcoDtcService(VoidDBusMethodCallback callback) = 0;
 
+  // Starts arc-data-snapshotd daemon.
+  virtual void StartArcDataSnapshotd(VoidDBusMethodCallback callback) = 0;
+
+  // Stops arc-data-snapshotd daemon.
+  virtual void StopArcDataSnapshotd(VoidDBusMethodCallback callback) = 0;
+
  protected:
   // Initialize() should be used instead.
   UpstartClient();
