@@ -523,6 +523,7 @@
 <translation id="6818242057446442178">වචනයෙන් ආපසු</translation>
 <translation id="6820676911989879663">විවේකයක් ගන්න!</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> සක්‍රිය කරන්න</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{එක් අංකයක් ඉතිරිය}one{අංක #ක් ඉතිරිය}other{අංක #ක් ඉතිරිය}}</translation>
 <translation id="6878400149835617132">කෙටිමඟ අක්‍රියයි</translation>
 <translation id="6896758677409633944">පිටපත්</translation>
 <translation id="6910714959251846841">මෙම යාවත්කාලීන කිරීම සඳහා ඔබේ උපාංගය බල ගැන්වීම අවශ්‍යය. <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන නවතම තොරතුරු දැන ගන්න.</translation>

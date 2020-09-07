@@ -522,6 +522,7 @@
 <translation id="6818242057446442178">এটা শব্দ পিছলৈ যাওক</translation>
 <translation id="6820676911989879663">বিৰতি লওক!</translation>
 <translation id="6857811139397017780">সক্ৰিয় কৰক <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{এটা অংক বাকী আছে}one{# টা অংক বাকী আছে}other{# টা অংক বাকী আছে}}</translation>
 <translation id="6878400149835617132">শ্বৰ্টকাট অফ কৰা হৈছে</translation>
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
 <translation id="6910714959251846841">এই আপডে’টটো কৰিবলৈ হ’লে আপোনাৰ ডিভাইচটো পাৱাৰৱাশ্ব কৰাটো প্ৰয়োজনীয়। শেহতীয়া <ph name="SYSTEM_APP_NAME" /> আপডে’টৰ বিষয়ে অধিক জানক।</translation>

@@ -523,6 +523,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6818242057446442178">Bitta soʻz orqaga</translation>
 <translation id="6820676911989879663">Tanaffus qiling</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> tarmog‘ini faollashtirish</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bitta raqam kiritilmadi}other{# ta raqam kiritilmadi}}</translation>
 <translation id="6878400149835617132">Yorliq yoqilmagan</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
 <translation id="6910714959251846841">Ushbu yangilanish o‘rnatilishi uchun qurilmani zavod sozlamalariga qaytarish zarur. <ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot.</translation>

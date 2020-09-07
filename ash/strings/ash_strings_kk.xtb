@@ -523,6 +523,7 @@
 <translation id="6818242057446442178">Бір сөзге артқа жылжу</translation>
 <translation id="6820676911989879663">Үзіліс жасаңыз!</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> белсендіру</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бір цифр қалды.}other{# цифр қалды.}}</translation>
 <translation id="6878400149835617132">Таңбаша өшірілді</translation>
 <translation id="6896758677409633944">Көшіру</translation>
 <translation id="6910714959251846841">Бұл жаңартылған нұсқаны орнату үшін құрылғыны зауыттық параметрлерге қайтару қажет. <ph name="SYSTEM_APP_NAME" /> қолданбасының ең жаңа нұсқасы туралы толығырақ.</translation>

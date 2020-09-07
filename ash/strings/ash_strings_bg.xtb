@@ -523,6 +523,7 @@
 <translation id="6818242057446442178">Придвижване назад с една дума</translation>
 <translation id="6820676911989879663">Време е за почивка!</translation>
 <translation id="6857811139397017780">Активиране на <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6910714959251846841">Тази актуализация изисква Powerwash на устройството ви. Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" />.</translation>

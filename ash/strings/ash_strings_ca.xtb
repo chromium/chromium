@@ -523,6 +523,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6857811139397017780">Activa <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6910714959251846841">Aquesta actualització requereix executar la funció Powerwash al dispositiu. Obtén més informació sobre l'última actualització de <ph name="SYSTEM_APP_NAME" />.</translation>

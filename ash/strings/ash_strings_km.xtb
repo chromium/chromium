@@ -523,6 +523,7 @@
 <translation id="6818242057446442178">ថយក្រោយមួយពាក្យ</translation>
 <translation id="6820676911989879663">សម្រាក​មួយភ្លែត!</translation>
 <translation id="6857811139397017780">ធ្វើសកម្មភាព <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{នៅសល់មួយខ្ទង់ទៀត}other{នៅសល់ # ខ្ទង់ទៀត}}</translation>
 <translation id="6878400149835617132">បានបិទ​ផ្លូវកាត់</translation>
 <translation id="6896758677409633944">ចម្លង</translation>
 <translation id="6910714959251846841">កំណែ​ថ្មី​នេះ​តម្រូវឱ្យ powerwash ឧបករណ៍​របស់អ្នក។ ស្វែងយល់​បន្ថែម​អំពី​កំណែ​ <ph name="SYSTEM_APP_NAME" /> ថ្មី​បំផុត។</translation>

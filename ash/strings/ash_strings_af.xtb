@@ -524,6 +524,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Geniet 'n blaaskans!</translation>
 <translation id="6857811139397017780">Aktiveer <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Een syfer bly oor}other{# syfers bly oor}}</translation>
 <translation id="6878400149835617132">Kortpad is afgeskakel</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6910714959251846841">Hierdie opdatering vereis dat jou toestel 'n kragwas kry. Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>

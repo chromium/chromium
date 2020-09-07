@@ -245,6 +245,7 @@
 <translation id="3638472932233958418">Вчитај веб-страници</translation>
 <translation id="3670030362669914947">Број</translation>
 <translation id="3691593122358196899">Додаден е обележувач во <ph name="FOLDER_TITLE" /></translation>
+<translation id="3709582977625132201">Обележи како непрочитано</translation>
 <translation id="3740397331642243698">Ги отвора внесените URL-адреси во Google Chrome во „Инкогнито“.</translation>
 <translation id="3771033907050503522">Инкогнито картички</translation>
 <translation id="3775743491439407556">Синхронизацијата не функционира</translation>
@@ -333,6 +334,7 @@
 <translation id="4818522717893377262">Додај јазик…</translation>
 <translation id="481968316161811770">Колачиња, податоци</translation>
 <translation id="4826218269716039351">Се блокираат колачиња од трети страни</translation>
+<translation id="48274138579728272">Означи како прочитано</translation>
 <translation id="4833786495304741580">Автоматски испраќа статистика за користењето и извештаи за падовите во Google.</translation>
 <translation id="4840495572919996524">Обележувачите, историјата, лозинките и другo веќе нема да се синхронизираат со сметката на Google.</translation>
 <translation id="4854345657858711387">Поставете лозинка</translation>
@@ -383,6 +385,7 @@
 <translation id="5433691172869980887">Корисничкото име е копирано</translation>
 <translation id="54401264925851789">Безбедносни информации за страницата</translation>
 <translation id="5443952882982198570">Кредитни картички</translation>
+<translation id="5457226814769348910">Отвори офлајн верзија</translation>
 <translation id="5457907402803865181">Грешка при синхронизирање на лозинките.</translation>
 <translation id="5489208564673669003">За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките за колачиња<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај ги сите колачиња (не се препорачува)</translation>

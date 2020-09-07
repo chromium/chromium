@@ -245,6 +245,7 @@
 <translation id="3638472932233958418">웹페이지 미리 로드하기</translation>
 <translation id="3670030362669914947">번호</translation>
 <translation id="3691593122358196899">북마크를 <ph name="FOLDER_TITLE" />에 추가함</translation>
+<translation id="3709582977625132201">읽지않음으로 표시</translation>
 <translation id="3740397331642243698">Chrome에서 시크릿 모드로 입력된 URL 열기</translation>
 <translation id="3771033907050503522">시크릿 탭</translation>
 <translation id="3775743491439407556">동기화가 작동하지 않음</translation>
@@ -333,6 +334,7 @@
 <translation id="4818522717893377262">언어 추가...</translation>
 <translation id="481968316161811770">쿠키, 사이트 데이터</translation>
 <translation id="4826218269716039351">제3자 차단</translation>
+<translation id="48274138579728272">읽음으로 표시</translation>
 <translation id="4833786495304741580">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="4840495572919996524">북마크, 방문 기록, 비밀번호 등이 더 이상 Google 계정과 동기화되지 않습니다.</translation>
 <translation id="4854345657858711387">비밀번호 설정</translation>
@@ -383,6 +385,7 @@
 <translation id="5433691172869980887">사용자 이름 복사됨</translation>
 <translation id="54401264925851789">페이지 보안 정보</translation>
 <translation id="5443952882982198570">신용카드</translation>
+<translation id="5457226814769348910">오프라인 버전 열기</translation>
 <translation id="5457907402803865181">비밀번호 동기화 중에 오류가 발생했습니다.</translation>
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>

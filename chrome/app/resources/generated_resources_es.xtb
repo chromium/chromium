@@ -1391,7 +1391,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="264810637653812429">No se han podido encontrar dispositivos compatibles.</translation>
 <translation id="2649045351178520408">ASCII codificado en Base64, cadena de certificados</translation>
 <translation id="2653033005692233957">No se ha podido completar la búsqueda</translation>
-<translation id="2653266418988778031">Si eliminas el certificado de CA, el navegador ya no podrá confiar en ningún certificado emitido por esa entidad emisora de certificados.</translation>
+<translation id="2653266418988778031">Si eliminas el certificado AC, el navegador ya no podrá confiar en ningún certificado emitido por esa entidad emisora de certificados.</translation>
 <translation id="2653275834716714682">Reemplazo de texto</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="265390580714150011">Valor de campo</translation>
@@ -2661,7 +2661,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4175137578744761569">Morado claro y blanco</translation>
 <translation id="4175737294868205930">Almacenamiento permanente</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
-<translation id="4180788401304023883">¿Eliminar el certificado de CA "<ph name="CERTIFICATE_NAME" />"?</translation>
+<translation id="4180788401304023883">¿Eliminar el certificado AC "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4184885522552335684">Arrastra una pantalla para moverla</translation>
@@ -5288,7 +5288,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">¿Has olvidado tu antigua contraseña?</translation>
 <translation id="7496732379142025470">Para ahorrar batería, solo está activada la frase "Ok Google" cuando el dispositivo está conectado a una fuente de alimentación. Para realizar algún cambio, ve a Ajustes.</translation>
-<translation id="7497215489070763236">Certificado de CA del servidor</translation>
+<translation id="7497215489070763236">Certificado AC del servidor</translation>
 <translation id="7497981768003291373">No has capturado ningún registro de texto de WebRTC recientemente.</translation>
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>

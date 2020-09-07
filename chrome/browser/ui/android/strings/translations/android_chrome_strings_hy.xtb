@@ -220,7 +220,7 @@
 <translation id="2707726405694321444">Թարմացնել էջը</translation>
 <translation id="2709516037105925701">Ինքնալցում</translation>
 <translation id="2717722538473713889">Էլ․ հասցեներ</translation>
-<translation id="2728754400939377704">Տեսակավորել ըստ կայքի</translation>
+<translation id="2728754400939377704">Դասավորել ըստ կայքի</translation>
 <translation id="2744248271121720757">Հպեք բառին՝ ակնթարթորեն որոնելու կամ առնչվող գործողությունները տեսնելու համար</translation>
 <translation id="2760989362628427051">Միացնել մուգ թեման, երբ սարքի մուգ թեման կամ մարտկոցի տնտեսման ռեժիմը միացված է</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
@@ -748,7 +748,7 @@
 <translation id="6618554661997243500">Ձեր թոփ կայքերն ու հոդվածները տեսնելու համար սեղմեք գլխավոր էկրանի կոճակը</translation>
 <translation id="6627583120233659107">Փոփոխել պանակը</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
-<translation id="6643649862576733715">Տեսակավորել ըստ պահված տվյալների ծավալի</translation>
+<translation id="6643649862576733715">Դասավորել ըստ պահված տվյալների ծավալի</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
 <translation id="6649642165559792194">Նախադիտել պատկերը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="6656545060687952787">Սարքեր գտնելու համար Chrome-ին անհրաժեշտ է տեղադրության հասանելիություն: <ph name="BEGIN_LINK" />Թարմացնել թույլտվությունները<ph name="END_LINK" /></translation>
@@ -975,7 +975,7 @@
 <translation id="8310344678080805313">Ստանդարտ ներդիրներ</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> և այլ կայքեր</translation>
 <translation id="8327155640814342956">Համացանցում աշխատանքը լավացնելու համար բացեք Chrome-ը և թարմացրեք այն</translation>
-<translation id="8349013245300336738">Տեսակավորել ըստ օգտագործված տվյալների ծավալի</translation>
+<translation id="8349013245300336738">Դասավորել ըստ օգտագործված տվյալների ծավալի</translation>
 <translation id="8364299278605033898">Դիտեք թոփ կայքերը</translation>
 <translation id="8368027906805972958">Անհայտ կամ չաջակցվող սարք (<ph name="DEVICE_ID" />)</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>

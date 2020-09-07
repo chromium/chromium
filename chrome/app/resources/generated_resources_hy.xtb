@@ -2287,7 +2287,7 @@
 <translation id="3732530910372558017">PIN կոդը պետք է կազմված լինի առավելագույնը 63 նիշից</translation>
 <translation id="3732857534841813090">Google Օգնականին առնչվող տեղեկություններ</translation>
 <translation id="3733127536501031542">SSL սերվեր՝ նոր տարբերակին անցնելու հնարավորությամբ</translation>
-<translation id="3735740477244556633">Տեսակավորել ըստ</translation>
+<translation id="3735740477244556633">Դասավորել ըստ</translation>
 <translation id="3738924763801731196"><ph name="OID" />՝</translation>
 <translation id="3739254215541673094">Բացե՞լ <ph name="APPLICATION" /> հավելվածը</translation>
 <translation id="3742055079367172538">Սքրինշոթը ստեղծված է</translation>
@@ -4752,7 +4752,7 @@
 <translation id="6823506025919456619">Ձեր սարքերը տեսնելու համար պետք է մուտք գործեք Chrome</translation>
 <translation id="6824564591481349393">Պատճենել &amp;էլփոստի հասցեն</translation>
 <translation id="6824584962142919697">&amp;Ստուգել տարրերը</translation>
-<translation id="6825184156888454064">Տեսակավորել ըստ անվան</translation>
+<translation id="6825184156888454064">Դասավորել ըստ անվան</translation>
 <translation id="6826872289184051766">Հաստատել USB-ի միջոցով</translation>
 <translation id="6827623133556594466">Google Cloud Print-ը դեկտեմբերի 31-ից հետո այլևս չի աջակցվի։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Թույլատրել մուտքը միայն հետևյալ օգտատերերին՝</translation>

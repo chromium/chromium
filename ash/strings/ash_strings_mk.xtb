@@ -524,6 +524,7 @@
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6857811139397017780">Активирај <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6910714959251846841">За ажурирањево потребно е фабричко ресетирање на уредот. Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" />.</translation>

@@ -523,6 +523,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6910714959251846841">Cette mise à jour nécessite que vous utilisiez la fonctionnalité Powerwash sur votre appareil. Obtenez de plus amples informations sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" />.</translation>

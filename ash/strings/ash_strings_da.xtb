@@ -524,6 +524,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6818242057446442178">Et ord tilbage</translation>
 <translation id="6820676911989879663">Hold en pause</translation>
 <translation id="6857811139397017780">Aktivér <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Der skal angives ét ciffer mere}one{Der skal angives # ciffer mere}other{Der skal angives # cifre mere}}</translation>
 <translation id="6878400149835617132">Genvejen er deaktiveret</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6910714959251846841">Denne opdatering kræver, at der udføres en powerwash på din enhed. Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>

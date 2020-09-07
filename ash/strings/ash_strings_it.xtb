@@ -524,6 +524,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
 <translation id="6857811139397017780">Attiva <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}other{Mancano # cifre}}</translation>
 <translation id="6878400149835617132">Scorciatoia disattivata</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6910714959251846841">Questo aggiornamento richiede il powerwash del dispositivo. Leggi ulteriori informazioni sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" />.</translation>

@@ -523,6 +523,7 @@
 <translation id="6818242057446442178">往後一個字詞</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6857811139397017780">啟用 <ph name="NETWORKSERVICE" /></translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{淨返 1 個數字}other{淨返 # 個數字}}</translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6910714959251846841">此更新需要為裝置執行 Powerwash。進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新。</translation>
