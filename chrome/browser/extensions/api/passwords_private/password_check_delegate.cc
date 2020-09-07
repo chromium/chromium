@@ -471,6 +471,13 @@ void PasswordCheckDelegate::OnCompromisedCredentialsChanged(
   }
 }
 
+void PasswordCheckDelegate::OnWeakCredentialsChanged(
+    InsecureCredentialsView credentials) {
+  // TODO(crbug.com/1119752): Implement this method after adding
+  // OnWeakCredentialsChanged to PasswordsPrivateEventRouter.
+  NOTIMPLEMENTED();
+}
+
 void PasswordCheckDelegate::OnStateChanged(State state) {
   if (state == State::kIdle && std::exchange(is_check_running_, false)) {
     // When the service transitions from running into idle it has finished a

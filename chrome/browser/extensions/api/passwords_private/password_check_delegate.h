@@ -96,6 +96,13 @@ class PasswordCheckDelegate
       password_manager::InsecureCredentialsManager::CredentialsView credentials)
       override;
 
+  // password_manager::InsecureCredentialsManager::Observer:
+  // Invokes PasswordsPrivateEventRouter::OnWeakCredentialsChanged if a valid
+  // pointer can be obtained.
+  void OnWeakCredentialsChanged(
+      password_manager::InsecureCredentialsManager::CredentialsView credentials)
+      override;
+
   // password_manager::BulkLeakCheckService::Observer:
   void OnStateChanged(
       password_manager::BulkLeakCheckService::State state) override;

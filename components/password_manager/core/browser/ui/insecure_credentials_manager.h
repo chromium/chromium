@@ -107,13 +107,14 @@ class InsecureCredentialsManager
   using CredentialsView = base::span<const CredentialWithPassword>;
 
   // Observer interface. Clients can implement this to get notified about
-  // changes to the list of compromised credentials. Clients can register and
-  // de-register themselves, and are expected to do so before the provider gets
-  // out of scope.
+  // changes to the list of compromised and weak credentials. Clients can
+  // register and de-register themselves, and are expected to do so before the
+  // provider gets out of scope.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnCompromisedCredentialsChanged(
         CredentialsView credentials) = 0;
+    virtual void OnWeakCredentialsChanged(CredentialsView credentials) {}
   };
 
   InsecureCredentialsManager(
