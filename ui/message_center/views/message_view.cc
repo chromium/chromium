@@ -44,9 +44,17 @@ base::string16 CreateAccessibleName(const Notification& notification) {
     return notification.accessible_name();
 
   // Fall back to a text constructed from the notification.
-  std::vector<base::string16> accessible_lines = {
-      notification.title(), notification.message(),
-      notification.context_message()};
+  // Add non-empty elements.
+
+  std::vector<base::string16> accessible_lines;
+  if (!notification.title().empty())
+    accessible_lines.push_back(notification.title());
+
+  if (!notification.message().empty())
+    accessible_lines.push_back(notification.message());
+
+  if (!notification.context_message().empty())
+    accessible_lines.push_back(notification.context_message());
   std::vector<NotificationItem> items = notification.items();
   for (size_t i = 0; i < items.size() && i < kNotificationMaximumItems; ++i) {
     accessible_lines.push_back(items[i].title + base::ASCIIToUTF16(" ") +
@@ -203,6 +211,10 @@ void MessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kRoleDescription,
       l10n_util::GetStringUTF8(IDS_MESSAGE_NOTIFICATION_ACCESSIBLE_NAME));
+
+  if (accessible_name_.empty())
+    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+
   node_data->SetName(accessible_name_);
 }
 
