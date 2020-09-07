@@ -218,7 +218,7 @@ void PendingAppManagerImpl::StartInstallationTask(
   }
   current_install_ = std::move(task);
 
-  if (!current_install_->task->install_options().app_info_factory.is_null()) {
+  if (current_install_->task->install_options().app_info_factory) {
     current_install_->task->InstallFromInfo(base::BindOnce(
         &PendingAppManagerImpl::OnInstalled, weak_ptr_factory_.GetWeakPtr()));
     return;
