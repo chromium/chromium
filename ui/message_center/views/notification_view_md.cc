@@ -182,6 +182,25 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
   return view;
 }
 
+std::unique_ptr<ui::Event> ConvertToBoundedLocatedEvent(const ui::Event& event,
+                                                        views::View* target) {
+  // In case the animation is triggered from keyboard operation.
+  if (!event.IsLocatedEvent())
+    return nullptr;
+
+  // Convert the point of |event| from the coordinate system of its target to
+  // that of the passed in |target| and create a new LocatedEvent.
+  std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(event);
+  ui::LocatedEvent* located_event = cloned_event->AsLocatedEvent();
+  event.target()->ConvertEventToTarget(target, located_event);
+
+  // Use default animation if location is out of bounds.
+  if (!target->HitTestPoint(located_event->location()))
+    return nullptr;
+
+  return cloned_event;
+}
+
 }  // anonymous namespace
 
 // CompactTitleMessageView /////////////////////////////////////////////////////
@@ -360,12 +379,10 @@ NotificationInputContainerMD::NotificationInputContainerMD(
 NotificationInputContainerMD::~NotificationInputContainerMD() = default;
 
 void NotificationInputContainerMD::AnimateBackground(const ui::Event& event) {
-  // Try to get a located event. This can be NULL if triggered via keyboard.
-  const ui::LocatedEvent* located_event = ui::LocatedEvent::FromIfValid(&event);
-  // Use default animation if location is out of bounds.
-  if (located_event && !View::HitTestPoint(located_event->location()))
-    located_event = nullptr;
-  AnimateInkDrop(views::InkDropState::ACTION_PENDING, located_event);
+  std::unique_ptr<ui::Event> located_event =
+      ConvertToBoundedLocatedEvent(event, this);
+  AnimateInkDrop(views::InkDropState::ACTION_PENDING,
+                 ui::LocatedEvent::FromIfValid(located_event.get()));
 }
 
 void NotificationInputContainerMD::AddLayerBeneathView(ui::Layer* layer) {
@@ -408,6 +425,12 @@ void NotificationInputContainerMD::OnThemeChanged() {
   textfield_->set_placeholder_text_color(theme->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationEmptyPlaceholderTextColor));
   SetButtonImage();
+}
+
+void NotificationInputContainerMD::Layout() {
+  views::InkDropHostView::Layout();
+  // The animation is needed to run inside of the border.
+  ink_drop_container_->SetBoundsRect(GetLocalBounds());
 }
 
 bool NotificationInputContainerMD::HandleKeyEvent(views::Textfield* sender,
@@ -1411,30 +1434,10 @@ void NotificationViewMD::Activate() {
 
 void NotificationViewMD::AddBackgroundAnimation(const ui::Event& event) {
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  // In case the animation is triggered from keyboard operation.
-  if (!event.IsLocatedEvent()) {
-    AnimateInkDrop(views::InkDropState::ACTION_PENDING, nullptr);
-    return;
-  }
-
-  // Convert the point of |event| from the coordinate system of
-  // |control_buttons_view_| to that of NotificationViewMD, create a new
-  // LocatedEvent which has the new point.
-  views::View* target = static_cast<views::View*>(event.target());
-  const gfx::Point& location = event.AsLocatedEvent()->location();
-  gfx::Point converted_location(location);
-  View::ConvertPointToTarget(target, this, &converted_location);
-
-  // Use default animation if location is out of bounds.
-  if (!View::HitTestPoint(converted_location)) {
-    AnimateInkDrop(views::InkDropState::ACTION_PENDING, nullptr);
-    return;
-  }
-
-  std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(event);
-  ui::LocatedEvent* cloned_located_event = cloned_event->AsLocatedEvent();
-  cloned_located_event->set_location(converted_location);
-  AnimateInkDrop(views::InkDropState::ACTION_PENDING, cloned_located_event);
+  std::unique_ptr<ui::Event> located_event =
+      ConvertToBoundedLocatedEvent(event, this);
+  AnimateInkDrop(views::InkDropState::ACTION_PENDING,
+                 ui::LocatedEvent::FromIfValid(located_event.get()));
 }
 
 void NotificationViewMD::RemoveBackgroundAnimation() {

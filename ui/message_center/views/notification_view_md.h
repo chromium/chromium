@@ -126,6 +126,7 @@ class NotificationInputContainerMD : public views::InkDropHostView,
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   SkColor GetInkDropBaseColor() const override;
   void OnThemeChanged() override;
+  void Layout() override;
 
   // Overridden from views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
