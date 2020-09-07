@@ -96,14 +96,14 @@ TelemetryExtensionUI::TelemetryExtensionUI(content::WebUI* web_ui)
 TelemetryExtensionUI::~TelemetryExtensionUI() = default;
 
 void TelemetryExtensionUI::BindInterface(
-    mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
-  probe_service_ = std::make_unique<ProbeService>(std::move(receiver));
-}
-
-void TelemetryExtensionUI::BindInterface(
     mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver) {
   diagnostics_service_ =
       std::make_unique<DiagnosticsService>(std::move(receiver));
+}
+
+void TelemetryExtensionUI::BindInterface(
+    mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
+  probe_service_ = std::make_unique<ProbeService>(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TelemetryExtensionUI)
