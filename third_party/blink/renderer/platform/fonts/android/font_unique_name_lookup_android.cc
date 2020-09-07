@@ -4,9 +4,10 @@
 
 #include "base/files/file.h"
 
-#include "third_party/blink/renderer/platform/fonts/android/font_unique_name_lookup_android.h"
+#include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/fonts/android/font_unique_name_lookup_android.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #include "third_party/skia/include/core/SkData.h"
@@ -130,15 +131,19 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
   }
 
   base::File font_file;
+  String case_folded_unique_font_name =
+      String::FromUTF8(IcuFoldCase(font_unique_name.Utf8()).c_str());
   if (!android_font_lookup_service_->MatchLocalFontByUniqueName(
-          font_unique_name, &font_file)) {
-    LOG(ERROR) << "Mojo method returned false for unique font name: "
-               << font_unique_name;
+          case_folded_unique_font_name, &font_file)) {
+    LOG(ERROR)
+        << "Mojo method returned false for case-folded unique font name: "
+        << case_folded_unique_font_name;
     return nullptr;
   }
 
   if (!font_file.IsValid()) {
-    LOG(ERROR) << "Received platform font handle invalid.";
+    LOG(ERROR) << "Received platform font handle invalid, fd: "
+               << font_file.GetPlatformFile();
     return nullptr;
   }
 
