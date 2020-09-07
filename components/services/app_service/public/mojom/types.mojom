@@ -93,10 +93,10 @@ enum AppType {
   kExtension,  // Extension-backed app.
   kWeb,        // Web app.
   kMacNative,  // Native Mac app.
-  kPluginVm,   // Plugin VM app.
-  kLacros,     // Lacros app.
+  kPluginVm,   // Plugin VM app, see go/pluginvm.
+  kLacros,     // Lacros browser app, see //docs/lacros.md.
   kRemote,     // Remote app.
-  kBorealis,   // Borealis app.
+  kBorealis,   // Borealis app, see go/borealis-app.
 };
 
 // Whether an app is ready to launch, i.e. installed.
