@@ -20,6 +20,21 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/arc/app/arc_playstore_search_request_state.h"
 
+namespace {
+
+void FillRawIconPngData(const std::string& icon_png_data_as_string,
+                        arc::mojom::RawIconPngData* icon) {
+  icon->is_adaptive_icon = true;
+  icon->icon_png_data = std::vector<uint8_t>(icon_png_data_as_string.begin(),
+                                             icon_png_data_as_string.end());
+  icon->foreground_icon_png_data = std::vector<uint8_t>(
+      icon_png_data_as_string.begin(), icon_png_data_as_string.end());
+  icon->background_icon_png_data = std::vector<uint8_t>(
+      icon_png_data_as_string.begin(), icon_png_data_as_string.end());
+}
+
+}  // namespace
+
 namespace mojo {
 
 template <>
@@ -144,9 +159,7 @@ void FakeAppInstance::SendTaskDescription(
     const std::string& label,
     const std::string& icon_png_data_as_string) {
   arc::mojom::RawIconPngDataPtr icon = arc::mojom::RawIconPngData::New();
-  icon->is_adaptive_icon = false;
-  icon->icon_png_data = std::vector<uint8_t>(icon_png_data_as_string.begin(),
-                                             icon_png_data_as_string.end());
+  FillRawIconPngData(icon_png_data_as_string, icon.get());
   app_host_->OnTaskDescriptionChanged(taskId, label, std::move(icon));
 }
 
@@ -171,19 +184,17 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GenerateIconResponse(
     icon_responses_.erase(previous_response);
 
   arc::mojom::RawIconPngDataPtr icon = arc::mojom::RawIconPngData::New();
-  icon->is_adaptive_icon = false;
   switch (icon_response_type_) {
     case IconResponseType::ICON_RESPONSE_SKIP:
       return nullptr;
     case IconResponseType::ICON_RESPONSE_SEND_BAD: {
       std::string bad_png_data_as_string = "BAD_ICON_CONTENT";
-      icon->icon_png_data = std::vector<uint8_t>(bad_png_data_as_string.begin(),
-                                                 bad_png_data_as_string.end());
+      FillRawIconPngData(bad_png_data_as_string, icon.get());
       icon_responses_[dimension] = bad_png_data_as_string;
       return icon;
     }
     case IconResponseType::ICON_RESPONSE_SEND_EMPTY: {
-      icon->icon_png_data = std::vector<uint8_t>();
+      FillRawIconPngData(std::string(), icon.get());
       icon_responses_[dimension] = std::string();
       return icon;
     }
@@ -204,8 +215,7 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GenerateIconResponse(
             << icon_file_path.MaybeAsASCII();
         CHECK(base::ReadFileToString(icon_file_path, &good_png_data_as_string));
       }
-      icon->icon_png_data = std::vector<uint8_t>(
-          good_png_data_as_string.begin(), good_png_data_as_string.end());
+      FillRawIconPngData(good_png_data_as_string, icon.get());
       icon_responses_[dimension] = good_png_data_as_string;
       return icon;
     }
@@ -260,9 +270,7 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GetFakeIcon(
   CHECK(base::ReadFileToString(icon_file_path, &png_data_as_string));
 
   arc::mojom::RawIconPngDataPtr icon = arc::mojom::RawIconPngData::New();
-  icon->is_adaptive_icon = false;
-  icon->icon_png_data = std::vector<uint8_t>(png_data_as_string.begin(),
-                                             png_data_as_string.end());
+  FillRawIconPngData(png_data_as_string, icon.get());
   return icon;
 }
 

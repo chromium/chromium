@@ -267,6 +267,9 @@ class FakeAppInstance : public mojom::AppInstance {
 
  private:
   using TaskIdToInfo = std::map<int32_t, std::unique_ptr<Request>>;
+
+  arc::mojom::RawIconPngDataPtr GetFakeIcon(mojom::ScaleFactor scale_factor);
+
   // Mojo endpoints.
   mojom::AppHost* app_host_;
   // Number of requests to start PAI flows.
@@ -305,8 +308,6 @@ class FakeAppInstance : public mojom::AppInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::AppHost> host_remote_;
-
-  arc::mojom::RawIconPngDataPtr GetFakeIcon(mojom::ScaleFactor scale_factor);
 
   DISALLOW_COPY_AND_ASSIGN(FakeAppInstance);
 };
