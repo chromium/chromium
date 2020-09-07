@@ -484,7 +484,8 @@ def make_v8_to_blink_value(blink_var_name,
         cg_context and cg_context.operation
         and not (cg_context.is_return_type_promise_type or
                  "RaisesException" in cg_context.operation.extended_attributes)
-        and all(arg.idl_type.type_name == "String"
+        and all((arg.idl_type.type_name == "String" or arg.idl_type.unwrap(
+            typedef=True).is_callback_function)
                 for arg in cg_context.operation.arguments))
     fast_path_cond = None
     fast_path_body_text = None
@@ -496,6 +497,14 @@ def make_v8_to_blink_value(blink_var_name,
         fast_path_cond = "LIKELY({}->IsString())".format(v8_value_expr)
         fast_path_body_text = "{}.Init({}.As<v8::String>());".format(
             blink_var_name, v8_value_expr)
+    elif idl_type.unwrap(typedef=True).is_callback_function:
+        # A key point of this fast path is that it doesn't require an
+        # ExceptionState.
+        fast_path_cond = "LIKELY({}->IsFunction())".format(v8_value_expr)
+        fast_path_body_text = "{} = {}::Create({}.As<v8::Function>());".format(
+            blink_var_name,
+            blink_class_name(idl_type.unwrap().type_definition_object),
+            v8_value_expr)
 
     def create_definition(symbol_node):
         if argument_index is None:

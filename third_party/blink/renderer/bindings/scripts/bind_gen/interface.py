@@ -325,7 +325,7 @@ def bind_callback_local_vars(code_node, cg_context):
     local_vars.append(S("execution_context", _format(pattern, _1=_1)))
     node = S("current_execution_context",
              ("ExecutionContext* ${current_execution_context} = "
-              "ExecutionContext::From(${current_script_state});"))
+              "ExecutionContext::From(${current_context});"))
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
             "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -333,7 +333,7 @@ def bind_callback_local_vars(code_node, cg_context):
     local_vars.append(node)
     node = S("receiver_execution_context",
              ("ExecutionContext* ${receiver_execution_context} = "
-              "ExecutionContext::From(${receiver_script_state});"))
+              "ExecutionContext::From(${receiver_context});"))
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
             "third_party/blink/renderer/core/execution_context/execution_context.h"
