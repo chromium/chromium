@@ -32,6 +32,7 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
   set_parent_window(parent);
   set_margins(gfx::Insets());
 
+  SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
   AddUndoButton();
