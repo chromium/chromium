@@ -240,8 +240,6 @@ GeneratedCodeCache* CodeCacheHostImpl::GetCodeCache(
 void CodeCacheHostImpl::OnReceiveCachedCode(FetchCachedCodeCallback callback,
                                             const base::Time& response_time,
                                             mojo_base::BigBuffer data) {
-  // TODO(crbug.com/867848): Pass the data as a mojo data pipe instead
-  // of BigBuffer.
   std::move(callback).Run(response_time, std::move(data));
 }
 
