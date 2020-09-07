@@ -58,6 +58,7 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
      */
     public void onDismiss() {
         destroyWebSigninBridge();
+        mOnSignInErrorCallback = null;
     }
 
     /**
