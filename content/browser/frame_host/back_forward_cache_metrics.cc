@@ -183,6 +183,15 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
   builder.SetBackForwardCache_NotRestoredReasons(
       not_restored_reasons_.to_ullong());
 
+  builder.SetBackForwardCache_BlocklistedFeatures(
+      static_cast<int64_t>(blocklisted_features_));
+
+  if (ShouldRecordBrowsingInstanceNotSwappedReason() &&
+      browsing_instance_not_swapped_reason_) {
+    builder.SetBackForwardCache_BrowsingInstanceNotSwappedReason(
+        static_cast<int64_t>(browsing_instance_not_swapped_reason_.value()));
+  }
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 
