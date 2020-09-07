@@ -2406,10 +2406,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Add account to device
       </message>
       <message name="IDS_SIGNIN_INCOGNITO_MODE_PRIMARY" desc="Text for signing in incognito mode.">
-        Go Incognito mode
+        Sign in temporarily
       </message>
       <message name="IDS_SIGNIN_INCOGNITO_MODE_SECONDARY" desc="Secondary text for signing in incognito mode.">
-        To sign in temporarily
+        A new incognito tab will open
       </message>
       <message name="IDS_SIGNIN_GMS_UPDATING" desc="Message notifying user that Google Play Services is still updating.">
         Waiting for Google Play Services to finish updating
