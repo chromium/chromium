@@ -16,5 +16,7 @@ FAIL setCodecPreferences() with modified codec clock rate should throw InvalidMo
 FAIL setCodecPreferences() with modified codec channel count should throw InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setCodecPreferences() with modified codec parameters should throw InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setCodecPreferences() with modified codecs returned from getCapabilities() should throw InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
+FAIL setCodecPreferences() modifies the order of audio codecs in createOffer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL setCodecPreferences() modifies the order of video codecs in createOffer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 Harness: the test ran to completion.
 
