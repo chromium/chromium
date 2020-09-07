@@ -110,11 +110,11 @@ fyi_goma_canary_builder(
 
 fyi_goma_canary_builder(
     name = "ios-device-goma-canary-clobber",
-    caches = [xcode_cache.x11e146],
+    caches = [xcode_cache.x12a8189n],
     cores = None,
     os = os.MAC_ANY,
     properties = {
-        "xcode_build_version": "11e146",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -186,11 +186,11 @@ fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "ios-device-goma-rbe-canary-clobber",
-    caches = [xcode_cache.x11e146],
+    caches = [xcode_cache.x12a8189n],
     cores = None,
     os = os.MAC_ANY,
     properties = {
-        "xcode_build_version": "11e146",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -271,11 +271,11 @@ fyi_goma_latest_client_builder(
 
 fyi_goma_latest_client_builder(
     name = "ios-device-goma-latest-clobber",
-    caches = [xcode_cache.x11e146],
+    caches = [xcode_cache.x12a8189n],
     cores = None,
     os = os.MAC_ANY,
     properties = {
-        "xcode_build_version": "11e146",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -361,11 +361,11 @@ fyi_goma_rbe_latest_client_builder(
 
 fyi_goma_rbe_latest_client_builder(
     name = "ios-device-goma-rbe-latest-clobber",
-    caches = [xcode_cache.x11e146],
+    caches = [xcode_cache.x12a8189n],
     cores = None,
     os = os.MAC_ANY,
     properties = {
-        "xcode_build_version": "11e146",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -484,11 +484,11 @@ def goma_mac_builder(
 
 goma_mac_builder(
     name = "Chromium iOS Goma RBE ToT",
-    caches = [xcode_cache.x11e146],
+    caches = [xcode_cache.x12a8189n],
     goma_backend = goma.backend.RBE_TOT,
     os = os.MAC_10_14,
     properties = {
-        "xcode_build_version": "11e146",
+        "xcode_build_version": "12a8189n",
     },
 )
 
