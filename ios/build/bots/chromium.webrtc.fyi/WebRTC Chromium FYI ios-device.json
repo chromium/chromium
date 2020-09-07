@@ -3,7 +3,7 @@
     "Builder for 64-bit devices.",
     "Build is performed with gn+ninja."
   ],
-  "xcode build version": "11e146",
+  "xcode build version": "12a8189n",
   "gn_args": [
     "goma_dir=\"$(goma_dir)\"",
     "ios_enable_code_signing=false",
