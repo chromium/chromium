@@ -125,7 +125,8 @@ class BlinkOptimizationGuideBrowserTest
     switch (GetOptimizationType()) {
       case proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION: {
         proto::DelayAsyncScriptExecutionMetadata metadata;
-        metadata.set_delay_type(proto::DelayType::DELAY_TYPE_FINISHED_PARSING);
+        metadata.set_delay_type(
+            proto::PerfectHeuristicsDelayType::DELAY_TYPE_FINISHED_PARSING);
         optimization_guide_metadata.SetAnyMetadataForTesting(metadata);
         break;
       }

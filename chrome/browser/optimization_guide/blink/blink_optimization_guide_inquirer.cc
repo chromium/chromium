@@ -92,16 +92,22 @@ void BlinkOptimizationGuideInquirer::PopulateHintsForDelayAsyncScriptExecution(
   using blink::mojom::DelayAsyncScriptExecutionDelayType;
   auto hints = blink::mojom::DelayAsyncScriptExecutionHints::New();
   switch (metadata->delay_type()) {
-    case proto::DelayType::DELAY_TYPE_UNKNOWN:
+    case proto::PerfectHeuristicsDelayType::DELAY_TYPE_UNKNOWN:
       hints->delay_type = DelayAsyncScriptExecutionDelayType::kUnknown;
       break;
-    case proto::DelayType::DELAY_TYPE_FINISHED_PARSING:
+    case proto::PerfectHeuristicsDelayType::DELAY_TYPE_FINISHED_PARSING:
       hints->delay_type = DelayAsyncScriptExecutionDelayType::kFinishedParsing;
       break;
-    case proto::DelayType::DELAY_TYPE_FIRST_PAINT_OR_FINISHED_PARSING:
+    case proto::PerfectHeuristicsDelayType::
+        DELAY_TYPE_FIRST_PAINT_OR_FINISHED_PARSING:
       hints->delay_type =
           DelayAsyncScriptExecutionDelayType::kFirstPaintOrFinishedParsing;
       break;
+    case proto::PerfectHeuristicsDelayType::DELAY_TYPE_FIRST_PAINT:
+    case proto::PerfectHeuristicsDelayType::DELAY_TYPE_FIRST_CONTENTFUL_PAINT:
+      // DelayAsyncScriptExecution doesn't support these milestones.
+      NOTREACHED();
+      return;
   }
   DCHECK(!optimization_guide_hints_->delay_async_script_execution_hints);
   optimization_guide_hints_->delay_async_script_execution_hints =

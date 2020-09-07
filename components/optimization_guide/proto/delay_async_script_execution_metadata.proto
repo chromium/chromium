@@ -10,16 +10,10 @@ option java_outer_classname = "DelayAsyncScriptExecutionMetadataProto";
 
 package optimization_guide.proto;
 
-// Enumerates the timings at which execution of async scripts can be delayed
-// until.
-enum DelayType {
-  DELAY_TYPE_UNKNOWN = 0;
-  DELAY_TYPE_FINISHED_PARSING = 1;
-  DELAY_TYPE_FIRST_PAINT_OR_FINISHED_PARSING = 2;
-};
+import "common_types.proto";
 
 // Optimization metadata for OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION.
 message DelayAsyncScriptExecutionMetadata {
   // The timing at which execution of async scripts should be delayed until.
-  optional DelayType delay_type = 1;
+  optional PerfectHeuristicsDelayType delay_type = 1;
 }

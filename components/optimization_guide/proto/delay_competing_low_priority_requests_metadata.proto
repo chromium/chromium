@@ -1,0 +1,30 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "DelayCompetingLowPriorityRequestsMetadataProto";
+
+package optimization_guide.proto;
+
+import "common_types.proto";
+
+// Enumerates the different request priorities that the Chromium experiment will
+// consider "important". For example, low priority requests will be queued
+// behind in-flight medium priority requests, when the PriorityThreshold is
+// PRIORITY_THRESHOLD_MEDIUM, etc.
+enum PriorityThreshold {
+  PRIORITY_THRESHOLD_UNKNOWN = 0;
+  PRIORITY_THRESHOLD_MEDIUM = 1;
+  PRIORITY_THRESHOLD_HIGH = 2;
+}
+
+// Optimization metadata for
+// OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS.
+message DelayCompetingLowPriorityRequestsMetadata {
+  optional PerfectHeuristicsDelayType delay_type = 1;
+  optional PriorityThreshold priority_threshold = 2;
+}

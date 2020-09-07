@@ -125,9 +125,9 @@ enum OptimizationType {
   // This optimization provides information about the effective delay for async
   // script execution.
   DELAY_ASYNC_SCRIPT_EXECUTION = 11;
-  // TODO(crbug/1112515): Add type here for delay low priority resources to
-  // match server.
-  //
+  // This optimization provides information about the effective delay and
+  // priority thresholds for delaying low priority requests.
+  DELAY_COMPETING_LOW_PRIORITY_REQUESTS = 12;
   // This optimization provides information about how to throttle meda requests
   // to reduce the bitrate of adaptively streamed media.
   LITE_VIDEO = 13;

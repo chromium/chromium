@@ -9,6 +9,15 @@ option java_outer_classname = "CommonTypesProto";
 
 package optimization_guide.proto;
 
+// Loading milestones that Perfect Heuristics experiments can use as delays.
+enum PerfectHeuristicsDelayType {
+  DELAY_TYPE_UNKNOWN = 0;
+  DELAY_TYPE_FINISHED_PARSING = 1;
+  DELAY_TYPE_FIRST_PAINT_OR_FINISHED_PARSING = 2;
+  DELAY_TYPE_FIRST_PAINT = 3;
+  DELAY_TYPE_FIRST_CONTENTFUL_PAINT = 4;
+}
+
 // The possible effective connection type values.
 //
 // The values should match those of //net/nqe/effective_connection_type.h in the
