@@ -15,6 +15,8 @@ const kMeta =       "\uE03d";
 const kControl =    "\uE009";
 const kAlt =        "\uE00A";
 
+const kImgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEElEQVR42mNgaGD4D8YwBgAw9AX9Y9zBwwAAAABJRU5ErkJggg==";
+
 let selection = getSelection();
 let editor = document.querySelector("div[contenteditable]");
 let beforeinput = [];
@@ -521,18 +523,60 @@ promise_test(async () => {
 promise_test(async () => {
   reset();
   editor.innerHTML = "<p>abc<br>def</p>";
-  let abc = editor.firstChild.firstChild;
+  let p = editor.querySelector("p");
+  let abc = p.firstChild;
   selection.collapse(abc, 3);
   await sendDeleteKey();
   assert_equals(editor.innerHTML, "<p>abcdef</p>");
   checkGetTargetRangesOfBeforeinputOnDeleteSomething({
-    startContainer: abc,
-    startOffset: 3,
-    endContainer: editor.querySelector("p"),
+    startContainer: p,
+    startOffset: 1,
+    endContainer: p,
     endOffset: 2,
   });
   checkGetTargetRangesOfInputOnDeleteSomething();
 }, 'Delete at "<p>abc[]<br>def</p>"');
+
+// Deleting visible `<br>` element following white-space should not include
+// the preceding white-space in the range.
+promise_test(async () => {
+  reset();
+  editor.innerHTML = "<p>abc <br>def</p>";
+  let p = editor.querySelector("p");
+  let abc = p.firstChild;
+  selection.collapse(abc, 4);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<p>abc def</p>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: p,
+    startOffset: 1,
+    endContainer: p,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<p>abc []<br>def</p>"');
+
+// Deleting visible `<br>` element followed by white-space should include
+// the following white-space in the range because it shouldn't become
+// visible and should be deleted for avoiding it.
+// https://github.com/w3c/input-events/issues/112
+promise_test(async () => {
+  reset();
+  editor.innerHTML = "<p>abc<br> def</p>";
+  let p = editor.querySelector("p");
+  let abc = p.firstChild;
+  let def = editor.querySelector("br").nextSibling;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<p>abcdef</p>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: p,
+    startOffset: 1,
+    endContainer: def,
+    endOffset: 1,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<p>abc[]<br> def</p>"');
 
 // Deleting visible `<br>` element should be contained by a range of
 // `getTargetRanges()`.  However, when only the `<br>` element is selected,
@@ -552,6 +596,172 @@ promise_test(async () => {
   });
   checkGetTargetRangesOfInputOnDeleteSomething();
 }, 'Delete at "<p>abc{<br>}def</p>"');
+
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<p>abc<img src="${kImgSrc}">def</p>`;
+  let p = editor.querySelector("p");
+  let abc = p.firstChild;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<p>abcdef</p>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: p,
+    startOffset: 1,
+    endContainer: p,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<p>abc[]<img>def</p>"');
+
+// White-spaces around `<img>` element are visible so that they shouldn't
+// be included into the target ranges.
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<p>abc <img src="${kImgSrc}">def</p>`;
+  let p = editor.querySelector("p");
+  let abc = p.firstChild;
+  selection.collapse(abc, 4);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<p>abc def</p>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: p,
+    startOffset: 1,
+    endContainer: p,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<p>abc []<img>def</p>"');
+
+// White-spaces around `<img>` element are visible so that they shouldn't
+// be included into the target ranges.
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<p>abc<img src="${kImgSrc}"> def</p>`;
+  let p = editor.querySelector("p");
+  let abc = p.firstChild;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<p>abc def</p>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: p,
+    startOffset: 1,
+    endContainer: p,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<p>abc[]<img> def</p>"');
+
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<p>abc<img src="${kImgSrc}"><img src="${kImgSrc}">def</p>`;
+  let p = editor.querySelector("p");
+  let abc = p.firstChild;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, `<p>abc<img src="${kImgSrc}">def</p>`);
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: p,
+    startOffset: 1,
+    endContainer: p,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<p>abc[]<img><img>def</p>"');
+
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<p>abc<img src="${kImgSrc}"><img src="${kImgSrc}">def</p>`;
+  let p = editor.querySelector("p");
+  selection.collapse(p, 2);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, `<p>abc<img src="${kImgSrc}">def</p>`);
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: p,
+    startOffset: 2,
+    endContainer: p,
+    endOffset: 3,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<p>abc<img>{}<img>def</p>"');
+
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<div>abc<hr>def</div>`;
+  let div = editor.querySelector("div");
+  let abc = div.firstChild;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<div>abcdef</div>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: div,
+    startOffset: 1,
+    endContainer: div,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<div>abc[]<hr>def</div>"');
+
+// White-spaces around block element are invisible white-spaces so that
+// they should be included into the target ranges to avoid they become
+// visible.
+// https://github.com/w3c/input-events/issues/112
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<div>abc <hr>def</div>`;
+  let div = editor.querySelector("div");
+  let abc = div.firstChild;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<div>abcdef</div>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: div,
+    startOffset: 1,
+    endContainer: div,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<div>abc[] <hr>def</div>"');
+
+// White-spaces around block element are invisible white-spaces so that
+// they should be included into the target ranges to avoid they become
+// visible.
+// https://github.com/w3c/input-events/issues/112
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<div>abc<hr> def</div>`;
+  let div = editor.querySelector("div");
+  let abc = div.firstChild;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<div>abcdef</div>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: div,
+    startOffset: 1,
+    endContainer: div,
+    endOffset: 2,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<div>abc[]<hr> def</div>"');
+
+// Invisible `<br>` element immediately before `<hr>` element should be
+// delete once, and both of them should be included in the target range.
+promise_test(async () => {
+  reset();
+  editor.innerHTML = `<div>abc<br><hr>def</div>`;
+  let div = editor.querySelector("div");
+  let abc = div.firstChild;
+  selection.collapse(abc, 3);
+  await sendDeleteKey();
+  assert_equals(editor.innerHTML, "<div>abcdef</div>");
+  checkGetTargetRangesOfBeforeinputOnDeleteSomething({
+    startContainer: div,
+    startOffset: 1,
+    endContainer: div,
+    endOffset: 3,
+  });
+  checkGetTargetRangesOfInputOnDeleteSomething();
+}, 'Delete at "<div>abc[]<br><hr>def</div>"');
 
 // Joining parent block and child block should remove invisible preceding
 // white-spaces of the child block and invisible leading white-spaces in

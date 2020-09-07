@@ -10098,6 +10098,23 @@
     }
    },
    "html": {
+    "browsers": {
+     "windows": {
+      "iframe-nested-print.html": [
+       "844f6ba3734e7a68b9555a287619445d32b83c5b",
+       [
+        null,
+        [
+         [
+          "/html/browsers/windows/iframe-nested-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     }
+    },
     "rendering": {
      "non-replaced-elements": {
       "tables": {
@@ -206738,6 +206755,10 @@
        "36c9182acf3571c65b546a886539972edad4e5ac",
        []
       ],
+      "iframe-nested-print-ref.html": [
+       "c36c459881cb0a6c3d85fa20a20d39b1c2d30b3c",
+       []
+      ],
       "nested-browsing-contexts": {
        "frameElement-siblings.sub-expected.txt": [
         "ebe614fad603265883035319ab4b777413987607",
@@ -226460,10 +226481,6 @@
      "776c59be658f749fcdd0a8ea6a92ac82c88d344e",
      []
     ],
-    "idlharness.https.window-expected.txt": [
-     "9ecbff50efaceff110c6f9a253564406e568495f",
-     []
-    ],
     "resources": {
      "page1.html": [
       "7fc080d380c4bd46dfb011910e570ee412561b92",
@@ -226484,10 +226501,6 @@
     ],
     "wakelock-enabled-on-self-origin-by-feature-policy.https.sub.html.headers": [
      "6bc94277cf9a4610c33274bd5b984e41d389622a",
-     []
-    ],
-    "wakelock-released.https-expected.txt": [
-     "f16dbd5af5552414a3e63667c5900410329f9343",
      []
     ]
    },
@@ -357044,7 +357057,7 @@
      ]
     ],
     "input-events-get-target-ranges-backspace.tentative.html": [
-     "2a166710f548654ce0795b1bf9f455d46825a2c6",
+     "11b1830efb9fa7680069fa0a3d28efa0b048a36d",
      [
       null,
       {
@@ -357053,7 +357066,7 @@
      ]
     ],
     "input-events-get-target-ranges-forwarddelete.tentative.html": [
-     "18e10ac660d570299c86c8c4d656e11615a973fd",
+     "b31afacb62dfca8b42734d098f9448086222ecc0",
      [
       null,
       {
