@@ -40,22 +40,10 @@ const char kSyncFirstSyncTime[] = "sync.first_sync_time";
 // Obsolete pref that used to store long poll intervals received by the server.
 const char kSyncLongPollIntervalSeconds[] = "sync.long_poll_interval";
 
-#if defined(OS_CHROMEOS)
-// Obsolete pref.
-const char kSyncSpareBootstrapToken[] = "sync.spare_bootstrap_token";
-#endif  // defined(OS_CHROMEOS)
-
 // Obsolete pref that used to store if sync should be prevented from
 // automatically starting up. This is now replaced by its inverse
 // kSyncRequested.
 const char kSyncSuppressStart[] = "sync.suppress_start";
-
-// Obsolete pref that stored how many times sync received memory pressure
-// warnings.
-const char kSyncMemoryPressureWarningCount[] = "sync.memory_warning_count";
-
-// Obsolete pref that stored if sync shutdown cleanly.
-const char kSyncShutdownCleanly[] = "sync.shutdown_cleanly";
 
 // Obsolete prefs for data types. Can be deleted after 2020-01-30.
 const char kSyncAppList[] = "sync.app_list";
@@ -319,12 +307,7 @@ void SyncPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(kSyncHasAuthError, false);
   registry->RegisterInt64Pref(kSyncFirstSyncTime, 0);
   registry->RegisterInt64Pref(kSyncLongPollIntervalSeconds, 0);
-#if defined(OS_CHROMEOS)
-  registry->RegisterStringPref(kSyncSpareBootstrapToken, "");
-#endif
   registry->RegisterBooleanPref(kSyncSuppressStart, false);
-  registry->RegisterIntegerPref(kSyncMemoryPressureWarningCount, -1);
-  registry->RegisterBooleanPref(kSyncShutdownCleanly, false);
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
@@ -808,11 +791,6 @@ void ClearObsoleteSyncLongPollIntervalSeconds(PrefService* pref_service) {
   pref_service->ClearPref(kSyncLongPollIntervalSeconds);
 }
 
-#if defined(OS_CHROMEOS)
-void ClearObsoleteSyncSpareBootstrapToken(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncSpareBootstrapToken);
-}
-#endif  // defined(OS_CHROMEOS)
 
 void MigrateSyncSuppressedPref(PrefService* pref_service) {
   // If the new kSyncRequested already has a value, there's nothing to be
@@ -847,11 +825,6 @@ void MigrateSyncSuppressedPref(PrefService* pref_service) {
   }
   // Otherwise, nothing to be done: Sync was likely never enabled in this
   // profile.
-}
-
-void ClearObsoleteMemoryPressurePrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncMemoryPressureWarningCount);
-  pref_service->ClearPref(kSyncShutdownCleanly);
 }
 
 }  // namespace syncer

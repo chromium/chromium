@@ -402,104 +402,8 @@
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
 
 namespace {
-
-#if defined(OS_ANDROID)
-// Deprecated 4/2019.
-const char kDismissedAssetDownloadSuggestions[] =
-    "ntp_suggestions.downloads.assets.dismissed_ids";
-const char kDismissedOfflinePageDownloadSuggestions[] =
-    "ntp_suggestions.downloads.offline_pages.dismissed_ids";
-
-// Deprecated 4/2019.
-const char kBreakingNewsSubscriptionDataToken[] =
-    "ntp_suggestions.breaking_news_subscription_data.token";
-const char kBreakingNewsSubscriptionDataIsAuthenticated[] =
-    "ntp_suggestions.breaking_news_subscription_data.is_authenticated";
-const char kBreakingNewsGCMSubscriptionTokenCache[] =
-    "ntp_suggestions.breaking_news_gcm_subscription_token_cache";
-const char kBreakingNewsGCMLastTokenValidationTime[] =
-    "ntp_suggestions.breaking_news_gcm_last_token_validation_time";
-const char kBreakingNewsGCMLastForcedSubscriptionTime[] =
-    "ntp_suggestions.breaking_news_gcm_last_forced_subscription_time";
-
-// Deprecated 4/2019.
-const char kContentSuggestionsConsecutiveIgnoredPrefName[] =
-    "ntp.content_suggestions.notifications.consecutive_ignored";
-const char kContentSuggestionsNotificationsSentDay[] =
-    "ntp.content_suggestions.notifications.sent_day";
-const char kContentSuggestionsNotificationsSentCount[] =
-    "ntp.content_suggestions.notifications.sent_count";
-const char kNotificationIDWithinCategory[] =
-    "ContentSuggestionsNotificationIDWithinCategory";
-
-// Deprecated 5/2019.
-const char kContentSuggestionsNotificationsEnabled[] =
-    "ntp.content_suggestions.notifications.enabled";
-
-#endif  // defined(OS_ANDROID)
-
-#if !defined(OS_ANDROID)
-// Deprecated 5/2019
-const char kSignInPromoShowOnFirstRunAllowed[] =
-    "sync_promo.show_on_first_run_allowed";
-const char kSignInPromoShowNTPBubble[] = "sync_promo.show_ntp_bubble";
-#endif  // !defined(OS_ANDROID)
-
-// Deprecated 5/2019
-const char kBookmarkAppCreationLaunchType[] =
-    "extensions.bookmark_app_creation_launch_type";
-
-// Deprecated 6/2019
-const char kMediaCacheSize[] = "browser.media_cache_size";
-
-#if defined(OS_WIN)
-// Deprecated 6/2019
-const char kHasSeenWin10PromoPage[] = "browser.has_seen_win10_promo_page";
-#endif  // defined(OS_WIN)
-
-// Deprecated 7/2019
-const char kSignedInTime[] = "signin.signedin_time";
-
-#if !defined(OS_ANDROID)
-// Deprecated 7/2019
-const char kNtpActivateHideShortcutsFieldTrial[] =
-    "ntp.activate_hide_shortcuts_field_trial";
-#endif  // !defined(OS_ANDROID)
-
-#if defined(OS_ANDROID)
-// Deprecated 7/2019
-// WebAuthn prefs were being erroneously stored on Android. They are registered
-// on other platforms.
-const char kWebAuthnLastTransportUsedPrefName[] =
-    "webauthn.last_transport_used";
-#endif  // defined(OS_ANDROID)
-// Deprecated 4/2020
-const char kWebAuthnBlePairedMacAddressesPrefName[] =
-    "webauthn.ble.paired_mac_addresses";
-
-// Deprecated 7/2019
-const char kLastKnownGoogleURL[] = "browser.last_known_google_url";
-const char kLastPromptedGoogleURL[] = "browser.last_prompted_google_url";
-#if defined(USE_X11)
-constexpr char kLocalProfileId[] = "profile.local_profile_id";
-#endif
-
-// Deprecated 8/2019
-const char kInsecureExtensionUpdatesEnabled[] =
-    "extension_updates.insecure_extension_updates_enabled";
-
-const char kLastStartupTimestamp[] = "startup_metric.last_startup_timestamp";
-const char kLastStartupVersion[] = "startup_metric.last_startup_version";
-const char kSameVersionStartupCount[] =
-    "startup_metric.same_version_startup_count";
-
-// Deprecated 8/2019
-const char kHintLoadedCounts[] = "optimization_guide.hint_loaded_counts";
 
 // Deprecated 9/2019
 const char kGoogleServicesUsername[] = "google.services.username";
@@ -578,10 +482,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kInvalidatorInvalidationState, std::string());
   registry->RegisterStringPref(kInvalidatorClientId, std::string());
 
-#if defined(OS_WIN)
-  registry->RegisterBooleanPref(kHasSeenWin10PromoPage, false);
-#endif
-
 #if defined(OS_CHROMEOS)
   registry->RegisterIntegerPref(kSupervisedUsersNextId, 0);
 #endif  // defined(OS_CHROMEOS)
@@ -590,54 +490,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-#if defined(OS_ANDROID)
-  registry->RegisterListPref(kDismissedAssetDownloadSuggestions);
-  registry->RegisterListPref(kDismissedOfflinePageDownloadSuggestions);
-
-  registry->RegisterStringPref(kBreakingNewsSubscriptionDataToken,
-                               std::string());
-  registry->RegisterBooleanPref(kBreakingNewsSubscriptionDataIsAuthenticated,
-                                false);
-  registry->RegisterStringPref(kBreakingNewsGCMSubscriptionTokenCache,
-                               std::string());
-  registry->RegisterInt64Pref(kBreakingNewsGCMLastTokenValidationTime, 0);
-  registry->RegisterInt64Pref(kBreakingNewsGCMLastForcedSubscriptionTime, 0);
-
-  registry->RegisterIntegerPref(kContentSuggestionsConsecutiveIgnoredPrefName,
-                                0);
-  registry->RegisterIntegerPref(kContentSuggestionsNotificationsSentDay, 0);
-  registry->RegisterIntegerPref(kContentSuggestionsNotificationsSentCount, 0);
-  registry->RegisterStringPref(kNotificationIDWithinCategory, std::string());
-  registry->RegisterBooleanPref(kContentSuggestionsNotificationsEnabled, true);
-#endif  // defined(OS_ANDROID)
-
-#if !defined(OS_ANDROID)
-  registry->RegisterBooleanPref(kSignInPromoShowOnFirstRunAllowed, true);
-  registry->RegisterBooleanPref(kSignInPromoShowNTPBubble, false);
-#endif  // !defined(OS_ANDROID)
-
-  registry->RegisterIntegerPref(kBookmarkAppCreationLaunchType, 0);
-
-  registry->RegisterIntegerPref(kMediaCacheSize, 0);
-
-  registry->RegisterInt64Pref(kSignedInTime, 0);
-
-#if defined(OS_ANDROID)
-  registry->RegisterStringPref(kWebAuthnLastTransportUsedPrefName,
-                               std::string());
-#endif  // defined(OS_ANDROID)
-  registry->RegisterListPref(kWebAuthnBlePairedMacAddressesPrefName);
-
-  registry->RegisterStringPref(kLastKnownGoogleURL, std::string());
-  registry->RegisterStringPref(kLastPromptedGoogleURL, std::string());
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    registry->RegisterIntegerPref(kLocalProfileId, 0);
-#endif
-
-  registry->RegisterBooleanPref(kInsecureExtensionUpdatesEnabled, false);
-
-  registry->RegisterDictionaryPref(kHintLoadedCounts);
   registry->RegisterStringPref(kGoogleServicesUsername, std::string());
   registry->RegisterStringPref(kGoogleServicesUserAccountId, std::string());
   registry->RegisterInt64Pref(
@@ -731,9 +583,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // function called above. Please keep this list alphabetized.
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled, false);
-  registry->RegisterInt64Pref(kLastStartupTimestamp, 0);
-  registry->RegisterStringPref(kLastStartupVersion, std::string());
-  registry->RegisterIntegerPref(kSameVersionStartupCount, 0);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserAgentClientHintsEnabled, true);
 #if defined(OS_ANDROID)
@@ -768,8 +617,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   StartupBrowserCreator::RegisterLocalStatePrefs(registry);
   task_manager::TaskManagerInterface::RegisterPrefs(registry);
   UpgradeDetector::RegisterPrefs(registry);
-
-  registry->RegisterBooleanPref(kNtpActivateHideShortcutsFieldTrial, false);
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_CHROMEOS)
@@ -1173,24 +1020,6 @@ void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
-#if defined(OS_WIN)
-  // Added 6/2019.
-  local_state->ClearPref(kHasSeenWin10PromoPage);
-#endif  // defined(OS_WIN)
-
-#if !defined(OS_ANDROID)
-  // Added 7/2019.
-  local_state->ClearPref(kNtpActivateHideShortcutsFieldTrial);
-#endif  // !defined(OS_ANDROID)
-
-  // Added 8/2019.
-  local_state->ClearPref(kLastStartupTimestamp);
-  local_state->ClearPref(kLastStartupVersion);
-  local_state->ClearPref(kSameVersionStartupCount);
-
-  // Added 1/2019
-  local_state->ClearPref(kLastStartupTimestamp);
-
   // Added 1/2020
 #if defined(OS_MAC)
   local_state->ClearPref(kKeyCreated);
@@ -1217,73 +1046,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
 
-#if defined(OS_ANDROID)
-  // Added 4/2019.
-  profile_prefs->ClearPref(kDismissedAssetDownloadSuggestions);
-  profile_prefs->ClearPref(kDismissedOfflinePageDownloadSuggestions);
-
-  // Added 4/2019.
-  profile_prefs->ClearPref(kBreakingNewsSubscriptionDataToken);
-  profile_prefs->ClearPref(kBreakingNewsSubscriptionDataIsAuthenticated);
-  profile_prefs->ClearPref(kBreakingNewsGCMSubscriptionTokenCache);
-  profile_prefs->ClearPref(kBreakingNewsGCMLastTokenValidationTime);
-  profile_prefs->ClearPref(kBreakingNewsGCMLastForcedSubscriptionTime);
-#endif  // defined(OS_ANDROID)
-
-#if defined(OS_CHROMEOS)
-  // Added 4/2019.
-  syncer::ClearObsoleteSyncSpareBootstrapToken(profile_prefs);
-#endif  // defined(OS_CHROMEOS)
-
-#if defined(OS_ANDROID)
-  // Added 4/2019.
-  profile_prefs->ClearPref(kContentSuggestionsConsecutiveIgnoredPrefName);
-  profile_prefs->ClearPref(kContentSuggestionsNotificationsSentDay);
-  profile_prefs->ClearPref(kContentSuggestionsNotificationsSentCount);
-  profile_prefs->ClearPref(kNotificationIDWithinCategory);
-
-  // Added 5/2019.
-  profile_prefs->ClearPref(kContentSuggestionsNotificationsEnabled);
-#endif  // defined(OS_ANDROID)
-
-#if !defined(OS_ANDROID)
-  // Deprecated 5/2019
-  profile_prefs->ClearPref(kSignInPromoShowOnFirstRunAllowed);
-  profile_prefs->ClearPref(kSignInPromoShowNTPBubble);
-#endif  // !defined(OS_ANDROID)
-
-  // Added 5/2019.
-  profile_prefs->ClearPref(kBookmarkAppCreationLaunchType);
-
-  // Added 6/2019.
-  profile_prefs->ClearPref(kMediaCacheSize);
-#if defined(OS_MAC)
-  profile_prefs->ClearPref(password_manager::prefs::kKeychainMigrationStatus);
-#endif  // defined(OS_MAC)
-
-  // Added 7/2019.
+  // Added 7/2019. Keep at least until 7/2021 as a missing migration would
+  // disable sync.
   syncer::MigrateSyncSuppressedPref(profile_prefs);
-  profile_prefs->ClearPref(kSignedInTime);
-  syncer::ClearObsoleteMemoryPressurePrefs(profile_prefs);
-  profile_prefs->ClearPref(kLastKnownGoogleURL);
-  profile_prefs->ClearPref(kLastPromptedGoogleURL);
-
-#if defined(OS_ANDROID)
-  // Added 7/2019.
-  profile_prefs->ClearPref(kWebAuthnLastTransportUsedPrefName);
-#endif  // defined(OS_ANDROID)
-  // Added 4/2020.
-  profile_prefs->ClearPref(kWebAuthnBlePairedMacAddressesPrefName);
-
-  // Added 7/2019.
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    profile_prefs->ClearPref(kLocalProfileId);
-#endif
-
-  // Added 8/2019
-  profile_prefs->ClearPref(kInsecureExtensionUpdatesEnabled);
-  profile_prefs->ClearPref(kHintLoadedCounts);
 
   // Added 9/2019
   profile_prefs->ClearPref(kGoogleServicesUsername);
