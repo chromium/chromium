@@ -84,60 +84,6 @@ TEST_F('ChromeVoxOptionsTest', 'NumberReadingStyleSelect', function() {
   });
 });
 
-TEST_F('ChromeVoxOptionsTest', 'punctuationEchoSelect', function() {
-  this.runOnOptionsPage((mockFeedback, evt) => {
-    const PUNCTUATION_ECHO_NONE = '0';
-    const PUNCTUATION_ECHO_SOME = '1';
-    const PUNCTUATION_ECHO_ALL = '2';
-    const punctuationEchoSelect = evt.target.find({
-      role: chrome.automation.RoleType.POP_UP_BUTTON,
-      attributes: {name: 'Punctuation echo:'}
-    });
-    assertNotNullNorUndefined(punctuationEchoSelect);
-    mockFeedback.call(punctuationEchoSelect.focus.bind(punctuationEchoSelect))
-        .expectSpeech('Punctuation echo:', 'None', 'Collapsed')
-        .call(punctuationEchoSelect.doDefault.bind(punctuationEchoSelect))
-        .expectSpeech('Expanded')
-
-        // Before selecting the menu option.
-        .call(() => {
-          assertEquals(
-              PUNCTUATION_ECHO_NONE,
-              localStorage[AbstractTts.PUNCTUATION_ECHO]);
-        })
-
-        .call(press(40 /* ArrowDown */))
-        .expectSpeech('Some', 'List item', ' 2 of 3 ')
-        .call(press(13 /* enter */))
-
-        // TODO(josiahk): The underlying select behavior here is unexpected
-        // because we never get a new focus event for the select (moving us
-        // away from the menu item). We simply repeat the menu item.
-        .expectSpeech('Some', ' 2 of 3 ')
-        .call(() => {
-          assertEquals(
-              PUNCTUATION_ECHO_SOME,
-              localStorage[AbstractTts.PUNCTUATION_ECHO]);
-        })
-
-        .call(punctuationEchoSelect.doDefault.bind(punctuationEchoSelect))
-        .call(press(40 /* ArrowDown */))
-        .expectSpeech('All', 'List item', ' 3 of 3 ')
-        .call(press(13 /* enter */))
-
-        // TODO(josiahk): The underlying select behavior here is unexpected
-        // because we never get a new focus event for the select (moving us
-        // away from the menu item). We simply repeat the menu item.
-        .expectSpeech('All', ' 3 of 3 ')
-        .call(() => {
-          assertEquals(
-              PUNCTUATION_ECHO_ALL, localStorage[AbstractTts.PUNCTUATION_ECHO]);
-        })
-
-        .replay();
-  });
-});
-
 TEST_F('ChromeVoxOptionsTest', 'SmartStickyMode', function() {
   this.runOnOptionsPage((mockFeedback, evt) => {
     const smartStickyModeCheckbox = evt.target.find({

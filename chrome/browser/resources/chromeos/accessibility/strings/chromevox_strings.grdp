@@ -2918,18 +2918,6 @@
   <message desc="Describes an option for ChromeVox to read numbers as digits." name="IDS_CHROMEVOX_OPTIONS_NUMBER_READING_STYLE_DIGITS">
     Digits
   </message>
-  <message desc="Labels the select for choosing how ChromeVox reads punctuation." name="IDS_CHROMEVOX_OPTIONS_PUNCTUATION_ECHO_SELECT_LABEL">
-    Punctuation echo:
-  </message>
-  <message desc="Describes an option for ChromeVox to echo (speak) no punctuation." name="IDS_CHROMEVOX_OPTIONS_PUNCTUATION_ECHO_NONE">
-    None
-  </message>
-  <message desc="Describes an option for ChromeVox to echo (speak) some punctuation." name="IDS_CHROMEVOX_OPTIONS_PUNCTUATION_ECHO_SOME">
-    Some
-  </message>
-  <message desc="Describes an option for ChromeVox to echo (speak) all punctuation." name="IDS_CHROMEVOX_OPTIONS_PUNCTUATION_ECHO_ALL">
-    All
-  </message>
   <message desc="Labels the checkbox on the options page that enables displaying Perkins Brailler commands in the ChromeVox menus." name="IDS_CHROMEVOX_OPTIONS_MENU_BRAILLE_COMMANDS">
     Show braille commands in the ChromeVox menus
   </message>

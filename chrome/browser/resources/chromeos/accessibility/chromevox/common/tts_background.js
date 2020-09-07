@@ -50,6 +50,45 @@ TtsBackground = class extends ChromeTtsBase {
         parseInt(localStorage[AbstractTts.PUNCTUATION_ECHO] || 1, 10);
 
     /**
+     * @type {!Array<{name:(string),
+     * msg:(string),
+     * regexp:(RegExp),
+     * clear:(boolean)}>}
+     * @private
+     */
+    this.punctuationEchoes_ = [
+      /**
+       * Punctuation echoed for the 'none' option.
+       */
+      {
+        name: 'none',
+        msg: 'no_punctuation',
+        regexp: /[-$#"()*;:<>\n\\\/+='~`@_]/g,
+        clear: true
+      },
+
+      /**
+       * Punctuation echoed for the 'some' option.
+       */
+      {
+        name: 'some',
+        msg: 'some_punctuation',
+        regexp: /[$#"*<>\\\/\{\}+=~`%\u2022]/g,
+        clear: false
+      },
+
+      /**
+       * Punctuation echoed for the 'all' option.
+       */
+      {
+        name: 'all',
+        msg: 'all_punctuation',
+        regexp: /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022]/g,
+        clear: false
+      }
+    ];
+
+    /**
      * A list of punctuation characters that should always be spliced into
      * output even with literal word substitutions. This is important for tts
      * prosity.
@@ -614,18 +653,17 @@ TtsBackground = class extends ChromeTtsBase {
     text = super.preprocess(text, properties);
 
     // Perform any remaining processing such as punctuation expansion.
-    let punctEcho = null;
+    let pE = null;
     if (properties[AbstractTts.PUNCTUATION_ECHO]) {
-      for (let i = 0; punctEcho = AbstractTts.PUNCTUATION_ECHOES[i]; i++) {
-        if (properties[AbstractTts.PUNCTUATION_ECHO] == punctEcho.name) {
+      for (let i = 0; pE = this.punctuationEchoes_[i]; i++) {
+        if (properties[AbstractTts.PUNCTUATION_ECHO] == pE.name) {
           break;
         }
       }
     } else {
-      punctEcho = AbstractTts.PUNCTUATION_ECHOES[this.currentPunctuationEcho_];
+      pE = this.punctuationEchoes_[this.currentPunctuationEcho_];
     }
-    text = text.replace(
-        punctEcho.regexp, this.createPunctuationReplace_(punctEcho.clear));
+    text = text.replace(pE.regexp, this.createPunctuationReplace_(pE.clear));
 
     // Remove all whitespace from the beginning and end, and collapse all
     // inner strings of whitespace to a single space.
@@ -669,25 +707,14 @@ TtsBackground = class extends ChromeTtsBase {
   }
 
   /**
-   * Method that updates the punctuation echo level, and also persists setting
-   * to local storage.
-   * @param {number} punctuationEcho The index of the desired punctuation echo
-   * level in AbstractTts.PUNCTUATION_ECHOES.
-   */
-  updatePunctuationEcho(punctuationEcho) {
-    this.currentPunctuationEcho_ = punctuationEcho;
-    localStorage[AbstractTts.PUNCTUATION_ECHO] = punctuationEcho;
-  }
-
-  /**
    * Method that cycles among the available punctuation echo levels.
    * @return {string} The resulting punctuation level message id.
    */
   cyclePunctuationEcho() {
-    this.updatePunctuationEcho(
-        (this.currentPunctuationEcho_ + 1) %
-        AbstractTts.PUNCTUATION_ECHOES.length);
-    return AbstractTts.PUNCTUATION_ECHOES[this.currentPunctuationEcho_].msg;
+    this.currentPunctuationEcho_ =
+        (this.currentPunctuationEcho_ + 1) % this.punctuationEchoes_.length;
+    localStorage[AbstractTts.PUNCTUATION_ECHO] = this.currentPunctuationEcho_;
+    return this.punctuationEchoes_[this.currentPunctuationEcho_].msg;
   }
 
   /**

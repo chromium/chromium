@@ -9,12 +9,10 @@
 
 goog.provide('OptionsPage');
 
-goog.require('AbstractTts');
 goog.require('BluetoothBrailleDisplayUI');
 goog.require('ConsoleTts');
 goog.require('Msgs');
 goog.require('PanelCommand');
-goog.require('TtsBackground');
 goog.require('BrailleTable');
 goog.require('BrailleTranslatorManager');
 goog.require('ChromeVox');
@@ -38,8 +36,6 @@ OptionsPage = class {
     OptionsPage.prefs = chrome.extension.getBackgroundPage().prefs;
     OptionsPage.consoleTts =
         chrome.extension.getBackgroundPage().ConsoleTts.getInstance();
-    OptionsPage.backgroundTts =
-        chrome.extension.getBackgroundPage().ChromeVoxState.backgroundTts;
     OptionsPage.populateVoicesSelect();
     BrailleTable.getAll(function(tables) {
       /** @type {!Array<BrailleTable.Table>} */
@@ -100,17 +96,6 @@ OptionsPage = class {
     if (localStorage['numberReadingStyle']) {
       for (let i = 0, opt; opt = $('numberReadingStyle').options[i]; ++i) {
         if (opt.id == localStorage['numberReadingStyle']) {
-          opt.setAttribute('selected', '');
-        }
-      }
-    }
-
-    if (localStorage[AbstractTts.PUNCTUATION_ECHO]) {
-      const currentPunctuationEcho =
-          AbstractTts
-              .PUNCTUATION_ECHOES[localStorage[AbstractTts.PUNCTUATION_ECHO]];
-      for (let i = 0, opt; opt = $('punctuationEcho').options[i]; ++i) {
-        if (opt.id == currentPunctuationEcho.name) {
           opt.setAttribute('selected', '');
         }
       }
@@ -460,11 +445,6 @@ OptionsPage = class {
         }
       } else if (target.className.indexOf('eventstream') != -1) {
         OptionsPage.setEventStreamFilter(target.name, target.checked);
-      } else if (target.id == 'punctuationEcho') {
-        const selectedPunctuationEcho = target.options[target.selectedIndex].id;
-        const punctuationEcho = AbstractTts.PUNCTUATION_ECHOES.findIndex(
-            echo => echo.name === selectedPunctuationEcho);
-        OptionsPage.backgroundTts.updatePunctuationEcho(punctuationEcho);
       } else if (target.classList.contains('pref')) {
         if (target.tagName == 'INPUT' && target.type == 'checkbox') {
           OptionsPage.prefs.setPref(target.name, target.checked);
@@ -507,16 +487,11 @@ OptionsPage = class {
 OptionsPage.prefs;
 
 /**
- * The ConsoleTts object.
+ * The ChromeVoxConsoleTts object.
  * @type {ConsoleTts}
  */
 OptionsPage.consoleTts;
 
-/**
- * The TtsBackground object.
- * @type {TtsBackground}
- */
-OptionsPage.backgroundTts;
 
 /**
  * Adds event listeners to input boxes to update local storage values and
