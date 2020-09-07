@@ -12,12 +12,11 @@
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_storage.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_util.h"
@@ -168,8 +167,7 @@ int WriteResponseMetadata(
 
 class ServiceWorkerStorageControlImplTest : public testing::Test {
  public:
-  ServiceWorkerStorageControlImplTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
+  ServiceWorkerStorageControlImplTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(user_data_directory_.CreateUniqueTempDir());
@@ -190,7 +188,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   void DestroyStorage() {
     storage_impl_.reset();
     disk_cache::FlushCacheThreadForTesting();
-    content::RunAllTasksUntilIdle();
+    task_environment().RunUntilIdle();
   }
 
   void RestartStorage() {
@@ -202,6 +200,8 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   storage::mojom::ServiceWorkerStorageControl* storage() {
     return storage_impl_.get();
   }
+
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   void LazyInitializeForTest() { storage_impl_->LazyInitializeForTest(); }
 
@@ -689,7 +689,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
 
  private:
   base::ScopedTempDir user_data_directory_;
-  BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ServiceWorkerStorageControlImpl> storage_impl_;
 };
 
@@ -1536,8 +1536,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
   }
 
   // Make sure all tasks are ran.
-  // TODO(bashi): Don't rely on RunAllTasksUntilIdle()?
-  content::RunAllTasksUntilIdle();
+  task_environment().RunUntilIdle();
 
   // Resources shouldn't be purged because there are two active references.
   {
@@ -1555,7 +1554,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
 
   // Drop the second reference.
   reference2.reset();
-  content::RunAllTasksUntilIdle();
+  task_environment().RunUntilIdle();
 
   // Resources shouldn't be purged because there is an active reference yet.
   {
@@ -1573,7 +1572,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
 
   // Drop the third reference.
   reference3.reset();
-  content::RunAllTasksUntilIdle();
+  task_environment().RunUntilIdle();
 
   // Resources should have been purged.
   {
