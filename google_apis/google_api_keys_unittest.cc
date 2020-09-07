@@ -641,8 +641,8 @@ namespace override_all_keys_config {
 TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   namespace testcase = override_all_keys_config::google_apis;
 
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchPath(
+  auto command_line = std::make_unique<base::test::ScopedCommandLine>();
+  command_line->GetProcessCommandLine()->AppendSwitchPath(
       "gaia-config", GetTestFilePath("api_keys.json"));
   GaiaConfig::ResetInstanceForTesting();
 
@@ -666,6 +666,11 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
             testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST));
   EXPECT_EQ("config-SECRET_REMOTING_HOST",
             testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST));
+
+  // It's important to reset the global config state for other tests running in
+  // the same process.
+  command_line.reset();
+  GaiaConfig::ResetInstanceForTesting();
 }
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
