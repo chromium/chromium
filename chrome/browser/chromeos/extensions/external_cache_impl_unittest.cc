@@ -63,9 +63,8 @@ class ExternalCacheImplTest : public testing::Test,
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override {
     prefs_.reset(prefs->DeepCopy());
   }
-  void OnExtensionLoadedInCache(const std::string& id) override {}
-  void OnExtensionDownloadFailed(const std::string& id) override {}
-  std::string GetInstalledExtensionVersion(const std::string& id) override {
+  std::string GetInstalledExtensionVersion(
+      const extensions::ExtensionId& id) override {
     std::map<std::string, std::string>::iterator it =
         installed_extensions_.find(id);
     return it != installed_extensions_.end() ? it->second : std::string();

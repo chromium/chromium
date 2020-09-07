@@ -85,17 +85,6 @@ void SigninScreenExtensionsExternalLoader::OnExtensionListsUpdated(
   LoadFinished(prefs->CreateDeepCopy());
 }
 
-void SigninScreenExtensionsExternalLoader::OnExtensionLoadedInCache(
-    const std::string& id) {}
-
-void SigninScreenExtensionsExternalLoader::OnExtensionDownloadFailed(
-    const std::string& id) {}
-
-std::string SigninScreenExtensionsExternalLoader::GetInstalledExtensionVersion(
-    const std::string& id) {
-  return std::string();
-}
-
 SigninScreenExtensionsExternalLoader::~SigninScreenExtensionsExternalLoader() =
     default;
 

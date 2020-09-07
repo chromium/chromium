@@ -60,9 +60,6 @@ class DeviceLocalAccountExternalPolicyLoader
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
-  void OnExtensionLoadedInCache(const std::string& id) override;
-  void OnExtensionDownloadFailed(const std::string& id) override;
-  std::string GetInstalledExtensionVersion(const std::string& id) override;
 
   ExternalCache* GetExternalCacheForTesting();
 

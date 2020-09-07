@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
+#include "extensions/common/extension_id.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -278,10 +279,8 @@ class KioskAppManager : public KioskAppManagerBase,
   void UpdateExternalCachePrefs();
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
-  void OnExtensionLoadedInCache(const std::string& id) override;
-  void OnExtensionDownloadFailed(const std::string& id) override;
-  std::string GetInstalledExtensionVersion(const std::string& id) override;
+  void OnExtensionLoadedInCache(const extensions::ExtensionId& id) override;
+  void OnExtensionDownloadFailed(const extensions::ExtensionId& id) override;
 
   // Callback for InstallAttributes::LockDevice() during
   // EnableConsumerModeKiosk() call.

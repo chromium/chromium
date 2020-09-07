@@ -1103,6 +1103,7 @@ source_set("chromeos") {
     "extensions/extensions_permissions_tracker.h",
     "extensions/external_cache.cc",
     "extensions/external_cache.h",
+    "extensions/external_cache_delegate.cc",
     "extensions/external_cache_delegate.h",
     "extensions/external_cache_impl.cc",
     "extensions/external_cache_impl.h",

@@ -91,18 +91,6 @@ void DeviceLocalAccountExternalPolicyLoader::OnExtensionListsUpdated(
     LoadFinished(std::move(prefs_));
 }
 
-void DeviceLocalAccountExternalPolicyLoader::OnExtensionLoadedInCache(
-    const std::string& id) {}
-
-void DeviceLocalAccountExternalPolicyLoader::OnExtensionDownloadFailed(
-    const std::string& id) {}
-
-std::string
-DeviceLocalAccountExternalPolicyLoader::GetInstalledExtensionVersion(
-    const std::string& id) {
-  return std::string();
-}
-
 ExternalCache*
 DeviceLocalAccountExternalPolicyLoader::GetExternalCacheForTesting() {
   return external_cache_.get();

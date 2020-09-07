@@ -121,17 +121,6 @@ void DemoExtensionsExternalLoader::OnExtensionListsUpdated(
   LoadFinished(prefs->CreateDeepCopy());
 }
 
-void DemoExtensionsExternalLoader::OnExtensionLoadedInCache(
-    const std::string& id) {}
-
-void DemoExtensionsExternalLoader::OnExtensionDownloadFailed(
-    const std::string& id) {}
-
-std::string DemoExtensionsExternalLoader::GetInstalledExtensionVersion(
-    const std::string& id) {
-  return std::string();
-}
-
 void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
   DemoSession* demo_session = DemoSession::Get();
   DCHECK(demo_session->resources()->loaded());

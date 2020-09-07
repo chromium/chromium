@@ -809,11 +809,8 @@ void KioskAppManager::UpdateExternalCachePrefs() {
   external_cache_->UpdateExtensionsList(std::move(prefs));
 }
 
-void KioskAppManager::OnExtensionListsUpdated(
-    const base::DictionaryValue* prefs) {
-}
-
-void KioskAppManager::OnExtensionLoadedInCache(const std::string& id) {
+void KioskAppManager::OnExtensionLoadedInCache(
+    const extensions::ExtensionId& id) {
   KioskAppData* app_data = GetAppDataMutable(id);
   if (!app_data)
     return;
@@ -827,17 +824,13 @@ void KioskAppManager::OnExtensionLoadedInCache(const std::string& id) {
     observer.OnKioskExtensionLoadedInCache(id);
 }
 
-void KioskAppManager::OnExtensionDownloadFailed(const std::string& id) {
+void KioskAppManager::OnExtensionDownloadFailed(
+    const extensions::ExtensionId& id) {
   KioskAppData* app_data = GetAppDataMutable(id);
   if (!app_data)
     return;
   for (auto& observer : observers_)
     observer.OnKioskExtensionDownloadFailed(id);
-}
-
-std::string KioskAppManager::GetInstalledExtensionVersion(
-    const std::string& id) {
-  return std::string();
 }
 
 KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
