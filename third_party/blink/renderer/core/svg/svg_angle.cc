@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -166,30 +167,28 @@ static SVGAngle::SVGAngleType StringToAngleType(const CharType*& ptr,
 }
 
 String SVGAngle::ValueAsString() const {
+  const char* unit_string = "";
   switch (unit_type_) {
-    case kSvgAngletypeDeg: {
-      DEFINE_STATIC_LOCAL(String, deg_string, ("deg"));
-      return String::Number(value_in_specified_units_) + deg_string;
-    }
-    case kSvgAngletypeRad: {
-      DEFINE_STATIC_LOCAL(String, rad_string, ("rad"));
-      return String::Number(value_in_specified_units_) + rad_string;
-    }
-    case kSvgAngletypeGrad: {
-      DEFINE_STATIC_LOCAL(String, grad_string, ("grad"));
-      return String::Number(value_in_specified_units_) + grad_string;
-    }
-    case kSvgAngletypeTurn: {
-      DEFINE_STATIC_LOCAL(String, turn_string, ("turn"));
-      return String::Number(value_in_specified_units_) + turn_string;
-    }
+    case kSvgAngletypeDeg:
+      unit_string = "deg";
+      break;
+    case kSvgAngletypeRad:
+      unit_string = "rad";
+      break;
+    case kSvgAngletypeGrad:
+      unit_string = "grad";
+      break;
+    case kSvgAngletypeTurn:
+      unit_string = "turn";
+      break;
     case kSvgAngletypeUnspecified:
     case kSvgAngletypeUnknown:
-      return String::Number(value_in_specified_units_);
+      break;
   }
-
-  NOTREACHED();
-  return String();
+  StringBuilder builder;
+  builder.AppendNumber(value_in_specified_units_);
+  builder.Append(unit_string, strlen(unit_string));
+  return builder.ToString();
 }
 
 template <typename CharType>
