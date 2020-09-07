@@ -11,6 +11,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
     super([
       'closeTab',
       'getProfileTabs',
+      'showFeedbackPage',
       'switchToTab',
       'showUI',
     ]);
@@ -35,6 +36,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   getProfileTabs() {
     this.methodCalled('getProfileTabs');
     return Promise.resolve({profileTabs: this.profileTabs_});
+  }
+
+  /** @override */
+  showFeedbackPage() {
+    this.methodCalled('showFeedbackPage');
   }
 
   /** @override */

@@ -148,6 +148,11 @@ export class TabSearchAppElement extends PolymerElement {
     this.$.tabs.scrollTop = 0;
   }
 
+  /** @private */
+  onFeedbackClick_() {
+    this.apiProxy_.showFeedbackPage();
+  }
+
   /**
    * @param {!Event} e
    * @private

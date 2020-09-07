@@ -278,7 +278,7 @@ suite('TabSearchAppTest', () => {
     assertEquals(updatedTab.url, tabSearchItem.data.url);
   });
 
-  test('Verify initial tab render time is logged correctly.', async () => {
+  test('Verify initial tab render time is logged correctly', async () => {
     // |recordTimeCalled| tracks the number of calls to recordTime().
     let recordTimeCalled = 0;
     // |metricString| tracks the metric name passed to recordTime().
@@ -313,7 +313,7 @@ suite('TabSearchAppTest', () => {
     assertEquals(1, recordTimeCalled);
   });
 
-  test('Verify tab switch is logged correctly.', async () => {
+  test('Verify tab switch is logged correctly', async () => {
     await setupTest(sampleData());
     // Make sure that tab data has been recieved.
     verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
@@ -353,7 +353,7 @@ suite('TabSearchAppTest', () => {
         });
   });
 
-  test('Verify showUI() is called correctly.', async () => {
+  test('Verify showUI() is called correctly', async () => {
     assertEquals(0, testProxy.getCallCount('showUI'));
 
     await setupTest(sampleData());
@@ -377,5 +377,14 @@ suite('TabSearchAppTest', () => {
 
     // |showUI()| should still have only been called once.
     assertEquals(1, testProxy.getCallCount('showUI'));
+  });
+
+  test('Click on Sumit Feedback footer triggers action', async () => {
+    await setupTest(sampleData());
+
+    const feedbackButton = /** @type {!HTMLButtonElement} */
+        (tabSearchApp.shadowRoot.querySelector('#feedback-footer'));
+    feedbackButton.click();
+    await testProxy.whenCalled('showFeedbackPage');
   });
 });

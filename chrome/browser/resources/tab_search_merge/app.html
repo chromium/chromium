@@ -11,7 +11,48 @@
     padding: 12px;
     text-align: center;
   }
+
+  #feedback-text {
+    color: var(--cr-primary-text-color);
+    font-size: var(--mwb-primary-text-font-size);
+    margin-inline-start: var(--mwb-list-item-horizontal-margin);
+    user-select: none;
+  }
+
+  #feedback-footer {
+    border: none;
+    border-top: 1px solid var(--google-grey-refresh-500);
+    height: 32px;
+    width: 100%;
+  }
+
+  #feedback-footer:focus {
+    background-color: var(--mwb-list-item-selected-background-color);
+    outline: none;
+  }
+
+  #feedback-icon {
+    --iron-icon-fill-color: var(--google-grey-refresh-700);
+    height: var(--mwb-icon-size);
+    width: var(--mwb-icon-size);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #feedback-icon {
+      --iron-icon-fill-color: var(--google-blue-refresh-300);
+    }
+  }
 </style>
+<iron-iconset-svg name="ts" size="24">
+  <svg>
+    <defs>
+      <g id="feedback">
+        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z">
+        </path>
+      </g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
 <tab-search-search-field id="searchField" autofocus clear-label="Clear search"
     label="Search tabs [[getKeyboardShortcut_()]]" on-keydown="onKeyDown_"
     on-search-changed="onSearchChanged_" >
@@ -29,3 +70,7 @@
 <div id="no-results" hidden="[[filteredOpenTabs_.length]]">
   No results found
 </div>
+<button id="feedback-footer" class="mwb-list-item" on-click="onFeedbackClick_">
+  <iron-icon id="feedback-icon" icon="ts:feedback"></iron-icon>
+  <div id="feedback-text">Submit feedback</div>
+</button>

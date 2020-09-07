@@ -22,8 +22,10 @@ export class TabSearchApiProxy {
   /** @param {number} tabId */
   closeTab(tabId) {}
 
-  /**  @return {Promise<{profileTabs: tabSearch.mojom.ProfileTabs}>} */
+  /** @return {Promise<{profileTabs: tabSearch.mojom.ProfileTabs}>} */
   getProfileTabs() {}
+
+  showFeedbackPage() {}
 
   /**
    * @param {!tabSearch.mojom.SwitchToTabInfo} info
@@ -60,6 +62,11 @@ export class TabSearchApiProxyImpl {
   /** @override */
   getProfileTabs() {
     return this.handler.getProfileTabs();
+  }
+
+  /** @override */
+  showFeedbackPage() {
+    this.handler.showFeedbackPage();
   }
 
   /** @override */
