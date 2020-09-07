@@ -55,7 +55,7 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context) {
   // TODO(lizeb): Returns incorrect values for aligned allocations.
-  return base::ThreadSafePartitionRoot::GetSizeFromPointer(address);
+  return base::ThreadSafePartitionRoot::GetAllocatedSize(address);
 }
 
 }  // namespace

@@ -384,7 +384,7 @@ struct BASE_EXPORT PartitionRoot {
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* ptr);
 
-  ALWAYS_INLINE static size_t GetSizeFromPointer(void* ptr);
+  ALWAYS_INLINE static size_t GetAllocatedSize(void* ptr);
   ALWAYS_INLINE size_t GetSize(void* ptr) const;
   ALWAYS_INLINE size_t ActualSize(size_t size);
 
@@ -649,17 +649,21 @@ PartitionAllocGetPageForSize(void* ptr) {
 }  // namespace internal
 
 // static
+// Gets the allocated size of the |ptr|, adjusted for cookie and tag.
+// (if any). Used as malloc_usable_size.
 template <bool thread_safe>
-ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetSizeFromPointer(void* ptr) {
+ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetAllocatedSize(void* ptr) {
   Page* page = Page::FromPointerNoAlignmentCheck(ptr);
   auto* root = PartitionRoot<thread_safe>::FromPage(page);
-  return root->GetSize(ptr);
+
+  size_t size = page->GetAllocatedSize();
+  size = internal::PartitionSizeAdjustSubtract(root->allow_extras, size);
+  return size;
 }
 
 // Gets the size of the allocated slot that contains |ptr|, adjusted for cookie
-// (if any).
-// CAUTION! For direct-mapped allocation, |ptr| has to be within the first
-// partition page.
+// and tag (if any). CAUTION! For direct-mapped allocation, |ptr| has to be
+// within the first partition page.
 template <bool thread_safe>
 ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetSize(void* ptr) const {
   ptr = internal::PartitionPointerAdjustSubtract(allow_extras, ptr);
