@@ -526,6 +526,7 @@ void ManagePasswordsUIController::SavePassword(const base::string16& username,
             username);
     post_save_compromised_helper_->AnalyzeLeakedCredentials(
         passwords_data_.client()->GetProfilePasswordStore(),
+        passwords_data_.client()->GetAccountPasswordStore(),
         Profile::FromBrowserContext(web_contents()->GetBrowserContext())
             ->GetPrefs(),
         base::Bind(

@@ -50,9 +50,10 @@ class PostSaveCompromisedHelper {
   PostSaveCompromisedHelper& operator=(const PostSaveCompromisedHelper&) =
       delete;
 
-  // Asynchronously queries the password store for the compromised credentials
+  // Asynchronously queries the password stores for the compromised credentials
   // and notifies |callback| with the result of analysis.
-  void AnalyzeLeakedCredentials(PasswordStore* store,
+  void AnalyzeLeakedCredentials(PasswordStore* profile_store,
+                                PasswordStore* account_store,
                                 PrefService* prefs,
                                 BubbleCallback callback);
 

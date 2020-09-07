@@ -18,6 +18,7 @@ namespace password_manager {
 namespace {
 
 using BubbleType = PostSaveCompromisedHelper::BubbleType;
+using autofill::PasswordForm;
 using prefs::kLastTimePasswordCheckCompleted;
 using testing::Return;
 
@@ -25,11 +26,14 @@ constexpr char kSignonRealm[] = "https://example.com/";
 constexpr char kUsername[] = "user";
 constexpr char kUsername2[] = "user2";
 
-CompromisedCredentials CreateCompromised(base::StringPiece username) {
+CompromisedCredentials CreateCompromised(
+    base::StringPiece username,
+    PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   return CompromisedCredentials{
       .signon_realm = kSignonRealm,
       .username = base::ASCIIToUTF16(username),
       .compromise_type = CompromiseType::kLeaked,
+      .in_store = store,
   };
 }
 
@@ -38,25 +42,28 @@ CompromisedCredentials CreateCompromised(base::StringPiece username) {
 class PostSaveCompromisedHelperTest : public testing::Test {
  public:
   PostSaveCompromisedHelperTest() {
-    mock_store_ = new MockPasswordStore;
-    EXPECT_TRUE(mock_store_->Init(&prefs_));
+    mock_profile_store_ = new MockPasswordStore;
+    EXPECT_TRUE(mock_profile_store_->Init(&prefs_));
     prefs_.registry()->RegisterDoublePref(kLastTimePasswordCheckCompleted, 0.0);
   }
 
   ~PostSaveCompromisedHelperTest() override {
-    mock_store_->ShutdownOnUIThread();
+    mock_profile_store_->ShutdownOnUIThread();
   }
 
   void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
-  MockPasswordStore* store() { return mock_store_.get(); }
+  MockPasswordStore* profile_store() { return mock_profile_store_.get(); }
+  virtual MockPasswordStore* account_store() { return nullptr; }
   TestingPrefServiceSimple* prefs() { return &prefs_; }
+
+ protected:
+  TestingPrefServiceSimple prefs_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<MockPasswordStore> mock_store_;
-  TestingPrefServiceSimple prefs_;
+  scoped_refptr<MockPasswordStore> mock_profile_store_;
 };
 
 TEST_F(PostSaveCompromisedHelperTest, DefaultState) {
@@ -69,8 +76,9 @@ TEST_F(PostSaveCompromisedHelperTest, EmptyStore) {
   PostSaveCompromisedHelper helper({}, base::ASCIIToUTF16(kUsername));
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
-  EXPECT_CALL(*store(), GetAllCompromisedCredentialsImpl);
-  helper.AnalyzeLeakedCredentials(store(), prefs(), callback.Get());
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl);
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kNoBubble, helper.bubble_type());
   EXPECT_EQ(0u, helper.compromised_count());
@@ -81,9 +89,10 @@ TEST_F(PostSaveCompromisedHelperTest, RandomSite_FullStore) {
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kUnsafeState, 1));
   std::vector<CompromisedCredentials> saved = {CreateCompromised(kUsername2)};
-  EXPECT_CALL(*store(), GetAllCompromisedCredentialsImpl)
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl)
       .WillOnce(Return(saved));
-  helper.AnalyzeLeakedCredentials(store(), prefs(), callback.Get());
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kUnsafeState, helper.bubble_type());
   EXPECT_EQ(1u, helper.compromised_count());
@@ -95,9 +104,10 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemStayed) {
   PostSaveCompromisedHelper helper({saved}, base::ASCIIToUTF16(kUsername));
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kUnsafeState, 2));
-  EXPECT_CALL(*store(), GetAllCompromisedCredentialsImpl)
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl)
       .WillOnce(Return(saved));
-  helper.AnalyzeLeakedCredentials(store(), prefs(), callback.Get());
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kUnsafeState, helper.bubble_type());
   EXPECT_EQ(2u, helper.compromised_count());
@@ -110,9 +120,10 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
   saved = {CreateCompromised(kUsername2)};
-  EXPECT_CALL(*store(), GetAllCompromisedCredentialsImpl)
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl)
       .WillOnce(Return(saved));
-  helper.AnalyzeLeakedCredentials(store(), prefs(), callback.Get());
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kPasswordUpdatedWithMoreToFix, helper.bubble_type());
   EXPECT_EQ(1u, helper.compromised_count());
@@ -124,9 +135,10 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckNeverDone) {
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
   saved = {};
-  EXPECT_CALL(*store(), GetAllCompromisedCredentialsImpl)
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl)
       .WillOnce(Return(saved));
-  helper.AnalyzeLeakedCredentials(store(), prefs(), callback.Get());
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kNoBubble, helper.bubble_type());
   EXPECT_EQ(0u, helper.compromised_count());
@@ -141,9 +153,10 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneLongAgo) {
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
   saved = {};
-  EXPECT_CALL(*store(), GetAllCompromisedCredentialsImpl)
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl)
       .WillOnce(Return(saved));
-  helper.AnalyzeLeakedCredentials(store(), prefs(), callback.Get());
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kNoBubble, helper.bubble_type());
   EXPECT_EQ(0u, helper.compromised_count());
@@ -158,12 +171,67 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedSafeState, 0));
   saved = {};
-  EXPECT_CALL(*store(), GetAllCompromisedCredentialsImpl)
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl)
       .WillOnce(Return(saved));
-  helper.AnalyzeLeakedCredentials(store(), prefs(), callback.Get());
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kPasswordUpdatedSafeState, helper.bubble_type());
   EXPECT_EQ(0u, helper.compromised_count());
+}
+
+namespace {
+class PostSaveCompromisedHelperWithTwoStoreTest
+    : public PostSaveCompromisedHelperTest {
+ public:
+  PostSaveCompromisedHelperWithTwoStoreTest() {
+    mock_account_store_ = new MockPasswordStore;
+    EXPECT_TRUE(mock_account_store_->Init(&prefs_));
+  }
+
+  ~PostSaveCompromisedHelperWithTwoStoreTest() override {
+    mock_account_store_->ShutdownOnUIThread();
+  }
+
+  MockPasswordStore* account_store() override {
+    return mock_account_store_.get();
+  }
+  TestingPrefServiceSimple* prefs() { return &prefs_; }
+
+  TestingPrefServiceSimple prefs_;
+
+ private:
+  scoped_refptr<MockPasswordStore> mock_account_store_;
+};
+
+}  // namespace
+
+TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
+       CompromisedSiteInAccountStore_ItemStayed) {
+  CompromisedCredentials profile_store_compromised_credential =
+      CreateCompromised(kUsername, PasswordForm::Store::kProfileStore);
+  CompromisedCredentials account_store_compromised_credential =
+      CreateCompromised(kUsername, PasswordForm::Store::kAccountStore);
+
+  std::vector<CompromisedCredentials> compromised_credentials = {
+      profile_store_compromised_credential,
+      account_store_compromised_credential};
+
+  PostSaveCompromisedHelper helper({compromised_credentials},
+                                   base::ASCIIToUTF16(kUsername));
+  EXPECT_CALL(*profile_store(), GetAllCompromisedCredentialsImpl)
+      .WillOnce(Return(std::vector<CompromisedCredentials>{
+          profile_store_compromised_credential}));
+  EXPECT_CALL(*account_store(), GetAllCompromisedCredentialsImpl)
+      .WillOnce(Return(std::vector<CompromisedCredentials>{
+          account_store_compromised_credential}));
+  base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
+  EXPECT_CALL(callback, Run(BubbleType::kUnsafeState, 2));
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
+  WaitForPasswordStore();
+  EXPECT_EQ(BubbleType::kUnsafeState, helper.bubble_type());
+  EXPECT_EQ(2u, helper.compromised_count());
 }
 
 }  // namespace password_manager
