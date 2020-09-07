@@ -43,8 +43,7 @@ class ExternalCache {
   // If the external extension is not curently cached, whether the extension's
   // value should be added to the set of cached extensions (returned by
   // GetCachedExtensions()) regardles of the extension's download status.
-  static bool ShouldCacheImmediately(const base::Value& extension_value,
-                                     const std::string& installed_version);
+  static bool ShouldCacheImmediately(const base::Value& extension_value);
 
   // Returns already cached extensions.
   virtual const base::DictionaryValue* GetCachedExtensions() = 0;
