@@ -32,7 +32,11 @@ blink_platform_sources("blob") {
     "serialized_blob_mojom_traits.h",
   ]
 
-  deps = [ "//services/network/public/mojom:mojom_blink" ]
+  deps = [
+    "//services/network/public/mojom:mojom_blink",
+    "//third_party/blink/renderer/platform/instrumentation:instrumentation",
+    "//third_party/blink/renderer/platform/scheduler:scheduler",
+  ]
 }
 
 source_set("unit_tests") {
@@ -50,7 +54,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform:test_support",
   ]
 }
 
@@ -79,5 +85,6 @@ source_set("test_support") {
   public_deps = [
     ":generator",
     "//third_party/blink/public:blink_headers",
+    "//third_party/blink/renderer/platform:platform",
   ]
 }

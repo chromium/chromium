@@ -1559,6 +1559,9 @@ component("platform") {
 
   include_dirs = []
 
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/platform/blob" ]
+
   public_deps = [
     ":blink_platform_public_deps",
     ":platform_export",
@@ -1797,6 +1800,7 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest:gtest",
     "//testing/perf",
+    "//third_party/blink/renderer/platform/blob:test_support",
   ]
 
   deps = [
@@ -1807,7 +1811,6 @@ static_library("test_support") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/blink/public/common:common",
-    "//third_party/blink/renderer/platform/blob:test_support",
     "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/loader:test_support",
     "//third_party/blink/renderer/platform/network:test_support",
