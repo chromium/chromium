@@ -132,13 +132,7 @@ struct URLResponseHead {
   array<url.mojom.Url> url_list_via_service_worker;
 
   // https://fetch.spec.whatwg.org/#concept-response-type
-  //
-  // TODO(falken): Initialize to kDefault per spec, if that doesn't
-  // break things. Previously this field was not being initialized
-  // explicitly, so it was zero-initializing which happens to be the
-  // kBasic type. So changing it to kDefault could potentially change
-  // behavior.
-  FetchResponseType response_type = FetchResponseType.kBasic;
+  FetchResponseType response_type = FetchResponseType.kDefault;
 
   // The cache name of the CacheStorage from where the response is served via
   // the ServiceWorker. Empty if the response isn't from the CacheStorage.
