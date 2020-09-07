@@ -121,7 +121,8 @@ void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
 
   // TODO(crbug.com/826982): drop the if, and call MaybeDismissAppList
   // unconditionally?
-  if (app_type_ == apps::mojom::AppType::kArc) {
+  if (app_type_ == apps::mojom::AppType::kArc ||
+      app_type_ == apps::mojom::AppType::kRemote) {
     MaybeDismissAppList();
   }
 }
