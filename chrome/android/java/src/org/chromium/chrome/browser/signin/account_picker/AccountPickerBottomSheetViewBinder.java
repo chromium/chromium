@@ -16,9 +16,8 @@ class AccountPickerBottomSheetViewBinder {
     static void bind(
             PropertyModel model, AccountPickerBottomSheetView view, PropertyKey propertyKey) {
         if (propertyKey == AccountPickerBottomSheetProperties.ON_SELECTED_ACCOUNT_CLICKED) {
-            view.getSelectedAccountView().setOnClickListener(v -> {
-                model.get(AccountPickerBottomSheetProperties.ON_SELECTED_ACCOUNT_CLICKED).run();
-            });
+            view.getSelectedAccountView().setOnClickListener(
+                    model.get(AccountPickerBottomSheetProperties.ON_SELECTED_ACCOUNT_CLICKED));
         } else if (propertyKey == AccountPickerBottomSheetProperties.VIEW_STATE) {
             @ViewState
             int viewState = model.get(AccountPickerBottomSheetProperties.VIEW_STATE);
@@ -30,9 +29,8 @@ class AccountPickerBottomSheetViewBinder {
                 view.updateSelectedAccount(profileData);
             }
         } else if (propertyKey == AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED) {
-            view.getContinueAsButton().setOnClickListener(v -> {
-                model.get(AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED).run();
-            });
+            view.getContinueAsButton().setOnClickListener(
+                    model.get(AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED));
         }
     }
 
