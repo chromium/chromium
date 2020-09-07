@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 
+#include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -106,6 +107,8 @@ using password_manager::CredentialLeakType;
 - (void)startPasswordCheck {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  password_manager::LogPasswordCheckReferrer(
+      password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
   [handler showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
                self.baseViewController];
 }

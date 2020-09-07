@@ -426,6 +426,23 @@ enum class PasswordAccountStorageUserState {
   kSyncUser = 6,
 };
 
+// Represents different user interactions related to password check.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordCheckInteraction in enums.xml and
+// password_manager_proxy.js.
+enum class PasswordCheckInteraction {
+  kAutomaticPasswordCheck = 0,
+  kManualPasswordCheck = 1,
+  kPasswordCheckStopped = 2,
+  kChangePassword = 3,
+  kEditPassword = 4,
+  kRemovePassword = 5,
+  kShowPassword = 6,
+  // Must be last.
+  kMaxValue = kShowPassword,
+};
+
 // Metrics: PasswordManager.MoveToAccountStoreTrigger.
 // This must be kept in sync with the enum in password_move_to_account_dialog.js
 // (in chrome/browser/resources/settings/autofill_page).

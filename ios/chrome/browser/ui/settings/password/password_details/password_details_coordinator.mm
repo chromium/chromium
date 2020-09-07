@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -162,6 +164,10 @@
                   [weakSelf.delegate
                       passwordDetailsCoordinator:weakSelf
                                   deletePassword:weakSelf.mediator.password];
+                  base::UmaHistogramEnumeration(
+                      "PasswordManager.BulkCheck.UserAction",
+                      password_manager::metrics_util::PasswordCheckInteraction::
+                          kRemovePassword);
                 }
                  style:UIAlertActionStyleDestructive];
 
