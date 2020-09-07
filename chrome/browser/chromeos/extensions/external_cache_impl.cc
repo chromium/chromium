@@ -113,7 +113,6 @@ void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
       LOG(ERROR) << "ExternalCacheImpl extension at " << path.value()
                  << " failed to install, deleting it.";
       cached_extensions_->Remove(id, NULL);
-      extensions_->Remove(id, NULL);
 
       local_cache_.RemoveExtension(id, std::string());
       UpdateExtensionLoader();
