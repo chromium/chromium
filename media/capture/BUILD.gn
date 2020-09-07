@@ -330,10 +330,16 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "video/linux/fake_device_provider.cc",
+    "video/linux/fake_device_provider.h",
+    "video/linux/fake_v4l2_impl.cc",
+    "video/linux/fake_v4l2_impl.h",
     "video/mock_device.cc",
     "video/mock_device.h",
     "video/mock_device_factory.cc",
     "video/mock_device_factory.h",
+    "video/mock_gpu_memory_buffer_manager.cc",
+    "video/mock_gpu_memory_buffer_manager.h",
     "video/mock_video_capture_device_client.cc",
     "video/mock_video_capture_device_client.h",
     "video/mock_video_frame_receiver.cc",
@@ -343,12 +349,29 @@ source_set("test_support") {
   deps = [
     ":capture_lib",
     "//base/test:test_support",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/common:common",
     "//media:test_support",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
     "//testing/gmock",
     "//ui/gfx:test_support",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "video/chromeos/mock_camera_module.cc",
+      "video/chromeos/mock_camera_module.h",
+      "video/chromeos/mock_vendor_tag_ops.cc",
+      "video/chromeos/mock_vendor_tag_ops.h",
+      "video/chromeos/mock_video_capture_client.cc",
+      "video/chromeos/mock_video_capture_client.h",
+    ]
+    deps += [
+      "//media/capture/video/chromeos/mojom:cros_camera",
+      "//media/capture/video/chromeos/public",
+    ]
+  }
 
   testonly = true
 }
@@ -365,14 +388,10 @@ test("capture_unittests") {
     "video/fake_video_capture_device_unittest.cc",
     "video/file_video_capture_device_unittest.cc",
     "video/linux/camera_config_chromeos_unittest.cc",
-    "video/linux/fake_v4l2_impl.cc",
-    "video/linux/fake_v4l2_impl.h",
     "video/linux/v4l2_capture_delegate_unittest.cc",
     "video/linux/video_capture_device_factory_linux_unittest.cc",
     "video/mac/video_capture_device_factory_mac_unittest.mm",
     "video/mac/video_capture_device_mac_unittest.mm",
-    "video/mock_gpu_memory_buffer_manager.cc",
-    "video/mock_gpu_memory_buffer_manager.h",
     "video/video_capture_device_client_unittest.cc",
     "video/video_capture_device_unittest.cc",
     "video_capture_types_unittest.cc",
@@ -453,12 +472,6 @@ test("capture_unittests") {
       "video/chromeos/camera_device_delegate_unittest.cc",
       "video/chromeos/camera_hal_delegate_unittest.cc",
       "video/chromeos/camera_hal_dispatcher_impl_unittest.cc",
-      "video/chromeos/mock_camera_module.cc",
-      "video/chromeos/mock_camera_module.h",
-      "video/chromeos/mock_vendor_tag_ops.cc",
-      "video/chromeos/mock_vendor_tag_ops.h",
-      "video/chromeos/mock_video_capture_client.cc",
-      "video/chromeos/mock_video_capture_client.h",
       "video/chromeos/request_manager_unittest.cc",
     ]
     deps += [
