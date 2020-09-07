@@ -918,8 +918,7 @@ blink::mojom::CodeCacheHost& RendererBlinkPlatformImpl::GetCodeCacheHost() {
   if (!code_cache_host_) {
     code_cache_host_ = mojo::SharedRemote<blink::mojom::CodeCacheHost>(
         std::move(code_cache_host_remote_),
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::WithBaseSyncPrimitives()}));
+        base::ThreadPool::CreateSequencedTaskRunner({}));
   }
   return *code_cache_host_;
 }
