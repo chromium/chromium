@@ -16196,6 +16196,11 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="1" label="AAA"/>
 </enum>
 
+<enum name="DevToolsComputedStyleGrouping">
+  <int value="0" label="Grouping enabled"/>
+  <int value="1" label="Grouping disabled"/>
+</enum>
+
 <enum name="DevToolsDualScreenDeviceEmulated">
   <int value="0" label="Dual-screen or fold device selected"/>
   <int value="1" label="Dual-screen span mode selected"/>
