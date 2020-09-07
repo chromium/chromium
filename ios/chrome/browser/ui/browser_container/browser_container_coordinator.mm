@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 
+#import <Availability.h>
+
 #include "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -11,8 +13,11 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/screen_time/features.h"
-#import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
 #include "url/gurl.h"
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
+#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,6 +88,7 @@
   if (!IsScreenTimeIntegrationEnabled())
     return;
 
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   if (@available(iOS 14, *)) {
     ScreenTimeCoordinator* screenTimeCoordinator =
         [[ScreenTimeCoordinator alloc]
@@ -93,6 +99,7 @@
         screenTimeCoordinator.viewController;
     self.screenTimeCoordinator = screenTimeCoordinator;
   }
+#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 }
 
 @end
