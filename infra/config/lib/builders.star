@@ -232,6 +232,15 @@ def _code_coverage_property(
 
     return code_coverage or None
 
+def _isolated_property(*, isolated_server):
+    isolated = {}
+
+    isolated_server = defaults.get_value("isolated_server", isolated_server)
+    if isolated_server:
+        isolated["server"] = isolated_server
+
+    return isolated or None
+
 ################################################################################
 # Builder defaults and function                                                #
 ################################################################################
@@ -263,6 +272,7 @@ defaults = args.defaults(
     coverage_exclude_sources = None,
     coverage_test_types = None,
     resultdb_bigquery_exports = [],
+    isolated_server = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -303,6 +313,7 @@ def builder(
         coverage_exclude_sources = args.DEFAULT,
         coverage_test_types = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
+        isolated_server = args.DEFAULT,
         **kwargs):
     """Define a builder.
 
@@ -401,6 +412,9 @@ def builder(
       * resultdb_bigquery_exports - a list of resultdb.export_test_results(...)
         specifying parameters for exporting test results to BigQuery. By default,
         do not export.
+      * isolated_server - a string indicating the host of the isolated server.
+        Will be incorporated into the '$recipe_engine/isolated' property. By
+        default, this is None.
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
     """
 
@@ -423,6 +437,9 @@ def builder(
         fail('Setting "$build/code_coverage" property is not supported: ' +
              "use use_clang_coverage, use_java_coverage, coverage_exclude_sources" +
              " and/or coverage_test_types instead")
+    if "$recipe_engine/isolated" in properties:
+        fail('Setting "$recipe_engine/isolated" property is not supported: ' +
+             "use isolated_server instead")
     properties = dict(properties)
 
     os = defaults.get_value("os", os)
@@ -512,6 +529,12 @@ def builder(
     )
     if code_coverage != None:
         properties["$build/code_coverage"] = code_coverage
+
+    isolated = _isolated_property(
+        isolated_server = isolated_server,
+    )
+    if isolated != None:
+        properties["$recipe_engine/isolated"] = isolated
 
     kwargs = dict(kwargs)
     if bucket != args.COMPUTE:

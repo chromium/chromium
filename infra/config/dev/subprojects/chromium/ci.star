@@ -55,11 +55,7 @@ def ci_builder(*, name, **kwargs):
         resultdb_bigquery_exports = [resultdb.export_test_results(
             bq_table = "luci-resultdb-dev.chromium.ci_test_results",
         )],
-        properties = {
-            "$recipe_engine/isolated": {
-                "server": "https://isolateserver-dev.appspot.com",
-            },
-        },
+        isolated_server = "https://isolateserver-dev.appspot.com",
         **kwargs
     )
 
