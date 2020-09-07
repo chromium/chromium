@@ -24,6 +24,7 @@ const State = {
   BACKUP_SUCCEEDED: 'backupSucceeded',
   PRECHECKS_FAILED: 'prechecksFailed',
   UPGRADING: 'upgrading',
+  UPGRADE_ERROR: 'upgrade_error',
   OFFER_RESTORE: 'offerRestore',
   RESTORE: 'restore',
   RESTORE_SUCCEEDED: 'restoreSucceeded',
@@ -170,7 +171,7 @@ Polymer({
         if (this.backupCheckboxChecked_) {
           this.state_ = State.OFFER_RESTORE;
         } else {
-          this.state_ = State.ERROR;
+          this.state_ = State.UPGRADE_ERROR;
         }
       }),
       callbackRouter.onRestoreProgress.addListener((percent) => {
@@ -257,6 +258,7 @@ Polymer({
         BrowserProxy.getInstance().handler.cancel();
         break;
       case State.PRECHECKS_FAILED:
+      case State.UPGRADE_ERROR:
       case State.ERROR:
       case State.OFFER_RESTORE:
       case State.SUCCEEDED:
@@ -324,7 +326,14 @@ Polymer({
    */
   isProgressMessageHidden_(state) {
     return this.isState_(this.state_, State.PROMPT) ||
-        this.isState_(this.state_, State.ERROR);
+        this.isState_(this.state_, State.UPGRADE_ERROR) ||
+        this.isState_(this.state_, State.OFFER_RESTORE);
+  },
+
+  isErrorLogsHidden_(state) {
+    return !(
+        this.isState_(this.state_, State.UPGRADE_ERROR) ||
+        this.isState_(this.state_, State.OFFER_RESTORE));
   },
 
   /**
@@ -384,6 +393,7 @@ Polymer({
         titleId = 'upgradingTitle';
         break;
       case State.OFFER_RESTORE:
+      case State.UPGRADE_ERROR:
       case State.ERROR:
         titleId = 'errorTitle';
         break;
@@ -416,6 +426,7 @@ Polymer({
         return loadTimeData.getString('upgrade');
       case State.PRECHECKS_FAILED:
         return loadTimeData.getString('retry');
+      case State.UPGRADE_ERROR:
       case State.ERROR:
         return loadTimeData.getString('cancel');
       case State.SUCCEEDED:
@@ -499,7 +510,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getErrorMessage_(state) {
+  getErrorLogs_(state) {
     return this.progressMessages_.join('\n');
   },
 
@@ -514,6 +525,8 @@ Polymer({
       case State.RESTORE_SUCCEEDED:
       case State.PRECHECKS_FAILED:
         return 'img-square-illustration';
+      case State.OFFER_RESTORE:
+      case State.UPGRADE_ERROR:
       case State.ERROR:
         return 'img-square-error-illustration';
     }
@@ -531,6 +544,8 @@ Polymer({
       case State.RESTORE_SUCCEEDED:
         return 'images/success_illustration.svg';
       case State.PRECHECKS_FAILED:
+      case State.OFFER_RESTORE:
+      case State.UPGRADE_ERROR:
       case State.ERROR:
         return 'images/error_illustration.png';
     }
