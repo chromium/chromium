@@ -40,14 +40,6 @@ class ServiceWorkerMetrics {
   };
 
   // Used for UMA. Append-only.
-  enum DeleteAndStartOverResult {
-    DELETE_OK,
-    DELETE_DATABASE_ERROR,
-    DELETE_DISK_CACHE_ERROR,
-    NUM_DELETE_AND_START_OVER_RESULT_TYPES,
-  };
-
-  // Used for UMA. Append-only.
   enum class StopStatus {
     NORMAL,
     DETACH_BY_REGISTRY,
@@ -179,14 +171,10 @@ class ServiceWorkerMetrics {
   // If the |url| is not a special site, returns Site::OTHER.
   static Site SiteFromURL(const GURL& url);
 
-  // Used for ServiceWorkerDiskCache.
-  static void CountInitDiskCacheResult(bool result);
+  // Counts the result of reading a service worker script from storage.
   static void CountReadResponseResult(ReadResponseResult result);
+  // Counts the result of writing a service worker script to storage.
   static void CountWriteResponseResult(WriteResponseResult result);
-
-  // Used for ServiceWorkerStorage.
-  static void RecordPurgeResourceResult(int net_error);
-  static void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result);
 
   // Counts the number of page loads controlled by a Service Worker.
   static void CountControlledPageLoad(Site site,
@@ -245,9 +233,6 @@ class ServiceWorkerMetrics {
   // Records the result of starting service worker for a navigation hint.
   static void RecordStartServiceWorkerForNavigationHintResult(
       StartServiceWorkerForNavigationHintResult result);
-
-  // Records the number of origins with a registered service worker.
-  static void RecordRegisteredOriginCount(size_t origin_count);
 
   // Records the duration of looking up an existing registration.
   // |status| is the result of lookup. The records for the cases where

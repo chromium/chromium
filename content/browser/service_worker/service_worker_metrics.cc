@@ -238,10 +238,6 @@ ServiceWorkerMetrics::Site ServiceWorkerMetrics::SiteFromURL(const GURL& url) {
   return ServiceWorkerMetrics::Site::OTHER;
 }
 
-void ServiceWorkerMetrics::CountInitDiskCacheResult(bool result) {
-  UMA_HISTOGRAM_BOOLEAN("ServiceWorker.DiskCache.InitResult", result);
-}
-
 void ServiceWorkerMetrics::CountReadResponseResult(
     ServiceWorkerMetrics::ReadResponseResult result) {
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.DiskCache.ReadResponseResult",
@@ -252,17 +248,6 @@ void ServiceWorkerMetrics::CountWriteResponseResult(
     ServiceWorkerMetrics::WriteResponseResult result) {
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.DiskCache.WriteResponseResult",
                             result, NUM_WRITE_RESPONSE_RESULT_TYPES);
-}
-
-void ServiceWorkerMetrics::RecordPurgeResourceResult(int net_error) {
-  base::UmaHistogramSparse("ServiceWorker.Storage.PurgeResourceResult",
-                           std::abs(net_error));
-}
-
-void ServiceWorkerMetrics::RecordDeleteAndStartOverResult(
-    DeleteAndStartOverResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.Storage.DeleteAndStartOverResult",
-                            result, NUM_DELETE_AND_START_OVER_RESULT_TYPES);
 }
 
 void ServiceWorkerMetrics::CountControlledPageLoad(Site site,
@@ -563,10 +548,6 @@ void ServiceWorkerMetrics::RecordStartServiceWorkerForNavigationHintResult(
     StartServiceWorkerForNavigationHintResult result) {
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartForNavigationHint.Result",
                             result);
-}
-
-void ServiceWorkerMetrics::RecordRegisteredOriginCount(size_t origin_count) {
-  UMA_HISTOGRAM_COUNTS_1M("ServiceWorker.RegisteredOriginCount", origin_count);
 }
 
 void ServiceWorkerMetrics::RecordLookupRegistrationTime(

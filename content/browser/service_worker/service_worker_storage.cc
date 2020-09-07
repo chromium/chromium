@@ -12,6 +12,7 @@
 #include "base/bind_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -59,6 +60,19 @@ void MaybeNotifyWriteFailed(
 const base::FilePath::CharType kDatabaseName[] = FILE_PATH_LITERAL("Database");
 const base::FilePath::CharType kDiskCacheName[] =
     FILE_PATH_LITERAL("ScriptCache");
+
+// Used for UMA. Append-only.
+enum class DeleteAndStartOverResult {
+  kDeleteOk = 0,
+  kDeleteDatabaseError = 1,
+  kDeleteDiskCacheError = 2,
+  kMaxValue = kDeleteDiskCacheError,
+};
+
+void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result) {
+  base::UmaHistogramEnumeration(
+      "ServiceWorker.Storage.DeleteAndStartOverResult", result);
+}
 
 }  // namespace
 
@@ -1069,8 +1083,8 @@ void ServiceWorkerStorage::DidReadInitialData(
     next_resource_id_ = data->next_resource_id;
     registered_origins_.swap(data->origins);
     state_ = STORAGE_STATE_INITIALIZED;
-    ServiceWorkerMetrics::RecordRegisteredOriginCount(
-        registered_origins_.size());
+    base::UmaHistogramCounts1M("ServiceWorker.RegisteredOriginCount",
+                               registered_origins_.size());
   } else {
     DVLOG(2) << "Failed to initialize: "
              << ServiceWorkerDatabase::StatusToString(status);
@@ -1232,7 +1246,8 @@ void ServiceWorkerStorage::OnDiskCacheInitialized(int rv) {
                << net::ErrorToString(rv);
     Disable();
   }
-  ServiceWorkerMetrics::CountInitDiskCacheResult(rv == net::OK);
+  base::UmaHistogramBoolean("ServiceWorker.DiskCache.InitResult",
+                            rv == net::OK);
 }
 
 void ServiceWorkerStorage::StartPurgingResources(
@@ -1282,7 +1297,8 @@ void ServiceWorkerStorage::OnResourcePurged(int64_t id, int rv) {
   DCHECK(is_purge_pending_);
   is_purge_pending_ = false;
 
-  ServiceWorkerMetrics::RecordPurgeResourceResult(rv);
+  base::UmaHistogramSparse("ServiceWorker.Storage.PurgeResourceResult",
+                           std::abs(rv));
 
   // TODO(falken): Is it always OK to ClearPurgeableResourceIds if |rv| is
   // failure? The disk cache entry might still remain and once we remove its
@@ -1654,8 +1670,8 @@ void ServiceWorkerStorage::DidDeleteDatabase(
     // Give up the corruption recovery until the browser restarts.
     LOG(ERROR) << "Failed to delete the database: "
                << ServiceWorkerDatabase::StatusToString(status);
-    ServiceWorkerMetrics::RecordDeleteAndStartOverResult(
-        ServiceWorkerMetrics::DELETE_DATABASE_ERROR);
+    RecordDeleteAndStartOverResult(
+        DeleteAndStartOverResult::kDeleteDatabaseError);
     std::move(callback).Run(status);
     return;
   }
@@ -1684,14 +1700,13 @@ void ServiceWorkerStorage::DidDeleteDiskCache(DatabaseStatusCallback callback,
   if (!result) {
     // Give up the corruption recovery until the browser restarts.
     LOG(ERROR) << "Failed to delete the diskcache.";
-    ServiceWorkerMetrics::RecordDeleteAndStartOverResult(
-        ServiceWorkerMetrics::DELETE_DISK_CACHE_ERROR);
+    RecordDeleteAndStartOverResult(
+        DeleteAndStartOverResult::kDeleteDiskCacheError);
     std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorFailed);
     return;
   }
   DVLOG(1) << "Deleted ServiceWorkerDiskCache successfully.";
-  ServiceWorkerMetrics::RecordDeleteAndStartOverResult(
-      ServiceWorkerMetrics::DELETE_OK);
+  RecordDeleteAndStartOverResult(DeleteAndStartOverResult::kDeleteOk);
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk);
 }
 

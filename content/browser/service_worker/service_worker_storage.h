@@ -24,7 +24,6 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_database.h"
-#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
