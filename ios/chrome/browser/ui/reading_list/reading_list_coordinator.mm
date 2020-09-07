@@ -465,6 +465,20 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
                            incognito:YES];
             }]];
 
+        const ReadingListEntry* entry = [self.mediator entryFromItem:item];
+        if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
+          GURL offlineURL = reading_list::OfflineURLForPath(
+              entry->DistilledPath(), item.entryURL, entry->DistilledURL());
+          [menuElements
+              addObject:[actionFactory
+                            actionToViewOfflineVersionInInNewTabWithBlock:^{
+                              [weakSelf loadEntryURL:item.entryURL
+                                      withOfflineURL:offlineURL
+                                            inNewTab:YES
+                                           incognito:NO];
+                            }]];
+        }
+
         if (IsMultipleScenesSupported()) {
           [menuElements
               addObject:[actionFactory
@@ -472,6 +486,17 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
                                             activityOrigin:
                                                 WindowActivityReadingListOrigin
                                                 completion:nil]];
+        }
+
+        if ([accessibilityDelegate isItemRead:item]) {
+          [menuElements
+              addObject:[actionFactory actionToMarkAsUnreadWithBlock:^{
+                [accessibilityDelegate markItemUnread:item];
+              }]];
+        } else {
+          [menuElements addObject:[actionFactory actionToMarkAsReadWithBlock:^{
+                          [accessibilityDelegate markItemRead:item];
+                        }]];
         }
 
         [menuElements addObject:[actionFactory actionToCopyURL:item.entryURL]];

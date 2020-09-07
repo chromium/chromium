@@ -316,4 +316,65 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
   }
 }
 
+// Tests that the Mark As Read action has the right title and image.
+TEST_F(ActionFactoryTest, markAsReadAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"mark_read"];
+
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_READING_LIST_MARK_AS_READ_ACTION);
+
+    UIAction* action = [factory actionToMarkAsReadWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the Mark As Unread action has the right title and image.
+TEST_F(ActionFactoryTest, markAsUnreadAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"remove"];
+
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION);
+
+    UIAction* action = [factory actionToMarkAsUnreadWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the View Offline Version in New Tab action has the right title and
+// image.
+TEST_F(ActionFactoryTest, viewOfflineVersion) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
+                                      scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = nil;
+
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE);
+
+    UIAction* action = [factory actionToViewOfflineVersionInInNewTabWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
 #endif  // defined(__IPHONE_13_0)

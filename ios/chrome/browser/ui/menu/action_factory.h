@@ -94,6 +94,20 @@ API_AVAILABLE(ios(13.0))
 // the given |block| when executed.
 - (UIAction*)actionToMoveFolderWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance configured for marking an entry from the
+// ReadingList as read, which will invoke the given |block| when executed.
+- (UIAction*)actionToMarkAsReadWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance configured for marking an entry from the
+// ReadingList as unread, which will invoke the given |block| when executed.
+- (UIAction*)actionToMarkAsUnreadWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance whose title and icon are configured for viewing
+// an offline version of an URL in a new tab. When triggered, the action will
+// invoke the |block| when executed.
+- (UIAction*)actionToViewOfflineVersionInInNewTabWithBlock:
+    (ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_
