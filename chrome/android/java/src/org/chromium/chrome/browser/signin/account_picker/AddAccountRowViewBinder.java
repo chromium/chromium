@@ -45,8 +45,7 @@ class AddAccountRowViewBinder {
         textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 AppCompatResources.getDrawable(view.getContext(), drawableRes), null, null, null);
         if (propertyKey == AddAccountRowProperties.ON_CLICK_LISTENER) {
-            view.setOnClickListener(
-                    v -> model.get(AddAccountRowProperties.ON_CLICK_LISTENER).run());
+            view.setOnClickListener(model.get(AddAccountRowProperties.ON_CLICK_LISTENER));
         } else {
             throw new IllegalArgumentException(
                     "Cannot update the view for propertyKey: " + propertyKey);

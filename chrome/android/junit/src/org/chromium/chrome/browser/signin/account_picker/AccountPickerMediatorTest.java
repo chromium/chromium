@@ -140,7 +140,7 @@ public class AccountPickerMediatorTest {
     private void checkItemForAddAccountRow(int position) {
         MVCListAdapter.ListItem item = mModelList.get(position);
         Assert.assertEquals(AccountPickerProperties.ItemType.ADD_ACCOUNT_ROW, item.type);
-        item.model.get(AddAccountRowProperties.ON_CLICK_LISTENER).run();
+        item.model.get(AddAccountRowProperties.ON_CLICK_LISTENER).onClick(null);
         verify(mListenerMock).addAccount();
     }
 
@@ -148,7 +148,7 @@ public class AccountPickerMediatorTest {
         MVCListAdapter.ListItem item = mModelList.get(position);
         Assert.assertEquals(AccountPickerProperties.ItemType.INCOGNITO_ACCOUNT_ROW, item.type);
         item.model.get(AccountPickerProperties.IncognitoAccountRowProperties.ON_CLICK_LISTENER)
-                .run();
+                .onClick(null);
         verify(mListenerMock).goIncognitoMode();
     }
 

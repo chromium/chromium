@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.LayoutRes;
-
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -23,15 +21,13 @@ class IncognitoAccountRowViewBinder {
     private IncognitoAccountRowViewBinder() {}
 
     static View buildView(ViewGroup parent) {
-        @LayoutRes
-        int layoutRes = R.layout.account_picker_incognito_row;
-        return LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.account_picker_incognito_row, parent, false);
     }
 
     static void bindView(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == IncognitoAccountRowProperties.ON_CLICK_LISTENER) {
-            view.setOnClickListener(
-                    v -> model.get(IncognitoAccountRowProperties.ON_CLICK_LISTENER).run());
+            view.setOnClickListener(model.get(IncognitoAccountRowProperties.ON_CLICK_LISTENER));
         } else {
             throw new IllegalArgumentException(
                     "Cannot update the view for propertyKey: " + propertyKey);

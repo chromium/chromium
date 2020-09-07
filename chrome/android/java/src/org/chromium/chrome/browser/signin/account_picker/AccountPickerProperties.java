@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin.account_picker;
 
+import android.view.View.OnClickListener;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
@@ -24,7 +26,7 @@ class AccountPickerProperties {
      * Properties for "add account" row in account picker.
      */
     static class AddAccountRowProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+        static final PropertyModel.ReadableObjectPropertyKey<OnClickListener> ON_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
 
         static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ON_CLICK_LISTENER};
@@ -33,7 +35,7 @@ class AccountPickerProperties {
 
         static PropertyModel createModel(Runnable runnableAddAccount) {
             return new PropertyModel.Builder(ALL_KEYS)
-                    .with(ON_CLICK_LISTENER, runnableAddAccount)
+                    .with(ON_CLICK_LISTENER, v -> runnableAddAccount.run())
                     .build();
         }
     }
@@ -42,7 +44,7 @@ class AccountPickerProperties {
      * Properties for "incognito account" row in account picker.
      */
     static class IncognitoAccountRowProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+        static final PropertyModel.ReadableObjectPropertyKey<OnClickListener> ON_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
 
         static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ON_CLICK_LISTENER};
@@ -51,7 +53,7 @@ class AccountPickerProperties {
 
         static PropertyModel createModel(Runnable runnableIncognitoMode) {
             return new PropertyModel.Builder(ALL_KEYS)
-                    .with(ON_CLICK_LISTENER, runnableIncognitoMode)
+                    .with(ON_CLICK_LISTENER, v -> runnableIncognitoMode.run())
                     .build();
         }
     }
