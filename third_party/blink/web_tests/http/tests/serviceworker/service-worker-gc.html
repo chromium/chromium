@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<script src="/js-test-resources/gc.js"></script>
 <script src="/js-test-resources/js-test.js"></script>
 <script src="resources/test-helpers.js"></script>
 <script>
@@ -62,17 +63,16 @@ function onStateChange(event) {
 function unregister() {
     // The worker has an event handler that can still receive the state change
     // to 'redundant', so it shouldn't be collected yet.
-    gc();
-    shouldBeFalse('registrationObservation.wasCollected');
-    shouldBeFalse('swObservation.wasCollected');
-    navigator.serviceWorker.getRegistration(scope)
-      .then(function(registration) {
-          registration.unregister();
-        })
-      .catch(function(error) {
-          testFailed('Could not unregister worker: ' + error);
-          finishJSTest();
-        });
+    asyncGC().then(function() {
+        shouldBeFalse('registrationObservation.wasCollected');
+        shouldBeFalse('swObservation.wasCollected');
+        return navigator.serviceWorker.getRegistration(scope);
+    }).then(function(registration) {
+        registration.unregister();
+    }).catch(function(error) {
+        testFailed('Could not unregister worker: ' + error);
+        finishJSTest();
+    });
 }
 
 function finish()
@@ -81,9 +81,10 @@ function finish()
     // so it shouldn't be collected yet.
     // FIXME: When crbug.com/398355 is fixed, register a new script URL and
     // once the new worker is activated, check that the old worker is gc'd.
-    gc();
-    shouldBeFalse('registrationObservation.wasCollected');
-    shouldBeTrue('swObservation.wasCollected');
-    finishJSTest();
+    asyncGC().then(function() {
+        shouldBeFalse('registrationObservation.wasCollected');
+        shouldBeTrue('swObservation.wasCollected');
+        finishJSTest();
+    });
 }
 </script>
