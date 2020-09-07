@@ -38,10 +38,9 @@ namespace blink {
 
 class SliderTrackElement;
 
-// This class should be renamed.
-class LayoutSliderContainer final : public LayoutBlockFlow {
+class LayoutSliderTrack final : public LayoutBlockFlow {
  public:
-  explicit LayoutSliderContainer(SliderTrackElement*);
+  explicit LayoutSliderTrack(SliderTrackElement*);
 
  private:
   void UpdateLayout() override;

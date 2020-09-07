@@ -40,7 +40,7 @@
 
 namespace blink {
 
-LayoutSliderContainer::LayoutSliderContainer(SliderTrackElement* element)
+LayoutSliderTrack::LayoutSliderTrack(SliderTrackElement* element)
     : LayoutBlockFlow(element) {}
 
 inline static Decimal SliderPosition(HTMLInputElement* element) {
@@ -50,7 +50,7 @@ inline static Decimal SliderPosition(HTMLInputElement* element) {
   return step_range.ProportionFromValue(step_range.ClampValue(old_value));
 }
 
-void LayoutSliderContainer::UpdateLayout() {
+void LayoutSliderTrack::UpdateLayout() {
   auto* input = To<HTMLInputElement>(GetNode()->OwnerShadowHost());
   const bool is_vertical = !StyleRef().IsHorizontalWritingMode();
 
