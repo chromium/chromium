@@ -38,7 +38,7 @@ class BLINK_MODULES_EXPORT WebAudioOutputIPCFactory {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   ~WebAudioOutputIPCFactory();
 
-  static WebAudioOutputIPCFactory* get() { return instance_; }
+  static WebAudioOutputIPCFactory& GetInstance();
 
   const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner() const;
 
@@ -61,9 +61,6 @@ class BLINK_MODULES_EXPORT WebAudioOutputIPCFactory {
   // Blink public API layer, move this Pimpl class back to its outer class.
   class Impl;
   std::unique_ptr<Impl> impl_;
-
-  // Global instance, set in constructor and unset in destructor.
-  static WebAudioOutputIPCFactory* instance_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAudioOutputIPCFactory);
 };

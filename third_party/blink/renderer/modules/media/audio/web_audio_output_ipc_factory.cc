@@ -13,12 +13,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/media/audio/mojo_audio_output_ipc.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
-
-WebAudioOutputIPCFactory* WebAudioOutputIPCFactory::instance_ = nullptr;
 
 class WebAudioOutputIPCFactory::Impl {
  public:
@@ -49,18 +49,18 @@ class WebAudioOutputIPCFactory::Impl {
   DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
-WebAudioOutputIPCFactory::WebAudioOutputIPCFactory(
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : impl_(std::make_unique<Impl>(std::move(io_task_runner))) {
-  DCHECK(!instance_);
-  instance_ = this;
+// static
+WebAudioOutputIPCFactory& WebAudioOutputIPCFactory::GetInstance() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WebAudioOutputIPCFactory, instance,
+                                  (Platform::Current()->GetIOTaskRunner()));
+  return instance;
 }
 
-WebAudioOutputIPCFactory::~WebAudioOutputIPCFactory() {
-  // Allow destruction in tests.
-  DCHECK_EQ(instance_, this);
-  instance_ = nullptr;
-}
+WebAudioOutputIPCFactory::WebAudioOutputIPCFactory(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
+    : impl_(std::make_unique<Impl>(std::move(io_task_runner))) {}
+
+WebAudioOutputIPCFactory::~WebAudioOutputIPCFactory() = default;
 
 std::unique_ptr<media::AudioOutputIPC>
 WebAudioOutputIPCFactory::CreateAudioOutputIPC(

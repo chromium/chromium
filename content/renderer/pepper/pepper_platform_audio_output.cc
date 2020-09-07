@@ -136,7 +136,7 @@ bool PepperPlatformAudioOutput::Initialize(
   DCHECK(client);
   client_ = client;
 
-  ipc_ = blink::WebAudioOutputIPCFactory::get()->CreateAudioOutputIPC(
+  ipc_ = blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
       source_frame_token);
   CHECK(ipc_);
 

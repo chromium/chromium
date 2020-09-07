@@ -83,8 +83,9 @@ scoped_refptr<::media::AudioOutputDevice> NewOutputDevice(
     const ::media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   auto device = base::MakeRefCounted<::media::AudioOutputDevice>(
-      blink::WebAudioOutputIPCFactory::get()->CreateAudioOutputIPC(frame_token),
-      blink::WebAudioOutputIPCFactory::get()->io_task_runner(), params,
+      blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
+          frame_token),
+      blink::WebAudioOutputIPCFactory::GetInstance().io_task_runner(), params,
       auth_timeout);
   device->RequestDeviceAuthorization();
   return device;

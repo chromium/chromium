@@ -624,8 +624,6 @@ void RenderThreadImpl::Init() {
   unfreezable_message_filter_ = new UnfreezableMessageFilter(this);
   AddFilter(unfreezable_message_filter_.get());
 
-  audio_output_ipc_factory_.emplace(GetIOTaskRunner());
-
   GetContentClient()->renderer()->RenderThreadStarted();
   ExposeRendererInterfacesToBrowser(weak_factory_.GetWeakPtr(), &binders);
   ExposeInterfacesToBrowser(std::move(binders));

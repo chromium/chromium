@@ -2001,7 +2001,6 @@ RenderFrameImpl::~RenderFrameImpl() {
 
   base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(routing_id_);
 
-
   if (is_main_frame_) {
     // Ensure the RenderView doesn't point to this object, once it is destroyed.
     // TODO(nasko): Add a check that the |main_render_frame_| of |render_view_|
@@ -2045,10 +2044,12 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   // embedder can call GetWebFrame on any RenderFrame.
   GetContentClient()->renderer()->RenderFrameCreated(this);
 
-  // blink::WebAudioOutputIPCFactory may be null in tests.
-  if (auto* factory = blink::WebAudioOutputIPCFactory::get())
-    factory->RegisterRemoteFactory(GetWebFrame()->GetLocalFrameToken(),
-                                   GetBrowserInterfaceBroker());
+  // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
+  auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();
+  if (factory.io_task_runner()) {
+    factory.RegisterRemoteFactory(GetWebFrame()->GetLocalFrameToken(),
+                                  GetBrowserInterfaceBroker());
+  }
 
   AudioRendererSinkCache::ObserveFrame(this);
 
@@ -4181,8 +4182,10 @@ void RenderFrameImpl::WillDetach() {
   for (auto& observer : observers_)
     observer.WillDetach();
 
-  if (auto* factory = blink::WebAudioOutputIPCFactory::get())
-    factory->MaybeDeregisterRemoteFactory(GetWebFrame()->GetLocalFrameToken());
+  // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
+  auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();
+  if (factory.io_task_runner())
+    factory.MaybeDeregisterRemoteFactory(GetWebFrame()->GetLocalFrameToken());
 
   // Send a state update before the frame is detached.
   SendUpdateState();
@@ -4438,8 +4441,9 @@ void RenderFrameImpl::DidCommitNavigation(
     // RenderFrameHostImpl.
     browser_interface_broker_receiver = browser_interface_broker_proxy_.Reset();
 
-    // blink::WebAudioOutputIPCFactory may be null in tests.
-    if (auto* factory = blink::WebAudioOutputIPCFactory::get()) {
+    // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
+    auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();
+    if (factory.io_task_runner()) {
       // The RendererAudioOutputStreamFactory must be readily accessible on the
       // IO thread when it's needed, because the main thread may block while
       // waiting for the factory call to finish on the IO thread, so if we tried
@@ -4448,10 +4452,9 @@ void RenderFrameImpl::DidCommitNavigation(
       // TODO(https://crbug.com/668275): Still, it is odd for one specific
       // factory to be registered here, make this a RenderFrameObserver.
       // code.
-      factory->MaybeDeregisterRemoteFactory(
-          GetWebFrame()->GetLocalFrameToken());
-      factory->RegisterRemoteFactory(GetWebFrame()->GetLocalFrameToken(),
-                                     GetBrowserInterfaceBroker());
+      factory.MaybeDeregisterRemoteFactory(GetWebFrame()->GetLocalFrameToken());
+      factory.RegisterRemoteFactory(GetWebFrame()->GetLocalFrameToken(),
+                                    GetBrowserInterfaceBroker());
     }
 
     // If the request for |audio_input_stream_factory_| is in flight when

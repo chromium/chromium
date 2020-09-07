@@ -260,7 +260,7 @@ bool PepperPlatformAudioOutputDev::Initialize(int sample_rate,
 
   client_ = client;
 
-  ipc_ = blink::WebAudioOutputIPCFactory::get()->CreateAudioOutputIPC(
+  ipc_ = blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
       render_frame->GetWebFrame()->GetLocalFrameToken());
   CHECK(ipc_);
 
