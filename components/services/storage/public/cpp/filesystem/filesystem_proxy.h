@@ -92,21 +92,18 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   bool WriteFileAtomically(const base::FilePath& path,
                            const std::string& contents);
 
-  // Deletes the file at |path| if it exists and returns true iff successful.
-  bool RemoveFile(const base::FilePath& path);
-
   // Creates a new directory at |path|. Any needed parent directories above
   // |path| are also created if they don't already exist.
   base::File::Error CreateDirectory(const base::FilePath& path);
 
-  // Deletes the directory at |path| if it exists and returns true iff
-  // successful.  Not recursive.  Will fail if there are subdirectories.
-  // This will return true if |path| does not exist.
-  bool RemoveDirectory(const base::FilePath& path);
+  // Deletes the file or directory at |path| if it exists and returns true iff
+  // successful.  Not recursive.  Will fail if there are subdirectories.  This
+  // will return true if |path| does not exist.
+  bool DeleteFile(const base::FilePath& path);
 
   // Recursively deletes the directory at |path| if it exists and returns true
   // iff successful.  This will return true if |path| does not exist.
-  bool RemoveDirectoryRecursively(const base::FilePath& path);
+  bool DeletePathRecursively(const base::FilePath& path);
 
   // Retrieves information about a file or directory at |path|. Returns a valid
   // base::File::Info value on success, or null on failure.

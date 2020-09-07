@@ -53,15 +53,12 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemImpl
   void WriteFileAtomically(const base::FilePath& path,
                            const std::string& contents,
                            WriteFileAtomicallyCallback callback) override;
-  void RemoveFile(const base::FilePath& path,
-                  RemoveFileCallback callback) override;
   void CreateDirectory(const base::FilePath& path,
                        CreateDirectoryCallback callback) override;
-  void RemoveDirectory(const base::FilePath& path,
-                       RemoveDirectoryCallback callback) override;
-  void RemoveDirectoryRecursively(
-      const base::FilePath& path,
-      RemoveDirectoryRecursivelyCallback callback) override;
+  void DeleteFile(const base::FilePath& path,
+                  DeleteFileCallback callback) override;
+  void DeletePathRecursively(const base::FilePath& path,
+                             DeletePathRecursivelyCallback callback) override;
   void GetFileInfo(const base::FilePath& path,
                    GetFileInfoCallback callback) override;
   void GetPathAccess(const base::FilePath& path,

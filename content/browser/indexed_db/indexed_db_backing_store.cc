@@ -691,7 +691,7 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     // If a blob directory already exists for this database, blow it away.  It's
     // leftover from a partially-purged previous generation of data.
     if (filesystem_proxy_ &&
-        !filesystem_proxy_->RemoveDirectoryRecursively(blob_path_)) {
+        !filesystem_proxy_->DeletePathRecursively(blob_path_)) {
       INTERNAL_WRITE_ERROR_UNTESTED(SET_UP_METADATA);
       return IOErrorStatus();
     }
@@ -832,7 +832,7 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   // fails it's not a big deal.
   if (filesystem_proxy_) {
     for (const auto& path : empty_blobs_to_delete) {
-      filesystem_proxy_->RemoveFile(path);
+      filesystem_proxy_->DeleteFile(path);
     }
   }
 
@@ -1712,14 +1712,14 @@ bool IndexedDBBackingStore::RemoveBlobFile(int64_t database_id,
   DVLOG(1) << "Deleting blob " << blob_number << " from IndexedDB database "
            << database_id << " at path " << path.value();
 #endif
-  return filesystem_proxy_->RemoveFile(path);
+  return filesystem_proxy_->DeleteFile(path);
 }
 
 bool IndexedDBBackingStore::RemoveBlobDirectory(int64_t database_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(idb_sequence_checker_);
   DCHECK(filesystem_proxy_) << "Only call this for on disk databases";
   FilePath path = GetBlobDirectoryName(blob_path_, database_id);
-  return filesystem_proxy_->RemoveDirectoryRecursively(path);
+  return filesystem_proxy_->DeletePathRecursively(path);
 }
 
 Status IndexedDBBackingStore::CleanUpBlobJournal(

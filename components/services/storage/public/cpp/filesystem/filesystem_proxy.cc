@@ -214,15 +214,6 @@ bool FilesystemProxy::WriteFileAtomically(const base::FilePath& path,
   return success;
 }
 
-bool FilesystemProxy::RemoveFile(const base::FilePath& path) {
-  if (!remote_directory_)
-    return base::DeleteFile(MaybeMakeAbsolute(path));
-
-  bool success = false;
-  remote_directory_->RemoveFile(MakeRelative(path), &success);
-  return success;
-}
-
 base::File::Error FilesystemProxy::CreateDirectory(const base::FilePath& path) {
   base::File::Error error = base::File::FILE_ERROR_IO;
   if (!remote_directory_) {
@@ -235,25 +226,25 @@ base::File::Error FilesystemProxy::CreateDirectory(const base::FilePath& path) {
   return error;
 }
 
-bool FilesystemProxy::RemoveDirectory(const base::FilePath& path) {
+bool FilesystemProxy::DeleteFile(const base::FilePath& path) {
   if (!remote_directory_) {
     const base::FilePath full_path = MaybeMakeAbsolute(path);
     return base::DeleteFile(full_path);
   }
 
   bool success = false;
-  remote_directory_->RemoveDirectory(MakeRelative(path), &success);
+  remote_directory_->DeleteFile(MakeRelative(path), &success);
   return success;
 }
 
-bool FilesystemProxy::RemoveDirectoryRecursively(const base::FilePath& path) {
+bool FilesystemProxy::DeletePathRecursively(const base::FilePath& path) {
   if (!remote_directory_) {
     const base::FilePath full_path = MaybeMakeAbsolute(path);
     return base::DeletePathRecursively(full_path);
   }
 
   bool success = false;
-  remote_directory_->RemoveDirectoryRecursively(MakeRelative(path), &success);
+  remote_directory_->DeletePathRecursively(MakeRelative(path), &success);
   return success;
 }
 

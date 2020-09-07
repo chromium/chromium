@@ -201,11 +201,6 @@ void FilesystemImpl::WriteFileAtomically(const base::FilePath& path,
       MakeAbsolute(path), std::move(contents)));
 }
 
-void FilesystemImpl::RemoveFile(const base::FilePath& path,
-                                RemoveFileCallback callback) {
-  std::move(callback).Run(base::DeleteFile(MakeAbsolute(path)));
-}
-
 void FilesystemImpl::CreateDirectory(const base::FilePath& path,
                                      CreateDirectoryCallback callback) {
   base::File::Error error = base::File::FILE_OK;
@@ -213,14 +208,14 @@ void FilesystemImpl::CreateDirectory(const base::FilePath& path,
   std::move(callback).Run(error);
 }
 
-void FilesystemImpl::RemoveDirectory(const base::FilePath& path,
-                                     RemoveDirectoryCallback callback) {
+void FilesystemImpl::DeleteFile(const base::FilePath& path,
+                                DeleteFileCallback callback) {
   std::move(callback).Run(base::DeleteFile(MakeAbsolute(path)));
 }
 
-void FilesystemImpl::RemoveDirectoryRecursively(
+void FilesystemImpl::DeletePathRecursively(
     const base::FilePath& path,
-    RemoveDirectoryRecursivelyCallback callback) {
+    DeletePathRecursivelyCallback callback) {
   std::move(callback).Run(base::DeletePathRecursively(MakeAbsolute(path)));
 }
 

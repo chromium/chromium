@@ -33,7 +33,7 @@ base::File SandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
 
 int SandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
                                      bool sync_dir) {
-  if (!filesystem_->RemoveFile(file_path))
+  if (!filesystem_->DeleteFile(file_path))
     return SQLITE_IOERR_DELETE;
   return SQLITE_OK;
 }

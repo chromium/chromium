@@ -314,14 +314,14 @@ TEST_P(FilesystemProxyTest, OpenFileAppendOnly) {
   EXPECT_EQ(kData + kMoreData, ReadFileContentsAtPath(kFile3));
 }
 
-TEST_P(FilesystemProxyTest, RemoveFile) {
+TEST_P(FilesystemProxyTest, DeleteFile) {
   FileErrorOr<base::File> file =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ);
   ASSERT_FALSE(file.is_error());
   EXPECT_TRUE(file->IsValid());
   file->Close();
 
-  EXPECT_TRUE(proxy().RemoveFile(kFile1));
+  EXPECT_TRUE(proxy().DeleteFile(kFile1));
   file =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ);
   EXPECT_TRUE(file.is_error());
@@ -331,29 +331,29 @@ TEST_P(FilesystemProxyTest, RemoveFile) {
 TEST_P(FilesystemProxyTest, CreateAndRemoveDirectory) {
   const base::FilePath kNewDirectoryName{FILE_PATH_LITERAL("new_dir")};
 
-  EXPECT_TRUE(proxy().RemoveDirectory(kNewDirectoryName));
+  EXPECT_TRUE(proxy().DeleteFile(kNewDirectoryName));
 
   EXPECT_EQ(base::File::FILE_OK, proxy().CreateDirectory(kNewDirectoryName));
   EXPECT_TRUE(proxy().PathExists(kNewDirectoryName));
 
-  EXPECT_TRUE(proxy().RemoveDirectory(kNewDirectoryName));
+  EXPECT_TRUE(proxy().DeleteFile(kNewDirectoryName));
 
   EXPECT_FALSE(proxy().PathExists(kNewDirectoryName));
-  EXPECT_TRUE(proxy().RemoveDirectory(kNewDirectoryName));
+  EXPECT_TRUE(proxy().DeleteFile(kNewDirectoryName));
 }
 
-TEST_P(FilesystemProxyTest, RemoveDirectoryFailsOnSubDirectory) {
-  // kDir1 has a subdirectory kDir1Dir1, which RemoveDirectory can't remove.
+TEST_P(FilesystemProxyTest, DeleteFileFailsOnSubDirectory) {
+  // kDir1 has a subdirectory kDir1Dir1, which DeleteFile can't remove.
   EXPECT_TRUE(proxy().PathExists(kDir1));
-  EXPECT_FALSE(proxy().RemoveDirectory(kDir1));
+  EXPECT_FALSE(proxy().DeleteFile(kDir1));
   EXPECT_TRUE(proxy().PathExists(kDir1));
 }
 
-TEST_P(FilesystemProxyTest, RemoveDirectoryRecursively) {
+TEST_P(FilesystemProxyTest, DeletePathRecursively) {
   EXPECT_TRUE(proxy().PathExists(kDir1));
-  EXPECT_TRUE(proxy().RemoveDirectoryRecursively(kDir1));
+  EXPECT_TRUE(proxy().DeletePathRecursively(kDir1));
   EXPECT_FALSE(proxy().PathExists(kDir1));
-  EXPECT_TRUE(proxy().RemoveDirectoryRecursively(kDir1));
+  EXPECT_TRUE(proxy().DeletePathRecursively(kDir1));
 }
 
 TEST_P(FilesystemProxyTest, GetMaximumPathComponentLength) {

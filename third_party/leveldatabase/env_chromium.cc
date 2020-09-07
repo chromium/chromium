@@ -782,7 +782,7 @@ void ChromiumEnv::RemoveBackupFiles(const FilePath& dir) {
 
   for (const auto& path : result.value()) {
     if (path.Extension() == FILE_PATH_LITERAL(".bak"))
-      histogram->AddBoolean(filesystem_->RemoveFile(path));
+      histogram->AddBoolean(filesystem_->DeleteFile(path));
   }
 }
 
@@ -816,7 +816,7 @@ Status ChromiumEnv::GetChildren(const std::string& dir,
 Status ChromiumEnv::RemoveFile(const std::string& fname) {
   Status result;
   FilePath fname_filepath = FilePath::FromUTF8Unsafe(fname);
-  if (!filesystem_->RemoveFile(fname_filepath)) {
+  if (!filesystem_->DeleteFile(fname_filepath)) {
     result = MakeIOError(fname, "Could not delete file.", kRemoveFile);
   }
   return result;
@@ -836,7 +836,7 @@ Status ChromiumEnv::CreateDir(const std::string& name) {
 
 Status ChromiumEnv::RemoveDir(const std::string& name) {
   Status result;
-  if (!filesystem_->RemoveDirectory(FilePath::FromUTF8Unsafe(name))) {
+  if (!filesystem_->DeleteFile(FilePath::FromUTF8Unsafe(name))) {
     result = MakeIOError(name, "Could not delete directory.", kRemoveDir);
   }
   return result;

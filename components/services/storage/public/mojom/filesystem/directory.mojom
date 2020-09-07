@@ -126,27 +126,20 @@ interface Directory {
                              mojo_base.mojom.BigString contents)
       => (bool success);
 
-  // Deletes a regular file at |path|.
-  [Sync]
-  RemoveFile(StrictRelativePath path) => (bool success);
-
   // Creates a new directory at |path|.
   [Sync]
   CreateDirectory(StrictRelativePath path) => (mojo_base.mojom.FileError error);
 
-  // Deletes a directory at |path|. Not recursive. If the directory at |path|
-  // contains only files (i.e. no subdirectories), all contents are deleted.
-  // It is considered successful to remove a directory that does not exist.
+  // Deletes the file or directory at |path| if it exists and returns true iff
+  // successful.  Not recursive.  Will fail if there are subdirectories.  This
+  // will return true if |path| does not exist.
   [Sync]
-  RemoveDirectory(StrictRelativePath path) => (bool success);
+  DeleteFile(StrictRelativePath path) => (bool success);
 
-  // Deletes the given path, whether it's a file or a directory.
-  // If it's a directory, it's perfectly happy to delete all of the
-  // directory's contents, including subdirectories and their contents.
-  // Returns true if successful, false otherwise. It is considered successful
-  // to attempt to remove a directory that does not exist.
+  // Recursively deletes the directory at |path| if it exists and returns true
+  // iff successful.  This will return true if |path| does not exist.
   [Sync]
-  RemoveDirectoryRecursively(StrictRelativePath path) => (bool success);
+  DeletePathRecursively(StrictRelativePath path) => (bool success);
 
   // Retrieves information about a specific filesystem entry at |path|. Returns
   // null on failure, or a populated |info| struct on success.

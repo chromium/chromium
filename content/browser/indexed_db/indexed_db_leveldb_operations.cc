@@ -118,7 +118,7 @@ std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
   if (!file_info.has_value())
     return message;
   if (!file_info->size || file_info->size > kMaxJsonLength) {
-    filesystem_proxy->RemoveFile(info_path);
+    filesystem_proxy->DeleteFile(info_path);
     return message;
   }
 
@@ -141,7 +141,7 @@ std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
     }
   }
 
-  filesystem_proxy->RemoveFile(info_path);
+  filesystem_proxy->DeleteFile(info_path);
 
   return message;
 }
