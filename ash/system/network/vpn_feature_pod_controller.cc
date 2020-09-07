@@ -27,10 +27,6 @@ namespace ash {
 namespace {
 
 bool IsVPNVisibleInSystemTray() {
-  LoginStatus login_status = Shell::Get()->session_controller()->login_status();
-  if (login_status == LoginStatus::NOT_LOGGED_IN)
-    return false;
-
   TrayNetworkStateModel* model =
       Shell::Get()->system_tray_model()->network_state_model();
 

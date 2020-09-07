@@ -675,9 +675,11 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
 
     std::string type = GetStringFromDict(*result, ::onc::network_config::kType);
 
-    // Prohibit anything but WiFi and Ethernet for device-level policy (which
-    // corresponds to shared networks). See also http://crosbug.com/28741.
+    // Prohibit anything but WiFi, Ethernet and VPN for device-level policy
+    // (which corresponds to shared networks). See also
+    // http://crosbug.com/28741.
     if (onc_source_ == ::onc::ONC_SOURCE_DEVICE_POLICY && !type.empty() &&
+        type != ::onc::network_type::kVPN &&
         type != ::onc::network_type::kWiFi &&
         type != ::onc::network_type::kEthernet) {
       std::ostringstream msg;
@@ -686,7 +688,6 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
       AddValidationIssue(true /* is_error */, msg.str());
       return false;
     }
-
     if (type == ::onc::network_type::kWiFi) {
       all_required_exist &= RequireField(*result, ::onc::network_config::kWiFi);
     } else if (type == ::onc::network_type::kEthernet) {
