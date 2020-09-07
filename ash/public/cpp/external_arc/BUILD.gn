@@ -31,6 +31,7 @@ static_library("external_arc") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chromeos/constants",
     "//components/account_id",
     "//components/arc:arc_metrics_constants",
     "//components/arc:connection_holder",

@@ -5,8 +5,11 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_impl.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/surface.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/cursor/cursor.h"
@@ -88,6 +91,13 @@ ArcNotificationSurfaceImpl::ArcNotificationSurfaceImpl(
   native_view_->Init(ui::LAYER_NOT_DRAWN);
   native_view_->SetName("ArcNotificationSurface");
   native_view_->AddChild(surface_->host_window());
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kArcPreImeKeyEventSupport)) {
+    surface_->root_surface()->window()->SetProperty(
+        aura::client::kSkipImeProcessing, true);
+  }
+
   native_view_->Show();
 }
 
