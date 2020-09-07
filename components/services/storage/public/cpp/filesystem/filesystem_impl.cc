@@ -290,7 +290,7 @@ FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
     return base::File::FILE_ERROR_IN_USE;
 
 #if !defined(OS_FUCHSIA)
-  base::File::Error error = file.Lock();
+  base::File::Error error = file.Lock(base::File::LockMode::kExclusive);
   if (error != base::File::FILE_OK)
     return error;
 #endif
