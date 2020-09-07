@@ -253,6 +253,13 @@ void CameraDeviceDelegate::AllocateAndStart(
 
   result_metadata_frame_number_for_photo_state_ = 0;
   result_metadata_frame_number_ = 0;
+  is_set_brightness_ = false;
+  is_set_contrast_ = false;
+  is_set_pan_ = false;
+  is_set_saturation_ = false;
+  is_set_sharpness_ = false;
+  is_set_tilt_ = false;
+  is_set_zoom_ = false;
   chrome_capture_params_ = params;
   device_context_ = device_context;
   device_context_->SetState(CameraDeviceContext::State::kStarting);
@@ -360,6 +367,10 @@ void CameraDeviceDelegate::GetPhotoState(
 
 // On success, invokes |callback| with value |true|. On failure, drops
 // callback without invoking it.
+//
+// https://www.w3.org/TR/mediacapture-streams/#dfn-applyconstraints-algorithm
+// In a single operation, remove the existing constraints from object, apply
+// newConstraints, and apply successfulSettings as the current settings.
 void CameraDeviceDelegate::SetPhotoOptions(
     mojom::PhotoSettingsPtr settings,
     VideoCaptureDevice::SetPhotoOptionsCallback callback) {
@@ -375,33 +386,39 @@ void CameraDeviceDelegate::SetPhotoOptions(
     return;
   }
 
+  // Set the vendor tag into with given |name| and |value|. Returns true if
+  // the vendor tag is set and false otherwise.
   auto set_vendor_int = [&](const std::string& name, bool has_field,
-                            double value) {
-    if (!has_field) {
-      return;
-    }
+                            double value, bool is_set) {
     const VendorTagInfo* info =
         camera_hal_delegate_->GetVendorTagInfoByName(name);
-    if (info == nullptr)
-      return;
+    if (info == nullptr || !has_field) {
+      if (is_set) {
+        request_manager_->UnsetRepeatingCaptureMetadata(info->tag);
+      }
+      return false;
+    }
     std::vector<uint8_t> temp(sizeof(int32_t));
     auto* temp_ptr = reinterpret_cast<int32_t*>(temp.data());
     *temp_ptr = value;
     request_manager_->SetRepeatingCaptureMetadata(info->tag, info->type, 1,
                                                   std::move(temp));
+    return true;
   };
-  set_vendor_int(kBrightness, settings->has_brightness, settings->brightness);
-  set_vendor_int(kContrast, settings->has_contrast, settings->contrast);
-  set_vendor_int(kPan, settings->has_pan, settings->pan);
-  set_vendor_int(kSaturation, settings->has_saturation, settings->saturation);
-  set_vendor_int(kSharpness, settings->has_sharpness, settings->sharpness);
-  set_vendor_int(kTilt, settings->has_tilt, settings->tilt);
-  if (settings->has_zoom && use_digital_zoom_) {
-    if (settings->zoom == 1) {
-      request_manager_->UnsetRepeatingCaptureMetadata(
-          cros::mojom::CameraMetadataTag::ANDROID_SCALER_CROP_REGION);
-      VLOG(1) << "zoom ratio 1";
-    } else {
+  is_set_brightness_ = set_vendor_int(kBrightness, settings->has_brightness,
+                                      settings->brightness, is_set_brightness_);
+  is_set_contrast_ = set_vendor_int(kContrast, settings->has_contrast,
+                                    settings->contrast, is_set_contrast_);
+  is_set_pan_ =
+      set_vendor_int(kPan, settings->has_pan, settings->pan, is_set_pan_);
+  is_set_saturation_ = set_vendor_int(kSaturation, settings->has_saturation,
+                                      settings->saturation, is_set_saturation_);
+  is_set_sharpness_ = set_vendor_int(kSharpness, settings->has_sharpness,
+                                     settings->sharpness, is_set_sharpness_);
+  is_set_tilt_ =
+      set_vendor_int(kTilt, settings->has_tilt, settings->tilt, is_set_tilt_);
+  if (use_digital_zoom_) {
+    if (settings->has_zoom && settings->zoom != 1) {
       double zoom_factor = sqrt(settings->zoom);
       int32_t crop_width = std::round(active_array_size_.width() / zoom_factor);
       int32_t crop_height =
@@ -419,9 +436,15 @@ void CameraDeviceDelegate::SetPhotoOptions(
       VLOG(1) << "zoom ratio:" << settings->zoom << " scaler.crop.region("
               << region[0] << "," << region[1] << "," << region[2] << ","
               << region[3] << ")";
+      is_set_zoom_ = true;
+    } else if (is_set_zoom_) {
+      request_manager_->UnsetRepeatingCaptureMetadata(
+          cros::mojom::CameraMetadataTag::ANDROID_SCALER_CROP_REGION);
+      is_set_zoom_ = false;
     }
   } else {
-    set_vendor_int(kZoom, settings->has_zoom, settings->zoom);
+    is_set_zoom_ =
+        set_vendor_int(kZoom, settings->has_zoom, settings->zoom, is_set_zoom_);
   }
 
   bool is_resolution_specified = settings->has_width && settings->has_height;

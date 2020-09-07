@@ -239,6 +239,15 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   CameraAppDeviceImpl* camera_app_device_;  // Weak.
 
+  // States of SetPhotoOptions
+  bool is_set_brightness_;
+  bool is_set_contrast_;
+  bool is_set_pan_;
+  bool is_set_saturation_;
+  bool is_set_sharpness_;
+  bool is_set_tilt_;
+  bool is_set_zoom_;
+
   std::vector<base::OnceClosure> get_photo_state_queue_;
   bool use_digital_zoom_;
   // We reply GetPhotoState when |result_metadata_frame_number_| >
