@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -188,6 +189,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdatePreferredSize() override;
   void EnablePreferredSizeChangedMode() override;
   void Focus() override;
+  void UpdateTargetURL(const WebURL& url, const WebURL& fallback_url) override;
   void SetDeviceScaleFactor(float) override;
   void SetZoomFactorForDeviceScaleFactor(float) override;
   float ZoomFactorForDeviceScaleFactor() override {
@@ -462,6 +464,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, SetBaseBackgroundColorBeforeMainFrame);
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, LongPressImage);
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, LongPressImageAndThenLongTapImage);
+  FRIEND_TEST_ALL_PREFIXES(WebViewTest, UpdateTargetURLWithInvalidURL);
+
   friend class frame_test_helpers::WebViewHelper;
   friend class SimCompositor;
   friend class WebView;  // So WebView::Create can call our constructor
@@ -493,6 +497,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetFocus(bool enable) override;
   bool SelectionBounds(WebRect& anchor, WebRect& focus) const;
   WebURL GetURLForDebugTrace();
+
+  void UpdateTargetURLInBrowser(const KURL& target_url);
+  void TargetURLUpdated();
 
   void SetPageScaleFactorAndLocation(float scale,
                                      bool is_pinch_gesture_active,
@@ -614,6 +621,29 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // against WebCore. This is lazily allocated the first time GetWebSettings()
   // is called.
   std::unique_ptr<WebSettingsImpl> web_settings_;
+
+  // The state of our target_url transmissions. When we receive a request to
+  // send a URL to the browser, we set this to TARGET_INFLIGHT until an ACK
+  // comes back - if a new request comes in before the ACK, we store the new
+  // URL in pending_target_url_ and set the status to TARGET_PENDING. If an
+  // ACK comes back and we are in TARGET_PENDING, we send the stored URL and
+  // revert to TARGET_INFLIGHT.
+  //
+  // We don't need a queue of URLs to send, as only the latest is useful.
+  enum {
+    TARGET_NONE,
+    TARGET_INFLIGHT,  // We have a request in-flight, waiting for an ACK
+    TARGET_PENDING    // INFLIGHT + we have a URL waiting to be sent
+  } target_url_status_ = TARGET_NONE;
+
+  // The URL we show the user in the status bar. We use this to determine if we
+  // want to send a new one (we do not need to send duplicates). It will be
+  // equal to either |mouse_over_url_| or |focus_url_|, depending on which was
+  // updated last.
+  KURL target_url_;
+
+  // The next target URL we want to send to the browser.
+  KURL pending_target_url_;
 
   // Keeps track of the current zoom level. 0 means no zoom, positive numbers
   // mean zoom in, negative numbers mean zoom out.

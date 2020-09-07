@@ -3402,6 +3402,13 @@ void RenderFrameHostImpl::FocusPage() {
   render_view_host_->OnFocus();
 }
 
+void RenderFrameHostImpl::UpdateTargetURL(
+    const GURL& url,
+    blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback callback) {
+  delegate_->UpdateTargetURL(this, url);
+  std::move(callback).Run();
+}
+
 void RenderFrameHostImpl::UpdateFaviconURL(
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
   delegate_->UpdateFaviconURL(this, std::move(favicon_urls));

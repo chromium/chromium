@@ -699,7 +699,6 @@ bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(ViewHostMsg_ShowWidget, OnShowWidget)
     IPC_MESSAGE_HANDLER(ViewHostMsg_ShowFullscreenWidget,
                         OnShowFullscreenWidget)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_UpdateTargetURL, OnUpdateTargetURL)
     IPC_MESSAGE_HANDLER(ViewHostMsg_TakeFocus, OnTakeFocus)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -728,14 +727,6 @@ void RenderViewHostImpl::OnShowFullscreenWidget(int widget_route_id) {
   delegate_->ShowCreatedFullscreenWidget(GetProcess()->GetID(),
                                          widget_route_id);
   Send(new WidgetMsg_SetBounds_ACK(widget_route_id));
-}
-
-void RenderViewHostImpl::OnUpdateTargetURL(const GURL& url) {
-  delegate_->UpdateTargetURL(this, url);
-
-  // Send a notification back to the renderer that we are ready to
-  // receive more target urls.
-  Send(new ViewMsg_UpdateTargetURL_ACK(GetRoutingID()));
 }
 
 void RenderViewHostImpl::OnDidContentsPreferredSizeChange(

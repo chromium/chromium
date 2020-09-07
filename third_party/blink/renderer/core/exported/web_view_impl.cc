@@ -2933,6 +2933,53 @@ void WebViewImpl::Focus() {
   }
 }
 
+void WebViewImpl::UpdateTargetURL(const WebURL& url,
+                                  const WebURL& fallback_url) {
+  KURL latest_url = KURL(url.IsEmpty() ? fallback_url : url);
+  if (latest_url == target_url_)
+    return;
+
+  // Tell the browser to display a destination link.
+  if (target_url_status_ == TARGET_INFLIGHT ||
+      target_url_status_ == TARGET_PENDING) {
+    // If we have a request in-flight, save the URL to be sent when we
+    // receive an ACK to the in-flight request. We can happily overwrite
+    // any existing pending sends.
+    pending_target_url_ = latest_url;
+    target_url_status_ = TARGET_PENDING;
+  } else {
+    // URLs larger than |kMaxURLChars| cannot be sent through IPC -
+    // see |ParamTraits<GURL>|.
+    if (latest_url.GetString().length() > url::kMaxURLChars)
+      latest_url = KURL();
+    UpdateTargetURLInBrowser(latest_url);
+    target_url_ = latest_url;
+    target_url_status_ = TARGET_INFLIGHT;
+  }
+}
+
+void WebViewImpl::UpdateTargetURLInBrowser(const KURL& target_url) {
+  if (GetPage()->MainFrame()->IsLocalFrame()) {
+    DCHECK(local_main_frame_host_remote_);
+    local_main_frame_host_remote_->UpdateTargetURL(
+        target_url, WTF::Bind(&WebViewImpl::TargetURLUpdated,
+                              weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    DCHECK(remote_main_frame_host_remote_);
+    remote_main_frame_host_remote_->UpdateTargetURL(
+        target_url, WTF::Bind(&WebViewImpl::TargetURLUpdated,
+                              weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void WebViewImpl::TargetURLUpdated() {
+  // Check if there is a targeturl waiting to be sent.
+  if (target_url_status_ == TARGET_PENDING)
+    UpdateTargetURLInBrowser(pending_target_url_);
+
+  target_url_status_ = TARGET_NONE;
+}
+
 float WebViewImpl::DefaultMinimumPageScaleFactor() const {
   return GetPageScaleConstraintsSet().DefaultConstraints().minimum_scale;
 }

@@ -591,6 +591,13 @@ void RenderFrameProxyHost::FocusPage() {
   frame_tree_node_->current_frame_host()->FocusPage();
 }
 
+void RenderFrameProxyHost::UpdateTargetURL(
+    const GURL& url,
+    blink::mojom::RemoteMainFrameHost::UpdateTargetURLCallback callback) {
+  frame_tree_node_->current_frame_host()->UpdateTargetURL(url,
+                                                          std::move(callback));
+}
+
 void RenderFrameProxyHost::RouteCloseEvent() {
   // Tell the active RenderViewHost to run unload handlers and close, as long
   // as the request came from a RenderViewHost in the same BrowsingInstance.

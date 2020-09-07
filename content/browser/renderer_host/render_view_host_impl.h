@@ -308,7 +308,6 @@ class CONTENT_EXPORT RenderViewHostImpl
                   bool user_gesture);
   void OnShowWidget(int widget_route_id, const gfx::Rect& initial_rect);
   void OnShowFullscreenWidget(int widget_route_id);
-  void OnUpdateTargetURL(const GURL& url);
   void OnDidContentsPreferredSizeChange(const gfx::Size& new_size);
   void OnPasteFromSelectionClipboard();
   void OnTakeFocus(bool reverse);

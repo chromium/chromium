@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -23,6 +24,9 @@ class FakeRemoteMainFrameHost : public mojom::blink::RemoteMainFrameHost {
 
   // blink::mojom::RemoteMainFrameHost overrides:
   void FocusPage() override;
+  void UpdateTargetURL(
+      const KURL&,
+      mojom::blink::RemoteMainFrameHost::UpdateTargetURLCallback) override;
   void RouteCloseEvent() override;
 
  private:

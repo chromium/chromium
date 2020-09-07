@@ -39,6 +39,7 @@
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -280,6 +281,11 @@ class WebView {
 
   // Asks the browser process to activate this web view.
   virtual void Focus() = 0;
+
+  // Update the target url and tell the browser that the target URL has changed.
+  // If |url| is empty, show |fallback_url|.
+  virtual void UpdateTargetURL(const WebURL& url,
+                               const WebURL& fallback_url) = 0;
 
   // Sets the ratio as computed by computePageScaleConstraints.
   // TODO(oshima): Remove this once the device scale factor implementation is

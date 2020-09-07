@@ -226,6 +226,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                            const base::string16& title,
                            base::i18n::TextDirection title_direction) {}
 
+  // The destination URL has changed and should be updated.
+  virtual void UpdateTargetURL(RenderFrameHost* render_frame_host,
+                               const GURL& url) {}
+
   // Return this object cast to a WebContents, if it is one. If the object is
   // not a WebContents, returns NULL.
   virtual WebContents* GetAsWebContents();

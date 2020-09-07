@@ -596,6 +596,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void UpdateTitle(RenderFrameHost* render_frame_host,
                    const base::string16& title,
                    base::i18n::TextDirection title_direction) override;
+  void UpdateTargetURL(RenderFrameHost* render_frame_host,
+                       const GURL& url) override;
   WebContents* GetAsWebContents() override;
   bool IsNeverComposited() override;
   ui::AXMode GetAccessibilityMode() override;
@@ -783,8 +785,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                             base::TerminationStatus status,
                             int error_code) override;
   void RenderViewDeleted(RenderViewHost* render_view_host) override;
-  void UpdateTargetURL(RenderViewHost* render_view_host,
-                       const GURL& url) override;
   void Close(RenderViewHost* render_view_host) override;
   void RequestSetBounds(const gfx::Rect& new_bounds) override;
   bool DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel log_level,
@@ -2079,7 +2079,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool was_ever_audible_ = false;
 
   // Helper variable for resolving races in UpdateTargetURL / ClearTargetURL.
-  RenderViewHost* view_that_set_last_target_url_ = nullptr;
+  RenderFrameHost* frame_that_set_last_target_url_ = nullptr;
 
   // Whether we should override user agent in new tabs.
   bool should_override_user_agent_in_new_tabs_ = false;

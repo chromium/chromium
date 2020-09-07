@@ -6509,28 +6509,8 @@ void WebContentsImpl::RenderViewDeleted(RenderViewHost* rvh) {
       [&](WebContentsObserver* observer) { observer->RenderViewDeleted(rvh); });
 }
 
-void WebContentsImpl::UpdateTargetURL(RenderViewHost* render_view_host,
-                                      const GURL& url) {
-  if (fullscreen_widget_routing_id_ != MSG_ROUTING_NONE) {
-    // If we're in flash fullscreen (i.e. Pepper plugin fullscreen) only update
-    // the url if it's from the fullscreen renderer.
-    RenderWidgetHostView* fs = GetFullscreenRenderWidgetHostView();
-    if (fs && fs->GetRenderWidgetHost() != render_view_host->GetWidget())
-      return;
-  }
-
-  // In case of racey updates from multiple RenderViewHosts, the last URL should
-  // be shown - see also some discussion in https://crbug.com/807776.
-  if (!url.is_valid() && render_view_host != view_that_set_last_target_url_)
-    return;
-  view_that_set_last_target_url_ = url.is_valid() ? render_view_host : nullptr;
-
-  if (delegate_)
-    delegate_->UpdateTargetURL(this, url);
-}
-
 void WebContentsImpl::ClearTargetURL() {
-  view_that_set_last_target_url_ = nullptr;
+  frame_that_set_last_target_url_ = nullptr;
   if (delegate_)
     delegate_->UpdateTargetURL(this, GURL());
 }
@@ -6825,6 +6805,28 @@ void WebContentsImpl::UpdateTitle(RenderFrameHost* render_frame_host,
   // TODO(evan): make use of title_direction.
   // http://code.google.com/p/chromium/issues/detail?id=27094
   UpdateTitleForEntry(entry, title);
+}
+
+void WebContentsImpl::UpdateTargetURL(RenderFrameHost* render_frame_host,
+                                      const GURL& url) {
+  if (fullscreen_widget_routing_id_ != MSG_ROUTING_NONE) {
+    // If we're in flash fullscreen (i.e. Pepper plugin fullscreen) only update
+    // the url if it's from the fullscreen renderer.
+    RenderWidgetHostView* fs = GetFullscreenRenderWidgetHostView();
+    RenderViewHost* render_view_host = render_frame_host->GetRenderViewHost();
+    if (fs && fs->GetRenderWidgetHost() != render_view_host->GetWidget())
+      return;
+  }
+
+  // In case of racey updates from multiple RenderViewHosts, the last URL should
+  // be shown - see also some discussion in https://crbug.com/807776.
+  if (!url.is_valid() && render_frame_host != frame_that_set_last_target_url_)
+    return;
+  frame_that_set_last_target_url_ =
+      url.is_valid() ? render_frame_host : nullptr;
+
+  if (delegate_)
+    delegate_->UpdateTargetURL(this, url);
 }
 
 bool WebContentsImpl::ShouldRouteMessageEvent(

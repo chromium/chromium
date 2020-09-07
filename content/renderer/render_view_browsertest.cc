@@ -2092,13 +2092,6 @@ TEST_F(RenderViewImplTest, DroppedNavigationStaysInViewSourceMode) {
   EXPECT_TRUE(web_frame->IsViewSourceModeEnabled());
 }
 
-// Regression test for http://crbug.com/41562
-TEST_F(RenderViewImplTest, UpdateTargetURLWithInvalidURL) {
-  const GURL invalid_gurl("http://");
-  view()->SetMouseOverURL(blink::WebURL(invalid_gurl));
-  EXPECT_EQ(invalid_gurl, view()->target_url_);
-}
-
 TEST_F(RenderViewImplTest, SetHistoryLengthAndOffset) {
   // No history to merge; one committed page.
   view()->OnSetHistoryOffsetAndLength(0, 1);

@@ -1661,6 +1661,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void TextAutosizerPageInfoChanged(
       blink::mojom::TextAutosizerPageInfoPtr page_info) override;
   void FocusPage() override;
+  void UpdateTargetURL(const GURL& url,
+                       blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback
+                           callback) override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

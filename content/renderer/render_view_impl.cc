@@ -1064,14 +1064,6 @@ void RenderViewImpl::ResizeWebWidgetForWidget(
 
 // IPC message handlers -----------------------------------------
 
-void RenderViewImpl::OnUpdateTargetURLAck() {
-  // Check if there is a targeturl waiting to be sent.
-  if (target_url_status_ == TARGET_PENDING)
-    Send(new ViewHostMsg_UpdateTargetURL(GetRoutingID(), pending_target_url_));
-
-  target_url_status_ = TARGET_NONE;
-}
-
 void RenderViewImpl::OnSetHistoryOffsetAndLength(int history_offset,
                                                  int history_length) {
   // -1 <= history_offset < history_length <= kMaxSessionHistoryEntries(50).
@@ -1130,7 +1122,6 @@ bool RenderViewImpl::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderViewImpl, message)
-    IPC_MESSAGE_HANDLER(ViewMsg_UpdateTargetURL_ACK, OnUpdateTargetURLAck)
     IPC_MESSAGE_HANDLER(ViewMsg_UpdateWebPreferences, OnUpdateWebPreferences)
     IPC_MESSAGE_HANDLER(ViewMsg_MoveOrResizeStarted, OnMoveOrResizeStarted)
 
@@ -1415,31 +1406,6 @@ void RenderViewImpl::SetValidationMessageDirection(
   }
 }
 
-void RenderViewImpl::UpdateTargetURL(const GURL& url,
-                                     const GURL& fallback_url) {
-  GURL latest_url = url.is_empty() ? fallback_url : url;
-  if (latest_url == target_url_)
-    return;
-
-  // Tell the browser to display a destination link.
-  if (target_url_status_ == TARGET_INFLIGHT ||
-      target_url_status_ == TARGET_PENDING) {
-    // If we have a request in-flight, save the URL to be sent when we
-    // receive an ACK to the in-flight request. We can happily overwrite
-    // any existing pending sends.
-    pending_target_url_ = latest_url;
-    target_url_status_ = TARGET_PENDING;
-  } else {
-    // URLs larger than |kMaxURLChars| cannot be sent through IPC -
-    // see |ParamTraits<GURL>|.
-    if (latest_url.possibly_invalid_spec().size() > url::kMaxURLChars)
-      latest_url = GURL();
-    Send(new ViewHostMsg_UpdateTargetURL(GetRoutingID(), latest_url));
-    target_url_ = latest_url;
-    target_url_status_ = TARGET_INFLIGHT;
-  }
-}
-
 void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
   // Keep track of which frames have pending updates.
   frames_with_pending_state_.insert(frame->GetRoutingID());
@@ -1468,12 +1434,12 @@ void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
 
 void RenderViewImpl::SetMouseOverURL(const WebURL& url) {
   mouse_over_url_ = GURL(url);
-  UpdateTargetURL(mouse_over_url_, focus_url_);
+  GetWebView()->UpdateTargetURL(mouse_over_url_, focus_url_);
 }
 
 void RenderViewImpl::SetKeyboardFocusURL(const WebURL& url) {
   focus_url_ = GURL(url);
-  UpdateTargetURL(focus_url_, mouse_over_url_);
+  GetWebView()->UpdateTargetURL(focus_url_, mouse_over_url_);
 }
 
 bool RenderViewImpl::AcceptsLoadDrops() {

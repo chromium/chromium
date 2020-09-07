@@ -299,7 +299,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, StaleNavigationsIgnored);
   FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
                            DontIgnoreBackAfterNavEntryLimit);
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, UpdateTargetURLWithInvalidURL);
   FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest,
                            GetCompositionCharacterBoundsTest);
   FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, OnNavigationHttpPost);
@@ -499,34 +498,11 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // UI state ------------------------------------------------------------------
 
-  // The state of our target_url transmissions. When we receive a request to
-  // send a URL to the browser, we set this to TARGET_INFLIGHT until an ACK
-  // comes back - if a new request comes in before the ACK, we store the new
-  // URL in pending_target_url_ and set the status to TARGET_PENDING. If an
-  // ACK comes back and we are in TARGET_PENDING, we send the stored URL and
-  // revert to TARGET_INFLIGHT.
-  //
-  // We don't need a queue of URLs to send, as only the latest is useful.
-  enum {
-    TARGET_NONE,
-    TARGET_INFLIGHT,  // We have a request in-flight, waiting for an ACK
-    TARGET_PENDING    // INFLIGHT + we have a URL waiting to be sent
-  } target_url_status_ = TARGET_NONE;
-
-  // The URL we show the user in the status bar. We use this to determine if we
-  // want to send a new one (we do not need to send duplicates). It will be
-  // equal to either |mouse_over_url_| or |focus_url_|, depending on which was
-  // updated last.
-  GURL target_url_;
-
   // The URL the user's mouse is hovering over.
   GURL mouse_over_url_;
 
   // The URL that has keyboard focus.
   GURL focus_url_;
-
-  // The next target URL we want to send to the browser.
-  GURL pending_target_url_;
 
   // View ----------------------------------------------------------------------
 

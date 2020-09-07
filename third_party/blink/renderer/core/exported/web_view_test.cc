@@ -5986,4 +5986,13 @@ TEST_F(WebViewTest, LongPressImageAndThenLongTapImage) {
           web_view->MainFrameImpl()->GetFrame()));
 }
 
+// Regression test for http://crbug.com/41562
+TEST_F(WebViewTest, UpdateTargetURLWithInvalidURL) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  const KURL invalid_kurl("http://");
+  web_view->UpdateTargetURL(blink::WebURL(invalid_kurl),
+                            /* fallback_url=*/blink::WebURL());
+  EXPECT_EQ(invalid_kurl, web_view->target_url_);
+}
+
 }  // namespace blink

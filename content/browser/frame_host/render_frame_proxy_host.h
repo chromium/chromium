@@ -180,6 +180,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // blink::mojom::RemoteMainFrameHost overrides:
   void FocusPage() override;
+  void UpdateTargetURL(
+      const GURL& url,
+      blink::mojom::RemoteMainFrameHost::UpdateTargetURLCallback callback)
+      override;
   void RouteCloseEvent() override;
 
   // mojom::RenderFrameProxyHost:

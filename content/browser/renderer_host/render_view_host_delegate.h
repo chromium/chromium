@@ -18,8 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 
-class GURL;
-
 namespace IPC {
 class Message;
 }
@@ -90,10 +88,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // The RenderView is going to be deleted. This is called when each
   // RenderView is going to be destroyed
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
-
-  // The destination URL has changed should be updated.
-  virtual void UpdateTargetURL(RenderViewHost* render_view_host,
-                               const GURL& url) {}
 
   // The page is trying to close the RenderView's representation in the client.
   virtual void Close(RenderViewHost* render_view_host) {}

@@ -98,10 +98,6 @@ IPC_STRUCT_TRAITS_END()
 IPC_MESSAGE_ROUTED1(ViewMsg_UpdateWebPreferences,
                     content::WebPreferences)
 
-// Used to notify the render-view that we have received a target URL. Used
-// to prevent target URLs spamming the browser.
-IPC_MESSAGE_ROUTED0(ViewMsg_UpdateTargetURL_ACK)
-
 // Notification that a move or resize renderer's containing window has
 // started.
 IPC_MESSAGE_ROUTED0(ViewMsg_MoveOrResizeStarted)
@@ -134,11 +130,6 @@ IPC_MESSAGE_ROUTED2(ViewHostMsg_ShowWidget,
 // Message to show a full screen widget.
 IPC_MESSAGE_ROUTED1(ViewHostMsg_ShowFullscreenWidget,
                     int /* route_id */)
-
-// Notifies the browser that we want to show a destination url for a potential
-// action (e.g. when the user is hovering over a link).
-IPC_MESSAGE_ROUTED1(ViewHostMsg_UpdateTargetURL,
-                    GURL)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // A renderer sends this to the browser process when it wants to access a PPAPI
