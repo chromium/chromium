@@ -548,12 +548,16 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   Sync();
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
-  // Emulate a wl_data_device::leave and make sure a motion event is dispatched
-  // in response.
+  // Emulate a [motion => leave] event sequence and make sure the correct
+  // ui::Events are dispatched in response.
+  SendDndMotion({50, 50});
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
+  Sync();
+
   SendDndLeave();
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
     EXPECT_EQ(ET_MOUSE_DRAGGED, event->type());
-    EXPECT_EQ(gfx::Point(-1, -1).ToString(),
+    EXPECT_EQ(gfx::Point(50, -1).ToString(),
               event->AsMouseEvent()->location().ToString());
   });
   Sync();

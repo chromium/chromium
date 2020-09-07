@@ -113,6 +113,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   State state_ = State::kIdle;
   gfx::Vector2d drag_offset_;
 
+  // The last known pointer location in DIP.
+  gfx::PointF pointer_location_;
+
   std::unique_ptr<WaylandDataSource> data_source_;
   std::unique_ptr<WaylandDataOffer> data_offer_;
 

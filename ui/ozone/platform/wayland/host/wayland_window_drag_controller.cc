@@ -155,6 +155,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   // Forward focus change event to the input delegate, so other components, such
   // as WaylandScreen, are able to properly retrieve focus related info during
   // window dragging sesstions.
+  pointer_location_ = location;
   pointer_delegate_->OnPointerFocusChanged(window, location);
 
   VLOG(1) << "OnEnter. widget=" << window->GetWidget();
@@ -179,6 +180,7 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
   VLOG(2) << "OnMotion. location=" << location.ToString();
 
   // Forward cursor location update info to the input handling delegate.
+  pointer_location_ = location;
   pointer_delegate_->OnPointerMotionEvent(location);
 }
 
@@ -207,12 +209,15 @@ void WaylandWindowDragController::OnDragLeave() {
 
   // As Wayland clients are only aware of surface-local coordinates and there is
   // no implicit grab during DND sessions, a fake motion event with negative
-  // coordinates must be used here to make it possible for higher level UI
-  // components to detect when a window should be detached. E.g: On Chrome,
-  // dragging a tab all the way up to the top edge of the window won't work
-  // without this fake motion event upon wl_data_device::leave events.
+  // y coordinate is used here to allow higher level UI components to detect
+  // when a window should be detached. E.g: On Chrome, dragging a tab all the
+  // way up to the top edge of the window won't work without this fake motion
+  // event upon wl_data_device::leave events. This is a workaround and should
+  // ideally be reworked in the future, at higher level layers such that they
+  // properly handle platforms that do not support global screen coordinates,
+  // like Wayland.
   if (state_ == State::kAttached)
-    pointer_delegate_->OnPointerMotionEvent({-1, -1});
+    pointer_delegate_->OnPointerMotionEvent({pointer_location_.x(), -1});
 }
 
 void WaylandWindowDragController::OnDragDrop() {
