@@ -27,6 +27,7 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_jpeg_encoder.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/parsers/jpeg_parser.h"
 
 namespace media {
@@ -82,17 +83,15 @@ class VaapiJpegEncodeAccelerator::Encoder {
   void EncodeTask(std::unique_ptr<EncodeRequest> request);
 
  private:
-  // |cached_output_buffer_id_| is the last allocated VABuffer during
-  // EncodeTask() and |cached_output_buffer_size_| is the size of it.
-  // If the next call to EncodeTask() does not require a buffer bigger than
-  // |cached_output_buffer_size_|, |cached_output_buffer_id_| will be reused.
-  size_t cached_output_buffer_size_;
-  VABufferID cached_output_buffer_id_;
-
   std::unique_ptr<VaapiJpegEncoder> jpeg_encoder_;
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
   scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_;
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
+
+  // |cached_output_buffer_| is the last allocated VABuffer during EncodeTask().
+  // If the next call to EncodeTask() does not require a buffer bigger than the
+  // size of |cached_output_buffer_|, |cached_output_buffer_| will be reused.
+  std::unique_ptr<ScopedVABuffer> cached_output_buffer_;
 
   base::RepeatingCallback<void(int32_t, size_t)> video_frame_ready_cb_;
   base::RepeatingCallback<void(int32_t, Status)> notify_error_cb_;
@@ -115,8 +114,7 @@ VaapiJpegEncodeAccelerator::Encoder::Encoder(
     scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper,
     base::RepeatingCallback<void(int32_t, size_t)> video_frame_ready_cb,
     base::RepeatingCallback<void(int32_t, Status)> notify_error_cb)
-    : cached_output_buffer_size_(0),
-      jpeg_encoder_(new VaapiJpegEncoder(vaapi_wrapper)),
+    : jpeg_encoder_(new VaapiJpegEncoder(vaapi_wrapper)),
       vaapi_wrapper_(std::move(vaapi_wrapper)),
       vpp_vaapi_wrapper_(std::move(vpp_vaapi_wrapper)),
       gpu_memory_buffer_support_(new gpu::GpuMemoryBufferSupport()),
@@ -130,6 +128,9 @@ VaapiJpegEncodeAccelerator::Encoder::Encoder(
 
 VaapiJpegEncodeAccelerator::Encoder::~Encoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Destroy ScopedVABuffer before VaapiWrappers are destroyed to ensure
+  // VADisplay is valid on ScopedVABuffer's destruction.
+  cached_output_buffer_.reset();
 }
 
 void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
@@ -205,19 +206,18 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   // Create output buffer for encoding result.
   size_t max_coded_buffer_size =
       VaapiJpegEncoder::GetMaxCodedBufferSize(input_size);
-  if (context_changed || max_coded_buffer_size > cached_output_buffer_size_) {
-    vaapi_wrapper_->DestroyVABuffers();
-    cached_output_buffer_size_ = 0;
+  if (context_changed || !cached_output_buffer_ ||
+      cached_output_buffer_->size() < max_coded_buffer_size) {
+    cached_output_buffer_.reset();
 
-    VABufferID output_buffer_id;
-    if (!vaapi_wrapper_->CreateVABuffer(max_coded_buffer_size,
-                                        &output_buffer_id)) {
+    auto output_buffer = vaapi_wrapper_->CreateVABuffer(VAEncCodedBufferType,
+                                                        max_coded_buffer_size);
+    if (!output_buffer) {
       VLOGF(1) << "Failed to create VA buffer for encoding output";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
       return;
     }
-    cached_output_buffer_size_ = max_coded_buffer_size;
-    cached_output_buffer_id_ = output_buffer_id;
+    cached_output_buffer_ = std::move(output_buffer);
   }
 
   // Prepare exif.
@@ -239,7 +239,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
 
   if (!jpeg_encoder_->Encode(input_size, exif_buffer_dummy.data(),
                              exif_buffer_size, quality, blit_surface->id(),
-                             cached_output_buffer_id_, &exif_offset)) {
+                             cached_output_buffer_->id(), &exif_offset)) {
     VLOGF(1) << "Encode JPEG failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
@@ -283,7 +283,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   // use its area as the maximum bytes we need to download to avoid buffer
   // overflow.
   if (!vaapi_wrapper_->DownloadFromVABuffer(
-          cached_output_buffer_id_, blit_surface->id(),
+          cached_output_buffer_->id(), blit_surface->id(),
           static_cast<uint8_t*>(output_memory),
           output_gmb_buffer->GetSize().GetArea(), &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
@@ -341,19 +341,18 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   // Create output buffer for encoding result.
   size_t max_coded_buffer_size =
       VaapiJpegEncoder::GetMaxCodedBufferSize(input_size);
-  if (max_coded_buffer_size > cached_output_buffer_size_ || context_changed) {
-    vaapi_wrapper_->DestroyVABuffers();
-    cached_output_buffer_size_ = 0;
+  if (context_changed || !cached_output_buffer_ ||
+      cached_output_buffer_->size() < max_coded_buffer_size) {
+    cached_output_buffer_.reset();
 
-    VABufferID output_buffer_id;
-    if (!vaapi_wrapper_->CreateVABuffer(max_coded_buffer_size,
-                                        &output_buffer_id)) {
+    auto output_buffer = vaapi_wrapper_->CreateVABuffer(VAEncCodedBufferType,
+                                                        max_coded_buffer_size);
+    if (!output_buffer) {
       VLOGF(1) << "Failed to create VA buffer for encoding output";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
       return;
     }
-    cached_output_buffer_size_ = max_coded_buffer_size;
-    cached_output_buffer_id_ = output_buffer_id;
+    cached_output_buffer_ = std::move(output_buffer);
   }
 
   uint8_t* exif_buffer = nullptr;
@@ -372,7 +371,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   size_t exif_offset = 0;
   if (!jpeg_encoder_->Encode(input_size, exif_buffer_dummy.data(),
                              exif_buffer_size, request->quality, va_surface_id_,
-                             cached_output_buffer_id_, &exif_offset)) {
+                             cached_output_buffer_->id(), &exif_offset)) {
     VLOGF(1) << "Encode JPEG failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
@@ -382,7 +381,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   // would wait until encoding is finished.
   size_t encoded_size = 0;
   if (!vaapi_wrapper_->DownloadFromVABuffer(
-          cached_output_buffer_id_, va_surface_id_,
+          cached_output_buffer_->id(), va_surface_id_,
           static_cast<uint8_t*>(request->output_shm->memory()),
           request->output_shm->size(), &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";

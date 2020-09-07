@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,14 +76,14 @@ class MockVaapiWrapper : public VaapiWrapper {
                     SurfaceUsageHint,
                     size_t,
                     std::vector<VASurfaceID>*));
-  MOCK_METHOD2(CreateVABuffer, bool(size_t, VABufferID*));
+  MOCK_METHOD2(CreateVABuffer,
+               std::unique_ptr<ScopedVABuffer>(VABufferType, size_t));
   MOCK_METHOD2(GetEncodedChunkSize, uint64_t(VABufferID, VASurfaceID));
   MOCK_METHOD5(DownloadFromVABuffer,
                bool(VABufferID, VASurfaceID, uint8_t*, size_t, size_t*));
   MOCK_METHOD3(UploadVideoFrameToSurface,
                bool(const VideoFrame&, VASurfaceID, const gfx::Size&));
   MOCK_METHOD1(ExecuteAndDestroyPendingBuffers, bool(VASurfaceID));
-  MOCK_METHOD1(DestroyVABuffer, void(VABufferID));
   MOCK_METHOD0(DestroyContext, void());
   MOCK_METHOD1(DestroySurfaces, void(std::vector<VASurfaceID> va_surface_ids));
 
@@ -198,12 +199,12 @@ class VaapiVideoEncodeAcceleratorTest
     ::testing::InSequence s;
 
     constexpr VABufferID kCodedBufferId = 123;
-    EXPECT_CALL(*mock_vaapi_wrapper_, CreateVABuffer(output_buffer_size_, _))
-        .WillOnce(WithArgs<1>([](VABufferID* va_buffer_id) {
-          *va_buffer_id = kCodedBufferId;
-          return true;
+    EXPECT_CALL(*mock_vaapi_wrapper_,
+                CreateVABuffer(VAEncCodedBufferType, output_buffer_size_))
+        .WillOnce(WithArgs<1>([](size_t buffer_size) {
+          return ScopedVABuffer::CreateForTesting(
+              kCodedBufferId, VAEncCodedBufferType, buffer_size);
         }));
-
     ASSERT_FALSE(va_surfaces_.empty());
     const VASurfaceID kInputSurfaceId = va_surfaces_.back();
     EXPECT_CALL(*mock_encoder_, PrepareEncodeJob(_))
@@ -248,8 +249,6 @@ class VaapiVideoEncodeAcceleratorTest
           *coded_data_size = kEncodedChunkSize;
           return true;
         }));
-    EXPECT_CALL(*mock_vaapi_wrapper_, DestroyVABuffer(kCodedBufferId))
-        .WillOnce(Return());
     EXPECT_CALL(*mock_encoder_, GetMetadata(_, kEncodedChunkSize))
         .WillOnce(WithArgs<0, 1>(
             [](AcceleratedVideoEncoder::EncodeJob* job, size_t payload_size) {
@@ -263,6 +262,7 @@ class VaapiVideoEncodeAcceleratorTest
                   reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
               return metadata;
             }));
+
     constexpr int32_t kBitstreamId = 12;
     EXPECT_CALL(client_, BitstreamBufferReady(kBitstreamId,
                                               MatchesBitstreamBufferMetadata(

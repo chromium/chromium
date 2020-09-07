@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
@@ -52,6 +53,27 @@ class VaapiUtilsTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(VaapiUtilsTest);
 };
+
+TEST_F(VaapiUtilsTest, ScopedVABuffer) {
+  const std::pair<VABufferType, size_t> kBufferParameters[] = {
+      {VASliceDataBufferType, 1024},
+      {VAEncCodedBufferType, 2048},
+      {VAProcPipelineParameterBufferType,
+       sizeof(VAProcPipelineParameterBuffer)},
+  };
+  constexpr gfx::Size kCodedSize(64, 64);
+  ASSERT_TRUE(vaapi_wrapper_->CreateContext(kCodedSize));
+  for (size_t i = 0; i < base::size(kBufferParameters); i++) {
+    const VABufferType buffer_type = kBufferParameters[i].first;
+    const size_t buffer_size = kBufferParameters[i].second;
+    auto scoped_va_buffer =
+        vaapi_wrapper_->CreateVABuffer(buffer_type, buffer_size);
+    ASSERT_TRUE(scoped_va_buffer);
+    EXPECT_NE(scoped_va_buffer->id(), VA_INVALID_ID);
+    EXPECT_EQ(scoped_va_buffer->type(), buffer_type);
+    EXPECT_EQ(scoped_va_buffer->size(), buffer_size);
+  }
+}
 
 // This test exercises the usual ScopedVAImage lifetime.
 TEST_F(VaapiUtilsTest, ScopedVAImage) {

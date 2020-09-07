@@ -104,12 +104,13 @@ class VaapiEncodeJob : public AcceleratedVideoEncoder::EncodeJob {
                  base::OnceClosure execute_cb,
                  scoped_refptr<VASurface> input_surface,
                  scoped_refptr<CodecPicture> picture,
-                 VABufferID coded_buffer_id);
+                 std::unique_ptr<ScopedVABuffer> coded_buffer);
+
   ~VaapiEncodeJob() override = default;
 
   VaapiEncodeJob* AsVaapiEncodeJob() override { return this; }
 
-  VABufferID coded_buffer_id() const { return coded_buffer_id_; }
+  VABufferID coded_buffer_id() const { return coded_buffer_->id(); }
   const scoped_refptr<VASurface> input_surface() const {
     return input_surface_;
   }
@@ -122,7 +123,7 @@ class VaapiEncodeJob : public AcceleratedVideoEncoder::EncodeJob {
   const scoped_refptr<CodecPicture> picture_;
 
   // Buffer that will contain the output bitstream data for this frame.
-  VABufferID coded_buffer_id_;
+  const std::unique_ptr<ScopedVABuffer> coded_buffer_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiEncodeJob);
 };
@@ -264,7 +265,6 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
                                              Client* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DCHECK_EQ(state_, kUninitialized);
-
   VLOGF(2) << "Initializing VAVEA, " << config.AsHumanReadableString();
 
   // VaapiVEA supports temporal layers for VP9 only, but we also allow VP8 to
@@ -330,6 +330,10 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
 
   DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
   if (!IsConfiguredForTesting()) {
+    if (vaapi_wrapper_) {
+      VLOGF(1) << "Initialize() is called twice";
+      return false;
+    }
     VaapiWrapper::CodecMode mode =
         codec == kCodecVP9 ? VaapiWrapper::kEncodeConstantQuantizationParameter
                            : VaapiWrapper::kEncode;
@@ -592,27 +596,24 @@ void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
     std::unique_ptr<BitstreamBufferRef> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   const VABufferID coded_buffer_id = encode_job->coded_buffer_id();
-  base::ScopedClosureRunner scoped_buffer(
-      base::BindOnce(&VaapiWrapper::DestroyVABuffer,
-                     base::Unretained(vaapi_wrapper_.get()), coded_buffer_id));
-
   uint8_t* target_data = static_cast<uint8_t*>(buffer->shm->memory());
   size_t data_size = 0;
   if (!vaapi_wrapper_->DownloadFromVABuffer(
-          encode_job->coded_buffer_id(), encode_job->input_surface()->id(),
-          target_data, buffer->shm->size(), &data_size)) {
+          coded_buffer_id, encode_job->input_surface()->id(), target_data,
+          buffer->shm->size(), &data_size)) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed downloading coded buffer");
     return;
   }
   DVLOGF(4) << "Returning bitstream buffer "
             << (encode_job->IsKeyframeRequested() ? "(keyframe)" : "")
             << " id: " << buffer->id << " size: " << data_size;
-  scoped_buffer.RunAndReset();
+
+  auto metadata = encoder_->GetMetadata(encode_job.get(), data_size);
+  encode_job.reset();
 
   child_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Client::BitstreamBufferReady, client_, buffer->id,
-                     encoder_->GetMetadata(encode_job.get(), data_size)));
+      FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, client_,
+                                buffer->id, std::move(metadata)));
 }
 
 void VaapiVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
@@ -656,9 +657,9 @@ std::unique_ptr<VaapiEncodeJob> VaapiVideoEncodeAccelerator::CreateEncodeJob(
     return nullptr;
   }
 
-  VABufferID coded_buffer_id;
-  if (!vaapi_wrapper_->CreateVABuffer(output_buffer_byte_size_,
-                                      &coded_buffer_id)) {
+  auto coded_buffer = vaapi_wrapper_->CreateVABuffer(VAEncCodedBufferType,
+                                                     output_buffer_byte_size_);
+  if (!coded_buffer) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed creating coded buffer");
     return nullptr;
   }
@@ -789,7 +790,7 @@ std::unique_ptr<VaapiEncodeJob> VaapiVideoEncodeAccelerator::CreateEncodeJob(
       frame, force_keyframe,
       base::BindOnce(&VaapiVideoEncodeAccelerator::ExecuteEncode,
                      encoder_weak_this_, input_surface->id()),
-      input_surface, std::move(picture), coded_buffer_id);
+      input_surface, std::move(picture), std::move(coded_buffer));
 
   if (!native_input_mode_) {
     job->AddSetupCallback(base::BindOnce(
@@ -977,6 +978,10 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   while (!input_queue_.empty())
     input_queue_.pop();
 
+  // Note ScopedVABuffer in VaapiEncodeJob must be destroyed before
+  // |vaapi_wrapper_| is destroyed to ensure VADisplay is valid on the
+  // ScopedVABuffer's destruction.
+  DCHECK(vaapi_wrapper_ || submitted_encode_jobs_.empty());
   while (!submitted_encode_jobs_.empty())
     submitted_encode_jobs_.pop();
 
@@ -1017,14 +1022,14 @@ VaapiEncodeJob::VaapiEncodeJob(scoped_refptr<VideoFrame> input_frame,
                                base::OnceClosure execute_cb,
                                scoped_refptr<VASurface> input_surface,
                                scoped_refptr<CodecPicture> picture,
-                               VABufferID coded_buffer_id)
+                               std::unique_ptr<ScopedVABuffer> coded_buffer)
     : EncodeJob(input_frame, keyframe, std::move(execute_cb)),
       input_surface_(input_surface),
       picture_(std::move(picture)),
-      coded_buffer_id_(coded_buffer_id) {
+      coded_buffer_(std::move(coded_buffer)) {
   DCHECK(input_surface_);
   DCHECK(picture_);
-  DCHECK_NE(coded_buffer_id_, VA_INVALID_ID);
+  DCHECK(coded_buffer_);
 }
 
 static void InitVAPictureH264(VAPictureH264* va_pic) {
