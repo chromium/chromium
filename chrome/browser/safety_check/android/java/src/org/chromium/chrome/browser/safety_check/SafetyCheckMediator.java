@@ -292,10 +292,12 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
     @Override
     public void onSafeBrowsingCheckResult(@SafeBrowsingStatus int status) {
         mRunnableSafeBrowsing = () -> {
-            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.SafeBrowsingResult",
-                    status, SafeBrowsingStatus.MAX_VALUE);
-            mModel.set(SafetyCheckProperties.SAFE_BROWSING_STATE,
-                    SafetyCheckProperties.safeBrowsingStateFromNative(status));
+            if (mModel != null) {
+                RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.SafeBrowsingResult",
+                        status, SafeBrowsingStatus.MAX_VALUE);
+                mModel.set(SafetyCheckProperties.SAFE_BROWSING_STATE,
+                        SafetyCheckProperties.safeBrowsingStateFromNative(status));
+            }
         };
         // Show the checking state for at least 1 second for a smoother UX.
         mHandler.postDelayed(mRunnableSafeBrowsing, getModelUpdateDelay());
@@ -337,13 +339,16 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
         // Handle error state.
         if (status != PasswordCheckUIStatus.IDLE) {
             mRunnablePasswords = () -> {
-                @SafetyCheckProperties.PasswordsState
-                int state = SafetyCheckProperties.passwordsStatefromErrorState(status);
-                RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
-                        SafetyCheckProperties.passwordsStateToNative(state),
-                        PasswordsStatus.MAX_VALUE);
-                mModel.set(SafetyCheckProperties.PASSWORDS_STATE, state);
-                updatePasswordElementClickDestination();
+                if (mModel != null) {
+                    @SafetyCheckProperties.PasswordsState
+                    int state = SafetyCheckProperties.passwordsStatefromErrorState(status);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Settings.SafetyCheck.PasswordsResult",
+                            SafetyCheckProperties.passwordsStateToNative(state),
+                            PasswordsStatus.MAX_VALUE);
+                    mModel.set(SafetyCheckProperties.PASSWORDS_STATE, state);
+                    updatePasswordElementClickDestination();
+                }
             };
             // Show the checking state for at least 1 second for a smoother UX.
             mHandler.postDelayed(mRunnablePasswords, getModelUpdateDelay());
