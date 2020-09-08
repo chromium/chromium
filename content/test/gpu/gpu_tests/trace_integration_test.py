@@ -436,8 +436,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _EvaluateSuccess_CheckSwapChainPath(self, category, event_iterator,
                                           other_args):
-    """Verified that swap chains were used for low latency canvas."""
-    del other_args  # Unused in this particular success evaluation.
+    """Verifies that swap chains are used as expected for low latency canvas."""
     os_name = self.browser.platform.GetOSName()
     assert os_name and os_name.lower() == 'win'
 
@@ -445,6 +444,10 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if overlay_bot_config is None:
       self.fail('Overlay bot config can not be determined')
     assert overlay_bot_config.get('direct_composition', False)
+
+    expect_no_overlay = other_args and other_args.get('no_overlay', False)
+    expect_overlay = not expect_no_overlay
+    found_overlay = False
 
     # Verify expectations through captured trace events.
     for event in event_iterator:
@@ -454,10 +457,16 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         continue
       presentation_mode = event.args.get('image_type', None)
       if presentation_mode == 'swap chain':
+        found_overlay = True
         break
-    else:
-      self.fail('Events with name %s were not found' %
-                _PRESENT_TO_SWAP_CHAIN_EVENT_NAME)
+    if expect_overlay and not found_overlay:
+      self.fail(
+          'Overlay expected but not found: matching %s events were not found' %
+          _PRESENT_TO_SWAP_CHAIN_EVENT_NAME)
+    elif expect_no_overlay and found_overlay:
+      self.fail(
+          'Overlay not expected but found: matching %s events were found' %
+          _PRESENT_TO_SWAP_CHAIN_EVENT_NAME)
 
   def _EvaluateSuccess_CheckMainSwapChainPath(self, category, event_iterator,
                                               other_args):

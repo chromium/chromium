@@ -313,11 +313,19 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
   }
 
   viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
+
+  // TODO(sunnyps): Software compositor only supports RGBA_8888 format, and
+  // AllocateSharedBitmap has a DCHECK for that, but we still allocate an F16
+  // buffer (of twice the size) so that there's no invalid memory access at
+  // runtime in ReadBackFramebuffer in release mode. Fixing this is non-trivial,
+  // so it will be done in a follow-up CL.
   viz::ResourceFormat format = viz::RGBA_8888;
   if (use_half_float_storage_)
     format = viz::RGBA_F16;
+
   base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
       static_cast<gfx::Size>(size_), format);
+
   auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
       id, std::move(shm), static_cast<gfx::Size>(size_), format);
   RegisteredBitmap registered = {
@@ -399,9 +407,15 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
                         op);
   }
 
+  // TODO(sunnyps): Software compositor only supports RGBA_8888 format, and
+  // AllocateSharedBitmap has a DCHECK for that, but we still allocate an F16
+  // buffer (of twice the size) so that there's no invalid memory access at
+  // runtime in ReadBackFramebuffer in release mode. Fixing this is non-trivial,
+  // so it will be done in a follow-up CL.
   viz::ResourceFormat format = viz::RGBA_8888;
   if (use_half_float_storage_)
     format = viz::RGBA_F16;
+
   *out_resource = viz::TransferableResource::MakeSoftware(
       registered.bitmap->id(), static_cast<gfx::Size>(size_), format);
   out_resource->color_space = storage_color_space_;
@@ -509,16 +523,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
         color_buffer_for_mailbox->produce_sync_token, gfx::Size(size_),
         is_overlay_candidate);
     out_resource->color_space = sampler_color_space_;
-    if (allocate_alpha_channel_) {
-      if (use_half_float_storage_)
-        out_resource->format = viz::RGBA_F16;
-      else
-        out_resource->format = viz::RGBA_8888;
-    } else {
-      DCHECK(!use_half_float_storage_);
-      out_resource->format = viz::RGBX_8888;
-    }
-
+    out_resource->format = color_buffer_for_mailbox->format;
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).
     auto func = base::BindOnce(&DrawingBuffer::NotifyMailboxReleasedGpu,
@@ -677,9 +682,23 @@ scoped_refptr<CanvasResource> DrawingBuffer::AsCanvasResource(
   scoped_refptr<ColorBuffer> canvas_resource_buffer =
       UsingSwapChain() ? front_color_buffer_ : back_color_buffer_;
 
+  CanvasColorParams color_params;
+  switch (canvas_resource_buffer->format) {
+    case viz::RGBA_8888:
+    case viz::RGBX_8888:
+      color_params.SetCanvasPixelFormat(CanvasPixelFormat::kRGBA8);
+      break;
+    case viz::RGBA_F16:
+      color_params.SetCanvasPixelFormat(CanvasPixelFormat::kF16);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   return ExternalCanvasResource::Create(
       canvas_resource_buffer->mailbox, canvas_resource_buffer->size,
-      texture_target_, CanvasColorParams(), context_provider_->GetWeakPtr(),
+      texture_target_, color_params, context_provider_->GetWeakPtr(),
       resource_provider, kLow_SkFilterQuality,
       /*is_origin_top_left=*/opengl_flip_y_extension_);
 }
@@ -687,12 +706,14 @@ scoped_refptr<CanvasResource> DrawingBuffer::AsCanvasResource(
 DrawingBuffer::ColorBuffer::ColorBuffer(
     base::WeakPtr<DrawingBuffer> drawing_buffer,
     const IntSize& size,
+    viz::ResourceFormat format,
     GLuint texture_id,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     gpu::Mailbox mailbox)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
       drawing_buffer(std::move(drawing_buffer)),
       size(size),
+      format(format),
       texture_id(texture_id),
       gpu_memory_buffer(std::move(gpu_memory_buffer)),
       mailbox(mailbox) {}
@@ -1092,14 +1113,9 @@ bool DrawingBuffer::ResizeDefaultFramebuffer(const IntSize& size) {
       premultiplied_alpha_false_mailbox_.SetZero();
       premultiplied_alpha_false_texture_ = 0;
     }
-    viz::ResourceFormat format;
-    if (use_half_float_storage_)
-      format = viz::RGBA_F16;
-    else
-      format = viz::RGBA_8888;
     premultiplied_alpha_false_mailbox_ = sii->CreateSharedImage(
-        format, static_cast<gfx::Size>(size), storage_color_space_,
-        kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
+        back_color_buffer_->format, static_cast<gfx::Size>(size),
+        storage_color_space_, kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 |
             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
             gpu::SHARED_IMAGE_USAGE_RASTER,
@@ -1675,7 +1691,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
         front_buffer_mailbox.name);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
-        weak_factory_.GetWeakPtr(), size, texture_id, nullptr,
+        weak_factory_.GetWeakPtr(), size, format, texture_id, nullptr,
         front_buffer_mailbox);
   }
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
@@ -1704,7 +1720,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   }
 
   return base::MakeRefCounted<ColorBuffer>(
-      weak_factory_.GetWeakPtr(), size, texture_id,
+      weak_factory_.GetWeakPtr(), size, format, texture_id,
       std::move(gpu_memory_buffer), back_buffer_mailbox);
 }
 

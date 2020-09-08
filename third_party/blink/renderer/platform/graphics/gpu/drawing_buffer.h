@@ -361,6 +361,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   struct ColorBuffer : public base::RefCountedThreadSafe<ColorBuffer> {
     ColorBuffer(base::WeakPtr<DrawingBuffer> drawing_buffer,
                 const IntSize&,
+                viz::ResourceFormat,
                 GLuint texture_id,
                 std::unique_ptr<gfx::GpuMemoryBuffer>,
                 gpu::Mailbox mailbox);
@@ -375,6 +376,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // ColorBuffers.
     base::WeakPtr<DrawingBuffer> drawing_buffer;
     const IntSize size;
+    const viz::ResourceFormat format;
     const GLuint texture_id = 0;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
 
