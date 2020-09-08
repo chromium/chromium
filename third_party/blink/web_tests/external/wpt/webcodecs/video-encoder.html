@@ -195,5 +195,19 @@ promise_test(async t => {
   return testUnconfiguredCodec(t, encoder, frame);
 }, 'Verify unconfigured VideoEncoder operations');
 
+promise_test(async t => {
+  let encoder = new VideoEncoder(getDefaultCodecInit(t));
+
+  let frame = await createVideoFrame(640, 480, 0);
+  frame.destroy();
+
+  encoder.configure(defaultConfig);
+
+  frame.destroy();
+  assert_throws_dom("OperationError", () => {
+    encoder.encode(frame)
+  });
+}, 'Verify encoding destroyed frames throws.');
+
 </script>
 </html>

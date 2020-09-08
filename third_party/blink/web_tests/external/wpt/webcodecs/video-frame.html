@@ -93,5 +93,16 @@ test(t => {
   let view = new Uint8Array(buffer);
   assert_throws_dom("InvalidStateError", () => yPlane.readInto(view));
 }, 'Test we cannot read planar data from a destroyed VideoFrame.');
+
+test(t => {
+  let image = makeImageBitmap(32, 16);
+
+  image.close();
+
+  assert_throws_dom("InvalidStateError", () => {
+    let frame = new VideoFrame(image, {timestamp: 10});
+  })
+}, 'Test constructing VideoFrames from closed ImageBitmap throws.');
+
 </script>
 </html>
