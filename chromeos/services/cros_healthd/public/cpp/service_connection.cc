@@ -122,6 +122,7 @@ class ServiceConnectionImpl : public ServiceConnection {
       BindNetworkHealthServiceCallback callback) override;
   void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) override;
+  void FlushForTesting() override;
 
   // Uses |bind_network_health_callback_| if set to bind a remote to the
   // NetworkHealthService and send the PendingRemote to the CrosHealthdService.
@@ -402,6 +403,17 @@ void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
     BindNetworkDiagnosticsRoutinesCallback callback) {
   bind_network_diagnostics_callback_ = std::move(callback);
   BindAndSendNetworkDiagnosticsRoutines();
+}
+
+void ServiceConnectionImpl::FlushForTesting() {
+  if (cros_healthd_service_factory_.is_bound())
+    cros_healthd_service_factory_.FlushForTesting();
+  if (cros_healthd_probe_service_.is_bound())
+    cros_healthd_probe_service_.FlushForTesting();
+  if (cros_healthd_diagnostics_service_.is_bound())
+    cros_healthd_diagnostics_service_.FlushForTesting();
+  if (cros_healthd_event_service_.is_bound())
+    cros_healthd_event_service_.FlushForTesting();
 }
 
 void ServiceConnectionImpl::BindAndSendNetworkHealthService() {

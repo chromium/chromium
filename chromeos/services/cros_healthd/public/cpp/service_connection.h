@@ -232,6 +232,11 @@ class ServiceConnection {
   virtual void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) = 0;
 
+  // Calls FlushForTesting method on all mojo::Remote objects owned by
+  // ServiceConnection. This method can be used for example to gracefully
+  // observe destruction of the cros_healthd client.
+  virtual void FlushForTesting() = 0;
+
  protected:
   ServiceConnection() = default;
   virtual ~ServiceConnection() = default;

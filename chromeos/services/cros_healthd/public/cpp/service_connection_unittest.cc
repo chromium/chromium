@@ -231,7 +231,7 @@ class CrosHealthdServiceConnectionTest : public testing::Test {
     CrosHealthdClient::Shutdown();
 
     // Wait for ServiceConnection to observe the destruction of the client.
-    base::RunLoop().RunUntilIdle();
+    ServiceConnection::GetInstance()->FlushForTesting();
   }
 
  private:
