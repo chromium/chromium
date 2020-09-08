@@ -40,6 +40,9 @@ enum EventFlags {
   EF_RIGHT_MOUSE_BUTTON = 1 << 12,
   EF_BACK_MOUSE_BUTTON = 1 << 13,
   EF_FORWARD_MOUSE_BUTTON = 1 << 14,
+  EF_MOUSE_BUTTON = EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON |
+                    EF_RIGHT_MOUSE_BUTTON | EF_BACK_MOUSE_BUTTON |
+                    EF_FORWARD_MOUSE_BUTTON,
 
 // An artificial value used to bridge platform differences.
 // Many commands on Mac as Cmd+Key are the counterparts of

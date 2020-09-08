@@ -994,7 +994,8 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
 #endif
   if (!is_repeat) {
     if (key_code() == last->key_code() &&
-        flags() == (last->flags() & ~EF_IS_REPEAT) &&
+        (flags() & ~EF_MOUSE_BUTTON) ==
+            (last->flags() & ~EF_IS_REPEAT & ~EF_MOUSE_BUTTON) &&
         (time_stamp() - last->time_stamp()).InMilliseconds() <
             kMaxAutoRepeatTimeMs) {
       is_repeat = true;

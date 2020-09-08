@@ -140,6 +140,29 @@ TEST(EventTest, RepeatedClick) {
   EXPECT_FALSE(MouseEvent::IsRepeatedClickEvent(event1, event2));
 }
 
+TEST(EventTest, RepeatedKeyEvent) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  base::TimeTicks time1 = start + base::TimeDelta::FromMilliseconds(1);
+  base::TimeTicks time2 = start + base::TimeDelta::FromMilliseconds(2);
+  base::TimeTicks time3 = start + base::TimeDelta::FromMilliseconds(3);
+
+  KeyEvent event1(ET_KEY_PRESSED, VKEY_A, 0, start);
+  KeyEvent event2(ET_KEY_PRESSED, VKEY_A, 0, time1);
+  KeyEvent event3(ET_KEY_PRESSED, VKEY_A, EF_LEFT_MOUSE_BUTTON, time2);
+  KeyEvent event4(ET_KEY_PRESSED, VKEY_A, 0, time3);
+
+  event1.InitializeNative();
+  EXPECT_TRUE((event1.flags() & EF_IS_REPEAT) == 0);
+  event2.InitializeNative();
+  EXPECT_TRUE((event2.flags() & EF_IS_REPEAT) != 0);
+
+  event3.InitializeNative();
+  EXPECT_TRUE((event3.flags() & EF_IS_REPEAT) != 0);
+
+  event4.InitializeNative();
+  EXPECT_TRUE((event4.flags() & EF_IS_REPEAT) != 0);
+}
+
 // Tests that re-processing the same mouse press event (detected by timestamp)
 // does not yield a double click event: http://crbug.com/389162
 TEST(EventTest, DoubleClickRequiresUniqueTimestamp) {
