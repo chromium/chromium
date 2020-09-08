@@ -46,8 +46,6 @@ class TextFieldInputType : public InputType,
   void Trace(Visitor*) const override;
   using InputType::GetElement;
 
-  String RawValue() const override;
-
  protected:
   TextFieldInputType(HTMLInputElement&);
   ~TextFieldInputType() override;

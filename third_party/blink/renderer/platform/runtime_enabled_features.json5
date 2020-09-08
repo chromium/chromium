@@ -939,10 +939,6 @@
       status: "experimental",
     },
     {
-      name: "InputElementRawValue",
-      status: "experimental",
-    },
-    {
       name: "InputMultipleFieldsUI",
       // No plan to support complex UI for date/time INPUT types on Android.
       status: {"Android": "test", "default": "stable"},

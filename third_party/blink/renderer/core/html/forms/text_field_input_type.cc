@@ -593,8 +593,4 @@ void TextFieldInputType::SpinButtonDidReleaseMouseCapture(
     GetElement().DispatchFormControlChangeEvent();
 }
 
-String TextFieldInputType::RawValue() const {
-  return GetElement().InnerEditorElement()->innerText();
-}
-
 }  // namespace blink

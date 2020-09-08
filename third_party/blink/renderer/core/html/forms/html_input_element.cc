@@ -1112,10 +1112,6 @@ String HTMLInputElement::value() const {
   return g_empty_string;
 }
 
-String HTMLInputElement::rawValue() const {
-  return input_type_view_->RawValue();
-}
-
 String HTMLInputElement::ValueOrDefaultLabel() const {
   String value = this->value();
   if (!value.IsNull())

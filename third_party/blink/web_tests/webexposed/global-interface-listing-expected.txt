@@ -3516,7 +3516,6 @@ interface HTMLInputElement : HTMLElement
     getter name
     getter pattern
     getter placeholder
-    getter rawValue
     getter readOnly
     getter required
     getter selectionDirection

@@ -81,8 +81,6 @@ enum SelectionMode { "select", "start", "end", "preserve" };
 
     readonly attribute NodeList labels;
 
-    [RuntimeEnabled=InputElementRawValue] readonly attribute DOMString rawValue;
-
     void select();
     [RaisesException, ImplementedAs=selectionStartForBinding] attribute unsigned long? selectionStart;
     [RaisesException, ImplementedAs=selectionEndForBinding] attribute unsigned long? selectionEnd;
