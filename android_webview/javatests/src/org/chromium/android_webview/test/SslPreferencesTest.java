@@ -66,8 +66,10 @@ public class SslPreferencesTest {
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
 
-            Assert.assertEquals("onReceivedSslError should not be called", onSslErrorCallCount,
-                    onReceivedSslErrorHelper.getCallCount());
+            if (onSslErrorCallCount != onReceivedSslErrorHelper.getCallCount()) {
+                Assert.fail("onReceivedSslError should not be called, but was called with error "
+                        + onReceivedSslErrorHelper.getError());
+            }
         } finally {
             mTestServer.stopAndDestroyServer();
         }

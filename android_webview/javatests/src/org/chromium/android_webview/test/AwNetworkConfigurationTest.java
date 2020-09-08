@@ -22,8 +22,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedSslErrorHelper;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -68,7 +68,8 @@ public class AwNetworkConfigurationTest {
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_SHA1_LEAF);
         try {
-            CallbackHelper onReceivedSslErrorHelper = mContentsClient.getOnReceivedSslErrorHelper();
+            OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                    mContentsClient.getOnReceivedSslErrorHelper();
             int count = onReceivedSslErrorHelper.getCallCount();
             String url = mTestServer.getURL("/android_webview/test/data/hello_world.html");
             mActivityTestRule.loadUrlSync(
@@ -77,8 +78,10 @@ public class AwNetworkConfigurationTest {
                 Assert.assertEquals("We should generate an SSL error on >= Q", count + 1,
                         onReceivedSslErrorHelper.getCallCount());
             } else {
-                Assert.assertEquals("We should not have received any SSL errors on < Q", count,
-                        onReceivedSslErrorHelper.getCallCount());
+                if (count != onReceivedSslErrorHelper.getCallCount()) {
+                    Assert.fail("We should not have received any SSL errors on < Q but we received"
+                            + " error " + onReceivedSslErrorHelper.getError());
+                }
             }
         } finally {
             mTestServer.stopAndDestroyServer();
