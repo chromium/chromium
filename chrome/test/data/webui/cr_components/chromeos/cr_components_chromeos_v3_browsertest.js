@@ -13,6 +13,7 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
 [['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.m.js'],
  ['CrPolicyNetworkIndicatorMojo', 'network/cr_policy_network_indicator_mojo_tests.m.js'],
  ['NetworkApnlist', 'network/network_apnlist_test.m.js'],
+ ['NetworkChooseMobile', 'network/network_choose_mobile_test.m.js'],
  ['NetworkConfig', 'network/network_config_test.m.js'],
  ['NetworkConfigElementBehavior', 'network/network_config_element_behavior_test.m.js'],
  ['NetworkConfigInput', 'network/network_config_input_test.m.js'],

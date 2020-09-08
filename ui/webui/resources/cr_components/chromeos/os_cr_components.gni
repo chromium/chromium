@@ -15,6 +15,7 @@ cr_components_chromeos_namespace_rewrites = [
   "cellularSetup.getTimeoutMsForPSimUIState|getTimeoutMsForPSimUIState",
   "cellular_setup.MojoInterfaceProvider|MojoInterfaceProvider",
   "network_config.MojoInterfaceProvider|MojoInterfaceProvider",
+  "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
   "settings.LockScreenProgress|LockScreenProgress",
   "settings.receivedEventFromKeyboard|receivedEventFromKeyboard",
   "webviewPost.util.postDeviceDataToWebview|postDeviceDataToWebview",

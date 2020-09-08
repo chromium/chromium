@@ -23,6 +23,7 @@ GEN('#include "content/public/test/browser_test.h"');
     ['../../cr_elements/cr_policy_strings.js']
   ],
   ['NetworkApnlist', 'network/network_apnlist_test.js', []],
+  ['NetworkChooseMobile', 'network/network_choose_mobile_test.js', []],
   ['NetworkConfig', 'network/network_config_test.js',
     [
       '//ui/webui/resources/js/assert.js',

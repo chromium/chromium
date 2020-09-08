@@ -9,6 +9,7 @@ js_modulizer("modulize") {
     "cr_policy_network_behavior_mojo_tests.js",
     "cr_policy_network_indicator_mojo_tests.js",
     "network_apnlist_test.js",
+    "network_choose_mobile_test.js",
     "network_config_element_behavior_test.js",
     "network_config_input_test.js",
     "network_config_select_test.js",

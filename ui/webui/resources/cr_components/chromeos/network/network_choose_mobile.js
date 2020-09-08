@@ -6,8 +6,6 @@
  * @fileoverview Polymer element for displaying and modifying a list of cellular
  * mobile networks.
  */
-(function() {
-'use strict';
 
 Polymer({
   is: 'network-choose-mobile',
@@ -192,4 +190,3 @@ Polymer({
     this.fire('user-action-setting-change');
   },
 });
-})();

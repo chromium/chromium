@@ -1,10 +1,16 @@
 <link rel="import" href="../../../html/polymer.html">
 
-<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="../../../cr_elements/md_select_css.html">
-<link rel="import" href="../../../cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.html">
+<link rel="import" href="chrome://resources/mojo/services/network/public/mojom/ip_address.mojom.html">
+<link rel="import" href="chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom.html">
+<link rel="import" href="chrome://resources/mojo/mojo/public/mojom/base/time.mojom.html">
+<link rel="import" href="chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="mojo_interface_provider.html">
 <link rel="import" href="network_shared_css.html">
 
 <dom-module id="network-choose-mobile">

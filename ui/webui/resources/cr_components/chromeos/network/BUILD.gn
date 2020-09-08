@@ -255,7 +255,7 @@ js_type_check("closure_compile_module") {
     ":mojo_interface_provider.m",
 
     ":network_apnlist.m",
-    #  ":network_choose_mobile.m",
+    ":network_choose_mobile.m",
     ":network_config.m",
     ":network_config_element_behavior.m",
     ":network_config_input.m",
@@ -328,7 +328,12 @@ js_library("network_apnlist.m") {
 js_library("network_choose_mobile.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_choose_mobile.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":network_shared_css.m",
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_choose_mobile_module" ]
 }
@@ -609,6 +614,14 @@ polymer_modulizer("network_choose_mobile") {
   js_file = "network_choose_mobile.js"
   html_file = "network_choose_mobile.html"
   html_type = "dom-module"
+  auto_imports = cr_components_chromeos_auto_imports
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites + [
+    "cros_network_config.mojom.m.js|cros_network_config.mojom-lite.js",
+    "ip_address.mojom.m.js|ip_address.mojom-lite.js",
+    "mojo_bindings_lite.m.js|mojo_bindings_lite.js",
+    "network_types.mojom.m.js|network_types.mojom-lite.js",
+    "time.mojom.m.js|time.mojom-lite.js",
+  ]
 }
 
 polymer_modulizer("network_config") {
