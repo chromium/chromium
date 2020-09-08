@@ -297,10 +297,17 @@ bool XDGPopupWrapperImpl::Initialize(WaylandConnection* connection,
   if (!xdg_surface_ || !parent_xdg_surface)
     return false;
 
+  auto new_bounds = bounds;
+  // Wayland doesn't allow empty bounds. If a zero or negative size is set, the
+  // invalid_input error is raised. Thus, use the least possible one.
+  // WaylandPopup will update its bounds upon the following configure event.
+  if (new_bounds.IsEmpty())
+    new_bounds.set_size({1, 1});
+
   if (connection->shell())
-    return InitializeStable(connection, bounds, parent_xdg_surface);
+    return InitializeStable(connection, new_bounds, parent_xdg_surface);
   else if (connection->shell_v6())
-    return InitializeV6(connection, bounds, parent_xdg_surface);
+    return InitializeV6(connection, new_bounds, parent_xdg_surface);
   return false;
 }
 

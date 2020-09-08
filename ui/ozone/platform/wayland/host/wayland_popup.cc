@@ -19,9 +19,6 @@ WaylandPopup::WaylandPopup(PlatformWindowDelegate* delegate,
 WaylandPopup::~WaylandPopup() = default;
 
 bool WaylandPopup::CreateShellPopup() {
-  if (GetBounds().IsEmpty())
-    return false;
-
   DCHECK(parent_window() && !shell_popup_);
 
   auto subsurface_bounds_dip =
