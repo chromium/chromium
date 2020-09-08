@@ -428,8 +428,16 @@ class DisplayModeControllingWebContentsDelegate : public WebContentsDelegate {
 // TODO(crbug.com/1060336): Unlike most VisualProperties, the DisplayMode does
 // not propagate down the tree of RenderWidgets, but is sent independently to
 // each RenderWidget.
+// Disable the test due to flaky, https://crbug.com/1126153
+#if defined(OS_MAC) || defined(OS_LINUX)
+#define MAYBE_VisualPropertiesPropagation_DisplayMode \
+  DISABLED_VisualPropertiesPropagation_DisplayMode
+#else
+#define MAYBE_VisualPropertiesPropagation_DisplayMode \
+  VisualPropertiesPropagation_DisplayMode
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       VisualPropertiesPropagation_DisplayMode) {
+                       MAYBE_VisualPropertiesPropagation_DisplayMode) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a,b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
