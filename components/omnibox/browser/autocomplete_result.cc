@@ -53,10 +53,6 @@ void RotateMatchToFront(ACMatches::iterator it, ACMatches* matches) {
   std::rotate(matches->begin(), it, next);
 }
 
-// This value should be comfortably larger than any max-autocomplete-matches
-// under consideration.
-constexpr size_t kMaxAutocompletePositionValue = 30;
-
 }  // namespace
 
 struct MatchGURLHash {

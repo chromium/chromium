@@ -1615,11 +1615,10 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
   // are processed in descending order of relevance so the first suggestions are
   // the ones to be shown; prefetching images for the rest would be wasteful.
   std::vector<GURL> prefetch_image_urls;
-  int prefetch_limit = AutocompleteResult::GetDynamicMaxMatches();
-  for (const auto& suggestion : results->suggest_results) {
-    if (prefetch_limit <= 0)
-      break;
-    prefetch_limit--;
+  size_t prefetch_limit = AutocompleteResult::GetDynamicMaxMatches();
+  for (size_t i = 0; i < prefetch_limit && i < results->suggest_results.size();
+       ++i) {
+    auto suggestion = results->suggest_results[i];
 
     const auto& image_url = suggestion.image_url();
     if (!image_url.is_empty())
@@ -1628,6 +1627,11 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
     if (suggestion.answer())
       suggestion.answer()->AddImageURLsTo(&prefetch_image_urls);
   }
+
+  UMA_HISTOGRAM_EXACT_LINEAR(
+      "Omnibox.SuggestRequest.Success.PrefetchImagesCount",
+      prefetch_image_urls.size(),
+      AutocompleteResult::kMaxAutocompletePositionValue);
 
   for (const GURL& url : prefetch_image_urls)
     client()->PrefetchImage(url);

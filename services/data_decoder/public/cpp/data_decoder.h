@@ -42,7 +42,10 @@ namespace data_decoder {
 // that instance rather than launching a separate process.
 class DataDecoder {
  public:
+  // Creates a DataDecoder with an implementation-defined default timeout.
   DataDecoder();
+  // Creates a DataDecoder with the specified timeout.
+  explicit DataDecoder(base::TimeDelta idle_timeout);
   ~DataDecoder();
 
   // The result of a Parse*() call that can return either a Value or an error
@@ -99,6 +102,13 @@ class DataDecoder {
                                ValueParseCallback callback);
 
  private:
+  // The amount of idle time to tolerate on a DataDecoder instance. If the
+  // instance is unused for this period of time, the underlying service process
+  // (if any) may be killed and only restarted once needed again.
+  // On platforms (like iOS) or environments (like some unit tests) where
+  // out-of-process services are not used, this has no effect.
+  base::TimeDelta idle_timeout_;
+
   // This instance's connection to the service. This connection is lazily
   // established and may be reset after long periods of idle time.
   mojo::Remote<mojom::DataDecoderService> service_;

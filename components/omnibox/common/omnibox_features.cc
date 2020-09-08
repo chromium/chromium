@@ -64,12 +64,6 @@ const base::Feature kHideFileUrlScheme{
     // need to show the file scheme.
     enabled_by_default_desktop_only};
 
-// Feature used to enable local entity suggestions. Similar to rich entities but
-// but location specific. E.g., typing 'starbucks near' could display the local
-// entity suggestion 'starbucks near disneyland \n starbucks * Anaheim, CA'.
-const base::Feature kOmniboxLocalEntitySuggestions{
-    "OmniboxLocalEntitySuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature used to enable swapping the rows on answers.
 const base::Feature kOmniboxReverseAnswers{"OmniboxReverseAnswers",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -167,6 +161,16 @@ const base::Feature kOmniboxDemoteByType{"OmniboxDemoteByType",
 // search features (e.g. zero suggest).
 const base::Feature kNewSearchFeatures{"OmniboxNewSearchFeatures",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Feature used to enable local entity suggestions. Similar to rich entities but
+// but location specific. E.g., typing 'starbucks near' could display the local
+// entity suggestion 'starbucks near disneyland \n starbucks * Anaheim, CA'.
+const base::Feature kOmniboxLocalEntitySuggestions{
+    "OmniboxLocalEntitySuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
+// Feature used to reduce entity latency by sharing a decoder. Param values will
+// configure other optimizations as well.
+const base::Feature kEntitySuggestionsReduceLatency{
+    "OmniboxEntitySuggestionsReduceLatency", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,

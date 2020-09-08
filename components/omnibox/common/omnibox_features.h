@@ -13,7 +13,6 @@ namespace omnibox {
 // Instead, use the categorized and alphabetized lists below this "big blob".
 // You can create a new category if none of the existing ones fit.
 extern const base::Feature kHideFileUrlScheme;
-extern const base::Feature kOmniboxLocalEntitySuggestions;
 extern const base::Feature kOmniboxReverseAnswers;
 extern const base::Feature kOmniboxShortBookmarkSuggestions;
 extern const base::Feature kOmniboxTailSuggestions;
@@ -39,6 +38,12 @@ extern const base::Feature kOmniboxDemoteByType;
 // A special flag, enabled by default, that can be used to disable all new
 // search features (e.g. zero suggest).
 extern const base::Feature kNewSearchFeatures;
+
+// Features below this line should be sorted alphabetically by their comments.
+
+// Entity suggestion features.
+extern const base::Feature kOmniboxLocalEntitySuggestions;
+extern const base::Feature kEntitySuggestionsReduceLatency;
 
 // Num suggestions - these affect how many suggestions are shown based on e.g.
 // focus, page context, provider, or URL v non-URL.

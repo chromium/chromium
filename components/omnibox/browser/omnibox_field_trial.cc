@@ -218,7 +218,7 @@ void OmniboxFieldTrial::GetActiveSuggestFieldTrialHashes(
 base::TimeDelta OmniboxFieldTrial::StopTimerFieldTrialDuration() {
   int stop_timer_ms;
   if (base::StringToInt(
-      base::FieldTrialList::FindFullName(kStopTimerFieldTrialName),
+          base::FieldTrialList::FindFullName(kStopTimerFieldTrialName),
           &stop_timer_ms))
     return base::TimeDelta::FromMilliseconds(stop_timer_ms);
   return base::TimeDelta::FromMilliseconds(1500);
@@ -449,7 +449,7 @@ void OmniboxFieldTrial::GetDefaultHUPScoringParams(
   // values here are based on the results of field trials to determine what
   // maximized overall result quality.
   const std::string& typed_count_score_buckets_str =
-    "1.0:1413,0.97:1390,0.93:1360,0.85:1340,0.72:1320,0.50:1250,0.0:1203";
+      "1.0:1413,0.97:1390,0.93:1360,0.85:1340,0.72:1320,0.50:1250,0.0:1203";
   InitializeBucketsFromString(typed_count_score_buckets_str,
                               type_score_buckets);
 
@@ -473,15 +473,15 @@ void OmniboxFieldTrial::GetExperimentalHUPScoringParams(
     return;
 
   InitializeScoreBuckets(params, kHUPNewScoringTypedCountRelevanceCapParam,
-      kHUPNewScoringTypedCountHalfLifeTimeParam,
-      kHUPNewScoringTypedCountScoreBucketsParam,
-      kHUPNewScoringTypedCountUseDecayFactorParam,
-      &scoring_params->typed_count_buckets);
+                         kHUPNewScoringTypedCountHalfLifeTimeParam,
+                         kHUPNewScoringTypedCountScoreBucketsParam,
+                         kHUPNewScoringTypedCountUseDecayFactorParam,
+                         &scoring_params->typed_count_buckets);
   InitializeScoreBuckets(params, kHUPNewScoringVisitedCountRelevanceCapParam,
-      kHUPNewScoringVisitedCountHalfLifeTimeParam,
-      kHUPNewScoringVisitedCountScoreBucketsParam,
-      kHUPNewScoringVisitedCountUseDecayFactorParam,
-      &scoring_params->visited_count_buckets);
+                         kHUPNewScoringVisitedCountHalfLifeTimeParam,
+                         kHUPNewScoringVisitedCountScoreBucketsParam,
+                         kHUPNewScoringVisitedCountUseDecayFactorParam,
+                         &scoring_params->visited_count_buckets);
 }
 
 float OmniboxFieldTrial::HQPBookmarkValue() {
@@ -986,6 +986,13 @@ const char OmniboxFieldTrial::kImageSearchSuggestionThumbnail[] =
 
 const char OmniboxFieldTrial::kOmniboxUIUnelideURLOnHoverThresholdMsParam[] =
     "OmniboxUIUnelideURLOnHoverThresholdMsdMs";
+
+const char
+    OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderTimeoutParam[] =
+        "EntitySuggestionsReduceLatencyDecoderTimeout";
+const char
+    OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderWakeupParam[] =
+        "EntitySuggestionsReduceLatencyDecoderWakeup";
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(
     const std::string& rule,

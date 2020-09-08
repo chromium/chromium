@@ -406,7 +406,6 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
   for (auto i(providers_.begin()); i != providers_.end(); ++i) {
-    // TODO(mpearson): Remove timing code once bug 178705 is resolved.
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
     (*i)->Start(input_, minimal_changes);
     if (!input.want_asynchronous_matches())

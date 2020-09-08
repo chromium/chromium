@@ -9,11 +9,18 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace {
@@ -70,6 +77,19 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
           }
         })");
 
+std::unique_ptr<data_decoder::DataDecoder> CreateSharedDataDecoder() {
+  if (!base::FeatureList::IsEnabled(omnibox::kEntitySuggestionsReduceLatency))
+    return nullptr;
+
+  int idle_timeout = base::GetFieldTrialParamByFeatureAsInt(
+      omnibox::kEntitySuggestionsReduceLatency,
+      OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderTimeoutParam, 0);
+
+  return idle_timeout > 0 ? std::make_unique<data_decoder::DataDecoder>(
+                                base::TimeDelta::FromSeconds(idle_timeout))
+                          : std::make_unique<data_decoder::DataDecoder>();
+}
+
 }  // namespace.
 
 class BitmapFetcherRequest {
@@ -113,10 +133,23 @@ BitmapFetcherService::CacheEntry::~CacheEntry() {
 }
 
 BitmapFetcherService::BitmapFetcherService(content::BrowserContext* context)
-    : cache_(kMaxCacheEntries), current_request_id_(1), context_(context) {
-}
+    : shared_data_decoder_(CreateSharedDataDecoder()),
+      cache_(kMaxCacheEntries),
+      current_request_id_(1),
+      context_(context) {}
 
 BitmapFetcherService::~BitmapFetcherService() {
+  // |active_fetchers_|'s elements must be destructured before
+  // |shared_data_decoder_|, as the former contain unowned pointers to the
+  // latter.
+  requests_.clear();
+  active_fetchers_.clear();
+
+  // Need to delete |shared_data_decoder_| in the same IO thread in which it is
+  // used. This avoids the possibility of deleting it prior to decoding requests
+  // using it completing.
+  content::GetIOThreadTaskRunner({})->DeleteSoon(
+      FROM_HERE, std::move(shared_data_decoder_));
 }
 
 void BitmapFetcherService::CancelRequest(int request_id) {
@@ -172,15 +205,31 @@ BitmapFetcherService::RequestId BitmapFetcherService::RequestImageImpl(
 }
 
 void BitmapFetcherService::Prefetch(const GURL& url) {
-  if (url.is_valid())
+  if (url.is_valid() && !IsCached(url))
     EnsureFetcherForUrl(url, traffic_annotation);
+}
+
+void BitmapFetcherService::WakeupDecoder() {
+  // base::Unretained() is safe here because |shared_data_decoder_| is freed
+  // only when |this| is destructured and in the same IO thread used here.
+  if (shared_data_decoder_) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&data_decoder::DataDecoder::GetService),
+            base::Unretained(shared_data_decoder_.get())));
+  }
+}
+
+bool BitmapFetcherService::IsCached(const GURL& url) {
+  return cache_.Get(url) != cache_.end();
 }
 
 std::unique_ptr<BitmapFetcher> BitmapFetcherService::CreateFetcher(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  std::unique_ptr<BitmapFetcher> new_fetcher(
-      new BitmapFetcher(url, this, traffic_annotation));
+  std::unique_ptr<BitmapFetcher> new_fetcher = std::make_unique<BitmapFetcher>(
+      url, this, traffic_annotation, shared_data_decoder_.get());
 
   new_fetcher->Init(
       std::string(),

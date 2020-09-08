@@ -26,13 +26,12 @@ namespace data_decoder {
 
 namespace {
 
-// The amount of idle time to tolerate on a DataDecoder instance. If the
+// The default amount of idle time to tolerate on a DataDecoder instance. If the
 // instance is unused for this period of time, the underlying service process
 // (if any) may be killed and only restarted once needed again.
-//
 // On platforms (like iOS) or environments (like some unit tests) where
 // out-of-process services are not used, this has no effect.
-constexpr base::TimeDelta kServiceProcessIdleTimeout{
+constexpr base::TimeDelta kServiceProcessIdleTimeoutDefault{
     base::TimeDelta::FromSeconds(5)};
 
 // Encapsulates an in-process data decoder parsing request. This provides shared
@@ -141,7 +140,10 @@ DataDecoder::ValueOrError DataDecoder::ValueOrError::Error(
   return result;
 }
 
-DataDecoder::DataDecoder() = default;
+DataDecoder::DataDecoder() : idle_timeout_(kServiceProcessIdleTimeoutDefault) {}
+
+DataDecoder::DataDecoder(base::TimeDelta idle_timeout)
+    : idle_timeout_(idle_timeout) {}
 
 DataDecoder::~DataDecoder() = default;
 
@@ -162,7 +164,7 @@ mojom::DataDecoderService* DataDecoder::GetService() {
     }
 
     service_.reset_on_disconnect();
-    service_.reset_on_idle_timeout(kServiceProcessIdleTimeout);
+    service_.reset_on_idle_timeout(idle_timeout_);
   }
 
   return service_.get();

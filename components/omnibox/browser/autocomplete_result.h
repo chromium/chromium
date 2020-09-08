@@ -205,6 +205,10 @@ class AutocompleteResult {
     hidden_group_ids_ = hidden_group_ids;
   }
 
+  // This value should be comfortably larger than any max-autocomplete-matches
+  // under consideration.
+  static constexpr size_t kMaxAutocompletePositionValue = 30;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, ConvertsOpenTabsCorrectly);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,

@@ -41,8 +41,8 @@ class BitmapFetcherServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    service_.reset(new TestService(&profile_));
-    images_changed_ = 0;
+    service_ = std::make_unique<TestService>(&profile_);
+    images_changed_count_ = 0;
   }
 
   const std::vector<std::unique_ptr<BitmapFetcherRequest>>& requests() const {
@@ -53,7 +53,7 @@ class BitmapFetcherServiceTest : public testing::Test {
   }
   size_t cache_size() const { return service_->cache_.size(); }
 
-  void OnBitmapFetched(const SkBitmap& bitmap) { images_changed_++; }
+  void OnBitmapFetched(const SkBitmap& bitmap) { images_changed_count_++; }
 
   BitmapFetcherService::RequestId RequestImage(const GURL& url) {
     return service_->RequestImageForTesting(
@@ -65,7 +65,8 @@ class BitmapFetcherServiceTest : public testing::Test {
 
   // Simulate finishing a URL fetch and decode for the given fetcher.
   void CompleteFetch(const GURL& url) {
-    const BitmapFetcher* fetcher = service_->FindFetcherForUrl(url);
+    BitmapFetcher* fetcher =
+        const_cast<BitmapFetcher*>(service_->FindFetcherForUrl(url));
     ASSERT_TRUE(fetcher);
 
     // Create a non-empty bitmap.
@@ -73,13 +74,16 @@ class BitmapFetcherServiceTest : public testing::Test {
     image.allocN32Pixels(2, 2);
     image.eraseColor(SK_ColorGREEN);
 
-    const_cast<BitmapFetcher*>(fetcher)->OnImageDecoded(image);
+    fetcher->SetStartTimeForTesting();
+    fetcher->OnImageDecoded(image);
   }
 
   void FailFetch(const GURL& url) {
-    const BitmapFetcher* fetcher = service_->FindFetcherForUrl(url);
+    BitmapFetcher* fetcher =
+        const_cast<BitmapFetcher*>(service_->FindFetcherForUrl(url));
     ASSERT_TRUE(fetcher);
-    const_cast<BitmapFetcher*>(fetcher)->OnImageDecoded(SkBitmap());
+    fetcher->SetStartTimeForTesting();
+    fetcher->OnImageDecoded(SkBitmap());
   }
 
   // A failed decode results in a nullptr image.
@@ -89,17 +93,21 @@ class BitmapFetcherServiceTest : public testing::Test {
     const_cast<BitmapFetcher*>(fetcher)->OnDecodeImageFailed();
   }
 
- protected:
-  std::unique_ptr<BitmapFetcherService> service_;
+  BitmapFetcherService* service() { return service_.get(); }
 
-  int images_changed_;
+  int images_changed_count() const { return images_changed_count_; }
 
   const GURL url1_;
   const GURL url2_;
 
  private:
+  // |task_environment_| must outlive |service_|.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+
+  std::unique_ptr<BitmapFetcherService> service_;
+
+  int images_changed_count_;
 };
 
 TEST_F(BitmapFetcherServiceTest, RequestInvalidUrl) {
@@ -113,8 +121,8 @@ TEST_F(BitmapFetcherServiceTest, RequestInvalidUrl) {
 }
 
 TEST_F(BitmapFetcherServiceTest, CancelInvalidRequest) {
-  service_->CancelRequest(BitmapFetcherService::REQUEST_ID_INVALID);
-  service_->CancelRequest(23);
+  service()->CancelRequest(BitmapFetcherService::REQUEST_ID_INVALID);
+  service()->CancelRequest(23);
 }
 
 TEST_F(BitmapFetcherServiceTest, OnlyFirstRequestCreatesFetcher) {
@@ -137,7 +145,7 @@ TEST_F(BitmapFetcherServiceTest, CompletedFetchNotifiesAllObservers) {
   EXPECT_EQ(4U, requests().size());
 
   CompleteFetch(url1_);
-  EXPECT_EQ(4, images_changed_);
+  EXPECT_EQ(4, images_changed_count());
 }
 
 TEST_F(BitmapFetcherServiceTest, CancelRequest) {
@@ -147,14 +155,14 @@ TEST_F(BitmapFetcherServiceTest, CancelRequest) {
   RequestImage(url1_);
   RequestImage(url1_);
 
-  service_->CancelRequest(requestId);
+  service()->CancelRequest(requestId);
   EXPECT_EQ(4U, requests().size());
 
   CompleteFetch(url2_);
-  EXPECT_EQ(0, images_changed_);
+  EXPECT_EQ(0, images_changed_count());
 
   CompleteFetch(url1_);
-  EXPECT_EQ(4, images_changed_);
+  EXPECT_EQ(4, images_changed_count());
 }
 
 TEST_F(BitmapFetcherServiceTest, FailedNullRequestsAreHandled) {
@@ -167,6 +175,7 @@ TEST_F(BitmapFetcherServiceTest, FailedNullRequestsAreHandled) {
   FailDecode(url2_);
   EXPECT_EQ(1U, cache_size());
 }
+
 TEST_F(BitmapFetcherServiceTest, FailedRequestsDontEnterCache) {
   RequestImage(url1_);
   RequestImage(url2_);

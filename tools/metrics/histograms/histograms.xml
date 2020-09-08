@@ -24135,6 +24135,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Maximal amount of memory allocated by decoder.</summary>
 </histogram>
 
+<histogram name="Browser.BitmapFetcher.Decode" units="ms"
+    expires_after="2021-04-23">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>The time elapsed decoding an image using BitmapFetcher.</summary>
+</histogram>
+
+<histogram name="Browser.BitmapFetcher.Fetch" units="ms"
+    expires_after="2021-04-23">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The time elapsed fetching an image from a URL using BitmapFetcher.
+  </summary>
+</histogram>
+
 <histogram name="Browser.DarkModeStatus" enum="DarkModeStatus"
     expires_after="2021-02-21">
   <owner>lgrey@chromium.org</owner>
@@ -118294,6 +118312,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.BitmapFetchLatency" units="ms"
+    expires_after="2021-04-23">
+<!-- Name completed by histogram_suffixes name="Omnibox.BitmapFetchLatencyCacheSplit" -->
+
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The time elapsed between the ChromeOmniboxClient requesting a suggestion's
+    image to receiving the image. This includes both uncached and cached
+    requests. See BitmapFetcher.Fetch and BitmapFetcher.Decode for what
+    contributes to uncached images latency; however, the sum of those metrics
+    can be greater than this metric as image prefetching begins before the
+    ChromeOmniboxClient requests an image.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.CharTypedToRepaintLatency" units="ms"
     expires_after="2021-03-23">
   <owner>jdonnelly@chromium.org</owner>
@@ -119726,6 +119761,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The time elapsed between the sending of a suggest request to Google until
     the time the request was returned with status==success. Ignores requests
     that were canceled before being returned.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestRequest.Success.PrefetchImagesCount"
+    units="count" expires_after="2021-04-09">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The number of images prefetched by the search provider on retrieving a
+    successful search response.
   </summary>
 </histogram>
 
@@ -211937,6 +211983,12 @@ regressions. -->
   <suffix name="NonOTR" label="Non off-the-record profile"/>
   <suffix name="OTR" label="Off-the-record profile"/>
   <affected-histogram name="Tab.TabUnderAction"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="Omnibox.BitmapFetchLatencyCacheSplit" separator=".">
+  <suffix name="Cached" label="Bitmaps returned from cache"/>
+  <suffix name="Uncached" label="Bitmaps not returned from cache"/>
+  <affected-histogram name="Omnibox.BitmapFetchLatency"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OmniboxClipboardSuggestionType" separator=".">

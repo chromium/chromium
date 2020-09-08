@@ -556,6 +556,13 @@ extern const char kImageSearchSuggestionThumbnail[];
 // optionally subdomains) in the steady state.
 extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
+// Parameter names used by entity variations. Enabling 'shared decoder' will
+// share a decoder for all suggestion images. Enabling 'shared decoder without
+// timeout' will prevent the decoder from resetting while idle for 5 seconds.
+// Enabling the latter will implicitly enable the former.
+extern const char kEntitySuggestionsReduceLatencyDecoderTimeoutParam[];
+extern const char kEntitySuggestionsReduceLatencyDecoderWakeupParam[];
+
 namespace internal {
 // The bundled omnibox experiment comes with a set of parameters
 // (key-value pairs).  Each key indicates a certain rule that applies in

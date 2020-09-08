@@ -19,6 +19,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace data_decoder {
+class DataDecoder;
+}  // namespace data_decoder
+
 class BitmapFetcher;
 class BitmapFetcherRequest;
 class GURL;
@@ -60,6 +64,18 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
   // Start fetching the image at the given |url|.
   void Prefetch(const GURL& url);
 
+  // Prepare the |shared_data_decoder_| for use. If it has either not been
+  // created yet, it will be created; if it is not bound (e.g. due to idle
+  // timeout), it will be bound. Calling this is optional, as invoking
+  // |RequestImage()| or |Prefetch()| will prepare the |shared_data_decoder_|.
+  // This is meant to help reduce latency if a caller knows they will need the
+  // decoder ahead of time.
+  void WakeupDecoder();
+
+  // Return true if |url| is found in |cache_|. This will move the |url| to the
+  // front of the recency list.
+  bool IsCached(const GURL& url);
+
  protected:
   // Create a bitmap fetcher for the given |url| and start it. Virtual method
   // so tests can override this for different behavior.
@@ -96,6 +112,12 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
 
   // BitmapFetcherDelegate implementation.
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
+
+  // The data decoder shared by requests. Using a shared decoder has latency
+  // benefits. Can be a nullptr if the appropriate corresponding feature is
+  // disabled, in which case, BitmapFetcher will start up an isolated decoder
+  // per request.
+  std::unique_ptr<data_decoder::DataDecoder> shared_data_decoder_;
 
   // Currently active image fetchers.
   std::vector<std::unique_ptr<BitmapFetcher>> active_fetchers_;

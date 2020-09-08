@@ -5,6 +5,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -16,7 +17,17 @@ BitmapFetcher::BitmapFetcher(
     const GURL& url,
     BitmapFetcherDelegate* delegate,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
-    : url_(url), delegate_(delegate), traffic_annotation_(traffic_annotation) {}
+    : BitmapFetcher(url, delegate, traffic_annotation, nullptr) {}
+
+BitmapFetcher::BitmapFetcher(
+    const GURL& url,
+    BitmapFetcherDelegate* delegate,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    data_decoder::DataDecoder* data_decoder)
+    : ImageDecoder::ImageRequest(data_decoder),
+      url_(url),
+      delegate_(delegate),
+      traffic_annotation_(traffic_annotation) {}
 
 BitmapFetcher::~BitmapFetcher() {
 }
@@ -47,6 +58,8 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
     if (net::DataURL::Parse(url_, &mime_type, &charset, &data))
       response_body = std::make_unique<std::string>(std::move(data));
 
+    // Set |start_time_| to null to exclude data URLs from the fetch histogram.
+    start_time_ = base::TimeTicks();
     // Post a task to maintain our guarantee that the delegate will only be
     // called asynchronously.
     base::ThreadPool::PostTask(
@@ -55,6 +68,7 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
   }
 
   if (simple_loader_) {
+    start_time_ = base::TimeTicks::Now();
     simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         loader_factory, std::move(callback));
   }
@@ -62,6 +76,12 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
 
 void BitmapFetcher::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
+  auto now = base::TimeTicks::Now();
+  // |start_time_| will be null for data URLs. We don't want to include them in
+  // this fetch histogram as data URLs don't require fetching.
+  if (!start_time_.is_null())
+    UMA_HISTOGRAM_TIMES("Browser.BitmapFetcher.Fetch", now - start_time_);
+
   if (!response_body) {
     ReportFailure();
     return;
@@ -69,6 +89,7 @@ void BitmapFetcher::OnSimpleLoaderComplete(
 
   // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
   // with the data when it is done.
+  start_time_ = now;
   ImageDecoder::Start(this, *response_body);
 }
 
@@ -76,6 +97,10 @@ void BitmapFetcher::OnSimpleLoaderComplete(
 
 void BitmapFetcher::OnImageDecoded(const SkBitmap& decoded_image) {
   // Report success.
+  auto now = base::TimeTicks::Now();
+  DCHECK(!start_time_.is_null());
+  UMA_HISTOGRAM_TIMES("Browser.BitmapFetcher.Decode", now - start_time_);
+
   delegate_->OnFetchComplete(url_, &decoded_image);
 }
 
@@ -85,4 +110,8 @@ void BitmapFetcher::OnDecodeImageFailed() {
 
 void BitmapFetcher::ReportFailure() {
   delegate_->OnFetchComplete(url_, NULL);
+}
+
+void BitmapFetcher::SetStartTimeForTesting() {
+  start_time_ = base::TimeTicks::Now();
 }
