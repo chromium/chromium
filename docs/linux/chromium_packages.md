@@ -10,7 +10,7 @@ TODO: Move away from tables.
 | **Distro** | **Contact** | **URL for packages** | **URL for distro-specific patches** |
 |:-----------|:------------|:---------------------|:------------------------------------|
 | Ubuntu     | Olivier Tilloy `olivier.tilloy@canonical.com` | https://launchpad.net/ubuntu/+source/chromium-browser | https://code.launchpad.net/~chromium-team |
-| Debian     | [see package page](http://packages.debian.org/sid/chromium) | in standard repo     | [debian patch tracker](http://patch-tracker.debian.org/package/chromium-browser/) |
+| Debian     | chromium@packages.debian.org | https://tracker.debian.org/pkg/chromium | [debian sources](https://sources.debian.org/patches/chromium/) |
 | openSUSE   | Raymond Wooninck  `tittiatcoke@gmail.com` | http://software.opensuse.org/search?baseproject=ALL&p=1&q=chromium | ??                                  |
 | Arch       | Evangelos Foutras `evangelos@foutrelis.com` | http://www.archlinux.org/packages/extra/x86_64/chromium/ | [link](http://projects.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/chromium) |
 | Gentoo     | [project page](http://www.gentoo.org/proj/en/desktop/chromium/index.xml) | Available in portage, [www-client/chromium](http://packages.gentoo.org/package/www-client/chromium) | http://sources.gentoo.org/viewcvs.py/gentoo-x86/www-client/chromium/files/ |
