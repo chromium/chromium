@@ -23,7 +23,7 @@ Android (i.e., `supports_android = true`):
  - `java_library`
 
 This is implemented in the
-[`android_lint`](https://code.google.com/p/chromium/codesearch#chromium/src/build/config/android/internal_rules.gni&q=android_lint%20file:internal_rules%5C.gni)
+[`android_lint`](https://source.chromium.org/chromium/chromium/src/+/HEAD:build/config/android/internal_rules.gni)
 gn template.
 
 ## My code has a lint error
