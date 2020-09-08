@@ -24,7 +24,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/sync/base/sync_prefs.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_device_info/device_info_prefs.h"
@@ -152,5 +151,6 @@ KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
   return new syncer::DeviceInfoSyncServiceImpl(
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
-      std::move(device_info_sync_client));
+      std::move(device_info_sync_client),
+      SyncInvalidationsServiceFactory::GetForProfile(profile));
 }

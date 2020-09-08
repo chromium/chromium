@@ -103,7 +103,8 @@ WebViewDeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
-      std::move(device_info_sync_client));
+      std::move(device_info_sync_client),
+      /*sync_invalidations_service=*/nullptr);
 }
 
 }  // namespace ios_web_view
