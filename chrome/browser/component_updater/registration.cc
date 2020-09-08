@@ -173,9 +173,9 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   }
 #endif
 
-  RegisterSafetyTipsComponent(cus, path);
-  RegisterCrowdDenyComponent(cus, path);
-  RegisterTLSDeprecationConfigComponent(cus, path);
+  RegisterSafetyTipsComponent(cus);
+  RegisterCrowdDenyComponent(cus);
+  RegisterTLSDeprecationConfigComponent(cus);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_ANDROID)
   component_updater::RegisterGamesComponent(cus, profile_prefs);

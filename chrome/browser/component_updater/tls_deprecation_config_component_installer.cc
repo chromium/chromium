@@ -172,9 +172,7 @@ TLSDeprecationConfigComponentInstallerPolicy::GetMimeTypes() const {
   return std::vector<std::string>();
 }
 
-void RegisterTLSDeprecationConfigComponent(
-    ComponentUpdateService* cus,
-    const base::FilePath& user_data_dir) {
+void RegisterTLSDeprecationConfigComponent(ComponentUpdateService* cus) {
   DVLOG(1) << "Registering TLS Deprecation Config component.";
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(

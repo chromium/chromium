@@ -139,8 +139,7 @@ std::vector<std::string> SafetyTipsComponentInstallerPolicy::GetMimeTypes()
   return std::vector<std::string>();
 }
 
-void RegisterSafetyTipsComponent(ComponentUpdateService* cus,
-                                 const base::FilePath& /* user_data_dir */) {
+void RegisterSafetyTipsComponent(ComponentUpdateService* cus) {
   DVLOG(1) << "Registering Safety Tips component.";
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(

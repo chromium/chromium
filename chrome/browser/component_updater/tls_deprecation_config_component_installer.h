@@ -52,8 +52,7 @@ class TLSDeprecationConfigComponentInstallerPolicy
   DISALLOW_COPY_AND_ASSIGN(TLSDeprecationConfigComponentInstallerPolicy);
 };
 
-void RegisterTLSDeprecationConfigComponent(ComponentUpdateService* cus,
-                                           const base::FilePath& user_data_dir);
+void RegisterTLSDeprecationConfigComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

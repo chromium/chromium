@@ -117,8 +117,7 @@ CrowdDenyComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-void RegisterCrowdDenyComponent(ComponentUpdateService* cus,
-                                const base::FilePath& user_data_dir) {
+void RegisterCrowdDenyComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<CrowdDenyComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());

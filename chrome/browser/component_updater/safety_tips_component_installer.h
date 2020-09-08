@@ -47,8 +47,7 @@ class SafetyTipsComponentInstallerPolicy : public ComponentInstallerPolicy {
   DISALLOW_COPY_AND_ASSIGN(SafetyTipsComponentInstallerPolicy);
 };
 
-void RegisterSafetyTipsComponent(ComponentUpdateService* cus,
-                                 const base::FilePath& user_data_dir);
+void RegisterSafetyTipsComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

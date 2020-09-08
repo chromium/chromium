@@ -51,8 +51,7 @@ class CrowdDenyComponentInstallerPolicy : public ComponentInstallerPolicy {
 
 // Call once during startup to make the component update service aware of the
 // Crowd Deny component.
-void RegisterCrowdDenyComponent(ComponentUpdateService* cus,
-                                const base::FilePath& user_data_dir);
+void RegisterCrowdDenyComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 
