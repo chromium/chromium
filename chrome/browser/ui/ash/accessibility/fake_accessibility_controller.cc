@@ -61,9 +61,6 @@ base::string16 FakeAccessibilityController::GetBatteryDescription() const {
 
 void FakeAccessibilityController::SetVirtualKeyboardVisible(bool is_visible) {}
 
-void FakeAccessibilityController::PerformAcceleratorAction(
-    ash::AcceleratorAction accelerator_action) {}
-
 void FakeAccessibilityController::NotifyAccessibilityStatusChanged() {}
 
 bool FakeAccessibilityController::IsAccessibilityFeatureVisibleInTrayMenu(

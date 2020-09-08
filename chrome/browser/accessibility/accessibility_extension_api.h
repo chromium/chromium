@@ -170,15 +170,6 @@ class AccessibilityPrivateSetVirtualKeyboardVisibleFunction
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setVirtualKeyboardVisible",
                              ACCESSIBILITY_PRIVATE_SETVIRTUALKEYBOARDVISIBLE)
 };
-
-// API function that performs an accelerator action.
-class AccessibilityPrivatePerformAcceleratorActionFunction
-    : public ExtensionFunction {
-  ~AccessibilityPrivatePerformAcceleratorActionFunction() override {}
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.performAcceleratorAction",
-                             ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION)
-};
 #endif  // defined (OS_CHROMEOS)
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_

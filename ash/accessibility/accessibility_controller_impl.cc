@@ -1871,12 +1871,6 @@ void AccessibilityControllerImpl::SetVirtualKeyboardVisible(bool is_visible) {
     Shell::Get()->keyboard_controller()->HideKeyboard(HideReason::kUser);
 }
 
-void AccessibilityControllerImpl::PerformAcceleratorAction(
-    AcceleratorAction accelerator_action) {
-  AcceleratorController::Get()->PerformActionIfEnabled(accelerator_action,
-                                                       /* accelerator = */ {});
-}
-
 void AccessibilityControllerImpl::NotifyAccessibilityStatusChanged() {
   for (auto& observer : observers_)
     observer.OnAccessibilityStatusChanged();

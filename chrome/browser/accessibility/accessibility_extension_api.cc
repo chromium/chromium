@@ -509,28 +509,4 @@ AccessibilityPrivateSetVirtualKeyboardVisibleFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-ExtensionFunction::ResponseAction
-AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
-  std::unique_ptr<accessibility_private::PerformAcceleratorAction::Params>
-      params = accessibility_private::PerformAcceleratorAction::Params::Create(
-          *args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-  ash::AcceleratorAction accelerator_action;
-  switch (params->accelerator_action) {
-    case accessibility_private::ACCELERATOR_ACTION_FOCUSPREVIOUSPANE:
-      accelerator_action = ash::FOCUS_PREVIOUS_PANE;
-      break;
-    case accessibility_private::ACCELERATOR_ACTION_FOCUSNEXTPANE:
-      accelerator_action = ash::FOCUS_NEXT_PANE;
-      break;
-    case accessibility_private::ACCELERATOR_ACTION_NONE:
-      NOTREACHED();
-      return RespondNow(Error("Invalid accelerator action."));
-  }
-
-  ash::AccessibilityController::Get()->PerformAcceleratorAction(
-      accelerator_action);
-  return RespondNow(NoArguments());
-}
-
 #endif  // defined (OS_CHROMEOS)

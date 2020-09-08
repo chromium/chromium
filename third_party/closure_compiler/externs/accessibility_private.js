@@ -187,14 +187,6 @@ chrome.accessibilityPrivate.FocusType = {
 chrome.accessibilityPrivate.FocusRingInfo;
 
 /**
- * @enum {string}
- */
-chrome.accessibilityPrivate.AcceleratorAction = {
-  FOCUS_PREVIOUS_PANE: 'focusPreviousPane',
-  FOCUS_NEXT_PANE: 'focusNextPane',
-};
-
-/**
  * Called to translate localeCodeToTranslate into human-readable string in the
  * locale specified by displayLocaleCode
  * @param {string} localeCodeToTranslate
@@ -332,12 +324,6 @@ chrome.accessibilityPrivate.setVirtualKeyboardVisible = function(isVisible) {};
  * @param {string} subpage
  */
 chrome.accessibilityPrivate.openSettingsSubpage = function(subpage) {};
-
-/**
- * Performs an accelerator action.
- * @param {!chrome.accessibilityPrivate.AcceleratorAction} acceleratorAction
- */
-chrome.accessibilityPrivate.performAcceleratorAction = function(acceleratorAction) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.
