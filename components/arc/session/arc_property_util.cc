@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "chromeos/constants/chromeos_switches.h"
 
 namespace brillo {
@@ -295,7 +296,8 @@ bool ExpandPropertyFile(const base::FilePath& input,
   std::string content;
   std::string expanded;
   if (!base::ReadFileToString(input, &content)) {
-    PLOG(ERROR) << "Failed to read " << input;
+    if (base::SysInfo::IsRunningOnChromeOS())
+      PLOG(ERROR) << "Failed to read " << input;
     return false;
   }
   if (!ExpandPropertyContents(content, config, &expanded,
@@ -323,7 +325,8 @@ bool ExpandPropertyFile(const base::FilePath& input,
 CrosConfig::CrosConfig() {
   const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (!cl->HasSwitch(chromeos::switches::kArcBuildProperties)) {
-    LOG(ERROR) << chromeos::switches::kArcBuildProperties << " is not found";
+    if (base::SysInfo::IsRunningOnChromeOS())
+      LOG(ERROR) << chromeos::switches::kArcBuildProperties << " is not found";
     return;
   }
   std::string command_line_value =
@@ -417,7 +420,8 @@ bool ExpandPropertyFiles(const base::FilePath& source_path,
             single_file ? dest_path : dest_path.Append(file), &config,
             /*append=*/single_file, add_native_bridge_64bit_support,
             append_dalvik_isa, partition_name)) {
-      LOG(ERROR) << "Failed to expand " << source_path.Append(file);
+      if (base::SysInfo::IsRunningOnChromeOS())
+        LOG(ERROR) << "Failed to expand " << source_path.Append(file);
       return false;
     }
   }
