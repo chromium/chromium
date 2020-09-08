@@ -22,15 +22,9 @@ interface CookieStore : EventTarget {
   attribute EventHandler onchange;
 };
 
-enum CookieMatchType {
-  "equals",
-  "starts-with"
-};
-
 dictionary CookieStoreGetOptions {
   USVString name;
   USVString url;
-  CookieMatchType matchType = "equals";
 };
 
 enum CookieSameSite {
