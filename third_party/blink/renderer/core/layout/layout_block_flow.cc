@@ -607,10 +607,9 @@ void LayoutBlockFlow::LayoutChildren(bool relayout_children,
   LayoutUnit before_edge = BorderBefore() + PaddingBefore();
   LayoutUnit after_edge = BorderAfter() + PaddingAfter();
 
-  if (HasFlippedBlocksWritingMode())
-    before_edge += ScrollbarLogicalHeight();
-  else
-    after_edge += ScrollbarLogicalHeight();
+  NGBoxStrut scrollbars = ComputeLogicalScrollbars();
+  before_edge += scrollbars.block_start;
+  after_edge += scrollbars.block_end;
 
   SetLogicalHeight(before_edge);
 

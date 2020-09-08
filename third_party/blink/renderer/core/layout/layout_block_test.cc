@@ -49,9 +49,9 @@ TEST_F(LayoutBlockTest, WidthAvailableToChildrenChanged) {
   LayoutBox* list_box = ToLayoutBox(list_element->GetLayoutObject());
   Element* item_element = ElementTraversal::FirstChild(*list_element);
   ASSERT_TRUE(item_element);
-  ASSERT_GT(list_box->VerticalScrollbarWidth(), 0);
+  ASSERT_GT(list_box->ComputeScrollbars().HorizontalSum(), 0);
   ASSERT_EQ(item_element->OffsetWidth(),
-            150 - list_box->VerticalScrollbarWidth());
+            150 - list_box->ComputeScrollbars().HorizontalSum());
 
   DummyExceptionStateForTesting exception_state;
   list_element->style()->setCSSText(GetDocument().GetExecutionContext(),
@@ -59,7 +59,7 @@ TEST_F(LayoutBlockTest, WidthAvailableToChildrenChanged) {
                                     exception_state);
   ASSERT_FALSE(exception_state.HadException());
   UpdateAllLifecyclePhasesForTest();
-  ASSERT_EQ(list_box->VerticalScrollbarWidth(), 0);
+  ASSERT_EQ(list_box->ComputeScrollbars().HorizontalSum(), 0);
   ASSERT_EQ(item_element->OffsetWidth(), 150);
 }
 

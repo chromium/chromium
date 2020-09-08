@@ -495,6 +495,7 @@ inline NGLineBoxStrut ComputeLinePadding(
                         style.IsFlippedLinesWritingMode());
 }
 
+// Compute the scrollbars and scrollbar gutters.
 CORE_EXPORT NGBoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode&);
 
 inline NGBoxStrut ComputeScrollbars(const NGConstraintSpace& space,

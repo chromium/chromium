@@ -1486,9 +1486,10 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
     if (box_->ShouldComputeSizeAsReplaced()) {
       builder.SetIntrinsicBlockSize(box_->LogicalHeight());
     } else {
-      builder.SetIntrinsicBlockSize(box_->IntrinsicContentLogicalHeight() +
-                                    box_->BorderAndPaddingLogicalHeight() +
-                                    box_->ScrollbarLogicalHeight());
+      builder.SetIntrinsicBlockSize(
+          box_->IntrinsicContentLogicalHeight() +
+          box_->BorderAndPaddingLogicalHeight() +
+          box_->ComputeLogicalScrollbars().BlockSum());
     }
 
     // If we're block-fragmented, we can only handle monolithic content, since

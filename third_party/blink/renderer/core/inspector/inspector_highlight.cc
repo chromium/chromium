@@ -1120,20 +1120,15 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
     margin_box = text_rect;
   } else if (layout_object->IsBox()) {
     LayoutBox* layout_box = ToLayoutBox(layout_object);
-
-    // LayoutBox returns the "pure" content area box, exclusive of the
-    // scrollbars (if present), which also count towards the content area in
-    // CSS.
-    const int vertical_scrollbar_width = layout_box->VerticalScrollbarWidth();
-    const int horizontal_scrollbar_height =
-        layout_box->HorizontalScrollbarHeight();
     content_box = layout_box->PhysicalContentBoxRect();
-    content_box.SetWidth(content_box.Width() + vertical_scrollbar_width);
-    content_box.SetHeight(content_box.Height() + horizontal_scrollbar_height);
 
+    // Include scrollbars and gutters in the padding highlight.
     padding_box = layout_box->PhysicalPaddingBoxRect();
-    padding_box.SetWidth(padding_box.Width() + vertical_scrollbar_width);
-    padding_box.SetHeight(padding_box.Height() + horizontal_scrollbar_height);
+    NGPhysicalBoxStrut scrollbars = layout_box->ComputeScrollbars();
+    padding_box.SetX(padding_box.X() - scrollbars.left);
+    padding_box.SetY(padding_box.Y() - scrollbars.top);
+    padding_box.SetWidth(padding_box.Width() + scrollbars.HorizontalSum());
+    padding_box.SetHeight(padding_box.Height() + scrollbars.VerticalSum());
 
     border_box = layout_box->PhysicalBorderBoxRect();
 

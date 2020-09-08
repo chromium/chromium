@@ -97,10 +97,10 @@ LayoutUnit LayoutButton::BaselinePosition(
     // baseline for the empty case manually here.
     if (direction == kHorizontalLine) {
       return MarginTop() + Size().Height() - BorderBottom() - PaddingBottom() -
-             HorizontalScrollbarHeight();
+             ComputeScrollbars().bottom;
     }
     return MarginRight() + Size().Width() - BorderLeft() - PaddingLeft() -
-           VerticalScrollbarWidth();
+           ComputeScrollbars().left;
   }
   LayoutUnit result_baseline = LayoutFlexibleBox::BaselinePosition(
       baseline, first_line, direction, line_position_mode);

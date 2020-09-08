@@ -237,9 +237,10 @@ void LayoutSVGText::UpdateLayout() {
 
   RebuildFloatsFromIntruding();
 
-  LayoutUnit before_edge = BorderBefore() + PaddingBefore();
+  LayoutUnit before_edge =
+      BorderBefore() + PaddingBefore() + ComputeLogicalScrollbars().block_start;
   LayoutUnit after_edge =
-      BorderAfter() + PaddingAfter() + ScrollbarLogicalHeight();
+      BorderAfter() + PaddingAfter() + ComputeLogicalScrollbars().block_end;
   SetLogicalHeight(before_edge);
 
   LayoutState state(*this);

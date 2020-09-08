@@ -1154,7 +1154,7 @@ void LayoutTableCell::ScrollbarsChanged(bool horizontal_scrollbar_changed,
   if (context != kLayout)
     return;
 
-  int scrollbar_height = ScrollbarLogicalHeight();
+  int scrollbar_height = ComputeLogicalScrollbars().BlockSum().ToInt();
   // Not sure if we should be doing something when a scrollbar goes away or not.
   if (!scrollbar_height)
     return;

@@ -27,9 +27,13 @@
 
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 
 namespace blink {
@@ -61,6 +65,8 @@ enum MarginDirection { kBlockDirection, kInlineDirection };
 enum BackgroundRectType { kBackgroundClipRect, kBackgroundKnownOpaqueRect };
 
 enum ShouldComputePreferred { kComputeActual, kComputePreferred };
+
+enum ShouldClampToContentBox { kDoNotClampToContentBox, kClampToContentBox };
 
 using SnapAreaSet = HashSet<LayoutBox*>;
 
@@ -307,8 +313,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   LayoutUnit MinimumLogicalHeightForEmptyLine() const {
-    return BorderAndPaddingLogicalHeight() + ScrollbarLogicalHeight() +
-           LogicalHeightForEmptyLine();
+    return BorderAndPaddingLogicalHeight() +
+           ComputeLogicalScrollbars().BlockSum() + LogicalHeightForEmptyLine();
   }
   LayoutUnit LogicalHeightForEmptyLine() const {
     return LineHeight(
@@ -661,43 +667,48 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   int PixelSnappedOffsetWidth(const Element*) const final;
   int PixelSnappedOffsetHeight(const Element*) const final;
 
-  DISABLE_CFI_PERF LayoutUnit LeftScrollbarWidth() const {
-    return ShouldPlaceVerticalScrollbarOnLeft()
-               // See the function for the reason of using it here.
-               ? VerticalScrollbarWidthClampedToContentBox()
-               : LayoutUnit();
-  }
-  DISABLE_CFI_PERF LayoutUnit RightScrollbarWidth() const {
-    return ShouldPlaceVerticalScrollbarOnLeft()
-               ? LayoutUnit()
-               // See VerticalScrollbarWidthClampedToContentBox for the reason
-               // of not using it here.
-               : LayoutUnit(VerticalScrollbarWidth());
-  }
-  // The horizontal scrollbar is always at the bottom.
-  DISABLE_CFI_PERF LayoutUnit BottomScrollbarHeight() const {
-    return LayoutUnit(HorizontalScrollbarHeight());
+  bool UsesOverlayScrollbars() const {
+    if (StyleRef().HasPseudoElementStyle(kPseudoIdScrollbar))
+      return false;
+    if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())
+      return true;
+    return false;
   }
 
-  // This could be
-  //   IsHorizontalWritingMode() ? LeftScrollbarWidth() : TopScrollbarWidth(),
-  // but LeftScrollbarWidth() is non-zero only in horizontal rtl mode, and we
-  // never have scrollbar on the top, so it's just LeftScrollbarWidth().
+  // Clamps the left scrollbar size so it is not wider than the content box.
   DISABLE_CFI_PERF LayoutUnit LogicalLeftScrollbarWidth() const {
-    return LeftScrollbarWidth();
+    if (CanSkipComputeScrollbars())
+      return LayoutUnit();
+    else if (StyleRef().IsHorizontalWritingMode())
+      return ComputeScrollbarsInternal(kClampToContentBox).left;
+    else
+      return ComputeScrollbarsInternal(kClampToContentBox).top;
   }
   DISABLE_CFI_PERF LayoutUnit LogicalTopScrollbarHeight() const {
-    return UNLIKELY(HasFlippedBlocksWritingMode()) ? RightScrollbarWidth()
-                                                   : LayoutUnit();
+    if (CanSkipComputeScrollbars())
+      return LayoutUnit();
+    else if (HasFlippedBlocksWritingMode())
+      return ComputeScrollbarsInternal(kClampToContentBox).right;
+    else
+      return ComputeScrollbarsInternal(kClampToContentBox).top;
   }
 
   // Physical client rect (a.k.a. PhysicalPaddingBoxRect(), defined by
   // ClientLeft, ClientTop, ClientWidth and ClientHeight) represents the
   // interior of an object excluding borders and scrollbars.
+  // Clamps the left scrollbar size so it is not wider than the content box.
   DISABLE_CFI_PERF LayoutUnit ClientLeft() const {
-    return BorderLeft() + LeftScrollbarWidth();
+    if (CanSkipComputeScrollbars())
+      return BorderLeft();
+    else
+      return BorderLeft() + ComputeScrollbarsInternal(kClampToContentBox).left;
   }
-  DISABLE_CFI_PERF LayoutUnit ClientTop() const { return BorderTop(); }
+  DISABLE_CFI_PERF LayoutUnit ClientTop() const {
+    if (CanSkipComputeScrollbars())
+      return BorderTop();
+    else
+      return BorderTop() + ComputeScrollbarsInternal(kClampToContentBox).top;
+  }
   LayoutUnit ClientWidth() const;
   LayoutUnit ClientHeight() const;
   DISABLE_CFI_PERF LayoutUnit ClientLogicalWidth() const {
@@ -1244,15 +1255,20 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                : AvailableLogicalWidth();
   }
 
-  int VerticalScrollbarWidth() const;
-  int HorizontalScrollbarHeight() const;
-  int ScrollbarLogicalWidth() const {
-    return StyleRef().IsHorizontalWritingMode() ? VerticalScrollbarWidth()
-                                                : HorizontalScrollbarHeight();
+  // Return both scrollbars and scrollbar gutters (defined by scrollbar-gutter).
+  inline NGPhysicalBoxStrut ComputeScrollbars() const {
+    if (CanSkipComputeScrollbars())
+      return NGPhysicalBoxStrut();
+    else
+      return ComputeScrollbarsInternal();
   }
-  int ScrollbarLogicalHeight() const {
-    return StyleRef().IsHorizontalWritingMode() ? HorizontalScrollbarHeight()
-                                                : VerticalScrollbarWidth();
+  inline NGBoxStrut ComputeLogicalScrollbars() const {
+    if (CanSkipComputeScrollbars()) {
+      return NGBoxStrut();
+    } else {
+      return ComputeScrollbarsInternal().ConvertToLogical(
+          StyleRef().GetWritingMode(), StyleRef().Direction());
+    }
   }
 
   bool CanBeScrolledAndHasScrollableArea() const;
@@ -1944,12 +1960,18 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   RasterEffectOutset VisualRectOutsetForRasterEffects() const override;
 
-  // Return the width of the vertical scrollbar, unless it's larger than the
-  // logical width of the content box, in which case we'll return that instead.
-  // Scrollbar handling is quite bad in such situations, and this method here
-  // is just to make sure that left-hand scrollbars don't mess up
-  // scrollWidth. For the full story, visit http://crbug.com/724255.
-  LayoutUnit VerticalScrollbarWidthClampedToContentBox() const;
+  inline bool CanSkipComputeScrollbars() const {
+    return (StyleRef().IsOverflowVisible() || !HasNonVisibleOverflow() ||
+            (GetScrollableArea() &&
+             !GetScrollableArea()->HasHorizontalScrollbar() &&
+             !GetScrollableArea()->HasVerticalScrollbar())) &&
+           StyleRef().ScrollbarGutterIsAuto();
+  }
+
+  bool HasScrollbarGutters(ScrollbarOrientation orientation) const;
+  NGPhysicalBoxStrut ComputeScrollbarsInternal(
+      ShouldClampToContentBox = kDoNotClampToContentBox,
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
 
   LayoutUnit FlipForWritingModeInternal(
       LayoutUnit position,

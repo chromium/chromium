@@ -737,7 +737,7 @@ void LayoutMultiColumnFlowThread::CalculateColumnHeightAvailable() {
                                     computed_values);
     column_height = computed_values.extent_ -
                     container->BorderAndPaddingLogicalHeight() -
-                    container->ScrollbarLogicalHeight();
+                    container->ComputeLogicalScrollbars().BlockSum();
   }
   SetColumnHeightAvailable(std::max(column_height, LayoutUnit()));
 }

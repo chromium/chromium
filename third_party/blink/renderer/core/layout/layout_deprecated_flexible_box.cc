@@ -201,7 +201,8 @@ MinMaxSizes LayoutDeprecatedFlexibleBox::ComputeIntrinsicLogicalWidths() const {
   }
 
   sizes.max_size = std::max(sizes.min_size, sizes.max_size);
-  sizes += BorderAndPaddingLogicalWidth() + ScrollbarLogicalWidth();
+  sizes +=
+      BorderAndPaddingLogicalWidth() + ComputeLogicalScrollbars().InlineSum();
   return sizes;
 }
 
@@ -250,7 +251,7 @@ void LayoutDeprecatedFlexibleBox::UpdateBlockLayout(bool relayout_children) {
 
 void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
   LayoutUnit to_add =
-      BorderBottom() + PaddingBottom() + HorizontalScrollbarHeight();
+      BorderBottom() + PaddingBottom() + ComputeScrollbars().bottom;
 
   // We confine the line clamp ugliness to vertical flexible boxes (thus keeping
   // it out of mainstream block layout); this is not really part of the XUL box
@@ -259,7 +260,7 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
-  SetHeight(BorderTop() + PaddingTop());
+  SetHeight(BorderTop() + PaddingTop() + ComputeScrollbars().top);
   LayoutUnit min_height = Size().Height() + to_add;
 
   for (LayoutBox* child = FirstChildBox(); child;

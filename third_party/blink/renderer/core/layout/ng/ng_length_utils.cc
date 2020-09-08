@@ -992,18 +992,10 @@ NGBoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
 
 NGBoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {
   const ComputedStyle& style = node.Style();
-  if (style.IsOverflowVisible())
+  if (style.IsOverflowVisible() && style.ScrollbarGutterIsAuto())
     return NGBoxStrut();
-  NGPhysicalBoxStrut sizes;
   const LayoutBox* layout_box = node.GetLayoutBox();
-  LayoutUnit horizontal = LayoutUnit(layout_box->HorizontalScrollbarHeight());
-  sizes.bottom = horizontal;
-  LayoutUnit vertical = LayoutUnit(layout_box->VerticalScrollbarWidth());
-  if (layout_box->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft())
-    sizes.left = vertical;
-  else
-    sizes.right = vertical;
-  return sizes.ConvertToLogical(style.GetWritingMode(), style.Direction());
+  return layout_box->ComputeLogicalScrollbars();
 }
 
 bool NeedsInlineSizeToResolveLineLeft(const ComputedStyle& style,

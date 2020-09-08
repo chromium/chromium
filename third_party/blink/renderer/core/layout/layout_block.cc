@@ -1418,7 +1418,8 @@ void LayoutBlock::ScrollbarsChanged(bool horizontal_scrollbar_changed,
 
 MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
   MinMaxSizes sizes;
-  sizes += BorderAndPaddingLogicalWidth() + ScrollbarLogicalWidth();
+  sizes +=
+      BorderAndPaddingLogicalWidth() + ComputeLogicalScrollbars().InlineSum();
 
   // See if we can early out sooner if the logical width is overridden or we're
   // size contained. Note that for multicol containers we need the column gaps.
@@ -1757,9 +1758,9 @@ LayoutUnit LayoutBlock::BaselinePosition(
       LayoutUnit bottom_of_content =
           direction == kHorizontalLine
               ? Size().Height() - BorderBottom() - PaddingBottom() -
-                    HorizontalScrollbarHeight()
+                    ComputeScrollbars().bottom
               : Size().Width() - BorderLeft() - PaddingLeft() -
-                    VerticalScrollbarWidth();
+                    ComputeScrollbars().left;
       if (baseline_pos > bottom_of_content)
         baseline_pos = LayoutUnit(-1);
     }
@@ -2320,10 +2321,11 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
   } else if (style.LogicalHeight().IsFixed()) {
     LayoutUnit content_box_height = AdjustContentBoxLogicalHeightForBoxSizing(
         style.LogicalHeight().Value());
-    available_height = std::max(
-        LayoutUnit(),
-        ConstrainContentBoxLogicalHeightByMinMax(
-            content_box_height - ScrollbarLogicalHeight(), LayoutUnit(-1)));
+    available_height =
+        std::max(LayoutUnit(),
+                 ConstrainContentBoxLogicalHeightByMinMax(
+                     content_box_height - ComputeLogicalScrollbars().BlockSum(),
+                     LayoutUnit(-1)));
   } else if (style.LogicalHeight().IsPercentOrCalc() &&
              !is_out_of_flow_positioned_with_specified_height) {
     LayoutUnit height_with_scrollbar =
@@ -2336,7 +2338,8 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
       // return value from the recursive call will not have been adjusted
       // yet.
       LayoutUnit content_box_height = ConstrainContentBoxLogicalHeightByMinMax(
-          content_box_height_with_scrollbar - ScrollbarLogicalHeight(),
+          content_box_height_with_scrollbar -
+              ComputeLogicalScrollbars().BlockSum(),
           LayoutUnit(-1));
       available_height = std::max(LayoutUnit(), content_box_height);
     }
@@ -2347,7 +2350,7 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
     ComputeLogicalHeight(LogicalHeight(), LayoutUnit(), computed_values);
     available_height = computed_values.extent_ -
                        BorderAndPaddingLogicalHeight() -
-                       ScrollbarLogicalHeight();
+                       ComputeLogicalScrollbars().BlockSum();
   } else if (IsA<LayoutView>(this)) {
     available_height = View()->ViewLogicalHeightForPercentages();
   }

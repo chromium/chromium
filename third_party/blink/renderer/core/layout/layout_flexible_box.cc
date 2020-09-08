@@ -86,7 +86,8 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
 
 MinMaxSizes LayoutFlexibleBox::ComputeIntrinsicLogicalWidths() const {
   MinMaxSizes sizes;
-  sizes += BorderAndPaddingLogicalWidth() + ScrollbarLogicalWidth();
+  sizes +=
+      BorderAndPaddingLogicalWidth() + ComputeLogicalScrollbars().InlineSum();
 
   if (HasOverrideIntrinsicContentLogicalWidth()) {
     sizes += OverrideIntrinsicContentLogicalWidth();
@@ -401,7 +402,8 @@ void LayoutFlexibleBox::UpdateBlockLayout(bool relayout_children) {
 
   SubtreeLayoutScope layout_scope(*this);
   LayoutUnit previous_height = LogicalHeight();
-  SetLogicalHeight(BorderAndPaddingLogicalHeight() + ScrollbarLogicalHeight());
+  SetLogicalHeight(BorderAndPaddingLogicalHeight() +
+                   ComputeLogicalScrollbars().BlockSum());
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
@@ -566,7 +568,8 @@ LayoutUnit LayoutFlexibleBox::ChildUnstretchedLogicalHeight(
 
     LayoutUnit child_intrinsic_logical_height =
         child_intrinsic_content_logical_height +
-        child.ScrollbarLogicalHeight() + child.BorderAndPaddingLogicalHeight();
+        child.ComputeLogicalScrollbars().BlockSum() +
+        child.BorderAndPaddingLogicalHeight();
     LogicalExtentComputedValues values;
     child.ComputeLogicalHeight(child_intrinsic_logical_height, LayoutUnit(),
                                values);
@@ -615,8 +618,8 @@ LayoutUnit LayoutFlexibleBox::MainAxisContentExtentForChild(
 LayoutUnit LayoutFlexibleBox::MainAxisContentExtentForChildIncludingScrollbar(
     const LayoutBox& child) const {
   return IsHorizontalFlow()
-             ? child.ContentWidth() + child.VerticalScrollbarWidth()
-             : child.ContentHeight() + child.HorizontalScrollbarHeight();
+             ? child.ContentWidth() + child.ComputeScrollbars().HorizontalSum()
+             : child.ContentHeight() + child.ComputeScrollbars().VerticalSum();
 }
 
 LayoutUnit LayoutFlexibleBox::CrossAxisExtent() const {
@@ -632,7 +635,7 @@ LayoutUnit LayoutFlexibleBox::MainAxisContentExtent(
   if (IsColumnFlow()) {
     LogicalExtentComputedValues computed_values;
     LayoutUnit border_padding_and_scrollbar =
-        BorderAndPaddingLogicalHeight() + ScrollbarLogicalHeight();
+        BorderAndPaddingLogicalHeight() + ComputeLogicalScrollbars().BlockSum();
     LayoutUnit border_box_logical_height =
         content_logical_height + border_padding_and_scrollbar;
     ComputeLogicalHeight(border_box_logical_height, LogicalTop(),
@@ -662,7 +665,7 @@ LayoutUnit LayoutFlexibleBox::ComputeMainAxisExtentForChild(
         size_type, size, child.IntrinsicContentLogicalHeight());
     if (logical_height == -1)
       return logical_height;
-    return logical_height + child.ScrollbarLogicalHeight();
+    return logical_height + child.ComputeLogicalScrollbars().BlockSum();
   }
   // computeLogicalWidth always re-computes the intrinsic widths. However, when
   // our logical width is auto, we can just use our cached value. So let's do
@@ -679,11 +682,11 @@ LayoutUnit LayoutFlexibleBox::ComputeMainAxisExtentForChild(
 }
 
 LayoutUnit LayoutFlexibleBox::ContentInsetRight() const {
-  return BorderRight() + PaddingRight() + RightScrollbarWidth();
+  return BorderRight() + PaddingRight() + ComputeScrollbars().right;
 }
 
 LayoutUnit LayoutFlexibleBox::ContentInsetBottom() const {
-  return BorderBottom() + PaddingBottom() + BottomScrollbarHeight();
+  return BorderBottom() + PaddingBottom() + ComputeScrollbars().bottom;
 }
 
 LayoutUnit LayoutFlexibleBox::FlowAwareContentInsetStart() const {
@@ -728,14 +731,14 @@ LayoutUnit LayoutFlexibleBox::FlowAwareContentInsetAfter() const {
 }
 
 LayoutUnit LayoutFlexibleBox::CrossAxisScrollbarExtent() const {
-  return LayoutUnit(IsHorizontalFlow() ? HorizontalScrollbarHeight()
-                                       : VerticalScrollbarWidth());
+  return IsHorizontalFlow() ? ComputeScrollbars().HorizontalSum()
+                            : ComputeScrollbars().VerticalSum();
 }
 
 LayoutUnit LayoutFlexibleBox::CrossAxisScrollbarExtentForChild(
     const LayoutBox& child) const {
-  return LayoutUnit(IsHorizontalFlow() ? child.HorizontalScrollbarHeight()
-                                       : child.VerticalScrollbarWidth());
+  return IsHorizontalFlow() ? child.ComputeScrollbars().HorizontalSum()
+                            : child.ComputeScrollbars().VerticalSum();
 }
 
 LayoutPoint LayoutFlexibleBox::FlowAwareLocationForChild(
@@ -865,7 +868,7 @@ void LayoutFlexibleBox::CacheChildMainSize(const LayoutBox& child) {
         !MainAxisLengthIsDefinite(child, FlexBasisForChild(child))) {
       main_size = child.IntrinsicContentLogicalHeight() +
                   child.BorderAndPaddingLogicalHeight() +
-                  child.ScrollbarLogicalHeight();
+                  child.ComputeLogicalScrollbars().BlockSum();
     } else {
       main_size = child.LogicalHeight();
     }
@@ -944,18 +947,18 @@ LayoutUnit LayoutFlexibleBox::ComputeInnerFlexBaseSizeForChild(
   // width; for the height we need to lay out the child.
   LayoutUnit main_axis_extent;
   if (MainAxisIsInlineAxis(child)) {
-    // We don't need to add ScrollbarLogicalWidth here because the preferred
-    // width includes the scrollbar, even for overflow: auto.
+    // We don't need to add ComputeLogicalScrollbars().InlineSum() here because
+    // the preferred width includes the scrollbar, even for overflow: auto.
     main_axis_extent = child.PreferredLogicalWidths().max_size;
   } else {
     // The needed value here is the logical height. This value does not include
     // the border/scrollbar/padding size, so we have to add the scrollbar.
     if (child.HasOverrideIntrinsicContentLogicalHeight()) {
       return child.OverrideIntrinsicContentLogicalHeight() +
-             LayoutUnit(child.ScrollbarLogicalHeight());
+             LayoutUnit(child.ComputeLogicalScrollbars().BlockSum());
     }
     if (child.ShouldApplySizeContainment())
-      return LayoutUnit(child.ScrollbarLogicalHeight());
+      return LayoutUnit(child.ComputeLogicalScrollbars().BlockSum());
 
     if (child_layout_type == kNeverLayout)
       return LayoutUnit();

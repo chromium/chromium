@@ -547,8 +547,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Return the thickness of the existing scrollbar; or, if there is no
   // existing scrollbar, then calculate the thickness it would have if it
   // existed. Returns zero if the (real or hypothetical) scrollbar is an overlay
-  // scrollbar.
-  int HypotheticalScrollbarThickness(ScrollbarOrientation) const;
+  // scrollbar, unless should_include_overlay_thickness has been specified.
+  int HypotheticalScrollbarThickness(
+      ScrollbarOrientation,
+      bool should_include_overlay_thickness = false) const;
 
   void DidAddScrollbar(Scrollbar&, ScrollbarOrientation) override;
   void WillRemoveScrollbar(Scrollbar&, ScrollbarOrientation) override;

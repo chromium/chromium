@@ -736,9 +736,14 @@ LayoutUnit LayoutBox::ClientWidth() const {
   // border side values are currently limited to 2^20px (a recent change in the
   // code), if this limit is raised again in the future, we'd have ill effects
   // of saturated arithmetic otherwise.
-  return (frame_rect_.Width() - BorderLeft() - BorderRight() -
-          VerticalScrollbarWidthClampedToContentBox())
-      .ClampNegativeToZero();
+  if (CanSkipComputeScrollbars()) {
+    return (frame_rect_.Width() - BorderLeft() - BorderRight())
+        .ClampNegativeToZero();
+  } else {
+    return (frame_rect_.Width() - BorderLeft() - BorderRight() -
+            ComputeScrollbarsInternal(kClampToContentBox).HorizontalSum())
+        .ClampNegativeToZero();
+  }
 }
 
 DISABLE_CFI_PERF
@@ -749,9 +754,14 @@ LayoutUnit LayoutBox::ClientHeight() const {
   // currently limited to 2^20px (a recent change in the code), if this limit is
   // raised again in the future, we'd have ill effects of saturated arithmetic
   // otherwise.
-  return (frame_rect_.Height() - BorderTop() - BorderBottom() -
-          HorizontalScrollbarHeight())
-      .ClampNegativeToZero();
+  if (CanSkipComputeScrollbars()) {
+    return (frame_rect_.Height() - BorderTop() - BorderBottom())
+        .ClampNegativeToZero();
+  } else {
+    return (frame_rect_.Height() - BorderTop() - BorderBottom() -
+            ComputeScrollbarsInternal(kClampToContentBox).VerticalSum())
+        .ClampNegativeToZero();
+  }
 }
 
 int LayoutBox::PixelSnappedClientWidth() const {
@@ -1038,7 +1048,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
       return MenuListIntrinsicBlockSize(*select, *this);
     } else {
       return ListBoxItemHeight(*select, *this) * select->ListBoxSize() -
-             ScrollbarLogicalHeight();
+             ComputeLogicalScrollbars().BlockSum();
     }
   }
   return kIndefiniteSize;
@@ -1249,28 +1259,82 @@ bool LayoutBox::CanResize() const {
          StyleRef().HasResize();
 }
 
-int LayoutBox::VerticalScrollbarWidth() const {
-  if (!HasNonVisibleOverflow() || StyleRef().OverflowY() == EOverflow::kOverlay)
-    return 0;
+bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
+  if (StyleRef().ScrollbarGutterIsAuto())
+    return false;
 
-  return GetScrollableArea()->VerticalScrollbarWidth();
-}
+  bool is_stable = StyleRef().ScrollbarGutterIsStable();
+  bool is_always = StyleRef().ScrollbarGutterIsAlways();
 
-int LayoutBox::HorizontalScrollbarHeight() const {
-  if (!HasNonVisibleOverflow() || StyleRef().OverflowX() == EOverflow::kOverlay)
-    return 0;
+  if (!is_stable && !is_always)
+    return false;
 
-  return GetScrollableArea()->HorizontalScrollbarHeight();
-}
-
-LayoutUnit LayoutBox::VerticalScrollbarWidthClampedToContentBox() const {
-  LayoutUnit width(VerticalScrollbarWidth());
-  DCHECK_GE(width, LayoutUnit());
-  if (width) {
-    LayoutUnit maximum_width = LogicalWidth() - BorderAndPaddingLogicalWidth();
-    width = std::min(width, maximum_width.ClampNegativeToZero());
+  if (orientation == kVerticalScrollbar) {
+    EOverflow overflow = StyleRef().OverflowY();
+    return (overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
+           StyleRef().IsHorizontalWritingMode() &&
+           !(is_stable && UsesOverlayScrollbars());
+  } else {
+    EOverflow overflow = StyleRef().OverflowX();
+    return (overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
+           !StyleRef().IsHorizontalWritingMode() &&
+           !(is_stable && UsesOverlayScrollbars());
   }
-  return width;
+}
+
+NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
+    ShouldClampToContentBox clamp_to_content_box,
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
+  NGPhysicalBoxStrut scrollbars;
+  PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
+  if (!scrollable_area)
+    return scrollbars;
+
+  if (HasScrollbarGutters(kVerticalScrollbar)) {
+    LayoutUnit gutter_size =
+        LayoutUnit(scrollable_area->HypotheticalScrollbarThickness(
+            kVerticalScrollbar, /* should_include_overlay_thickness */ true));
+    if (ShouldPlaceVerticalScrollbarOnLeft()) {
+      scrollbars.left = gutter_size;
+      if (StyleRef().ScrollbarGutterIsBoth())
+        scrollbars.right = gutter_size;
+    } else {
+      scrollbars.right = gutter_size;
+      if (StyleRef().ScrollbarGutterIsBoth())
+        scrollbars.left = gutter_size;
+    }
+  } else if (ShouldPlaceVerticalScrollbarOnLeft()) {
+    scrollbars.left = LayoutUnit(scrollable_area->VerticalScrollbarWidth(
+        overlay_scrollbar_clip_behavior));
+  } else {
+    scrollbars.right = LayoutUnit(scrollable_area->VerticalScrollbarWidth(
+        overlay_scrollbar_clip_behavior));
+  }
+
+  if (HasScrollbarGutters(kHorizontalScrollbar)) {
+    LayoutUnit gutter_size =
+        LayoutUnit(scrollable_area->HypotheticalScrollbarThickness(
+            kHorizontalScrollbar, /* should_include_overlay_thickness */ true));
+    scrollbars.bottom = gutter_size;
+    if (StyleRef().ScrollbarGutterIsBoth())
+      scrollbars.top = gutter_size;
+  } else {
+    scrollbars.bottom = LayoutUnit(scrollable_area->HorizontalScrollbarHeight(
+        overlay_scrollbar_clip_behavior));
+  }
+
+  // Use the width of the vertical scrollbar, unless it's larger than the
+  // logical width of the content box, in which case we'll use that instead.
+  // Scrollbar handling is quite bad in such situations, and this code here
+  // is just to make sure that left-hand scrollbars don't mess up
+  // scrollWidth. For the full story, visit http://crbug.com/724255.
+  if (scrollbars.left > 0 && clamp_to_content_box == kClampToContentBox) {
+    LayoutUnit max_width = frame_rect_.Width() - BorderAndPaddingWidth();
+    scrollbars.left =
+        std::min(scrollbars.left, max_width.ClampNegativeToZero());
+  }
+
+  return scrollbars;
 }
 
 bool LayoutBox::CanBeScrolledAndHasScrollableArea() const {
@@ -1418,7 +1482,13 @@ bool LayoutBox::NeedsPreferredWidthsRecalculation() const {
 }
 
 IntSize LayoutBox::OriginAdjustmentForScrollbars() const {
-  return IntSize(LeftScrollbarWidth().ToInt(), 0);
+  if (CanSkipComputeScrollbars()) {
+    return IntSize();
+  } else {
+    NGPhysicalBoxStrut scrollbars =
+        ComputeScrollbarsInternal(kClampToContentBox);
+    return IntSize(scrollbars.left.ToInt(), scrollbars.top.ToInt());
+  }
 }
 
 IntPoint LayoutBox::ScrollOrigin() const {
@@ -1673,13 +1743,13 @@ void LayoutBox::ClearOverrideSize() {
 
 LayoutUnit LayoutBox::OverrideContentLogicalWidth() const {
   return (OverrideLogicalWidth() - BorderAndPaddingLogicalWidth() -
-          ScrollbarLogicalWidth())
+          ComputeLogicalScrollbars().InlineSum())
       .ClampNegativeToZero();
 }
 
 LayoutUnit LayoutBox::OverrideContentLogicalHeight() const {
   return (OverrideLogicalHeight() - BorderAndPaddingLogicalHeight() -
-          ScrollbarLogicalHeight())
+          ComputeLogicalScrollbars().BlockSum())
       .ClampNegativeToZero();
 }
 
@@ -2356,17 +2426,16 @@ bool LayoutBox::HasControlClip() const {
 void LayoutBox::ExcludeScrollbars(
     PhysicalRect& rect,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
-  if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea()) {
-    if (ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-      rect.offset.left += scrollable_area->VerticalScrollbarWidth(
-          overlay_scrollbar_clip_behavior);
-    }
-    rect.size.width -= scrollable_area->VerticalScrollbarWidth(
-        overlay_scrollbar_clip_behavior);
-    rect.size.height -= scrollable_area->HorizontalScrollbarHeight(
-        overlay_scrollbar_clip_behavior);
-    rect.size.ClampNegativeToZero();
-  }
+  if (CanSkipComputeScrollbars())
+    return;
+
+  NGPhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(
+      kDoNotClampToContentBox, overlay_scrollbar_clip_behavior);
+  rect.offset.top += scrollbars.top;
+  rect.offset.left += scrollbars.left;
+  rect.size.width -= scrollbars.HorizontalSum();
+  rect.size.height -= scrollbars.VerticalSum();
+  rect.size.ClampNegativeToZero();
 }
 
 PhysicalRect LayoutBox::ClipRect(const PhysicalOffset& location) const {
@@ -3985,14 +4054,16 @@ void LayoutBox::ComputeLogicalHeight(
   LayoutUnit height;
   if (HasOverrideIntrinsicContentLogicalHeight()) {
     height = OverrideIntrinsicContentLogicalHeight() +
-             BorderAndPaddingLogicalHeight() + ScrollbarLogicalHeight();
+             BorderAndPaddingLogicalHeight() +
+             ComputeLogicalScrollbars().BlockSum();
   } else {
     LayoutUnit default_height = DefaultIntrinsicContentBlockSize();
     if (default_height != kIndefiniteSize) {
       height = default_height + BorderAndPaddingLogicalHeight() +
-               ScrollbarLogicalHeight();
+               ComputeLogicalScrollbars().BlockSum();
     } else if (ShouldApplySizeContainment() && !IsLayoutGrid()) {
-      height = BorderAndPaddingLogicalHeight() + ScrollbarLogicalHeight();
+      height = BorderAndPaddingLogicalHeight() +
+               ComputeLogicalScrollbars().BlockSum();
     } else {
       height = LogicalHeight();
     }
@@ -4167,7 +4238,8 @@ LayoutUnit LayoutBox::ComputeContentLogicalHeight(
     adjusted =
         AdjustContentBoxLogicalHeightForBoxSizing(height_including_scrollbar);
   }
-  return std::max(LayoutUnit(), adjusted - ScrollbarLogicalHeight());
+  return std::max(LayoutUnit(),
+                  adjusted - ComputeLogicalScrollbars().BlockSum());
 }
 
 LayoutUnit LayoutBox::ComputeIntrinsicLogicalContentHeightUsing(
@@ -4213,7 +4285,7 @@ LayoutUnit LayoutBox::ComputeContentAndScrollbarLogicalHeightUsing(
     return ComputeIntrinsicLogicalContentHeightUsing(
                height, intrinsic_content_height,
                BorderAndPaddingLogicalHeight()) +
-           ScrollbarLogicalHeight();
+           ComputeLogicalScrollbars().BlockSum();
   }
   if (height.IsFixed())
     return LayoutUnit(height.Value());
@@ -4343,7 +4415,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPercentageResolution(
       }
       available_height = cb->OverrideLogicalHeight() -
                          cb->CollapsedBorderAndCSSPaddingLogicalHeight() -
-                         cb->ScrollbarLogicalHeight();
+                         cb->ComputeLogicalScrollbars().BlockSum();
     }
   } else {
     available_height = cb->AvailableLogicalHeightForPercentageComputation();
@@ -4680,7 +4752,7 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
     if (HasOverrideLogicalHeight()) {
       return OverrideLogicalHeight() -
              CollapsedBorderAndCSSPaddingLogicalHeight() -
-             ScrollbarLogicalHeight();
+             ComputeLogicalScrollbars().BlockSum();
     }
     return LogicalHeight() - BorderAndPaddingLogicalHeight();
   }
@@ -4720,10 +4792,11 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
   LayoutUnit height_including_scrollbar =
       ComputeContentAndScrollbarLogicalHeightUsing(kMainOrPreferredSize, h,
                                                    LayoutUnit(-1));
-  if (height_including_scrollbar != -1)
+  if (height_including_scrollbar != -1) {
     return std::max(LayoutUnit(), AdjustContentBoxLogicalHeightForBoxSizing(
                                       height_including_scrollbar) -
-                                      ScrollbarLogicalHeight());
+                                      ComputeLogicalScrollbars().BlockSum());
+  }
 
   // FIXME: Check logicalTop/logicalBottom here to correctly handle vertical
   // writing-mode.
@@ -4737,7 +4810,7 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
     block->ComputeLogicalHeight(block->LogicalHeight(), LayoutUnit(),
                                 computed_values);
     return computed_values.extent_ - block->BorderAndPaddingLogicalHeight() -
-           block->ScrollbarLogicalHeight();
+           block->ComputeLogicalScrollbars().BlockSum();
   }
 
   // FIXME: This is wrong if the containingBlock has a perpendicular writing
@@ -5147,15 +5220,29 @@ void LayoutBox::ComputeLogicalLeftPositionedOffset(
       logical_left_pos =
           container_logical_width - logical_width_value - logical_left_pos;
       logical_left_pos += container_block->BorderRight();
-      if (container_block->IsBox())
-        logical_left_pos += ToLayoutBox(container_block)->RightScrollbarWidth();
+      if (container_block->IsBox() &&
+          !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
+        logical_left_pos += ToLayoutBox(container_block)
+                                ->ComputeScrollbarsInternal(kClampToContentBox)
+                                .right;
+      }
     } else {
       logical_left_pos += container_block->BorderLeft();
-      if (container_block->IsBox())
-        logical_left_pos += ToLayoutBox(container_block)->LeftScrollbarWidth();
+      if (container_block->IsBox() &&
+          !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
+        logical_left_pos += ToLayoutBox(container_block)
+                                ->ComputeScrollbarsInternal(kClampToContentBox)
+                                .left;
+      }
     }
   } else {
     logical_left_pos += container_block->BorderTop();
+    if (container_block->IsBox() &&
+        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
+      logical_left_pos += ToLayoutBox(container_block)
+                              ->ComputeScrollbarsInternal(kClampToContentBox)
+                              .top;
+    }
   }
 }
 
@@ -5570,14 +5657,28 @@ void LayoutBox::ComputeLogicalTopPositionedOffset(
   // box space.
   if (child->IsHorizontalWritingMode()) {
     logical_top_pos += container_block->BorderTop();
+    if (container_block->IsBox() &&
+        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
+      logical_top_pos += ToLayoutBox(container_block)
+                             ->ComputeScrollbarsInternal(kClampToContentBox)
+                             .top;
+    }
   } else if (container_block->HasFlippedBlocksWritingMode()) {
     logical_top_pos += container_block->BorderRight();
-    if (container_block->IsBox())
-      logical_top_pos += ToLayoutBox(container_block)->RightScrollbarWidth();
+    if (container_block->IsBox() &&
+        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
+      logical_top_pos += ToLayoutBox(container_block)
+                             ->ComputeScrollbarsInternal(kClampToContentBox)
+                             .right;
+    }
   } else {
     logical_top_pos += container_block->BorderLeft();
-    if (container_block->IsBox())
-      logical_top_pos += ToLayoutBox(container_block)->LeftScrollbarWidth();
+    if (container_block->IsBox() &&
+        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
+      logical_top_pos += ToLayoutBox(container_block)
+                             ->ComputeScrollbarsInternal(kClampToContentBox)
+                             .left;
+    }
   }
 }
 

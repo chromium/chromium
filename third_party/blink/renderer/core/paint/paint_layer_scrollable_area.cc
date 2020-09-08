@@ -726,21 +726,13 @@ PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
   LayoutSize layer_size(Layer()->Size());
   LayoutUnit border_width = GetLayoutBox()->BorderWidth();
   LayoutUnit border_height = GetLayoutBox()->BorderHeight();
-  LayoutUnit horizontal_scrollbar_height, vertical_scrollbar_width;
-  if (scrollbar_inclusion == kExcludeScrollbars) {
-    horizontal_scrollbar_height = LayoutUnit(
-        HorizontalScrollbar() && !HorizontalScrollbar()->IsOverlayScrollbar()
-            ? HorizontalScrollbar()->ScrollbarThickness()
-            : 0);
-    vertical_scrollbar_width = LayoutUnit(
-        VerticalScrollbar() && !VerticalScrollbar()->IsOverlayScrollbar()
-            ? VerticalScrollbar()->ScrollbarThickness()
-            : 0);
-  }
+  NGPhysicalBoxStrut scrollbars;
+  if (scrollbar_inclusion == kExcludeScrollbars)
+    scrollbars = GetLayoutBox()->ComputeScrollbars();
 
   PhysicalSize size(
-      layer_size.Width() - border_width - vertical_scrollbar_width,
-      layer_size.Height() - border_height - horizontal_scrollbar_height);
+      layer_size.Width() - border_width - scrollbars.HorizontalSum(),
+      layer_size.Height() - border_height - scrollbars.VerticalSum());
   size.ClampNegativeToZero();
   return PhysicalRect(PhysicalOffset::FromFloatPointRound(ScrollPosition()),
                       size);
@@ -1473,7 +1465,8 @@ static inline const LayoutObject& ScrollbarStyleSource(
 }
 
 int PaintLayerScrollableArea::HypotheticalScrollbarThickness(
-    ScrollbarOrientation orientation) const {
+    ScrollbarOrientation orientation,
+    bool should_include_overlay_thickness) const {
   Scrollbar* scrollbar = orientation == kHorizontalScrollbar
                              ? HorizontalScrollbar()
                              : VerticalScrollbar();
@@ -1489,7 +1482,7 @@ int PaintLayerScrollableArea::HypotheticalScrollbarThickness(
   }
 
   ScrollbarTheme& theme = GetPageScrollbarTheme();
-  if (theme.UsesOverlayScrollbars())
+  if (theme.UsesOverlayScrollbars() && !should_include_overlay_thickness)
     return 0;
   return theme.ScrollbarThickness(ScaleFromDIP());
 }

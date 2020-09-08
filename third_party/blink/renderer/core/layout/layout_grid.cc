@@ -348,7 +348,7 @@ void LayoutGrid::UpdateBlockLayout(bool relayout_children) {
     // ScrollbarLogicalHeight() for the intrinsic height cases. But that's
     // causing more problems as described in the bug linked before.
     if (!StyleRef().LogicalHeight().IsIntrinsic())
-      track_based_logical_height += ScrollbarLogicalHeight();
+      track_based_logical_height += ComputeLogicalScrollbars().BlockSum();
 
     SetLogicalHeight(track_based_logical_height);
     UpdateLogicalHeight();
@@ -518,7 +518,8 @@ LayoutUnit LayoutGrid::GuttersSize(
 
 MinMaxSizes LayoutGrid::ComputeIntrinsicLogicalWidths() const {
   MinMaxSizes sizes;
-  sizes += BorderAndPaddingLogicalWidth() + ScrollbarLogicalWidth();
+  sizes +=
+      BorderAndPaddingLogicalWidth() + ComputeLogicalScrollbars().InlineSum();
 
   if (HasOverrideIntrinsicContentLogicalWidth()) {
     sizes += OverrideIntrinsicContentLogicalWidth();
@@ -1470,10 +1471,10 @@ void LayoutGrid::PopulateGridPositionsForDirection(
   if (is_row_axis) {
     if (StyleRef().IsHorizontalWritingMode() &&
         !StyleRef().IsLeftToRightDirection())
-      border_and_padding += ScrollbarLogicalWidth();
+      border_and_padding += ComputeLogicalScrollbars().InlineSum();
   } else {
     if (StyleRef().GetWritingMode() == WritingMode::kVerticalRl)
-      border_and_padding += ScrollbarLogicalHeight();
+      border_and_padding += ComputeLogicalScrollbars().BlockSum();
   }
 
   positions[0] = border_and_padding + offset.position_offset;

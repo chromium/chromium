@@ -3052,4 +3052,385 @@ TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
                                        WebThemeEngine::kPartScrollbarCorner));
 }
 
+// Test scrollbar-gutter values with classic scrollbars and horizontal-tb text.
+TEST_F(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
+  // This test requires that scrollbars take up space.
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+        overflow: auto;
+        writing-mode: horizontal-tb;
+      }
+      #auto {
+        scrollbar-gutter: auto;
+      }
+      #stable {
+        scrollbar-gutter: stable;
+      }
+      #stable_both {
+        scrollbar-gutter: stable both;
+      }
+      #always {
+        scrollbar-gutter: always;
+      }
+      #always_both {
+        scrollbar-gutter: always both;
+      }
+    </style>
+    <div id="auto"></div>
+    <div id="stable"></div>
+    <div id="stable_both"></div>
+    <div id="always"></div>
+    <div id="always_both"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* auto_ = GetDocument().getElementById("auto");
+  LayoutBox* box_auto = ToLayoutBox(auto_->GetLayoutObject());
+  EXPECT_EQ(box_auto->OffsetWidth(), 100);
+  EXPECT_EQ(box_auto->ClientWidth(), 100);
+  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  EXPECT_EQ(box_auto_scrollbars.top, 0);
+  EXPECT_EQ(box_auto_scrollbars.bottom, 0);
+  EXPECT_EQ(box_auto_scrollbars.left, 0);
+  EXPECT_EQ(box_auto_scrollbars.right, 0);
+
+  auto* stable = GetDocument().getElementById("stable");
+  LayoutBox* box_stable = ToLayoutBox(stable->GetLayoutObject());
+  EXPECT_EQ(box_stable->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable->ClientWidth(), 85);
+  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  EXPECT_EQ(box_stable_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_scrollbars.right, 15);
+
+  auto* stable_both = GetDocument().getElementById("stable_both");
+  LayoutBox* box_stable_both = ToLayoutBox(stable_both->GetLayoutObject());
+  EXPECT_EQ(box_stable_both->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_both->ClientWidth(), 70);
+  NGPhysicalBoxStrut box_stable_both_scrollbars =
+      box_stable_both->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.left, 15);
+  EXPECT_EQ(box_stable_both_scrollbars.right, 15);
+
+  auto* always = GetDocument().getElementById("always");
+  LayoutBox* box_always = ToLayoutBox(always->GetLayoutObject());
+  EXPECT_EQ(box_always->OffsetWidth(), 100);
+  EXPECT_EQ(box_always->ClientWidth(), 85);
+  NGPhysicalBoxStrut box_always_scrollbars = box_always->ComputeScrollbars();
+  EXPECT_EQ(box_always_scrollbars.top, 0);
+  EXPECT_EQ(box_always_scrollbars.bottom, 0);
+  EXPECT_EQ(box_always_scrollbars.left, 0);
+  EXPECT_EQ(box_always_scrollbars.right, 15);
+
+  auto* always_both = GetDocument().getElementById("always_both");
+  LayoutBox* box_always_both = ToLayoutBox(always_both->GetLayoutObject());
+  EXPECT_EQ(box_always_both->OffsetWidth(), 100);
+  EXPECT_EQ(box_always_both->ClientWidth(), 70);
+  NGPhysicalBoxStrut box_always_both_scrollbars =
+      box_always_both->ComputeScrollbars();
+  EXPECT_EQ(box_always_both_scrollbars.top, 0);
+  EXPECT_EQ(box_always_both_scrollbars.bottom, 0);
+  EXPECT_EQ(box_always_both_scrollbars.left, 15);
+  EXPECT_EQ(box_always_both_scrollbars.right, 15);
+}
+
+// Test scrollbar-gutter values with classic scrollbars and vertical-rl text.
+TEST_F(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
+  // This test requires that scrollbars take up space.
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+        overflow: auto;
+        writing-mode: vertical-rl;
+      }
+      #auto {
+        scrollbar-gutter: auto;
+      }
+      #stable {
+        scrollbar-gutter: stable;
+      }
+      #stable_both {
+        scrollbar-gutter: stable both;
+      }
+      #always {
+        scrollbar-gutter: always;
+      }
+      #always_both {
+        scrollbar-gutter: always both;
+      }
+    </style>
+    <div id="auto"></div>
+    <div id="stable"></div>
+    <div id="stable_both"></div>
+    <div id="always"></div>
+    <div id="always_both"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* auto_ = GetDocument().getElementById("auto");
+  LayoutBox* box_auto = ToLayoutBox(auto_->GetLayoutObject());
+  EXPECT_EQ(box_auto->OffsetHeight(), 100);
+  EXPECT_EQ(box_auto->ClientHeight(), 100);
+  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  EXPECT_EQ(box_auto_scrollbars.top, 0);
+  EXPECT_EQ(box_auto_scrollbars.bottom, 0);
+  EXPECT_EQ(box_auto_scrollbars.left, 0);
+  EXPECT_EQ(box_auto_scrollbars.right, 0);
+
+  auto* stable = GetDocument().getElementById("stable");
+  LayoutBox* box_stable = ToLayoutBox(stable->GetLayoutObject());
+  EXPECT_EQ(box_stable->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable->ClientHeight(), 85);
+  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  EXPECT_EQ(box_stable_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_scrollbars.bottom, 15);
+  EXPECT_EQ(box_stable_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_scrollbars.right, 0);
+
+  auto* stable_both = GetDocument().getElementById("stable_both");
+  LayoutBox* box_stable_both = ToLayoutBox(stable_both->GetLayoutObject());
+  EXPECT_EQ(box_stable_both->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_both->ClientHeight(), 70);
+  NGPhysicalBoxStrut box_stable_both_scrollbars =
+      box_stable_both->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_scrollbars.top, 15);
+  EXPECT_EQ(box_stable_both_scrollbars.bottom, 15);
+  EXPECT_EQ(box_stable_both_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.right, 0);
+
+  auto* always = GetDocument().getElementById("always");
+  LayoutBox* box_always = ToLayoutBox(always->GetLayoutObject());
+  EXPECT_EQ(box_always->OffsetHeight(), 100);
+  EXPECT_EQ(box_always->ClientHeight(), 85);
+  NGPhysicalBoxStrut box_always_scrollbars = box_always->ComputeScrollbars();
+  EXPECT_EQ(box_always_scrollbars.top, 0);
+  EXPECT_EQ(box_always_scrollbars.bottom, 15);
+  EXPECT_EQ(box_always_scrollbars.left, 0);
+  EXPECT_EQ(box_always_scrollbars.right, 0);
+
+  auto* always_both = GetDocument().getElementById("always_both");
+  LayoutBox* box_always_both = ToLayoutBox(always_both->GetLayoutObject());
+  EXPECT_EQ(box_always_both->OffsetHeight(), 100);
+  EXPECT_EQ(box_always_both->ClientHeight(), 70);
+  NGPhysicalBoxStrut box_always_both_scrollbars =
+      box_always_both->ComputeScrollbars();
+  EXPECT_EQ(box_always_both_scrollbars.top, 15);
+  EXPECT_EQ(box_always_both_scrollbars.bottom, 15);
+  EXPECT_EQ(box_always_both_scrollbars.left, 0);
+  EXPECT_EQ(box_always_both_scrollbars.right, 0);
+}
+
+// Test scrollbar-gutter values with overlay scrollbars and horizontal-tb text.
+TEST_F(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
+  // This test is specifically checking the behavior when overlay scrollbars
+  // are enabled.
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+        overflow: auto;
+        writing-mode: horizontal-tb;
+      }
+      #auto {
+        scrollbar-gutter: auto;
+      }
+      #stable {
+        scrollbar-gutter: stable;
+      }
+      #stable_both {
+        scrollbar-gutter: stable both;
+      }
+      #always {
+        scrollbar-gutter: always;
+      }
+      #always_both {
+        scrollbar-gutter: always both;
+      }
+    </style>
+    <div id="auto"></div>
+    <div id="stable"></div>
+    <div id="stable_both"></div>
+    <div id="always"></div>
+    <div id="always_both"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* auto_ = GetDocument().getElementById("auto");
+  LayoutBox* box_auto = ToLayoutBox(auto_->GetLayoutObject());
+  EXPECT_EQ(box_auto->OffsetWidth(), 100);
+  EXPECT_EQ(box_auto->ClientWidth(), 100);
+  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  EXPECT_EQ(box_auto_scrollbars.top, 0);
+  EXPECT_EQ(box_auto_scrollbars.bottom, 0);
+  EXPECT_EQ(box_auto_scrollbars.left, 0);
+  EXPECT_EQ(box_auto_scrollbars.right, 0);
+
+  auto* stable = GetDocument().getElementById("stable");
+  LayoutBox* box_stable = ToLayoutBox(stable->GetLayoutObject());
+  EXPECT_EQ(box_stable->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable->ClientWidth(), 100);
+  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  EXPECT_EQ(box_stable_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_scrollbars.right, 0);
+
+  auto* stable_both = GetDocument().getElementById("stable_both");
+  LayoutBox* box_stable_both = ToLayoutBox(stable_both->GetLayoutObject());
+  EXPECT_EQ(box_stable_both->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_both->ClientWidth(), 100);
+  NGPhysicalBoxStrut box_stable_both_scrollbars =
+      box_stable_both->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.right, 0);
+
+  // The size of overlay scrollbars is different between operating systems,
+  // which is why we use these relative comparisons.
+
+  auto* always = GetDocument().getElementById("always");
+  LayoutBox* box_always = ToLayoutBox(always->GetLayoutObject());
+  EXPECT_EQ(box_always->OffsetWidth(), 100);
+  EXPECT_LT(box_always->ClientWidth(), box_auto->ClientWidth());
+  NGPhysicalBoxStrut box_always_scrollbars = box_always->ComputeScrollbars();
+  EXPECT_EQ(box_always_scrollbars.top, 0);
+  EXPECT_EQ(box_always_scrollbars.bottom, 0);
+  EXPECT_EQ(box_always_scrollbars.left, 0);
+  // scrollbar gutter
+  EXPECT_GT(box_always_scrollbars.right, 0);
+
+  auto* always_both = GetDocument().getElementById("always_both");
+  LayoutBox* box_always_both = ToLayoutBox(always_both->GetLayoutObject());
+  EXPECT_EQ(box_always_both->OffsetWidth(), 100);
+  EXPECT_LT(box_always_both->ClientWidth(), box_always->ClientWidth());
+  NGPhysicalBoxStrut box_always_both_scrollbars =
+      box_always_both->ComputeScrollbars();
+  EXPECT_EQ(box_always_both_scrollbars.top, 0);
+  EXPECT_EQ(box_always_both_scrollbars.bottom, 0);
+  // scrollbar gutters
+  EXPECT_GT(box_always_both_scrollbars.left, 0);
+  EXPECT_GT(box_always_both_scrollbars.right, 0);
+}
+
+// Test scrollbar-gutter values with overlay scrollbars and vertical-rl text.
+TEST_F(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
+  // This test is specifically checking the behavior when overlay scrollbars
+  // are enabled.
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+        overflow: auto;
+        writing-mode: vertical-rl;
+      }
+      #auto {
+        scrollbar-gutter: auto;
+      }
+      #stable {
+        scrollbar-gutter: stable;
+      }
+      #stable_both {
+        scrollbar-gutter: stable both;
+      }
+      #always {
+        scrollbar-gutter: always;
+      }
+      #always_both {
+        scrollbar-gutter: always both;
+      }
+    </style>
+    <div id="auto"></div>
+    <div id="stable"></div>
+    <div id="stable_both"></div>
+    <div id="always"></div>
+    <div id="always_both"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* auto_ = GetDocument().getElementById("auto");
+  LayoutBox* box_auto = ToLayoutBox(auto_->GetLayoutObject());
+  EXPECT_EQ(box_auto->OffsetHeight(), 100);
+  EXPECT_EQ(box_auto->ClientHeight(), 100);
+  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  EXPECT_EQ(box_auto_scrollbars.top, 0);
+  EXPECT_EQ(box_auto_scrollbars.bottom, 0);
+  EXPECT_EQ(box_auto_scrollbars.left, 0);
+  EXPECT_EQ(box_auto_scrollbars.right, 0);
+
+  auto* stable = GetDocument().getElementById("stable");
+  LayoutBox* box_stable = ToLayoutBox(stable->GetLayoutObject());
+  EXPECT_EQ(box_stable->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable->ClientHeight(), 100);
+  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  EXPECT_EQ(box_stable_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_scrollbars.right, 0);
+
+  auto* stable_both = GetDocument().getElementById("stable_both");
+  LayoutBox* box_stable_both = ToLayoutBox(stable_both->GetLayoutObject());
+  EXPECT_EQ(box_stable_both->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_both->ClientHeight(), 100);
+  NGPhysicalBoxStrut box_stable_both_scrollbars =
+      box_stable_both->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_both_scrollbars.right, 0);
+
+  auto* always = GetDocument().getElementById("always");
+  LayoutBox* box_always = ToLayoutBox(always->GetLayoutObject());
+  EXPECT_EQ(box_always->OffsetHeight(), 100);
+  EXPECT_LT(box_always->ClientHeight(), box_auto->ClientHeight());
+  NGPhysicalBoxStrut box_always_scrollbars = box_always->ComputeScrollbars();
+  EXPECT_EQ(box_always_scrollbars.top, 0);
+  // scrollbar gutter
+  EXPECT_GT(box_always_scrollbars.bottom, 0);
+  EXPECT_EQ(box_always_scrollbars.left, 0);
+  EXPECT_EQ(box_always_scrollbars.right, 0);
+
+  auto* always_both = GetDocument().getElementById("always_both");
+  LayoutBox* box_always_both = ToLayoutBox(always_both->GetLayoutObject());
+  EXPECT_EQ(box_always_both->OffsetHeight(), 100);
+  EXPECT_LT(box_always_both->ClientHeight(), box_always->ClientHeight());
+  NGPhysicalBoxStrut box_always_both_scrollbars =
+      box_always_both->ComputeScrollbars();
+  // scrollbar gutters
+  EXPECT_GT(box_always_both_scrollbars.top, 0);
+  EXPECT_GT(box_always_both_scrollbars.bottom, 0);
+  EXPECT_EQ(box_always_both_scrollbars.left, 0);
+  EXPECT_EQ(box_always_both_scrollbars.right, 0);
+}
+
 }  // namespace blink
