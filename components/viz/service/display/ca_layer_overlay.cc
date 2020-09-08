@@ -14,6 +14,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 
 namespace viz {
 
@@ -296,7 +297,10 @@ CALayerOverlay::CALayerOverlay() : filter(GL_LINEAR) {}
 
 CALayerOverlay::CALayerOverlay(const CALayerOverlay& other) = default;
 
-CALayerOverlay::~CALayerOverlay() {}
+CALayerOverlay::~CALayerOverlay() = default;
+
+CALayerOverlay& CALayerOverlay::operator=(const CALayerOverlay& other) =
+    default;
 
 bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     DisplayResourceProvider* resource_provider,

@@ -77,6 +77,10 @@ SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
     : recorder_(root_recorder), render_pass_id_(0) {}
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
+    SkSurfaceCharacterization characterization)
+    : ScopedPaint(characterization, AggregatedRenderPassId(0)) {}
+
+SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
     SkSurfaceCharacterization characterization,
     AggregatedRenderPassId render_pass_id)
     : render_pass_id_(render_pass_id) {
@@ -503,6 +507,38 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   return current_paint_->recorder()->getCanvas();
 }
 
+#if defined(OS_APPLE)
+SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
+    const gfx::Size& size,
+    ResourceFormat format,
+    bool mipmap,
+    sk_sp<SkColorSpace> color_space) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
+  DCHECK(!current_paint_);
+  DCHECK(resource_sync_tokens_.empty());
+
+  SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
+      size, BufferFormat(format), mipmap, std::move(color_space),
+      true /* is_root_render_pass */);
+  if (!characterization.isValid())
+    return nullptr;
+
+  current_paint_.emplace(characterization);
+  return current_paint_->recorder()->getCanvas();
+}
+
+sk_sp<SkDeferredDisplayList>
+SkiaOutputSurfaceImpl::EndPaintRenderPassOverlay() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(current_paint_);
+
+  auto ddl = current_paint_->recorder()->detach();
+  current_paint_.reset();
+  return ddl;
+}
+#endif  // defined(OS_APPLE)
+
 gpu::SyncToken SkiaOutputSurfaceImpl::SubmitPaint(
     base::OnceClosure on_finished) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -661,8 +697,10 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
     std::vector<gpu::SyncToken> sync_tokens) {
   auto task =
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::ScheduleOverlays,
-                     base::Unretained(impl_on_gpu_.get()), std::move(overlays));
+                     base::Unretained(impl_on_gpu_.get()), std::move(overlays),
+                     std::move(images_in_current_paint_));
   ScheduleGpuTask(std::move(task), std::move(sync_tokens));
+  images_in_current_paint_.clear();
 }
 
 gpu::MemoryTracker* SkiaOutputSurfaceImpl::GetMemoryTracker() {

@@ -131,6 +131,15 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
 
+#if defined(OS_APPLE)
+  SkCanvas* BeginPaintRenderPassOverlay(
+      const gfx::Size& size,
+      ResourceFormat format,
+      bool mipmap,
+      sk_sp<SkColorSpace> color_space) override;
+  sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() override;
+#endif
+
   // ExternalUseClient implementation:
   gpu::SyncToken ReleaseImageContexts(
       std::vector<std::unique_ptr<ImageContext>> image_contexts) override;
@@ -210,6 +219,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   class ScopedPaint {
    public:
     explicit ScopedPaint(SkDeferredDisplayListRecorder* root_recorder);
+    explicit ScopedPaint(SkSurfaceCharacterization characterization);
     ScopedPaint(SkSurfaceCharacterization characterization,
                 AggregatedRenderPassId render_pass_id);
     ~ScopedPaint();

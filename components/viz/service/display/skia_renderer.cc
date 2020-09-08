@@ -47,6 +47,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkOverdrawCanvas.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -66,6 +67,7 @@
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/transform.h"
 
@@ -2159,14 +2161,18 @@ void SkiaRenderer::ScheduleOverlays() {
   if (current_frame()->overlay_list.empty())
     return;
 
+  auto& locks = pending_overlay_locks_.back();
+  std::vector<gpu::SyncToken> sync_tokens;
+
+#if !defined(OS_WIN)
+  DCHECK(output_surface_->capabilities().supports_surfaceless);
+#endif
+
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS)
   // CrOS and Android SurfaceControl use this code path. Android classic has
   // switched over to OverlayProcessor.
   // TODO(weiliangc): Remove this when CrOS and Android SurfaceControl switch
   // to OverlayProcessor as well.
-  DCHECK(output_surface_->capabilities().supports_surfaceless);
-  auto& locks = pending_overlay_locks_.back();
-  std::vector<gpu::SyncToken> sync_tokens;
   for (auto& overlay : current_frame()->overlay_list) {
     // Resources will be unlocked after the next SwapBuffers() is completed.
     locks.emplace_back(resource_provider_, overlay.resource_id);
@@ -2180,11 +2186,7 @@ void SkiaRenderer::ScheduleOverlays() {
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());
   }
-  skia_output_surface_->ScheduleOverlays(
-      std::move(current_frame()->overlay_list), std::move(sync_tokens));
 #elif defined(OS_WIN)
-  auto& locks = pending_overlay_locks_.back();
-  std::vector<gpu::SyncToken> sync_tokens;
   for (auto& dc_layer_overlay : current_frame()->overlay_list) {
     for (size_t i = 0; i < DCLayerOverlay::kNumResources; ++i) {
       ResourceId resource_id = dc_layer_overlay.resources[i];
@@ -2204,13 +2206,12 @@ void SkiaRenderer::ScheduleOverlays() {
     }
     DCHECK(!dc_layer_overlay.mailbox[0].IsZero());
   }
-  skia_output_surface_->ScheduleOverlays(
-      std::move(current_frame()->overlay_list), std::move(sync_tokens));
 #elif defined(OS_APPLE)
-  DCHECK(output_surface_->capabilities().supports_surfaceless);
-  auto& locks = pending_overlay_locks_.back();
-  std::vector<gpu::SyncToken> sync_tokens;
   for (CALayerOverlay& ca_layer_overlay : current_frame()->overlay_list) {
+    if (ca_layer_overlay.rpdq) {
+      PrepareRenderPassOverlay(&ca_layer_overlay);
+      continue;
+    }
     // Some overlays are for solid-color layers.
     if (!ca_layer_overlay.contents_resource_id)
       continue;
@@ -2231,8 +2232,6 @@ void SkiaRenderer::ScheduleOverlays() {
     ca_layer_overlay.mailbox = lock.mailbox();
     DCHECK(!ca_layer_overlay.mailbox.IsZero());
   }
-  skia_output_surface_->ScheduleOverlays(
-      std::move(current_frame()->overlay_list), std::move(sync_tokens));
 #elif defined(USE_OZONE)
   // For platforms that don't support overlays, the
   // current_frame()->overlay_list should be empty, and this code should not be
@@ -2242,9 +2241,6 @@ void SkiaRenderer::ScheduleOverlays() {
     return;
   }
   // Only Wayland uses this code path.
-  DCHECK(output_surface_->capabilities().supports_surfaceless);
-  auto& locks = pending_overlay_locks_.back();
-  std::vector<gpu::SyncToken> sync_tokens;
   for (auto& overlay : current_frame()->overlay_list) {
     // Resources will be unlocked after the next SwapBuffers() is completed.
     locks.emplace_back(resource_provider_, overlay.resource_id);
@@ -2258,14 +2254,15 @@ void SkiaRenderer::ScheduleOverlays() {
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());
   }
-  skia_output_surface_->ScheduleOverlays(
-      std::move(current_frame()->overlay_list), std::move(sync_tokens));
 #else   // defined(OS_ANDROID)
   // For platforms that don't support overlays, the
   // current_frame()->overlay_list should be empty, and this code should not be
   // reached.
   NOTREACHED();
 #endif  // defined(OS_ANDROID)
+
+  skia_output_surface_->ScheduleOverlays(
+      std::move(current_frame()->overlay_list), std::move(sync_tokens));
 }
 
 sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
@@ -2450,16 +2447,17 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
 
     // Must account for clipping that occurs for backdrop filters, since their
     // input content has already been clipped to the output rect.
-    gfx::Rect deviceRect = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
+    gfx::Rect device_rect = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
         params->content_device_transform, gfx::RectF(quad->rect)));
-    gfx::Rect outRect = MoveFromDrawToWindowSpace(
+    gfx::Rect out_rect = MoveFromDrawToWindowSpace(
         current_frame()->current_render_pass->output_rect);
-    outRect.Intersect(deviceRect);
-    gfx::Vector2dF offset = (deviceRect.top_right() - outRect.top_right()) +
-                            (deviceRect.bottom_left() - outRect.bottom_left());
+    out_rect.Intersect(device_rect);
+    gfx::Vector2dF offset =
+        (device_rect.top_right() - out_rect.top_right()) +
+        (device_rect.bottom_left() - out_rect.bottom_left());
 
     auto bg_paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(
-        *backdrop_filters, gfx::SizeF(outRect.size()), offset);
+        *backdrop_filters, gfx::SizeF(out_rect.size()), offset);
     auto sk_bg_filter =
         bg_paint_filter ? bg_paint_filter->cached_sk_filter_ : nullptr;
 
@@ -2505,6 +2503,9 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
 void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
                                       DrawQuadParams* params) {
   DrawRPDQParams rpdq_params = CalculateRPDQParams(quad, params);
+
+  // |filter_bounds| is the content space bounds that includes any filtered
+  // extents. If empty, the draw can be skipped.
   if (rpdq_params.filter_bounds.IsEmpty())
     return;
 
@@ -2530,25 +2531,24 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
 
   sk_sp<SkImage> content_image;
   switch (draw_mode_) {
-    case DrawMode::DDL: {
+    case DrawMode::DDL:
       content_image = skia_output_surface_->MakePromiseSkImageFromRenderPass(
           quad->render_pass_id, backing.size, backing.format,
           backing.generate_mipmap, backing.color_space.ToSkColorSpace());
+      DLOG_IF(ERROR, !content_image)
+          << "MakePromiseSkImageFromRenderPass() failed for render pass";
       break;
-    }
-    case DrawMode::SKPRECORD: {
+    case DrawMode::SKPRECORD:
       content_image = SkImage::MakeFromPicture(
           backing.picture,
           SkISize::Make(backing.size.width(), backing.size.height()), nullptr,
           nullptr, SkImage::BitDepth::kU8,
           backing.color_space.ToSkColorSpace());
-      return;
-    }
+      break;
   }
 
-  if (!content_image) {
+  if (!content_image)
     return;
-  }
 
   // If the RP generated mipmaps when it was created, set quality to medium,
   // which turns on mipmap filtering in Skia.
@@ -2721,6 +2721,140 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
                                         requirements.generate_mipmap,
                                         CurrentRenderPassColorSpace()));
 }
+
+#if defined(OS_APPLE)
+void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
+  DCHECK(!current_canvas_);
+  DCHECK_EQ(draw_mode_, DrawMode::DDL);
+  DCHECK(batched_quads_.empty());
+  DCHECK(overlay->rpdq);
+
+  auto* const quad = overlay->rpdq;
+  overlay->rpdq = nullptr;
+  gfx::Transform target_to_device =
+      current_frame()->window_matrix * current_frame()->projection_matrix;
+  const gfx::Rect* scissor = is_scissor_enabled_ ? &scissor_rect_ : nullptr;
+
+  DrawQuadParams params = CalculateDrawQuadParams(
+      target_to_device, scissor, quad, /*draw_region=*/nullptr);
+  DrawRPDQParams rpdq_params = CalculateRPDQParams(quad, &params);
+
+  // |filter_bounds| is the content space bounds that includes any filtered
+  // extents. If empty, the draw can be skipped.
+  if (rpdq_params.filter_bounds.IsEmpty())
+    return;
+
+  ResourceFormat buffer_format;
+  gfx::ColorSpace color_space;
+
+  RenderPassBacking* backing = nullptr;
+  auto bypass = render_pass_bypass_quads_.find(quad->render_pass_id);
+  BypassMode bypass_mode = BypassMode::kSkip;
+  // When Render Pass has a single quad inside we would draw that directly.
+  if (bypass != render_pass_bypass_quads_.end()) {
+    bypass_mode = CalculateBypassParams(bypass->second, &rpdq_params, &params);
+    if (bypass_mode == BypassMode::kSkip)
+      return;
+    // For bypassed render pass, we use the same format and color space for the
+    // framebuffer.
+    buffer_format = GetResourceFormat(reshape_buffer_format());
+    color_space = reshape_color_space();
+  } else {
+    // A real render pass that was turned into an image
+    auto it = render_pass_backings_.find(quad->render_pass_id);
+    DCHECK(render_pass_backings_.end() != it);
+    // This function is called after AllocateRenderPassResourceIfNeeded, so
+    // there should be backing ready.
+    backing = &it->second;
+    buffer_format = backing->format;
+    color_space = backing->color_space;
+  }
+
+  auto dst_filter_bounds = gfx::RectF(rpdq_params.filter_bounds);
+  params.content_device_transform.TransformRect(&dst_filter_bounds);
+
+  gfx::Size buffer_size = gfx::ToCeiledSize(dst_filter_bounds.size());
+  // Adjust the overlay |buffer_size| to reduce memory fragmentation. It also
+  // increases buffer reusing possibilities.
+  constexpr int kBufferMultiple = 64;
+  buffer_size.SetSize(
+      cc::MathUtil::CheckedRoundUp(buffer_size.width(), kBufferMultiple),
+      cc::MathUtil::CheckedRoundUp(buffer_size.height(), kBufferMultiple));
+
+  current_canvas_ = skia_output_surface_->BeginPaintRenderPassOverlay(
+      buffer_size, buffer_format, /*mipmap=*/false,
+      color_space.ToSkColorSpace());
+  if (!current_canvas_) {
+    DLOG(ERROR) << "BeginPaintRenderPassOverlay() failed.";
+    return;
+  }
+
+  current_canvas_->clear(overlay->background_color);
+
+  // Calculate visible_rect's origin in output device coordinates.
+  auto dst_visible_rect_origin = params.visible_rect.origin();
+  params.content_device_transform.TransformPoint(&dst_visible_rect_origin);
+
+  // Adjust the content_device_transform to make sure filter extends are drawn
+  // inside of the buffer.
+  params.content_device_transform.Translate(-dst_filter_bounds.x(),
+                                            -dst_filter_bounds.y());
+
+  // When Render Pass has a single quad inside we would draw that directly.
+  if (bypass != render_pass_bypass_quads_.end()) {
+    if (bypass_mode == BypassMode::kDrawTransparentQuad) {
+      DrawColoredQuad(SK_ColorTRANSPARENT, &rpdq_params, &params);
+    } else if (bypass_mode == BypassMode::kDrawBypassQuad) {
+      DrawQuadInternal(bypass->second, &rpdq_params, &params);
+    } else {
+      NOTREACHED();
+    }
+  } else {
+    DCHECK(backing);
+    auto content_image = skia_output_surface_->MakePromiseSkImageFromRenderPass(
+        quad->render_pass_id, backing->size, backing->format,
+        backing->generate_mipmap, backing->color_space.ToSkColorSpace());
+    if (!content_image) {
+      DLOG(ERROR)
+          << "MakePromiseSkImageFromRenderPass() failed for render pass";
+      skia_output_surface_->EndPaintRenderPassOverlay();
+      return;
+    }
+
+    // If the RP generated mipmaps when it was created, set quality to medium,
+    // which turns on mipmap filtering in Skia.
+    if (backing->generate_mipmap)
+      params.filter_quality = kMedium_SkFilterQuality;
+
+    params.vis_tex_coords = cc::MathUtil::ScaleRectProportional(
+        quad->tex_coord_rect, gfx::RectF(quad->rect), params.visible_rect);
+    gfx::RectF valid_texel_bounds(content_image->width(),
+                                  content_image->height());
+
+    SkPaint paint = params.paint(GetContentColorFilter());
+    DrawSingleImage(content_image.get(), valid_texel_bounds, &rpdq_params,
+                    &paint, &params);
+  }
+
+  current_canvas_ = nullptr;
+  auto ddl = skia_output_surface_->EndPaintRenderPassOverlay();
+  DCHECK(ddl);
+
+  // Put overlay related information in CALayerOverlay,
+  // so SkiaOutputSurfaceImplOnGpu can use the DDL to create overlay buffer and
+  // play the DDL back to it accordingly.
+  overlay->bounds_rect = gfx::RectF(gfx::SizeF(buffer_size));
+  overlay->ddl = std::move(ddl);
+
+  // Since the overlay may be in different size comparing to the render pass's
+  // visible rect due to filter effect extends and buffer size round up, so we
+  // have to adjust the overlay transform to put overlay at the right position.
+  overlay->transform = overlay->shared_state->transform;
+  overlay->transform->preTranslate(
+      -dst_visible_rect_origin.x() + dst_filter_bounds.x(),
+      -dst_visible_rect_origin.y() + dst_filter_bounds.y(), 0);
+}
+#endif
 
 SkiaRenderer::RenderPassBacking::RenderPassBacking(
     GrDirectContext* gr_context,

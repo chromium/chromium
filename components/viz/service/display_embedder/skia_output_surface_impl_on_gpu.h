@@ -168,7 +168,8 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
           image_contexts,
       uint64_t sync_fence_release);
-  void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays);
+  void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
+                        std::vector<ImageContextImpl*> image_contexts);
 
   void SetEnableDCLayers(bool enable);
   void SetGpuVSyncEnabled(bool enabled);

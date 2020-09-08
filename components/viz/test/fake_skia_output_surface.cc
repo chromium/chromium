@@ -316,6 +316,23 @@ void FakeSkiaOutputSurface::RemoveContextLostObserver(
   NOTIMPLEMENTED();
 }
 
+#if defined(OS_APPLE)
+SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPassOverlay(
+    const gfx::Size& size,
+    ResourceFormat format,
+    bool mipmap,
+    sk_sp<SkColorSpace> color_space) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+sk_sp<SkDeferredDisplayList>
+FakeSkiaOutputSurface::EndPaintRenderPassOverlay() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+#endif
+
 void FakeSkiaOutputSurface::SetOutOfOrderCallbacks(
     bool out_of_order_callbacks) {
   TestContextSupport* support =

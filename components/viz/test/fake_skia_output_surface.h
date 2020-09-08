@@ -19,6 +19,7 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 
 namespace viz {
 
@@ -99,6 +100,14 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                   std::unique_ptr<CopyOutputRequest> request) override;
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
+#if defined(OS_APPLE)
+  SkCanvas* BeginPaintRenderPassOverlay(
+      const gfx::Size& size,
+      ResourceFormat format,
+      bool mipmap,
+      sk_sp<SkColorSpace> color_space) override;
+  sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() override;
+#endif
 
   // ExternalUseClient implementation:
   gpu::SyncToken ReleaseImageContexts(

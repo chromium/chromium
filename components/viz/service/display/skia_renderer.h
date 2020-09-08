@@ -247,6 +247,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       float resource_multiplier = 1.0f);
   // Returns the color filter that should be applied to the current canvas.
   sk_sp<SkColorFilter> GetContentColorFilter();
+
+#if defined(OS_APPLE)
+  void PrepareRenderPassOverlay(CALayerOverlay* overlay);
+#endif
+
   // A map from RenderPass id to the texture used to draw the RenderPass from.
   struct RenderPassBacking {
     sk_sp<SkSurface> render_pass_surface;

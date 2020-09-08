@@ -319,6 +319,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     DCHECK(current_frame_valid_);
     return &current_frame_;
   }
+  gfx::BufferFormat reshape_buffer_format() const {
+    DCHECK(reshape_buffer_format_);
+    return reshape_buffer_format_.value();
+  }
+  gfx::ColorSpace reshape_color_space() const { return reshape_color_space_; }
 
   // Return a bool to inform the caller if the delegated ink renderer was
   // actually created or not. If the renderer doesn't support drawing delegated

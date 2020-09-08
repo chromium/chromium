@@ -28,6 +28,10 @@
 class SkCanvas;
 class SkImage;
 
+#if defined(OS_APPLE)
+class SkDeferredDisplayList;
+#endif
+
 namespace gfx {
 class ColorSpace;
 }  // namespace gfx
@@ -165,6 +169,15 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void ScheduleGpuTaskForTesting(
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) = 0;
+
+#if defined(OS_APPLE)
+  virtual SkCanvas* BeginPaintRenderPassOverlay(
+      const gfx::Size& size,
+      ResourceFormat format,
+      bool mipmap,
+      sk_sp<SkColorSpace> color_space) = 0;
+  virtual sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() = 0;
+#endif
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SkiaOutputSurface);
