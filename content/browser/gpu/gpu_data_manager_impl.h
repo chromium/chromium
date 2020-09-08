@@ -29,6 +29,8 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_mode.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/gpu/gpu.mojom.h"
 #include "ui/display/display_observer.h"
 
 class GURL;
@@ -143,8 +145,6 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // or a full URL to a page.
   void BlockDomainFrom3DAPIs(const GURL& url, gpu::DomainGuilt guilt);
   bool Are3DAPIsBlocked(const GURL& top_origin_url,
-                        int render_process_id,
-                        int render_frame_id,
                         ThreeDAPIType requester);
   void UnblockDomainFrom3DAPIs(const GURL& url);
 
@@ -175,6 +175,10 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // DisplayObserver overrides.
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
+
+  // Binds a new Mojo receiver to handle requests from a renderer.
+  static void BindReceiver(
+      mojo::PendingReceiver<blink::mojom::GpuDataManager> receiver);
 
  private:
   friend class GpuDataManagerImplPrivate;

@@ -107,8 +107,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void BlockDomainFrom3DAPIs(const GURL& url, gpu::DomainGuilt guilt);
   bool Are3DAPIsBlocked(const GURL& top_origin_url,
-                        int render_process_id,
-                        int render_frame_id,
                         ThreeDAPIType requester);
 
   void DisableDomainBlockingFor3DAPIsForTesting();
