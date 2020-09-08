@@ -42,8 +42,9 @@ mojom("mojo_interfaces") {
     "//ui/gfx/geometry/mojom",
   ]
 
+  enabled_features = []
   if (enable_print_preview) {
-    enabled_features = [ "enable_print_preview" ]
+    enabled_features += [ "enable_print_preview" ]
   }
   if (enable_tagged_pdf) {
     public_deps += [ "//ui/accessibility/mojom" ]
