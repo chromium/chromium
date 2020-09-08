@@ -11,10 +11,13 @@ source_set("internal") {
   sources = [
     "proto_conversions.cc",
     "proto_conversions.h",
+    "store.h",
     "tutorial_group.cc",
     "tutorial_group.h",
     "tutorial_service_impl.cc",
     "tutorial_service_impl.h",
+    "tutorial_store.cc",
+    "tutorial_store.h",
   ]
 
   public_deps = [ "//components/image_fetcher/core" ]
@@ -79,12 +82,17 @@ source_set("unit_tests") {
   sources = [
     "proto_conversions_unittest.cc",
     "tutorial_group_unittest.cc",
+    "tutorial_store_unittest.cc",
   ]
 
   deps = [
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/video_tutorials/proto",
+    "//chrome/browser/video_tutorials/test:test_lib",
+    "//components/leveldb_proto",
+    "//components/leveldb_proto:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
