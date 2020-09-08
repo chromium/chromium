@@ -29,6 +29,7 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
+#include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -176,6 +177,9 @@ class TransferUpdateDecorator : public TransferUpdateCallback {
 
   void OnTransferUpdate(const ShareTarget& share_target,
                         const TransferMetadata& transfer_metadata) override {
+    NS_LOG(VERBOSE) << __func__ << share_target.id << " status: "
+                    << TransferMetadata::StatusToString(
+                           transfer_metadata.status());
     if (got_final_status_) {
       // If we already got a final status, we can ignore any subsequent final
       // statuses caused by race conditions.

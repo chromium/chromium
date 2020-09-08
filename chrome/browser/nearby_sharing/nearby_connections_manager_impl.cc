@@ -47,6 +47,43 @@ bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
 
 }  // namespace
 
+// static
+std::string NearbyConnectionsManagerImpl::ConnectionsStatusToString(
+    ConnectionsStatus status) {
+  switch (status) {
+    case ConnectionsStatus::kSuccess:
+      return "kSuccess";
+    case ConnectionsStatus::kError:
+      return "kError";
+    case ConnectionsStatus::kOutOfOrderApiCall:
+      return "kOutOfOrderApiCall";
+    case ConnectionsStatus::kAlreadyHaveActiveStrategy:
+      return "kAlreadyHaveActiveStrategy";
+    case ConnectionsStatus::kAlreadyAdvertising:
+      return "kAlreadyAdvertising";
+    case ConnectionsStatus::kAlreadyDiscovering:
+      return "kAlreadyDiscovering";
+    case ConnectionsStatus::kEndpointIOError:
+      return "kEndpointIOError";
+    case ConnectionsStatus::kEndpointUnknown:
+      return "kEndpointUnknown";
+    case ConnectionsStatus::kConnectionRejected:
+      return "kConnectionRejected";
+    case ConnectionsStatus::kAlreadyConnectedToEndpoint:
+      return "kAlreadyConnectedToEndpoint";
+    case ConnectionsStatus::kNotConnectedToEndpoint:
+      return "kNotConnectedToEndpoint";
+    case ConnectionsStatus::kBluetoothError:
+      return "kBluetoothError";
+    case ConnectionsStatus::kBleError:
+      return "kBleError";
+    case ConnectionsStatus::kWifiLanError:
+      return "kWifiLanError";
+    case ConnectionsStatus::kPayloadUnknown:
+      return "kPayloadUnknown";
+  }
+}
+
 NearbyConnectionsManagerImpl::NearbyConnectionsManagerImpl(
     NearbyProcessManager* process_manager,
     Profile* profile)
@@ -74,6 +111,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   DCHECK(!incoming_connection_listener_);
 
   if (!BindNearbyConnections()) {
+    NS_LOG(ERROR) << __func__ << ": BindNearbyConnections() failed.";
     std::move(callback).Run(ConnectionsStatus::kError);
     return;
   }
@@ -98,13 +136,13 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
 
 void NearbyConnectionsManagerImpl::StopAdvertising() {
   if (nearby_connections_) {
-    nearby_connections_->StopAdvertising(base::BindOnce([](ConnectionsStatus
-                                                               status) {
-      NS_LOG(VERBOSE)
-          << __func__
-          << ": Stop advertising attempted over Nearby Connections with result "
-          << status;
-    }));
+    nearby_connections_->StopAdvertising(
+        base::BindOnce([](ConnectionsStatus status) {
+          NS_LOG(VERBOSE) << __func__
+                          << ": Stop advertising attempted over Nearby "
+                             "Connections with result: "
+                          << ConnectionsStatusToString(status);
+        }));
   }
 
   incoming_connection_listener_ = nullptr;
@@ -117,6 +155,7 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
   DCHECK(!discovery_listener_);
 
   if (!BindNearbyConnections()) {
+    NS_LOG(ERROR) << __func__ << ": BindNearbyConnections() failed.";
     std::move(callback).Run(ConnectionsStatus::kError);
     return;
   }
@@ -134,8 +173,8 @@ void NearbyConnectionsManagerImpl::StopDiscovery() {
         base::BindOnce([](ConnectionsStatus status) {
           NS_LOG(VERBOSE) << __func__
                           << ": Stop discovery attempted over Nearby "
-                             "Connections with result "
-                          << status;
+                             "Connections with result: "
+                          << ConnectionsStatusToString(status);
         }));
   }
 
@@ -201,7 +240,8 @@ void NearbyConnectionsManagerImpl::OnConnectionRequested(
     return;
 
   if (status != ConnectionsStatus::kSuccess) {
-    NS_LOG(ERROR) << "Failed to connect to the remote shareTarget: " << status;
+    NS_LOG(ERROR) << "Failed to connect to the remote shareTarget: "
+                  << ConnectionsStatusToString(status);
     Disconnect(endpoint_id);
     return;
   }
@@ -219,7 +259,8 @@ void NearbyConnectionsManagerImpl::Disconnect(const std::string& endpoint_id) {
           [](const std::string& endpoint_id, ConnectionsStatus status) {
             NS_LOG(VERBOSE)
                 << __func__ << ": Disconnecting from endpoint " << endpoint_id
-                << " attempted over Nearby Connections with result " << status;
+                << " attempted over Nearby Connections with result: "
+                << ConnectionsStatusToString(status);
           },
           endpoint_id));
 
@@ -242,7 +283,8 @@ void NearbyConnectionsManagerImpl::Send(const std::string& endpoint_id,
           [](const std::string& endpoint_id, ConnectionsStatus status) {
             NS_LOG(VERBOSE)
                 << __func__ << ": Sending payload to endpoint " << endpoint_id
-                << " attempted over Nearby Connections with result " << status;
+                << " attempted over Nearby Connections with result: "
+                << ConnectionsStatusToString(status);
           },
           endpoint_id));
 }
@@ -299,15 +341,15 @@ void NearbyConnectionsManagerImpl::Cancel(int64_t payload_id) {
     payload_status_listeners_.erase(it);
   }
   nearby_connections_->CancelPayload(
-      payload_id, base::BindOnce(
-                      [](int64_t payload_id, ConnectionsStatus status) {
-                        NS_LOG(VERBOSE)
-                            << __func__ << ": Cancelling payload to id "
-                            << payload_id
-                            << " attempted over Nearby Connections with result "
-                            << status;
-                      },
-                      payload_id));
+      payload_id,
+      base::BindOnce(
+          [](int64_t payload_id, ConnectionsStatus status) {
+            NS_LOG(VERBOSE)
+                << __func__ << ": Cancelling payload to id " << payload_id
+                << " attempted over Nearby Connections with result: "
+                << ConnectionsStatusToString(status);
+          },
+          payload_id));
   NS_LOG(INFO) << "Cancelling payload: " << payload_id;
 }
 
@@ -341,8 +383,8 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
           [](const std::string& endpoint_id, ConnectionsStatus status) {
             NS_LOG(VERBOSE)
                 << __func__ << ": Bandwidth upgrade attempted to endpoint "
-                << endpoint_id << "over Nearby Connections with result "
-                << status;
+                << endpoint_id << "over Nearby Connections with result: "
+                << ConnectionsStatusToString(status);
           },
           endpoint_id));
 }
@@ -426,8 +468,8 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
           [](const std::string& endpoint_id, ConnectionsStatus status) {
             NS_LOG(VERBOSE)
                 << __func__ << ": Accept connection attempted to endpoint "
-                << endpoint_id << "over Nearby Connections with result "
-                << status;
+                << endpoint_id << "over Nearby Connections with result: "
+                << ConnectionsStatusToString(status);
           },
           endpoint_id));
 }
@@ -571,8 +613,8 @@ void NearbyConnectionsManagerImpl::Reset() {
         base::BindOnce([](ConnectionsStatus status) {
           NS_LOG(VERBOSE) << __func__
                           << ": Stop all endpoints attempted over Nearby "
-                             "Connections with result "
-                          << status;
+                             "Connections with result: "
+                          << ConnectionsStatusToString(status);
         }));
   }
   nearby_connections_ = nullptr;

@@ -36,6 +36,8 @@ class TransferMetadata {
 
   static bool IsFinalStatus(Status status);
 
+  static std::string StatusToString(TransferMetadata::Status status);
+
   TransferMetadata(Status status,
                    float progress,
                    base::Optional<std::string> token,
