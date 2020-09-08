@@ -83,7 +83,8 @@ std::unique_ptr<base::File> GetOpenedPolicyFileForUser(
     return nullptr;
   }
 
-  base::File::Error lock_error = policy_file->Lock();
+  base::File::Error lock_error =
+      policy_file->Lock(base::File::LockMode::kExclusive);
   if (lock_error != base::File::FILE_OK) {
     LOGFN(ERROR) << "Failed to obtain exclusive lock on policy file! Error: "
                  << lock_error;
