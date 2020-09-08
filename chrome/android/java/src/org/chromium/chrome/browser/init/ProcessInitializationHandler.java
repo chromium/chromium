@@ -254,6 +254,7 @@ public class ProcessInitializationHandler {
                                     includeTel, includeAddresses, includeIcons, formattedOrigin);
                     dialog.getWindow().getAttributes().windowAnimations =
                             R.style.PickerDialogAnimation;
+                    dialog.show();
                     return dialog;
                 });
 
