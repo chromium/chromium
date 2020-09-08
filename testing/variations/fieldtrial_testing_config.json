@@ -5002,6 +5002,24 @@
             ]
         }
     ],
+    "PasswordCompromisedBubble": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CompromisedPasswordsReengagement"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaymentRequestAlwaysAllowJustInTimePaymentApp": [
         {
             "platforms": [
