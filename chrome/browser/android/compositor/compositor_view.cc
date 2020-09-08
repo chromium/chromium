@@ -243,12 +243,16 @@ void CompositorView::SetOverlayImmersiveArMode(
     JNIEnv* env,
     const JavaParamRef<jobject>& object,
     bool enabled) {
-  // This mode is a variant of overlay video mode, the Java code is responsible
-  // for calling SetOverlayVideoMode(enabled) first to ensure consistent state.
-  // Check to make sure this didn't get bypassed.
-  DCHECK_EQ(enabled, overlay_video_mode_) << "missing SetOverlayVideoMode call";
+  DVLOG(1) << __func__ << ": enabled=" << enabled;
 
   overlay_immersive_ar_mode_ = enabled;
+
+  // This method may be called after SetOverlayVideoMode (when switching between
+  // opaque and translucent surfaces), or just by itself (in SurfaceControl
+  // mode). All settings from SetOverlayVideoMode that the AR overlay depends on
+  // must be duplicated here. Currently, that's just SetRequiresAlphaChannel.
+  compositor_->SetRequiresAlphaChannel(enabled);
+
   // This mode needs a transparent background color.
   // ContentViewRenderView::SetOverlayVideoMode applies this, but the
   // CompositorView::SetOverlayVideoMode version in this file doesn't.
