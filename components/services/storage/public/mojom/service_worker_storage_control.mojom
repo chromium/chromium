@@ -144,25 +144,15 @@ interface ServiceWorkerStorageControl {
        array<ServiceWorkerRegistrationData> registrations);
 
   // Stores |registration_data| and |resources|.
-  // TODO(crbug.com/1055677): Stop returning |deleted_version_id| and
-  // |newly_purgeable_resources|. These are used to schedule resource purging
-  // in the browser process, but it should be done in the Storage Service.
   StoreRegistration(ServiceWorkerRegistrationData registration,
                     array<ServiceWorkerResourceRecord> resources) =>
-      (ServiceWorkerDatabaseStatus status,
-       int64 deleted_version_id,
-       array<int64> newly_purgeable_resources);
+      (ServiceWorkerDatabaseStatus status);
 
   // Deletes the registration specified by |registration_id|. |origin_state| is
   // kDelete if there is no registration for |origin| after deletion.
-  // TODO(crbug.com/1055677): Stop returning |deleted_version_id| and
-  // |newly_purgeable_resources|. These are used to schedule resource purging
-  // in the browser process, but it should be done in the Storage Service.
   DeleteRegistration(int64 registration_id, url.mojom.Url origin) =>
       (ServiceWorkerDatabaseStatus status,
-       ServiceWorkerStorageOriginState origin_state,
-       int64 deleted_version_id,
-       array<int64> newly_purgeable_resources);
+       ServiceWorkerStorageOriginState origin_state);
 
   // Updates the state of the registration's stored version to active.
   UpdateToActiveState(int64 registration_id, url.mojom.Url origin) =>

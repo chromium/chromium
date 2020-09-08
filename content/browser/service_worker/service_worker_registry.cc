@@ -1151,9 +1151,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
     uint64_t stored_resources_total_size_bytes,
     const GURL& stored_scope,
     StatusCallback callback,
-    storage::mojom::ServiceWorkerDatabaseStatus database_status,
-    int64_t deleted_version_id,
-    const std::vector<int64_t>& newly_purgeable_resources) {
+    storage::mojom::ServiceWorkerDatabaseStatus database_status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
@@ -1186,9 +1184,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     const GURL& origin,
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
-    ServiceWorkerStorage::OriginState origin_state,
-    int64_t deleted_version_id,
-    const std::vector<int64_t>& newly_purgeable_resources) {
+    ServiceWorkerStorage::OriginState origin_state) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);

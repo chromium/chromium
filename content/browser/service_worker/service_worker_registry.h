@@ -303,17 +303,13 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       uint64_t stored_resources_total_size_bytes,
       const GURL& stored_scope,
       StatusCallback callback,
-      storage::mojom::ServiceWorkerDatabaseStatus database_status,
-      int64_t deleted_version_id,
-      const std::vector<int64_t>& newly_purgeable_resources);
+      storage::mojom::ServiceWorkerDatabaseStatus database_status);
   void DidDeleteRegistration(
       int64_t registration_id,
       const GURL& origin,
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
-      ServiceWorkerStorage::OriginState origin_state,
-      int64_t deleted_version_id,
-      const std::vector<int64_t>& newly_purgeable_resources);
+      ServiceWorkerStorage::OriginState origin_state);
 
   void DidUpdateToActiveState(
       const GURL& origin,
