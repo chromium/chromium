@@ -151,10 +151,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
     RegisterOriginTrialsComponent(cus, path);
 
     RegisterFileTypePoliciesComponent(cus, path);
-
-
-    RegisterSSLErrorAssistantComponent(cus, path);
   }
+  RegisterSSLErrorAssistantComponent(cus);
 
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 

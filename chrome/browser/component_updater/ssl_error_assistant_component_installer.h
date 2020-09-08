@@ -48,8 +48,7 @@ class SSLErrorAssistantComponentInstallerPolicy
   DISALLOW_COPY_AND_ASSIGN(SSLErrorAssistantComponentInstallerPolicy);
 };
 
-void RegisterSSLErrorAssistantComponent(ComponentUpdateService* cus,
-                                        const base::FilePath& user_data_dir);
+void RegisterSSLErrorAssistantComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

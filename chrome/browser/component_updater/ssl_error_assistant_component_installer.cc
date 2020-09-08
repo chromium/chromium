@@ -139,8 +139,7 @@ SSLErrorAssistantComponentInstallerPolicy::GetMimeTypes() const {
   return std::vector<std::string>();
 }
 
-void RegisterSSLErrorAssistantComponent(ComponentUpdateService* cus,
-                                        const base::FilePath& user_data_dir) {
+void RegisterSSLErrorAssistantComponent(ComponentUpdateService* cus) {
   DVLOG(1) << "Registering SSL Error Assistant component.";
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
