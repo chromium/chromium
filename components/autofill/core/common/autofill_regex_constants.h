@@ -11,6 +11,8 @@ extern const char kAttentionIgnoredRe[];
 extern const char kRegionIgnoredRe[];
 extern const char kAddressNameIgnoredRe[];
 extern const char kCompanyRe[];
+extern const char kHouseNumberRe[];
+extern const char kStreetNameRe[];
 extern const char kAddressLine1Re[];
 extern const char kAddressLine1LabelRe[];
 extern const char kAddressLine2Re[];

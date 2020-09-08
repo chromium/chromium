@@ -53,6 +53,8 @@ class AddressField : public FormField {
   explicit AddressField(LogManager* log_manager);
 
   bool ParseCompany(AutofillScanner* scanner);
+  bool ParseAddress(AutofillScanner* scanner);
+  bool ParseAddressFieldSequence(AutofillScanner* scanner);
   bool ParseAddressLines(AutofillScanner* scanner);
   bool ParseCountry(AutofillScanner* scanner);
   bool ParseZipCode(AutofillScanner* scanner);
@@ -91,16 +93,18 @@ class AddressField : public FormField {
   ParseNameLabelResult ParseNameAndLabelForState(AutofillScanner* scanner);
 
   LogManager* log_manager_;
-  AutofillField* company_;
-  AutofillField* address1_;
-  AutofillField* address2_;
-  AutofillField* address3_;
-  AutofillField* street_address_;
-  AutofillField* city_;
-  AutofillField* state_;
-  AutofillField* zip_;
-  AutofillField* zip4_;  // optional ZIP+4; we don't fill this yet.
-  AutofillField* country_;
+  AutofillField* company_ = nullptr;
+  AutofillField* street_name_ = nullptr;
+  AutofillField* house_number_ = nullptr;
+  AutofillField* address1_ = nullptr;
+  AutofillField* address2_ = nullptr;
+  AutofillField* address3_ = nullptr;
+  AutofillField* street_address_ = nullptr;
+  AutofillField* city_ = nullptr;
+  AutofillField* state_ = nullptr;
+  AutofillField* zip_ = nullptr;
+  AutofillField* zip4_ = nullptr;  // optional ZIP+4; we don't fill this yet.
+  AutofillField* country_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AddressField);
 };

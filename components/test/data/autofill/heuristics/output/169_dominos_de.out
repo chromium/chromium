@@ -1,0 +1,4 @@
+ADDRESS_HOME_ZIP | Customer.Postcode | Postleitzahl |  | Customer.Postcode_1-default
+ADDRESS_HOME_STREET_NAME | Customer.Street | Straßenname |  | Customer.Postcode_1-default
+ADDRESS_HOME_HOUSE_NUMBER | Customer.StreetNo | Hausnummer |  | Customer.Postcode_1-default
+UNKNOWN_TYPE | Customer.RememberMyDetails | Filialauswahl merken | true | Customer.Postcode_1-default

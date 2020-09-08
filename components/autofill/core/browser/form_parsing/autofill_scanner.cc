@@ -59,6 +59,10 @@ size_t AutofillScanner::SaveCursor() {
   return static_cast<size_t>(cursor_ - begin_);
 }
 
+size_t AutofillScanner::CursorPosition() {
+  return static_cast<size_t>(cursor_ - begin_);
+}
+
 void AutofillScanner::Init(const std::vector<AutofillField*>& fields) {
   cursor_ = fields.begin();
   saved_cursor_ = fields.begin();

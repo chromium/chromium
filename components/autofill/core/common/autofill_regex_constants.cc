@@ -30,6 +30,11 @@ const char kCompanyRe[] =
     "|单位|公司"                 // zh-CN
     "|شرکت"                      // fa
     "|회사|직장";                // ko-KR
+const char kStreetNameRe[] =
+    "stra(ss|ß)e"    // de
+    "|street"        // en
+    "|rua|avenida";  // br
+const char kHouseNumberRe[] = "(house |^)number|(haus|^)nummer|^número$";
 const char kAddressLine1Re[] =
     "^address$|address[_-]?line(one)?|address1|addr1|street"
     "|(?:shipping|billing)address$"

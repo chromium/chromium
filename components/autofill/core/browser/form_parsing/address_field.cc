@@ -77,7 +77,7 @@ std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
                                    MATCH_DEFAULT | MATCH_TEXT_AREA, nullptr,
                                    {log_manager, "kEmailRe"})) {
       continue;
-    } else if (address_field->ParseAddressLines(scanner) ||
+    } else if (address_field->ParseAddress(scanner) ||
                (!is_enabled_merged_city_state_country_zip &&
                 (address_field->ParseCityStateZipCode(scanner) ||
                  address_field->ParseCountry(scanner))) ||
@@ -133,17 +133,7 @@ std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
 }
 
 AddressField::AddressField(LogManager* log_manager)
-    : log_manager_(log_manager),
-      company_(nullptr),
-      address1_(nullptr),
-      address2_(nullptr),
-      address3_(nullptr),
-      street_address_(nullptr),
-      city_(nullptr),
-      state_(nullptr),
-      zip_(nullptr),
-      zip4_(nullptr),
-      country_(nullptr) {}
+    : log_manager_(log_manager) {}
 
 void AddressField::AddClassifications(
     FieldCandidatesMap* field_candidates) const {
@@ -172,6 +162,10 @@ void AddressField::AddClassifications(
                     field_candidates);
   AddClassification(country_, ADDRESS_HOME_COUNTRY, kBaseAddressParserScore,
                     field_candidates);
+  AddClassification(house_number_, ADDRESS_HOME_HOUSE_NUMBER,
+                    kBaseAddressParserScore, field_candidates);
+  AddClassification(street_name_, ADDRESS_HOME_STREET_NAME,
+                    kBaseAddressParserScore, field_candidates);
 }
 
 bool AddressField::ParseCompany(AutofillScanner* scanner) {
@@ -180,6 +174,53 @@ bool AddressField::ParseCompany(AutofillScanner* scanner) {
 
   return ParseField(scanner, UTF8ToUTF16(kCompanyRe), &company_,
                     {log_manager_, "kCompanyRe"});
+}
+
+bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner) {
+  // Search for a sequence of a street name field followed by a house number
+  // field. Only if both are found in an abitrary order, the parsing is
+  // considered successful.
+
+  // TODO(crbug.com/1125978): Remove once launched.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHouseNumbers)) {
+    return false;
+  }
+
+  const size_t cursor_position = scanner->CursorPosition();
+
+  while (!scanner->IsEnd()) {
+    if (!street_name_ &&
+        ParseFieldSpecifics(scanner, UTF8ToUTF16(kStreetNameRe), MATCH_DEFAULT,
+                            &street_name_, {log_manager_, "kStreetNameRe"})) {
+      continue;
+    }
+    if (!house_number_ &&
+        ParseFieldSpecifics(scanner, UTF8ToUTF16(kHouseNumberRe), MATCH_DEFAULT,
+                            &house_number_, {log_manager_, "kHouseNumberRe"})) {
+      continue;
+    }
+
+    break;
+  }
+
+  if (street_name_ && house_number_)
+    return true;
+
+  // Reset both fields in case one of them was found.
+  if (street_name_ || house_number_) {
+    street_name_ = nullptr;
+    house_number_ = nullptr;
+  }
+  scanner->RewindTo(cursor_position);
+  return false;
+}
+
+bool AddressField::ParseAddress(AutofillScanner* scanner) {
+  if (street_name_ && house_number_) {
+    return false;
+  }
+  return ParseAddressFieldSequence(scanner) || ParseAddressLines(scanner);
 }
 
 bool AddressField::ParseAddressLines(AutofillScanner* scanner) {

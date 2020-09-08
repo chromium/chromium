@@ -36,6 +36,7 @@ extern const base::Feature kAutofillEnableCompanyName;
 extern const base::Feature kAutofillEnableHideSuggestionsUI;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInNames;
 extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;
+extern const base::Feature kAutofillEnableSupportForHouseNumbers;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForHeuristics;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForQuery;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForUpload;

@@ -45,6 +45,9 @@ class AutofillScanner {
   // |RewindTo()|.
   size_t SaveCursor();
 
+  // Returns the current cursor position.
+  size_t CursorPosition();
+
  private:
   void Init(const std::vector<AutofillField*>& fields);
 
