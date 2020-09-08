@@ -609,6 +609,9 @@ class BottomSheet extends FrameLayout
         mSettleAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
+                // Cancelled animation on M seem to continue updating, block them.
+                if (animator != mSettleAnimator) return;
+
                 setSheetOffsetFromBottom((Float) animator.getAnimatedValue(), reason);
             }
         });

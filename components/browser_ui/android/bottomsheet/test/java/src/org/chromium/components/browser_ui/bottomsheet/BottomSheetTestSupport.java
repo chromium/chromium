@@ -41,7 +41,7 @@ public class BottomSheetTestSupport {
 
     /** End all animations on the sheet for testing purposes. */
     public void endAllAnimations() {
-        mController.endAnimationsForTesting();
+        if (getBottomSheet() != null) mController.endAnimationsForTesting();
     }
 
     /** @see {@link BottomSheet#setSheetOffsetFromBottom(float, int)} */
@@ -97,6 +97,11 @@ public class BottomSheetTestSupport {
     @SheetState
     public int forceScrolling(float sheetHeight, float yVelocity) {
         return getBottomSheet().forceScrollingStateForTesting(sheetHeight, yVelocity);
+    }
+
+    /** Dismiss all content currently queued in the controller including custom lifecycles. */
+    public void forceDismissAllContent() {
+        mController.forceDismissAllContent();
     }
 
     /** @return The bottom sheet view. */

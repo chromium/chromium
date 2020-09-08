@@ -22,11 +22,13 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  *
  * State is stored statically, and so the Activity may be reused across multiple test suites within
  * the same {@link Batch}.
+ *
+ * @param <T> The type of {@link ChromeActivity}.
  */
-public class BlankCTATabInitialStateRule implements TestRule {
+public class BlankCTATabInitialStateRule<T extends ChromeActivity> implements TestRule {
     private static ChromeActivity sActivity;
 
-    private final ChromeActivityTestRule<ChromeActivity> mActivityTestRule;
+    private final ChromeActivityTestRule<T> mActivityTestRule;
     private final boolean mClearAllTabState;
 
     /**
@@ -35,7 +37,7 @@ public class BlankCTATabInitialStateRule implements TestRule {
      *     renderer process between each test.
      */
     public BlankCTATabInitialStateRule(
-            ChromeActivityTestRule<ChromeActivity> activityTestRule, boolean clearAllTabState) {
+            ChromeActivityTestRule<T> activityTestRule, boolean clearAllTabState) {
         super();
         mActivityTestRule = activityTestRule;
         mClearAllTabState = clearAllTabState;
@@ -52,7 +54,7 @@ public class BlankCTATabInitialStateRule implements TestRule {
                     mActivityTestRule.startMainActivityOnBlankPage();
                     sActivity = mActivityTestRule.getActivity();
                 } else {
-                    mActivityTestRule.setActivity(sActivity);
+                    mActivityTestRule.setActivity((T) sActivity);
                     if (mClearAllTabState) {
                         resetTabStateThorough();
                     } else {
