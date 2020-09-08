@@ -534,6 +534,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/password_manager/login_db_v25.sql",
     "//components/test/data/password_manager/login_db_v26.sql",
     "//components/test/data/password_manager/login_db_v27.sql",
+    "//components/test/data/password_manager/login_db_v28.sql",
     "//components/test/data/password_manager/login_db_v2_broken.sql",
     "//components/test/data/password_manager/login_db_v3.sql",
     "//components/test/data/password_manager/login_db_v3_broken.sql",

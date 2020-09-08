@@ -58,10 +58,10 @@ using autofill::PasswordForm;
 namespace password_manager {
 
 // The current version number of the login database schema.
-const int kCurrentVersionNumber = 27;
+const int kCurrentVersionNumber = 28;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
-const int kCompatibleVersionNumber = 19;
+const int kCompatibleVersionNumber = 28;
 
 base::Pickle SerializeValueElementPairs(
     const autofill::ValueElementVector& vec) {
@@ -150,9 +150,6 @@ enum LoginDatabaseTableColumns {
   COLUMN_PASSWORD_VALUE,
   COLUMN_SUBMIT_ELEMENT,
   COLUMN_SIGNON_REALM,
-  // TODO(crbug.com/999949): The "preferred" column isn't used anymore and
-  // should be dropped from the schema in M84.
-  COLUMN_PREFERRED,
   COLUMN_DATE_CREATED,
   COLUMN_BLACKLISTED_BY_USER,
   COLUMN_SCHEME,
@@ -208,8 +205,6 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
               static_cast<int>(form.encrypted_password.length()));
   s->BindString16(COLUMN_SUBMIT_ELEMENT, form.submit_element);
   s->BindString(COLUMN_SIGNON_REALM, form.signon_realm);
-  // The "preferred" column has been deprecated in M81.
-  s->BindInt(COLUMN_PREFERRED, 0);
   s->BindInt64(COLUMN_DATE_CREATED, form.date_created.ToInternalValue());
   s->BindInt(COLUMN_BLACKLISTED_BY_USER, form.blocked_by_user);
   s->BindInt(COLUMN_SCHEME, static_cast<int>(form.scheme));
@@ -438,6 +433,10 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->AddColumn("moving_blocked_for", "BLOB");
   SealVersion(builders, /*expected_version=*/27u);
 
+  // Version 28.
+  builders.logins->DropColumn("preferred");
+  SealVersion(builders, /*expected_version=*/28u);
+
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -529,26 +528,6 @@ bool MigrateLogins(unsigned current_version,
   // drop all data because Sync would populate the tables properly at startup.
   if (current_version >= 21 && current_version < 26) {
     if (!ClearAllSyncMetadata(db))
-      return false;
-  }
-
-  // "date_last_used" column has been introduced and we should migrate the data
-  // in "preferred" column. We set the value of "date_last_used"
-  // deterministically such the final output will be consistent across syncing
-  // clients.
-  // TODO(crbug.com/997670): Drop the "preferred" column together with this
-  // migration code in M82.
-  if (current_version < 25) {
-    sql::Statement preferred_stmt;
-    preferred_stmt.Assign(db->GetCachedStatement(
-        SQL_FROM_HERE,
-        "UPDATE logins SET date_last_used = ? WHERE preferred > 0"));
-    // Set the preferred password to be last used one day after the Windows
-    // Epoch to make sure the "preferred" password is used more recently.
-    // Non-preferred passwords carry the default value of 0 (which maps to the
-    // Windows Epoch).
-    preferred_stmt.BindInt64(0, base::TimeDelta::FromDays(1).InMicroseconds());
-    if (!preferred_stmt.Run())
       return false;
   }
 
@@ -1084,7 +1063,6 @@ void LoginDatabase::ReportDuplicateCredentialsMetrics() {
 void LoginDatabase::ReportMetrics(const std::string& sync_username,
                                   bool custom_passphrase_sync_enabled,
                                   BulkCheckDone bulk_check_done) {
-
   TRACE_EVENT0("passwords", "LoginDatabase::ReportMetrics");
 
   ReportNumberOfAccountsMetrics(custom_passphrase_sync_enabled);
@@ -1207,8 +1185,6 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   s.BindBlob(next_param++, encrypted_password.data(),
              static_cast<int>(encrypted_password.length()));
   s.BindString16(next_param++, form.submit_element);
-  // This is the "preferred" column which has been deprecated in M81.
-  s.BindInt(next_param++, 0);
   s.BindInt64(next_param++, form.date_created.ToInternalValue());
   s.BindInt(next_param++, form.blocked_by_user);
   s.BindInt(next_param++, static_cast<int>(form.scheme));
