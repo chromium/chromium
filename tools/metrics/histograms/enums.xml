@@ -2097,6 +2097,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AndroidWebViewSslErrorType">
+  <obsolete>
+    Removed 09/2020. These are no longer being tracked.
+  </obsolete>
   <int value="0" label="SSL_NOTYETVALID">The certificate is not yet valid.</int>
   <int value="1" label="SSL_EXPIRED">The certificate has expired.</int>
   <int value="2" label="SSL_IDMISMATCH">Hostname mismatch.</int>

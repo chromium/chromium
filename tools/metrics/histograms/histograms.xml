@@ -5692,6 +5692,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.onReceivedSslError.ErrorCode"
     enum="AndroidWebViewSslErrorType" expires_after="2020-05-08">
+  <obsolete>
+    Removed 09/2020. These are no longer being tracked.
+  </obsolete>
   <owner>laisminchillo@chromium.org</owner>
   <owner>timvolodine@chromium.org</owner>
   <summary>
