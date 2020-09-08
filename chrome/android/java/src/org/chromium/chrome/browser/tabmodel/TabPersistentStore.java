@@ -64,6 +64,7 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -1337,11 +1338,13 @@ public class TabPersistentStore extends TabPersister {
         // TabState and CriticalPersistedTabData are acquired asynchronously and Tab
         // restoration continues when both have been returned
         private int mRemaining = isCriticalPersistedTabDataEnabled() ? 2 : 1;
+        private long mStartTime;
 
         public LoadTabTask(TabRestoreDetails tabToRestore) {
             mTabToRestore = tabToRestore;
             TraceEvent.startAsync("LoadTabTask", mTabToRestore.id);
             TraceEvent.startAsync("LoadTabState", mTabToRestore.id);
+            mStartTime = SystemClock.elapsedRealtime();
             // TODO(crbug.com/1119455) decouple CriticalPersistedTabData from
             // LoadTabTask
             if (isCriticalPersistedTabDataEnabled()) {
@@ -1350,6 +1353,11 @@ public class TabPersistentStore extends TabPersister {
                         tabToRestore.id, tabToRestore.isIncognito, (res) -> {
                             TraceEvent.finishAsync(
                                     "LoadCriticalPersistedTabData", mTabToRestore.id);
+                            RecordHistogram.recordTimesHistogram(
+                                    String.format(Locale.US,
+                                            "Tabs.SavedTabLoadTime.CriticalPersistedTabData.%s",
+                                            res == null ? "Null" : "Exists"),
+                                    SystemClock.elapsedRealtime() - mStartTime);
                             mSerializedCriticalPersistedTabData = res;
                             mRemaining--;
                             if (mRemaining == 0) {
@@ -1373,6 +1381,10 @@ public class TabPersistentStore extends TabPersister {
         @Override
         protected void onPostExecute(TabState tabState) {
             TraceEvent.finishAsync("LoadTabState", mTabToRestore.id);
+            RecordHistogram.recordTimesHistogram(
+                    String.format(Locale.US, "Tabs.SavedTabLoadTime.TabState.%s",
+                            tabState == null ? "Null" : "Exists"),
+                    SystemClock.elapsedRealtime() - mStartTime);
             mTabState = tabState;
             mRemaining--;
             if (mRemaining == 0) {

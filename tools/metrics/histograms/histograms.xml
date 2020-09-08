@@ -181367,6 +181367,26 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="Tabs.SavedTabLoadTime.{SavedTabMethod}.{SavedTabLoadResult}"
+    units="ms" expires_after="2021-08-26">
+  <owner>davidjm@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    Records load time of a Tab using {SavedTabMethod} storage and whether the
+    {SavedTabLoadResult}
+  </summary>
+  <token key="SavedTabMethod">
+    <variant name="CriticalPersistedTabData" label="CriticalPersistedTabData"/>
+    <variant name="TabState" label="TabState"/>
+  </token>
+  <token key="SavedTabLoadResult">
+    <variant name="Exists" label="Exists"/>
+    <variant name="Null" label="Null"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.ScrubbedInInterval.KeyPress" units="tabs"
     expires_after="2020-10-01">
   <owner>corising@chromium.org</owner>
