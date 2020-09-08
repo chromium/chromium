@@ -29,10 +29,8 @@ class NET_EXPORT URLRequestJobFactoryImpl : public URLRequestJobFactory {
                           std::unique_ptr<ProtocolHandler> protocol_handler);
 
   // URLRequestJobFactory implementation
-  URLRequestJob* MaybeCreateJobWithProtocolHandler(
-      const std::string& scheme,
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override;
+  URLRequestJob* CreateJob(URLRequest* request,
+                           NetworkDelegate* network_delegate) const override;
 
   bool IsHandledProtocol(const std::string& scheme) const override;
   bool IsSafeRedirectTarget(const GURL& location) const override;

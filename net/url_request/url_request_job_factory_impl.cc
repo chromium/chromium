@@ -5,10 +5,14 @@
 #include "net/url_request/url_request_job_factory_impl.h"
 
 #include "base/stl_util.h"
-#include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
+#include "net/net_buildflags.h"
+#include "net/url_request/url_request.h"
+#include "net/url_request/url_request_error_job.h"
+#include "net/url_request/url_request_http_job.h"
 #include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job_manager.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -16,9 +20,35 @@ namespace {
 
 URLRequestInterceptor* g_interceptor_for_testing = nullptr;
 
+// TODO(mmenke): Once FTP support is removed, look into removing this class, and
+// URLRequestJobFactory::ProtocolHandlers completely. The only other subclass is
+// iOS-only.
+class HttpProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
+ public:
+  HttpProtocolHandler() = default;
+  HttpProtocolHandler(const HttpProtocolHandler&) = delete;
+  HttpProtocolHandler& operator=(const HttpProtocolHandler&) = delete;
+  ~HttpProtocolHandler() override = default;
+
+  URLRequestJob* MaybeCreateJob(
+      URLRequest* request,
+      NetworkDelegate* network_delegate) const override {
+    return URLRequestHttpJob::Factory(request, network_delegate,
+                                      request->url().scheme());
+  }
+};
+
 }  // namespace
 
-URLRequestJobFactoryImpl::URLRequestJobFactoryImpl() = default;
+URLRequestJobFactoryImpl::URLRequestJobFactoryImpl() {
+  SetProtocolHandler(url::kHttpScheme, std::make_unique<HttpProtocolHandler>());
+  SetProtocolHandler(url::kHttpsScheme,
+                     std::make_unique<HttpProtocolHandler>());
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+  SetProtocolHandler(url::kWsScheme, std::make_unique<HttpProtocolHandler>());
+  SetProtocolHandler(url::kWssScheme, std::make_unique<HttpProtocolHandler>());
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+}
 
 URLRequestJobFactoryImpl::~URLRequestJobFactoryImpl() = default;
 
@@ -42,11 +72,15 @@ bool URLRequestJobFactoryImpl::SetProtocolHandler(
   return true;
 }
 
-URLRequestJob* URLRequestJobFactoryImpl::MaybeCreateJobWithProtocolHandler(
-    const std::string& scheme,
+URLRequestJob* URLRequestJobFactoryImpl::CreateJob(
     URLRequest* request,
     NetworkDelegate* network_delegate) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // If we are given an invalid URL, then don't even try to inspect the scheme.
+  if (!request->url().is_valid())
+    return new URLRequestErrorJob(request, network_delegate, ERR_INVALID_URL);
+
   if (g_interceptor_for_testing) {
     URLRequestJob* job = g_interceptor_for_testing->MaybeInterceptRequest(
         request, network_delegate);
@@ -54,17 +88,19 @@ URLRequestJob* URLRequestJobFactoryImpl::MaybeCreateJobWithProtocolHandler(
       return job;
   }
 
-  auto it = protocol_handler_map_.find(scheme);
-  if (it == protocol_handler_map_.end())
-    return nullptr;
+  auto it = protocol_handler_map_.find(request->url().scheme());
+  if (it == protocol_handler_map_.end()) {
+    return new URLRequestErrorJob(request, network_delegate,
+                                  ERR_UNKNOWN_URL_SCHEME);
+  }
+
   return it->second->MaybeCreateJob(request, network_delegate);
 }
 
 bool URLRequestJobFactoryImpl::IsHandledProtocol(
     const std::string& scheme) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::Contains(protocol_handler_map_, scheme) ||
-         URLRequestJobManager::GetInstance()->SupportsScheme(scheme);
+  return base::Contains(protocol_handler_map_, scheme);
 }
 
 bool URLRequestJobFactoryImpl::IsSafeRedirectTarget(

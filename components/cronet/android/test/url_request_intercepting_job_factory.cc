@@ -18,9 +18,7 @@ URLRequestInterceptingJobFactory::URLRequestInterceptingJobFactory(
 
 URLRequestInterceptingJobFactory::~URLRequestInterceptingJobFactory() = default;
 
-net::URLRequestJob*
-URLRequestInterceptingJobFactory::MaybeCreateJobWithProtocolHandler(
-    const std::string& scheme,
+net::URLRequestJob* URLRequestInterceptingJobFactory::CreateJob(
     net::URLRequest* request,
     net::NetworkDelegate* network_delegate) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -28,8 +26,7 @@ URLRequestInterceptingJobFactory::MaybeCreateJobWithProtocolHandler(
       interceptor_->MaybeInterceptRequest(request, network_delegate);
   if (job)
     return job;
-  return job_factory_->MaybeCreateJobWithProtocolHandler(scheme, request,
-                                                         network_delegate);
+  return job_factory_->CreateJob(request, network_delegate);
 }
 
 bool URLRequestInterceptingJobFactory::IsHandledProtocol(

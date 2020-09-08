@@ -45,7 +45,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_job_factory.h"
+#include "net/url_request/url_request_interceptor.h"
 #include "url/url_util.h"
 
 namespace net {
@@ -409,19 +409,25 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
 
 //-----------------------------------------------------------------------------
 
-// A simple ProtocolHandler that returns a pre-built URLRequestJob only once.
-class TestJobInterceptor : public URLRequestJobFactory::ProtocolHandler {
+class TestScopedURLInterceptor {
  public:
-  TestJobInterceptor();
-  ~TestJobInterceptor() override;
-
-  URLRequestJob* MaybeCreateJob(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override;
-  void set_main_intercept_job(std::unique_ptr<URLRequestJob> job);
+  // Sets up a URLRequestInterceptor that intercepts a single request for |url|,
+  // returning the provided job.
+  //
+  // On destruction, cleans makes sure the job was removed, and cleans up the
+  // interceptor. Other interceptors for the same URL may not be created until
+  // the interceptor is deleted.
+  TestScopedURLInterceptor(const GURL& url,
+                           std::unique_ptr<URLRequestJob> intercept_job);
+  ~TestScopedURLInterceptor();
 
  private:
-  mutable std::unique_ptr<URLRequestJob> main_intercept_job_;
+  class TestRequestInterceptor;
+
+  GURL url_;
+
+  // This is owned by the URLFilter.
+  TestRequestInterceptor* interceptor_ = nullptr;
 };
 
 }  // namespace net

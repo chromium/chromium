@@ -61,7 +61,8 @@ class DummyProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
 };
 
 TEST(URLRequestJobFactoryTest, NoProtocolHandler) {
-  base::test::TaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
   TestDelegate delegate;
   TestURLRequestContext request_context;
   std::unique_ptr<URLRequest> request(
@@ -92,7 +93,8 @@ TEST(URLRequestJobFactoryTest, BasicProtocolHandler) {
 }
 
 TEST(URLRequestJobFactoryTest, DeleteProtocolHandler) {
-  base::test::TaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
   URLRequestJobFactoryImpl job_factory;
   TestURLRequestContext request_context;
   request_context.set_job_factory(&job_factory);

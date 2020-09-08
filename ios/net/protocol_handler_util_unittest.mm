@@ -17,9 +17,9 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_filter.h"
+#include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_job_factory.h"
-#include "net/url_request/url_request_job_factory_impl.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -65,7 +65,7 @@ class HeadersURLRequestJob : public URLRequestJob {
     header_string.push_back('\0');
     header_string += std::string("Cache-Control: max-age=600");
     header_string.push_back('\0');
-    if (request()->url().DomainIs("multiplecontenttype")) {
+    if (request()->url().path_piece() == "/multiplecontenttype") {
       header_string += std::string(
           "coNteNt-tYPe: text/plain; charset=iso-8859-4, image/png");
       header_string.push_back('\0');
@@ -91,15 +91,15 @@ class HeadersURLRequestJob : public URLRequestJob {
   ~HeadersURLRequestJob() override {}
 
   std::string GetContentTypeValue() const {
-    if (request()->url().DomainIs("badcontenttype"))
+    if (request()->url().path_piece() == "/badcontenttype")
       return "\xff";
     return kTextHtml;
   }
 };
 
-class NetProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
+class NetURLRequestInterceptor : public URLRequestInterceptor {
  public:
-  URLRequestJob* MaybeCreateJob(
+  URLRequestJob* MaybeInterceptRequest(
       URLRequest* request,
       NetworkDelegate* network_delegate) const override {
     return new HeadersURLRequestJob(request);
@@ -109,11 +109,15 @@ class NetProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
 class ProtocolHandlerUtilTest : public PlatformTest,
                                 public URLRequest::Delegate {
  public:
-  ProtocolHandlerUtilTest() : request_context_(new TestURLRequestContext) {
-    // Ownership of the protocol handlers is transferred to the factory.
-    job_factory_.SetProtocolHandler("http",
-                                    base::WrapUnique(new NetProtocolHandler));
-    request_context_->set_job_factory(&job_factory_);
+  ProtocolHandlerUtilTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        request_context_(std::make_unique<TestURLRequestContext>()) {
+    URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+        "http", "foo.test", std::make_unique<NetURLRequestInterceptor>());
+  }
+
+  ~ProtocolHandlerUtilTest() override {
+    URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
   void OnResponseStarted(URLRequest* request, int net_error) override {}
@@ -121,7 +125,6 @@ class ProtocolHandlerUtilTest : public PlatformTest,
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  URLRequestJobFactoryImpl job_factory_;
   std::unique_ptr<URLRequestContext> request_context_;
 };
 
@@ -129,7 +132,7 @@ class ProtocolHandlerUtilTest : public PlatformTest,
 
 TEST_F(ProtocolHandlerUtilTest, GetResponseHttpTest) {
   // Create a request.
-  GURL url(std::string("http://url"));
+  GURL url("http://foo.test/");
   std::unique_ptr<URLRequest> request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, this));
   request->Start();
@@ -154,9 +157,9 @@ TEST_F(ProtocolHandlerUtilTest, GetResponseHttpTest) {
 }
 
 TEST_F(ProtocolHandlerUtilTest, BadHttpContentType) {
-  // Create a request using the magic domain that triggers a garbage
+  // Create a request using the magic path that triggers a garbage
   // content-type in the test framework.
-  GURL url(std::string("http://badcontenttype"));
+  GURL url("http://foo.test/badcontenttype");
   std::unique_ptr<URLRequest> request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, this));
   request->Start();
@@ -170,9 +173,9 @@ TEST_F(ProtocolHandlerUtilTest, BadHttpContentType) {
 }
 
 TEST_F(ProtocolHandlerUtilTest, MultipleHttpContentType) {
-  // Create a request using the magic domain that triggers a garbage
+  // Create a request using the magic path that triggers a garbage
   // content-type in the test framework.
-  GURL url(std::string("http://multiplecontenttype"));
+  GURL url("http://foo.test/multiplecontenttype");
   std::unique_ptr<URLRequest> request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, this));
   request->Start();
@@ -187,7 +190,7 @@ TEST_F(ProtocolHandlerUtilTest, MultipleHttpContentType) {
 }
 
 TEST_F(ProtocolHandlerUtilTest, CopyHttpHeaders) {
-  GURL url(std::string("http://url"));
+  GURL url("http://foo.test/");
   NSMutableURLRequest* in_request =
       [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
   [in_request setAllHTTPHeaderFields:@{
@@ -211,7 +214,7 @@ TEST_F(ProtocolHandlerUtilTest, CopyHttpHeaders) {
 }
 
 TEST_F(ProtocolHandlerUtilTest, AddMissingHeaders) {
-  GURL url(std::string("http://url"));
+  GURL url("http://foo.test/");
   NSMutableURLRequest* in_request =
       [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
   std::unique_ptr<URLRequest> out_request(

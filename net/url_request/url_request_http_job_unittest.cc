@@ -129,19 +129,12 @@ class TestURLRequestHttpJob : public URLRequestHttpJob {
 class URLRequestHttpJobSetUpSourceTest : public TestWithTaskEnvironment {
  public:
   URLRequestHttpJobSetUpSourceTest() : context_(true) {
-    test_job_interceptor_ = new TestJobInterceptor();
-    EXPECT_TRUE(test_job_factory_.SetProtocolHandler(
-        url::kHttpScheme, base::WrapUnique(test_job_interceptor_)));
-    context_.set_job_factory(&test_job_factory_);
     context_.set_client_socket_factory(&socket_factory_);
     context_.Init();
   }
 
  protected:
   MockClientSocketFactory socket_factory_;
-  // |test_job_interceptor_| is owned by |test_job_factory_|.
-  TestJobInterceptor* test_job_interceptor_;
-  URLRequestJobFactoryImpl test_job_factory_;
 
   TestURLRequestContext context_;
   TestDelegate delegate_;
@@ -162,7 +155,7 @@ TEST_F(URLRequestHttpJobSetUpSourceTest, SetUpSourceFails) {
                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
   auto job = std::make_unique<TestURLRequestHttpJob>(request.get());
   job->set_use_null_source_stream(true);
-  test_job_interceptor_->set_main_intercept_job(std::move(job));
+  TestScopedURLInterceptor interceptor(request->url(), std::move(job));
   request->Start();
 
   delegate_.RunUntilComplete();
@@ -185,7 +178,7 @@ TEST_F(URLRequestHttpJobSetUpSourceTest, UnknownEncoding) {
       context_.CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
   auto job = std::make_unique<TestURLRequestHttpJob>(request.get());
-  test_job_interceptor_->set_main_intercept_job(std::move(job));
+  TestScopedURLInterceptor interceptor(request->url(), std::move(job));
   request->Start();
 
   delegate_.RunUntilComplete();
@@ -345,12 +338,6 @@ class URLRequestHttpJobTest : public TestWithTaskEnvironment {
  protected:
   URLRequestHttpJobTest() : context_(true) {
     context_.set_http_transaction_factory(&network_layer_);
-
-    // The |test_job_factory_| takes ownership of the interceptor.
-    test_job_interceptor_ = new TestJobInterceptor();
-    EXPECT_TRUE(test_job_factory_.SetProtocolHandler(
-        url::kHttpScheme, base::WrapUnique(test_job_interceptor_)));
-    context_.set_job_factory(&test_job_factory_);
     context_.set_net_log(&net_log_);
     context_.Init();
 
@@ -360,10 +347,6 @@ class URLRequestHttpJobTest : public TestWithTaskEnvironment {
   }
 
   MockNetworkLayer network_layer_;
-
-  // |test_job_interceptor_| is owned by |test_job_factory_|.
-  TestJobInterceptor* test_job_interceptor_;
-  URLRequestJobFactoryImpl test_job_factory_;
 
   TestURLRequestContext context_;
   TestDelegate delegate_;
@@ -1359,8 +1342,8 @@ TEST_F(URLRequestHttpJobTest, SetPriorityBasic) {
 // Make sure that URLRequestHttpJob passes on its priority to its
 // transaction on start.
 TEST_F(URLRequestHttpJobTest, SetTransactionPriorityOnStart) {
-  test_job_interceptor_->set_main_intercept_job(
-      std::make_unique<TestURLRequestHttpJob>(req_.get()));
+  TestScopedURLInterceptor interceptor(
+      req_->url(), std::make_unique<TestURLRequestHttpJob>(req_.get()));
   req_->SetPriority(LOW);
 
   EXPECT_FALSE(network_layer_.last_transaction());
@@ -1374,8 +1357,8 @@ TEST_F(URLRequestHttpJobTest, SetTransactionPriorityOnStart) {
 // Make sure that URLRequestHttpJob passes on its priority updates to
 // its transaction.
 TEST_F(URLRequestHttpJobTest, SetTransactionPriority) {
-  test_job_interceptor_->set_main_intercept_job(
-      std::make_unique<TestURLRequestHttpJob>(req_.get()));
+  TestScopedURLInterceptor interceptor(
+      req_->url(), std::make_unique<TestURLRequestHttpJob>(req_.get()));
   req_->SetPriority(LOW);
   req_->Start();
   ASSERT_TRUE(network_layer_.last_transaction());

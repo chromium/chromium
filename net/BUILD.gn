@@ -1128,8 +1128,6 @@ component("net") {
       "url_request/url_request_job_factory.h",
       "url_request/url_request_job_factory_impl.cc",
       "url_request/url_request_job_factory_impl.h",
-      "url_request/url_request_job_manager.cc",
-      "url_request/url_request_job_manager.h",
       "url_request/url_request_netlog_params.cc",
       "url_request/url_request_netlog_params.h",
       "url_request/url_request_redirect_job.cc",

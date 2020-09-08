@@ -17,8 +17,8 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/test/url_request/url_request_failed_job.h"
-#include "net/url_request/url_request_job_factory.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_filter.h"
+#include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -40,14 +40,15 @@ const char kSharedSecret[] = "abcdefgh";
 const char kBadScope[] =
     "client:user@example.com/local host:user@example.com/remote";
 
-class FakeProtocolHandler : public net::URLRequestJobFactory::ProtocolHandler {
+class TestURLRequestInterceptor : public net::URLRequestInterceptor {
  public:
-  FakeProtocolHandler(const std::string& headers, const std::string& response)
+  TestURLRequestInterceptor(const std::string& headers,
+                            const std::string& response)
       : headers_(headers), response_(response) {}
 
-  ~FakeProtocolHandler() override = default;
+  ~TestURLRequestInterceptor() override = default;
 
-  net::URLRequestJob* MaybeCreateJob(
+  net::URLRequestJob* MaybeInterceptRequest(
       net::URLRequest* request,
       net::NetworkDelegate* network_delegate) const override {
     return new net::URLRequestTestJob(request, network_delegate, headers_,
@@ -60,17 +61,16 @@ class FakeProtocolHandler : public net::URLRequestJobFactory::ProtocolHandler {
 };
 
 // Creates URLRequestJobs that fail at the specified phase.
-class FakeFailingProtocolHandler
-    : public net::URLRequestJobFactory::ProtocolHandler {
+class TestFailingURLRequestInterceptor : public net::URLRequestInterceptor {
  public:
-  FakeFailingProtocolHandler(
+  TestFailingURLRequestInterceptor(
       net::URLRequestFailedJob::FailurePhase failure_phase,
       net::Error net_error)
       : failure_phase_(failure_phase), net_error_(net_error) {}
 
-  ~FakeFailingProtocolHandler() override = default;
+  ~TestFailingURLRequestInterceptor() override = default;
 
-  net::URLRequestJob* MaybeCreateJob(
+  net::URLRequestJob* MaybeInterceptRequest(
       net::URLRequest* request,
       net::NetworkDelegate* network_delegate) const override {
     return new net::URLRequestFailedJob(request, network_delegate,
@@ -82,27 +82,6 @@ class FakeFailingProtocolHandler
   const net::Error net_error_;
 };
 
-class SetResponseURLRequestContext : public net::TestURLRequestContext {
- public:
-  void SetResponse(const std::string& headers, const std::string& response) {
-    std::unique_ptr<net::URLRequestJobFactoryImpl> factory =
-        std::make_unique<net::URLRequestJobFactoryImpl>();
-    factory->SetProtocolHandler(
-        "https", std::make_unique<FakeProtocolHandler>(headers, response));
-    context_storage_.set_job_factory(std::move(factory));
-  }
-
-  void SetErrorResponse(net::URLRequestFailedJob::FailurePhase failure_phase,
-                        net::Error net_error) {
-    std::unique_ptr<net::URLRequestJobFactoryImpl> factory =
-        std::make_unique<net::URLRequestJobFactoryImpl>();
-    factory->SetProtocolHandler(
-        "https",
-        std::make_unique<FakeFailingProtocolHandler>(failure_phase, net_error));
-    context_storage_.set_job_factory(std::move(factory));
-  }
-};
-
 }  // namespace
 
 namespace remoting {
@@ -112,6 +91,10 @@ class TokenValidatorFactoryImplTest : public testing::Test {
   TokenValidatorFactoryImplTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::IO) {}
+
+  ~TokenValidatorFactoryImplTest() override {
+    net::URLRequestFilter::GetInstance()->ClearHandlers();
+  }
 
   void SuccessCallback(const std::string& shared_secret) {
     EXPECT_FALSE(shared_secret.empty());
@@ -133,8 +116,7 @@ class TokenValidatorFactoryImplTest : public testing::Test {
   void SetUp() override {
     key_pair_ = RsaKeyPair::FromString(kTestRsaKeyPair);
     request_context_getter_ = new net::TestURLRequestContextGetter(
-        task_environment_.GetMainThreadTaskRunner(),
-        std::make_unique<SetResponseURLRequestContext>());
+        task_environment_.GetMainThreadTaskRunner());
     ThirdPartyAuthConfig config;
     config.token_url = GURL(kTokenUrl);
     config.token_validation_url = GURL(kTokenValidationUrl);
@@ -162,18 +144,17 @@ class TokenValidatorFactoryImplTest : public testing::Test {
   }
 
   void SetResponse(const std::string& headers, const std::string& response) {
-    SetResponseURLRequestContext* context =
-        static_cast<SetResponseURLRequestContext*>(
-            request_context_getter_->GetURLRequestContext());
-    context->SetResponse(headers, response);
+    net::URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+        "https", "example.com",
+        std::make_unique<TestURLRequestInterceptor>(headers, response));
   }
 
   void SetErrorResponse(net::URLRequestFailedJob::FailurePhase failure_phase,
                         net::Error net_error) {
-    SetResponseURLRequestContext* context =
-        static_cast<SetResponseURLRequestContext*>(
-            request_context_getter_->GetURLRequestContext());
-    context->SetErrorResponse(failure_phase, net_error);
+    net::URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+        "https", "example.com",
+        std::make_unique<TestFailingURLRequestInterceptor>(failure_phase,
+                                                           net_error));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

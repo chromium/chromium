@@ -41,10 +41,8 @@ class NET_EXPORT URLRequestJobFactory {
   URLRequestJobFactory();
   virtual ~URLRequestJobFactory();
 
-  virtual URLRequestJob* MaybeCreateJobWithProtocolHandler(
-      const std::string& scheme,
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const = 0;
+  virtual URLRequestJob* CreateJob(URLRequest* request,
+                                   NetworkDelegate* network_delegate) const = 0;
 
   virtual bool IsHandledProtocol(const std::string& scheme) const = 0;
 

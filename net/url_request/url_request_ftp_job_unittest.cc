@@ -17,6 +17,7 @@
 #include "net/ftp/ftp_transaction_factory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -119,10 +120,8 @@ class MockURLRequestFtpJobFactory : public URLRequestJobFactory {
     delete factory;
   }
 
-  URLRequestJob* MaybeCreateJobWithProtocolHandler(
-      const std::string& scheme,
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
+  URLRequestJob* CreateJob(URLRequest* request,
+                           NetworkDelegate* network_delegate) const override {
     return new URLRequestFtpJob(request, network_delegate, factory, auth_cache);
   }
 

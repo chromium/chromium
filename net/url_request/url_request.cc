@@ -35,7 +35,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_error_job.h"
 #include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_job_manager.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_netlog_params.h"
 #include "net/url_request/url_request_redirect_job.h"
 #include "url/gurl.h"
@@ -521,8 +521,7 @@ void URLRequest::Start() {
     return;
   }
 
-  StartJob(
-      URLRequestJobManager::GetInstance()->CreateJob(this, network_delegate_));
+  StartJob(context_->job_factory()->CreateJob(this, network_delegate_));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -600,8 +599,7 @@ void URLRequest::BeforeRequestComplete(int error) {
         URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "Delegate");
     StartJob(job);
   } else {
-    StartJob(URLRequestJobManager::GetInstance()->CreateJob(this,
-                                                            network_delegate_));
+    StartJob(context_->job_factory()->CreateJob(this, network_delegate_));
   }
 }
 
