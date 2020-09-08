@@ -132,7 +132,7 @@ public class AutofillAssistantUiController {
         mActivityTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(activity.getActivityTabProvider()) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab) {
+                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
                         if (mWebContents == null) return;
 
                         if (!allowTabSwitching) {

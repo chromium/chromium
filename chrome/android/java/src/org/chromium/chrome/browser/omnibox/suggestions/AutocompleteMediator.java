@@ -372,7 +372,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                 }
 
                 @Override
-                protected void onObservingDifferentTab(Tab tab) {
+                protected void onObservingDifferentTab(Tab tab, boolean hint) {
                     if (tab == null) return;
                     maybeTriggerCacheRefresh(tab.getUrlString());
                 }

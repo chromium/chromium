@@ -25,7 +25,7 @@ public class TabThemeColorProvider extends ThemeColorProvider {
     public void setActivityTabProvider(ActivityTabProvider provider) {
         mActivityTabTabObserver = new ActivityTabTabObserver(provider) {
             @Override
-            public void onObservingDifferentTab(Tab tab) {
+            public void onObservingDifferentTab(Tab tab, boolean hint) {
                 if (tab == null) return;
                 updatePrimaryColor(TabThemeColorHelper.getColor(tab), false);
             }

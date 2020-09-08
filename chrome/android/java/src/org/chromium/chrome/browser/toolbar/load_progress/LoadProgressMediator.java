@@ -85,7 +85,7 @@ public class LoadProgressMediator {
             }
 
             @Override
-            protected void onObservingDifferentTab(Tab tab) {
+            protected void onObservingDifferentTab(Tab tab, boolean hint) {
                 onNewTabObserved(tab);
             }
         };

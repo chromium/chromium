@@ -73,16 +73,32 @@ public class ActivityTabProvider implements Supplier<Tab> {
         private Tab mTab;
 
         /**
-         * Create a new {@link TabObserver} that only observes the activity tab.
+         * Create a new {@link TabObserver} that only observes the activity tab. It doesn't trigger
+         * for the initial tab being attached to after creation.
          * @param tabProvider An {@link ActivityTabProvider} to get the activity tab.
          */
         public ActivityTabTabObserver(ActivityTabProvider tabProvider) {
+            this(tabProvider, false);
+        }
+
+        /**
+         * Create a new {@link TabObserver} that only observes the activity tab. This constructor
+         * allows the option of triggering for the initial tab being attached to after creation.
+         * @param tabProvider An {@link ActivityTabProvider} to get the activity tab.
+         * @param shouldTrigger Whether the observer should be triggered for the initial tab after
+         * creation.
+         */
+        public ActivityTabTabObserver(ActivityTabProvider tabProvider, boolean shouldTrigger) {
             mTabProvider = tabProvider;
             mActivityTabObserver = (tab, hint) -> {
                 updateObservedTab(tab);
-                onObservingDifferentTab(tab);
+                onObservingDifferentTab(tab, hint);
             };
-            mTabProvider.addObserver(mActivityTabObserver);
+            if (shouldTrigger) {
+                mTabProvider.addObserverAndTrigger(mActivityTabObserver);
+            } else {
+                mTabProvider.addObserver(mActivityTabObserver);
+            }
             updateObservedTab(mTabProvider.get());
         }
 
@@ -97,11 +113,14 @@ public class ActivityTabProvider implements Supplier<Tab> {
         }
 
         /**
-         * A notification that the observer has switched to observing a different tab. This will not
-         * be called for the initial tab being attached to after creation.
+         * A notification that the observer has switched to observing a different tab. This can be
+         * called a first time with the {@code hint} parameter set to true, indicating that a new
+         * tab is going to be selected.
          * @param tab The tab that the observer is now observing. This can be null.
+         * @param hint Whether the change event is a hint that a tab change is likely. If true, the
+         *             provided tab may still be frozen and is not yet selected.
          */
-        protected void onObservingDifferentTab(Tab tab) {}
+        protected void onObservingDifferentTab(Tab tab, boolean hint) {}
 
         /**
          * Clean up any state held by this observer.

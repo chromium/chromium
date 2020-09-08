@@ -209,7 +209,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         ApplicationStatus.registerWindowFocusChangedListener(this);
         mActiveTabObserver = new ActivityTabTabObserver(activityTabProvider) {
             @Override
-            protected void onObservingDifferentTab(Tab tab) {
+            protected void onObservingDifferentTab(Tab tab, boolean hint) {
                 mTab = tab;
                 setContentView(tab != null ? tab.getContentView() : null);
                 if (tab != null) updateMultiTouchZoomSupport(!getPersistentFullscreenMode());

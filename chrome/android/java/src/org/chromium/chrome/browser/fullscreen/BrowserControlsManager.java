@@ -184,7 +184,7 @@ public class BrowserControlsManager
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
         mActiveTabObserver = new ActivityTabTabObserver(activityTabProvider) {
             @Override
-            protected void onObservingDifferentTab(Tab tab) {
+            protected void onObservingDifferentTab(Tab tab, boolean hint) {
                 setTab(tab);
             }
         };

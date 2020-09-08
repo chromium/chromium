@@ -167,7 +167,7 @@ public class HomeButton extends ChromeImageButton
         mActivityTabProvider = activityTabProvider;
         mActivityTabTabObserver = new ActivityTabTabObserver(activityTabProvider) {
             @Override
-            public void onObservingDifferentTab(Tab tab) {
+            public void onObservingDifferentTab(Tab tab, boolean hint) {
                 if (tab == null) return;
                 updateButtonEnabledState(tab);
             }

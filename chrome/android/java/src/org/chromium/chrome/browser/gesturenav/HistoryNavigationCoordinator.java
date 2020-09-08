@@ -115,7 +115,7 @@ public class HistoryNavigationCoordinator
 
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(tabProvider) {
             @Override
-            protected void onObservingDifferentTab(Tab tab) {
+            protected void onObservingDifferentTab(Tab tab, boolean hint) {
                 if (mTab != null && mTab.isInitialized()) {
                     SwipeRefreshHandler.from(mTab).setNavigationCoordinator(null);
                 }

@@ -20,7 +20,7 @@ public class AccessibilityVisibilityHandler implements Destroyable {
             ActivityTabProvider activityTabProvider, TabObscuringHandler tabObscuringHandler) {
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
             @Override
-            public void onObservingDifferentTab(Tab tab) {
+            public void onObservingDifferentTab(Tab tab, boolean hint) {
                 if (mTab == tab) return;
 
                 TabImpl tabImpl = (TabImpl) tab;
