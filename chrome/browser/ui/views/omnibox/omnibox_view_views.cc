@@ -2524,6 +2524,14 @@ bool OmniboxViewViews::IsURLEligibleForSimplifiedDomainEliding() {
   AutocompleteInput::ParseForEmphasizeComponents(
       text, model()->client()->GetSchemeClassifier(), &scheme, &host);
 
+  // TODO(crbug.com/1117631): Simplified domain elision can have bugs for some
+  // URLs with bidirectional hosts, disable elision for those URLs while the
+  // bugs are fixed.
+  const base::string16 url_host = text.substr(host.begin, host.len);
+  if (base::i18n::GetStringDirection(url_host) ==
+      base::i18n::TextDirection::UNKNOWN_DIRECTION) {
+    return false;
+  }
   const base::string16 url_scheme = text.substr(scheme.begin, scheme.len);
   // Simplified domain display only makes sense for http/https schemes; for now
   // we don't want to mess with the display of other URLs like data:, blob:,
