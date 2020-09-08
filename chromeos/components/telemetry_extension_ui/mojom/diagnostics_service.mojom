@@ -102,6 +102,22 @@ interface DiagnosticsService {
   RunAcPowerRoutine(AcPowerStatusEnum expected_status,
                     string? expected_power_type)
       => (RunRoutineResponse response);
+
+  // Requests that the CPU cache routine is created and started on the
+  // platform. This routine runs the stressapptest to test the CPU caches.
+  // The routine will pass if the stressapptest returns zero. This routine is
+  // only available if GetAvailableRoutines returned kCpuCache.
+  //
+  // The request:
+  // * |length_seconds| - length of time, in seconds, to run the CPU cache
+  //                      routine. This parameter needs to be strictly greater
+  //                      than zero.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunCpuCacheRoutine(uint32 length_seconds)
+      => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.

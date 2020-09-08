@@ -162,6 +162,26 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests cpu cache routine to be run for duration seconds.
+     * @param { !number } duration
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runCpuCacheRoutine(duration) {
+      const message =
+          /** @type {!dpsl_internal.DiagnosticsRunCpuCacheRoutineRequest} */ (
+              {duration: duration});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

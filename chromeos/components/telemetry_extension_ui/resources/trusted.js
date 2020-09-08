@@ -369,6 +369,29 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runAcPowerRoutine(
         expectedStatus, request.expectedPowerType);
   };
+
+  /**
+   * @param { !number } number
+   */
+  assertNumberIsPositive(number) {
+    if (number <= 0) {
+      throw RangeError(`Parameter must be positive.`);
+    }
+  }
+
+  /**
+   * Runs cpu cache routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunCpuCacheRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunCpuCacheRoutineRequest} */ (
+            message);
+    this.assertNumberIsPositive(request.duration);
+    return await getOrCreateDiagnosticsService().runCpuCacheRoutine(
+        request.duration);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -670,6 +693,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_AC_POWER_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunAcPowerRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunCpuCacheRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

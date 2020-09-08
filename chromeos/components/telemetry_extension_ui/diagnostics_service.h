@@ -44,6 +44,8 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
   void RunAcPowerRoutine(health::mojom::AcPowerStatusEnum expected_status,
                          const base::Optional<std::string>& expected_power_type,
                          RunAcPowerRoutineCallback callback) override;
+  void RunCpuCacheRoutine(uint32_t length_seconds,
+                          RunCpuCacheRoutineCallback callback) override;
 
   // Ensures that |service_| created and connected to the
   // CrosHealthdProbeService.

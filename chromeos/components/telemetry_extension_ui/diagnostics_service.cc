@@ -120,4 +120,18 @@ void DiagnosticsService::RunAcPowerRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunCpuCacheRoutine(
+    uint32_t length_seconds,
+    RunCpuCacheRoutineCallback callback) {
+  GetService()->RunCpuCacheRoutine(
+      length_seconds,
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::RunCpuCacheRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace chromeos

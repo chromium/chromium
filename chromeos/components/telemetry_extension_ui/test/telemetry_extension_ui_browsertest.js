@@ -394,6 +394,21 @@ TEST_F(
 
 TEST_F(
     'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunCpuCacheRoutineInvalidInput', async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunCpuCacheRoutineInvalidInput');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunCpuCacheRoutine', async () => {
+      await runTestInUntrusted('UntrustedDiagnosticsRequestRunCpuCacheRoutine');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
     'UntrustedRequestTelemetryInfoUnknownCategory', async () => {
       await runTestInUntrusted('UntrustedRequestTelemetryInfoUnknownCategory');
       testDone();

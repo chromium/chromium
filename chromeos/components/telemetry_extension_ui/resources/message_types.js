@@ -27,6 +27,7 @@ dpsl_internal.Message = {
   DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE:
       'DiagnosticsService.RunSmartctlCheckRoutine',
   DIAGNOSTICS_RUN_AC_POWER_ROUTINE: 'DiagnosticsService.RunAcPowerRoutine',
+  DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE: 'DiagnosticsService.RunCpuCacheRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -94,6 +95,13 @@ dpsl_internal.DiagnosticsRunSmartctlCheckRoutineRequest;
  *  expectedPowerType: string}}
  */
 dpsl_internal.DiagnosticsRunAcPowerRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run cpu cache routine.
+ * @typedef {{ duration: !number }}
+ */
+dpsl_internal.DiagnosticsRunCpuCacheRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

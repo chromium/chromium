@@ -184,6 +184,27 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunAcPowerRoutine', async () => {
   assertDeepEquals(response3, {id: 123456789, status: 'ready'});
 });
 
+// Tests that runCpuCacheRoutine throws the correct error
+// when invalid number is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunCpuCacheRoutineInvalidInput', async () => {
+      let caughtError;
+      try {
+        await chromeos.diagnostics.runCpuCacheRoutine(0);
+      } catch (error) {
+        caughtError = error;
+      }
+
+      assertEquals(caughtError.name, 'RangeError');
+      assertEquals(caughtError.message, `Parameter must be positive.`);
+    });
+
+// Tests that runCpuCacheRoutine returns the correct Object.
+UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunCpuCacheRoutine', async () => {
+  const response = await chromeos.diagnostics.runCpuCacheRoutine(10);
+  assertDeepEquals(response, {id: 123456789, status: 'ready'});
+});
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
