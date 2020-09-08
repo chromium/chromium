@@ -278,7 +278,7 @@ public class PaymentRequestImpl
      *  - requestPayerPhone
      *  - requestShipping
      */
-    private Map<String, PaymentMethodData> mQueryForQuota;
+    private Map<String, PaymentMethodData> mQueryForQuota = new HashMap<>();
 
     /**
      * There are a few situations were the Payment Request can appear, from a code perspective, to
@@ -310,12 +310,6 @@ public class PaymentRequestImpl
 
     /** If not empty, use this error message for rejecting PaymentRequest.show(). */
     private String mRejectShowErrorMessage;
-
-    /**
-     * True when Payment Request is invoked on a prohibited origin (e.g., blob:) or with an invalid
-     * SSL certificate (e.g., self-signed).
-     */
-    private boolean mIsProhibitedOriginOrInvalidSsl;
 
     /** A helper to manage the Skip-to-GPay experimental flow. */
     private SkipToGPayHelper mSkipToGPayHelper;
@@ -369,34 +363,26 @@ public class PaymentRequestImpl
         mRequestPayerEmail = options != null && options.requestPayerEmail;
         mShippingType = PaymentOptionsUtils.getShippingType(options);
 
-        // TODO(crbug.com/978471): Improve architecture for handling prohibited origins and invalid
-        // SSL certificates.
         if (!UrlUtil.isOriginAllowedToUseWebPaymentApis(mWebContents.getLastCommittedUrl())) {
-            mIsProhibitedOriginOrInvalidSsl = true;
-            mRejectShowErrorMessage = ErrorStrings.PROHIBITED_ORIGIN;
-            Log.d(TAG, mRejectShowErrorMessage);
+            Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN);
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
-            // Don't show any UI. Resolve .canMakePayment() with "false". Reject .show() with
-            // "NotSupportedError".
-            mQueryForQuota = new HashMap<>();
-            onDoneCreatingPaymentApps(/*factory=*/null);
-            return true;
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.PROHIBITED_ORIGIN,
+                    PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
+            return false;
         }
 
         mJourneyLogger.setRequestedInformation(
                 mRequestShipping, mRequestPayerEmail, mRequestPayerPhone, mRequestPayerName);
 
-        assert mRejectShowErrorMessage == null;
-        mRejectShowErrorMessage = mDelegate.getInvalidSslCertificateErrorMessage();
-        if (!TextUtils.isEmpty(mRejectShowErrorMessage)) {
-            mIsProhibitedOriginOrInvalidSsl = true;
-            Log.d(TAG, mRejectShowErrorMessage);
+        String rejectShowErrorMessage = mDelegate.getInvalidSslCertificateErrorMessage();
+        if (!TextUtils.isEmpty(rejectShowErrorMessage)) {
+            Log.d(TAG, rejectShowErrorMessage);
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
-            // Don't show any UI. Resolve .canMakePayment() with "false". Reject .show() with
-            // "NotSupportedError".
-            mQueryForQuota = new HashMap<>();
-            onDoneCreatingPaymentApps(/*factory=*/null);
-            return true;
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(rejectShowErrorMessage,
+                    PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
+            return false;
         }
 
         boolean googlePayBridgeActivated = googlePayBridgeEligible
@@ -1916,14 +1902,7 @@ public class PaymentRequestImpl
             mJourneyLogger.setNotShown(mCanMakePayment
                             ? NotShownReason.NO_MATCHING_PAYMENT_METHOD
                             : NotShownReason.NO_SUPPORTED_PAYMENT_METHOD);
-            if (mIsProhibitedOriginOrInvalidSsl) {
-                if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-                    ComponentPaymentRequestImpl.getNativeObserverForTest().onNotSupportedError();
-                }
-                // Chrome always refuses payments with invalid SSL and in prohibited origin types.
-                disconnectFromClientWithDebugMessage(
-                        mRejectShowErrorMessage, PaymentErrorReason.NOT_SUPPORTED);
-            } else if (mIsOffTheRecord) {
+            if (mComponentPaymentRequestImpl.isOffTheRecord()) {
                 // If the user is in the OffTheRecord mode, hide the absence of their payment
                 // methods from the merchant site.
                 disconnectFromClientWithDebugMessage(

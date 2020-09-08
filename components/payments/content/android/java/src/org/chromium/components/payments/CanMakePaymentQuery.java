@@ -18,15 +18,20 @@ public class CanMakePaymentQuery {
     /**
      * Checks whether the given canMakePayment() query is allowed.
      *
-     * @param webContents    The web contents where the query is being performed.
-     * @param topLevelOrigin The top level origin using the Payment Request API.
-     * @param frameOrigin    The frame origin using the Payment Request API.
-     * @param query          The payment method identifiers and payment method specific data.
+     * @param webContents    The web contents where the query is being performed, cannot be null.
+     * @param topLevelOrigin The top level origin using the Payment Request API, cannot be null.
+     * @param frameOrigin    The frame origin using the Payment Request API, cannot be null.
+     * @param query          The payment method identifiers and payment method specific data, cannot
+     *         be null.
      *
      * @return True if the given query for canMakePayment() is allowed.
      */
     public static boolean canQuery(WebContents webContents, String topLevelOrigin,
             String frameOrigin, Map<String, PaymentMethodData> query) {
+        assert webContents != null;
+        assert topLevelOrigin != null;
+        assert frameOrigin != null;
+        assert query != null;
         return CanMakePaymentQueryJni.get().canQuery(
                 webContents, topLevelOrigin, frameOrigin, query);
     }

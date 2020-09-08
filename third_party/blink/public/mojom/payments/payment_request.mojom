@@ -37,6 +37,7 @@ enum PaymentErrorReason {
   UNKNOWN,
   USER_CANCEL,
   NOT_SUPPORTED,
+  NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL,
   ALREADY_SHOWING
 };
 
@@ -58,6 +59,17 @@ enum HasEnrolledInstrumentQueryResult {
 
 // Implemented in the renderer process. Sandboxed. Deals with untrusted data.
 // Implementation: third_party/blink/renderer/modules/payments/payment_request.h
+// Important: these methods are asynchronous. For example, when Blink calls:
+//     PaymentRequest request = new PaymentRequest();
+//     request.canMakePayment();
+// and when Java's PaymentRequest#init() invokes PaymentRequestClient#onError(),
+// the execution sequence would be:
+//     Blink: PaymentRequest request = new PaymentRequest();
+//     Blink: request.canMakePayment();
+//     Java:  PaymentRequest#init()
+//     Java:  PaymentRequestClient#onError()
+//     Java:  PaymentRequest#canMakePayment()
+//     Blink: request.onError()
 interface PaymentRequestClient {
   OnPaymentMethodChange(string method_name, string stringified_details);
   OnShippingAddressChange(PaymentAddress address);
