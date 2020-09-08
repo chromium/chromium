@@ -16,8 +16,6 @@ MainThreadSchedulerHelper::MainThreadSchedulerHelper(
     MainThreadSchedulerImpl* main_thread_scheduler)
     : SchedulerHelper(sequence_manager),
       main_thread_scheduler_(main_thread_scheduler),
-      // TODO(hajimehoshi): Forbid V8 execution at |default_task_queue_|
-      // (crbug.com/870606).
       default_task_queue_(
           NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
                            MainThreadTaskQueue::QueueType::kDefault)
