@@ -16,7 +16,7 @@ source_set("webrtc") {
     "//components/content_settings/core/common",
     "//components/permissions",
     "//content/public/browser",
-    "//content/public/common",
+    "//third_party/blink/public/common",
   ]
   if (is_android) {
     deps += [ "//ui/android" ]

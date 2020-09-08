@@ -20,7 +20,6 @@
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/browser/web_package/signed_exchange_validity_pinger.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/origin_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
@@ -33,6 +32,7 @@
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
@@ -170,7 +170,7 @@ void SignedExchangeLoader::OnStartLoadingResponseBody(
   }
 
   signed_exchange_handler_ = std::make_unique<SignedExchangeHandler>(
-      IsOriginSecure(outer_request_.url),
+      blink::network_utils::IsOriginSecure(outer_request_.url),
       signed_exchange_utils::HasNoSniffHeader(*outer_response_head_),
       content_type_,
       std::make_unique<network::DataPipeToSourceStream>(

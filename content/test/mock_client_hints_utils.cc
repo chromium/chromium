@@ -4,6 +4,8 @@
 
 #include "content/test/mock_client_hints_utils.h"
 
+#include "third_party/blink/public/common/loader/network_utils.h"
+
 namespace content {
 
 bool PersistClientHintsHelper(const GURL& url,
@@ -11,7 +13,7 @@ bool PersistClientHintsHelper(const GURL& url,
                               base::TimeDelta expiration_duration,
                               ClientHintsContainer* container) {
   DCHECK(container);
-  if (!content::IsOriginSecure(url) ||
+  if (!blink::network_utils::IsOriginSecure(url) ||
       expiration_duration <= base::TimeDelta()) {
     return false;
   }

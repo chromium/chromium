@@ -60,6 +60,7 @@ source_set("permissions") {
     "//components/vector_icons",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common",
     "//ui/base",
     "//url",
   ]

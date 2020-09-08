@@ -20,6 +20,7 @@
 #include "content/public/common/origin_util.h"
 #include "content/public/common/web_preferences.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -50,7 +51,8 @@ bool IsUrlPotentiallySecure(const GURL& url) {
   // blob: and filesystem: URLs never hit the network, and access is restricted
   // to same-origin contexts, so they are not blocked.
   return url.SchemeIs(url::kBlobScheme) ||
-         url.SchemeIs(url::kFileSystemScheme) || IsOriginSecure(url) ||
+         url.SchemeIs(url::kFileSystemScheme) ||
+         blink::network_utils::IsOriginSecure(url) ||
          IsPotentiallyTrustworthyOrigin(url::Origin::Create(url));
 }
 
@@ -290,7 +292,7 @@ RenderFrameHostImpl* MixedContentNavigationThrottle::InWhichFrameIsContentMixed(
           blink::mojom::WebFeature::
               kMixedContentInNonHTTPSFrameThatRestrictsMixedContent);
     }
-  } else if (!IsOriginSecure(url) &&
+  } else if (!blink::network_utils::IsOriginSecure(url) &&
              (IsSecureScheme(root->GetLastCommittedOrigin().scheme()) ||
               IsSecureScheme(parent->GetLastCommittedOrigin().scheme()))) {
     mixed_content_features_.insert(

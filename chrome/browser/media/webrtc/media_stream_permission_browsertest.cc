@@ -22,12 +22,12 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/origin_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
@@ -73,7 +73,7 @@ class MediaStreamPermissionTest : public WebRtcTestBase {
     // Uses the default server.
     GURL url = test_page_url();
 
-    EXPECT_TRUE(content::IsOriginSecure(url));
+    EXPECT_TRUE(blink::network_utils::IsOriginSecure(url));
 
     ui_test_utils::NavigateToURL(browser, url);
     return browser->tab_strip_model()->GetActiveWebContents();
@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
                        TestSecureOriginDenyIsSticky) {
   content::WebContents* tab_contents = LoadTestPageInTab();
-  EXPECT_TRUE(content::IsOriginSecure(tab_contents->GetLastCommittedURL()));
+  EXPECT_TRUE(blink::network_utils::IsOriginSecure(
+      tab_contents->GetLastCommittedURL()));
 
   GetUserMediaAndDeny(tab_contents);
   GetUserMediaAndExpectAutoDenyWithoutPrompt(tab_contents);
@@ -117,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
                        TestSecureOriginAcceptIsSticky) {
   content::WebContents* tab_contents = LoadTestPageInTab();
-  EXPECT_TRUE(content::IsOriginSecure(tab_contents->GetLastCommittedURL()));
+  EXPECT_TRUE(blink::network_utils::IsOriginSecure(
+      tab_contents->GetLastCommittedURL()));
 
   EXPECT_TRUE(GetUserMediaAndAccept(tab_contents));
   GetUserMediaAndExpectAutoAcceptWithoutPrompt(tab_contents);

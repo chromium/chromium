@@ -34,7 +34,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/origin_util.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/gurl.h"
 
 namespace permissions {
@@ -289,7 +289,7 @@ bool PermissionContextBase::IsPermissionAvailableToOrigins(
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   if (IsRestrictedToSecureOrigins()) {
-    if (!content::IsOriginSecure(requesting_origin))
+    if (!blink::network_utils::IsOriginSecure(requesting_origin))
       return false;
 
     // TODO(raymes): We should check the entire chain of embedders here whenever
@@ -298,7 +298,7 @@ bool PermissionContextBase::IsPermissionAvailableToOrigins(
     // the top level and requesting origins.
     if (!PermissionsClient::Get()->CanBypassEmbeddingOriginCheck(
             requesting_origin, embedding_origin) &&
-        !content::IsOriginSecure(embedding_origin)) {
+        !blink::network_utils::IsOriginSecure(embedding_origin)) {
       return false;
     }
   }

@@ -69,11 +69,11 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -1040,7 +1040,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   int radio_block_label_id = 0;
   if (state_ & (PageSpecificContentSettings::MICROPHONE_BLOCKED |
                 PageSpecificContentSettings::CAMERA_BLOCKED)) {
-    if (content::IsOriginSecure(url)) {
+    if (blink::network_utils::IsOriginSecure(url)) {
       radio_item_setting_[0] = CONTENT_SETTING_ALLOW;
       radio_allow_label_id = IDS_BLOCKED_MEDIASTREAM_CAMERA_ALLOW;
       if (MicrophoneAccessed())

@@ -17,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -102,10 +103,11 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
   EXPECT_EQ("chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef",
             origin.Serialize());
 
-  EXPECT_TRUE(content::IsOriginSecure(GURL("chrome-native://newtab/")));
+  EXPECT_TRUE(
+      blink::network_utils::IsOriginSecure(GURL("chrome-native://newtab/")));
 
   GURL chrome_url(content::GetWebUIURL("dummyurl"));
-  EXPECT_TRUE(content::IsOriginSecure(chrome_url));
+  EXPECT_TRUE(blink::network_utils::IsOriginSecure(chrome_url));
   EXPECT_FALSE(content::OriginCanAccessServiceWorkers(chrome_url));
   EXPECT_TRUE(
       content::IsPotentiallyTrustworthyOrigin(url::Origin::Create(chrome_url)));

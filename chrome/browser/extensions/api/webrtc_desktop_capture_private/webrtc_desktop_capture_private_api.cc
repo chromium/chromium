@@ -12,8 +12,8 @@
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/webrtc_desktop_capture_private.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 
 namespace extensions {
 
@@ -60,12 +60,13 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
   GURL origin = rfh->GetLastCommittedURL().GetOrigin();
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kAllowHttpScreenCapture) &&
-      !content::IsOriginSecure(origin)) {
+      !blink::network_utils::IsOriginSecure(origin)) {
     return RespondNow(Error(kUrlNotSecure));
   }
-  base::string16 target_name = base::UTF8ToUTF16(
-      content::IsOriginSecure(origin) ? net::GetHostAndOptionalPort(origin)
-                                      : origin.spec());
+  base::string16 target_name =
+      base::UTF8ToUTF16(blink::network_utils::IsOriginSecure(origin)
+                            ? net::GetHostAndOptionalPort(origin)
+                            : origin.spec());
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);

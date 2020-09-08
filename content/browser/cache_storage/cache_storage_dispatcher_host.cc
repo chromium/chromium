@@ -20,7 +20,6 @@
 #include "content/browser/cache_storage/cache_storage_trace_utils.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "net/http/http_response_headers.h"
@@ -28,6 +27,7 @@
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -45,7 +45,8 @@ using network::mojom::RequestMode;
 
 // TODO(lucmult): Check this before binding.
 bool OriginCanAccessCacheStorage(const url::Origin& origin) {
-  return !origin.opaque() && IsOriginSecure(origin.GetURL());
+  return !origin.opaque() &&
+         blink::network_utils::IsOriginSecure(origin.GetURL());
 }
 
 // Verifies that the BatchOperation list conforms to the constraints imposed

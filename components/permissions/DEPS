@@ -14,6 +14,7 @@ include_rules = [
   "+content/public/test",
   "+media/base/android/media_drm_bridge.h",
   "+services/metrics/public/cpp",
+  "+third_party/blink/public/common/loader/network_utils.h",
   "+third_party/blink/public/mojom/feature_policy",
   "+third_party/blink/public/mojom/quota",
   "+ui/base",

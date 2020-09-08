@@ -8,7 +8,6 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/public/common/origin_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -17,6 +16,7 @@
 #include "net/test/test_data_directory.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
 namespace content {
@@ -328,7 +328,7 @@ class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
     }
 
     bool IsOriginSecure(const GURL& url) const override {
-      return content::IsOriginSecure(url);
+      return blink::network_utils::IsOriginSecure(url);
     }
 
    private:

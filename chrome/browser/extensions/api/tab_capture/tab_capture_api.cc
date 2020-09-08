@@ -32,12 +32,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 
 using content::DesktopMediaID;
 using content::WebContentsMediaCaptureId;
@@ -458,7 +458,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
       return RespondNow(Error(kInvalidOriginError));
     }
 
-    if (!content::IsOriginSecure(origin)) {
+    if (!blink::network_utils::IsOriginSecure(origin)) {
       return RespondNow(Error(kTabUrlNotSecure));
     }
 

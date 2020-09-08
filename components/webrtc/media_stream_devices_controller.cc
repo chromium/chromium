@@ -18,7 +18,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
 
 #if defined(OS_ANDROID)
@@ -165,7 +165,7 @@ MediaStreamDevicesController::MediaStreamDevicesController(
       enumerator_(enumerator),
       request_(request),
       callback_(std::move(callback)) {
-  DCHECK(content::IsOriginSecure(request_.security_origin) ||
+  DCHECK(blink::network_utils::IsOriginSecure(request_.security_origin) ||
          request_.request_type == blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY);
 
   if (!enumerator_)
@@ -407,7 +407,7 @@ ContentSetting MediaStreamDevicesController::GetContentSetting(
   DCHECK(content_type == ContentSettingsType::MEDIASTREAM_MIC ||
          content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
   DCHECK(!request_.security_origin.is_empty());
-  DCHECK(content::IsOriginSecure(request_.security_origin) ||
+  DCHECK(blink::network_utils::IsOriginSecure(request_.security_origin) ||
          request_.request_type == blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY);
   if (!ContentTypeIsRequested(content_type, request)) {
     // No denial reason set as it will have been previously set.

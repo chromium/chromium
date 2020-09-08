@@ -35,7 +35,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/origin_util.h"
 #include "crypto/sha2.h"
 #include "device/base/features.h"
 #include "device/fido/attestation_statement.h"
@@ -55,6 +54,7 @@
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -127,7 +127,7 @@ base::Optional<std::string> ProcessAppIdExtension(std::string appid,
   // Webauthn is only supported on secure origins and |ValidateEffectiveDomain|
   // has already checked this property of |origin| before this call. Thus this
   // step is moot.
-  DCHECK(content::IsOriginSecure(origin.GetURL()));
+  DCHECK(blink::network_utils::IsOriginSecure(origin.GetURL()));
 
   // Step 2: "If the AppID is null or empty, the client must set the AppID to be
   // the FacetID of the caller, and the operation may proceed without additional

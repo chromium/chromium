@@ -12,8 +12,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 
 namespace extensions {
 
@@ -69,11 +69,12 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
 
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             ::switches::kAllowHttpScreenCapture) &&
-        !content::IsOriginSecure(origin)) {
+        !blink::network_utils::IsOriginSecure(origin)) {
       return RespondNow(Error(kDesktopCaptureApiTabUrlNotSecure));
     }
-    target_name = base::UTF8ToUTF16(content::IsOriginSecure(origin) ?
-        net::GetHostAndOptionalPort(origin) : origin.spec());
+    target_name = base::UTF8ToUTF16(blink::network_utils::IsOriginSecure(origin)
+                                        ? net::GetHostAndOptionalPort(origin)
+                                        : origin.spec());
 
     if (!params->target_tab->id ||
         *params->target_tab->id == api::tabs::TAB_ID_NONE) {

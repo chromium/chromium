@@ -4,5 +4,6 @@ include_rules = [
   "+components/prefs",
   "+components/policy/core/common",
   "+content/public/browser",
+  "+third_party/blink/public/common/loader/network_utils.h",
   "+third_party/blink/public/common/user_agent",
 ]

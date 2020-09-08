@@ -5,7 +5,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/payments/content/android/jni_headers/OriginSecurityChecker_jni.h"
-#include "content/public/common/origin_util.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -21,7 +21,7 @@ jboolean JNI_OriginSecurityChecker_IsOriginSecure(
     JNIEnv* env,
     const JavaParamRef<jstring>& jurl) {
   GURL url(ConvertJavaStringToUTF8(env, jurl));
-  return url.is_valid() && content::IsOriginSecure(url);
+  return url.is_valid() && blink::network_utils::IsOriginSecure(url);
 }
 
 // static

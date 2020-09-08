@@ -11,7 +11,6 @@
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/public/common/origin_util.h"
 #include "content/renderer/pepper/fullscreen_container.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_browser_connection.h"
@@ -26,6 +25,7 @@
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/host_dispatcher.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -288,7 +288,7 @@ bool RendererPpapiHostImpl::IsSecureContext(PP_Instance pp_instance) const {
   if (!instance)
     return false;
   return instance->GetContainer()->GetDocument().IsSecureContext() &&
-         content::IsOriginSecure(instance->GetPluginURL());
+         blink::network_utils::IsOriginSecure(instance->GetPluginURL());
 }
 
 int RendererPpapiHostImpl::GetPluginChildId() const {

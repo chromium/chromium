@@ -8,10 +8,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/origin_util.h"
 #include "device/fido/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -42,7 +42,7 @@ blink::mojom::AuthenticatorStatus ValidateEffectiveDomain(
   }
 
   if (url::HostIsIPAddress(caller_origin.host()) ||
-      !IsOriginSecure(caller_origin.GetURL())) {
+      !blink::network_utils::IsOriginSecure(caller_origin.GetURL())) {
     return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
   }
 
@@ -50,8 +50,8 @@ blink::mojom::AuthenticatorStatus ValidateEffectiveDomain(
   // may be supported in the future but the webauthn relying party is
   // just the domain of the origin so we would have to define how the
   // authority part of other schemes maps to a "domain" without
-  // collisions. Given the |IsOriginSecure| check, just above, HTTP is
-  // effectively restricted to just "localhost".
+  // collisions. Given the |blink::network_utils::IsOriginSecure| check, just
+  // above, HTTP is effectively restricted to just "localhost".
   if (caller_origin.scheme() != url::kHttpScheme &&
       caller_origin.scheme() != url::kHttpsScheme) {
     return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
@@ -193,7 +193,7 @@ WebAuthRequestSecurityChecker::ValidateAPrioriAuthenticatedUrl(
   // https://www.w3.org/TR/mixed-content/#a-priori-authenticated-url
   if (!url.IsAboutSrcdoc() && !url.IsAboutBlank() &&
       !url.SchemeIs(url::kDataScheme) &&
-      !network::IsUrlPotentiallyTrustworthy(url)) {
+      !blink::network_utils::IsOriginSecure(url)) {
     ReportSecurityCheckFailure(
         RelyingPartySecurityCheckFailure::kIconUrlInvalid);
     return blink::mojom::AuthenticatorStatus::INVALID_ICON_URL;

@@ -28,9 +28,9 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
 #include "device/base/features.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -215,7 +215,8 @@ void WebUsbDetector::OnDeviceAdded(
     return;
 
   const GURL& landing_page = *device_info->webusb_landing_page;
-  if (!landing_page.is_valid() || !content::IsOriginSecure(landing_page))
+  if (!landing_page.is_valid() ||
+      !blink::network_utils::IsOriginSecure(landing_page))
     return;
 
   if (base::StartsWith(GetActiveTabURL().spec(), landing_page.spec(),

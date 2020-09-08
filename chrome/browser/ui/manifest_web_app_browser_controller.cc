@@ -9,9 +9,9 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -36,7 +36,7 @@ bool ManifestWebAppBrowserController::ShouldShowCustomTabBar() const {
     return false;
 
   // Show if the web_contents is not on a secure origin.
-  if (!content::IsOriginSecure(app_launch_url_))
+  if (!blink::network_utils::IsOriginSecure(app_launch_url_))
     return true;
 
   // Show if web_contents is not currently in scope.
