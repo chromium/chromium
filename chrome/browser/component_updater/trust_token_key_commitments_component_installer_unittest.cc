@@ -47,8 +47,7 @@ TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest, FeatureDisabled) {
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
   EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
-  RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(
-      service.get(), component_install_dir_.GetPath());
+  RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(service.get());
 
   env_.RunUntilIdle();
 }

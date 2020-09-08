@@ -125,6 +125,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   RegisterOnDeviceHeadSuggestComponent(
       cus, g_browser_process->GetApplicationLocale());
   RegisterOptimizationHintsComponent(cus, is_off_the_record_profile);
+  RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus);
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
@@ -151,7 +152,6 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 
     RegisterFileTypePoliciesComponent(cus, path);
 
-    RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus, path);
 
     RegisterSSLErrorAssistantComponent(cus, path);
   }

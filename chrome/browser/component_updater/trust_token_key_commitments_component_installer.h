@@ -73,8 +73,7 @@ class TrustTokenKeyCommitmentsComponentInstallerPolicy
 // Call once during startup to make the component update service aware of
 // the component.
 void RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(
-    ComponentUpdateService* cus,
-    const base::FilePath& user_data_dir);
+    ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

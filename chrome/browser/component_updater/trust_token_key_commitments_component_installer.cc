@@ -166,8 +166,7 @@ TrustTokenKeyCommitmentsComponentInstallerPolicy::GetMimeTypes() const {
 }
 
 void RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(
-    ComponentUpdateService* cus,
-    const base::FilePath& user_data_dir) {
+    ComponentUpdateService* cus) {
   if (!base::FeatureList::IsEnabled(network::features::kTrustTokens))
     return;
 
