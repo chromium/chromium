@@ -1265,7 +1265,7 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
   // there can be no inline autocompletion, and the match must not be allowed to
   // be default.
   if (match.TryRichAutocompletion(match.contents, match.description,
-                                  params.input)) {
+                                  params.input_before_fixup)) {
     // If rich autocompletion applies, we skip trying the alternatives below.
   } else if (inline_autocomplete_offset != base::string16::npos) {
     DCHECK(inline_autocomplete_offset <= match.fill_into_edit.length());
