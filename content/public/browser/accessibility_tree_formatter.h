@@ -126,10 +126,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
   static bool MatchesNodeFilters(const std::vector<NodeFilter>& node_filters,
                                  const base::DictionaryValue& dict);
 
-  // Build an accessibility tree for any process with a window.
-  virtual std::unique_ptr<base::DictionaryValue>
-  BuildAccessibilityTreeForProcess(base::ProcessId pid) = 0;
-
   // Build an accessibility tree for any window.
   virtual std::unique_ptr<base::DictionaryValue>
   BuildAccessibilityTreeForWindow(gfx::AcceleratedWidget widget) = 0;

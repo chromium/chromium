@@ -215,13 +215,6 @@ AccessibilityTreeFormatterBlink::BuildAccessibilityTree(
 }
 
 std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForProcess(
-    base::ProcessId pid) {
-  NOTREACHED();
-  return nullptr;
-}
-
-std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForWindow(
     gfx::AcceleratedWidget widget) {
   NOTREACHED();

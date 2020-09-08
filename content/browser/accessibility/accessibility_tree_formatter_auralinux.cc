@@ -44,8 +44,6 @@ class AccessibilityTreeFormatterAuraLinux
 
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForProcess(
-      base::ProcessId pid) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget hwnd) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForPattern(
@@ -151,14 +149,6 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTree(
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
   RecursiveBuildAccessibilityTree(atk_root, dict.get());
   return dict;
-}
-
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForProcess(
-    base::ProcessId pid) {
-  LOG(ERROR) << "Aura Linux does not yet support building trees for processes";
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 std::unique_ptr<base::DictionaryValue>

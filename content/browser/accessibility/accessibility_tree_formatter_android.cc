@@ -86,9 +86,6 @@ class AccessibilityTreeFormatterAndroid
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForProcess(
-      base::ProcessId pid) override;
-
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget widget) override;
 
@@ -146,13 +143,6 @@ AccessibilityTreeFormatterAndroid::BuildAccessibilityTree(
   // XXX: Android formatter should walk native Android tree (not internal one).
   RecursiveBuildAccessibilityTree(*root, dict.get());
   return dict;
-}
-
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAndroid::BuildAccessibilityTreeForProcess(
-    base::ProcessId pid) {
-  NOTREACHED();
-  return nullptr;
 }
 
 std::unique_ptr<base::DictionaryValue>

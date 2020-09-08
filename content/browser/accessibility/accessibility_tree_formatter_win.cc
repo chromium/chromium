@@ -46,8 +46,6 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
       BrowserAccessibility* start) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget hwnd) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForProcess(
-      base::ProcessId pid) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForPattern(
       const base::StringPiece& pattern) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
@@ -325,14 +323,6 @@ AccessibilityTreeFormatterWin::BuildAccessibilityTreeForWindow(
   RecursiveBuildAccessibilityTree(start, dict.get(), 0, 0);
 
   return dict;
-}
-
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterWin::BuildAccessibilityTreeForProcess(
-    base::ProcessId pid) {
-  // Get HWND for process id.
-  HWND hwnd = GetHwndForProcess(pid);
-  return BuildAccessibilityTreeForWindow(hwnd);
 }
 
 std::unique_ptr<base::DictionaryValue>

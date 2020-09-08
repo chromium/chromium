@@ -35,8 +35,6 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* start) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForProcess(
-      base::ProcessId pid) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget hwnd) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForPattern(

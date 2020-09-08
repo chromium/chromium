@@ -424,15 +424,6 @@ AccessibilityTreeFormatterUia::BuildAccessibilityTree(
 }
 
 std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterUia::BuildAccessibilityTreeForProcess(
-    base::ProcessId pid) {
-  std::unique_ptr<base::DictionaryValue> tree;
-  // Get HWND for process id.
-  HWND hwnd = GetHwndForProcess(pid);
-  return BuildAccessibilityTreeForWindow(hwnd);
-}
-
-std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterUia::BuildAccessibilityTreeForWindow(
     gfx::AcceleratedWidget hwnd) {
   CHECK(hwnd);
