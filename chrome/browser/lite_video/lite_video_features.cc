@@ -127,5 +127,13 @@ base::flat_set<std::string> GetLiteVideoPermanentBlocklist() {
   return permanent_host_blocklist;
 }
 
+bool IsLiteVideoNotAllowedForPageTransition(
+    ui::PageTransition page_transition) {
+  if (!(page_transition & ui::PAGE_TRANSITION_FORWARD_BACK))
+    return false;
+  return !base::GetFieldTrialParamByFeatureAsBool(
+      ::features::kLiteVideo, "allow_on_forward_back", false);
+}
+
 }  // namespace features
 }  // namespace lite_video

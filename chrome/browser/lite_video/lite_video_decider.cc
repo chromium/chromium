@@ -177,8 +177,8 @@ void LiteVideoDecider::CanApplyLiteVideo(
   // LiteVideos.
   bool is_reload = PageTransitionCoreTypeIs(
       navigation_handle->GetPageTransition(), ui::PAGE_TRANSITION_RELOAD);
-  if (is_reload || (navigation_handle->GetPageTransition() &
-                    ui::PAGE_TRANSITION_FORWARD_BACK)) {
+  if (is_reload || features::IsLiteVideoNotAllowedForPageTransition(
+                       navigation_handle->GetPageTransition())) {
     user_blocklist_->AddNavigationToBlocklist(navigation_handle, true);
     blocklist_reason = is_reload
                            ? LiteVideoBlocklistReason::kNavigationReload

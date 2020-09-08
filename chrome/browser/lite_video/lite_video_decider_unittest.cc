@@ -146,9 +146,14 @@ class TestOptimizationGuideDecider
 
 class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
  public:
+  explicit LiteVideoDeciderTest(bool allow_on_forward_back = false)
+      : allow_on_forward_back_(allow_on_forward_back) {}
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeature({::features::kLiteVideo});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kLiteVideo,
+        {{"allow_on_forward_back", allow_on_forward_back_ ? "true" : "false"}});
 
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
@@ -292,6 +297,7 @@ class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
   base::Optional<lite_video::LiteVideoHint> hint_;
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
   optimization_guide::OptimizationGuideDecision opt_guide_decision_;
+  bool allow_on_forward_back_;
 };
 
 TEST_F(LiteVideoDeciderTest, CanApplyOnNonHTTPOrHTTPSURL) {
@@ -488,7 +494,7 @@ TEST_F(LiteVideoDeciderTest, CanApplyOnReload) {
       "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", false, 1);
 }
 
-TEST_F(LiteVideoDeciderTest, CanApplyOnBackForwardNavigation) {
+TEST_F(LiteVideoDeciderTest, CanApplyOnForwardBackNavigation) {
   base::HistogramTester histogram_tester;
 
   SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
@@ -831,4 +837,41 @@ TEST_F(LiteVideoDeciderTest, HostOnPermanentBlocklist) {
       lite_video::LiteVideoBlocklistReason::kHostPermanentlyBlocklisted, 1);
   histogram_tester.ExpectUniqueSample(
       "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", false, 1);
+}
+
+class LiteVideoDeciderAllowOnForwardBackTest : public LiteVideoDeciderTest {
+ public:
+  LiteVideoDeciderAllowOnForwardBackTest()
+      : LiteVideoDeciderTest(/*allow_on_forward_back=*/true) {}
+};
+
+TEST_F(LiteVideoDeciderAllowOnForwardBackTest,
+       CanApplyOnForwardBackNavigation) {
+  base::HistogramTester histogram_tester;
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL url("https://LiteVideo.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_FORWARD_BACK);
+
+  lite_video::LiteVideoHint seeded_hint(
+      /*target_downlink_bandwidth_kbps=*/123,
+      /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
+      /*kilobytes_to_buffer_before_throttle=*/500,
+      /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
+  SeedLiteVideoHintCache(url, seeded_hint, /*use_opt_guide=*/false);
+
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  EXPECT_TRUE(hint());
+  EXPECT_EQ(blocklist_reason(), lite_video::LiteVideoBlocklistReason::kAllowed);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", true, 1);
 }
