@@ -1436,57 +1436,6 @@ TEST_P(OverviewSessionTest, NoCrashOnTabAfterExitWithNoWindows) {
   EXPECT_FALSE(InOverviewSession());
 }
 
-// Tests that dragging a window from the top of a display creates a drop target
-// on that display. The workflow will be real after the tablet disambiguation
-// work. Until then, this test can safely be disabled.
-TEST_P(OverviewSessionTest,
-       DISABLED_DropTargetOnCorrectDisplayForDraggingFromTop) {
-  UpdateDisplay("600x600,600x600");
-  EnterTabletMode();
-  // DisplayConfigurationObserver enables mirror mode when tablet mode is
-  // enabled. Disable mirror mode to test multiple displays.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  const aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
-  ASSERT_EQ(2u, root_windows.size());
-
-  std::unique_ptr<aura::Window> primary_screen_window =
-      CreateTestWindow(gfx::Rect(0, 0, 600, 600));
-  primary_screen_window->SetProperty(aura::client::kAppType,
-                                     static_cast<int>(AppType::BROWSER));
-  ASSERT_EQ(root_windows[0], primary_screen_window->GetRootWindow());
-  std::unique_ptr<aura::Window> secondary_screen_window =
-      CreateTestWindow(gfx::Rect(600, 0, 600, 600));
-  secondary_screen_window->SetProperty(aura::client::kAppType,
-                                       static_cast<int>(AppType::BROWSER));
-  ASSERT_EQ(root_windows[1], secondary_screen_window->GetRootWindow());
-
-  ASSERT_FALSE(InOverviewSession());
-  {
-    std::unique_ptr<WindowResizer> resizer =
-        CreateWindowResizer(primary_screen_window.get(), gfx::PointF(400, 0),
-                            HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-    ASSERT_TRUE(InOverviewSession());
-    EXPECT_FALSE(GetDropTarget(1));
-    ASSERT_TRUE(GetDropTarget(0));
-    EXPECT_EQ(root_windows[0], GetDropTarget(0)->root_window());
-    resizer->CompleteDrag();
-  }
-  ASSERT_FALSE(InOverviewSession());
-  {
-    std::unique_ptr<WindowResizer> resizer =
-        CreateWindowResizer(secondary_screen_window.get(), gfx::PointF(400, 0),
-                            HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-    ASSERT_TRUE(InOverviewSession());
-    EXPECT_FALSE(GetDropTarget(0));
-    ASSERT_TRUE(GetDropTarget(1));
-    EXPECT_EQ(root_windows[1], GetDropTarget(1)->root_window());
-    resizer->CompleteDrag();
-  }
-  ASSERT_FALSE(InOverviewSession());
-}
-
 // Tests that dragging a window from overview creates a drop target on the same
 // display.
 TEST_P(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
