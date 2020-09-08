@@ -45,7 +45,36 @@ constexpr char kCertProfileId[] = "cert_profile_id_1";
 constexpr char kCertProfileVersion[] = "cert_profile_version_1";
 constexpr TimeDelta kCertProfileRenewalPeriod = TimeDelta::FromSeconds(0);
 
-//================ CertProvisioningSchedulerTest ===============================
+//=============== TestCertProvisioningSchedulerObserver ========================
+
+class TestCertProvisioningSchedulerObserver
+    : public CertProvisioningSchedulerObserver {
+ public:
+  TestCertProvisioningSchedulerObserver() = default;
+  ~TestCertProvisioningSchedulerObserver() override = default;
+
+  TestCertProvisioningSchedulerObserver(
+      const TestCertProvisioningSchedulerObserver& other) = delete;
+  TestCertProvisioningSchedulerObserver& operator=(
+      const TestCertProvisioningSchedulerObserver& other) = delete;
+
+  // CertProvisioningSchedulerObserver:
+  void OnVisibleStateChanged() override { run_loop_->Quit(); }
+
+  // Waits for one call to happen (since construction or since the previous
+  // WaitForOneCall has returned).
+  void WaitForOneCall() {
+    run_loop_->Run();
+    // Create a new RunLoop so it can already be terminated when the next
+    // OnVisibleStateChanged() call comes in.
+    run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+};
+
+//=================== CertProvisioningSchedulerTest ============================
 
 class CertProvisioningSchedulerTest : public testing::Test {
  public:
@@ -950,6 +979,95 @@ TEST_F(CertProvisioningSchedulerTest, PlatformKeysServiceShutDown) {
   // PlatformKeysService has been shut down (the factory will fail on an attempt
   // to do so).
   scheduler.UpdateAllCerts();
+}
+
+TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
+  const CertScope kCertScope = CertScope::kDevice;
+
+  CertProvisioningSchedulerImpl scheduler(
+      kCertScope, GetProfile(), &pref_service_, &cloud_policy_client_,
+      &platform_keys_service_,
+      network_state_test_helper_.network_state_handler(),
+      MakeFakeInvalidationFactory());
+
+  TestCertProvisioningSchedulerObserver observer;
+  scheduler.AddObserver(&observer);
+
+  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
+  EXPECT_CALL(fake_cryptohome_client_,
+              OnTpmAttestationDeleteKeysByPrefix(
+                  attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
+      .Times(1);
+
+  // The policy is empty, so no workers should be created yet.
+  FastForwardBy(TimeDelta::FromSeconds(1));
+  ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // Two new workers will be created on prefs update.
+  // Expect a state change notification for this.
+  const char kCertProfileId0[] = "cert_profile_id_0";
+  const char kCertProfileVersion0[] = "cert_profile_version_0";
+  CertProfile cert_profile0(kCertProfileId0, kCertProfileVersion0,
+                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+  const char kCertProfileId1[] = "cert_profile_id_1";
+  const char kCertProfileVersion1[] = "cert_profile_version_1";
+  CertProfile cert_profile1(kCertProfileId1, kCertProfileVersion1,
+                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+
+  MockCertProvisioningWorker* worker0 =
+      mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile0);
+  worker0->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
+                           cert_profile0);
+  MockCertProvisioningWorker* worker1 =
+      mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile1);
+  worker1->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
+                           cert_profile1);
+
+  // Add 2 certificate profiles to the policy (the values are the same as
+  // in |cert_profile|-s)
+  base::Value config = ParseJson(
+      R"([{
+           "name": "Certificate Profile 0",
+           "cert_profile_id":"cert_profile_id_0",
+           "policy_version":"cert_profile_version_0",
+           "key_algorithm":"rsa"
+          },
+          {
+           "name": "Certificate Profile 1",
+           "cert_profile_id":"cert_profile_id_1",
+           "policy_version":"cert_profile_version_1",
+           "key_algorithm":"rsa"
+          }])");
+  pref_service_.Set(GetPrefNameForCertProfiles(kCertScope), config);
+  observer.WaitForOneCall();
+
+  // Now one worker for each profile should be created.
+  ASSERT_EQ(scheduler.GetWorkers().size(), 2U);
+
+  // Emulate a worker reporting a state change.
+  // A state change event should be fired by the scheduler for that.
+  scheduler.OnVisibleStateChanged();
+  observer.WaitForOneCall();
+
+  // Emulate a worker reporting a state changeand successfully finishing.
+  // Should be just deleted, and state change event should be
+  // fired for that.
+  scheduler.OnVisibleStateChanged();
+  scheduler.OnProfileFinished(cert_profile0,
+                              CertProvisioningWorkerState::kSucceeded);
+  observer.WaitForOneCall();
+
+  // worker1 failed. Should be deleted and the profile id should be saved, and a
+  // state change event should be fired for that.
+  scheduler.OnProfileFinished(cert_profile1,
+                              CertProvisioningWorkerState::kFailed);
+  observer.WaitForOneCall();
+
+  EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
+  EXPECT_TRUE(
+      base::Contains(scheduler.GetFailedCertProfileIds(), kCertProfileId1));
+
+  scheduler.RemoveObserver(&observer);
 }
 
 }  // namespace

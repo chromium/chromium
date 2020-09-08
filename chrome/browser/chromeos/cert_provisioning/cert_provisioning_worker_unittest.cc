@@ -38,6 +38,7 @@ using base::test::ParseJson;
 using base::test::RunOnceCallback;
 using chromeos::attestation::MockTpmChallengeKeySubtle;
 using testing::_;
+using testing::AtLeast;
 using testing::Mock;
 using testing::StrictMock;
 
@@ -307,11 +308,18 @@ const std::string& GetPublicKey() {
         .WillOnce(RunOnceCallback<2>(platform_keys::Status::kSuccess)); \
   }
 
+// A mock for observing the result callback of the worker.
 class CallbackObserver {
  public:
   MOCK_METHOD(void,
               Callback,
               (const CertProfile& profile, CertProvisioningWorkerState state));
+};
+
+// A mock for observing the state change callback of the worker.
+class StateChangeCallbackObserver {
+ public:
+  MOCK_METHOD(void, StateChangeCallback, ());
 };
 
 class CertProvisioningWorkerTest : public ::testing::Test {
@@ -376,7 +384,13 @@ class CertProvisioningWorkerTest : public ::testing::Test {
     return tpm_challenge_key_impl;
   }
 
-  CertProvisioningWorkerCallback GetCallback() {
+  base::RepeatingClosure GetStateChangeCallback() {
+    return base::BindRepeating(
+        &StateChangeCallbackObserver ::StateChangeCallback,
+        base::Unretained(&state_change_callback_observer_));
+  }
+
+  CertProvisioningWorkerCallback GetResultCallback() {
     return base::BindOnce(&CallbackObserver::Callback,
                           base::Unretained(&callback_observer_));
   }
@@ -397,6 +411,7 @@ class CertProvisioningWorkerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  StrictMock<StateChangeCallbackObserver> state_change_callback_observer_;
   StrictMock<CallbackObserver> callback_observer_;
   StrictMock<SpyingFakeCryptohomeClient> fake_cryptohome_client_;
   ProfileHelperForTesting profile_helper_for_testing_;
@@ -418,7 +433,8 @@ TEST_F(CertProvisioningWorkerTest, Success) {
   MockCertProvisioningInvalidator* mock_invalidator = nullptr;
   CertProvisioningWorkerImpl worker(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(&mock_invalidator), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(&mock_invalidator),
+      GetStateChangeCallback(), GetResultCallback());
 
   {
     testing::InSequence seq;
@@ -430,31 +446,38 @@ TEST_F(CertProvisioningWorkerTest, Success) {
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_START_CSR_OK(ClientCertProvisioningStartCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
         /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
                                                     /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
         platform_keys::KeyAttributeType::kCertificateProvisioningId,
         kCertProfileId, _));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
         ::testing::Optional(platform_keys::TokenId::kUser), kDataToSign,
         GetPublicKey(), kPkHashAlgo, /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_FINISH_CSR_OK(ClientCertProvisioningFinishCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
         kChallengeResponse, kSignature, /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_DOWNLOAD_CERT_OK(ClientCertProvisioningDownloadCert(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
@@ -462,6 +485,7 @@ TEST_F(CertProvisioningWorkerTest, Success) {
 
     EXPECT_IMPORT_CERTIFICATE_OK(ImportCertificate(
         platform_keys::TokenId::kUser, /*certificate=*/_, /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
 
@@ -493,8 +517,11 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
 
   CertProvisioningWorkerImpl worker(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -546,9 +573,12 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   CertProvisioningWorkerImpl worker(
       CertScope::kDevice, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
   const TimeDelta delay = TimeDelta::FromSeconds(30);
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -649,7 +679,8 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   CertProvisioningWorkerImpl worker(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
   const TimeDelta start_csr_delay = TimeDelta::FromSeconds(30);
   const TimeDelta finish_csr_delay = TimeDelta::FromSeconds(30);
@@ -657,6 +688,8 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
   const TimeDelta download_cert_real_delay = TimeDelta::FromSeconds(10);
   const TimeDelta small_delay = TimeDelta::FromMilliseconds(500);
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -760,8 +793,11 @@ TEST_F(CertProvisioningWorkerTest, StatusErrorHandling) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   CertProvisioningWorkerImpl worker(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -803,8 +839,11 @@ TEST_F(CertProvisioningWorkerTest, ResponseErrorHandling) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   auto worker = CertProvisioningWorkerFactory::Get()->Create(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -847,8 +886,11 @@ TEST_F(CertProvisioningWorkerTest, InconsistentDataErrorHandling) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   auto worker = CertProvisioningWorkerFactory::Get()->Create(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -887,11 +929,14 @@ TEST_F(CertProvisioningWorkerTest, BackoffStrategy) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   CertProvisioningWorkerImpl worker(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
   TimeDelta next_delay = TimeDelta::FromSeconds(30);
   const TimeDelta small_delay = TimeDelta::FromMilliseconds(500);
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -951,8 +996,11 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
   MockCertProvisioningInvalidator* mock_invalidator = nullptr;
   CertProvisioningWorkerImpl worker(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(&mock_invalidator), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(&mock_invalidator),
+      GetStateChangeCallback(), GetResultCallback());
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -1045,11 +1093,15 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
   std::unique_ptr<CertProvisioningWorker> worker =
       CertProvisioningWorkerFactory::Get()->Create(
           kCertScope, GetProfile(), &testing_pref_service_, cert_profile,
-          &cloud_policy_client_, MakeInvalidator(), GetCallback());
+          &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+          GetResultCallback());
 
   StrictMock<PrefServiceObserver> pref_observer(
       &testing_pref_service_, GetPrefNameForSerialization(CertScope::kUser));
   base::Value pref_val;
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
 
   // Prepare key, send start csr request.
   {
@@ -1105,7 +1157,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
         kCertScope, GetProfile(), &testing_pref_service_,
         *pref_val.FindKeyOfType(kCertProfileId, base::Value::Type::DICTIONARY),
         &cloud_policy_client_, MakeInvalidator(&mock_invalidator),
-        GetCallback());
+        GetStateChangeCallback(), GetResultCallback());
   }
 
   // Retry start csr request, receive response, try sign challenge.
@@ -1183,7 +1235,8 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
         *pref_val.FindKeyOfType(kCertProfileId, base::Value::Type::DICTIONARY),
-        &cloud_policy_client_, std::move(mock_invalidator_obj), GetCallback());
+        &cloud_policy_client_, std::move(mock_invalidator_obj),
+        GetStateChangeCallback(), GetResultCallback());
   }
 
   // Retry download cert request, receive response, try import certificate.
@@ -1216,12 +1269,15 @@ TEST_F(CertProvisioningWorkerTest, SerializationOnFailure) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   auto worker = CertProvisioningWorkerFactory::Get()->Create(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
   PrefServiceObserver pref_observer(
       &testing_pref_service_, GetPrefNameForSerialization(CertScope::kUser));
   base::Value pref_val;
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -1277,8 +1333,11 @@ TEST_F(CertProvisioningWorkerTest, InformationalGetters) {
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   CertProvisioningWorkerImpl worker(
       CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   {
     testing::InSequence seq;
 
@@ -1329,10 +1388,13 @@ TEST_F(CertProvisioningWorkerTest, CancelDeviceWorker) {
   CertProfile cert_profile(kCertProfileId, kCertProfileVersion,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
 
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   auto worker = CertProvisioningWorkerFactory::Get()->Create(
       kCertScope, GetProfile(), &testing_pref_service_, cert_profile,
-      &cloud_policy_client_, MakeInvalidator(), GetCallback());
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
 
   EXPECT_CALL(callback_observer_, Callback).Times(0);
 

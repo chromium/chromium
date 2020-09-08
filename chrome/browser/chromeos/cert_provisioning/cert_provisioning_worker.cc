@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -135,11 +136,13 @@ std::unique_ptr<CertProvisioningWorker> CertProvisioningWorkerFactory::Create(
     const CertProfile& cert_profile,
     policy::CloudPolicyClient* cloud_policy_client,
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
-    CertProvisioningWorkerCallback callback) {
+    base::RepeatingClosure state_change_callback,
+    CertProvisioningWorkerCallback result_callback) {
   RecordEvent(cert_scope, CertProvisioningEvent::kWorkerCreated);
   return std::make_unique<CertProvisioningWorkerImpl>(
       cert_scope, profile, pref_service, cert_profile, cloud_policy_client,
-      std::move(invalidator), std::move(callback));
+      std::move(invalidator), std::move(state_change_callback),
+      std::move(result_callback));
 }
 
 std::unique_ptr<CertProvisioningWorker>
@@ -150,10 +153,12 @@ CertProvisioningWorkerFactory::Deserialize(
     const base::Value& saved_worker,
     policy::CloudPolicyClient* cloud_policy_client,
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
-    CertProvisioningWorkerCallback callback) {
+    base::RepeatingClosure state_change_callback,
+    CertProvisioningWorkerCallback result_callback) {
   auto worker = std::make_unique<CertProvisioningWorkerImpl>(
       cert_scope, profile, pref_service, CertProfile(), cloud_policy_client,
-      std::move(invalidator), std::move(callback));
+      std::move(invalidator), std::move(state_change_callback),
+      std::move(result_callback));
   if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,
                                                      worker.get())) {
     RecordEvent(cert_scope,
@@ -179,12 +184,14 @@ CertProvisioningWorkerImpl::CertProvisioningWorkerImpl(
     const CertProfile& cert_profile,
     policy::CloudPolicyClient* cloud_policy_client,
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
-    CertProvisioningWorkerCallback callback)
+    base::RepeatingClosure state_change_callback,
+    CertProvisioningWorkerCallback result_callback)
     : cert_scope_(cert_scope),
       profile_(profile),
       pref_service_(pref_service),
       cert_profile_(cert_profile),
-      callback_(std::move(callback)),
+      state_change_callback_(std::move(state_change_callback)),
+      result_callback_(std::move(result_callback)),
       request_backoff_(&kBackoffPolicy),
       cloud_policy_client_(cloud_policy_client),
       invalidator_(std::move(invalidator)) {
@@ -311,6 +318,7 @@ void CertProvisioningWorkerImpl::UpdateState(
 
   HandleSerialization();
 
+  state_change_callback_.Run();
   if (IsFinalState(state_)) {
     CleanUpAndRunCallback();
   }
@@ -805,7 +813,7 @@ void CertProvisioningWorkerImpl::OnCleanUpDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RecordResult(cert_scope_, state_, prev_state_);
-  std::move(callback_).Run(cert_profile_, state_);
+  std::move(result_callback_).Run(cert_profile_, state_);
 }
 
 void CertProvisioningWorkerImpl::HandleSerialization() {

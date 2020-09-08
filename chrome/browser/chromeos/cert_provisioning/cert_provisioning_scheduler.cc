@@ -14,6 +14,8 @@
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
@@ -334,6 +336,9 @@ void CertProvisioningSchedulerImpl::DeserializeWorkers() {
         CertProvisioningWorkerFactory::Get()->Deserialize(
             cert_scope_, profile_, pref_service_, saved_worker,
             cloud_policy_client_, invalidator_factory_->Create(),
+            base::BindRepeating(
+                &CertProvisioningSchedulerImpl::OnVisibleStateChanged,
+                weak_factory_.GetWeakPtr()),
             base::BindOnce(&CertProvisioningSchedulerImpl::OnProfileFinished,
                            weak_factory_.GetWeakPtr()));
     if (!worker) {
@@ -341,7 +346,7 @@ void CertProvisioningSchedulerImpl::DeserializeWorkers() {
       continue;
     }
 
-    workers_[worker->GetCertProfile().profile_id] = std::move(worker);
+    AddWorkerToMap(std::move(worker));
   }
 }
 
@@ -501,10 +506,12 @@ void CertProvisioningSchedulerImpl::CreateCertProvisioningWorker(
       CertProvisioningWorkerFactory::Get()->Create(
           cert_scope_, profile_, pref_service_, cert_profile,
           cloud_policy_client_, invalidator_factory_->Create(),
+          base::BindRepeating(
+              &CertProvisioningSchedulerImpl::OnVisibleStateChanged,
+              weak_factory_.GetWeakPtr()),
           base::BindOnce(&CertProvisioningSchedulerImpl::OnProfileFinished,
                          weak_factory_.GetWeakPtr()));
-  CertProvisioningWorker* worker_unowned = worker.get();
-  workers_[cert_profile.profile_id] = std::move(worker);
+  CertProvisioningWorker* worker_unowned = AddWorkerToMap(std::move(worker));
   worker_unowned->DoStep();
 }
 
@@ -539,7 +546,7 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
       break;
   }
 
-  workers_.erase(worker_iter);
+  RemoveWorkerFromMap(worker_iter);
 }
 
 CertProvisioningWorker* CertProvisioningSchedulerImpl::FindWorker(
@@ -552,6 +559,20 @@ CertProvisioningWorker* CertProvisioningSchedulerImpl::FindWorker(
   }
 
   return iter->second.get();
+}
+
+CertProvisioningWorker* CertProvisioningSchedulerImpl::AddWorkerToMap(
+    std::unique_ptr<CertProvisioningWorker> worker) {
+  CertProvisioningWorker* worker_unowned = worker.get();
+  workers_[worker_unowned->GetCertProfile().profile_id] = std::move(worker);
+  OnVisibleStateChanged();
+  return worker_unowned;
+}
+
+void CertProvisioningSchedulerImpl::RemoveWorkerFromMap(
+    WorkerMap::iterator worker_iter) {
+  workers_.erase(worker_iter);
+  OnVisibleStateChanged();
 }
 
 base::Optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
@@ -610,6 +631,16 @@ CertProvisioningSchedulerImpl::GetFailedCertProfileIds() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   return failed_cert_profiles_;
+}
+
+void CertProvisioningSchedulerImpl::AddObserver(
+    CertProvisioningSchedulerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CertProvisioningSchedulerImpl::RemoveObserver(
+    CertProvisioningSchedulerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool CertProvisioningSchedulerImpl::MaybeWaitForInternetConnection() {
@@ -726,6 +757,27 @@ void CertProvisioningSchedulerImpl::CancelWorkersWithoutPolicy(
       // callback.
       worker_ptr->Stop(CertProvisioningWorkerState::kCanceled);
     }
+  }
+}
+
+void CertProvisioningSchedulerImpl::OnVisibleStateChanged() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (notify_observers_pending_) {
+    return;
+  }
+  notify_observers_pending_ = true;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::Bind(
+          &CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged,
+          weak_factory_.GetWeakPtr()));
+}
+
+void CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  notify_observers_pending_ = false;
+  for (auto& observer : observers_) {
+    observer.OnVisibleStateChanged();
   }
 }
 

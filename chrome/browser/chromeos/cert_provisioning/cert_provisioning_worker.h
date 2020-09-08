@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -28,6 +29,8 @@ namespace cert_provisioning {
 
 class CertProvisioningInvalidator;
 
+// A OnceCallback that is invoked when the CertProvisioningWorker is done and
+// has a result (which could be success or failure).
 using CertProvisioningWorkerCallback =
     base::OnceCallback<void(const CertProfile& profile,
                             CertProvisioningWorkerState state)>;
@@ -47,7 +50,8 @@ class CertProvisioningWorkerFactory {
       const CertProfile& cert_profile,
       policy::CloudPolicyClient* cloud_policy_client,
       std::unique_ptr<CertProvisioningInvalidator> invalidator,
-      CertProvisioningWorkerCallback callback);
+      base::RepeatingClosure state_change_callback,
+      CertProvisioningWorkerCallback result_callback);
 
   virtual std::unique_ptr<CertProvisioningWorker> Deserialize(
       CertScope cert_scope,
@@ -56,7 +60,8 @@ class CertProvisioningWorkerFactory {
       const base::Value& saved_worker,
       policy::CloudPolicyClient* cloud_policy_client,
       std::unique_ptr<CertProvisioningInvalidator> invalidator,
-      CertProvisioningWorkerCallback callback);
+      base::RepeatingClosure state_change_callback,
+      CertProvisioningWorkerCallback result_callback);
 
   // Doesn't take ownership.
   static void SetFactoryForTesting(CertProvisioningWorkerFactory* test_factory);
@@ -108,7 +113,8 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
       const CertProfile& cert_profile,
       policy::CloudPolicyClient* cloud_policy_client,
       std::unique_ptr<CertProvisioningInvalidator> invalidator,
-      CertProvisioningWorkerCallback callback);
+      base::RepeatingClosure state_change_callback,
+      CertProvisioningWorkerCallback result_callback);
   ~CertProvisioningWorkerImpl() override;
 
   // CertProvisioningWorker
@@ -219,7 +225,8 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   Profile* profile_ = nullptr;
   PrefService* pref_service_ = nullptr;
   CertProfile cert_profile_;
-  CertProvisioningWorkerCallback callback_;
+  base::RepeatingClosure state_change_callback_;
+  CertProvisioningWorkerCallback result_callback_;
 
   // This field should be updated only via |UpdateState| function. It will
   // trigger update of the serialized data.

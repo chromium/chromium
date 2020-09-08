@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
 #define CHROME_BROWSER_CHROMEOS_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
 
+#include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_worker.h"
 #include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_invalidator.h"
@@ -33,6 +34,7 @@ class MockCertProvisioningWorkerFactory : public CertProvisioningWorkerFactory {
                const CertProfile& cert_profile,
                policy::CloudPolicyClient* cloud_policy_client,
                std::unique_ptr<CertProvisioningInvalidator> invalidator,
+               base::RepeatingClosure state_change_callback,
                CertProvisioningWorkerCallback callback),
               (override));
 
@@ -44,6 +46,7 @@ class MockCertProvisioningWorkerFactory : public CertProvisioningWorkerFactory {
                const base::Value& saved_worker,
                policy::CloudPolicyClient* cloud_policy_client,
                std::unique_ptr<CertProvisioningInvalidator> invalidator,
+               base::RepeatingClosure state_change_callback,
                CertProvisioningWorkerCallback callback),
               (override));
 

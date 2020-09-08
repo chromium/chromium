@@ -25,11 +25,18 @@ class MockCertProvisioningScheduler : public CertProvisioningScheduler {
               (override));
   MOCK_METHOD(void, UpdateAllCerts, (), (override));
   MOCK_METHOD(const WorkerMap&, GetWorkers, (), (const override));
-
   MOCK_METHOD((const base::flat_map<CertProfileId, FailedWorkerInfo>&),
               GetFailedCertProfileIds,
               (),
               (const override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (CertProvisioningSchedulerObserver*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (CertProvisioningSchedulerObserver*),
+              (override));
 };
 
 }  // namespace cert_provisioning
