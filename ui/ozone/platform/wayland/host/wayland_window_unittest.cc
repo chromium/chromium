@@ -19,6 +19,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
@@ -2141,6 +2142,117 @@ TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
 
   EXPECT_EQ(test_subsurface->position(), subsurface_bounds.origin());
   EXPECT_TRUE(test_subsurface->sync());
+}
+
+TEST_P(WaylandWindowTest, UsesCorrectParentForChildrenWindows) {
+  uint32_t serial = 0;
+
+  MockPlatformWindowDelegate window_delegate;
+  std::unique_ptr<WaylandWindow> window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
+      gfx::Rect(10, 10, 100, 100), &window_delegate);
+  EXPECT_TRUE(window);
+
+  window->Show(false);
+
+  std::unique_ptr<WaylandWindow> another_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
+      gfx::Rect(10, 10, 300, 400), &window_delegate);
+  EXPECT_TRUE(another_window);
+
+  another_window->Show(false);
+
+  Sync();
+
+  auto* window1 = window.get();
+  auto* window2 = window_.get();
+  auto* window3 = another_window.get();
+
+  // Make sure windows are not "active".
+  auto empty_state = MakeStateArray({});
+  SendConfigureEvent(xdg_surface_, 0, 0, ++serial, empty_state.get());
+  auto* xdg_surface_window =
+      server_
+          .GetObject<wl::MockSurface>(window->root_surface()->GetSurfaceId())
+          ->xdg_surface();
+  SendConfigureEvent(xdg_surface_window, 0, 0, ++serial, empty_state.get());
+  auto* xdg_surface_another_window =
+      server_
+          .GetObject<wl::MockSurface>(
+              another_window->root_surface()->GetSurfaceId())
+          ->xdg_surface();
+  SendConfigureEvent(xdg_surface_another_window, 0, 0, ++serial,
+                     empty_state.get());
+
+  Sync();
+
+  // Case 1: provided parent window's widget..
+  MockPlatformWindowDelegate menu_window_delegate;
+  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, window1->GetWidget(),
+      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
+
+  EXPECT_TRUE(menu_window->parent_window() == window1);
+
+  // Case 2: didn't provide parent window's widget - must use current focused.
+  //
+  // Subcase 1: pointer focus.
+  window2->SetPointerFocus(true);
+  menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
+      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
+
+  EXPECT_TRUE(menu_window->parent_window() == window2);
+  EXPECT_TRUE(wl::IsMenuType(menu_window->type()));
+
+  // Subcase 2: keyboard focus.
+  window2->SetPointerFocus(false);
+  window2->set_keyboard_focus(true);
+  menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
+      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
+
+  // Mustn't be able to create a menu window, but rather creates a toplevel
+  // window as we must provide at least something.
+  EXPECT_TRUE(menu_window);
+  // Make it create xdg objects.
+  menu_window->Show(false);
+
+  Sync();
+
+  auto* menu_window_xdg =
+      server_
+          .GetObject<wl::MockSurface>(
+              another_window->root_surface()->GetSurfaceId())
+          ->xdg_surface();
+  EXPECT_TRUE(menu_window_xdg);
+  EXPECT_TRUE(menu_window_xdg->xdg_toplevel());
+  EXPECT_FALSE(menu_window_xdg->xdg_popup());
+
+  // Subcase 3: touch focus.
+  window2->set_keyboard_focus(false);
+  window2->set_touch_focus(true);
+  menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
+      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
+
+  EXPECT_TRUE(menu_window->parent_window() == window2);
+  EXPECT_TRUE(wl::IsMenuType(menu_window->type()));
+
+  // Case 3: neither of the windows are focused. However, there is one that is
+  // active. Must use that then.
+  window2->set_touch_focus(false);
+
+  auto active = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_another_window, 0, 0, ++serial, active.get());
+  Sync();
+
+  menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
+      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
+
+  EXPECT_TRUE(menu_window->parent_window() == window3);
+  EXPECT_TRUE(wl::IsMenuType(menu_window->type()));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
