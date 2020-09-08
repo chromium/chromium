@@ -208,7 +208,7 @@ TEST_F(ImageTest, MultiResolutionImageSkiaToPNG) {
   gfx::Image image(image_skia);
 
   EXPECT_TRUE(
-      gt::ArePNGBytesCloseToBitmap(image.As1xPNGBytes(), bitmap_1x,
+      gt::ArePNGBytesCloseToBitmap(*image.As1xPNGBytes(), bitmap_1x,
                                    gt::MaxColorSpaceConversionColorShift()));
   EXPECT_TRUE(image.HasRepresentation(gfx::Image::kImageRepPNG));
 }
@@ -230,10 +230,10 @@ TEST_F(ImageTest, MultiResolutionPNGToImageSkia) {
   scales.push_back(2.0f);
   gfx::ImageSkia image_skia = image.AsImageSkia();
   EXPECT_TRUE(gt::ArePNGBytesCloseToBitmap(
-      bytes1x, image_skia.GetRepresentation(1.0f).GetBitmap(),
+      *bytes1x, image_skia.GetRepresentation(1.0f).GetBitmap(),
       gt::MaxColorSpaceConversionColorShift()));
   EXPECT_TRUE(gt::ArePNGBytesCloseToBitmap(
-      bytes2x, image_skia.GetRepresentation(2.0f).GetBitmap(),
+      *bytes2x, image_skia.GetRepresentation(2.0f).GetBitmap(),
       gt::MaxColorSpaceConversionColorShift()));
   EXPECT_TRUE(gt::ImageSkiaStructureMatches(image_skia, kSize1x, kSize1x,
                                             scales));
@@ -269,16 +269,17 @@ TEST_F(ImageTest, MultiResolutionPNGToPlatform) {
   EXPECT_EQ(scales.size(), 1U);
   if (scales[0] == 1.0f)
     EXPECT_TRUE(
-        gt::ArePNGBytesCloseToBitmap(bytes1x, from_platform.AsBitmap(),
+        gt::ArePNGBytesCloseToBitmap(*bytes1x, from_platform.AsBitmap(),
                                      gt::MaxColorSpaceConversionColorShift()));
   else if (scales[0] == 2.0f)
-    EXPECT_TRUE(gt::ArePNGBytesCloseToBitmap(bytes2x, from_platform.AsBitmap(),
-                gt::MaxColorSpaceConversionColorShift()));
+    EXPECT_TRUE(
+        gt::ArePNGBytesCloseToBitmap(*bytes2x, from_platform.AsBitmap(),
+                                     gt::MaxColorSpaceConversionColorShift()));
   else
     ADD_FAILURE() << "Unexpected platform scale factor.";
 #else
   EXPECT_TRUE(
-      gt::ArePNGBytesCloseToBitmap(bytes1x, from_platform.AsBitmap(),
+      gt::ArePNGBytesCloseToBitmap(*bytes1x, from_platform.AsBitmap(),
                                    gt::MaxColorSpaceConversionColorShift()));
 #endif  // defined(OS_IOS)
 }
@@ -316,7 +317,7 @@ TEST_F(ImageTest, PNGEncodeFromSkiaDecodeToPlatform) {
 
   EXPECT_TRUE(gt::IsPlatformImageValid(gt::ToPlatformType(from_platform)));
   EXPECT_TRUE(
-      gt::ArePNGBytesCloseToBitmap(png_bytes, from_platform.AsBitmap(),
+      gt::ArePNGBytesCloseToBitmap(*png_bytes, from_platform.AsBitmap(),
                                    gt::MaxColorSpaceConversionColorShift()));
 }
 

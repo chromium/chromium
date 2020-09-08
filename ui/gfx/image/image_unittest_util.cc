@@ -148,15 +148,12 @@ bool AreBitmapsClose(const SkBitmap& bmp1,
   return true;
 }
 
-bool ArePNGBytesCloseToBitmap(
-    const scoped_refptr<base::RefCountedMemory>& bytes,
-    const SkBitmap& bitmap,
-    int max_deviation) {
+bool ArePNGBytesCloseToBitmap(base::span<const uint8_t> bytes,
+                              const SkBitmap& bitmap,
+                              int max_deviation) {
   SkBitmap decoded;
-  if (!bytes.get() ||
-      !PNGCodec::Decode(bytes->front(), bytes->size(), &decoded)) {
+  if (!PNGCodec::Decode(bytes.data(), bytes.size(), &decoded))
     return bitmap.isNull();
-  }
 
   return AreBitmapsClose(bitmap, decoded, max_deviation);
 }

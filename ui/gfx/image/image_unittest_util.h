@@ -8,6 +8,9 @@
 #ifndef UI_GFX_IMAGE_IMAGE_UNITTEST_UTIL_H_
 #define UI_GFX_IMAGE_IMAGE_UNITTEST_UTIL_H_
 
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
@@ -60,10 +63,9 @@ bool AreBitmapsClose(const SkBitmap& bitmap1,
 
 // Returns true if the passed in PNG bitmap is visually similar to the passed in
 // SkBitmap.
-bool ArePNGBytesCloseToBitmap(
-    const scoped_refptr<base::RefCountedMemory>& bytes,
-    const SkBitmap& bitmap,
-    int max_deviation);
+bool ArePNGBytesCloseToBitmap(base::span<const uint8_t> bytes,
+                              const SkBitmap& bitmap,
+                              int max_deviation);
 
 // Returns the maximum color shift in the red, green, and blue components caused
 // by converting a gfx::Image between colorspaces. Color shifts occur when
