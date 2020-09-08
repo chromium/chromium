@@ -75,6 +75,10 @@ base::flat_set<std::string> GetLiteVideoPermanentBlocklist();
 // are not allowed on those navigations.
 bool IsLiteVideoNotAllowedForPageTransition(ui::PageTransition page_transition);
 
+// The number of media rebuffers before all throttling within the frame
+// should be stopped.
+int GetMaxRebuffersPerFrame();
+
 }  // namespace features
 }  // namespace lite_video
 

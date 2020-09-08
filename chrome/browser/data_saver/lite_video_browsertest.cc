@@ -63,11 +63,17 @@ void RetryForHistogramUntilCountReached(
 class LiteVideoBrowserTest : public InProcessBrowserTest {
  public:
   explicit LiteVideoBrowserTest(bool enable_lite_mode = true,
-                                bool enable_lite_video_feature = true)
+                                bool enable_lite_video_feature = true,
+                                int max_rebuffers_before_stop = 1)
       : enable_lite_mode_(enable_lite_mode) {
-    std::vector<base::Feature> enabled_features;
-    if (enable_lite_video_feature)
-      enabled_features.push_back(features::kLiteVideo);
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    if (enable_lite_video_feature) {
+      enabled_features.push_back(
+          {features::kLiteVideo,
+           {{"max_rebuffers_per_frame",
+             base::NumberToString(max_rebuffers_before_stop)}}});
+    }
 
     std::vector<base::Feature> disabled_features = {
         // Disable fallback after decode error to avoid unexpected test pass on
@@ -79,7 +85,8 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
         features::kAudioServiceOutOfProcess,
     };
 
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   ~LiteVideoBrowserTest() override = default;
@@ -322,6 +329,105 @@ IN_PROC_BROWSER_TEST_F(LiteVideoAndLiteModeDisabledBrowserTest,
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::LiteVideo::kEntryName);
   ASSERT_EQ(0u, entries.size());
+}
+
+class LiteVideoRebuffersAllowedBrowserTest : public LiteVideoBrowserTest {
+ public:
+  LiteVideoRebuffersAllowedBrowserTest()
+      : LiteVideoBrowserTest(true /*enable_lite_mode*/,
+                             true /*enable_lite_video_feature*/,
+                             10 /*max_rebuffers_before_stop*/) {}
+};
+
+IN_PROC_BROWSER_TEST_F(LiteVideoRebuffersAllowedBrowserTest,
+                       LiteVideoContinuesAfterBufferUnderflow) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestMSEPlayback("bear-vp9.webm", "2700", "500", false);
+
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "Media.VideoHeight.Initial.MSE", 1);
+
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
+  // Verify some responses were throttled and some video stalls were
+  // encountered.
+  EXPECT_GE(1U, histogram_tester()
+                    .GetAllSamples("LiteVideo.URLLoader.ThrottleLatency")
+                    .size());
+  EXPECT_EQ(0U, histogram_tester()
+                    .GetAllSamples("LiteVideo.HintsAgent.StopThrottling")
+                    .size());
+  EXPECT_GE(
+      1U, histogram_tester()
+              .GetAllSamples("LiteVideo.NavigationMetrics.FrameRebufferMapSize")
+              .size());
+
+  // Close the tab to flush the UKM metrics.
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::LiteVideo::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0];
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, media_url());
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingStartDecisionName,
+      static_cast<int>(lite_video::LiteVideoDecision::kAllowed));
+  // Blocklist reason is unknown due to force overriding the decision logic
+  // for testing.
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kBlocklistReasonName,
+      static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingResultName,
+      static_cast<int>(
+          lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
+}
+
+IN_PROC_BROWSER_TEST_F(LiteVideoRebuffersAllowedBrowserTest,
+                       LiteVideoContinuesAfterBufferUnderflow_WithSubframe) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestMSEPlayback("bear-vp9.webm", "2700", "500", true);
+
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "Media.VideoHeight.Initial.MSE", 1);
+
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "LiteVideo.HintAgent.HasHint", 2);
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 2);
+  // Verify some responses were throttled and some video stalls were
+  // encountered.
+  EXPECT_GE(2U, histogram_tester()
+                    .GetAllSamples("LiteVideo.URLLoader.ThrottleLatency")
+                    .size());
+  EXPECT_EQ(0U, histogram_tester()
+                    .GetAllSamples("LiteVideo.HintsAgent.StopThrottling")
+                    .size());
+  EXPECT_GE(
+      1U, histogram_tester()
+              .GetAllSamples("LiteVideo.NavigationMetrics.FrameRebufferMapSize")
+              .size());
+
+  // Close the tab to flush the UKM metrics.
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::LiteVideo::kEntryName);
+  // Only 1 UKM entry logged, tied to the mainframe navigation.
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0];
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, media_url());
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingStartDecisionName,
+      static_cast<int>(lite_video::LiteVideoDecision::kAllowed));
+  // Blocklist reason is unknown due to force overriding the decision logic
+  // for testing.
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kBlocklistReasonName,
+      static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingResultName,
+      static_cast<int>(
+          lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
 }
 
 }  // namespace

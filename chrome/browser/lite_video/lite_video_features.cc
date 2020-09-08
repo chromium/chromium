@@ -135,5 +135,10 @@ bool IsLiteVideoNotAllowedForPageTransition(
       ::features::kLiteVideo, "allow_on_forward_back", false);
 }
 
+int GetMaxRebuffersPerFrame() {
+  return GetFieldTrialParamByFeatureAsInt(::features::kLiteVideo,
+                                          "max_rebuffers_per_frame", 1);
+}
+
 }  // namespace features
 }  // namespace lite_video

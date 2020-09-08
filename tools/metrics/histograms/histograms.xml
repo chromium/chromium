@@ -76707,6 +76707,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="LiteVideo.NavigationMetrics.FrameRebufferMapSize"
+    units="count" expires_after="M90">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Records the number of entries in the map that records the number of rebuffer
+    events within each frame. Recorded once per navigation.
+  </summary>
+</histogram>
+
 <histogram name="LiteVideo.OriginHints.ParseResult" enum="BooleanSuccess"
     expires_after="M90">
   <owner>mcrouse@chromium.org</owner>

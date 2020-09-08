@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_NAVIGATION_METRICS_H_
 #define CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_NAVIGATION_METRICS_H_
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 
 namespace lite_video {
@@ -46,6 +47,7 @@ class LiteVideoNavigationMetrics {
                              LiteVideoDecision decision,
                              LiteVideoBlocklistReason blocklist_reason,
                              LiteVideoThrottleResult throttle_result);
+  LiteVideoNavigationMetrics(const LiteVideoNavigationMetrics& other);
   ~LiteVideoNavigationMetrics();
 
   int64_t nav_id() const { return nav_id_; }
@@ -55,8 +57,11 @@ class LiteVideoNavigationMetrics {
   }
   LiteVideoThrottleResult throttle_result() const { return throttle_result_; }
 
-  // Update the throttling result of the current navigation.
-  void SetThrottleResult(LiteVideoThrottleResult throttle_result);
+  // Returns true if the frame with |frame_id| has rebuffered too many times.
+  // Updates the map holding the count of rebuffers associated with the frame
+  // for the current navigation and the throttling result if the frame
+  // has rebuffered too often.
+  bool ShouldStopOnRebufferForFrame(int64_t frame_id);
 
   // Update the decision to made on applying LiteVideos to the current
   // navigation.
@@ -67,6 +72,8 @@ class LiteVideoNavigationMetrics {
 
  private:
   int64_t nav_id_;
+  // Map of frame ids to the count of media rebuffers events observed.
+  base::flat_map<int64_t, int> frame_rebuffer_count_map_;
   LiteVideoDecision decision_;
   LiteVideoBlocklistReason blocklist_reason_;
   LiteVideoThrottleResult throttle_result_;

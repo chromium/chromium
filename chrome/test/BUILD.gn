@@ -3333,6 +3333,7 @@ test("unit_tests") {
     "../browser/lite_video/lite_video_features_unittest.cc",
     "../browser/lite_video/lite_video_hint_cache_unittest.cc",
     "../browser/lite_video/lite_video_hint_unittest.cc",
+    "../browser/lite_video/lite_video_navigation_metrics_unittest.cc",
     "../browser/lite_video/lite_video_user_blocklist_unittest.cc",
     "../browser/logging_chrome_unittest.cc",
     "../browser/mac/exception_processor_unittest.mm",
