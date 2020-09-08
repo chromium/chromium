@@ -3452,6 +3452,48 @@ static float GetMaxWidthListMarker(const LayoutBox* layout_object) {
   return max_width;
 }
 
+LayoutUnit LayoutBox::ContainerWidthInInlineDirection() const {
+  LayoutBlock* cb = ContainingBlock();
+
+  if (IsParallelWritingMode(cb->StyleRef().GetWritingMode(),
+                            StyleRef().GetWritingMode())) {
+    return std::max(LayoutUnit(), ContainingBlockLogicalWidthForContent());
+  }
+
+  // PerpendicularContainingBlockLogicalHeight() can return -1 in some
+  // situations but we cannot have a negative width, that's why we clamp it to
+  // zero.
+  return PerpendicularContainingBlockLogicalHeight().ClampNegativeToZero();
+}
+
+bool LayoutBox::ComputeLogicalWidthFromAspectRatio(
+    LayoutUnit* out_logical_width) const {
+  LayoutUnit logical_height_for_ar = kIndefiniteSize;
+  if (StyleRef().AspectRatio() && StyleRef().LogicalWidth().IsAuto() &&
+      (StyleRef().LogicalHeight().IsFixed() ||
+       StyleRef().LogicalHeight().IsPercentOrCalc())) {
+    logical_height_for_ar = ComputeLogicalHeightUsing(
+        kMainOrPreferredSize, StyleRef().LogicalHeight(),
+        /* intrinsic_content_height */ kIndefiniteSize);
+  }
+
+  if (logical_height_for_ar == kIndefiniteSize)
+    return false;
+
+  LayoutUnit container_width_in_inline_direction =
+      ContainerWidthInInlineDirection();
+
+  NGBoxStrut border_padding(
+      BorderStart() + PaddingStart(), BorderEnd() + PaddingEnd(),
+      BorderBefore() + PaddingBefore(), BorderAfter() + PaddingAfter());
+  LayoutUnit logical_width = InlineSizeFromAspectRatio(
+      border_padding, *StyleRef().LogicalAspectRatio(), StyleRef().BoxSizing(),
+      logical_height_for_ar);
+  *out_logical_width = ConstrainLogicalWidthByMinMax(
+      logical_width, container_width_in_inline_direction, ContainingBlock());
+  return true;
+}
+
 DISABLE_CFI_PERF
 void LayoutBox::ComputeLogicalWidth(
     LogicalExtentComputedValues& computed_values) const {
@@ -3486,12 +3528,8 @@ void LayoutBox::ComputeLogicalWidth(
                            (!in_vertical_box || !stretching) &&
                            (!IsGridItem() || !HasStretchedLogicalWidth());
   const ComputedStyle& style_to_use = StyleRef();
-
-  LayoutBlock* cb = ContainingBlock();
   LayoutUnit container_logical_width =
       std::max(LayoutUnit(), ContainingBlockLogicalWidthForContent());
-  bool has_perpendicular_containing_block =
-      cb->IsHorizontalWritingMode() != IsHorizontalWritingMode();
 
   if (IsInline() && !IsInlineBlockOrInlineTable()) {
     // just calculate margins
@@ -3507,36 +3545,12 @@ void LayoutBox::ComputeLogicalWidth(
     return;
   }
 
-  LayoutUnit container_width_in_inline_direction = container_logical_width;
-  if (has_perpendicular_containing_block) {
-    // PerpendicularContainingBlockLogicalHeight() can return -1 in some
-    // situations but we cannot have a negative width, that's why we clamp it to
-    // zero.
-    container_width_in_inline_direction =
-        PerpendicularContainingBlockLogicalHeight().ClampNegativeToZero();
-  }
+  LayoutUnit container_width_in_inline_direction =
+      ContainerWidthInInlineDirection();
+  LayoutBlock* cb = ContainingBlock();
 
-  // If we have an aspect ratio, see if we have a definite height to compute
-  // the width from.
-  LayoutUnit logical_height_for_ar = kIndefiniteSize;
-  if (StyleRef().AspectRatio() && StyleRef().LogicalWidth().IsAuto() &&
-      (StyleRef().LogicalHeight().IsFixed() ||
-       StyleRef().LogicalHeight().IsPercentOrCalc())) {
-    logical_height_for_ar = ComputeLogicalHeightUsing(
-        kMainOrPreferredSize, StyleRef().LogicalHeight(),
-        /* intrinsic_content_height */ kIndefiniteSize);
-  }
-
-  // Width calculations
-  if (logical_height_for_ar != kIndefiniteSize) {
-    NGBoxStrut border_padding(
-        BorderStart() + PaddingStart(), BorderEnd() + PaddingEnd(),
-        BorderBefore() + PaddingBefore(), BorderAfter() + PaddingAfter());
-    LayoutUnit logical_width = InlineSizeFromAspectRatio(
-        border_padding, *StyleRef().LogicalAspectRatio(),
-        StyleRef().BoxSizing(), logical_height_for_ar);
-    computed_values.extent_ = ConstrainLogicalWidthByMinMax(
-        logical_width, container_width_in_inline_direction, cb);
+  if (ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
+    /* we're good */
   } else if (treat_as_replaced) {
     computed_values.extent_ =
         ComputeReplacedLogicalWidth() + BorderAndPaddingLogicalWidth();
@@ -3554,6 +3568,8 @@ void LayoutBox::ComputeLogicalWidth(
       computed_values.margins_.start_, computed_values.margins_.end_,
       StyleRef().MarginStart(), StyleRef().MarginEnd());
 
+  bool has_perpendicular_containing_block =
+      cb->IsHorizontalWritingMode() != IsHorizontalWritingMode();
   if (!has_perpendicular_containing_block && container_logical_width &&
       container_logical_width !=
           (computed_values.extent_ + computed_values.margins_.start_ +

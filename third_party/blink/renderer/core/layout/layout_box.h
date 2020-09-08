@@ -485,6 +485,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool CanResize() const;
 
+  LayoutUnit ContainerWidthInInlineDirection() const;
+  bool ComputeLogicalWidthFromAspectRatio(LayoutUnit* logical_width) const;
+
   // Like most of the other box geometries, visual and layout overflow are also
   // in the "physical coordinates in flipped block-flow direction" of the box.
   LayoutRect NoOverflowRect() const;
