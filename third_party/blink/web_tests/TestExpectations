@@ -1268,6 +1268,7 @@ crbug.com/6606 external/wpt/mathml/relations/css-styling/mathvariant-sans-serif.
 crbug.com/6606 external/wpt/mathml/relations/css-styling/mathvariant-script.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/mathvariant-stretched.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/mathvariant-tailed.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/relations/css-styling/multi-column-layout.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/width-height-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-1.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-2.html [ Failure ]
