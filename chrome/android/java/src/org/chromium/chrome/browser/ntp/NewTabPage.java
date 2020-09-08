@@ -420,7 +420,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         // Determine the feed header to use.
         final SectionHeaderView sectionHeaderView;
-        if (FeedFeatures.isReportingUserActions()) {
+        if (FeedFeatures.isV2Enabled()) {
+            sectionHeaderView = (SectionHeaderView) inflater.inflate(
+                    R.layout.new_tab_page_feed_v2_expandable_header, null, false);
+
+        } else if (FeedFeatures.isReportingUserActions()) {
             sectionHeaderView = (SectionHeaderView) inflater.inflate(
                     R.layout.new_tab_page_snippets_expandable_header_with_menu, null, false);
         } else {

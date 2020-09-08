@@ -12,9 +12,9 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/snippets_article_header_height"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/card_padding"
     android:gravity="center_vertical"
-    android:layoutDirection="locale">
+    android:layoutDirection="locale"
+    app:showHairlineWhenDisabled="false">
 
     <!-- Note: Setting textDirection to "locale" makes sure that a non-translated English word in
          the title text view is aligned based on the device locale and not the text content.
@@ -33,6 +33,9 @@
         android:layout_height="@dimen/snippets_article_header_menu_size"
         android:scaleType="fitXY"
         android:padding="15dp"
+        android:layout_marginTop="@dimen/feed_v2_header_menu_vertical_inset"
+        android:layout_marginBottom="@dimen/feed_v2_header_menu_vertical_inset"
+        android:layout_marginEnd="@dimen/feed_v2_header_menu_end_inset"
         android:background="@null"
         android:src="@drawable/ic_settings_gear_24dp"
         android:contentDescription="@string/accessibility_ntp_feed_menu_button"
