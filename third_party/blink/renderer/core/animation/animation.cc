@@ -1646,9 +1646,9 @@ void Animation::setPlaybackRate(double playback_rate,
   // 4. If previous time is resolved, set the current time of animation to
   //    previous time
   pending_playback_rate_ = base::nullopt;
-  double previous_current_time = currentTime().value_or(Timing::NullValue());
+  base::Optional<double> previous_current_time = currentTime();
   playback_rate_ = playback_rate;
-  if (!Timing::IsNull(previous_current_time)) {
+  if (previous_current_time.has_value()) {
     setCurrentTime(previous_current_time, exception_state);
   }
 
