@@ -2804,8 +2804,6 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
   test::CreateTestFormField("Address:", "address", "1600 Pennsylvania Avenue",
                             "text", &field);
   form.fields.push_back(field);
-  // The sectioning is broken and does not start a new section when a name
-  // follows a FIRST_NAME + LAST_NAME field.
   test::CreateTestFormField("Name:", "name", "Barack Obama", "text", &field);
   form.fields.push_back(field);
   test::CreateTestFormField("City:", "city", "Washington", "text", &field);
@@ -2855,6 +2853,62 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(0, expected_card.Compare(*results[0]));
+}
+
+// Test that a form is split into two sections correctly when the name has
+// a different input format between the sections.
+TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesNameFirst) {
+  base::test::ScopedFeatureList redundant_name_sectioning_feature;
+  redundant_name_sectioning_feature.InitAndEnableFeature(
+      features::kAutofillSectionUponRedundantNameInfo);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  // Address section 1.
+  test::CreateTestFormField("First name:", "first_name", "George", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "California", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
+  form.fields.push_back(field);
+
+  // Address section 2.
+  // The sectioning should start a new section when a name
+  // follows a FIRST_NAME + LAST_NAME field.
+  test::CreateTestFormField("Name:", "name", "Barack Obama", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "address", "1600 Pennsylvania Avenue",
+                            "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "Washington", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "DC", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "20500", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Country:", "country", "USA", "text", &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  // Test that both addresses have been saved.
+  EXPECT_EQ(2U, personal_data_manager_->GetProfiles().size());
 }
 
 // Test that a form with both address and credit card sections imports only the

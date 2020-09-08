@@ -231,6 +231,11 @@ const base::Feature kAutofillSaveAndFillVPA{"AutofillSaveAndFillVPA",
 const base::Feature kAutofillSaveOnProbablySubmitted{
     "AutofillSaveOnProbablySubmitted", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables creating a new form section when an unstructured name input 
+// containing a |NAME_LAST| field is encountered after a structured name input.
+const base::Feature kAutofillSectionUponRedundantNameInfo{
+    "AutofillSectionUponRedundantNameInfo", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or Disables (mostly for hermetic testing) autofill server
 // communication. The URL of the autofill server can further be controlled via
 // the autofill-server-url param. The given URL should specify the complete

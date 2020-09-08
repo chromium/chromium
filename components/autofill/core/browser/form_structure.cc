@@ -2093,6 +2093,9 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
 
   const bool is_enabled_autofill_new_sectioning =
       base::FeatureList::IsEnabled(features::kAutofillUseNewSectioningMethod);
+  const bool is_enabled_autofill_redundant_name_sectioning =
+      base::FeatureList::IsEnabled(
+          features::kAutofillSectionUponRedundantNameInfo);
 
   if (!has_author_specified_sections || is_enabled_autofill_new_sectioning) {
     // Name sections after the first field in the section.
@@ -2124,6 +2127,14 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       // little off.  Hence, ignore this field type as a signal here.
       if (AutofillType(current_type).group() == PHONE_HOME)
         already_saw_current_type = false;
+
+      if (is_enabled_autofill_redundant_name_sectioning) {
+        // Forms sometimes have a different format of inputting names in
+        // different sections. If we believe a new name is being entered, assume
+        // it is a new section (unless there are two identical inputs in a row).
+        if (current_type == NAME_FULL)
+          already_saw_current_type |= (seen_types.count(NAME_LAST) > 0);
+      }
 
       bool ignored_field = !field->IsVisible();
 
