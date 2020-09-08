@@ -3605,6 +3605,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SHARING_HUB_SYNC_DISABLED_TEXT" desc="Text to show when sync is disabled on the current device.">
         To share this page to another device, turn on sync in Chrome settings
       </message>
+      <message name="IDS_SHARING_HUB_STORAGE_DISABLED_TEXT" desc="Text to show when storage permission is disabled.">
+        You have disabled Storage access, please go to Settings to enable it.
+      </message>
+      <message name="IDS_SHARING_HUB_OPEN_SETTINGS_LABEL" desc="Label for the open settings button.">
+        Open Settings
+      </message>
 
       <!-- ClickToCall -->
       <message name="IDS_CLICK_TO_CALL_NOTIFICATION_TEXT" desc="Text displayed in a click to call notification to call on a number.">

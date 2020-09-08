@@ -69,7 +69,6 @@ class ScreenshotShareSheetMediator {
             share();
         } else if (NoArgOperation.SAVE == operation) {
             mSaveRunnable.run();
-            mCloseDialogRunnable.run();
         } else if (NoArgOperation.DELETE == operation) {
             mCloseDialogRunnable.run();
         } else if (NoArgOperation.INSTALL == operation) {
