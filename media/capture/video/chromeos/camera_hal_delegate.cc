@@ -293,6 +293,17 @@ void CameraHalDelegate::GetDevicesInfo(
       if (!camera_info) {
         continue;
       }
+
+      auto get_vendor_string = [&](const std::string& key) -> const char* {
+        const VendorTagInfo* info = vendor_tag_ops_delegate_.GetInfoByName(key);
+        if (info == nullptr) {
+          return nullptr;
+        }
+        auto val = GetMetadataEntryAsSpan<char>(
+            camera_info->static_camera_characteristics, info->tag);
+        return val.empty() ? nullptr : val.data();
+      };
+
       VideoCaptureDeviceDescriptor desc;
       desc.capture_api = VideoCaptureApi::ANDROID_API2_LIMITED;
       desc.transport_type = VideoCaptureTransportType::OTHER_TRANSPORT;
@@ -310,17 +321,6 @@ void CameraHalDelegate::GetDevicesInfo(
         case cros::mojom::CameraFacing::CAMERA_FACING_EXTERNAL: {
           desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE;
 
-          auto get_vendor_string = [&](const std::string& key) -> const char* {
-            const VendorTagInfo* info =
-                vendor_tag_ops_delegate_.GetInfoByName(key);
-            if (info == nullptr) {
-              return nullptr;
-            }
-            auto val = GetMetadataEntryAsSpan<char>(
-                camera_info->static_camera_characteristics, info->tag);
-            return val.empty() ? nullptr : val.data();
-          };
-
           // The webcam_private api expects that |device_id| to be set as the
           // corresponding device path for external cameras used in GVC system.
           auto* path = get_vendor_string("com.google.usb.devicePath");
@@ -330,15 +330,15 @@ void CameraHalDelegate::GetDevicesInfo(
           auto* name = get_vendor_string("com.google.usb.modelName");
           desc.set_display_name(name != nullptr ? name : "External Camera");
 
-          auto* vid = get_vendor_string("com.google.usb.vendorId");
-          auto* pid = get_vendor_string("com.google.usb.productId");
-          if (vid != nullptr && pid != nullptr) {
-            desc.model_id = base::StrCat({vid, ":", pid});
-          }
           break;
           // Mojo validates the input parameters for us so we don't need to
           // worry about malformed values.
         }
+      }
+      auto* vid = get_vendor_string("com.google.usb.vendorId");
+      auto* pid = get_vendor_string("com.google.usb.productId");
+      if (vid != nullptr && pid != nullptr) {
+        desc.model_id = base::StrCat({vid, ":", pid});
       }
       desc.set_pan_tilt_zoom_supported(IsPanTiltZoomSupported(camera_info));
       device_id_to_camera_id_[desc.device_id] = camera_id;

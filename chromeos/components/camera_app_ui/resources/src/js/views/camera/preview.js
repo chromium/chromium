@@ -314,6 +314,13 @@ export class Preview {
       },
     };
 
+    // These should be per session static information and we don't need to
+    // recalculate them in every callback.
+    const {videoWidth, videoHeight} = this.video_;
+    const resolution = `${videoWidth}x${videoHeight}`;
+    const videoTrack = this.stream_.getVideoTracks()[0];
+    const deviceName = videoTrack.label;
+
     // Currently there is no easy way to calculate the fps of a video element.
     // Here we use the metadata events to calculate a reasonable approximation.
     const updateFps = (() => {
@@ -333,6 +340,8 @@ export class Preview {
     })();
 
     const callback = (metadata) => {
+      showValue('#preview-resolution', resolution);
+      showValue('#preview-device-name', deviceName);
       const fps = updateFps();
       if (fps !== null) {
         showValue('#preview-fps', `${fps.toFixed(0)} FPS`);
@@ -354,7 +363,7 @@ export class Preview {
       return;
     }
 
-    const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
+    const deviceId = videoTrack.getSettings().deviceId;
     this.metadataObserverId_ = await deviceOperator.addMetadataObserver(
         deviceId, callback, cros.mojom.StreamType.PREVIEW_OUTPUT);
   }
