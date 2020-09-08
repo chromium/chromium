@@ -80,6 +80,16 @@ public class PaymentRequestSpec {
         mNativePointer = 0;
     }
 
+    /**
+     * Destroys native object if owned object is not destroyed.
+     *
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    public void finalize() throws Throwable {
+        destroy();
+    }
+
     @CalledByNative
     private long getNativePointer() {
         return mNativePointer;

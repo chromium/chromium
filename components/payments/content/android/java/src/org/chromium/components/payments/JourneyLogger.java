@@ -36,6 +36,16 @@ public class JourneyLogger {
     }
 
     /**
+     * Destroys native object if owned object is not destroyed.
+     *
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    public void finalize() throws Throwable {
+        destroy();
+    }
+
+    /**
      * Sets the number of suggestions shown for the specified section.
      *
      * @param section               The section for which to log.

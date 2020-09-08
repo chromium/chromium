@@ -46,6 +46,16 @@ public class CurrencyFormatter {
         }
     }
 
+    /**
+     * Destroys native object if owned object is not destroyed.
+     *
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    public void finalize() throws Throwable {
+        destroy();
+    }
+
     /** @return The currency code formatted for display. */
     public String getFormattedCurrencyCode() {
         return CurrencyFormatterJni.get().getFormattedCurrencyCode(
