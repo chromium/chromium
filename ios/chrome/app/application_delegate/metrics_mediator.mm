@@ -7,7 +7,7 @@
 #include <sys/sysctl.h>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
@@ -128,14 +128,15 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   const base::TimeDelta startDurationFromProcess =
       TimeDeltaSinceAppLaunchFromProcess();
 
-  UMA_HISTOGRAM_TIMES("Startup.ColdStartFromProcessCreationTime",
-                      startDurationFromProcess);
+  base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTime",
+                          startDurationFromProcess);
 
   if ([connectionInformation startupParameters]) {
-    UMA_HISTOGRAM_TIMES("Startup.ColdStartWithExternalURLTime", startDuration);
+    base::UmaHistogramTimes("Startup.ColdStartWithExternalURLTime",
+                            startDuration);
   } else {
-    UMA_HISTOGRAM_TIMES("Startup.ColdStartWithoutExternalURLTime",
-                        startDuration);
+    base::UmaHistogramTimes("Startup.ColdStartWithoutExternalURLTime",
+                            startDuration);
   }
 }
 
@@ -377,8 +378,19 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
 + (void)applicationDidEnterBackground:(NSInteger)memoryWarningCount {
   base::RecordAction(base::UserMetricsAction("MobileEnteredBackground"));
-  UMA_HISTOGRAM_COUNTS_100("MemoryWarning.OccurrencesPerSession",
-                           memoryWarningCount);
+  base::UmaHistogramCounts100("MemoryWarning.OccurrencesPerSession",
+                              memoryWarningCount);
+
+  task_vm_info task_info_data;
+  mach_msg_type_number_t count = sizeof(task_vm_info) / sizeof(natural_t);
+  kern_return_t result =
+      task_info(mach_task_self(), TASK_VM_INFO,
+                reinterpret_cast<task_info_t>(&task_info_data), &count);
+  if (result == KERN_SUCCESS) {
+    mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
+    base::UmaHistogramMemoryLargeMB(
+        "Memory.Browser.MemoryFootprint.OnBackground", footprint_mb);
+  }
 }
 
 #pragma mark - CRConnectionTypeObserverBridge implementation
@@ -408,11 +420,11 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 #pragma mark - interfaces methods
 
 + (void)recordNumTabAtStartup:(int)numTabs {
-  UMA_HISTOGRAM_COUNTS_100("Tabs.CountAtStartup", numTabs);
+  base::UmaHistogramCounts100("Tabs.CountAtStartup", numTabs);
 }
 
 + (void)recordNumTabAtResume:(int)numTabs {
-  UMA_HISTOGRAM_COUNTS_100("Tabs.CountAtResume", numTabs);
+  base::UmaHistogramCounts100("Tabs.CountAtResume", numTabs);
 }
 
 - (void)setBreakpadUploadingEnabled:(BOOL)enableUploading {
