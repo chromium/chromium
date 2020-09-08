@@ -1984,6 +1984,27 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
   }
 
+  // Back navigation from a cross-origin isolated page to a non cross-origin
+  // isolated page.
+  {
+    EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+    scoped_refptr<SiteInstanceImpl> cross_origin_isolated_site_instance =
+        current_frame_host()->GetSiteInstance();
+
+    EXPECT_TRUE(
+        cross_origin_isolated_site_instance->IsCoopCoepCrossOriginIsolated());
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+    scoped_refptr<SiteInstanceImpl> non_cross_origin_isolated_site_instance =
+        current_frame_host()->GetSiteInstance();
+
+    EXPECT_FALSE(non_cross_origin_isolated_site_instance
+                     ->IsCoopCoepCrossOriginIsolated());
+    EXPECT_FALSE(non_cross_origin_isolated_site_instance->IsRelatedSiteInstance(
+        cross_origin_isolated_site_instance.get()));
+  }
+
   // Cross origin navigation in between two cross-origin isolated pages.
   {
     EXPECT_TRUE(NavigateToURL(shell(), isolated_page));

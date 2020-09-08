@@ -1562,8 +1562,9 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
   SiteInstanceImpl* new_instance_impl =
       static_cast<SiteInstanceImpl*>(new_instance.get());
-  DCHECK_EQ(is_coop_coep_cross_origin_isolated,
-            new_instance_impl->IsCoopCoepCrossOriginIsolated());
+  DCHECK(IsSiteInstanceCompatibleWithCoopCoepCrossOriginIsolation(
+      new_instance_impl, frame_tree_node_->IsMainFrame(), dest_url,
+      is_coop_coep_cross_origin_isolated, is_speculative));
 
   // If |should_swap| is true, we must use a different SiteInstance than the
   // current one. If we didn't, we would have two RenderFrameHosts in the same

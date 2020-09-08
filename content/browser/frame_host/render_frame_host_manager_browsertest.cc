@@ -6731,9 +6731,8 @@ class ProactivelySwapBrowsingInstancesSameSiteCoopTest
 // COOP + COEP, should use new process).
 // 2. Go back to A2 (should use new process).
 // 3. Go back to A1 (should reuse A2's process).
-// Note: This test is currently disabled due to crbug.com/1107814.
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteCoopTest,
-                       DISABLED_HistoryNavigationReusesProcess_COOP) {
+                       HistoryNavigationReusesProcess_COOP) {
   // This test expects a renderer process to eventually get deleted when we
   // navigate away from the page using it, which won't happen if the page is
   // kept alive in the back-forward cache.  So, we should disable back-forward
