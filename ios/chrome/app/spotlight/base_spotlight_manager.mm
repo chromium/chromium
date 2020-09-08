@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/hash/md5.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/fallback_url_util.h"
@@ -82,10 +83,10 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   favicon::LargeIconService* _largeIconService;  // weak
 
   // Queue to query large icons.
-  base::CancelableTaskTracker _largeIconTaskTracker;
+  std::unique_ptr<base::CancelableTaskTracker> _largeIconTaskTracker;
 
-  // Dictionary to track the tasks querying the large icons.
-  NSMutableDictionary* _pendingTasks;
+  // Tasks querying the large icons.
+  std::set<GURL> _pendingTasks;
 
   // Records whether -shutdown has been invoked and the method forwarded to
   // the base class.
@@ -110,7 +111,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   if (self) {
     _spotlightDomain = domain;
     _largeIconService = largeIconService;
-    _pendingTasks = [[NSMutableDictionary alloc] init];
+    _largeIconTaskTracker = std::make_unique<base::CancelableTaskTracker>();
   }
   return self;
 }
@@ -140,8 +141,9 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 }
 
 - (void)cancelAllLargeIconPendingTasks {
-  _largeIconTaskTracker.TryCancelAll();
-  [_pendingTasks removeAllObjects];
+  DCHECK(!_shutdownCalled);
+  _largeIconTaskTracker->TryCancelAll();
+  _pendingTasks.clear();
 }
 
 - (void)clearAllSpotlightItems:(BlockWithError)callback {
@@ -193,63 +195,35 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 }
 
 - (void)refreshItemsWithURL:(const GURL&)URLToRefresh title:(NSString*)title {
-  NSURL* NSURL = net::NSURLWithGURL(URLToRefresh);
-
-  if (!NSURL || [_pendingTasks objectForKey:NSURL]) {
+  DCHECK(!_shutdownCalled);
+  if (!URLToRefresh.is_valid() || base::Contains(_pendingTasks, URLToRefresh))
     return;
-  }
 
+  _pendingTasks.insert(URLToRefresh);
   __weak BaseSpotlightManager* weakSelf = self;
-  GURL URL = URLToRefresh;
-  void (^faviconBlock)(const favicon_base::LargeIconResult&) = ^(
-      const favicon_base::LargeIconResult& result) {
-    BaseSpotlightManager* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf->_pendingTasks removeObjectForKey:NSURL];
-    UIImage* favicon;
-    if (result.bitmap.is_valid()) {
-      scoped_refptr<base::RefCountedMemory> data =
-          result.bitmap.bitmap_data.get();
-      favicon = [UIImage
-          imageWithData:[NSData dataWithBytes:data->front() length:data->size()]
-                  scale:[UIScreen mainScreen].scale];
-    } else {
-      NSString* iconText =
-          base::SysUTF16ToNSString(favicon::GetFallbackIconText(URL));
-      UIColor* backgroundColor = skia::UIColorFromSkColor(
-          result.fallback_icon_style->background_color);
-      UIColor* textColor =
-          skia::UIColorFromSkColor(result.fallback_icon_style->text_color);
-      favicon = GetFallbackImageWithStringAndColor(iconText, backgroundColor,
-                                                   textColor);
-    }
-    NSArray* spotlightItems = [strongSelf spotlightItemsWithURL:URL
-                                                        favicon:favicon
-                                                   defaultTitle:title];
-
-    if ([spotlightItems count]) {
-      [[CSSearchableIndex defaultSearchableIndex]
-          indexSearchableItems:spotlightItems
-             completionHandler:nil];
-    }
-  };
-
   base::CancelableTaskTracker::TaskId taskID =
       _largeIconService->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
-          URL, kMinIconSize * [UIScreen mainScreen].scale,
+          URLToRefresh, kMinIconSize * [UIScreen mainScreen].scale,
           kIconSize * [UIScreen mainScreen].scale,
-          base::BindRepeating(faviconBlock), &_largeIconTaskTracker);
-  [_pendingTasks setObject:[NSNumber numberWithLongLong:taskID] forKey:NSURL];
+          base::BindOnce(
+              ^(const GURL& itemURL,
+                const favicon_base::LargeIconResult& result) {
+                [weakSelf largeIconResult:result itemURL:itemURL title:title];
+              },
+              URLToRefresh),
+          _largeIconTaskTracker.get());
+
+  if (taskID == base::CancelableTaskTracker::kBadTaskId)
+    _pendingTasks.erase(URLToRefresh);
 }
 
 - (NSUInteger)pendingLargeIconTasksCount {
-  return [_pendingTasks count];
+  return static_cast<NSUInteger>(_pendingTasks.size());
 }
 
 - (void)shutdown {
   [self cancelAllLargeIconPendingTasks];
+  _largeIconTaskTracker.reset();
   _largeIconService = nullptr;
   _shutdownCalled = YES;
 }
@@ -276,6 +250,39 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
     [keywordsArray addObjectsFromArray:additionalArray];
   }
   return keywordsArray;
+}
+
+- (void)largeIconResult:(const favicon_base::LargeIconResult&)largeIconResult
+                itemURL:(const GURL&)itemURL
+                  title:(NSString*)title {
+  _pendingTasks.erase(itemURL);
+
+  UIImage* favicon;
+  if (largeIconResult.bitmap.is_valid()) {
+    scoped_refptr<base::RefCountedMemory> data =
+        largeIconResult.bitmap.bitmap_data;
+    favicon = [UIImage imageWithData:[NSData dataWithBytes:data->front()
+                                                    length:data->size()]
+                               scale:[UIScreen mainScreen].scale];
+  } else {
+    NSString* iconText =
+        base::SysUTF16ToNSString(favicon::GetFallbackIconText(itemURL));
+    UIColor* backgroundColor = skia::UIColorFromSkColor(
+        largeIconResult.fallback_icon_style->background_color);
+    UIColor* textColor = skia::UIColorFromSkColor(
+        largeIconResult.fallback_icon_style->text_color);
+    favicon = GetFallbackImageWithStringAndColor(iconText, backgroundColor,
+                                                 textColor);
+  }
+  NSArray* spotlightItems = [self spotlightItemsWithURL:itemURL
+                                                favicon:favicon
+                                           defaultTitle:title];
+
+  if ([spotlightItems count]) {
+    [[CSSearchableIndex defaultSearchableIndex]
+        indexSearchableItems:spotlightItems
+           completionHandler:nil];
+  }
 }
 
 @end
