@@ -60,7 +60,7 @@ PointerDetails GetMousePointerDetailsFromNative(
 
 const gfx::Vector2dF& GetMouseMovementFromNative(
     const PlatformEvent& native_event) {
-  DCHECK(native_event->IsMouseEvent());
+  DCHECK(native_event->IsMouseEvent() || native_event->IsScrollEvent());
   const ui::MouseEvent* event =
       static_cast<const ui::MouseEvent*>(native_event);
   return event->movement();
