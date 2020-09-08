@@ -58,8 +58,12 @@ suite('SharedPaths', function() {
   test('Remove', async function() {
     await setPrefs({'path1': ['PvmDefault'], 'path2': ['PvmDefault']});
     assertEquals(3, page.shadowRoot.querySelectorAll('.settings-box').length);
-    assertEquals(2, page.shadowRoot.querySelectorAll('.list-item').length);
+    const rows = '.list-item:not([hidden])';
+    assertEquals(2, page.shadowRoot.querySelectorAll(rows).length);
+
     assertFalse(page.$.pluginVmInstructionsRemove.hidden);
+    assertFalse(page.$.pluginVmList.hidden);
+    assertTrue(page.$.pluginVmListEmpty.hidden);
     assertTrue(!!page.$$('.list-item cr-icon-button'));
 
     // Remove first shared path, still one left.
@@ -71,12 +75,12 @@ suite('SharedPaths', function() {
       assertEquals('path1', path);
     }
     await setPrefs({'path2': ['PvmDefault']});
-    assertEquals(1, page.shadowRoot.querySelectorAll('.list-item').length);
+    assertEquals(1, page.shadowRoot.querySelectorAll(rows).length);
     assertFalse(page.$.pluginVmInstructionsRemove.hidden);
 
     // Remove remaining shared path, none left.
     pluginVmBrowserProxy.resetResolver('removePluginVmSharedPath');
-    page.$$('.list-item cr-icon-button').click();
+    page.$$(`${rows} cr-icon-button`).click();
     {
       const [vmName, path] =
           await pluginVmBrowserProxy.whenCalled('removePluginVmSharedPath');
@@ -84,8 +88,10 @@ suite('SharedPaths', function() {
       assertEquals('path2', path);
     }
     await setPrefs({'ignored': ['ignore']});
-    assertEquals(0, page.shadowRoot.querySelectorAll('.list-item').length);
-    // Verify remove instructions are hidden.
+    assertTrue(page.$.pluginVmList.hidden);
+    // Verify remove instructions are hidden, and empty list message is shown.
     assertTrue(page.$.pluginVmInstructionsRemove.hidden);
+    assertTrue(page.$.pluginVmList.hidden);
+    assertFalse(page.$.pluginVmListEmpty.hidden);
   });
 });

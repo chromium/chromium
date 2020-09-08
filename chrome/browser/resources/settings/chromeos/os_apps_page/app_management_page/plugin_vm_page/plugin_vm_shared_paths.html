@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="plugin_vm_browser_proxy.html">
 <link rel="import" href="../../../../settings_shared_css.html">
 <link rel="import" href="../../../metrics_recorder.html">
@@ -18,7 +19,7 @@
         </span>
       </div>
     </div>
-    <div class="settings-box secondary continuation"
+    <div id="pluginVmListEmpty" class="settings-box secondary continuation"
         hidden="[[sharedPaths_.length]]" >
        $i18n{pluginVmSharedPathsListEmptyMessage}
     </div>
@@ -28,18 +29,18 @@
           $i18n{pluginVmSharedPathsListHeading}
         </h2>
       </div>
-      <div class="list-frame vertical-list" role="list"
-          aria-labeledby="pluginVmListHeading">
-        <template is="dom-repeat" items="[[sharedPaths_]]">
+      <iron-list class="list-frame vertical-list" role="list"
+          aria-labeledby="pluginVmListHeading" items="[[sharedPaths_]]">
+        <template>
           <div class="list-item" role="listitem">
             <div class="start">[[item.pathDisplayText]]</div>
-            <cr-icon-button class="icon-clear"
+            <cr-icon-button class="icon-clear" tabindex$="[[tabIndex]]"
                 on-click="onRemoveSharedPathClick_"
                 title="$i18n{pluginVmSharedPathsRemoveSharing}">
             </cr-icon-button>
           </div>
         </template>
-      </div>
+      </iron-list>
     </div>
   </template>
   <script src="plugin_vm_shared_paths.js"></script>

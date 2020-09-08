@@ -936,6 +936,8 @@ suite('CrostiniPageTests', function() {
       assertFalse(subpage.$.crostiniList.hidden);
       assertTrue(subpage.$.crostiniListEmpty.hidden);
       assertTrue(!!subpage.$$('.list-item cr-icon-button'));
+      const rows = '.list-item:not([hidden])';
+      assertEquals(2, subpage.shadowRoot.querySelectorAll(rows).length);
 
       {
         // Remove first shared path, still one left.
@@ -949,13 +951,13 @@ suite('CrostiniPageTests', function() {
 
       await test_util.flushTasks();
       Polymer.dom.flush();
-      assertEquals(1, subpage.shadowRoot.querySelectorAll('.list-item').length);
+      assertEquals(1, subpage.shadowRoot.querySelectorAll(rows).length);
       assertFalse(subpage.$.crostiniInstructionsRemove.hidden);
 
       {
         // Remove remaining shared path, none left.
         crostiniBrowserProxy.resetResolver('removeCrostiniSharedPath');
-        subpage.$$('.list-item cr-icon-button').click();
+        subpage.$$(`${rows} cr-icon-button`).click();
         const [vmName, path] =
             await crostiniBrowserProxy.whenCalled('removeCrostiniSharedPath');
         assertEquals('termina', vmName);
@@ -965,9 +967,7 @@ suite('CrostiniPageTests', function() {
 
       await test_util.flushTasks();
       Polymer.dom.flush();
-      assertEquals(0, subpage.shadowRoot.querySelectorAll('.list-item').length);
-      // Verify remove instructions are hidden, and empty list message
-      // is shown.
+      // Verify remove instructions are hidden, and empty list message is shown.
       assertTrue(subpage.$.crostiniInstructionsRemove.hidden);
       assertTrue(subpage.$.crostiniList.hidden);
       assertFalse(subpage.$.crostiniListEmpty.hidden);
