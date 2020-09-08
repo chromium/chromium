@@ -8189,8 +8189,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // a FrameHostMsg_ShowPopup to ask the browser to build and display the actual
 // popup using native controls.
 #if !defined(OS_MAC) && !defined(OS_ANDROID)
+// Disable the test due to flaky: https://crbug.com/1126165
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_TwoSubframesCreatePopupMenuWidgetsSimultaneously \
+  DISABLED_TwoSubframesCreatePopupMenuWidgetsSimultaneously
+#else
+#define MAYBE_TwoSubframesCreatePopupMenuWidgetsSimultaneously \
+  TwoSubframesCreatePopupMenuWidgetsSimultaneously
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       TwoSubframesCreatePopupMenuWidgetsSimultaneously) {
+                       MAYBE_TwoSubframesCreatePopupMenuWidgetsSimultaneously) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
