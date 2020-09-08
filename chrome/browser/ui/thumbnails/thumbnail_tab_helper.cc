@@ -292,7 +292,7 @@ void ThumbnailTabHelper::StartVideoCapture() {
                             /* include_scrollbars_in_capture */ true);
 
   const gfx::Size& target_size = last_frame_capture_info_.target_size;
-  constexpr int kMaxFrameRate = 3;
+  constexpr int kMaxFrameRate = 2;
   video_capturer_ = source_view->CreateVideoCapturer();
   video_capturer_->SetResolutionConstraints(target_size, target_size, false);
   video_capturer_->SetAutoThrottlingEnabled(false);
