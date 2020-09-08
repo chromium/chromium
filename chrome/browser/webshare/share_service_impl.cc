@@ -79,10 +79,8 @@ bool ShareServiceImpl::IsDangerousFilename(base::StringPiece name) {
       ".xbm",    // image/x-xbitmap
   };
 
-  const std::string lower_name = base::ToLowerASCII(name);
-
   for (const char* permitted : kPermitted) {
-    if (base::EndsWith(lower_name, permitted))
+    if (base::EndsWith(name, permitted, base::CompareCase::INSENSITIVE_ASCII))
       return false;
   }
   return true;

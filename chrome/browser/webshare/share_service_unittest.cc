@@ -104,6 +104,11 @@ TEST_F(ShareServiceUnitTest, DangerousFilename) {
 
   EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("a/a"));
   EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("zzz/zzz"));
+
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousFilename("1.XBM"));
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousFilename("2.bMP"));
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousFilename("3.Flac"));
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousFilename("4.webM"));
 }
 
 TEST_F(ShareServiceUnitTest, DangerousMimeType) {
@@ -112,6 +117,9 @@ TEST_F(ShareServiceUnitTest, DangerousMimeType) {
 
   EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("a/a"));
   EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("zzz/zzz"));
+
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("audio/Flac"));
+  EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("Video/webm"));
 }
 
 TEST_F(ShareServiceUnitTest, Multimedia) {
