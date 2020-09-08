@@ -149510,7 +149510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ResourceScheduler.ActiveSchedulerClientsCount" units="clients"
-    expires_after="M85">
+    expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <summary>
     The number of active resource scheduler clients indicates the severity of
@@ -149619,7 +149619,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ResourceScheduler.NonDelayableLastEndToNonDelayableStart.NonDelayableNotInFlight"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <owner>dougarnett@chromium.org</owner>
   <summary>
@@ -149633,7 +149633,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ResourceScheduler.NonDelayableLastStartOrEndToNonDelayableStart"
-    units="ms" expires_after="M82">
+    units="ms" expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <owner>dougarnett@chromium.org</owner>
   <summary>
@@ -149646,7 +149646,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ResourceScheduler.NonDelayableLastStartToNonDelayableStart"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <owner>dougarnett@chromium.org</owner>
   <summary>
@@ -149659,7 +149659,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ResourceScheduler.NonDelayableLastStartToNonDelayableStart.NonDelayableInFlight"
-    units="ms" expires_after="M82">
+    units="ms" expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <owner>dougarnett@chromium.org</owner>
   <summary>
@@ -149673,7 +149673,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable"
-    units="requests" expires_after="M85">
+    units="requests" expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <summary>
     Records the number of delayable requests in-flight when a non-delayable
@@ -149691,7 +149691,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ResourceScheduler.PeakDelayableRequestsInFlight"
-    units="requests" expires_after="M85">
+    units="requests" expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <summary>
     Records the highest number of delayable requests that were in-flight when
@@ -149700,7 +149700,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ResourceScheduler.PeakObservedQueueingDelay" units="ms"
-    expires_after="2020-06-30">
+    expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <owner>dougarnett@chromium.org</owner>
   <summary>
@@ -149712,7 +149712,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ResourceScheduler.RequestQueuingDuration" units="ms"
-    expires_after="M85">
+    expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
   <summary>
     The amount of time the ResourceScheduler queued a request. Recorded in
