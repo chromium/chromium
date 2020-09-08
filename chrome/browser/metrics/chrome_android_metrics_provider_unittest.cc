@@ -17,9 +17,10 @@ class ChromeAndroidMetricsProviderTest : public testing::Test {
   ChromeAndroidMetricsProvider metrics_provider_;
 };
 
-TEST_F(ChromeAndroidMetricsProviderTest, ProvideCurrentSessionData_CustomTabs) {
-  metrics_provider_.ProvideCurrentSessionData(nullptr /* uma_proto */);
+TEST_F(ChromeAndroidMetricsProviderTest, OnDidCreateMetricsLog_CustomTabs) {
+  metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectTotalCount("CustomTabs.Visible", 1);
+  histogram_tester_.ExpectTotalCount("Android.ChromeActivity.Type", 1);
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,

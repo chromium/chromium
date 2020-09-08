@@ -37397,6 +37397,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CustomTabs.Experimental.Visible" enum="VisibleTab"
     expires_after="2021-04-15">
+  <obsolete>
+    Finished experiment and replaced by CustomTabs.Visible in September 2020
+  </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
