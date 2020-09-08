@@ -41,6 +41,12 @@ public interface CompositorSurfaceManager {
     void requestSurface(int format);
 
     /**
+     * Returns the PixelFormat of the currently owned surface if any (OPAQUE or TRANSLUCENT),
+     * or UNKNOWN if there is no owned surface or it isn't initialized yet.
+     */
+    int getFormatOfOwnedSurface();
+
+    /**
      * Called to notify us that the client no longer needs the surface that it doesn't own. This
      * tells us that we may destroy it. Note that it's okay if it never had an unowned surface.
      */

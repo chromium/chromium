@@ -149,6 +149,12 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     }
 
     @Override
+    public int getFormatOfOwnedSurface() {
+        if (mOwnedByClient == null) return PixelFormat.UNKNOWN;
+        return mOwnedByClient.format;
+    }
+
+    @Override
     public void requestSurface(int format) {
         Log.e(TAG, "Transitioning to surface with format : " + format);
         mRequestedByClient = (format == PixelFormat.TRANSLUCENT) ? mTranslucent : mOpaque;

@@ -349,9 +349,10 @@ public class CompositorView
         // content. The compositor surface appears on top of that as an overlay.)
         // TODO(https://crbug.com/1122103): revisit once the stale-ChromeChildSurface issue is
         // fixed.
-        if (!canUseSurfaceControl()) {
-            // If SurfaceControl is off, switch the compositor to a translucent surface, same as
-            // overlay video mode.
+        if (!canUseSurfaceControl()
+                || mCompositorSurfaceManager.getFormatOfOwnedSurface() != PixelFormat.TRANSLUCENT) {
+            // If SurfaceControl is off, or if we haven't started using it yet, switch the
+            // compositor to a translucent surface, same as overlay video mode.
             setOverlayVideoMode(enabled);
         }
         CompositorViewJni.get().setOverlayImmersiveArMode(
