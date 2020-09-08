@@ -101,7 +101,8 @@ VRServiceImpl::XrCompatibleCallback::XrCompatibleCallback(
 
 VRServiceImpl::XrCompatibleCallback::~XrCompatibleCallback() {
   if (!callback.is_null())
-    std::move(callback).Run(device::mojom::XrCompatibleResult::kNotCompatible);
+    std::move(callback).Run(
+        device::mojom::XrCompatibleResult::kNoDeviceAvailable);
 }
 
 VRServiceImpl::VRServiceImpl(content::RenderFrameHost* render_frame_host)

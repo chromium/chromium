@@ -318,10 +318,9 @@ void XRRuntimeManagerImpl::SupportsSession(
 void XRRuntimeManagerImpl::MakeXrCompatible() {
   auto* runtime = GetImmersiveVrRuntime();
   if (!runtime) {
-    // WebXR spec: if there's no device, xr compatible is false.
     for (VRServiceImpl* service : services_)
       service->OnMakeXrCompatibleComplete(
-          device::mojom::XrCompatibleResult::kNotCompatible);
+          device::mojom::XrCompatibleResult::kNoDeviceAvailable);
     return;
   }
 

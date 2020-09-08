@@ -799,7 +799,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void MakeXrCompatibleAsync();
   void OnMakeXrCompatibleFinished(
       device::mojom::blink::XrCompatibleResult xr_compatible_result);
-  void CompleteXrCompatiblePromiseIfPending();
+  void CompleteXrCompatiblePromiseIfPending(DOMExceptionCode exception_code);
   bool xr_compatible_;
   Member<ScriptPromiseResolver> make_xr_compatible_resolver_;
 

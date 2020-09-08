@@ -1259,17 +1259,31 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
 
 void XRSystem::MakeXrCompatibleAsync(
     device::mojom::blink::VRService::MakeXrCompatibleCallback callback) {
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::FeaturePolicyFeature::kWebXr)) {
+    std::move(callback).Run(
+        device::mojom::XrCompatibleResult::kWebXrFeaturePolicyBlocked);
+    return;
+  }
+
   TryEnsureService();
   if (service_.is_bound()) {
     service_->MakeXrCompatible(std::move(callback));
   } else {
-    std::move(callback).Run(device::mojom::XrCompatibleResult::kNotCompatible);
+    std::move(callback).Run(
+        device::mojom::XrCompatibleResult::kNoDeviceAvailable);
   }
 }
 
 void XRSystem::MakeXrCompatibleSync(
     device::mojom::XrCompatibleResult* xr_compatible_result) {
-  *xr_compatible_result = device::mojom::XrCompatibleResult::kNotCompatible;
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::FeaturePolicyFeature::kWebXr)) {
+    *xr_compatible_result =
+        device::mojom::XrCompatibleResult::kWebXrFeaturePolicyBlocked;
+    return;
+  }
+  *xr_compatible_result = device::mojom::XrCompatibleResult::kNoDeviceAvailable;
 
   TryEnsureService();
   if (service_.is_bound())

@@ -660,10 +660,11 @@ union RequestSessionResult {
 // process is compatible with the active VR headset.
 enum XrCompatibleResult {
   // Compatibility results where the GPU process was not restarted.
-  kAlreadyCompatible,
-  kNotCompatible,
+  kAlreadyCompatible,         // GPU process is already on a compatible GPU.
+  kNoDeviceAvailable,         // No WebXR device is available.
+  kWebXrFeaturePolicyBlocked, // WebXR is blocked by feature policy.
 
-  // Compatibility results where the GPU was restarted. Context lost and
+  // Compatibility results where the GPU process was restarted. Context lost and
   // restored for existing WebGL contexts must be handled before using for XR.
   kCompatibleAfterRestart,    // XR compatible, GPU process was restarted.
   kNotCompatibleAfterRestart, // Not XR compatible, GPU process was restarted.

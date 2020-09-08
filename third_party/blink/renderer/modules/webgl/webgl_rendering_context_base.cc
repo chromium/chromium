@@ -863,7 +863,7 @@ bool WebGLRenderingContextBase::MakeXrCompatibleSync(
     return true;
 
   device::mojom::blink::XrCompatibleResult xr_compatible_result =
-      device::mojom::blink::XrCompatibleResult::kNotCompatible;
+      device::mojom::blink::XrCompatibleResult::kNoDeviceAvailable;
   HTMLCanvasElement* canvas = static_cast<HTMLCanvasElement*>(host);
   NavigatorXR* navigator_xr = NavigatorXR::From(canvas->GetDocument());
   if (navigator_xr)
@@ -875,14 +875,14 @@ bool WebGLRenderingContextBase::MakeXrCompatibleSync(
 void WebGLRenderingContextBase::MakeXrCompatibleAsync() {
   if (!canvas()) {
     xr_compatible_ = false;
-    CompleteXrCompatiblePromiseIfPending();
+    CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
     return;
   }
 
   NavigatorXR* navigator_xr = NavigatorXR::From(canvas()->GetDocument());
   if (!navigator_xr) {
     xr_compatible_ = false;
-    CompleteXrCompatiblePromiseIfPending();
+    CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
     return;
   }
 
@@ -896,19 +896,39 @@ void WebGLRenderingContextBase::OnMakeXrCompatibleFinished(
     device::mojom::blink::XrCompatibleResult xr_compatible_result) {
   xr_compatible_ = IsXrCompatibleFromResult(xr_compatible_result);
 
-  // If the gpu is restarted, MaybeRestoreContext will resolve the promise on
-  // the subsequent restore.
-  if (!DidGpuRestart(xr_compatible_result))
-    CompleteXrCompatiblePromiseIfPending();
+  // If the gpu process is restarted, MaybeRestoreContext will resolve the
+  // promise on the subsequent restore.
+  if (!DidGpuRestart(xr_compatible_result)) {
+    DOMExceptionCode exception_code = DOMExceptionCode::kUnknownError;
+    switch (xr_compatible_result) {
+      case device::mojom::blink::XrCompatibleResult::kAlreadyCompatible:
+        exception_code = DOMExceptionCode::kNoError;
+        break;
+      case device::mojom::blink::XrCompatibleResult::kNoDeviceAvailable:
+        // Per WebXR spec, reject with an InvalidStateError if device is null.
+        exception_code = DOMExceptionCode::kInvalidStateError;
+        break;
+      case device::mojom::blink::XrCompatibleResult::kWebXrFeaturePolicyBlocked:
+        exception_code = DOMExceptionCode::kSecurityError;
+        break;
+      case device::mojom::blink::XrCompatibleResult::kCompatibleAfterRestart:
+      case device::mojom::blink::XrCompatibleResult::kNotCompatibleAfterRestart:
+        NOTREACHED();
+    }
+    CompleteXrCompatiblePromiseIfPending(exception_code);
+  }
 }
 
-void WebGLRenderingContextBase::CompleteXrCompatiblePromiseIfPending() {
+void WebGLRenderingContextBase::CompleteXrCompatiblePromiseIfPending(
+    DOMExceptionCode exception_code) {
   if (make_xr_compatible_resolver_) {
     if (xr_compatible_) {
+      DCHECK(exception_code == DOMExceptionCode::kNoError);
       make_xr_compatible_resolver_->Resolve();
     } else {
+      DCHECK(exception_code != DOMExceptionCode::kNoError);
       make_xr_compatible_resolver_->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+          MakeGarbageCollected<DOMException>(exception_code));
     }
 
     make_xr_compatible_resolver_ = nullptr;
@@ -8201,7 +8221,7 @@ void WebGLRenderingContextBase::DispatchContextLostEvent(TimerBase*) {
     // behavior wasn't prevented. CompleteXrCompatiblePromiseIfPending rejects
     // the promise if xr_compatible_ is false, which was set at the beginning of
     // this method.
-    CompleteXrCompatiblePromiseIfPending();
+    CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
   }
 }
 
@@ -8299,7 +8319,11 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
       WebGLContextEvent::Create(event_type_names::kWebglcontextrestored, "");
   Host()->HostDispatchEvent(event);
 
-  CompleteXrCompatiblePromiseIfPending();
+  if (xr_compatible_) {
+    CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kNoError);
+  } else {
+    CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
+  }
 }
 
 String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
