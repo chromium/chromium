@@ -483,7 +483,6 @@ blink_core_sources("css") {
     "resolver/cascade_priority.h",
     "resolver/cascade_resolver.cc",
     "resolver/cascade_resolver.h",
-    "resolver/css_property_priority.h",
     "resolver/css_to_style_map.cc",
     "resolver/css_to_style_map.h",
     "resolver/element_resolve_context.cc",

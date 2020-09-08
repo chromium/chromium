@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_interpolations.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
-#include "third_party/blink/renderer/core/css/resolver/css_property_priority.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -343,9 +342,8 @@ void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
   uint64_t bits = map_.HighPriorityBits();
 
   if (bits) {
-    using HighPriority = CSSPropertyPriorityData<kHighPropertyPriority>;
-    int first = static_cast<int>(HighPriority::First());
-    int last = static_cast<int>(HighPriority::Last());
+    int first = static_cast<int>(kFirstHighPriorityCSSProperty);
+    int last = static_cast<int>(kLastHighPriorityCSSProperty);
     for (int i = first; i <= last; ++i) {
       if (bits & (static_cast<uint64_t>(1) << i))
         LookupAndApply(CSSProperty::Get(convertToCSSPropertyID(i)), resolver);

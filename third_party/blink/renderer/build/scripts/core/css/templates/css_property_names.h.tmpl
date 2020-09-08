@@ -35,6 +35,8 @@ const int numCSSProperties = {{properties_count}};
 const int kIntLastCSSProperty = {{last_property_id}};
 const CSSPropertyID lastCSSProperty = static_cast<CSSPropertyID>(kIntLastCSSProperty);
 const CSSPropertyID lastUnresolvedCSSProperty = static_cast<CSSPropertyID>({{last_unresolved_property_id}});
+const CSSPropertyID kFirstHighPriorityCSSProperty = firstCSSProperty;
+const CSSPropertyID kLastHighPriorityCSSProperty = CSSPropertyID::{{last_high_priority_property_id}};
 const int numCSSPropertyIDs = static_cast<int>(lastUnresolvedCSSProperty) + 1;
 const size_t maxCSSPropertyNameLength = {{max_name_length}};
 constexpr size_t kCSSPropertyIDBitLength = {{property_id_bit_length}};
@@ -43,10 +45,23 @@ static_assert((static_cast<size_t>(1) << kCSSPropertyIDBitLength) >
                   static_cast<size_t>(lastUnresolvedCSSProperty),
               "kCSSPropertyIDBitLength has enough bits");
 
+static_assert(CSSPropertyID::kColor == kFirstHighPriorityCSSProperty,
+              "CSSPropertyID::kColor is the first high-priority property");
+static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty,
+              "CSSPropertyID::kZoom is the last high-priority property");
+static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
+               static_cast<int>(kFirstHighPriorityCSSProperty)) == 26,
+              "There should a low number of high-priority properties");
+
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {
     DCHECK_GE(id, firstCSSProperty);
     DCHECK_LE(id, lastCSSProperty);
     return static_cast<int>(id) - kIntFirstCSSProperty;
+}
+
+constexpr bool IsHighPriority(CSSPropertyID id) {
+  return id >= kFirstHighPriorityCSSProperty &&
+      id <= kLastHighPriorityCSSProperty;
 }
 
 inline bool isCSSPropertyIDWithName(CSSPropertyID id)

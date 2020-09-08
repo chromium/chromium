@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/resolver/cascade_map.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
-#include "third_party/blink/renderer/core/css/resolver/css_property_priority.h"
 
 namespace blink {
 
@@ -125,10 +124,9 @@ void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
   DCHECK_LT(index, static_cast<size_t>(numCSSProperties));
 
   // Set bit in high_priority_, if appropriate.
-  using HighPriority = CSSPropertyPriorityData<kHighPropertyPriority>;
-  static_assert(static_cast<int>(HighPriority::Last()) < 64,
+  static_assert(static_cast<int>(kLastHighPriorityCSSProperty) < 64,
                 "CascadeMap supports at most 63 high-priority properties");
-  if (HighPriority::PropertyHasPriority(id))
+  if (IsHighPriority(id))
     high_priority_ |= (1ull << index);
   has_important_ |= priority.IsImportant();
 

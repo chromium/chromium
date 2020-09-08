@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
-#include "third_party/blink/renderer/core/css/resolver/css_property_priority.h"
 
 namespace blink {
 
@@ -183,8 +182,7 @@ TEST(CascadeMapTest, AllHighPriorityBits) {
 
   uint64_t expected = 0;
   for (CSSPropertyID id : CSSPropertyIDList()) {
-    if (CSSPropertyPriorityData<kHighPropertyPriority>::PropertyHasPriority(
-            id)) {
+    if (IsHighPriority(id)) {
       if (CSSProperty::Get(id).IsSurrogate())
         continue;
       map.Add(CSSPropertyName(id), CascadeOrigin::kAuthor);
@@ -200,7 +198,7 @@ TEST(CascadeMapTest, LastHighPrio) {
 
   EXPECT_FALSE(map.HighPriorityBits());
 
-  CSSPropertyID last = CSSPropertyPriorityData<kHighPropertyPriority>::Last();
+  CSSPropertyID last = kLastHighPriorityCSSProperty;
 
   map.Add(CSSPropertyName(last), CascadeOrigin::kAuthor);
   EXPECT_EQ(map.HighPriorityBits(), 1ull << static_cast<uint64_t>(last));

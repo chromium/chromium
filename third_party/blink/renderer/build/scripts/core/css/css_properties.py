@@ -70,6 +70,7 @@ class CSSProperties(object):
         # 1: CSSPropertyID::kVariable
         self._first_enum_value = 2
         self._last_used_enum_value = self._first_enum_value
+        self._last_high_priority_property = None
 
         self._properties_by_id = {}
         self._properties_by_name = {}
@@ -141,7 +142,6 @@ class CSSProperties(object):
         for property_ in self._longhands + self._shorthands:
             self.expand_parameters(property_)
             validate_property(property_)
-            # This order must match the order in CSSPropertyPriority.h.
             priority_numbers = {'High': 0, 'Low': 1}
             priority = priority_numbers[property_['priority']]
             name_without_leading_dash = property_['name'].original
@@ -170,6 +170,8 @@ class CSSProperties(object):
                 ('property with ID {} appears more than once in the '
                  'properties list'.format(property_['property_id']))
             self._properties_by_id[property_['property_id']] = property_
+            if property_['priority'] == 'High':
+                self._last_high_priority_property = property_
 
         self.expand_aliases()
         self._properties_including_aliases = self._longhands + \
@@ -376,6 +378,10 @@ class CSSProperties(object):
     @property
     def last_unresolved_property_id(self):
         return self._last_unresolved_property_id
+
+    @property
+    def last_high_priority_property_id(self):
+        return self._last_high_priority_property['enum_key']
 
     @property
     def property_id_bit_length(self):

@@ -47,6 +47,8 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
             self._css_properties.last_property_id,
             'last_unresolved_property_id':
             self._css_properties.last_unresolved_property_id,
+            'last_high_priority_property_id':
+            self._css_properties.last_high_priority_property_id,
             'property_id_bit_length':
             self._css_properties.property_id_bit_length,
             'max_name_length':
