@@ -18099,7 +18099,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="BackForwardCache.ProactiveSameSiteBISwap.EligibilityDuringCommit"
-    enum="BooleanPresent" expires_after="M88">
+    enum="BackForwardCacheEligibilityDuringCommit" expires_after="M88">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -18115,7 +18115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap"
-    enum="BooleanPresent" expires_after="M88">
+    enum="BackForwardCacheSameSiteNavigationDidSwap" expires_after="M88">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -18128,7 +18128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="BackForwardCache.ProactiveSameSiteBISwap.UnloadRunsAfterCommit"
-    enum="BooleanPresent" expires_after="M88">
+    enum="BackForwardCacheUnloadRunsAfterCommit" expires_after="M88">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>

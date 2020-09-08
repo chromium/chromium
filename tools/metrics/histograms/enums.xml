@@ -5763,7 +5763,7 @@ Unknown properties are collapsed to zero. -->
 
 <enum name="BackForwardCacheActionAfterPagehide">
   <int value="0" label="Navigation"/>
-  <int value="1" label="Ssent postMessage"/>
+  <int value="1" label="Sent postMessage"/>
   <int value="2" label="Received postMessage"/>
   <int value="3" label="Modified localStorage"/>
   <int value="4" label="Modified sessionStorage"/>
@@ -5821,6 +5821,11 @@ Unknown properties are collapsed to zero. -->
       label="ChromePasswordManagerClient::BindCredentialManager"/>
   <int value="2129248270"
       label="password_manager::ContentPasswordManagerDriver"/>
+</enum>
+
+<enum name="BackForwardCacheEligibilityDuringCommit">
+  <int value="0" label="No longer bfcache-eligible"/>
+  <int value="1" label="Still bfcache-eligible"/>
 </enum>
 
 <enum name="BackForwardCacheEvictedAfterDocumentRestoredReason">
@@ -5886,6 +5891,16 @@ Unknown properties are collapsed to zero. -->
 <enum name="BackForwardCacheReloadsAndHistoryNavigations">
   <int value="0" label="HistoryNavigation"/>
   <int value="1" label="ReloadAfterHistoryNavigation"/>
+</enum>
+
+<enum name="BackForwardCacheSameSiteNavigationDidSwap">
+  <int value="0" label="Did not swap BrowsingInstances"/>
+  <int value="1" label="Swapped BrowsingInstances"/>
+</enum>
+
+<enum name="BackForwardCacheUnloadRunsAfterCommit">
+  <int value="0" label="Unload won't run after commit"/>
+  <int value="1" label="Unload runs after commit"/>
 </enum>
 
 <enum name="BackForwardNavigationType">
