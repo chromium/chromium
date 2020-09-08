@@ -534,8 +534,9 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   DISALLOW_COPY_AND_ASSIGN(DelayingDownloadManagerDelegate);
 };
 
-// Disabled on ChromeOS due to flakiness. crbug.com/580766
-#if defined(OS_CHROMEOS)
+// Disabled on multiple platforms due to flakiness. crbug.com/580766
+#if defined(OS_CHROMEOS) || \
+    (defined(OS_WIN) || defined(OS_LINUX)) && defined(NDEBUG)
 #define MAYBE_SaveHTMLOnlyTabDestroy DISABLED_SaveHTMLOnlyTabDestroy
 #else
 #define MAYBE_SaveHTMLOnlyTabDestroy SaveHTMLOnlyTabDestroy
