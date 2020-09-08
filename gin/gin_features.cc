@@ -46,4 +46,8 @@ const base::Feature kV8NoReclaimUnmodifiedWrappers{
 const base::Feature kV8LocalHeaps{"V8LocalHeaps",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables TurboFan's direct heap access.
+const base::Feature kV8TurboDirectHeapAccess{"V8TurboDirectHeapAccess",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features

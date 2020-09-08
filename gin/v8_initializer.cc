@@ -265,9 +265,20 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
 
   if (!base::FeatureList::IsEnabled(features::kV8LocalHeaps)) {
     // The --local-heaps flag is enabled by default, so we need to explicitly
-    // disabled it if kV8LocalHeaps is disabled.
+    // disable it if kV8LocalHeaps is disabled.
     static constexpr char no_local_heaps[] = "--no-local-heaps";
     v8::V8::SetFlagsFromString(no_local_heaps, sizeof(no_local_heaps) - 1);
+
+    // Also disable TurboFan's direct access if local heaps are not enabled.
+    static constexpr char no_direct_access[] = "--no-turbo-direct-heap-access";
+    v8::V8::SetFlagsFromString(no_direct_access, sizeof(no_direct_access) - 1);
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kV8TurboDirectHeapAccess)) {
+    // The --turbo-direct-heap-access flag is enabled by default, so we need to
+    // explicitly disable it if kV8TurboDirectHeapAccess is disabled.
+    static constexpr char no_direct_access[] = "--no-turbo-direct-heap-access";
+    v8::V8::SetFlagsFromString(no_direct_access, sizeof(no_direct_access) - 1);
   }
 
   if (IsolateHolder::kStrictMode == mode) {
