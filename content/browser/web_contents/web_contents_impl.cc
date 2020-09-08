@@ -4849,10 +4849,6 @@ void WebContentsImpl::LoadStateChanged(
   load_state_host_ = host16;
   if (load_state_.state == net::LOAD_STATE_READING_RESPONSE)
     SetNotWaitingForResponse();
-  if (IsLoading()) {
-    NotifyNavigationStateChanged(static_cast<InvalidateTypes>(
-        INVALIDATE_TYPE_LOAD | INVALIDATE_TYPE_TAB));
-  }
 }
 
 void WebContentsImpl::SetVisibilityAndNotifyObservers(Visibility visibility) {
