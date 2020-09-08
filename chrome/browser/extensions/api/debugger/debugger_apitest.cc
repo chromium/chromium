@@ -391,4 +391,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       AutoAttachPermissions) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com",
+      "/extensions/api_test/debugger_auto_attach_permissions/page.html"));
+  ASSERT_TRUE(RunExtensionTestWithArg("debugger_auto_attach_permissions",
+                                      url.spec().c_str()))
+      << message_;
+}
+
 }  // namespace extensions

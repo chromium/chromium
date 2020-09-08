@@ -467,7 +467,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
       // was introduced. Try a DCHECK instead and possibly remove the check.
       if (!handler_->root_session_->HasChildSession(id_))
         return;
-      handler_->root_session_->GetClient()->DispatchProtocolMessage(
+      GetRootClient()->DispatchProtocolMessage(
           handler_->root_session_->GetAgentHost(), message);
       return;
     }
@@ -483,6 +483,26 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   void AgentHostClosed(DevToolsAgentHost* agent_host) override {
     DCHECK(agent_host == agent_host_.get());
     Detach(true);
+  }
+
+  bool MayAttachToURL(const GURL& url, bool is_webui) override {
+    return GetRootClient()->MayAttachToURL(url, is_webui);
+  }
+
+  bool MayAttachToBrowser() override {
+    return GetRootClient()->MayAttachToBrowser();
+  }
+
+  bool MayReadLocalFiles() override {
+    return GetRootClient()->MayReadLocalFiles();
+  }
+
+  bool MayWriteLocalFiles() override {
+    return GetRootClient()->MayWriteLocalFiles();
+  }
+
+  content::DevToolsAgentHostClient* GetRootClient() {
+    return handler_->root_session_->GetClient();
   }
 
   TargetHandler* handler_;
