@@ -38,11 +38,12 @@ void BlinkOptimizationGuideInquirer::InquireHints(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::vector<proto::OptimizationType> supported_optimization_types;
-  if (ShouldUseOptimizationGuideForDelayAsyncScript()) {
+  if (features::ShouldUseOptimizationGuideForDelayAsyncScript()) {
     supported_optimization_types.push_back(
         proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION);
   }
-  if (ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests()) {
+  if (features::
+          ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests()) {
     supported_optimization_types.push_back(
         proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS);
   }

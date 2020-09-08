@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/features.h"
 
 namespace optimization_guide {
+namespace features {
 
 bool ShouldUseOptimizationGuideForDelayAsyncScript() {
   static const bool is_feature_enabled =
@@ -28,4 +29,5 @@ bool ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests() {
   return is_feature_enabled;
 }
 
+}  // namespace features
 }  // namespace optimization_guide

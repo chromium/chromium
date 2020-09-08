@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_BLINK_BLINK_OPTIMIZATION_GUIDE_FEATURE_FLAG_HELPER_H_
 
 namespace optimization_guide {
+namespace features {
 
 bool ShouldUseOptimizationGuideForDelayAsyncScript();
 
 bool ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests();
 
+}  // namespace features
 }  // namespace optimization_guide
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_BLINK_BLINK_OPTIMIZATION_GUIDE_FEATURE_FLAG_HELPER_H_
