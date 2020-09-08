@@ -9,17 +9,16 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-
-namespace device {
-class BluetoothAdapter;
-}  // namespace device
+#include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash {
 
 // Listens to changes in battery level for HID devices, updating the
 // corresponding device::BluetoothDevice.
+// TODO(b/166543531): Remove after migrated to BlueZ Battery Provider API.
 class ASH_EXPORT HidBatteryListener
-    : public chromeos::PowerManagerClient::Observer {
+    : public chromeos::PowerManagerClient::Observer,
+      public device::BluetoothAdapter::Observer {
  public:
   explicit HidBatteryListener(scoped_refptr<device::BluetoothAdapter> adapter);
   ~HidBatteryListener() override;
@@ -31,6 +30,10 @@ class ASH_EXPORT HidBatteryListener
   void PeripheralBatteryStatusReceived(const std::string& path,
                                        const std::string& name,
                                        int level) override;
+
+  // device::BluetoothAdapter::Observer:
+  void DeviceAdded(device::BluetoothAdapter* adapter,
+                   device::BluetoothDevice* device) override;
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
 

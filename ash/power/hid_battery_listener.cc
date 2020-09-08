@@ -14,10 +14,17 @@ HidBatteryListener::HidBatteryListener(
     scoped_refptr<device::BluetoothAdapter> adapter)
     : adapter_(adapter) {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+  adapter_->AddObserver(this);
+
+  // We may be late for DeviceAdded notifications. So for the already added
+  // devices, simulate DeviceAdded events.
+  for (auto* const device : adapter_->GetDevices())
+    DeviceAdded(adapter_.get(), device);
 }
 
 HidBatteryListener::~HidBatteryListener() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  adapter_->RemoveObserver(this);
 }
 
 void HidBatteryListener::PeripheralBatteryStatusReceived(
@@ -37,6 +44,12 @@ void HidBatteryListener::PeripheralBatteryStatusReceived(
     device->SetBatteryPercentage(base::nullopt);
   else
     device->SetBatteryPercentage(level);
+}
+
+void HidBatteryListener::DeviceAdded(device::BluetoothAdapter* adapter,
+                                     device::BluetoothDevice* device) {
+  chromeos::PowerManagerClient::Get()->RefreshBluetoothBattery(
+      device->GetAddress());
 }
 
 }  // namespace ash

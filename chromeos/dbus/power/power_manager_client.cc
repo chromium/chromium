@@ -580,6 +580,17 @@ class PowerManagerClientImpl : public PowerManagerClient {
     return max_dark_suspend_delay_timeout_;
   }
 
+  void RefreshBluetoothBattery(const std::string& address) override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kRefreshBluetoothBatteryMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(address);
+    // This refresh request is best effort, so we don't have to handle errors.
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
  private:
   // Returns true if the current thread is the origin thread.
   bool OnOriginThread() {

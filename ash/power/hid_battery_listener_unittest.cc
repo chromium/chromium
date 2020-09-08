@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,6 +44,9 @@ class HidBatteryListenerTest : public AshTestBase {
     ON_CALL(*mock_adapter_, GetDevice(kAddress))
         .WillByDefault(Return(mock_device_.get()));
 
+    // Check that HidBatteryListener subscribes to be adapter observer.
+    EXPECT_CALL(*mock_adapter_, AddObserver(_))
+        .WillOnce(testing::SaveArg<0>(&adapter_observer_));
     listener_ = std::make_unique<HidBatteryListener>(mock_adapter_);
   }
 
@@ -61,6 +65,7 @@ class HidBatteryListenerTest : public AshTestBase {
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<device::MockBluetoothDevice> mock_device_;
   std::unique_ptr<HidBatteryListener> listener_;
+  device::BluetoothAdapter::Observer* adapter_observer_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HidBatteryListenerTest);
@@ -109,6 +114,23 @@ TEST_F(HidBatteryListenerTest, DeviceNotPresentInAdapter) {
 
   // Should not crash.
   NotifyPeripheralBatteryStatusReceived(kPath, kDeviceName, 100);
+}
+
+TEST_F(HidBatteryListenerTest, RefreshBluetoothBattery) {
+  // Start with no battery info.
+  EXPECT_FALSE(mock_device_->battery_percentage());
+
+  // Simulate DeviceAdded observer event.
+  chromeos::FakePowerManagerClient::Get()->set_peripheral_battery_refresh_level(
+      60);
+  adapter_observer_->DeviceAdded(mock_adapter_.get(), mock_device_.get());
+  EXPECT_EQ(60, mock_device_->battery_percentage());
+
+  // Simulate DeviceAdded observer event with a different battery value.
+  chromeos::FakePowerManagerClient::Get()->set_peripheral_battery_refresh_level(
+      50);
+  adapter_observer_->DeviceAdded(mock_adapter_.get(), mock_device_.get());
+  EXPECT_EQ(50, mock_device_->battery_percentage());
 }
 
 }  // namespace ash
