@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
+#include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
@@ -167,11 +168,6 @@ v8::Local<v8::Value> ToV8(const IDBAny* impl,
   return v8::Undefined(isolate);
 }
 
-// Non-standard limits, selected to avoid breaking real-world use of the API
-// while also preventing buggy (or malicious) code from causing crashes.
-const size_t kMaximumDepth = 2000;
-const size_t kMaximumArraySize = 1000000;
-
 // Convert a simple (non-Array) script value to an Indexed DB key. If the
 // conversion fails due to a detached buffer, an exception is thrown. If
 // the value can't be converted into a key, an 'Invalid' key is returned. This
@@ -264,7 +260,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
   // Initial state.
   {
     v8::Local<v8::Array> array = value.As<v8::Array>();
-    if (array->Length() > kMaximumArraySize)
+    if (array->Length() > IndexedDBKey::kMaximumArraySize)
       return IDBKey::CreateInvalid();
 
     stack.push_back(std::make_unique<Record>(array));
@@ -320,8 +316,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
     } else {
       // A sub-array; push onto the stack and start processing it.
       v8::Local<v8::Array> array = item.As<v8::Array>();
-      if (seen.Contains(array) || stack.size() >= kMaximumDepth ||
-          array->Length() > kMaximumArraySize) {
+      if (seen.Contains(array) || stack.size() >= IndexedDBKey::kMaximumDepth ||
+          array->Length() > IndexedDBKey::kMaximumArraySize) {
         return IDBKey::CreateInvalid();
       }
 

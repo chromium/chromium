@@ -359,8 +359,13 @@ bool DecodeBinary(StringPiece* slice, base::span<const uint8_t>* value) {
   return true;
 }
 
-bool DecodeIDBKey(StringPiece* slice, std::unique_ptr<IndexedDBKey>* value) {
+bool DecodeIDBKeyRecursive(StringPiece* slice,
+                           std::unique_ptr<IndexedDBKey>* value,
+                           size_t recursion) {
   if (slice->empty())
+    return false;
+
+  if (recursion > IndexedDBKey::kMaximumDepth)
     return false;
 
   unsigned char type = (*slice)[0];
@@ -378,7 +383,7 @@ bool DecodeIDBKey(StringPiece* slice, std::unique_ptr<IndexedDBKey>* value) {
       IndexedDBKey::KeyArray array;
       while (length--) {
         std::unique_ptr<IndexedDBKey> key;
-        if (!DecodeIDBKey(slice, &key))
+        if (!DecodeIDBKeyRecursive(slice, &key, recursion + 1))
           return false;
         array.push_back(*key);
       }
@@ -423,6 +428,10 @@ bool DecodeIDBKey(StringPiece* slice, std::unique_ptr<IndexedDBKey>* value) {
 
   NOTREACHED();
   return false;
+}
+
+bool DecodeIDBKey(StringPiece* slice, std::unique_ptr<IndexedDBKey>* value) {
+  return DecodeIDBKeyRecursive(slice, value, 0);
 }
 
 bool DecodeDouble(StringPiece* slice, double* value) {
