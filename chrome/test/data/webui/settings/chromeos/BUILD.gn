@@ -37,6 +37,7 @@ js_modulizer("modulize") {
     "fake_bluetooth.js",
     "fake_bluetooth_private.js",
     "fake_quick_unlock_private.js",
+    "fake_receive_manager.js",
     "fake_settings_search_handler.js",
     "fake_user_action_recorder.js",
     "input_method_options_page_test.js",
@@ -84,5 +85,6 @@ js_modulizer("modulize") {
                        os_test_namespace_rewrites + [
                          "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
                          "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
+                         "nearby_share.FakeReceiveManager|FakeReceiveManager",
                        ]
 }

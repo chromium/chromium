@@ -42,6 +42,10 @@ void RegisterResourcesWithPrefix(
 }  // namespace
 
 void RegisterNearbySharedMojoResources(content::WebUIDataSource* data_source) {
+  data_source->AddResourcePath("mojo/nearby_share.mojom-lite.js",
+                               IDR_NEARBY_SHARE_MOJO_JS);
+  data_source->AddResourcePath("mojo/nearby_share_target_types.mojom-lite.js",
+                               IDR_NEARBY_SHARE_TARGET_TYPES_MOJO_JS);
   data_source->AddResourcePath("mojo/nearby_share_settings.mojom-lite.js",
                                IDR_NEARBY_SHARE_SETTINGS_MOJOM_LITE_JS);
 }

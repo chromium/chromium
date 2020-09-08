@@ -1094,6 +1094,8 @@ var OSSettingsNearbyShareReceiveDialogTest =
   get extraLibraries() {
     return super.extraLibraries.concat([
       '../../test_util.js',
+      '../../test_browser_proxy.js',
+      'fake_receive_manager.js',
       'nearby_share_receive_dialog_tests.js',
     ]);
   }
@@ -1117,6 +1119,7 @@ var OSSettingsNearbyShareSubPageTest = class extends OSSettingsBrowserTest {
     return super.extraLibraries.concat([
       '../../test_browser_proxy.js',
       '../../nearby_share/shared/fake_nearby_share_settings.js',
+      'fake_receive_manager.js',
       'nearby_share_subpage_tests.js',
     ]);
   }

@@ -274,6 +274,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/date_time_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_bluetooth_private.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_bluetooth.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_receive_manager.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_quick_unlock_private.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/input_method_options_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/input_page_test.m.js",

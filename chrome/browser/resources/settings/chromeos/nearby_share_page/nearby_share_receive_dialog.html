@@ -3,9 +3,11 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_view_manager/cr_view_manager.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="../../shared/nearby_share_settings_behavior.html">
 <link rel="import" href="nearby_share_confirm_page.html">
 <link rel="import" href="nearby_share_high_visibility_page.html">
+<link rel="import" href="nearby_share_receive_manager.html">
 
 <dom-module id="nearby-share-receive-dialog">
   <template>
@@ -20,7 +22,9 @@
           <nearby-share-high-visibility-page id="[[Page.HIGH_VISIBILITY]]"
               slot="view" device-name="[[settings.deviceName]]">
           </nearby-share-high-visibility-page>
-          <nearby-share-confirm-page id="[[Page.CONFIRM]]" slot="view">
+          <nearby-share-confirm-page id="[[Page.CONFIRM]]" slot="view"
+              share-target="[[shareTarget]]"
+              connection-token="[[connectionToken]]">
           </nearby-share-confirm-page>
         </cr-view-manager>
       </div>

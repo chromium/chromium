@@ -9,4 +9,18 @@
  */
 Polymer({
   is: 'nearby-share-confirm-page',
+
+  properties: {
+    /** @type {?nearbyShare.mojom.ShareTarget} */
+    shareTarget: {
+      type: Object,
+      value: null,
+    },
+
+    /** @type {?string} */
+    connectionToken: {
+      type: String,
+      value: null,
+    },
+  }
 });

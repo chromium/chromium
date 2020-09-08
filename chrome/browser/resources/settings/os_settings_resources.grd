@@ -1364,6 +1364,12 @@
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_RECEIVE_DIALOG_JS"
                  file="chromeos/nearby_share_page/nearby_share_receive_dialog.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_RECEIVE_MANAGER_HTML"
+                 file="chromeos/nearby_share_page/nearby_share_receive_manager.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_RECEIVE_MANAGER_JS"
+                 file="chromeos/nearby_share_page/nearby_share_receive_manager.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_HTML"
                  file="chromeos/nearby_share_page/nearby_share_data_usage_dialog.html"
                  compress="false" type="chrome_html" />

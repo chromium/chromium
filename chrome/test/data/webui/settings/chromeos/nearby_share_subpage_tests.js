@@ -6,8 +6,9 @@
 // #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 // #import {assertEquals} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+// #import {FakeReceiveManager} from './fake_receive_manager.m.js'
 // clang-format on
 
 /** @implements {nearby_share.AccountManagerBrowserProxy} */
@@ -46,6 +47,8 @@ suite('NearbyShare', function() {
   let featureToggleButton = null;
   /** @type {?HTMLElement} */
   let toggleRow = null;
+  /** @type {?FakeReceiveManager} */
+  let fakeReceiveManager = null;
   /** @type {nearby_share.AccountManagerBrowserProxy} */
   let accountManagerBrowserProxy = null;
 
@@ -53,6 +56,9 @@ suite('NearbyShare', function() {
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
     nearby_share.NearbyAccountManagerBrowserProxyImpl.instance_ =
         accountManagerBrowserProxy;
+
+    fakeReceiveManager = new nearby_share.FakeReceiveManager();
+    nearby_share.setReceiveManagerForTesting(fakeReceiveManager);
 
     /** @type {!nearbyShare.mojom.NearbyShareSettingsInterface} */
     const fakeSettings = new nearby_share.FakeNearbyShareSettings();
