@@ -79,6 +79,7 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       layers_clip_max_(0),
       any_layer_uses_content_box_(false),
       any_layer_has_image_(false),
+      any_layer_has_url_image_(false),
       any_layer_has_local_attachment_image_(false),
       any_layer_has_fixed_attachment_image_(false),
       any_layer_has_default_attachment_image_(false),
@@ -116,6 +117,7 @@ FillLayer::FillLayer(const FillLayer& o)
       layers_clip_max_(0),
       any_layer_uses_content_box_(false),
       any_layer_has_image_(false),
+      any_layer_has_url_image_(false),
       any_layer_has_local_attachment_image_(false),
       any_layer_has_fixed_attachment_image_(false),
       any_layer_has_default_attachment_image_(false),
@@ -346,6 +348,8 @@ void FillLayer::ComputeCachedProperties() const {
   any_layer_uses_content_box_ =
       Clip() == EFillBox::kContent || Origin() == EFillBox::kContent;
   any_layer_has_image_ = !!GetImage();
+  any_layer_has_url_image_ =
+      any_layer_has_image_ && GetImage()->CssValue()->MayContainUrl();
   any_layer_has_local_attachment_image_ =
       any_layer_has_image_ && Attachment() == EFillAttachment::kLocal;
   any_layer_has_fixed_attachment_image_ =
@@ -360,6 +364,7 @@ void FillLayer::ComputeCachedProperties() const {
         EnclosingFillBox(LayersClipMax(), next_->LayersClipMax()));
     any_layer_uses_content_box_ |= next_->any_layer_uses_content_box_;
     any_layer_has_image_ |= next_->any_layer_has_image_;
+    any_layer_has_url_image_ |= next_->any_layer_has_url_image_;
     any_layer_has_local_attachment_image_ |=
         next_->any_layer_has_local_attachment_image_;
     any_layer_has_fixed_attachment_image_ |=

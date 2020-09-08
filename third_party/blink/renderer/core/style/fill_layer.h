@@ -231,6 +231,10 @@ class CORE_EXPORT FillLayer {
     ComputeCachedPropertiesIfNeeded();
     return any_layer_has_image_;
   }
+  bool AnyLayerHasUrlImage() const {
+    ComputeCachedPropertiesIfNeeded();
+    return any_layer_has_url_image_;
+  }
   bool AnyLayerHasLocalAttachmentImage() const {
     ComputeCachedPropertiesIfNeeded();
     return any_layer_has_local_attachment_image_;
@@ -337,6 +341,8 @@ class CORE_EXPORT FillLayer {
   mutable unsigned any_layer_uses_content_box_ : 1;
   // True if any of this or subsequent layers has image.
   mutable unsigned any_layer_has_image_ : 1;
+  // True if any of this of subsequent layers has a url() image.
+  mutable unsigned any_layer_has_url_image_ : 1;
   // True if any of this or subsequent layers has local attachment image.
   mutable unsigned any_layer_has_local_attachment_image_ : 1;
   // True if any of this or subsequent layers has fixed attachment image.

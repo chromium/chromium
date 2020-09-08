@@ -323,7 +323,6 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
 
   LookupAndApply(GetCSSPropertyDirection(), resolver);
   LookupAndApply(GetCSSPropertyWritingMode(), resolver);
-  LookupAndApply(GetCSSPropertyForcedColorAdjust(), resolver);
 
   if (depends_on_cascade_affecting_property_) {
     // We could avoid marking these if this cascade provided a value, but
@@ -544,32 +543,66 @@ void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
 }
 
 void StyleCascade::ForceColors() {
-  // TODO(almaher): Return if the color is already a system color.
+  ComputedStyle* style = state_.Style();
   if (!GetDocument().InForcedColorsMode() ||
-      state_.Style()->ForcedColorAdjust() == EForcedColorAdjust::kNone)
+      style->ForcedColorAdjust() == EForcedColorAdjust::kNone)
     return;
 
   int bg_color_alpha =
-      state_.Style()
-          ->VisitedDependentColor(GetCSSPropertyBackgroundColor())
-          .Alpha();
+      style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).Alpha();
 
-  // TODO(almaher): Do this for all Forced Colors Mode properties.
-  CSSPropertyName name(CSSPropertyID::kBackgroundColor);
-  CSSPropertyRef ref(name, state_.GetDocument());
-  DCHECK(ref.IsValid());
+  MaybeForceColor(GetCSSPropertyColor());
+  MaybeForceColor(GetCSSPropertyBackgroundColor());
+  MaybeForceColor(GetCSSPropertyBorderBottomColor());
+  MaybeForceColor(GetCSSPropertyBorderLeftColor());
+  MaybeForceColor(GetCSSPropertyBorderRightColor());
+  MaybeForceColor(GetCSSPropertyBorderTopColor());
+  MaybeForceColor(GetCSSPropertyFill());
+  MaybeForceColor(GetCSSPropertyOutlineColor());
+  MaybeForceColor(GetCSSPropertyStroke());
+  MaybeForceColor(GetCSSPropertyTextDecorationColor());
+  MaybeForceColor(GetCSSPropertyColumnRuleColor());
+  MaybeForceColor(GetCSSPropertyWebkitTapHighlightColor());
+  MaybeForceColor(GetCSSPropertyWebkitTextEmphasisColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBackgroundColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderBottomColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderLeftColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderRightColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderTopColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedFill());
+  MaybeForceColor(GetCSSPropertyInternalVisitedOutlineColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedStroke());
+  MaybeForceColor(GetCSSPropertyInternalVisitedTextDecorationColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedColumnRuleColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedTextEmphasisColor());
 
-  StyleBuilder::ApplyProperty(ref.GetProperty(), state_,
-                              *GetForcedColorValue(name));
+  auto* none = CSSIdentifierValue::Create(CSSValueID::kNone);
+  StyleBuilder::ApplyProperty(GetCSSPropertyTextShadow(), state_, *none);
+  StyleBuilder::ApplyProperty(GetCSSPropertyBoxShadow(), state_, *none);
+  if (!style->HasUrlBackgroundImage())
+    StyleBuilder::ApplyProperty(GetCSSPropertyBackgroundImage(), state_, *none);
 
   // Preserve the author/user defined background alpha channel.
-  state_.Style()->SetBackgroundColor(
-      StyleColor(state_.Style()->BackgroundColor().ResolveWithAlpha(
-          state_.Style()->GetCurrentColor(), WebColorScheme::kLight,
-          bg_color_alpha)));
+  style->SetBackgroundColor(
+      StyleColor(style->BackgroundColor().ResolveWithAlpha(
+          style->GetCurrentColor(), WebColorScheme::kLight, bg_color_alpha)));
+}
+
+void StyleCascade::MaybeForceColor(const CSSProperty& property) {
+  DCHECK(GetDocument().InForcedColorsMode() &&
+         state_.Style()->ForcedColorAdjust() != EForcedColorAdjust::kNone);
+
+  // TODO(almaher): Return early if the current computed color is already a
+  // system color.
+  StyleBuilder::ApplyProperty(
+      property, state_, *GetForcedColorValue(property.GetCSSPropertyName()));
 }
 
 const CSSValue* StyleCascade::GetForcedColorValue(CSSPropertyName name) {
+  DCHECK(GetDocument().InForcedColorsMode() &&
+         state_.Style()->ForcedColorAdjust() != EForcedColorAdjust::kNone);
+
   CascadePriority* p = map_.Find(name, CascadeOrigin::kUserAgent);
   if (p)
     return ValueAt(match_result_, p->GetPosition());
@@ -617,24 +650,12 @@ StyleCascade::TokenSequence::BuildVariableData() {
       has_font_units_, has_root_font_units_, base_url_, charset_);
 }
 
-bool StyleCascade::ShouldRevert(const CSSProperty& property,
-                                const CSSValue& value,
-                                CascadeOrigin origin) {
-  return IsRevert(value) ||
-         (state_.GetDocument().InForcedColorsMode() &&
-          state_.Style()->ForcedColorAdjust() != EForcedColorAdjust::kNone &&
-          property.IsAffectedByForcedColors() &&
-          !(property.PropertyID() == CSSPropertyID::kBackgroundImage &&
-            value.MayContainUrl()) &&
-          origin >= CascadeOrigin::kAuthor);
-}
-
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
                                       const CSSValue& value,
                                       CascadeOrigin origin,
                                       CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
-  if (ShouldRevert(property, value, origin))
+  if (IsRevert(value))
     return ResolveRevert(property, value, origin, resolver);
   resolver.CollectAuthorFlags(property, origin);
   if (const auto* v = DynamicTo<CSSCustomPropertyDeclaration>(value))

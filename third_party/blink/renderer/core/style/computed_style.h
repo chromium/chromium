@@ -482,6 +482,9 @@ class ComputedStyle : public ComputedStyleBase,
   bool HasBackgroundImage() const {
     return BackgroundInternal().AnyLayerHasImage();
   }
+  bool HasUrlBackgroundImage() const {
+    return BackgroundInternal().AnyLayerHasUrlImage();
+  }
   bool HasFixedAttachmentBackgroundImage() const {
     return BackgroundInternal().AnyLayerHasFixedAttachmentImage();
   }
