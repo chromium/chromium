@@ -74,13 +74,11 @@ void ObservableWebView::ResetDelegate() {
 
 WebDialogView::WebDialogView(content::BrowserContext* context,
                              WebDialogDelegate* delegate,
-                             std::unique_ptr<WebContentsHandler> handler,
-                             bool use_dialog_frame)
+                             std::unique_ptr<WebContentsHandler> handler)
     : ClientView(nullptr, nullptr),
       WebDialogWebContentsDelegate(context, std::move(handler)),
       delegate_(delegate),
-      web_view_(new ObservableWebView(context, delegate)),
-      use_dialog_frame_(use_dialog_frame) {
+      web_view_(new ObservableWebView(context, delegate)) {
   web_view_->set_allow_accelerators(true);
   AddChildView(web_view_);
   set_contents_view(web_view_);
@@ -224,8 +222,18 @@ views::ClientView* WebDialogView::CreateClientView(views::Widget* widget) {
 
 std::unique_ptr<NonClientFrameView> WebDialogView::CreateNonClientFrameView(
     Widget* widget) {
-  return use_dialog_frame_ ? DialogDelegate::CreateDialogFrameView(widget)
-                           : WidgetDelegate::CreateNonClientFrameView(widget);
+  if (!delegate_)
+    return WidgetDelegate::CreateNonClientFrameView(widget);
+
+  switch (delegate_->GetWebDialogFrameKind()) {
+    case WebDialogDelegate::FrameKind::kNonClient:
+      return WidgetDelegate::CreateNonClientFrameView(widget);
+    case WebDialogDelegate::FrameKind::kDialog:
+      return DialogDelegate::CreateDialogFrameView(widget);
+    default:
+      NOTREACHED() << "Unknown frame kind type enum specified.";
+      return std::unique_ptr<NonClientFrameView>{};
+  }
 }
 
 views::View* WebDialogView::GetInitiallyFocusedView() {

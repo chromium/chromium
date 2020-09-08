@@ -30,6 +30,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 
 // A delegate used to intercept the creation of new WebContents by the HaTS
 // Next dialog.
@@ -166,6 +167,10 @@ bool HatsNextWebDialog::HandleContextMenu(
     const content::ContextMenuParams& params) {
   return true;
 }
+ui::WebDialogDelegate::FrameKind HatsNextWebDialog::GetWebDialogFrameKind()
+    const {
+  return ui::WebDialogDelegate::FrameKind::kDialog;
+}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   return size_;
@@ -198,8 +203,7 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   web_view_ = AddChildView(std::make_unique<views::WebDialogView>(
-      otr_profile_, this, std::make_unique<ChromeWebContentsHandler>(),
-      /* use_dialog_frame */ true));
+      otr_profile_, this, std::make_unique<ChromeWebContentsHandler>()));
   set_margins(gfx::Insets());
   widget_ = views::BubbleDialogDelegateView::CreateBubble(this);
 

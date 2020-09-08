@@ -78,8 +78,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // client frame view.
   WebDialogView(content::BrowserContext* context,
                 ui::WebDialogDelegate* delegate,
-                std::unique_ptr<WebContentsHandler> handler,
-                bool use_dialog_frame = false);
+                std::unique_ptr<WebContentsHandler> handler);
   ~WebDialogView() override;
 
   content::WebContents* web_contents();
@@ -193,9 +192,6 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
 
   // Handler for unhandled key events from renderer.
   UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-
-  // Whether to use dialog frame view for non client frame view.
-  bool use_dialog_frame_ = false;
 
   bool disable_url_load_for_test_ = false;
 

@@ -180,9 +180,7 @@ void HatsNotificationController::Click(
 
   UpdateLastInteractionTime();
 
-  // The dialog deletes itself on close.
-  HatsDialog::CreateAndShow(
-      gaia::IsGoogleInternalAccountEmail(profile_->GetProfileUserName()));
+  hats_dialog_ = HatsDialog::CreateAndShow();
 
   // Remove the notification.
   network_portal_detector::GetInstance()->RemoveObserver(this);

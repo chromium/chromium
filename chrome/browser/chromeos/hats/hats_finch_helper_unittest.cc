@@ -18,6 +18,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
+namespace {
+constexpr char kValidTriggerId[] = "1gksUIDXA0jBnuK8T6R0NfspWBvA";
+}  // namespace
 
 class HatsFinchHelperTest : public testing::Test {
  public:
@@ -32,13 +35,15 @@ class HatsFinchHelperTest : public testing::Test {
                                         std::string cycle_length,
                                         std::string start_date,
                                         std::string reset_survey,
-                                        std::string reset) {
+                                        std::string reset,
+                                        std::string trigger_id) {
     base::FieldTrialParams params;
     params[HatsFinchHelper::kProbabilityParam] = prob;
     params[HatsFinchHelper::kSurveyCycleLengthParam] = cycle_length;
     params[HatsFinchHelper::kSurveyStartDateMsParam] = start_date;
     params[HatsFinchHelper::kResetSurveyCycleParam] = reset_survey;
     params[HatsFinchHelper::kResetAllParam] = reset;
+    params[HatsFinchHelper::kTriggerIdParam] = trigger_id;
     return params;
   }
 
@@ -56,8 +61,8 @@ class HatsFinchHelperTest : public testing::Test {
 };
 
 TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {
-  base::FieldTrialParams params =
-      CreateParamMap("1.0", "7", "1475613895337", "false", "false");
+  base::FieldTrialParams params = CreateParamMap(
+      "1.0", "7", "1475613895337", "false", "false", kValidTriggerId);
   SetFeatureParams(params);
 
   HatsFinchHelper hats_finch_helper(&profile_);
@@ -66,13 +71,14 @@ TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, 7);
   EXPECT_EQ(hats_finch_helper.first_survey_start_date_,
             base::Time().FromJsTime(1475613895337LL));
+  EXPECT_EQ(hats_finch_helper.trigger_id_, kValidTriggerId);
   EXPECT_FALSE(hats_finch_helper.reset_survey_cycle_);
   EXPECT_FALSE(hats_finch_helper.reset_hats_);
 }
 
 TEST_F(HatsFinchHelperTest, InitFinchSeed_Invalidalues) {
   base::FieldTrialParams params =
-      CreateParamMap("-0.1", "-1", "-1000", "false", "false");
+      CreateParamMap("-0.1", "-1", "-1000", "false", "false", "1A2B3C4D5");
   SetFeatureParams(params);
 
   base::Time current_time = base::Time::Now();
@@ -88,7 +94,7 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
   base::FieldTrialParams params =
       CreateParamMap("0",
                      "7",  // 7 Days survey cycle length
-                     "0", "false", "false");
+                     "0", "false", "false", kValidTriggerId);
 
   SetFeatureParams(params);
 
@@ -116,7 +122,7 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
 
 TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
   base::FieldTrialParams params =
-      CreateParamMap("0.5", "7", "1475613895337", "true", "0");
+      CreateParamMap("0.5", "7", "1475613895337", "true", "0", kValidTriggerId);
   SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
@@ -140,7 +146,7 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
 
 TEST_F(HatsFinchHelperTest, ResetHats) {
   base::FieldTrialParams params =
-      CreateParamMap("0.5", "7", "1475613895337", "0", "true");
+      CreateParamMap("0.5", "7", "1475613895337", "0", "true", kValidTriggerId);
   SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();

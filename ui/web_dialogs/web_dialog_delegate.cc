@@ -74,4 +74,7 @@ bool WebDialogDelegate::AcceleratorPressed(const Accelerator& accelerator) {
   return false;
 }
 
+WebDialogDelegate::FrameKind WebDialogDelegate::GetWebDialogFrameKind() const {
+  return WebDialogDelegate::FrameKind::kNonClient;
+}
 }  // namespace ui
