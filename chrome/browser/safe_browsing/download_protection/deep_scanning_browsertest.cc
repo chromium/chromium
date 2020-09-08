@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -182,6 +184,12 @@ class DownloadDeepScanningBrowserTest
     waiting_for_enterprise_ = false;
   }
 
+  void WaitForMetadataCheck() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    waiting_for_metadata_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   void ExpectMetadataResponse(const ClientDownloadResponse& response) {
     test_sb_factory_->test_safe_browsing_service()
         ->GetTestUrlLoaderFactory()
@@ -335,6 +343,11 @@ class DownloadDeepScanningBrowserTest
       if (waiting_for_enterprise_)
         std::move(waiting_for_upload_closure_).Run();
     }
+
+    if (request.url == PPAPIDownloadRequest::GetDownloadRequestUrl()) {
+      if (waiting_for_metadata_closure_)
+        std::move(waiting_for_metadata_closure_).Run();
+    }
   }
 
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_sb_factory_;
@@ -353,6 +366,7 @@ class DownloadDeepScanningBrowserTest
   std::string connector_url_;
 
   base::OnceClosure waiting_for_upload_closure_;
+  base::OnceClosure waiting_for_metadata_closure_;
 
   base::flat_set<download::DownloadItem*> download_items_;
 
@@ -785,6 +799,69 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
                                 true, 1);
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.MalwareResult",
                                 true, 1);
+}
+
+class DownloadRestrictionsDeepScanningBrowserTest
+    : public DownloadDeepScanningBrowserTest {
+ public:
+  DownloadRestrictionsDeepScanningBrowserTest() = default;
+  ~DownloadRestrictionsDeepScanningBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    DownloadDeepScanningBrowserTest::SetUpOnMainThread();
+
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kDownloadRestrictions,
+        static_cast<int>(DownloadPrefs::DownloadRestriction::DANGEROUS_FILES));
+    SetDlpPolicy(CheckContentComplianceValues::CHECK_NONE);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DownloadRestrictionsDeepScanningBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
+                       ReportsDownloadsBlockedByDownloadRestrictions) {
+  SetUpReporting();
+
+  // The file is DANGEROUS according to the metadata check
+  ClientDownloadResponse metadata_response;
+  metadata_response.set_verdict(ClientDownloadResponse::DANGEROUS);
+  ExpectMetadataResponse(metadata_response);
+
+  GURL url = embedded_test_server()->GetURL(
+      "/safe_browsing/download_protection/zipfile_two_archives.zip");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  WaitForMetadataCheck();
+
+  EventReportValidator validator(client());
+  std::set<std::string> zip_types = {"application/zip",
+                                     "application/x-zip-compressed"};
+  validator.ExpectDangerousDownloadEvent(
+      /*url*/ url.spec(),
+      (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe(),
+      // sha256sum chrome/test/data/safe_browsing/download_protection/\
+      // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
+      /*sha*/
+      "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
+      /*threat_type*/ "DANGEROUS_FILE_TYPE",
+      /*trigger*/
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      /*mimetypes*/ &zip_types,
+      /*size*/ 276,
+      /*result*/ EventResultToString(EventResult::BLOCKED));
+
+  WaitForDownloadToFinish();
+
+  ASSERT_EQ(download_items().size(), 1u);
+  download::DownloadItem* item = *download_items().begin();
+  EXPECT_EQ(item->GetDangerType(),
+            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
 class WhitelistedUrlDeepScanningBrowserTest
