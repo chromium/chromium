@@ -10,8 +10,11 @@
   </message>
 
   <!-- Caption Subpage (strings used by the <settings-captions> element) -->
-  <message name="IDS_SETTINGS_CAPTIONS" desc="Name of the settings page which displays caption preferences.">
-    Captions
+  <message name="IDS_SETTINGS_CAPTIONS" desc="Section title for caption style setting that is supported by some apps">
+    Caption preferences
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_SUBTITLE" desc="Settings subcopy for Caption preferences. Disclaimer that not all apps support the system caption style. Some apps don't use the web captioning standard and have their own captioning platform.">
+    Customize caption size and style for apps that support this setting
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_SETTINGS" desc="Name of settings section of the caption settings page.">
     Settings
@@ -19,8 +22,8 @@
   <message name="IDS_SETTINGS_CAPTIONS_PREVIEW" desc="Name of preview section of the caption settings page.">
     Preview
   </message>
-  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SIZE" desc="Name of the caption text size preference.">
-    Text size
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SIZE" desc="Name of the caption text size preference. Text size will apply to captions and alo Live Caption when it's enabled.">
+    Text size (Also applies to Live Caption)
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_TEXT_FONT" desc="Name of the caption text font preference.">
     Text font

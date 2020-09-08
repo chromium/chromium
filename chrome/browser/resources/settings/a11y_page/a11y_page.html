@@ -10,7 +10,9 @@
         </cr-link-row>
 </if>
 <if expr="not chromeos">
-        <cr-link-row class="hr" id="captions" label="$i18n{captionsTitle}"
+        <cr-link-row class="hr" id="captions"
+            label="$i18n{captionsTitle}"
+            sub-label="$i18n{captionsSubtitle}"
             on-click="onCaptionsClick_"
             external$="[[captionSettingsOpensExternally_]]">
         </cr-link-row>

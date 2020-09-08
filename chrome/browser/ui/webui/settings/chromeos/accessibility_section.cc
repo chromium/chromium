@@ -261,7 +261,7 @@ const std::vector<SearchConcept>& GetA11yLabelsSearchConcepts() {
 
 const std::vector<SearchConcept>& GetA11yLiveCaptionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTIONS,
+      {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
@@ -629,7 +629,7 @@ void AccessibilitySection::RegisterHierarchy(
   RegisterNestedSettingBulk(mojom::Subpage::kSwitchAccessOptions,
                             kSwitchAccessSettings, generator);
 
-  // Captions.
+  // Caption preferences.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_CAPTIONS, mojom::Subpage::kCaptions,
       mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,

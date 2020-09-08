@@ -284,7 +284,9 @@
     <h2>$i18n{audioAndCaptionsHeading}</h2>
     <template is="dom-if" if="[[!isKioskModeActive_]]">
       <cr-link-row id="captionsSubpageButton" class="first"
-          label="$i18n{captionsTitle}" on-click="onCaptionsClick_"
+          label="$i18n{captionsTitle}"
+          sub-label="$i18n{captionsSubtitle}"
+          on-click="onCaptionsClick_"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
     <template is="dom-if" if="[[enableLiveCaption_]]">

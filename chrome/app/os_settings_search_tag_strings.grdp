@@ -1051,11 +1051,11 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_STARTUP_SOUND" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable playing a sound upon device startup.">
     Startup sound
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_A11Y_CAPTIONS" desc="Text for search result item which, when clicked, navigates the user to accessibility captions settings.">
-    Captions
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CAPTIONS" desc="Text for search result item which, when clicked, navigates the user to accessibility caption preferences.">
+    Caption preferences
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTIONS" desc="Text for a search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable live captions.">
-    Live Captions
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION" desc="Text for a search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable Live Caption.">
+    Live Caption
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_ENABLE_SWITCH_ACCESS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable switch access, which allows users to control the computer with just one or two switches.">
     Switch access

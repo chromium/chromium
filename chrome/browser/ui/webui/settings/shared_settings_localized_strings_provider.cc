@@ -52,6 +52,7 @@ base::string16 GetHelpUrlWithBoard(const std::string& original_url) {
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"captionsTitle", IDS_SETTINGS_CAPTIONS},
+      {"captionsSubtitle", IDS_SETTINGS_CAPTIONS_SUBTITLE},
       {"captionsSettings", IDS_SETTINGS_CAPTIONS_SETTINGS},
       {"captionsPreview", IDS_SETTINGS_CAPTIONS_PREVIEW},
       {"captionsTextSize", IDS_SETTINGS_CAPTIONS_TEXT_SIZE},
