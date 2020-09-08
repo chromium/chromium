@@ -4823,8 +4823,6 @@ test("net_unittests") {
     ]
     android_manifest = "//net/android/unittest_support/AndroidManifest.xml"
 
-    # Cronet still supports kitkat.
-    min_sdk_version = 19
     sources += [
       "base/address_tracker_linux_unittest.cc",
       "base/network_interfaces_linux_unittest.cc",

@@ -21,9 +21,6 @@ import("//url/features.gni")
 _jni_registration_header = "$target_gen_dir/cronet_jni_registration.h"
 _templates_dir = "$target_gen_dir/templates"
 
-# //components/cronet still needs to support Jelly Bean. See crbug.com/922656.
-_cronet_min_sdk_version = 16
-
 declare_args() {
   # In integrated mode, CronetEngine will use the shared network task runner by
   # other Chromium-based clients like webview without self-initialization.
@@ -452,7 +449,6 @@ android_library("cronet_sample_apk_java") {
 android_apk("cronet_sample_apk") {
   apk_name = "CronetSample"
   android_manifest = "sample/AndroidManifest.xml"
-  min_sdk_version = _cronet_min_sdk_version
   shared_libraries = [ ":cronet" ]
 
   deps = [
@@ -769,7 +765,6 @@ if (!is_component_build) {
     apk_name = "CronetSampleTest"
     apk_under_test = ":cronet_sample_apk"
     android_manifest = "sample/javatests/AndroidManifest.xml"
-    min_sdk_version = _cronet_min_sdk_version
     sources = [ "sample/javatests/src/org/chromium/cronet_sample_apk/CronetSampleTest.java" ]
     deps = [
       ":cronet_sample_apk_java",
@@ -1024,9 +1019,11 @@ if (!is_component_build) {
     enable_lint = true
     lint_suppressions_file = "lint-suppressions.xml"
 
+    # Still needs to support Jelly Bean. See crbug.com/922656.
+    lint_min_sdk_version = 16
+
     apk_name = "CronetTestInstrumentation"
     android_manifest = "test/javatests/AndroidManifest.xml"
-    min_sdk_version = _cronet_min_sdk_version
 
     shared_libraries = [
       ":cronet",
@@ -1089,7 +1086,6 @@ if (!is_component_build) {
       "cronet_smoketests_platform_only_instrumentation_apk") {
     apk_name = "PlatformOnlyEngineSmokeTestInstrumentation"
     android_manifest = "test/javatests/AndroidManifest.xml"
-    min_sdk_version = _cronet_min_sdk_version
 
     sources = cronet_smoketests_platform_only_common_srcs + [
                 "test/src/org/chromium/net/CronetTestApplication.java",
@@ -1125,7 +1121,6 @@ if (!is_component_build) {
       "cronet_smoketests_missing_native_library_instrumentation_apk") {
     apk_name = "MissingNativeLibrarySmokeTestInstrumentation"
     android_manifest = "test/javatests/AndroidManifest.xml"
-    min_sdk_version = _cronet_min_sdk_version
 
     sources = cronet_smoketests_native_common_srcs + [ "test/smoketests/src/org/chromium/net/smoke/MissingNativeLibraryTest.java" ]
     deps = [
@@ -1161,7 +1156,6 @@ if (!is_component_build) {
     testonly = true
     apk_name = "CronetPerfTest"
     android_manifest = "test/javaperftests/AndroidManifest.xml"
-    min_sdk_version = _cronet_min_sdk_version
     shared_libraries = [
       ":cronet",
       ":cronet_tests",
@@ -1196,7 +1190,6 @@ if (!is_component_build) {
   }
 
   test("cronet_unittests_android") {
-    min_sdk_version = _cronet_min_sdk_version
     deps = [
       ":cronet_impl_native_base_java",
       ":cronet_static",
@@ -1222,7 +1215,6 @@ if (!is_component_build) {
   }
 
   test("cronet_tests_android") {
-    min_sdk_version = _cronet_min_sdk_version
     deps = [
       ":cronet_impl_native_base_java",
       ":cronet_static",

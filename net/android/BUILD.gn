@@ -141,9 +141,6 @@ android_apk("net_test_support_apk") {
   # just disable it.
   enable_multidex = false
 
-  # Cronet still supports kitkat.
-  min_sdk_version = 19
-
   # Required on Android Q+ to read from /sdcard when installing certs.
   target_sdk_version = 28
 
