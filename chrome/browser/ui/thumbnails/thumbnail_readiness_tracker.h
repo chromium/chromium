@@ -48,6 +48,10 @@ class ThumbnailReadinessTracker : public content::WebContentsObserver {
 
   ReadinessChangeCallback callback_;
   Readiness last_readiness_ = Readiness::kNotReady;
+
+  // The last navigation that reset the thumbnail. When this navigation
+  // finishes, the page is considered ready for capture.
+  content::NavigationHandle* pending_navigation_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_READINESS_TRACKER_H_

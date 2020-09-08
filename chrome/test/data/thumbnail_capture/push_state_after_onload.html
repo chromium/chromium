@@ -1,0 +1,13 @@
+<html>
+    <body>
+        <script type="text/javascript">
+         window.onload = function () {
+             setTimeout(push);
+         };
+
+         function push() {
+             window.history.pushState({}, "", "foo.html");
+         }
+        </script>
+    </body>
+</html>
