@@ -4,22 +4,32 @@
 # found in the LICENSE file.
 """Builds and runs a test by filename.
 
-This script finds the appropriate test suite for the specified test file, builds
-it, then runs it with the (optionally) specified filter, passing any extra args
-on to the test runner.
+This script finds the appropriate test suites for the specified test file or
+directory, builds it, then runs it with the (optionally) specified filter,
+passing any extra args on to the test runner.
 
 Examples:
-autotest.py -C out/Desktop bit_cast_unittest.cc --gtest_filter=BitCastTest* -v
+# Run the test target for bit_cast_unittest.cc. Use a custom test filter instead
+# of the automatically generated one.
+autotest.py -C out/Desktop bit_cast_unittest.cc --gtest_filter=BitCastTest*
+
+# Find and run UrlUtilitiesUnitTest.java's tests, pass remaining parameters to
+# the test binary.
 autotest.py -C out/Android UrlUtilitiesUnitTest --fast-local-dev -v
+
+# Run all tests under base/strings
+autotest.py -C out/foo --run-all base/strings
+
+# Run only the test on line 11. Useful when running autotest.py from your text
+# editor.
+autotest.py -C out/foo --line 11 base/strings/strcat_unittest.cc
 """
 
 import argparse
 import locale
-import logging
-import multiprocessing
 import os
+import json
 import re
-import shlex
 import subprocess
 import sys
 
@@ -46,9 +56,33 @@ _OTHER_TEST_TARGETS = [
     '//chrome/test:unit_tests',
 ]
 
+TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
+GTEST_INCLUDE_REGEX = re.compile(r'#include.*gtest\.h"')
+
+
+def ExitWithMessage(*args):
+  print(*args, file=sys.stderr)
+  sys.exit(1)
+
+
+def IsTestFile(file_path):
+  if not TEST_FILE_NAME_REGEX.match(file_path):
+    return False
+  if file_path.endswith('.cc'):
+    # Try a bit harder to remove non-test files for c++. Without this,
+    # 'autotest.py base/' finds non-test files.
+    try:
+      with open(file_path, 'r') as f:
+        if GTEST_INCLUDE_REGEX.search(f.read()) is not None:
+          return True
+    except IOError:
+      pass
+    return False
+  return True
+
 
 class CommandError(Exception):
-  """Exception thrown when we can't parse the input file."""
+  """Exception thrown when a subcommand fails."""
 
   def __init__(self, command, return_code, output=None):
     Exception.__init__(self)
@@ -65,20 +99,14 @@ class CommandError(Exception):
     return message
 
 
-def LogCommand(cmd, **kwargs):
-  if DEBUG:
-    print('Running command: ' + ' '.join(cmd))
-
+def StreamCommandOrExit(cmd, **kwargs):
   try:
     subprocess.check_call(cmd, **kwargs)
   except subprocess.CalledProcessError as e:
-    raise CommandError(e.cmd, e.returncode) from None
+    sys.exit(1)
 
 
 def RunCommand(cmd, **kwargs):
-  if DEBUG:
-    print('Running command: ' + ' '.join(cmd))
-
   try:
     # Set an encoding to convert the binary output to a string.
     return subprocess.check_output(
@@ -87,16 +115,16 @@ def RunCommand(cmd, **kwargs):
     raise CommandError(e.cmd, e.returncode, e.output) from None
 
 
-def BuildTestTargetWithNinja(out_dir, target, dry_run):
-  """Builds the specified target with ninja"""
+def BuildTestTargetsWithNinja(out_dir, targets, dry_run):
+  """Builds the specified targets with ninja"""
   ninja_path = os.path.join(DEPOT_TOOLS_DIR, 'autoninja')
   if sys.platform.startswith('win32'):
     ninja_path += '.bat'
-  cmd = [ninja_path, '-C', out_dir, target]
+  cmd = [ninja_path, '-C', out_dir] + targets
   print('Building: ' + ' '.join(cmd))
   if (dry_run):
     return
-  RunCommand(cmd)
+  StreamCommandOrExit(cmd)
 
 
 def RecursiveMatchFilename(folder, filename):
@@ -124,7 +152,27 @@ def RecursiveMatchFilename(folder, filename):
   return matches
 
 
-def FindMatchingTestFile(target):
+def FindTestFilesInDirectory(directory):
+  test_files = []
+  for root, dirs, files in os.walk(directory):
+    for f in files:
+      path = os.path.join(root, f)
+      if IsTestFile(path):
+        test_files.append(path)
+  return test_files
+
+
+def FindMatchingTestFiles(target):
+  # Return early if there's an exact file match.
+  if os.path.isfile(target):
+    return [target]
+  # If this is a directory, return all the test files it contains.
+  if os.path.isdir(target):
+    files = FindTestFilesInDirectory(target)
+    if not files:
+      ExitWithMessage('No tests found in directory')
+    return files
+
   if sys.platform.startswith('win32') and os.path.altsep in target:
     # Use backslash as the path separator on Windows to match os.scandir().
     if DEBUG:
@@ -140,11 +188,11 @@ def FindMatchingTestFile(target):
     # Arbitrarily capping at 10 results so we don't print the name of every file
     # in the repo if the target is poorly specified.
     results = results[:10]
-    raise Exception(f'Target "{target}" is ambiguous. Matching files: '
+    ExitWithMessage(f'Target "{target}" is ambiguous. Matching files: '
                     f'{results}')
   if not results:
-    raise Exception(f'Target "{target}" did not match any files.')
-  return results[0]
+    ExitWithMessage(f'Target "{target}" did not match any files.')
+  return results
 
 
 def IsTestTarget(target):
@@ -154,59 +202,126 @@ def IsTestTarget(target):
   return target in _OTHER_TEST_TARGETS
 
 
-def HaveUserPickTarget(path, targets):
+def HaveUserPickTarget(paths, targets):
   # Cap to 10 targets for convenience [0-9].
   targets = targets[:10]
-  target_list = ''
-  i = 0
-  for target in targets:
-    target_list += f'{i}. {target}\n'
-    i += 1
+  target_list = '\n'.join(f'{i}. {t}' for i, t in enumerate(targets))
+
+  user_input = input(f'Target "{paths}" is used by multiple test targets.\n' +
+                     target_list + '\nPlease pick a target: ')
   try:
-    value = int(
-        input(f'Target "{path}" is used by multiple test targets.\n' +
-              target_list + 'Please pick a target: '))
+    value = int(user_input)
     return targets[value]
-  except Exception as e:
+  except (ValueError, IndexError):
     print('Try again')
-    return HaveUserPickTarget(path, targets)
+    return HaveUserPickTarget(paths, targets)
 
 
-def FindTestTarget(out_dir, path):
-  # Use gn refs to recursively find all targets that depend on |path|, filter
-  # internal gn targets, and match against well-known test suffixes, falling
-  # back to a list of known test targets if that fails.
-  gn_path = os.path.join(DEPOT_TOOLS_DIR, 'gn')
-  if sys.platform.startswith('win32'):
-    gn_path += '.bat'
-  cmd = [gn_path, 'refs', out_dir, '--all', path]
-  targets = RunCommand(cmd, cwd=SRC_DIR).splitlines()
-  targets = [t for t in targets if '__' not in t]
-  test_targets = [t for t in targets if IsTestTarget(t)]
+# A persistent cache to avoid running gn on repeated runs of autotest.
+class TargetCache:
+  def __init__(self, out_dir):
+    self.path = os.path.join(out_dir, 'autotest_cache')
+    self.gold_mtime = os.path.getmtime(os.path.join(out_dir, 'build.ninja'))
+    self.cache = {}
+    try:
+      mtime, cache = json.load(open(self.path, 'r'))
+      if mtime == self.gold_mtime:
+        self.cache = cache
+    except Exception:
+      pass
+
+  def Save(self):
+    with open(self.path, 'w') as f:
+      json.dump([self.gold_mtime, self.cache], f)
+
+  def Find(self, test_paths):
+    key = ' '.join(test_paths)
+    return self.cache.get(key, None)
+
+  def Store(self, test_paths, test_targets):
+    key = ' '.join(test_paths)
+    self.cache[key] = test_targets
+
+
+def FindTestTargets(target_cache, out_dir, paths, run_all):
+  # Normalize paths, so they can be cached.
+  paths = [os.path.realpath(p) for p in paths]
+  test_targets = target_cache.Find(paths)
+  if not test_targets:
+
+    # Use gn refs to recursively find all targets that depend on |path|, filter
+    # internal gn targets, and match against well-known test suffixes, falling
+    # back to a list of known test targets if that fails.
+    gn_path = os.path.join(DEPOT_TOOLS_DIR, 'gn')
+    if sys.platform.startswith('win32'):
+      gn_path += '.bat'
+
+    cmd = [gn_path, 'refs', out_dir, '--all'] + paths
+    targets = RunCommand(cmd).splitlines()
+    targets = [t for t in targets if '__' not in t]
+    test_targets = [t for t in targets if IsTestTarget(t)]
 
   if not test_targets:
-    raise Exception(
-        f'Target "{path}" did not match any test targets. Consider adding '
-        f'one of the following targets to the top of this file: {targets}')
-  target = test_targets[0]
+    ExitWithMessage(
+        f'Target(s) "{paths}" did not match any test targets. Consider adding'
+        f' one of the following targets to the top of this file: {targets}')
+
+  target_cache.Store(paths, test_targets)
+  target_cache.Save()
+
   if len(test_targets) > 1:
-    target = HaveUserPickTarget(path, test_targets)
+    if run_all:
+      print(f'Warning, found {len(test_targets)} test targets.',
+            file=sys.stderr)
+      if len(test_targets) > 10:
+        ExitWithMessage('Your query likely involves non-test sources.')
+      print('Trying to run all of them!', file=sys.stderr)
+    else:
+      test_targets = [HaveUserPickTarget(paths, test_targets)]
 
-  return target.split(':')[-1]
+  test_targets = list(set([t.split(':')[-1] for t in test_targets]))
+
+  return test_targets
 
 
-def RunTestTarget(out_dir, target, gtest_filter, extra_args, dry_run):
-  # Look for the Android wrapper script first.
-  path = os.path.join(out_dir, 'bin', f'run_{target}')
-  if not os.path.isfile(path):
-    # Otherwise, use the Desktop target which is an executable.
-    path = os.path.join(out_dir, target)
-  extra_args = ' '.join(extra_args)
-  cmd = [path, f'--gtest_filter={gtest_filter}'] + shlex.split(extra_args)
-  print('Running test: ' + ' '.join(cmd))
-  if (dry_run):
-    return
-  LogCommand(cmd)
+def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run):
+  for target in targets:
+    # Look for the Android wrapper script first.
+    path = os.path.join(out_dir, 'bin', f'run_{target}')
+    if not os.path.isfile(path):
+      # Otherwise, use the Desktop target which is an executable.
+      path = os.path.join(out_dir, target)
+    cmd = [path, f'--gtest_filter={gtest_filter}'] + extra_args
+    print('Running test: ' + ' '.join(cmd))
+    if not dry_run:
+      StreamCommandOrExit(cmd)
+
+
+def BuildCppTestFilter(filenames, line):
+  make_filter_command = [os.path.join(SRC_DIR, 'tools', 'make-gtest-filter.py')]
+  if line:
+    make_filter_command += ['--line', str(line)]
+  else:
+    make_filter_command += ['--class-only']
+  make_filter_command += filenames
+  return RunCommand(make_filter_command).strip()
+
+
+def BuildJavaTestFilter(filenames):
+  return ':'.join('*{}*'.format(os.path.splitext(os.path.basename(f))[0])
+                  for f in filenames)
+
+
+def BuildTestFilter(filenames, line):
+  java_files = [f for f in filenames if f.endswith('.java')]
+  cc_files = [f for f in filenames if f.endswith('.cc')]
+  filters = []
+  if java_files:
+    filters.append(BuildJavaTestFilter(java_files))
+  if cc_files:
+    filters.append(BuildCppTestFilter(cc_files, line))
+
+  return ':'.join(filters)
 
 
 def main():
@@ -219,9 +334,16 @@ def main():
       help='output directory of the build',
       required=True)
   parser.add_argument(
+      '--run-all',
+      action='store_true',
+      help='Run all tests for the file or directory, instead of just one')
+  parser.add_argument('--line',
+                      type=int,
+                      help='run only the test on this line number. c++ only.')
+  parser.add_argument(
       '--gtest_filter', '-f', metavar='FILTER', help='test filter')
   parser.add_argument(
-      '--dry_run',
+      '--dry-run',
       '-n',
       action='store_true',
       help='Print ninja and test run commands without executing them.')
@@ -232,21 +354,21 @@ def main():
 
   if not os.path.isdir(args.out_dir):
     parser.error(f'OUT_DIR "{args.out_dir}" does not exist.')
-  filename = FindMatchingTestFile(args.file)
+  target_cache = TargetCache(args.out_dir)
+  filenames = FindMatchingTestFiles(args.file)
+
+  targets = FindTestTargets(target_cache, args.out_dir, filenames, args.run_all)
 
   gtest_filter = args.gtest_filter
   if not gtest_filter:
-    if not filename.endswith('java'):
-      # In c++ tests, the test class often doesn't match the filename, or a
-      # single file will contain multiple test classes. It's likely possible to
-      # handle most cases with a regex and provide a default here.
-      # Patches welcome :)
-      parser.error('--gtest_filter must be specified for non-java tests.')
-    gtest_filter = '*' + os.path.splitext(os.path.basename(filename))[0] + '*'
+    gtest_filter = BuildTestFilter(filenames, args.line)
 
-  target = FindTestTarget(args.out_dir, filename)
-  BuildTestTargetWithNinja(args.out_dir, target, args.dry_run)
-  RunTestTarget(args.out_dir, target, gtest_filter, _extras, args.dry_run)
+  if not gtest_filter:
+    ExitWithMessage('Failed to derive a gtest filter')
+
+  assert targets
+  BuildTestTargetsWithNinja(args.out_dir, targets, args.dry_run)
+  RunTestTargets(args.out_dir, targets, gtest_filter, _extras, args.dry_run)
 
 
 if __name__ == '__main__':
