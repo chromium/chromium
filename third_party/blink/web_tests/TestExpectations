@@ -1217,6 +1217,9 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.h
 
 # ====== MathMLCore-only tests from here ======
 
+crbug.com/626703 external/wpt/mathml/presentation-markup/fractions/frac-invalid-2.html [ Failure ]
+crbug.com/626703 external/wpt/mathml/presentation-markup/fractions/frac-invalid-3.html [ Failure ]
+crbug.com/626703 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-dynamic.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-006.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-009.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction.html [ Failure ]
@@ -1230,11 +1233,15 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretc
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mfenced-element-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-002.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/cramped-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
@@ -1266,12 +1273,6 @@ crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-1.html [ Fail
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-2.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-3.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/integration-point-4.html [ Failure ]
-
-# Need to handle OOF for these.
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Skip ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-002.html [ Skip ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/cramped-001.html [ Skip ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Skip ]
 
 # This test fails on macOS.
 crbug.com/6606 [ Mac ] external/wpt/mathml/relations/text-and-math/use-typo-metrics-1.html [ Failure ]
@@ -2550,8 +2551,6 @@ crbug.com/626703 [ Linux ] external/wpt/css/css-color/t422-rgba-a0.6-a.xht [ Fai
 crbug.com/626703 external/wpt/css/css-color/t32-opacity-basic-0.6-a.xht [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/t425-hsla-basic-a.xht [ Failure ]
 crbug.com/626703 external/wpt/wasm/jsapi/functions/incumbent.html [ Crash ]
-crbug.com/626703 external/wpt/mathml/presentation-markup/fractions/frac-invalid-3.html [ Failure ]
-crbug.com/626703 external/wpt/mathml/presentation-markup/fractions/frac-invalid-2.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/normal-flow/min-height-applies-to-014.xht [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_allow_top_navigation-1.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_allow_top_navigation-3.html [ Timeout ]
@@ -2587,7 +2586,6 @@ crbug.com/626703 external/wpt/cookie-store/serviceworker_oncookiechange_eventhan
 crbug.com/626703 external/wpt/workers/postMessage_block.https.html [ Timeout ]
 crbug.com/626703 external/wpt/content-security-policy/script-src/script-src-strict_dynamic_double_policy_honor_source_expressions.html [ Timeout ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/focus-management-expectations.html [ Timeout ]
-crbug.com/626703 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-dynamic.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/preload/onload-event.html [ Timeout ]
