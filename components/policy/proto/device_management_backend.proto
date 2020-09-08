@@ -3430,6 +3430,11 @@ message ClientCertificateProvisioningRequest {
 
 // Response for ClientCertificateProvisioningRequest.
 message ClientCertificateProvisioningResponse {
+  // Error conditions that the server side reports to the client that don't fit
+  // into the standard HTTP error schema.
+  // Note that HTTP errors can still be signaled for the client certificate
+  // provisioning requests, e.g. bad DMToken or internal errors will be
+  // propagated as HTTP errors.
   enum Error {
     UNDEFINED = 0;
     // The backend has not received a certificate within the time limit.
@@ -3440,6 +3445,8 @@ message ClientCertificateProvisioningResponse {
     CA_ERROR = 3;
     // The client has sent inconsistent data.
     INCONSISTENT_DATA = 4;
+    // The backend does not accept the public key sent by the client.
+    BAD_PUBLIC_KEY = 5;
   }
 
   // If filled, the request can currently not be processed and the client
