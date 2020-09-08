@@ -93,6 +93,24 @@ crbug.com/1108830 external/wpt/css/css-pseudo/marker-word-break.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-default.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-normal.html [ Failure ]
 
+### external/wpt/css/css-shapes/shape-outside/shape-box/
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-003.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-content-box-border-radius-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-margin-box-border-radius-003.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-margin-box-border-radius-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-margin-box-border-radius-008.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-padding-box-border-radius-002.html [ Failure ]
+
+### external/wpt/css/css-shapes/shape-outside/supported-shapes/
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/circle/shape-outside-circle-042.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/circle/shape-outside-circle-044.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/circle/shape-outside-circle-050.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/circle/shape-outside-circle-055.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/ellipse/shape-outside-ellipse-038.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/ellipse/shape-outside-ellipse-039.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/inset/shape-outside-inset-024.html [ Failure ]
+
 ### external/wpt/css/css-shapes/shape-outside/supported-shapes/polygon/
 crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/polygon/shape-outside-polygon-017.html [ Failure ]
 
@@ -542,6 +560,12 @@ external/wpt/css/css-text/white-space/white-space-intrinsic-size-001.html [ Fail
 external/wpt/css/css-writing-modes/available-size-007.html [ Failure ]
 external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-001.xht [ Failure ]
 external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-004.xht [ Failure ]
+external/wpt/css/css-shapes/shape-outside/supported-shapes/circle/shape-outside-circle-048.html [ Failure ]
+external/wpt/css/css-shapes/shape-outside/supported-shapes/circle/shape-outside-circle-049.html [ Failure ]
+external/wpt/css/css-shapes/shape-outside/supported-shapes/circle/shape-outside-circle-051.html [ Failure ]
+external/wpt/css/css-shapes/shape-outside/supported-shapes/inset/shape-outside-inset-025.html [ Failure ]
+external/wpt/css/css-shapes/shape-outside/supported-shapes/polygon/shape-outside-polygon-020.html [ Failure ]
+external/wpt/css/css-shapes/shape-outside/supported-shapes/polygon/shape-outside-polygon-021.html [ Failure ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/shapes1/shape-outside-circle-048.html [ Failure ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/shapes1/shape-outside-circle-049.html [ Failure ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/shapes1/shape-outside-circle-051.html [ Failure ]
