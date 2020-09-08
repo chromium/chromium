@@ -81,10 +81,11 @@ public class SigninUtils {
         if (signinManager.isSignInAllowed()) {
             ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
             AccountPickerBottomSheetCoordinator coordinator =
-                    new AccountPickerBottomSheetCoordinator(activity,
-                            BottomSheetControllerProvider.from(activity.getWindowAndroid()),
-                            new AccountPickerDelegate(
-                                    windowAndroid, new WebSigninBridge.Factory(), continueUrl));
+                    new AccountPickerBottomSheetCoordinator(windowAndroid.getContext().get(),
+                            BottomSheetControllerProvider.from(windowAndroid),
+                            new AccountPickerDelegate(windowAndroid, activity.getActivityTab(),
+                                    activity.getTabCreator(/*incognito=*/true),
+                                    new WebSigninBridge.Factory(), continueUrl));
         }
     }
 

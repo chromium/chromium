@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.SigninUtils;
 import org.chromium.chrome.browser.signin.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -36,21 +36,20 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class AccountPickerDelegate implements WebSigninBridge.Listener {
     private final WindowAndroid mWindowAndroid;
-    private final ChromeActivity mChromeActivity;
-    private final Tab mTab;
+    private final Tab mCurrentTab;
+    private final TabCreator mIncognitoTabCreator;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
     private final String mContinueUrl;
     private final SigninManager mSigninManager;
     private @Nullable WebSigninBridge mWebSigninBridge;
     private Callback<GoogleServiceAuthError> mOnSignInErrorCallback;
 
-    public AccountPickerDelegate(WindowAndroid windowAndroid,
-            WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
+    public AccountPickerDelegate(WindowAndroid windowAndroid, Tab currentTab,
+            TabCreator incognitoTabCreator, WebSigninBridge.Factory webSigninBridgeFactory,
+            String continueUrl) {
         mWindowAndroid = windowAndroid;
-        // TODO(crbug.com/1125459): Remove cast and pass the ChromeActiviy dependencies explicitly
-        // instead.
-        mChromeActivity = (ChromeActivity) mWindowAndroid.getActivity().get();
-        mTab = mChromeActivity.getActivityTab();
+        mCurrentTab = currentTab;
+        mIncognitoTabCreator = incognitoTabCreator;
         mWebSigninBridgeFactory = webSigninBridgeFactory;
         mContinueUrl = continueUrl;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
@@ -62,9 +61,9 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
      */
     public IncognitoInterstitialDelegate getIncognitoInterstitialDelegate() {
         IncognitoInterstitialDelegate incognitoInterstitialDelegate =
-                new IncognitoInterstitialDelegate(mChromeActivity,
-                        mChromeActivity.getTabCreator(/*incognito=*/true),
-                        HelpAndFeedback.getInstance(), mTab.getUrlString());
+                new IncognitoInterstitialDelegate(mWindowAndroid.getActivity().get(),
+                        mIncognitoTabCreator, HelpAndFeedback.getInstance(),
+                        mCurrentTab.getUrlString());
         return incognitoInterstitialDelegate;
     }
 
@@ -135,7 +134,7 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
     @Override
     public void onSigninSucceded() {
         ThreadUtils.assertOnUiThread();
-        mTab.loadUrl(new LoadUrlParams(mContinueUrl));
+        mCurrentTab.loadUrl(new LoadUrlParams(mContinueUrl));
     }
 
     /**
