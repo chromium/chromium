@@ -435,8 +435,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
 
   if (best_fourcc == kCMVideoCodecType_JPEG_OpenDML) {
-    [_captureSession removeOutput:_stillImageOutput];
-    _stillImageOutput.reset();
+    // Capturing MJPEG directly never worked. Request a conversion to what has
+    // historically been the default pixel format.
+    // TODO(https://crbug.com/1124884): Investigate the performance of
+    // performing MJPEG ourselves.
+    best_fourcc = kCMPixelFormat_422YpCbCr8;
   }
 
   // The capture output has to be configured, despite Mac documentation
