@@ -69,8 +69,8 @@ TEST_F(IntegrationTest, InstallAndPromote) {
   ExpectActiveVersion(UPDATER_VERSION_STRING);
 #else
   ExpectActiveVersion("0");
-  RunWake(0);  // Candidate qualifies and promotes to active.
 #endif
+  RunWake(0);  // Candidate qualifies and promotes to active.
   ExpectActiveVersion(UPDATER_VERSION_STRING);
   ExpectActive();
   Uninstall();

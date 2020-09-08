@@ -25,8 +25,8 @@ source_set("test_common") {
 
   deps = [
     "//base",
-    "//chrome/updater:app_install",
     "//chrome/updater:base",
+    "//chrome/updater/win:app_install_controller",
     "//chrome/updater/win:lib",
   ]
 }

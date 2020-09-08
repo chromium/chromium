@@ -12,7 +12,6 @@ group("mac") {
     ":browser_install_script",
     ":updater_bundle",
     ":updater_install_script",
-    "//chrome/updater:app_install",
     "//chrome/updater/mac/signing",
   ]
 }
@@ -61,7 +60,6 @@ mac_app_bundle("updater_bundle") {
   deps = [
     ":network_fetcher_sources",
     ":updater_setup_sources",
-    "//chrome/updater:app_install",
     "//chrome/updater:lib",
   ]
 }
@@ -169,7 +167,6 @@ source_set("updater_setup_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/common:constants",
-    "//chrome/updater:app_install",
     "//testing/gtest",
   ]
 }

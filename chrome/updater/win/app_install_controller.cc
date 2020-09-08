@@ -6,62 +6,41 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
-#include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/i18n/icu_util.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_pump_type.h"
-#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task/single_thread_task_executor.h"
-#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/version.h"
+#include "base/time/time.h"
 #include "base/win/atl.h"
-#include "chrome/updater/app/app.h"
-#include "chrome/updater/configurator.h"
-#include "chrome/updater/constants.h"
 #include "chrome/updater/control_service.h"
-#include "chrome/updater/installer.h"
-#include "chrome/updater/persisted_data.h"
-#include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/updater_version.h"
 #include "chrome/updater/win/install_progress_observer.h"
-#include "chrome/updater/win/setup/setup.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/splash_screen.h"
 #include "chrome/updater/win/ui/util.h"
 #include "chrome/updater/win/util.h"
-#include "components/prefs/pref_service.h"
 
 namespace updater {
-
 namespace {
 
 // TODO(sorin): remove the hardcoding of the application name.
-// https://crbug.com/1014298
+// https://crbug.com/1065588
 constexpr base::char16 kAppNameChrome[] = L"Google Chrome";
-
-class AppInstallController;
 
 // Implements a simple inter-thread communication protocol based on Windows
 // messages exchanged between the application installer and its UI.
@@ -80,7 +59,10 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   static constexpr unsigned int WM_PROGRESS_WINDOW_IPC = WM_APP + 1;
 
   explicit InstallProgressObserverIPC(ui::ProgressWnd* progress_wnd);
-  ~InstallProgressObserverIPC() override;
+  InstallProgressObserverIPC(const InstallProgressObserverIPC&) = delete;
+  InstallProgressObserverIPC& operator=(const InstallProgressObserverIPC&) =
+      delete;
+  ~InstallProgressObserverIPC() override = default;
 
   // Called by the window proc when a specific application message is processed
   // by the progress window. This call always occurs in the context of the
@@ -126,7 +108,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   };
 
   struct ParamOnUpdateAvailable {
-    ParamOnUpdateAvailable();
+    ParamOnUpdateAvailable() = default;
     ParamOnUpdateAvailable(const ParamOnUpdateAvailable&) = delete;
     ParamOnUpdateAvailable& operator=(const ParamOnUpdateAvailable&) = delete;
 
@@ -136,7 +118,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   };
 
   struct ParamOnDownloading {
-    ParamOnDownloading();
+    ParamOnDownloading() = default;
     ParamOnDownloading(const ParamOnDownloading&) = delete;
     ParamOnDownloading& operator=(const ParamOnDownloading&) = delete;
 
@@ -147,7 +129,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   };
 
   struct ParamOnWaitingToInstall {
-    ParamOnWaitingToInstall();
+    ParamOnWaitingToInstall() = default;
     ParamOnWaitingToInstall(const ParamOnWaitingToInstall&) = delete;
     ParamOnWaitingToInstall& operator=(const ParamOnWaitingToInstall&) = delete;
 
@@ -156,7 +138,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   };
 
   struct ParamOnInstalling {
-    ParamOnInstalling();
+    ParamOnInstalling() = default;
     ParamOnInstalling(const ParamOnInstalling&) = delete;
     ParamOnInstalling& operator=(const ParamOnInstalling&) = delete;
 
@@ -167,7 +149,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   };
 
   struct ParamOnComplete {
-    ParamOnComplete();
+    ParamOnComplete() = default;
     ParamOnComplete(const ParamOnComplete&) = delete;
     ParamOnComplete& operator=(const ParamOnComplete&) = delete;
 
@@ -181,19 +163,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
 
   // The thread id of the thread which owns the |ProgressWnd|.
   int window_thread_id_ = 0;
-
-  InstallProgressObserverIPC(const InstallProgressObserverIPC&) = delete;
-  InstallProgressObserverIPC& operator=(const InstallProgressObserverIPC&) =
-      delete;
 };
-
-InstallProgressObserverIPC::ParamOnUpdateAvailable::ParamOnUpdateAvailable() =
-    default;
-InstallProgressObserverIPC::ParamOnDownloading::ParamOnDownloading() = default;
-InstallProgressObserverIPC::ParamOnWaitingToInstall::ParamOnWaitingToInstall() =
-    default;
-InstallProgressObserverIPC::ParamOnInstalling::ParamOnInstalling() = default;
-InstallProgressObserverIPC::ParamOnComplete::ParamOnComplete() = default;
 
 InstallProgressObserverIPC::InstallProgressObserverIPC(
     ui::ProgressWnd* progress_wnd)
@@ -204,7 +174,6 @@ InstallProgressObserverIPC::InstallProgressObserverIPC(
   DCHECK(progress_wnd->m_hWnd);
   DCHECK(IsWindow(progress_wnd->m_hWnd));
 }
-InstallProgressObserverIPC::~InstallProgressObserverIPC() = default;
 
 void InstallProgressObserverIPC::OnCheckingForUpdate() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -388,38 +357,36 @@ void InstallProgressObserverIPC::Invoke(WPARAM wparam, LPARAM lparam) {
 // posts a reply to the main thread, which makes the main thread exit its run
 // loop, and then the main thread returns to the destructor of this class,
 // and destructs its class members.
-class AppInstallController
-    : public base::RefCountedThreadSafe<AppInstallController>,
-      public ui::ProgressWndEvents,
-      public WTL::CMessageFilter {
+class AppInstallControllerImpl : public AppInstallController,
+                                 public ui::ProgressWndEvents,
+                                 public WTL::CMessageFilter {
  public:
-  AppInstallController();
+  AppInstallControllerImpl();
 
-  AppInstallController(const AppInstallController&) = delete;
-  AppInstallController& operator=(const AppInstallController&) = delete;
+  AppInstallControllerImpl(const AppInstallControllerImpl&) = delete;
+  AppInstallControllerImpl& operator=(const AppInstallControllerImpl&) = delete;
 
+  // Override for AppInstallController.
   void InstallApp(const std::string& app_id,
-                  base::OnceCallback<void(int)> callback);
+                  base::OnceCallback<void(int)> callback) override;
 
  private:
-  friend class base::RefCountedThreadSafe<AppInstallController>;
+  friend class base::RefCountedThreadSafe<AppInstallControllerImpl>;
 
-  ~AppInstallController() override;
+  ~AppInstallControllerImpl() override;
 
   // Overrides for OmahaWndEvents. These functions are called on the UI thread.
   void DoClose() override {}
   void DoExit() override;
 
   // Overrides for CompleteWndEvents. This function is called on the UI thread.
-  bool DoLaunchBrowser(const base::string16& url) override { return false; }
+  bool DoLaunchBrowser(const base::string16& url) override;
 
   // Overrides for ProgressWndEvents. These functions are called on the UI
   // thread.
   bool DoRestartBrowser(bool restart_all_browsers,
-                        const std::vector<base::string16>& urls) override {
-    return false;
-  }
-  bool DoReboot() override { return false; }
+                        const std::vector<base::string16>& urls) override;
+  bool DoReboot() override;
   void DoCancel() override {}
 
   // Overrides for WTL::CMessageFilter.
@@ -473,17 +440,18 @@ class AppInstallController
 
 // TODO(sorin): fix the hardcoding of the application name.
 // https:crbug.com/1014298
-AppInstallController::AppInstallController()
+AppInstallControllerImpl::AppInstallControllerImpl()
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       ui_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
       app_name_(kAppNameChrome) {}
-AppInstallController::~AppInstallController() = default;
+AppInstallControllerImpl::~AppInstallControllerImpl() = default;
 
-void AppInstallController::InstallApp(const std::string& app_id,
-                                      base::OnceCallback<void(int)> callback) {
+void AppInstallControllerImpl::InstallApp(
+    const std::string& app_id,
+    base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
@@ -491,19 +459,19 @@ void AppInstallController::InstallApp(const std::string& app_id,
   callback_ = std::move(callback);
 
   ui_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(&AppInstallController::InitializeUI, this),
-      base::BindOnce(&AppInstallController::DoInstallApp, this));
+      FROM_HERE, base::BindOnce(&AppInstallControllerImpl::InitializeUI, this),
+      base::BindOnce(&AppInstallControllerImpl::DoInstallApp, this));
 }
 
-void AppInstallController::DoInstallApp() {
+void AppInstallControllerImpl::DoInstallApp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // At this point, the UI has been initialized, which means the UI can be
   // used from now on as an observer of the application install. The task
   // below runs the UI message loop for the UI until it exits, because
   // a WM_QUIT message has been posted to it.
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(&AppInstallController::RunUI, this));
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AppInstallControllerImpl::RunUI, this));
 
   update_service_ = CreateUpdateService();
 
@@ -512,19 +480,19 @@ void AppInstallController::DoInstallApp() {
 
   update_service_->Update(
       app_id_, UpdateService::Priority::kForeground,
-      base::BindRepeating(&AppInstallController::StateChange, this),
-      base::BindOnce(&AppInstallController::InstallComplete, this));
+      base::BindRepeating(&AppInstallControllerImpl::StateChange, this),
+      base::BindOnce(&AppInstallControllerImpl::InstallComplete, this));
 }
 
 // TODO(crbug.com/1116492) - handle the case when this callback is posted
 // and no other |StateChange| callbacks were received. Since UI is driven by
 // state changes only, then the UI is not going to close in this case.
-void AppInstallController::InstallComplete(UpdateService::Result result) {
+void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_service_ = nullptr;
 }
 
-void AppInstallController::StateChange(
+void AppInstallControllerImpl::StateChange(
     UpdateService::UpdateState update_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(install_progress_observer_ipc_);
@@ -575,7 +543,7 @@ void AppInstallController::StateChange(
   }
 }
 
-void AppInstallController::HandleInstallResult(
+void AppInstallControllerImpl::HandleInstallResult(
     const UpdateService::UpdateState& update_state) {
   CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
   base::string16 completion_text;
@@ -613,7 +581,7 @@ void AppInstallController::HandleInstallResult(
 
 // Creates and shows the progress window. The window has thread affinity. It
 // must be created, process its messages, and be destroyed on the same thread.
-void AppInstallController::InitializeUI() {
+void AppInstallControllerImpl::InitializeUI() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 
   base::ScopedDisallowBlocking no_blocking_allowed_on_ui_thread;
@@ -627,7 +595,7 @@ void AppInstallController::InitializeUI() {
   progress_wnd_->Show();
 }
 
-void AppInstallController::RunUI() {
+void AppInstallControllerImpl::RunUI() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
 
@@ -641,12 +609,12 @@ void AppInstallController::RunUI() {
                               base::BindOnce(std::move(callback_), 0));
 }
 
-void AppInstallController::DoExit() {
+void AppInstallControllerImpl::DoExit() {
   DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   PostThreadMessage(GetCurrentThreadId(), WM_QUIT, 0, 0);
 }
 
-BOOL AppInstallController::PreTranslateMessage(MSG* msg) {
+BOOL AppInstallControllerImpl::PreTranslateMessage(MSG* msg) {
   DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   if (msg->message == InstallProgressObserverIPC::WM_PROGRESS_WINDOW_IPC) {
     install_progress_observer_ipc_->Invoke(msg->wParam, msg->lParam);
@@ -655,145 +623,38 @@ BOOL AppInstallController::PreTranslateMessage(MSG* msg) {
   return false;
 }
 
-DWORD AppInstallController::GetUIThreadID() const {
+DWORD AppInstallControllerImpl::GetUIThreadID() const {
   DCHECK(progress_wnd_);
   return ::GetWindowThreadProcessId(progress_wnd_->m_hWnd, nullptr);
 }
 
+bool AppInstallControllerImpl::DoLaunchBrowser(const base::string16& url) {
+  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  return false;
+}
+
+bool AppInstallControllerImpl::DoRestartBrowser(
+    bool restart_all_browsers,
+    const std::vector<base::string16>& urls) {
+  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  return false;
+}
+
+bool AppInstallControllerImpl::DoReboot() {
+  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  return false;
+}
+
 }  // namespace
 
-// Sets the updater up, shows up a splash screen, then installs an application
-// while displaying the UI progress window.
-class AppInstall : public App {
- public:
-  AppInstall() = default;
-
- private:
-  ~AppInstall() override = default;
-
-  // Overrides for App.
-  void Initialize() override;
-  void FirstTaskRun() override;
-
-  void SetupDone(int result);
-
-  // Handles the --app-id command line argument, and triggers installing of the
-  // corresponding app-id if the argument is present.
-  void HandleAppId();
-
-  // Makes this version of the updater active, self-registers for updates, then
-  // runs the |done| closure.
-  void MakeActive(base::OnceClosure done);
-
-  // Bound to the main sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  scoped_refptr<AppInstallController> app_install_controller_;
-
-  // The splash screen has a fading effect. That means that the splash screen
-  // needs to be alive for a while, until the fading effect is over.
-  std::unique_ptr<ui::SplashScreen> splash_screen_;
-
-  // These prefs objects are used to make the updater active and register this
-  // version of the updater for self-updates.
-  //
-  // TODO(crbug.com/1109231) - this is a temporary workaround until a better
-  // fix is found.
-  std::unique_ptr<LocalPrefs> local_prefs_;
-  std::unique_ptr<GlobalPrefs> global_prefs_;
-
-  scoped_refptr<base::TaskRunner> make_active_task_runner_;
-};
-
-void AppInstall::Initialize() {
-  base::i18n::InitializeICU();
-
-  // Creating |global_prefs_| requires acquiring a global lock, and this lock is
-  // typical owned by the RPC server. That means that if the server is
-  // running, the following code will block, and the install will not proceed
-  // until the server releases the lock.
-  global_prefs_ = CreateGlobalPrefs();
-  local_prefs_ = CreateLocalPrefs();
-}
-
-void AppInstall::FirstTaskRun() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
-
-  splash_screen_ = std::make_unique<ui::SplashScreen>(kAppNameChrome);
-  splash_screen_->Show();
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce([]() { return Setup(false); }),
-      base::BindOnce(
-          [](ui::SplashScreen* splash_screen,
-             base::OnceCallback<void(int)> done, int result) {
-            splash_screen->Dismiss(base::BindOnce(std::move(done), result));
-          },
-          splash_screen_.get(), base::BindOnce(&AppInstall::SetupDone, this)));
-}
-
-// Updates the prefs if the setup is successful, then continue installing
-// the application if --appid is specified on the command line.
-void AppInstall::SetupDone(int result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (result != 0) {
-    Shutdown(result);
-    return;
-  }
-
-  // Invoke |HandleAppId| to continue the execution flow.
-  MakeActive(base::BindOnce(&AppInstall::HandleAppId, this));
-}
-
-void AppInstall::HandleAppId() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // This releases the prefs lock, and the RPC server can be started.
-  global_prefs_ = nullptr;
-  local_prefs_ = nullptr;
-
-  // If no app id is provided, then invoke ControlService::Run to wake
-  // this version of the updater, to do an update check, and possibly promote
-  // it as a result.
-  const std::string app_id =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kAppIdSwitch);
-  if (app_id.empty()) {
-    // The instance of |CreateControlService| has sequence affinity. Bind it
-    // in the closure to ensure it is released in this sequence.
-    scoped_refptr<ControlService> control_service = CreateControlService();
-    control_service->Run(base::BindOnce(
-        [](scoped_refptr<ControlService> /*control_service*/,
-           scoped_refptr<AppInstall> app_install) { app_install->Shutdown(0); },
-        control_service, base::WrapRefCounted(this)));
-    return;
-  }
-
-  app_install_controller_ = base::MakeRefCounted<AppInstallController>();
-  app_install_controller_->InstallApp(
-      app_id, base::BindOnce(&AppInstall::Shutdown, this));
-}
-
-// TODO(crbug.com/1109231) - this is a temporary workaround.
-void AppInstall::MakeActive(base::OnceClosure done) {
-  local_prefs_->SetQualified(true);
-  local_prefs_->GetPrefService()->CommitPendingWrite(base::BindOnce(
-      [](base::OnceClosure done, PrefService* pref_service) {
-        DCHECK(pref_service);
-        auto persisted_data = base::MakeRefCounted<PersistedData>(pref_service);
-        persisted_data->SetProductVersion(
-            kUpdaterAppId, base::Version(UPDATER_VERSION_STRING));
-        pref_service->CommitPendingWrite(std::move(done));
-      },
-      std::move(done), global_prefs_->GetPrefService()));
-}
-
 scoped_refptr<App> MakeAppInstall() {
-  return base::MakeRefCounted<AppInstall>();
+  return base::MakeRefCounted<AppInstall>(
+      base::BindRepeating([]() -> std::unique_ptr<SplashScreen> {
+        return std::make_unique<ui::SplashScreen>(kAppNameChrome);
+      }),
+      base::BindRepeating([]() -> scoped_refptr<AppInstallController> {
+        return base::MakeRefCounted<AppInstallControllerImpl>();
+      }));
 }
 
 }  // namespace updater

@@ -25,10 +25,10 @@ executable("updater") {
   configs += [ "//build/config/win:windowed" ]
 
   deps = [
+    ":app_install_controller",
     ":lib",
     ":version_resources",
     "//build/win:default_exe_manifest",
-    "//chrome/updater:app_install",
     "//chrome/updater:lib",
     "//chrome/updater/win/ui:ui_resources",
   ]
@@ -136,6 +136,33 @@ source_set("install_progress_observer") {
   deps = [ "//base" ]
 }
 
+# This build target is defined to minimize the impact of -Wno-missing-braces
+# compiler switch. In the future it might be possible to isolate the
+# dependency of ATL in the UI so ATL headers are not visible in the
+# compilation units outside the UI itself.
+# TODO(sorin): https://crbug.com/1014311
+source_set("app_install_controller") {
+  if (is_win) {
+    visibility = [ "//chrome/updater/win/*" ]
+    allow_circular_includes_from = [ "//chrome/updater:lib" ]
+
+    cflags_cc = [ "-Wno-missing-braces" ]
+
+    sources = [ "app_install_controller.cc" ]
+
+    deps = [
+      ":install_progress_observer",
+      ":lib",
+      "//base",
+      "//base:i18n",
+      "//chrome/updater:base",
+      "//chrome/updater:lib",
+      "//chrome/updater:version_header",
+      "//chrome/updater/win/ui",
+    ]
+  }
+}
+
 source_set("updater_tests") {
   testonly = true
 
@@ -149,11 +176,11 @@ source_set("updater_tests") {
   ]
 
   deps = [
+    ":app_install_controller",
     ":constants",
     ":lib",
     ":tag_extractor",
     "//base/test:test_support",
-    "//chrome/updater:app_install",
     "//testing/gtest",
     "//url:url",
   ]
@@ -183,10 +210,10 @@ test("updater_unittests") {
   ]
 
   deps = [
+    ":app_install_controller",
     ":lib",
     "//base",
     "//base/test:test_support",
-    "//chrome/updater:app_install",
     "//chrome/updater:version_header",
     "//chrome/updater/win/test:test_executables",
     "//chrome/updater/win/test:test_strings",
