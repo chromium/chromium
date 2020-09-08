@@ -130,8 +130,7 @@ FileTypePoliciesComponentInstallerPolicy::GetMimeTypes() const {
   return std::vector<std::string>();
 }
 
-void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus,
-                                       const base::FilePath& user_data_dir) {
+void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering File Type Policies component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FileTypePoliciesComponentInstallerPolicy>());

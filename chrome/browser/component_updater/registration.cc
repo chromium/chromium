@@ -149,10 +149,9 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif  // !defined(OS_CHROMEOS)
 
     RegisterOriginTrialsComponent(cus, path);
-
-    RegisterFileTypePoliciesComponent(cus, path);
   }
   RegisterSSLErrorAssistantComponent(cus);
+  RegisterFileTypePoliciesComponent(cus);
 
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 

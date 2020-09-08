@@ -56,8 +56,7 @@ class FileTypePoliciesComponentInstallerPolicy
 
 // Call once during startup to make the component update service aware of
 // the File Type Policies component.
-void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus,
-                                       const base::FilePath& user_data_dir);
+void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 
