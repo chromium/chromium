@@ -106,7 +106,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "components/previews/content/previews_ui_service.h"
-#include "components/site_isolation/pref_names.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
@@ -210,22 +209,6 @@ base::OnceCallback<void(T)> IgnoreArgument(base::OnceClosure callback) {
   return base::BindOnce(&IgnoreArgumentHelper<T>, std::move(callback));
 }
 
-bool WebsiteSettingsFilterAdapter(
-    const base::RepeatingCallback<bool(const GURL&)> predicate,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
-  // Ignore the default setting.
-  if (primary_pattern == ContentSettingsPattern::Wildcard())
-    return false;
-
-  // Website settings only use origin-scoped patterns. The only content setting
-  // this filter is used for is DURABLE_STORAGE, which also only uses
-  // origin-scoped patterns. Such patterns can be directly translated to a GURL.
-  GURL url(primary_pattern.ToString());
-  DCHECK(url.is_valid());
-  return predicate.Run(url);
-}
-
 #if BUILDFLAG(ENABLE_NACL)
 void ClearNaClCacheOnIOThread(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -278,17 +261,6 @@ bool DoesOriginMatchEmbedderMask(uint64_t origin_type_mask,
       << "DoesOriginMatchEmbedderMask must handle all origin types.";
 
   return false;
-}
-
-// Callback for when cookies have been deleted. Invokes NotifyIfDone.
-// Receiving |cookie_manager| as a parameter so that the receive pipe is
-// not deleted before the response is received.
-void OnClearedCookies(
-    base::OnceClosure done,
-    mojo::Remote<network::mojom::CookieManager> cookie_manager,
-    uint32_t num_deleted) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(done).Run();
 }
 
 }  // namespace
@@ -443,9 +415,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           : filter;
 
   HostContentSettingsMap::PatternSourcePredicate website_settings_filter =
-      filter_builder->MatchesAllOriginsAndDomains()
-          ? HostContentSettingsMap::PatternSourcePredicate()
-          : base::BindRepeating(&WebsiteSettingsFilterAdapter, filter);
+      browsing_data::CreateWebsiteSettingsFilter(filter_builder);
 
   // Managed devices and supervised users can have restrictions on history
   // deletion.
@@ -697,39 +667,18 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB)) {
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Cookies"));
 
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::CLIENT_HINTS, base::Time(), base::Time::Max(),
-        website_settings_filter);
+    network::mojom::NetworkContext* safe_browsing_context = nullptr;
+    safe_browsing::SafeBrowsingService* sb_service =
+        g_browser_process->safe_browsing_service();
+    if (sb_service)
+      safe_browsing_context = sb_service->GetNetworkContext(profile_);
 
-    // Clear the safebrowsing cookies only if time period is for "all time".  It
-    // doesn't make sense to apply the time period of deleting in the last X
-    // hours/days to the safebrowsing cookies since they aren't the result of
-    // any user action.
-    if (IsForAllTime()) {
-      safe_browsing::SafeBrowsingService* sb_service =
-          g_browser_process->safe_browsing_service();
-      if (sb_service) {
-        mojo::Remote<network::mojom::CookieManager> cookie_manager;
-        sb_service->GetNetworkContext(profile_)->GetCookieManager(
-            cookie_manager.BindNewPipeAndPassReceiver());
-
-        network::mojom::CookieManager* manager_ptr = cookie_manager.get();
-
-        network::mojom::CookieDeletionFilterPtr deletion_filter =
-            filter_builder->BuildCookieDeletionFilter();
-        if (!delete_begin_.is_null())
-          deletion_filter->created_after_time = delete_begin_;
-        if (!delete_end_.is_null())
-          deletion_filter->created_before_time = delete_end_;
-
-        manager_ptr->DeleteCookies(
-            std::move(deletion_filter),
-            base::BindOnce(
-                &OnClearedCookies,
-                CreateTaskCompletionClosure(TracingDataType::kCookies),
-                std::move(cookie_manager)));
-      }
-    }
+    browsing_data::RemoveEmbedderCookieData(
+        delete_begin, delete_end, filter_builder, host_content_settings_map_,
+        safe_browsing_context,
+        base::BindOnce(
+            &ChromeBrowsingDataRemoverDelegate::CreateTaskCompletionClosure,
+            base::Unretained(this), TracingDataType::kCookies));
 
     if (filter_builder->GetMode() ==
         BrowsingDataFilterBuilder::Mode::kPreserve) {
@@ -752,21 +701,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // DATA_TYPE_CONTENT_SETTINGS
   if (remove_mask & DATA_TYPE_CONTENT_SETTINGS) {
     base::RecordAction(UserMetricsAction("ClearBrowsingData_ContentSettings"));
-    const auto* registry =
-        content_settings::ContentSettingsRegistry::GetInstance();
-    for (const content_settings::ContentSettingsInfo* info : *registry) {
-      host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-          info->website_settings_info()->type(), delete_begin_, delete_end_,
-          HostContentSettingsMap::PatternSourcePredicate());
-    }
 
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::USB_CHOOSER_DATA, delete_begin_, delete_end_,
-        HostContentSettingsMap::PatternSourcePredicate());
-
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::BLUETOOTH_CHOOSER_DATA, delete_begin_, delete_end_,
-        HostContentSettingsMap::PatternSourcePredicate());
+    browsing_data::RemoveSiteSettingsData(delete_begin, delete_end,
+                                          host_content_settings_map_);
 
     auto* handler_registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_);
@@ -779,15 +716,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #if !defined(OS_ANDROID)
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetDefaultForBrowserContext(profile_);
-    zoom_map->ClearZoomLevels(delete_begin_, delete_end_);
-
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::SERIAL_CHOOSER_DATA, delete_begin_, delete_end_,
-        HostContentSettingsMap::PatternSourcePredicate());
-
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::HID_CHOOSER_DATA, delete_begin_, delete_end_,
-        HostContentSettingsMap::PatternSourcePredicate());
+    zoom_map->ClearZoomLevels(delete_begin, delete_end_);
 #else
     // Reset the Default Search Engine permissions to their default.
     SearchPermissionsService* search_permissions_service =
@@ -1027,14 +956,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                            TracingDataType::kPnaclCache))));
 #endif
 
-    // The PrerenderManager may have a page actively being prerendered, which
-    // is essentially a preemptively cached page.
-    prerender::PrerenderManager* prerender_manager =
-        prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
-    if (prerender_manager) {
-      prerender_manager->ClearData(
-          prerender::PrerenderManager::CLEAR_PRERENDER_CONTENTS);
-    }
+    browsing_data::RemovePrerenderCacheData(
+        prerender::PrerenderManagerFactory::GetForBrowserContext(profile_));
 
     ntp_snippets::ContentSuggestionsService* content_suggestions_service =
         ContentSuggestionsServiceFactory::GetForProfileIfExists(profile_);
@@ -1242,13 +1165,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   //
   // TODO(alexmos): Support finer-grained filtering based on time ranges and
   // |filter|. For now, conservatively delete all saved isolated origins.
-  if (remove_mask & (DATA_TYPE_ISOLATED_ORIGINS | DATA_TYPE_HISTORY)) {
-    prefs->ClearPref(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
-    // Note that this does not clear these sites from the in-memory map in
-    // ChildProcessSecurityPolicy, since that is not supported at runtime. That
-    // list of isolated sites is not directly exposed to users, though, and
-    // will be cleared on next restart.
-  }
+  if (remove_mask & (DATA_TYPE_ISOLATED_ORIGINS | DATA_TYPE_HISTORY))
+    browsing_data::RemoveSiteIsolationData(prefs);
 
 #if BUILDFLAG(ENABLE_REPORTING)
   if (remove_mask & DATA_TYPE_HISTORY) {

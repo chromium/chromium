@@ -24,6 +24,9 @@ class URLLoaderThrottle;
 }
 
 namespace network {
+namespace mojom {
+class NetworkContext;
+}
 class SharedURLLoaderFactory;
 }
 
@@ -43,7 +46,7 @@ class UrlCheckerDelegateImpl;
 // support for initialization and construction of these objects.
 class SafeBrowsingService {
  public:
-  SafeBrowsingService(const std::string& user_agent);
+  explicit SafeBrowsingService(const std::string& user_agent);
   ~SafeBrowsingService();
 
   // Executed on UI thread
@@ -57,6 +60,9 @@ class SafeBrowsingService {
   void AddInterface(service_manager::BinderRegistry* registry,
                     content::RenderProcessHost* render_process_host);
   void StopDBManager();
+
+  network::mojom::NetworkContext* GetNetworkContext();
+
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
  private:

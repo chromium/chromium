@@ -12,10 +12,13 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * @hide
  */
-@IntDef({BrowsingDataType.COOKIES_AND_SITE_DATA, BrowsingDataType.CACHE})
+@IntDef({BrowsingDataType.COOKIES_AND_SITE_DATA, BrowsingDataType.CACHE,
+        BrowsingDataType.SITE_SETTINGS})
 @Retention(RetentionPolicy.SOURCE)
 public @interface BrowsingDataType {
     int COOKIES_AND_SITE_DATA =
             org.chromium.weblayer_private.interfaces.BrowsingDataType.COOKIES_AND_SITE_DATA;
     int CACHE = org.chromium.weblayer_private.interfaces.BrowsingDataType.CACHE;
+    // @since 86
+    int SITE_SETTINGS = org.chromium.weblayer_private.interfaces.BrowsingDataType.SITE_SETTINGS;
 }

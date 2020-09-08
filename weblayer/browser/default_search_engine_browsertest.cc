@@ -4,6 +4,7 @@
 
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/test/browser_test_utils.h"
+#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/shell/browser/shell.h"
@@ -11,9 +12,6 @@
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
 namespace weblayer {
-namespace {
-constexpr char kDseOrigin[] = "https://www.google.com";
-}
 
 using DefaultSearchEngineBrowserTest = WebLayerBrowserTest;
 
@@ -23,14 +21,15 @@ IN_PROC_BROWSER_TEST_F(DefaultSearchEngineBrowserTest,
       static_cast<TabImpl*>(shell()->tab())
           ->web_contents()
           ->GetBrowserContext());
-  EXPECT_EQ(settings_map->GetContentSetting(GURL(kDseOrigin), GURL(kDseOrigin),
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
-            CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(settings_map->GetContentSetting(GURL(kDseOrigin), GURL(kDseOrigin),
-                                            ContentSettingsType::NOTIFICATIONS,
-                                            std::string()),
-            CONTENT_SETTING_ASK);
+  auto origin = GetDseOrigin().GetURL();
+  EXPECT_EQ(
+      settings_map->GetContentSetting(
+          origin, origin, ContentSettingsType::GEOLOCATION, std::string()),
+      CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      settings_map->GetContentSetting(
+          origin, origin, ContentSettingsType::NOTIFICATIONS, std::string()),
+      CONTENT_SETTING_ASK);
 }
 
 class IncognitoDefaultSearchEngineBrowserTest
@@ -45,14 +44,15 @@ IN_PROC_BROWSER_TEST_F(IncognitoDefaultSearchEngineBrowserTest,
       static_cast<TabImpl*>(shell()->tab())
           ->web_contents()
           ->GetBrowserContext());
-  EXPECT_EQ(settings_map->GetContentSetting(GURL(kDseOrigin), GURL(kDseOrigin),
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
-            CONTENT_SETTING_ASK);
-  EXPECT_EQ(settings_map->GetContentSetting(GURL(kDseOrigin), GURL(kDseOrigin),
-                                            ContentSettingsType::NOTIFICATIONS,
-                                            std::string()),
-            CONTENT_SETTING_ASK);
+  auto origin = GetDseOrigin().GetURL();
+  EXPECT_EQ(
+      settings_map->GetContentSetting(
+          origin, origin, ContentSettingsType::GEOLOCATION, std::string()),
+      CONTENT_SETTING_ASK);
+  EXPECT_EQ(
+      settings_map->GetContentSetting(
+          origin, origin, ContentSettingsType::NOTIFICATIONS, std::string()),
+      CONTENT_SETTING_ASK);
 }
 
 }  // namespace weblayer

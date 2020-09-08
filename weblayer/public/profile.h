@@ -31,6 +31,7 @@ class DownloadDelegate;
 enum class BrowsingDataType {
   COOKIES_AND_SITE_DATA = 0,
   CACHE = 1,
+  SITE_SETTINGS = 2,
 };
 
 // Used for setting/getting profile related settings.

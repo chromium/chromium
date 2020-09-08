@@ -9,7 +9,6 @@
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/favicon/favicon_service_impl.h"
 #include "weblayer/browser/favicon/favicon_service_impl_factory.h"
-#include "weblayer/browser/profile_impl.h"
 #include "weblayer/public/favicon_fetcher_delegate.h"
 
 namespace weblayer {
@@ -61,17 +60,14 @@ FaviconTabHelper::RegisterFaviconFetcherDelegate(
 
 FaviconTabHelper::FaviconTabHelper(content::WebContents* contents)
     : WebContentsObserver(contents) {
-  // This code relies on the ability to get a Profile for the BrowserContext.
-  DCHECK(ProfileImpl::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
 void FaviconTabHelper::AddDelegate(FaviconFetcherDelegate* delegate) {
   delegates_.AddObserver(delegate);
   if (++observer_count_ == 1) {
-    ProfileImpl* profile =
-        ProfileImpl::FromBrowserContext(web_contents()->GetBrowserContext());
     FaviconServiceImpl* favicon_service =
-        FaviconServiceImplFactory::GetForProfile(profile);
+        FaviconServiceImplFactory::GetForBrowserContext(
+            web_contents()->GetBrowserContext());
     favicon::ContentFaviconDriver::CreateForWebContents(web_contents(),
                                                         favicon_service);
     favicon::ContentFaviconDriver::FromWebContents(web_contents())

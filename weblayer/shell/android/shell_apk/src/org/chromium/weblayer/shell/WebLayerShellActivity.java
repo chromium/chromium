@@ -255,7 +255,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
 
             if (item.getItemId() == R.id.clear_browsing_data_menu_id) {
                 mProfile.clearBrowsingData(
-                        new int[] {BrowsingDataType.COOKIES_AND_SITE_DATA, BrowsingDataType.CACHE},
+                        new int[] {BrowsingDataType.COOKIES_AND_SITE_DATA, BrowsingDataType.CACHE,
+                                BrowsingDataType.SITE_SETTINGS},
+
                         () -> {
                             Toast.makeText(getApplicationContext(), "Data cleared!",
                                          Toast.LENGTH_SHORT)

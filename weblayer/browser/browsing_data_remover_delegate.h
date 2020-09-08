@@ -5,6 +5,8 @@
 #ifndef WEBLAYER_BROWSER_BROWSING_DATA_REMOVER_DELEGATE_H_
 #define WEBLAYER_BROWSER_BROWSING_DATA_REMOVER_DELEGATE_H_
 
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/browsing_data_remover_delegate.h"
@@ -29,10 +31,12 @@ class BrowsingDataRemoverDelegate : public content::BrowsingDataRemoverDelegate,
     // WebLayer-specific datatypes.
     DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN,
     DATA_TYPE_FAVICONS = DATA_TYPE_EMBEDDER_BEGIN << 1,
+    DATA_TYPE_SITE_SETTINGS = DATA_TYPE_EMBEDDER_BEGIN << 2,
   };
 
   explicit BrowsingDataRemoverDelegate(
       content::BrowserContext* browser_context);
+  ~BrowsingDataRemoverDelegate() override;
 
   BrowsingDataRemoverDelegate(const BrowsingDataRemoverDelegate&) = delete;
   BrowsingDataRemoverDelegate& operator=(const BrowsingDataRemoverDelegate&) =
@@ -51,7 +55,20 @@ class BrowsingDataRemoverDelegate : public content::BrowsingDataRemoverDelegate,
                           base::OnceCallback<void(uint64_t)> callback) override;
 
  private:
+  base::OnceClosure CreateTaskCompletionClosure();
+
+  void OnTaskComplete();
+
+  void RunCallbackIfDone();
+
   content::BrowserContext* browser_context_ = nullptr;
+
+  int pending_tasks_ = 0;
+
+  // Completion callback to call when all data are deleted.
+  base::OnceCallback<void(uint64_t)> callback_;
+
+  base::WeakPtrFactory<BrowsingDataRemoverDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace weblayer
