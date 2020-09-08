@@ -83,9 +83,9 @@ void FeaturePodIconButton::SetToggled(bool toggled) {
 
 void FeaturePodIconButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kSystemMenuIconColor, AshColorMode::kDark);
+      ContentLayerType::kSystemMenuIconColor);
   const SkColor toggled_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kSystemMenuIconColorToggled, AshColorMode::kDark);
+      ContentLayerType::kSystemMenuIconColorToggled);
 
   // Skip repainting if the incoming icon is the same as the current icon. If
   // the icon has been painted before, |gfx::CreateVectorIcon()| will simply
@@ -124,13 +124,11 @@ void FeaturePodIconButton::PaintButtonContents(gfx::Canvas* canvas) {
 
   const AshColorProvider* color_provider = AshColorProvider::Get();
   SkColor color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      AshColorMode::kDark);
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   if (GetEnabled()) {
     if (toggled_) {
       color = color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive,
-          AshColorMode::kDark);
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
     }
   } else {
     color = AshColorProvider::GetDisabledColor(color);
@@ -313,10 +311,10 @@ void FeaturePodLabelButton::ShowDetailedViewArrow() {
 
 void FeaturePodLabelButton::OnEnabledChanged() {
   const AshColorProvider* color_provider = AshColorProvider::Get();
-  const SkColor primary_text_color = color_provider->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary, AshColorMode::kDark);
+  const SkColor primary_text_color =
+      color_provider->GetContentLayerColor(ContentLayerType::kTextColorPrimary);
   const SkColor secondary_text_color = color_provider->GetContentLayerColor(
-      ContentLayerType::kTextColorSecondary, AshColorMode::kDark);
+      ContentLayerType::kTextColorSecondary);
   label_->SetEnabledColor(
       GetEnabled() ? primary_text_color
                    : AshColorProvider::GetDisabledColor(primary_text_color));
@@ -324,8 +322,8 @@ void FeaturePodLabelButton::OnEnabledChanged() {
       GetEnabled() ? secondary_text_color
                    : AshColorProvider::GetDisabledColor(secondary_text_color));
 
-  const SkColor icon_color = color_provider->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary, AshColorMode::kDark);
+  const SkColor icon_color =
+      color_provider->GetContentLayerColor(ContentLayerType::kIconColorPrimary);
   detailed_view_arrow_->SetImage(gfx::CreateVectorIcon(
       kUnifiedMenuMoreIcon,
       GetEnabled() ? icon_color

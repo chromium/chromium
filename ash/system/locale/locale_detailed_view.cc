@@ -54,8 +54,7 @@ class LocaleItem : public ActionableView {
     views::Label* iso_code_label = TrayPopupUtils::CreateDefaultLabel();
     iso_code_label->SetEnabledColor(
         AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorPrimary,
-            AshColorProvider::AshColorMode::kDark));
+            AshColorProvider::ContentLayerType::kTextColorPrimary));
     iso_code_label->SetAutoColorReadabilityEnabled(false);
     iso_code_label->SetText(base::i18n::ToUpper(
         base::UTF8ToUTF16(l10n_util::GetLanguage(iso_code))));

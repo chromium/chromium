@@ -39,8 +39,7 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
   gfx::ImageSkia image = gfx::CreateVectorIcon(
       kShelfOverviewIcon,
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor,
-          AshColorProvider::AshColorMode::kDark));
+          AshColorProvider::ContentLayerType::kButtonIconColor));
   icon_->SetImage(image);
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;

@@ -139,8 +139,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   background_view_->layer()->SetFillsBoundsOpaquely(false);
   background_view_->layer()->SetColor(
       AshColorProvider::Get()->GetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield80,
-          AshColorProvider::AshColorMode::kDark));
+          AshColorProvider::ShieldLayerType::kShield80));
 
   AddChildView(background_view_);
   AddChildView(new_desk_button_);

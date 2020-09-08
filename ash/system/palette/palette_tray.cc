@@ -511,8 +511,7 @@ void PaletteTray::ShowBubble(bool show_by_click) {
       bubble_view->AddChildView(std::make_unique<views::Separator>());
   setup_layered_view(separator);
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   separator->SetBorder(views::CreateEmptyBorder(gfx::Insets(
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
 

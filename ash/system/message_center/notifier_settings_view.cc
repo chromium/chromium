@@ -254,7 +254,7 @@ class EmptyNotifierView : public views::View {
  public:
   EmptyNotifierView() {
     const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kTextColorPrimary, AshColorMode::kDark);
+        ContentLayerType::kTextColorPrimary);
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0);
     layout->set_main_axis_alignment(
@@ -298,7 +298,7 @@ class NotifierViewCheckbox : public views::Checkbox {
   SkColor GetIconImageColor(int icon_state) const override {
     if (icon_state & IconState::CHECKED) {
       return AshColorProvider::Get()->GetContentLayerColor(
-          ContentLayerType::kIconColorProminent, AshColorMode::kDark);
+          ContentLayerType::kIconColorProminent);
     }
     return views::Checkbox::GetIconImageColor(icon_state);
   }
@@ -320,7 +320,7 @@ NotifierSettingsView::NotifierButton::NotifierButton(
                                                          this /* listener */);
   name_view->SetAutoColorReadabilityEnabled(false);
   name_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary, AshColorMode::kDark));
+      ContentLayerType::kTextColorPrimary));
   name_view->SetSubpixelRenderingEnabled(false);
   // "Roboto-Regular, 13sp" is specified in the mock.
   name_view->SetFontList(
@@ -355,10 +355,10 @@ NotifierSettingsView::NotifierButton::~NotifierButton() = default;
 void NotifierSettingsView::NotifierButton::UpdateIconImage(
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
-    icon_view_->SetImage(gfx::CreateVectorIcon(
-        message_center::kProductIcon, kEntryIconSize,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary, AshColorMode::kDark)));
+    icon_view_->SetImage(
+        gfx::CreateVectorIcon(message_center::kProductIcon, kEntryIconSize,
+                              AshColorProvider::Get()->GetContentLayerColor(
+                                  ContentLayerType::kIconColorPrimary)));
   } else {
     icon_view_->SetImage(icon);
     icon_view_->SetImageSize(gfx::Size(kEntryIconSize, kEntryIconSize));
@@ -425,10 +425,10 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
 
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
-    policy_enforced_icon->SetImage(gfx::CreateVectorIcon(
-        kSystemMenuBusinessIcon, kEntryIconSize,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary, AshColorMode::kDark)));
+    policy_enforced_icon->SetImage(
+        gfx::CreateVectorIcon(kSystemMenuBusinessIcon, kEntryIconSize,
+                              AshColorProvider::Get()->GetContentLayerColor(
+                                  ContentLayerType::kIconColorPrimary)));
     cs->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0,
                   GridLayout::ColumnSize::kFixed, kEntryIconSize, 0);
     layout->AddView(std::move(policy_enforced_icon));
@@ -451,11 +451,11 @@ NotifierSettingsView::NotifierSettingsView() {
       views::CreateSolidSidedBorder(1, 0, 0, 0, kTopBorderColor));
 
   const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary, AshColorMode::kDark);
+      ContentLayerType::kTextColorPrimary);
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary, AshColorMode::kDark);
+      ContentLayerType::kIconColorPrimary);
   const SkColor separator_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kSeparatorColor, AshColorMode::kDark);
+      ContentLayerType::kSeparatorColor);
 
   if (features::IsNotificationIndicatorEnabled()) {
     // Row for the app badging toggle button.
@@ -548,7 +548,7 @@ bool NotifierSettingsView::IsScrollable() {
 void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
   quiet_mode_toggle_->SetIsOn(is_quiet_mode);
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary, AshColorMode::kDark);
+      ContentLayerType::kIconColorPrimary);
   if (is_quiet_mode) {
     quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
         kNotificationCenterDoNotDisturbOnIcon, kMenuIconSize, icon_color));
@@ -713,7 +713,7 @@ std::unique_ptr<views::View> NotifierSettingsView::CreateToggleButtonRow(
   row_view->AddChildView(std::move(icon));
 
   const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary, AshColorMode::kDark);
+      ContentLayerType::kTextColorPrimary);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // "Roboto-Regular, 13sp" is specified in the mock.
   label->SetFontList(gfx::FontList().DeriveWithSizeDelta(kLabelFontSizeDelta));

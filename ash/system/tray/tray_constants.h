@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRAY_CONSTANTS_H_
 
 #include "ash/ash_export.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -247,6 +248,10 @@ constexpr int kHoldingSpaceRowPadding = 8;
 
 // Constants used for media tray.
 constexpr int kMediaTrayPadding = 8;
+
+// There is no active user session during oobe, which means it doesn't support
+// dark mode. Sets the icon color to be constant.
+constexpr SkColor kIconColorInOobe = gfx::kGoogleGrey700;
 
 }  // namespace ash
 

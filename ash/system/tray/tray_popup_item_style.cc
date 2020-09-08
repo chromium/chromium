@@ -27,8 +27,7 @@ SkColor TrayPopupItemStyle::GetIconColor(ColorStyle color_style,
   const SkColor kBaseIconColor =
       use_unified_theme
           ? AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary,
-                AshColorProvider::AshColorMode::kDark)
+                AshColorProvider::ContentLayerType::kIconColorPrimary)
           : gfx::kChromeIconGrey;
   switch (color_style) {
     case ColorStyle::ACTIVE:
@@ -62,8 +61,7 @@ SkColor TrayPopupItemStyle::GetTextColor() const {
   const SkColor kBaseTextColor =
       use_unified_theme_
           ? AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorPrimary,
-                AshColorProvider::AshColorMode::kDark)
+                AshColorProvider::ContentLayerType::kTextColorPrimary)
           : SkColorSetA(SK_ColorBLACK, 0xDE);
 
   switch (color_style_) {

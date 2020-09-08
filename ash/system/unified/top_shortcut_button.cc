@@ -27,8 +27,7 @@ TopShortcutButton::TopShortcutButton(const gfx::VectorIcon& icon,
            gfx::CreateVectorIcon(
                icon, kTrayTopShortcutButtonIconSize,
                AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kIconColorPrimary,
-                   AshColorProvider::AshColorMode::kDark)));
+                   AshColorProvider::ContentLayerType::kIconColorPrimary)));
   SetEnabled(false);
 
   focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
@@ -39,8 +38,7 @@ TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
                                      int accessible_name_id)
     : TopShortcutButton(listener, accessible_name_id) {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   SetImage(
       views::Button::STATE_NORMAL,
       gfx::CreateVectorIcon(icon, kTrayTopShortcutButtonIconSize, icon_color));

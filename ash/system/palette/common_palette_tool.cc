@@ -75,8 +75,7 @@ void CommonPaletteTool::OnViewClicked(views::View* sender) {
 
 views::View* CommonPaletteTool::CreateDefaultView(const base::string16& name) {
   SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
   gfx::ImageSkia icon =
       CreateVectorIcon(GetPaletteIcon(), kMenuIconSize, icon_color);
   highlight_view_ = new HoverHighlightView(this, true /* use_unified_theme */);

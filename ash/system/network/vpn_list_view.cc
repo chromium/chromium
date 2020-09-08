@@ -135,8 +135,7 @@ class VPNListProviderEntry : public views::ButtonListener, public views::View {
 
     // Add the VPN add button.
     const SkColor image_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorProminent,
-        AshColorProvider::AshColorMode::kDark);
+        AshColorProvider::ContentLayerType::kIconColorProminent);
 
     const gfx::ImageSkia enabled_icon =
         gfx::CreateVectorIcon(kSystemMenuAddConnectionIcon, image_color);
@@ -190,8 +189,7 @@ class VPNListProviderEntry : public views::ButtonListener, public views::View {
     policy_indicator_icon->SetImage(gfx::CreateVectorIcon(
         kSystemMenuBusinessIcon,
         AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary,
-            AshColorProvider::AshColorMode::kDark)));
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
     policy_indicator_icon->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED,
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER)));

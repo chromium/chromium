@@ -40,8 +40,7 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf) : TrayBackgroundView(shelf) {
                                                       CONTEXT_LAUNCHER_BUTTON);
   button->SetProminent(true);
   button->SetBgColorOverride(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorAlert,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorAlert));
 
   button_ = tray_container()->AddChildView(std::move(button));
 }
@@ -156,8 +155,7 @@ void LogoutButtonTray::UpdateButtonTextAndImage() {
         gfx::CreateVectorIcon(
             kShelfLogoutIcon,
             AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary,
-                AshColorProvider::AshColorMode::kDark)));
+                AshColorProvider::ContentLayerType::kIconColorPrimary)));
     button_->SetMinSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   }
   UpdateVisibility();

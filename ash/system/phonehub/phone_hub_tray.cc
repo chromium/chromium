@@ -45,8 +45,7 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   icon->SetImage(CreateVectorIcon(
       kSystemMenuPhoneIcon,
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary,
-          AshColorProvider::AshColorMode::kDark)));
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
 
   tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
   icon_ = tray_container()->AddChildView(std::move(icon));

@@ -85,8 +85,7 @@ void HoldingSpaceItemChipView::OnPaint(gfx::Canvas* canvas) {
 
   const AshColorProvider* color_provider = AshColorProvider::Get();
   SkColor color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   flags.setColor(color);
 
   canvas->DrawRoundRect(GetContentsBounds(), kHoldingSpaceChipCornerRadius,
@@ -108,8 +107,7 @@ void HoldingSpaceItemChipView::AddPinButton() {
   pin_->SetVisible(false);
 
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
 
   const gfx::ImageSkia unpinned_icon =
       gfx::CreateVectorIcon(views::kUnpinIcon, icon_color);

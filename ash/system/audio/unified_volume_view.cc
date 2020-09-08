@@ -67,8 +67,7 @@ class MoreButton : public views::Button {
         2));
 
     const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary,
-        AshColorProvider::AshColorMode::kDark);
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
 
     if (!features::IsSystemTrayMicGainSettingEnabled()) {
       auto* headset = new views::ImageView();

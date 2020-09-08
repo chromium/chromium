@@ -28,10 +28,10 @@ BottomStatusIndicator::~BottomStatusIndicator() = default;
 
 void BottomStatusIndicator::SetIcon(const gfx::VectorIcon& vector_icon,
                                     AshColorProvider::ContentLayerType type) {
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(
-               vector_icon, AshColorProvider::Get()->GetContentLayerColor(
-                                type, AshColorProvider::AshColorMode::kDark)));
+  SetImage(
+      views::Button::STATE_NORMAL,
+      gfx::CreateVectorIcon(
+          vector_icon, AshColorProvider::Get()->GetContentLayerColor(type)));
 }
 
 void BottomStatusIndicator::ButtonPressed(views::Button* sender,

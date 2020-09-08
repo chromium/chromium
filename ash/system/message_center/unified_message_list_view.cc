@@ -5,7 +5,6 @@
 #include "ash/system/message_center/unified_message_list_view.h"
 
 #include "ash/public/cpp/ash_features.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/notification_swipe_control_view.h"
@@ -81,9 +80,7 @@ class UnifiedMessageListView::MessageViewContainer
         is_bottom ? views::NullBorder()
                   : views::CreateSolidSidedBorder(
                         0, 0, kUnifiedNotificationSeparatorThickness, 0,
-                        AshColorProvider::Get()->GetContentLayerColor(
-                            AshColorProvider::ContentLayerType::kSeparatorColor,
-                            AshColorProvider::AshColorMode::kLight)));
+                        message_center_style::kSeperatorColor));
     const int top_radius = is_top ? kUnifiedTrayCornerRadius : 0;
     const int bottom_radius = is_bottom ? kUnifiedTrayCornerRadius : 0;
     message_view_->UpdateCornerRadius(top_radius, bottom_radius);

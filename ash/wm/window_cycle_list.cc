@@ -252,8 +252,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     ui::Layer* layer = this->layer();
     SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80,
-        AshColorProvider::AshColorMode::kDark);
+        AshColorProvider::BaseLayerType::kTransparent80);
     layer->SetColor(background_color);
     layer->SetBackgroundBlur(kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(kBackgroundBlurQuality);

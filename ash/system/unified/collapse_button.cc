@@ -60,8 +60,7 @@ const char* CollapseButton::GetClassName() const {
 
 void CollapseButton::OnEnabledChanged() {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(
                kUnifiedMenuExpandIcon,

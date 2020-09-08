@@ -60,13 +60,13 @@ class ViewsStyleGenerator(BaseGenerator):
             return int(alpha * 255)
 
         if c.var:
-            return ('ResolveColor(ColorName::%s, color_mode)' %
+            return ('ResolveColor(ColorName::%s, is_dark_mode)' %
                     self._ToConstName(c.var))
 
         if c.rgb_var:
             return (
-                'SkColorSetA(ResolveColor(ColorName::%s, color_mode), 0x%X)' %
-                (self._ToConstName(c.RGBVarToVar()), AlphaToInt(c.a)))
+                'SkColorSetA(ResolveColor(ColorName::%s, is_dark_mode), 0x%X)'
+                % (self._ToConstName(c.RGBVarToVar()), AlphaToInt(c.a)))
 
         if c.a != 1:
             return 'SkColorSetARGB(0x%X, 0x%X, 0x%X, 0x%X)' % (AlphaToInt(c.a),

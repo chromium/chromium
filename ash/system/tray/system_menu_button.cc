@@ -52,8 +52,7 @@ SystemMenuButton::SystemMenuButton(views::ButtonListener* listener,
 
 void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon, icon_color));
   SetImage(views::Button::STATE_DISABLED,

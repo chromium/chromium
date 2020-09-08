@@ -63,8 +63,7 @@ TEST_F(LoginBaseBubbleViewTest, BasicProperties) {
 
   EXPECT_EQ(bubble_->width(), kBubbleTotalWidthDp);
   SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::BaseLayerType::kTransparent80);
   EXPECT_EQ(bubble_->background()->get_color(), background_color);
 
   bubble_->Hide();

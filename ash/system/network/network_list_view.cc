@@ -72,8 +72,7 @@ bool IsSecondaryUser() {
 
 SkColor GetIconColor() {
   return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
 }
 
 bool IsManagedByPolicy(const NetworkInfo& info) {

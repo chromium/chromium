@@ -18,8 +18,7 @@ CaptureModeCloseButton::CaptureModeCloseButton(views::ButtonListener* listener)
   SetBorder(views::CreateEmptyBorder(capture_mode::kButtonPadding));
   auto* color_provider = AshColorProvider::Get();
   const SkColor normal_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kCloseButtonIcon, normal_color));
   SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -29,8 +28,7 @@ CaptureModeCloseButton::CaptureModeCloseButton(views::ButtonListener* listener)
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
   focus_ring()->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           capture_mode::kButtonPadding));

@@ -21,8 +21,7 @@ RoundedLabelButton::RoundedLabelButton(views::ButtonListener* listener,
                                        const base::string16& text)
     : views::LabelButton(listener, text) {
   SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   label()->SetElideBehavior(gfx::NO_ELIDE);

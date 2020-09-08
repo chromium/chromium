@@ -119,8 +119,7 @@ void PowerTrayView::UpdateImage() {
   const SkColor icon_fg_color = TrayIconColor(session_state);
   const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
       ShelfConfig::Get()->GetShelfControlButtonColor(),
-      AshColorProvider::Get()->GetBackgroundColor(
-          AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::Get()->GetBackgroundColor());
 
   image_view()->SetImage(PowerStatus::GetBatteryImage(
       info, kUnifiedTrayIconSize, icon_bg_color, icon_fg_color));

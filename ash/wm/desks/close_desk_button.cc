@@ -31,8 +31,7 @@ CloseDeskButton::CloseDeskButton(views::ButtonListener* listener)
   AshColorProvider* color_provider = AshColorProvider::Get();
   color_provider->DecorateCloseButton(
       this, AshColorProvider::ButtonType::kCloseButtonWithSmallBase,
-      AshColorProvider::AshColorMode::kDark, kCloseButtonSize,
-      kCloseButtonIcon);
+      kCloseButtonSize, kCloseButtonIcon);
 
   AshColorProvider::RippleAttributes ripple_attributes =
       color_provider->GetRippleAttributes(background()->get_color());

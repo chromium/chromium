@@ -242,10 +242,10 @@ class ScrollContentsView : public views::View {
     gfx::Canvas* canvas = recorder.canvas();
     cc::PaintFlags flags;
     gfx::ShadowValues shadow;
-    shadow.emplace_back(gfx::Vector2d(0, kShadowOffsetY), kShadowBlur,
-                        AshColorProvider::Get()->GetContentLayerColor(
-                            AshColorProvider::ContentLayerType::kSeparatorColor,
-                            AshColorProvider::AshColorMode::kDark));
+    shadow.emplace_back(
+        gfx::Vector2d(0, kShadowOffsetY), kShadowBlur,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kSeparatorColor));
     flags.setLooper(gfx::CreateShadowDrawLooper(shadow));
     flags.setAntiAlias(true);
     canvas->ClipRect(shadowed_area, SkClipOp::kDifference);
@@ -398,8 +398,7 @@ TriView* TrayDetailedView::AddScrollListSubHeader(const gfx::VectorIcon& icon,
   views::ImageView* image_view = TrayPopupUtils::CreateMainImageView();
   image_view->SetImage(gfx::CreateVectorIcon(
       icon, AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary,
-                AshColorProvider::AshColorMode::kDark)));
+                AshColorProvider::ContentLayerType::kIconColorPrimary)));
   header->AddView(TriView::Container::START, image_view);
 
   scroll_content_->AddChildView(header);
@@ -431,8 +430,7 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
     progress_bar_->SetVisible(false);
     progress_bar_->SetForegroundColor(
         AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorProminent,
-            AshColorProvider::AshColorMode::kDark));
+            AshColorProvider::ContentLayerType::kIconColorProminent));
   }
 
   progress_bar_->SetValue(value);

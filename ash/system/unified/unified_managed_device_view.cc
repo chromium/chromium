@@ -45,8 +45,7 @@ UnifiedManagedDeviceView::UnifiedManagedDeviceView(
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
   label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
   label_->SetID(VIEW_ID_TRAY_ENTERPRISE_LABEL);
   AddChildView(label_);
 
@@ -86,8 +85,7 @@ void UnifiedManagedDeviceView::Update() {
   std::string enterprise_domain_name = model->enterprise_display_domain();
 
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorSecondary,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kIconColorSecondary);
   if (session->ShouldDisplayManagedUI() || model->active_directory_managed() ||
       !enterprise_domain_name.empty()) {
     // Show enterpised managed UI.

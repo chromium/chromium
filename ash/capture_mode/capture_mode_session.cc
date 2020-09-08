@@ -112,8 +112,7 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
 
   auto* color_provider = AshColorProvider::Get();
   const SkColor dimming_color = color_provider->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield40,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ShieldLayerType::kShield40);
   recorder.canvas()->DrawColor(dimming_color);
 
   PaintCaptureRegion(recorder.canvas());

@@ -48,8 +48,7 @@ CaptureModeBarView::CaptureModeBarView()
   SetPaintToLayer();
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::BaseLayerType::kTransparent80);
   SetBackground(views::CreateSolidBackground(background_color));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kBorderRadius);
@@ -63,8 +62,7 @@ CaptureModeBarView::CaptureModeBarView()
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   const SkColor separator_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kSeparatorColor);
   separator_1_->SetColor(separator_color);
   separator_1_->SetPreferredHeight(kSeparatorHeight);
   separator_2_->SetColor(separator_color);

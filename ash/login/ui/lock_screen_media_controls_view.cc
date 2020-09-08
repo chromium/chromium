@@ -174,8 +174,7 @@ class MediaActionButton : public views::ImageButton {
     views::SetImageFromVectorIcon(
         this, GetVectorIconForMediaAction(action), icon_size_,
         AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary,
-            AshColorProvider::AshColorMode::kDark));
+            AshColorProvider::ContentLayerType::kIconColorPrimary));
   }
 
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
@@ -235,8 +234,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
       views::BoxLayout::Orientation::kVertical, kMediaControlsInsets));
   contents_view_->SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80,
-          AshColorProvider::AshColorMode::kDark),
+          AshColorProvider::BaseLayerType::kTransparent80),
       kMediaControlsCornerRadius));
 
   contents_view_->SetPaintToLayer();  // Needed for opacity animation.
@@ -281,8 +279,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   title_label->SetFontList(base_font_list.Derive(
       2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD));
   title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_label->SetAutoColorReadabilityEnabled(false);
   title_label->SetElideBehavior(gfx::ELIDE_TAIL);
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -292,8 +289,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   artist_label->SetFontList(base_font_list.Derive(
       0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::LIGHT));
   artist_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
   artist_label->SetAutoColorReadabilityEnabled(false);
   artist_label->SetElideBehavior(gfx::ELIDE_TAIL);
   artist_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);

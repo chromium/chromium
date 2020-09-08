@@ -104,8 +104,7 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
 
   views::Separator* separator = new views::Separator();
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   separator->SetPreferredHeight(kSeparatorHeight);
   int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
   int separator_spacing = (total_height - kSeparatorHeight) / 2;

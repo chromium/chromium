@@ -89,8 +89,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button,
 
     const SkColor selected_color =
         AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary,
-            AshColorProvider::AshColorMode::kDark);
+            AshColorProvider::ContentLayerType::kIconColorPrimary);
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);

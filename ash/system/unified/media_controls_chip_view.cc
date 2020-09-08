@@ -44,15 +44,13 @@ MediaControlsChipView::MediaControlsChipView()
   title_label_->SetAutoColorReadabilityEnabled(false);
   title_label_->SetSubpixelRenderingEnabled(false);
   title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_artist_view_->AddChildView(title_label_);
 
   artist_label_->SetAutoColorReadabilityEnabled(false);
   artist_label_->SetSubpixelRenderingEnabled(false);
   artist_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
   title_artist_view_->AddChildView(artist_label_);
 
   AddChildView(title_artist_view_);
@@ -64,8 +62,7 @@ void MediaControlsChipView::OnPaintBackground(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
   gfx::Rect bounds = GetContentsBounds();
   bounds.Inset(kMediaControlsChipViewPadding);
   canvas->DrawRoundRect(bounds, kMediaControlsChipContainerRadius, flags);

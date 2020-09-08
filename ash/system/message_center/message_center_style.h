@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_STYLE_H_
 
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace ash {
@@ -14,6 +15,11 @@ namespace message_center_style {
 
 constexpr SkColor kEmptyViewColor = SkColorSetARGB(0x8A, 0x0, 0x0, 0x0);
 constexpr SkColor kScrollShadowColor = SkColorSetARGB(0x24, 0x0, 0x0, 0x0);
+
+// TODO: Get the colors from AshColorProvider once notification supports
+// dark/light mode.
+constexpr SkColor kCountLabelColor = gfx::kGoogleGrey900;
+constexpr SkColor kSeperatorColor = SkColorSetA(SK_ColorBLACK, 0x24);  // 14%
 
 constexpr int kEmptyIconSize = 24;
 constexpr gfx::Insets kEmptyIconPadding(0, 0, 4, 0);

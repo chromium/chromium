@@ -174,44 +174,36 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // Base layer.
   SkColor DeprecatedGetShieldLayerColor(ShieldLayerType type,
                                         SkColor default_color) const;
-  SkColor GetShieldLayerColor(ShieldLayerType type,
-                              AshColorMode given_color_mode) const;
+  SkColor GetShieldLayerColor(ShieldLayerType type) const;
 
   // Used by UI elements that need to support |kDefault| mode to get the color
-  // of base layer. |default_color| is provided while |color_mode_| is not set.
-  // Otherwise, gets the base layer color on |type| and |color_mode_|. Note,
-  // this function will be removed after launch dark/light mode.
+  // of base layer. Deprecated. Remove once all the deprecated calls are
+  // converted to light/dark mode colors.
   SkColor DeprecatedGetBaseLayerColor(BaseLayerType type,
                                       SkColor default_color) const;
-  // Used by new specs to get the color of base layer. |given_color_mode| is
-  // provided since the colors of new specs will always follow |kLight| or
-  // |kDark| mode. But |color_mode_| should have higher priority, gets the color
-  // on |color_mode_| instead if it is set.
-  SkColor GetBaseLayerColor(BaseLayerType type,
-                            AshColorMode given_color_mode) const;
+  // Gets base layer's color of |type|.
+  SkColor GetBaseLayerColor(BaseLayerType type) const;
 
   // Gets color of Controls layer. See details at the corresponding function of
   // Base layer.
   SkColor DeprecatedGetControlsLayerColor(ControlsLayerType type,
                                           SkColor default_color) const;
-  SkColor GetControlsLayerColor(ControlsLayerType type,
-                                AshColorMode given_color_mode) const;
+  SkColor GetControlsLayerColor(ControlsLayerType type) const;
 
   // Gets color of Content layer. See details at the corresponding function of
   // Base layer.
   SkColor DeprecatedGetContentLayerColor(ContentLayerType type,
                                          SkColor default_color) const;
-  SkColor GetContentLayerColor(ContentLayerType type,
-                               AshColorMode given_color_mode) const;
+  SkColor GetContentLayerColor(ContentLayerType type) const;
 
   // Gets the attributes of ripple on |bg_color|. |bg_color| is the background
   // color of the UI element that wants to show inkdrop.
   RippleAttributes GetRippleAttributes(SkColor bg_color) const;
 
   // Gets the background color that can be applied on any layer. The returned
-  // color will be different based on |color_mode| and color theme (see
+  // color will be different based on color mode and color theme (see
   // |is_themed_|).
-  SkColor GetBackgroundColor(AshColorMode color_mode) const;
+  SkColor GetBackgroundColor() const;
 
   // Ink drop color for shelf items.
   SkColor GetInkDropBaseColor(AshColorMode given_color_mode) const;
@@ -224,11 +216,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // disabled states. May overwrite an prior styles on |button|.
   void DecoratePillButton(views::LabelButton* button,
                           ButtonType type,
-                          AshColorMode given_color_mode,
                           const gfx::VectorIcon& icon);
   void DecorateCloseButton(views::ImageButton* button,
                            ButtonType type,
-                           AshColorMode given_color_mode,
                            int button_size,
                            const gfx::VectorIcon& icon);
 
@@ -253,38 +243,14 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   SkColor GetLoginBackgroundBaseColor() const;
 
  private:
-  // Gets Shield layer color on |type| and |color_mode|. This function will be
-  // merged into GetShieldLayerColor after DeprecatedGetShieldLayerColor got be
-  // removed.
-  SkColor GetShieldLayerColorImpl(ShieldLayerType type,
-                                  AshColorMode color_mode) const;
-
-  // Gets Base layer color on |type| and |color_mode|. This function will be
-  // merged into GetBaseLayerColor after DeprecatedGetBaseLayerColor got be
-  // removed.
-  SkColor GetBaseLayerColorImpl(BaseLayerType type,
-                                AshColorMode color_mode) const;
-
-  // Gets Controls layer color on |type| and |color_mode|. This function will be
-  // merged into GetControlsLayerColor after DeprecatedGetControlsLayerColor got
-  // be removed.
-  SkColor GetControlsLayerColorImpl(ControlsLayerType type,
-                                    AshColorMode color_mode) const;
-
-  // Gets Content layer color on |type| and |color_mode|. This function will be
-  // merged into GetContentLayerColor after DeprecatedGetContentLayerColor got
-  // be removed.
-  SkColor GetContentLayerColorImpl(ContentLayerType type,
-                                   AshColorMode color_mode) const;
-
   // Gets the background default color.
-  SkColor GetBackgroundDefaultColor(AshColorMode color_mode) const;
+  SkColor GetBackgroundDefaultColor() const;
 
   // Gets the background themed color that's calculated based on the color
   // extracted from wallpaper. For dark mode, it will be dark muted wallpaper
   // prominent color + SK_ColorBLACK 50%. For light mode, it will be light
   // muted wallpaper prominent color + SK_ColorWHITE 75%.
-  SkColor GetBackgroundThemedColor(AshColorMode color_mode) const;
+  SkColor GetBackgroundThemedColor() const;
 
   // Notifies all the observers on |kDarkModeEnabled|'s change.
   void NotifyDarkModeEnabledPrefChange();

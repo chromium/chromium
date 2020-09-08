@@ -135,8 +135,7 @@ void DeskMiniView::UpdateBorderColor() {
     desk_preview_->SetBorderColor(kDraggedOverColor);
   } else if (IsViewHighlighted()) {
     desk_preview_->SetBorderColor(color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor,
-        AshColorProvider::AshColorMode::kDark));
+        AshColorProvider::ControlsLayerType::kFocusRingColor));
   } else if (!desk_->is_active()) {
     desk_preview_->SetBorderColor(kInactiveColor);
   } else {

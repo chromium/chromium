@@ -154,8 +154,7 @@ PinRequestViewState PinRequestView::TestApi::state() const {
 // static
 SkColor PinRequestView::GetChildUserDialogColor(bool using_blur) {
   SkColor color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kOpaque,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::BaseLayerType::kOpaque);
 
   SkColor extracted_color =
       Shell::Get()->wallpaper_controller()->GetProminentColor(

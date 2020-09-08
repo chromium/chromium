@@ -14,11 +14,7 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-#include "ash/style/ash_color_provider.h"
-
 namespace {{namespace_name}} {
-
-using AshColorMode = ash::AshColorProvider::AshColorMode;
 
 enum class ColorName {
 {%- for obj in colors %}
@@ -26,15 +22,15 @@ enum class ColorName {
 {%-  endfor %}
 };
 
-constexpr SkColor ResolveColor(ColorName color_name, AshColorMode color_mode) {
+constexpr SkColor ResolveColor(ColorName color_name, bool is_dark_mode) {
   switch (color_name) {
 {%- for obj in colors %}
     case ColorName::{{obj.name | to_const_name}}:
 {%-   if obj.mode_values[Modes.DARK] %}
-      if (color_mode == AshColorMode::kLight) {
-        return {{obj.mode_values[Modes.LIGHT] | cpp_color}};
-      } else {
+      if (is_dark_mode) {
         return {{obj.mode_values[Modes.DARK] | cpp_color}};
+      } else {
+        return {{obj.mode_values[Modes.LIGHT] | cpp_color}};
       }
 {%-    else %}
       return {{obj.mode_values[Modes.LIGHT] | cpp_color}};

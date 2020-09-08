@@ -228,8 +228,7 @@ views::ToggleButton* TrayPopupUtils::CreateToggleButton(
         is_on ? AshColorProvider::ContentLayerType::kIconColorProminent
               : AshColorProvider::ContentLayerType::kTextColorPrimary;
 
-    return SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(
-                           type, AshColorProvider::AshColorMode::kDark),
+    return SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(type),
                        alpha);
   };
   views::ToggleButton* toggle = new views::ToggleButton(listener);
@@ -285,8 +284,7 @@ views::Separator* TrayPopupUtils::CreateVerticalSeparator() {
   views::Separator* separator = new views::Separator();
   separator->SetPreferredHeight(24);
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   return separator;
 }
 
@@ -334,8 +332,7 @@ void TrayPopupUtils::InstallHighlightPathGenerator(
 views::Separator* TrayPopupUtils::CreateListItemSeparator(bool left_inset) {
   views::Separator* separator = new views::Separator();
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor,
-      AshColorProvider::AshColorMode::kLight));
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   separator->SetBorder(views::CreateEmptyBorder(
       kMenuSeparatorVerticalPadding - views::Separator::kThickness,
       left_inset ? kMenuExtraMarginFromLeftEdge + kMenuButtonSize +

@@ -184,8 +184,8 @@ SkColor UnifiedSystemTrayView::GetBackgroundColor() {
           ? AshColorProvider::BaseLayerType::kTransparent90
           : AshColorProvider::BaseLayerType::kTransparent80;
 
-  SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
-      layer_type, AshColorProvider::AshColorMode::kDark);
+  SkColor background_color =
+      AshColorProvider::Get()->GetBaseLayerColor(layer_type);
 
   return ShelfConfig::Get()->GetThemedColorFromWallpaper(background_color);
 }

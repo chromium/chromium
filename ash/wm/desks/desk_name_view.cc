@@ -48,8 +48,7 @@ DeskNameView::DeskNameView() {
 
   SetBackgroundColor(SK_ColorTRANSPARENT);
   SetTextColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   SetCursorEnabled(true);
   SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 }

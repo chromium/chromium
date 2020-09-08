@@ -45,7 +45,7 @@ NewDeskButton::NewDeskButton(views::ButtonListener* listener)
 
   AshColorProvider::Get()->DecoratePillButton(
       this, AshColorProvider::ButtonType::kPillButtonWithIcon,
-      AshColorProvider::AshColorMode::kDark, kDesksNewDeskButtonIcon);
+      kDesksNewDeskButtonIcon);
 
   SetInkDropMode(InkDropMode::ON);
   set_has_ink_drop_action_on_click(true);
@@ -74,8 +74,7 @@ void NewDeskButton::UpdateButtonState() {
   SetEnabled(enabled);
 
   background_color_ = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   if (!enabled)
     background_color_ = AshColorProvider::GetDisabledColor(background_color_);
 

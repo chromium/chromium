@@ -139,8 +139,7 @@ views::Button* FloatingAccessibilityDetailedController::CreateBackButton(
   gfx::ImageSkia image = gfx::CreateVectorIcon(
       kAutoclickCloseIcon,
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary,
-          AshColorProvider::AshColorMode::kDark));
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
   button->SetImage(views::Button::STATE_NORMAL, image);
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_CLOSE));

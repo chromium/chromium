@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
+#include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -267,9 +268,7 @@ StackedNotificationBar::StackedNotificationBar(
   AddChildView(notification_icons_container_);
   message_center::MessageCenter::Get()->AddObserver(this);
 
-  count_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary,
-      AshColorProvider::AshColorMode::kLight));
+  count_label_->SetEnabledColor(message_center_style::kCountLabelColor);
   count_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
       1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   AddChildView(count_label_);
@@ -479,9 +478,7 @@ void StackedNotificationBar::OnPaint(gfx::Canvas* canvas) {
     canvas->DrawSharpLine(
         gfx::PointF(bounds.bottom_left() - gfx::Vector2d(0, 1)),
         gfx::PointF(bounds.bottom_right() - gfx::Vector2d(0, 1)),
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kSeparatorColor,
-            AshColorProvider::AshColorMode::kLight));
+        message_center_style::kSeperatorColor);
   }
 }
 

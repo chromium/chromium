@@ -34,8 +34,7 @@ CaptureModeTypeView::CaptureModeTypeView()
                                                     kCaptureModeVideoIcon))) {
   auto* color_provider = AshColorProvider::Get();
   const SkColor bg_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   SetBackground(
       views::CreateRoundedRectBackground(bg_color, kBackgroundCornerRadius));
   SetBorder(views::CreateEmptyBorder(kViewInsets));

@@ -9,11 +9,7 @@
 #ifndef TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
 #define TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
 
-#include "ash/style/ash_color_provider.h"
-
 namespace colors_test_expected {
-
-using AshColorMode = ash::AshColorProvider::AshColorMode;
 
 enum class ColorName {
   kGoogleGrey900,
@@ -21,18 +17,18 @@ enum class ColorName {
   kToggleColor,
 };
 
-constexpr SkColor ResolveColor(ColorName color_name, AshColorMode color_mode) {
+constexpr SkColor ResolveColor(ColorName color_name, bool is_dark_mode) {
   switch (color_name) {
     case ColorName::kGoogleGrey900:
       return SkColorSetRGB(0x20, 0x21, 0x24);
     case ColorName::kTextColorPrimary:
-      if (color_mode == AshColorMode::kLight) {
-        return ResolveColor(ColorName::kGoogleGrey900, color_mode);
-      } else {
+      if (is_dark_mode) {
         return SkColorSetRGB(0xFF, 0xFF, 0xFF);
+      } else {
+        return ResolveColor(ColorName::kGoogleGrey900, is_dark_mode);
       }
     case ColorName::kToggleColor:
-      return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, color_mode), 0x19);
+      return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode), 0x19);
   }
 }
 

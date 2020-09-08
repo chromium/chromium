@@ -134,8 +134,7 @@ ClipboardHistoryItemView::DeleteButton::DeleteButton(
 
   AshColorProvider::Get()->DecorateCloseButton(
       this, AshColorProvider::ButtonType::kCloseButtonWithSmallBase,
-      AshColorProvider::AshColorMode::kDark, kDeleteButtonSizeDip,
-      kCloseButtonIcon);
+      kDeleteButtonSizeDip, kCloseButtonIcon);
 }
 
 ClipboardHistoryItemView::DeleteButton::~DeleteButton() = default;

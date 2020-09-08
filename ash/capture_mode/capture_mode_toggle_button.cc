@@ -26,8 +26,7 @@ CaptureModeToggleButton::CaptureModeToggleButton(
   SetFocusForPlatform();
   const auto* color_provider = AshColorProvider::Get();
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
   focus_ring()->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           capture_mode::kButtonPadding));
@@ -36,8 +35,7 @@ CaptureModeToggleButton::CaptureModeToggleButton(
 
   SetIcon(icon);
   toggled_background_color_ = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
 }
 
 const char* CaptureModeToggleButton::GetClassName() const {
@@ -67,11 +65,9 @@ void CaptureModeToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
   auto* color_provider = AshColorProvider::Get();
   const SkColor normal_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
   const SkColor toggled_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColorToggled,
-      AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kSystemMenuIconColorToggled);
 
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon, normal_color));

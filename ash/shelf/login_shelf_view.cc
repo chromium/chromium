@@ -74,24 +74,13 @@ namespace {
 const char* kLoginShelfButtonClassName = "LoginShelfButton";
 
 SkColor GetButtonTextColor() {
-  AshColorProvider* ash_color_provider = AshColorProvider::Get();
-  return ash_color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColor,
-      AshColorProvider::AshColorMode::kDark);
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColor);
 }
 
 SkColor GetButtonIconColor() {
-  AshColorProvider* ash_color_provider = AshColorProvider::Get();
-  return ash_color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor,
-      AshColorProvider::AshColorMode::kDark);
-}
-
-SkColor GetButtonBackgroundColor() {
-  AshColorProvider* ash_color_provider = AshColorProvider::Get();
-  return ash_color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      AshColorProvider::AshColorMode::kDark);
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
 }
 
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
@@ -224,7 +213,8 @@ class LoginShelfButton : public views::LabelButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(GetButtonBackgroundColor());
+    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawPath(GetButtonHighlightPath(this), flags);
   }

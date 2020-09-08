@@ -142,8 +142,7 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
     fg_flags.setAntiAlias(true);
     fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
     fg_flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor,
-        AshColorProvider::AshColorMode::kDark));
+        AshColorProvider::ContentLayerType::kButtonIconColor));
 
     if (controller_.IsAssistantAvailable()) {
       // active: 100% alpha, inactive: 54% alpha

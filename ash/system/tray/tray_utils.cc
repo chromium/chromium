@@ -26,11 +26,10 @@ void SetupLabelForTray(views::Label* label) {
 }
 
 SkColor TrayIconColor(session_manager::SessionState session_state) {
-  const bool light_icon = session_state == session_manager::SessionState::OOBE;
+  if (session_state == session_manager::SessionState::OOBE)
+    return kIconColorInOobe;
   return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary,
-      light_icon ? AshColorProvider::AshColorMode::kLight
-                 : AshColorProvider::AshColorMode::kDark);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
 }
 
 gfx::Insets GetTrayBubbleInsets() {

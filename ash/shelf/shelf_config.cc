@@ -515,14 +515,12 @@ SkColor ShelfConfig::GetDefaultShelfColor() const {
   if (!features::IsBackgroundBlurEnabled()) {
     return GetThemedColorFromWallpaper(
         AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent90,
-            AshColorProvider::AshColorMode::kDark));
+            AshColorProvider::BaseLayerType::kTransparent90));
   }
 
   AshColorProvider::BaseLayerType layer_type = GetShelfBaseLayerType();
 
-  SkColor final_color = AshColorProvider::Get()->GetBaseLayerColor(
-      layer_type, AshColorProvider::AshColorMode::kDark);
+  SkColor final_color = AshColorProvider::Get()->GetBaseLayerColor(layer_type);
 
   return GetThemedColorFromWallpaper(final_color);
 }

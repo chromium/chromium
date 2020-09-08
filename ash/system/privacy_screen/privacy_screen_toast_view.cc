@@ -50,8 +50,7 @@ class PrivacyScreenToastManagedView : public views::View {
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
     const SkColor label_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary,
-        AshColorProvider::AshColorMode::kDark);
+        AshColorProvider::ContentLayerType::kTextColorSecondary);
     ConfigureLabel(label, label_color, kPrivacyScreenToastSubLabelFontSize);
 
     label->SetText(l10n_util::GetStringUTF16(
@@ -61,8 +60,7 @@ class PrivacyScreenToastManagedView : public views::View {
         gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
 
     const SkColor icon_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary,
-        AshColorProvider::AshColorMode::kDark);
+        AshColorProvider::ContentLayerType::kTextColorSecondary);
     icon->SetImage(gfx::CreateVectorIcon(kSystemTrayManagedIcon, icon_color));
 
     AddChildView(label);
@@ -88,8 +86,7 @@ class PrivacyScreenToastLabelView : public views::View {
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
     const SkColor primary_text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary,
-        AshColorProvider::AshColorMode::kDark);
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
 
     ConfigureLabel(label_, primary_text_color,
                    kPrivacyScreenToastMainLabelFontSize);

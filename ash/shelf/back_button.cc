@@ -42,9 +42,9 @@ void BackButton::PaintButtonContents(gfx::Canvas* canvas) {
   // Use PaintButtonContents instead of SetImage so the icon gets drawn at
   // |GetCenterPoint| coordinates instead of always in the center.
   gfx::ImageSkia img = CreateVectorIcon(
-      kShelfBackIcon, AshColorProvider::Get()->GetContentLayerColor(
-                          AshColorProvider::ContentLayerType::kButtonIconColor,
-                          AshColorProvider::AshColorMode::kDark));
+      kShelfBackIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
   canvas->DrawImageInt(img, GetCenterPoint().x() - img.width() / 2,
                        GetCenterPoint().y() - img.height() / 2);
 }
