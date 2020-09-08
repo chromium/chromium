@@ -225,4 +225,5 @@
 -MediaRouterUIBrowserTest.PinAndUnpinToolbarIcon
 -MultiActionAPITest.PopupCreation/*
 -PDFExtensionClipboardTest.CombinedShiftArrowPresses
+-PDFExtensionTestWithTestGuestViewManager.CSPFrameAncestorsOverridesXFrameOptions*
 -PopupTrackerBrowserTest.ControlClick_HasTracker

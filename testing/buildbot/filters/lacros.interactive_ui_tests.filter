@@ -53,3 +53,4 @@
 -NewTabPageDoodleShareDialogFocusTest.All
 -PlatformNotificationServiceBrowserTest.TestShouldDisplayMultiFullscreen
 -PopupBlockerBrowserTest.BlockWebContentsCreationIncognito
+-NotificationsApiTest*
