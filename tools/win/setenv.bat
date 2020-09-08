@@ -8,7 +8,7 @@ REM Run this script to add the current toolchain, as determined by
 REM DEPOT_TOOLS_WIN_TOOLCHAIN and the hash in vs_toolchain.py,
 REM to the path. Be aware of running this multiple times as too-long paths will
 REM break things.
-REM To get the toolchain for x64 targets pass /x64 to this batch file.
 
-REM Execute whatever is printed by setenv.py.
-FOR /f "usebackq tokens=*" %%a in (`python %~dp0setenv.py`) do %%a %1
+REM Execute whatever is printed by setenv.py. Use "CALL" to ensure that the
+REM command title is reset when this script finishes executing.
+FOR /f "usebackq tokens=*" %%a in (`python %~dp0setenv.py`) do CALL %%a

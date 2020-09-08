@@ -19,13 +19,13 @@ import vs_toolchain
 
 if bool(int(os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', '1'))):
   win_sdk_dir = vs_toolchain.SetEnvironmentAndGetSDKDir()
-  print(os.path.normpath(os.path.join(win_sdk_dir, 'bin/SetEnv.cmd')))
+  script_path = os.path.normpath(os.path.join(win_sdk_dir, 'bin/SetEnv.cmd'))
+  print('"%s" /x64' % script_path)
 else:
   vs_version = vs_toolchain.GetVisualStudioVersion()
   vs_path = vs_toolchain.DetectVisualStudioPath()
-  if vs_version == '2017':
-    print(os.path.join(vs_path, r'VC\Auxiliary\Build\vcvarsall.bat'))
-  elif vs_version == '2015':
-    print(os.path.join(vs_path, r'VC\vcvarsall.bat'))
+  if vs_version in ['2017', '2019']:
+    script_path = os.path.join(vs_path, r'VC\Auxiliary\Build\vcvarsall.bat')
+    print('"%s" amd64' % script_path)
   else:
     raise Exception('Unknown VS version %s' % vs_version)
