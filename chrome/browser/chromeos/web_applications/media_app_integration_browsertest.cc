@@ -441,6 +441,16 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, RenameFile) {
 
   EXPECT_EQ(1u, folder.files().size());
   EXPECT_EQ("x.jpg", folder.files()[0].BaseName().value());
+
+  std::string expected_contents, renamed_contents;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(
+      base::ReadFileToString(TestFile(kFileJpeg640x480), &expected_contents));
+  // Consistency check against the file size (2108 bytes) of image3.jpg in the
+  // test data directory.
+  EXPECT_EQ(2108u, expected_contents.size());
+  EXPECT_TRUE(base::ReadFileToString(folder.files()[0], &renamed_contents));
+  EXPECT_EQ(expected_contents, renamed_contents);
 }
 
 INSTANTIATE_TEST_SUITE_P(
