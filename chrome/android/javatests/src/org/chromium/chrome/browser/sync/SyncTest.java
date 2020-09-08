@@ -110,7 +110,7 @@ public class SyncTest {
             // settings. This would normally be done by the
             // SystemSyncTestRule.getSyncContentResolver().
             mSyncTestRule.getSyncContentResolver().renameAccounts(
-                    oldAccount, newAccount, getAndroidSyncSettings().getContractAuthority());
+                    oldAccount, newAccount, AndroidSyncSettings.getContractAuthority());
 
             // Starts the rename process. Normally, this is triggered by the broadcast
             // listener as well.
@@ -141,7 +141,7 @@ public class SyncTest {
     @Feature({"Sync"})
     public void testStopAndStartSyncThroughAndroidChromeSync() {
         Account account = mSyncTestRule.setUpAccountAndSignInForTesting();
-        String authority = getAndroidSyncSettings().getContractAuthority();
+        String authority = AndroidSyncSettings.getContractAuthority();
 
         Assert.assertTrue(getAndroidSyncSettings().isSyncEnabled());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
@@ -182,7 +182,7 @@ public class SyncTest {
     @DisabledTest(message = "Test is flaky crbug.com/1100890")
     public void testReenableMasterSyncFirst() {
         Account account = mSyncTestRule.setUpAccountAndSignInForTesting();
-        String authority = getAndroidSyncSettings().getContractAuthority();
+        String authority = AndroidSyncSettings.getContractAuthority();
 
         Assert.assertTrue(getAndroidSyncSettings().isSyncEnabled());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
@@ -215,7 +215,7 @@ public class SyncTest {
     @Feature({"Sync"})
     public void testReenableChromeSyncFirst() {
         Account account = mSyncTestRule.setUpAccountAndSignInForTesting();
-        String authority = getAndroidSyncSettings().getContractAuthority();
+        String authority = AndroidSyncSettings.getContractAuthority();
 
         Assert.assertTrue(getAndroidSyncSettings().isSyncEnabled());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());

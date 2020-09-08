@@ -60,7 +60,7 @@ public class PasswordViewingTypeTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AndroidSyncSettings.overrideForTests(
                     new AndroidSyncSettings(mSyncContentResolverDelegate));
-            mAuthority = AndroidSyncSettings.get().getContractAuthority();
+            mAuthority = AndroidSyncSettings.getContractAuthority();
             AndroidSyncSettings.get().updateAccount(mAccount);
         });
     }

@@ -31,6 +31,10 @@ import org.chromium.components.sync.SyncContentResolverDelegate;
 import org.chromium.components.sync.SystemSyncContentResolverDelegate;
 
 /**
+ * WARNING: Chrome will be decoupled from Android auto-sync (crbug.com/1105795).
+ * Some documentation in this class may be outdated or may not be coherent when
+ * DecoupleSyncFromAndroidMasterSync is enabled.
+ *
  * A helper class to handle the current status of sync for Chrome in Android settings.
  * It also provides an observer to be used whenever Android sync settings change.
  *
@@ -44,6 +48,7 @@ public class AndroidSyncSettings {
 
     private final Object mLock = new Object();
 
+    // Cached value of the static |getContractAuthority()|.
     private final String mContractAuthority;
 
     private final SyncContentResolverDelegate mSyncContentResolverDelegate;
@@ -105,7 +110,7 @@ public class AndroidSyncSettings {
     @VisibleForTesting
     public AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate,
             @Nullable Callback<Boolean> callback, @Nullable Account account) {
-        mContractAuthority = ContextUtils.getApplicationContext().getPackageName();
+        mContractAuthority = getContractAuthority();
         mSyncContentResolverDelegate = syncContentResolverDelegate;
 
         mAccount = account;
@@ -152,14 +157,14 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * Make sure Chrome is syncable, and enable sync.
+     * Enables Chrome sync for |mAccount| if it's non-null.
      */
     public void enableChromeSync() {
         setChromeSyncEnabled(true);
     }
 
     /**
-     * Disables Android Chrome sync
+     * Disables Chrome sync for |mAccount| if it's non-null.
      */
     public void disableChromeSync() {
         setChromeSyncEnabled(false);
@@ -189,10 +194,13 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * Returns the contract authority to use when requesting sync.
+     * Returns the contract authority used by Chrome when talking to auto-sync.
+     * Exposed only to tests, so they can fake user interaction with the
+     * auto-sync UI.
      */
-    public String getContractAuthority() {
-        return mContractAuthority;
+    @VisibleForTesting
+    public static String getContractAuthority() {
+        return ContextUtils.getApplicationContext().getPackageName();
     }
 
     /**
@@ -227,7 +235,7 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * Ensure Chrome is registered with the Android Sync Manager iff signed in.
+     * Updates whether Chrome is registered with the Android Auto-Sync Manager.
      *
      * This is what causes the "Chrome" option to appear in Settings -> Accounts -> Sync .
      * This function must be called within a synchronized block.
