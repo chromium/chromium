@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_util.h"
-#include "components/sync/invalidations/mock_sync_invalidations_service.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/version_info/version_string.h"
@@ -48,6 +47,8 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
   MOCK_CONST_METHOD0(GetSendTabToSelfReceivingEnabled, bool());
   MOCK_CONST_METHOD0(GetLocalSharingInfo,
                      base::Optional<DeviceInfo::SharingInfo>());
+  MOCK_CONST_METHOD0(GetFCMRegistrationToken, std::string());
+  MOCK_CONST_METHOD0(GetInterestedDataTypes, ModelTypeSet());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockDeviceInfoSyncClient);
@@ -62,16 +63,12 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
     provider_ = std::make_unique<LocalDeviceInfoProviderImpl>(
         version_info::Channel::UNKNOWN,
         version_info::GetVersionStringWithModifier("UNKNOWN"),
-        &device_info_sync_client_, GetSyncInvalidationsService());
+        &device_info_sync_client_);
   }
 
   void TearDown() override { provider_.reset(); }
 
  protected:
-  virtual SyncInvalidationsService* GetSyncInvalidationsService() {
-    return nullptr;
-  }
-
   void InitializeProvider() { InitializeProvider(kLocalDeviceGuid); }
 
   void InitializeProvider(const std::string& guid) {
@@ -89,22 +86,10 @@ class LocalDeviceInfoProviderImplWithSyncInvalidationsTest
   LocalDeviceInfoProviderImplWithSyncInvalidationsTest() {
     override_features_.InitAndEnableFeature(
         switches::kSubscribeForSyncInvalidations);
-    ON_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken())
-        .WillByDefault(ReturnRef(kEmptyToken));
-    ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
-        .WillByDefault(ReturnRef(kEmptyTypesSet));
   }
 
  protected:
-  SyncInvalidationsService* GetSyncInvalidationsService() override {
-    return &mock_sync_invalidations_service_;
-  }
-
-  const std::string kEmptyToken;
-  const ModelTypeSet kEmptyTypesSet;
-
   base::test::ScopedFeatureList override_features_;
-  NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 };
 
 TEST_F(LocalDeviceInfoProviderImplTest, GetLocalDeviceInfo) {
@@ -206,10 +191,9 @@ TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
       provider_->GetLocalDeviceInfo()->fcm_registration_token().empty());
 
   const std::string kFCMRegistrationToken = "token";
-  EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken())
-      .WillOnce(ReturnRef(kFCMRegistrationToken));
+  EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())
+      .WillOnce(Return(kFCMRegistrationToken));
 
-  provider_->OnFCMRegistrationTokenChanged();
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->fcm_registration_token(),
             kFCMRegistrationToken);
 }
@@ -221,10 +205,9 @@ TEST_F(LocalDeviceInfoProviderImplWithSyncInvalidationsTest,
   EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().Empty());
 
   const ModelTypeSet kTypes = ModelTypeSet(BOOKMARKS);
-  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
-      .WillOnce(ReturnRef(kTypes));
+  EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
+      .WillOnce(Return(kTypes));
 
-  provider_->OnInterestedDataTypesChanged();
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->interested_data_types(), kTypes);
 }
 

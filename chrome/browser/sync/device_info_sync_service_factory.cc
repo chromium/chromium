@@ -24,6 +24,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_device_info/device_info_prefs.h"
@@ -63,6 +64,26 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
       const override {
     return SharingSyncPreference::GetLocalSharingInfoForSync(
         profile_->GetPrefs());
+  }
+
+  // syncer::DeviceInfoSyncClient:
+  std::string GetFCMRegistrationToken() const override {
+    syncer::SyncInvalidationsService* service =
+        SyncInvalidationsServiceFactory::GetForProfile(profile_);
+    if (service) {
+      return service->GetFCMRegistrationToken();
+    }
+    return std::string();
+  }
+
+  // syncer::DeviceInfoSyncClient:
+  syncer::ModelTypeSet GetInterestedDataTypes() const override {
+    syncer::SyncInvalidationsService* service =
+        SyncInvalidationsServiceFactory::GetForProfile(profile_);
+    if (service) {
+      return service->GetInterestedDataTypes();
+    }
+    return syncer::ModelTypeSet();
   }
 
  private:
@@ -123,8 +144,7 @@ KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           chrome::GetChannel(), chrome::GetVersionString(),
-          device_info_sync_client.get(),
-          SyncInvalidationsServiceFactory::GetForProfile(profile));
+          device_info_sync_client.get());
 
   auto device_prefs = std::make_unique<syncer::DeviceInfoPrefs>(
       profile->GetPrefs(), base::DefaultClock::GetInstance());

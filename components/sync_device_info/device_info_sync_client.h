@@ -8,6 +8,7 @@
 #include <string>
 #include "base/macros.h"
 #include "base/optional.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace syncer {
@@ -22,6 +23,8 @@ class DeviceInfoSyncClient {
   virtual bool GetSendTabToSelfReceivingEnabled() const = 0;
   virtual base::Optional<DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const = 0;
+  virtual std::string GetFCMRegistrationToken() const = 0;
+  virtual ModelTypeSet GetInterestedDataTypes() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncClient);
