@@ -88,30 +88,54 @@ void FontMatchingMetrics::ReportFailedLocalFontMatch(
 void FontMatchingMetrics::ReportFontLookupByUniqueOrFamilyName(
     const AtomicString& name,
     const FontDescription& font_description,
-    LocalFontLookupType check_type,
-    SimpleFontData* resulting_font_data,
-    bool is_loading_fallback) {
+    SimpleFontData* resulting_font_data) {
   if (!identifiability_study_enabled_) {
     return;
   }
   OnFontLookup();
 
   IdentifiableTokenBuilder builder;
-  builder.AddToken(IdentifiabilityBenignStringToken(name))
+
+  // Font name lookups are case-insensitive.
+  builder.AddToken(IdentifiabilityBenignCaseFoldingStringToken(name))
       .AddValue(font_description.GetFontSelectionRequest().GetHash());
   IdentifiableTokenKey input_key(builder.GetToken());
 
-  if (font_lookups_.Contains(input_key))
+  if (font_lookups_by_unique_or_family_name_.Contains(input_key))
     return;
-  IdentifiableToken output_token(GetHashForFontData(resulting_font_data),
-                                 check_type, is_loading_fallback);
-  font_lookups_.insert(input_key, output_token);
+  IdentifiableToken output_token(GetHashForFontData(resulting_font_data));
+  font_lookups_by_unique_or_family_name_.insert(input_key, output_token);
+}
+
+void FontMatchingMetrics::ReportFontLookupByUniqueNameOnly(
+    const AtomicString& name,
+    const FontDescription& font_description,
+    SimpleFontData* resulting_font_data,
+    bool is_loading_fallback) {
+  // We ignore lookups that result in loading fallbacks for now as they should
+  // only be temporary.
+  if (!identifiability_study_enabled_ || is_loading_fallback) {
+    return;
+  }
+  OnFontLookup();
+
+  IdentifiableTokenBuilder builder;
+
+  // Font name lookups are case-insensitive.
+  builder.AddToken(IdentifiabilityBenignCaseFoldingStringToken(name))
+      .AddValue(font_description.GetFontSelectionRequest().GetHash());
+  IdentifiableTokenKey input_key(builder.GetToken());
+
+  if (font_lookups_by_unique_name_only_.Contains(input_key))
+    return;
+  IdentifiableToken output_token(GetHashForFontData(resulting_font_data));
+  font_lookups_by_unique_name_only_.insert(input_key, output_token);
 }
 
 void FontMatchingMetrics::ReportFontLookupByFallbackCharacter(
     UChar32 fallback_character,
+    FontFallbackPriority fallback_priority,
     const FontDescription& font_description,
-    LocalFontLookupType check_type,
     SimpleFontData* resulting_font_data) {
   if (!identifiability_study_enabled_) {
     return;
@@ -120,19 +144,18 @@ void FontMatchingMetrics::ReportFontLookupByFallbackCharacter(
 
   IdentifiableTokenBuilder builder;
   builder.AddValue(fallback_character)
+      .AddToken(IdentifiableToken(fallback_priority))
       .AddValue(font_description.GetFontSelectionRequest().GetHash());
   IdentifiableTokenKey input_key(builder.GetToken());
 
-  if (font_lookups_.Contains(input_key))
+  if (font_lookups_by_fallback_character_.Contains(input_key))
     return;
-  IdentifiableToken output_token(GetHashForFontData(resulting_font_data),
-                                 check_type, false);
-  font_lookups_.insert(input_key, output_token);
+  IdentifiableToken output_token(GetHashForFontData(resulting_font_data));
+  font_lookups_by_fallback_character_.insert(input_key, output_token);
 }
 
 void FontMatchingMetrics::ReportLastResortFallbackFontLookup(
     const FontDescription& font_description,
-    LocalFontLookupType check_type,
     SimpleFontData* resulting_font_data) {
   if (!identifiability_study_enabled_) {
     return;
@@ -143,11 +166,10 @@ void FontMatchingMetrics::ReportLastResortFallbackFontLookup(
   builder.AddValue(font_description.GetFontSelectionRequest().GetHash());
   IdentifiableTokenKey input_key(builder.GetToken());
 
-  if (font_lookups_.Contains(input_key))
+  if (font_lookups_as_last_resort_.Contains(input_key))
     return;
-  IdentifiableToken output_token(GetHashForFontData(resulting_font_data),
-                                 check_type, false);
-  font_lookups_.insert(input_key, output_token);
+  IdentifiableToken output_token(GetHashForFontData(resulting_font_data));
+  font_lookups_as_last_resort_.insert(input_key, output_token);
 }
 
 void FontMatchingMetrics::ReportFontFamilyLookupByGenericFamily(
@@ -160,14 +182,24 @@ void FontMatchingMetrics::ReportFontFamilyLookupByGenericFamily(
   }
   OnFontLookup();
 
+  // kStandardFamily lookups override the |generic_font_family_name|. See
+  // FontSelector::FamilyNameFromSettings. No need to be case-insensitive as
+  // generic names should already be lowercase.
+  DCHECK(generic_family_type == FontDescription::kStandardFamily ||
+         generic_font_family_name == generic_font_family_name.LowerASCII());
+  IdentifiableToken lookup_name_token = IdentifiabilityBenignStringToken(
+      generic_family_type == FontDescription::kStandardFamily
+          ? font_family_names::kWebkitStandard
+          : generic_font_family_name);
+
   IdentifiableTokenBuilder builder;
-  builder.AddToken(IdentifiabilityBenignStringToken(generic_font_family_name))
-      .AddToken(IdentifiableToken(script))
-      .AddToken(IdentifiableToken(generic_family_type));
+  builder.AddToken(lookup_name_token).AddToken(IdentifiableToken(script));
   IdentifiableTokenKey input_key(builder.GetToken());
 
+  // Font name lookups are case-insensitive.
   generic_font_lookups_.insert(
-      input_key, IdentifiabilityBenignStringToken(resulting_font_name));
+      input_key,
+      IdentifiabilityBenignCaseFoldingStringToken(resulting_font_name));
 }
 
 void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
@@ -175,13 +207,40 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
 
   IdentifiabilityMetricBuilder builder(source_id_);
 
-  for (const auto& entry : font_lookups_) {
+  for (const auto& entry : font_lookups_by_unique_or_family_name_) {
     builder.Set(
         IdentifiableSurface::FromTypeAndToken(
-            IdentifiableSurface::Type::kLocalFontLookup, entry.key.token),
+            IdentifiableSurface::Type::kLocalFontLookupByUniqueOrFamilyName,
+            entry.key.token),
         entry.value);
   }
-  font_lookups_.clear();
+  font_lookups_by_unique_or_family_name_.clear();
+
+  for (const auto& entry : font_lookups_by_unique_name_only_) {
+    builder.Set(
+        IdentifiableSurface::FromTypeAndToken(
+            IdentifiableSurface::Type::kLocalFontLookupByUniqueOrFamilyName,
+            entry.key.token),
+        entry.value);
+  }
+  font_lookups_by_unique_name_only_.clear();
+
+  for (const auto& entry : font_lookups_by_fallback_character_) {
+    builder.Set(
+        IdentifiableSurface::FromTypeAndToken(
+            IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter,
+            entry.key.token),
+        entry.value);
+  }
+  font_lookups_by_fallback_character_.clear();
+
+  for (const auto& entry : font_lookups_as_last_resort_) {
+    builder.Set(IdentifiableSurface::FromTypeAndToken(
+                    IdentifiableSurface::Type::kLocalFontLookupAsLastResort,
+                    entry.key.token),
+                entry.value);
+  }
+  font_lookups_as_last_resort_.clear();
 
   for (const auto& entry : generic_font_lookups_) {
     builder.Set(

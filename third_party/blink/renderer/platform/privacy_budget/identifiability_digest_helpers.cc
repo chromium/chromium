@@ -33,4 +33,24 @@ IdentifiableToken IdentifiabilitySensitiveStringToken(const String& in) {
                            (original_hash & 0xFFFF));
 }
 
+IdentifiableToken IdentifiabilityBenignCaseFoldingStringToken(
+    const String& in) {
+  if (in.IsNull())
+    return kNullStringDigest;
+
+  return IdentifiableToken(CaseFoldingHash::GetHash(in));
+}
+
+IdentifiableToken IdentifiabilitySensitiveCaseFoldingStringToken(
+    const String& in) {
+  if (in.IsNull())
+    return IdentifiableToken(kNullStringDigest);
+
+  // Take the 32-bit hash, and xor the top and bottom halves to produce a 16-bit
+  // hash.
+  const uint32_t original_hash = CaseFoldingHash::GetHash(in);
+  return IdentifiableToken(((original_hash & 0xFFFF0000) >> 16) ^
+                           (original_hash & 0xFFFF));
+}
+
 }  // namespace blink

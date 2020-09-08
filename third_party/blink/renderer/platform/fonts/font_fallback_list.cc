@@ -187,7 +187,6 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
         if (font_selector_) {
           font_selector_->ReportFontLookupByUniqueOrFamilyName(
               curr_family->Family(), font_description,
-              LocalFontLookupType::kLocalFontFamilyName,
               DynamicTo<SimpleFontData>(result.get()));
         }
       }
@@ -216,9 +215,8 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
   auto last_resort =
       FontCache::GetFontCache()->GetLastResortFallbackFont(font_description);
   if (font_selector_) {
-    font_selector_->ReportLastResortFallbackFontLookup(
-        font_description, LocalFontLookupType::kLastResortInFontFallbackList,
-        last_resort.get());
+    font_selector_->ReportLastResortFallbackFontLookup(font_description,
+                                                       last_resort.get());
   }
   return last_resort;
 }

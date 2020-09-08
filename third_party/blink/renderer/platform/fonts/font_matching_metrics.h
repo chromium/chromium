@@ -8,6 +8,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -73,17 +74,6 @@ struct IdentifiableTokenKeyHashTraits
   static IdentifiableTokenKey EmptyValue() { return IdentifiableTokenKey(); }
 };
 
-enum class LocalFontLookupType {
-  kAtFontFaceLocalSrc,
-  kGenericFontFamilyName,
-  kLocalFontFamilyName,
-  kPreferredStandardFont,
-  kLastResortInFontFallbackList,
-  kFallbackPriorityFont,
-  kSystemFallbackFont,
-  kLastResortInFontFallbackIterator,
-};
-
 // Tracks and reports UKM metrics of attempted font family match attempts (both
 // successful and not successful) by the current frame.
 //
@@ -128,26 +118,32 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   void ReportFailedLocalFontMatch(const AtomicString& font_name);
 
   // Reports a local font was looked up by a name and font description. This
-  // includes lookups by a family name, by a PostScript name and by a full font
-  // name.
+  // only includes lookups where the name is allowed to match family names,
+  // PostScript names and full font names.
   void ReportFontLookupByUniqueOrFamilyName(
       const AtomicString& name,
       const FontDescription& font_description,
-      LocalFontLookupType check_type,
-      SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false);
+      SimpleFontData* resulting_font_data);
 
-  // Reports a font was looked up by a fallback character and font description.
+  // Reports a local font was looked up by a name and font description. This
+  // only includes lookups where the name is allowed to match PostScript names
+  // and full font names, but not family names.
+  void ReportFontLookupByUniqueNameOnly(const AtomicString& name,
+                                        const FontDescription& font_description,
+                                        SimpleFontData* resulting_font_data,
+                                        bool is_loading_fallback = false);
+
+  // Reports a font was looked up by a fallback character, fallback priority,
+  // and a font description.
   void ReportFontLookupByFallbackCharacter(
       UChar32 fallback_character,
+      FontFallbackPriority fallback_priority,
       const FontDescription& font_description,
-      LocalFontLookupType check_type,
       SimpleFontData* resulting_font_data);
 
   // Reports a last-resort fallback font was looked up by a font description.
   void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
-      LocalFontLookupType check_type,
       SimpleFontData* resulting_font_data);
 
   // Reports a generic font family name was matched according to the script and
@@ -211,7 +207,10 @@ class PLATFORM_EXPORT FontMatchingMetrics {
                                       IdentifiableToken,
                                       IdentifiableTokenKeyHash,
                                       IdentifiableTokenKeyHashTraits>;
-  TokenToTokenHashMap font_lookups_;
+  TokenToTokenHashMap font_lookups_by_unique_or_family_name_;
+  TokenToTokenHashMap font_lookups_by_unique_name_only_;
+  TokenToTokenHashMap font_lookups_by_fallback_character_;
+  TokenToTokenHashMap font_lookups_as_last_resort_;
   TokenToTokenHashMap generic_font_lookups_;
 
   ukm::UkmRecorder* const ukm_recorder_;

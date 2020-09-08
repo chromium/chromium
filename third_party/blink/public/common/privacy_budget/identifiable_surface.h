@@ -81,10 +81,12 @@ class IdentifiableSurface {
     // CanvasRenderingContextType.
     kCanvasReadback = 2,
 
-    // Represents loading a font locally. Input is the combination of font style
-    // and either the family name, fallback character or neither (for a last-
-    // resort fallback).
-    kLocalFontLookup = 3,
+    // Represents loading a font locally based on a name lookup that is allowed
+    // to match either a unique name or a family name. This occurs when a
+    // font-family CSS rule doesn't match any @font-face rule. Input is the
+    // combination of the lookup name and the FontSelectionRequest (i.e. weight,
+    // width and slope).
+    kLocalFontLookupByUniqueOrFamilyName = 3,
 
     // Represents looking up the family name of a generic font. Input is the
     // combination of the generic font family name, script code and
@@ -119,6 +121,21 @@ class IdentifiableSurface {
     // Represents a call to |HTMLMediaElement.canPlayType(mimeType)|. Input is
     // the mime type supplied to the method.
     kHTMLMediaElement_CanPlayType = 11,
+
+    // Represents loading a font locally based on a name lookup that is only
+    // allowed to match a unique name. This occurs in @font-face CSS rules with
+    // a src:local attribute. Input is the combination of the lookup name and
+    // the FontSelectionRequest (i.e. weight, width and slope).
+    kLocalFontLookupByUniqueNameOnly = 12,
+
+    // Represents loading a font locally based on a fallback character. Input is
+    // the combination of the fallback character, FallbackPriority and the
+    // FontSelectionRequest (i.e. weight, width and slope).
+    kLocalFontLookupByFallbackCharacter = 13,
+
+    // Represents loading a font locally as a last resort. Input is the
+    // FontSelectionRequest (i.e. weight, width and slope).
+    kLocalFontLookupAsLastResort = 14,
 
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
