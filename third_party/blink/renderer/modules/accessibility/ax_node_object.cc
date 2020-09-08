@@ -3773,9 +3773,8 @@ void AXNodeObject::ChildrenChanged() {
   // because unignored nodes recursively include all children of ignored
   // nodes. This method is called during layout, so we need to be careful to
   // only explore existing objects.
-  bool is_included =
-      !LastKnownIsIgnoredValue() || LastKnownIsIgnoredButIncludedInTreeValue();
-  AXObject* node_to_update = is_included ? this : ParentObjectIncludedInTree();
+  AXObject* node_to_update =
+      LastKnownIsIncludedInTreeValue() ? this : ParentObjectIncludedInTree();
   if (node_to_update)  // Can be null, e.g. if <title> contents change.
     node_to_update->SetNeedsToUpdateChildren();
 

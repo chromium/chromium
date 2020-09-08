@@ -1643,6 +1643,11 @@ bool AXObject::LastKnownIsIgnoredButIncludedInTreeValue() const {
   return cached_is_ignored_but_included_in_tree_;
 }
 
+bool AXObject::LastKnownIsIncludedInTreeValue() const {
+  return !LastKnownIsIgnoredValue() ||
+         LastKnownIsIgnoredButIncludedInTreeValue();
+}
+
 bool AXObject::HasInheritedPresentationalRole() const {
   UpdateCachedAttributeValuesIfNeeded();
   return cached_has_inherited_presentational_role_;

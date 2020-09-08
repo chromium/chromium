@@ -1154,7 +1154,7 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
   if (!ax_layout_obj)
     return;
 
-  if (ax_layout_obj->AccessibilityIsIncludedInTree()) {
+  if (ax_layout_obj->LastKnownIsIncludedInTreeValue()) {
     // Participates in tree: update children if they haven't already been.
     DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout,
                     ax_layout_obj->GetNode(), ax_layout_obj);
