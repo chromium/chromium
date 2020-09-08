@@ -489,10 +489,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                                       .getCurrentTabModelFilter()
                                       .indexOf(tab);
 
-                if (fromIndex != toIndex || fromTab.getId() == tab.getId()) {
+                if (fromIndex != toIndex) {
                     // Only log when you switch a tab page directly from tab switcher.
-                    if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
-                            || getRelatedTabs(tab.getId()).size() == 1) {
+                    if (getRelatedTabs(tab.getId()).size() == 1) {
                         RecordUserAction.record(
                                 "MobileTabSwitched." + TabSwitcherCoordinator.COMPONENT_NAME);
                     }
@@ -679,8 +678,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
         if (mTabModelSelector.getCurrentTab() == null) return false;
 
-        recordUserSwitchedTab(
-                mTabModelSelector.getCurrentTab(), mTabModelSelector.getCurrentTabId());
         onTabSelecting(mTabModelSelector.getCurrentTabId());
 
         return true;
