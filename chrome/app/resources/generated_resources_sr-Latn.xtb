@@ -508,6 +508,7 @@
 <translation id="158849752021629804">Potrebna je matična mreža</translation>
 <translation id="1588870296199743671">Otvori link koristeći...</translation>
 <translation id="1589055389569595240">Prikaži pravopis i gramatiku</translation>
+<translation id="1591679663873027990">Dozvolite da Parallels Desktop pristupa USB uređajima. Parallels Desktop neće zapamtiti USB uređaj kada ga uklonite.</translation>
 <translation id="1593594475886691512">Formatiranje...</translation>
 <translation id="159359590073980872">Keš slike</translation>
 <translation id="1593926297800505364">Sačuvajte način plaćanja</translation>
@@ -824,6 +825,7 @@
 <translation id="1954813140452229842">Greška pri učitavanju deljene datoteke. Proverite akreditive i probajte ponovo.</translation>
 <translation id="1956050014111002555">Datoteka sadrži više sertifikata, od kojih nijedan nije uvezen:</translation>
 <translation id="1956390763342388273">Ovim ćete otpremiti sve datoteke iz „<ph name="FOLDER_PATH" />“. Radite ovo samo ako je sajt pouzdan.</translation>
+<translation id="196040970347962278">Prvo se povežite na internet</translation>
 <translation id="1962233722219655970">Ova stranica koristi Native Client aplikaciju koja ne funkcioniše na vašem računaru.</translation>
 <translation id="1963227389609234879">Ukloni sve</translation>
 <translation id="1963976881984600709">Standardna zaštita</translation>
@@ -1862,6 +1864,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="321834671654278338">Linux program za deinstaliranje</translation>
 <translation id="3220586366024592812">Proces konektora za <ph name="CLOUD_PRINT_NAME" /> je otkazao. Želite li ponovo da ga pokrenete?</translation>
 <translation id="3222066309010235055">Pretprikazivanje: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Povežite se sa uređajem <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Dugme Resetuj</translation>
 <translation id="3225084153129302039">Podrazumevani ljubičasti avatar</translation>
 <translation id="3225319735946384299">Potpisivanje koda</translation>
@@ -1874,6 +1877,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3246107497225150582">{0,plural, =1{Ažurirajte uređaj u roku od jednog dana}one{Ažurirajte uređaj u roku od # dana}few{Ažurirajte uređaj u roku od # dana}other{Ažurirajte uređaj u roku od # dana}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – greška na mreži</translation>
 <translation id="3248902735035392926">Bezbednost je važna. Odvojite malo vremena i <ph name="BEGIN_LINK" />proverite dodatke<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">Zatvori sve prozore bez arhiviranja</translation>
 <translation id="3251759466064201842">&lt;Nije deo sertifikata&gt;</translation>
 <translation id="3253225298092156258">Nije dostupno</translation>
 <translation id="3253448572569133955">Nepoznat nalog</translation>
@@ -2113,6 +2117,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3527085408025491307">Direktorijum</translation>
 <translation id="3528498924003805721">Ciljevi prečica</translation>
 <translation id="3532273508346491126">Upravljanje sinhronizacijom</translation>
+<translation id="3532521178906420528">Mrežna veza se uspostavlja...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Zvuk je isključen</translation>
 <translation id="3537881477201137177">Ovo može da se promeni kasnije u Podešavanjima</translation>
 <translation id="3538066758857505094">Greška pri deinstaliranju Linux-a. Probajte ponovo.</translation>
@@ -3122,6 +3127,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4750394297954878236">Predlozi</translation>
 <translation id="475088594373173692">Prvi korisnik</translation>
 <translation id="4751476147751820511">Senzori za pokret ili svetlo</translation>
+<translation id="4752124003533492687">Otvorite Podešavanja da biste povezali uređaj <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Zaustavi/ponovo učitaj</translation>
 <translation id="4756388243121344051">&amp;Istorija</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
@@ -4473,6 +4479,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6415900369006735853">Povežite se na internet pomoću telefona</translation>
 <translation id="6416743254476733475">Dozvolite ili blokirajte na računaru.</translation>
 <translation id="6417265370957905582">Google pomoćnik</translation>
+<translation id="6417468503703810114">Podrazumevano ponašanje</translation>
 <translation id="6418160186546245112">Vraća se na prethodnu instaliranu verziju proizvoda <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Trajno ukloni pristup za sve aplikacije</translation>
 <translation id="6418511932144861495">Instalirajte važno ažuriranje</translation>
@@ -4640,6 +4647,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> želi trajni pristup sertifikatu da bi potvrdio sopstvenu autentičnost u vaše ime.</translation>
 <translation id="6635944431854494329">Vlasnik može da upravlja ovom funkcijom u odeljku Podešavanja &gt; Napredno &gt; Automatski šalji Google-u dijagnostiku i podatke o korišćenju.</translation>
 <translation id="6635956300022133031">Izaberite i prilagodite glasove za pretvaranje teksta u govor</translation>
+<translation id="6636588250634969791">Umetnite SIM karticu da biste nastavili</translation>
 <translation id="6639554308659482635">SQLite memorija</translation>
 <translation id="6641138807883536517">Nasumično generisana lozinka za bezbednosni modul nije dostupna. To je normalno posle Powerwash-a.</translation>
 <translation id="6642720633335369752">Da biste videli sve otvorene prozore aplikacija, prevucite nagore od dna i zadržite.</translation>
@@ -5182,6 +5190,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7303900363563182677">Ovom sajtu je blokiran uvid u tekst i slike koji su kopirani u privremenu memoriju</translation>
 <translation id="7305123176580523628">USB štampač je povezan</translation>
 <translation id="730515362922783851">Razmena podataka sa bilo kojim uređajem na lokalnoj mreži ili internetu</translation>
+<translation id="7306521477691455105">Otvorite Podešavanja da biste povezali uređaj <ph name="USB_DEVICE_NAME" /> sa uređajem <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Pauzirano</translation>
 <translation id="7308002049209013926">Koristite Pokretač da biste brzo pristupali novim aplikacijama i aktivnostima. Da biste došli ovde pomoću tastature, pritisnite Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Prikaži &amp;kontrole</translation>
@@ -5546,6 +5555,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7766082757934713382">Pauzira automatska ažuriranja aplikacija i sistema i tako doprinosi smanjivanju potrošnje podataka na mreži</translation>
 <translation id="7766807826975222231">Kreni u obilazak</translation>
 <translation id="7766838926148951335">Prihvati dozvole</translation>
+<translation id="7768507955883790804">Sajtovi automatski prate ovo podešavanje kada ih posetite</translation>
 <translation id="7768770796815395237">Promenite</translation>
 <translation id="7768784765476638775">Izaberite za govor</translation>
 <translation id="7769672763586021400">ID modela</translation>
@@ -6805,6 +6815,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="947329552760389097">&amp;Proveri elemente</translation>
 <translation id="951991426597076286">Odbij</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
+<translation id="956444359529327203">Zatvori sve prozore u režimu gosta</translation>
 <translation id="956500788634395331">Štitimo vas od potencijalno štetnih dodataka</translation>
 <translation id="957960681186851048">Ovaj sajt je pokušao da automatski preuzme više datoteka</translation>
 <translation id="9580706199804957">Povezivanje sa Google uslugama nije uspelo</translation>

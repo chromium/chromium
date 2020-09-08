@@ -511,6 +511,7 @@
 <translation id="158849752021629804">홈 네크워크가 필요합니다.</translation>
 <translation id="1588870296199743671">다음으로 링크 열기...</translation>
 <translation id="1589055389569595240">영문 철자 및 문법 보기</translation>
+<translation id="1591679663873027990">Parallels Desktop에 USB 기기 액세스 권한을 부여하세요. 삭제된 USB 기기는 Parallels Desktop에 저장되지 않습니다.</translation>
 <translation id="1593594475886691512">포맷 중...</translation>
 <translation id="159359590073980872">이미지 캐시</translation>
 <translation id="1593926297800505364">결제 수단 저장</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">공유를 마운트하는 중에 오류가 발생했습니다. 사용자 인증 정보를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="1956050014111002555">파일에 여러 인증서가 있지만 가져올 수 있는 인증서가 없습니다.</translation>
 <translation id="1956390763342388273">'<ph name="FOLDER_PATH" />'의 모든 파일이 업로드됩니다. 사이트를 신뢰할 수 있을 때만 실행하세요.</translation>
+<translation id="196040970347962278">먼저 인터넷에 연결하세요.</translation>
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963227389609234879">모두 삭제</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
@@ -1865,6 +1867,7 @@
 <translation id="321834671654278338">Linux 제거 프로그램</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> 커넥터 프로세스가 중단되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="3222066309010235055">사전 렌더링: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989"><ph name="USB_VM_NAME" />에 연결</translation>
 <translation id="3223531857777746191">초기화 버튼</translation>
 <translation id="3225084153129302039">기본 보라색 아바타</translation>
 <translation id="3225319735946384299">코드 서명</translation>
@@ -1877,6 +1880,7 @@
 <translation id="3246107497225150582">{0,plural, =1{1일 내 기기 업데이트}other{#일 내 기기 업데이트}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 네트워크 오류</translation>
 <translation id="3248902735035392926">안전은 그 무엇보다도 중요합니다. 잠시 시간을 내어 <ph name="BEGIN_LINK" />확장 프로그램을 검토<ph name="END_LINK" />해 보세요.</translation>
+<translation id="325036368918787455">시크릿 창 닫기</translation>
 <translation id="3251759466064201842">&lt;인증서에 속하지 않음&gt;</translation>
 <translation id="3253225298092156258">사용할 수 없음</translation>
 <translation id="3253448572569133955">알 수 없는 계정</translation>
@@ -2116,6 +2120,7 @@
 <translation id="3527085408025491307">폴더</translation>
 <translation id="3528498924003805721">바로가기 대상</translation>
 <translation id="3532273508346491126">동기화 관리</translation>
+<translation id="3532521178906420528">네트워크 연결 설정 중...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 오디오 음소거</translation>
 <translation id="3537881477201137177">나중에 설정에서 수정할 수 있습니다.</translation>
 <translation id="3538066758857505094">Linux를 제거하는 동안 문제가 발생했습니다. 다시 시도해 주세요.</translation>
@@ -3123,6 +3128,7 @@
 <translation id="4750394297954878236">추천</translation>
 <translation id="475088594373173692">첫 번째 사용자</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
+<translation id="4752124003533492687">설정을 열어 <ph name="USB_DEVICE_NAME" />에 연결하세요.</translation>
 <translation id="4756378406049221019">중지/새로고침</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4759238208242260848">다운로드</translation>
@@ -4640,6 +4646,7 @@
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />에서 사용자를 대신하여 인증하기 위해 인증서에 대한 영구적인 액세스 권한을 요청합니다.</translation>
 <translation id="6635944431854494329">소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.</translation>
 <translation id="6635956300022133031">텍스트 음성 변환 기능의 음성을 선택하고 맞춤설정합니다.</translation>
+<translation id="6636588250634969791">계속하기 전에 SIM을 삽입하세요.</translation>
 <translation id="6639554308659482635">SQLite 메모리</translation>
 <translation id="6641138807883536517">임의로 생성된 보안 모듈 비밀번호는 사용할 수 없습니다. 이는 파워워시 후에는 정상적으로 나타나는 현상입니다.</translation>
 <translation id="6642720633335369752">열려 있는 모든 앱 창을 보려면 하단에서 위로 스와이프한 다음 길게 누르세요.</translation>
@@ -5182,6 +5189,7 @@
 <translation id="7303900363563182677">이 사이트는 클립보드에 복사된 텍스트 및 이미지에 액세스할 수 없습니다.</translation>
 <translation id="7305123176580523628">USB 프린터 연결됨</translation>
 <translation id="730515362922783851">로컬 네트워크 또는 인터넷의 모든 기기와 데이터 교환</translation>
+<translation id="7306521477691455105">설정을 열어 <ph name="USB_DEVICE_NAME" /> 기기를 <ph name="USB_VM_NAME" />에 연결하세요.</translation>
 <translation id="7307129035224081534">일시중지됨</translation>
 <translation id="7308002049209013926">런처를 사용하여 새로운 앱과 활동으로 빠르게 이동하세요. 키보드를 사용하여 이동하려면 Alt + Shift + L을 누르면 됩니다.</translation>
 <translation id="7309257895202129721">컨트롤 표시(&amp;C)</translation>
@@ -6805,6 +6813,7 @@
 <translation id="947329552760389097">요소 검사(&amp;I)</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>
+<translation id="956444359529327203">게스트 창 닫기</translation>
 <translation id="956500788634395331">잠재적으로 위험한 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="957960681186851048">이 사이트에서 여러 파일을 자동으로 다운로드하려고 함</translation>
 <translation id="9580706199804957">Google 서비스에 연결할 수 없음</translation>

@@ -116,6 +116,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
 <translation id="2144487987174258011">I-restart upang i-update ang Adobe Flash Player</translation>
+<translation id="2180011262286780504">Na-disable ng iyong administrator ang kakayahang mag-screen capture.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222338659135520253">Kinakailangang mag-sign in</translation>
@@ -239,6 +240,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3428447136709161042">Idiskonekta sa <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Mag-swipe mula sa kanan para bumalik</translation>
 <translation id="343571671045587506">I-edit ang paalala</translation>
+<translation id="3435967511775410570">Nakilala ang fingerprint</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3454224730401036106">Lumipat ang iyong koneksyon sa mas secure na network</translation>
 <translation id="3465223694362104965">May isa pang keyboard na kumonekta sa device na ito mula noong huling beses kang nag-sign in. Tiyaking pinagkakatiwalaan mo ang keyboard na ito bago mo ito gamitin.</translation>
@@ -600,6 +602,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7654687942625752712">Pindutin nang matagal ang parehong volume key sa loob ng limang segundo para i-disable ang pasalitang feedback.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Mag-authenticate gamit ang fingerprint</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# na notification}}</translation>
 <translation id="7724603315864178912">I-cut</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
@@ -617,6 +620,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7886277072580235377">Maki-clear ang iyong session sa internet kapag nag-sign out ka. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Magpadala ng email</translation>
 <translation id="7897375687985782769">Napindot mo ang keyboard shortcut para sa pag-rotate ng screen. Gusto mo bang i-rotate ang screen?</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">Hindi pinayagan ng administrator para sa account na ito ang multiple na pag-sign in.</translation>
 <translation id="7933084174919150729">Available lang ang Google Assistant para sa pangunahing profile.</translation>
 <translation id="79341161159229895">Pinamamahalaan nina <ph name="FIRST_PARENT_EMAIL" /> at <ph name="SECOND_PARENT_EMAIL" /> ang account</translation>
@@ -627,6 +631,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7984197416080286869">Masyadong maraming beses sumubok gamit ang fingerprint</translation>
 <translation id="7994370417837006925">Multiple na pag-sign in</translation>
+<translation id="7995804128062002838">Hindi na-capture ang screen</translation>
 <translation id="8000066093800657092">Walang network</translation>
 <translation id="8004512796067398576">Taasan</translation>
 <translation id="8029629653277878342">Kinakailangan ang PIN o password para sa higit pang seguridad</translation>
@@ -714,6 +719,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
+<translation id="885387440427703469">Na-disable ang screen capture</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>

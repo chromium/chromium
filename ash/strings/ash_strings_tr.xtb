@@ -116,6 +116,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2127372758936585790">Düşük güçlü şarj cihazı</translation>
 <translation id="2135456203358955318">Yerleştirilmiş büyüteç</translation>
 <translation id="2144487987174258011">Adobe Flash Player'ı güncellemek için yeniden başlatın</translation>
+<translation id="2180011262286780504">Ekran görüntüsü alma özelliği, yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222338659135520253">Oturum açılması gerekiyor</translation>
@@ -239,6 +240,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> bağlantısını kes</translation>
 <translation id="3430396595145920809">Geri gitmek için sağdan kaydırın</translation>
 <translation id="343571671045587506">Hatırlatıcıyı düzenleyin</translation>
+<translation id="3435967511775410570">Parmak izi tanındı</translation>
 <translation id="3445925074670675829">USB-C cihaz</translation>
 <translation id="3454224730401036106">Bağlantınız daha güvenli bir ağa geçti</translation>
 <translation id="3465223694362104965">Açtığınız son oturumdan sonra bu cihaza başka bir klavye bağlandı. Kullanmadan önce bu klavyeye güvendiğinizden emin olun.</translation>
@@ -601,6 +603,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7654687942625752712">Sesli geri bildirimi beş saniyeliğine devre dışı bırakmak için her iki ses ayarı tuşunu basılı tutun.</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Parmak iziyle kimlik doğrulayın</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildirim}other{# bildirim}}</translation>
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
@@ -618,6 +621,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7886277072580235377">Oturumu kapattığınızda internet oturumunuz temizlenecektir. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">E-posta gönder</translation>
 <translation id="7897375687985782769">Ekran döndürme klavye kısayoluna bastınız. Ekranı döndürmek istiyor musunuz?</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
 <translation id="7933084174919150729">Google Asistan yalnızca birincil profilde kullanılabilir.</translation>
 <translation id="79341161159229895">Hesap <ph name="FIRST_PARENT_EMAIL" /> ve <ph name="SECOND_PARENT_EMAIL" /> tarafından yönetiliyor</translation>
@@ -628,6 +632,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="7984197416080286869">Çok fazla parmak izi denemesi yapıldı</translation>
 <translation id="7994370417837006925">Çoklu oturum açma</translation>
+<translation id="7995804128062002838">Ekran görüntüsü alınamadı</translation>
 <translation id="8000066093800657092">Ağ yok</translation>
 <translation id="8004512796067398576">Artır</translation>
 <translation id="8029629653277878342">Daha fazla güvenlik için PIN veya şifre gerekli</translation>
@@ -715,6 +720,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Ara+Esc</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
+<translation id="885387440427703469">Ekran görüntüsü alma devre dışı</translation>
 <translation id="8870509716567206129">Uygulama bölünmüş ekranı desteklemiyor.</translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>

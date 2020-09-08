@@ -116,6 +116,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2127372758936585790">Pengecas berkuasa rendah</translation>
 <translation id="2135456203358955318">Penggadang didok</translation>
 <translation id="2144487987174258011">Mulakan semula untuk mengemas kini Pemain Adobe Flash</translation>
+<translation id="2180011262286780504">Keupayaan untuk menangkap skrin telah dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="2208323208084708176">Mod desktop bersatu</translation>
 <translation id="2220572644011485463">PIN atau kata laluan</translation>
 <translation id="2222338659135520253">Log masuk diperlukan</translation>
@@ -239,6 +240,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3428447136709161042">Putuskan sambungan daripada <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Leret dari kanan untuk kembali</translation>
 <translation id="343571671045587506">Edit peringatan</translation>
+<translation id="3435967511775410570">Cap jari dikenali</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3454224730401036106">Sambungan anda telah beralih kepada rangkaian yang lebih selamat</translation>
 <translation id="3465223694362104965">Papan kekunci lain telah disambungkan ke peranti ini sejak kali terakhir anda log masuk. Pastikan anda mempercayai papan kekunci ini sebelum anda menggunakannya.</translation>
@@ -601,6 +603,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua-dua kekunci kelantangan selama lima saat untuk melumpuhkan maklum balas yang dituturkan.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Sahkan dengan cap jari</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan}other{# pemberitahuan}}</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
@@ -618,6 +621,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7886277072580235377">Sesi Internet anda akan dipadam bersih apabila anda log keluar. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Hantar e-mel</translation>
 <translation id="7897375687985782769">Anda menekan pintasan papan kekunci untuk putaran skrin. Adakah anda ingin memutarkan skrin?</translation>
+<translation id="7901405293566323524">Hab Telefon</translation>
 <translation id="7904094684485781019">Pentadbir akaun ini tidak membenarkan berbilang log masuk.</translation>
 <translation id="7933084174919150729">Google Assistant hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akaun diurus oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
@@ -628,6 +632,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7984197416080286869">Terlalu banyak percubaan cap jari</translation>
 <translation id="7994370417837006925">Log masuk berbilang</translation>
+<translation id="7995804128062002838">Gagal untuk menangkap skrin</translation>
 <translation id="8000066093800657092">Tiada rangkaian</translation>
 <translation id="8004512796067398576">Kenaikan</translation>
 <translation id="8029629653277878342">PIN atau kata laluan diperlukan untuk meningkatkan keselamatan</translation>
@@ -715,6 +720,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8843682306134542540">Togol kunci putaran. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Carian+Esc</translation>
 <translation id="8853703225951107899">PIN atau kata laluan anda masih tidak dapat disahkan. Nota: Jika anda menukar kata laluan anda baru-baru ini, gunakan kata laluan lama anda. Kata laluan baharu anda akan digunakan apabila anda log keluar.</translation>
+<translation id="885387440427703469">Tangkapan skrin dilumpuhkan</translation>
 <translation id="8870509716567206129">Apl tidak menyokong skrin pisah.</translation>
 <translation id="8874184842967597500">Tidak bersambung</translation>
 <translation id="8877788021141246043">Tetapkan peringatan</translation>

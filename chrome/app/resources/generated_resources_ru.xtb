@@ -510,6 +510,7 @@
 <translation id="158849752021629804">Необходима домашняя сеть</translation>
 <translation id="1588870296199743671">Открыть ссылку с помощью...</translation>
 <translation id="1589055389569595240">Показать правописание и грамматику</translation>
+<translation id="1591679663873027990">Предоставьте Parallels Desktop доступ к USB-устройствам. Когда устройство будет отключено, вся информация о нем будет удалена из Parallels Desktop.</translation>
 <translation id="1593594475886691512">Форматирование...</translation>
 <translation id="159359590073980872">Кеш изображений</translation>
 <translation id="1593926297800505364">Сохранить способ оплаты</translation>
@@ -826,6 +827,7 @@
 <translation id="1954813140452229842">Не удалось подключить ресурс. Проверьте учетные данные и повторите попытку.</translation>
 <translation id="1956050014111002555">Файл содержит несколько сертификатов, ни один из которых не был импортирован:</translation>
 <translation id="1956390763342388273">Вы собираетесь загрузить все файлы из "<ph name="FOLDER_PATH" />". Не делайте этого, если не доверяете сайту.</translation>
+<translation id="196040970347962278">Сначала установите подключение к Интернету</translation>
 <translation id="1962233722219655970">На этой странице используется приложение Native Client, не поддерживаемое вашим компьютером.</translation>
 <translation id="1963227389609234879">Удалить все</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
@@ -1863,6 +1865,7 @@
 <translation id="321834671654278338">Программа удаления приложения Linux</translation>
 <translation id="3220586366024592812">Процесс коннектора <ph name="CLOUD_PRINT_NAME" /> завершился с ошибкой. Перезапустить?</translation>
 <translation id="3222066309010235055">Предварительная обработка: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Подключиться к ВМ "<ph name="USB_VM_NAME" />"</translation>
 <translation id="3223531857777746191">Кнопка сброса</translation>
 <translation id="3225084153129302039">Аватар по умолчанию (фиолетовый)</translation>
 <translation id="3225319735946384299">Подписывание кода</translation>
@@ -1875,6 +1878,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Перезагрузите устройство в течение 1 дня}one{Перезагрузите устройство в течение # дня}few{Перезагрузите устройство в течение # дней}many{Перезагрузите устройство в течение # дней}other{Перезагрузите устройство в течение # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: ошибка сети</translation>
 <translation id="3248902735035392926">Безопасность – это важно. <ph name="BEGIN_LINK" />Проверьте расширения<ph name="END_LINK" />, которые у вас установлены.</translation>
+<translation id="325036368918787455">Закрыть окна инкогнито</translation>
 <translation id="3251759466064201842">&lt;Не является частью сертификата&gt;</translation>
 <translation id="3253225298092156258">Недоступно</translation>
 <translation id="3253448572569133955">Неизвестный аккаунт</translation>
@@ -2114,6 +2118,7 @@
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3528498924003805721">Ярлыки</translation>
 <translation id="3532273508346491126">Управление синхронизацией</translation>
+<translation id="3532521178906420528">Подключение к сети…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: звук отключен</translation>
 <translation id="3537881477201137177">Этот параметр можно изменить позже в настройках.</translation>
 <translation id="3538066758857505094">Не удалось удалить Linux. Повторите попытку.</translation>
@@ -3123,6 +3128,7 @@
 <translation id="4750394297954878236">Предложения</translation>
 <translation id="475088594373173692">Первый пользователь</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
+<translation id="4752124003533492687">Чтобы подключить устройство "<ph name="USB_DEVICE_NAME" />", откройте настройки.</translation>
 <translation id="4756378406049221019">Остановить/Перезапустить</translation>
 <translation id="4756388243121344051">&amp;История</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
@@ -4640,6 +4646,7 @@
 <translation id="6630752851777525409">Расширение "<ph name="EXTENSION_NAME" />" запрашивает постоянный доступ к сертификату для прохождения аутентификации от вашего имени.</translation>
 <translation id="6635944431854494329">Владелец может управлять этой функцией в меню "Настройки &gt; Дополнительные &gt; Автоматически отправлять статистику использования и данные диагностики в Google".</translation>
 <translation id="6635956300022133031">Выбор и настройка голоса</translation>
+<translation id="6636588250634969791">Прежде чем продолжить, вставьте SIM-карту</translation>
 <translation id="6639554308659482635">Память SQLite</translation>
 <translation id="6641138807883536517">Случайно сгенерированный пароль безопасного модуля недоступен после выполнения функции Powerwash.</translation>
 <translation id="6642720633335369752">Чтобы посмотреть все открытые приложения, проведите по экрану снизу вверх и удерживайте.</translation>
@@ -5182,6 +5189,7 @@
 <translation id="7303900363563182677">У этого сайта нет доступа к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="7305123176580523628">Принтер подключен по USB</translation>
 <translation id="730515362922783851">Обмен данными с любыми устройствами в локальной сети и Интернете</translation>
+<translation id="7306521477691455105">Чтобы подключить устройство "<ph name="USB_DEVICE_NAME" />" к ВМ "<ph name="USB_VM_NAME" />", откройте настройки.</translation>
 <translation id="7307129035224081534">Приостановлена</translation>
 <translation id="7308002049209013926">Используйте панель запуска для быстрого перехода к приложениям и действиям. Для этого нажмите Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Показать &amp;элементы управления</translation>
@@ -6804,6 +6812,7 @@
 <translation id="947329552760389097">&amp;Проверить элементы</translation>
 <translation id="951991426597076286">Отклонить</translation>
 <translation id="952992212772159698">Не активировано</translation>
+<translation id="956444359529327203">Закрыть окна в гостевом режиме</translation>
 <translation id="956500788634395331">Включена защита от потенциально опасных расширений.</translation>
 <translation id="957960681186851048">Этот сайт попытался автоматически скачать несколько файлов</translation>
 <translation id="9580706199804957">Не удалось подключиться к сервисам Google</translation>

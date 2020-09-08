@@ -116,6 +116,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2127372758936585790">Caricabatterie a basso consumo</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
 <translation id="2144487987174258011">Riavvia per aggiornare Adobe Flash Player</translation>
+<translation id="2180011262286780504">La funzionalità di acquisizione dello schermo è stata disattivata dall'amministratore.</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222338659135520253">Accesso richiesto</translation>
@@ -239,6 +240,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3428447136709161042">Disconnettiti da <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Scorri da destra per tornare indietro</translation>
 <translation id="343571671045587506">Modifica promemoria</translation>
+<translation id="3435967511775410570">Impronta riconosciuta</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">La tua connessione è passata a una rete più sicura</translation>
 <translation id="3465223694362104965">Dal tuo ultimo accesso, un'altra tastiera si è connessa a questo dispositivo. Prima di usarla, assicurati che sia attendibile.</translation>
@@ -601,6 +603,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7654687942625752712">Tieni premuti entrambi i tasti del volume per cinque secondi per disattivare la funzione di lettura vocale.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Autentica con l'impronta</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
@@ -618,6 +621,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7886277072580235377">La sessione Internet verrà cancellata al momento dell'uscita dall'account. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Invia un'email</translation>
 <translation id="7897375687985782769">Hai premuto la scorciatoia da tastiera per la rotazione dello schermo. Vuoi ruotare lo schermo?</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">L'amministratore di questo account ha bloccato l'accesso simultaneo.</translation>
 <translation id="7933084174919150729">L'Assistente Google è disponibile solo per il profilo principale.</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
@@ -628,6 +632,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7982789257301363584">Rete</translation>
 <translation id="7984197416080286869">Troppi tentativi di sblocco con l'impronta</translation>
 <translation id="7994370417837006925">Accesso simultaneo</translation>
+<translation id="7995804128062002838">Impossibile acquisire schermo</translation>
 <translation id="8000066093800657092">Nessuna rete</translation>
 <translation id="8004512796067398576">Aumenta</translation>
 <translation id="8029629653277878342">PIN o password obbligatori per maggiore sicurezza</translation>
@@ -715,6 +720,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8843682306134542540">Attiva/disattiva blocco rotazione. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Tasto di ricerca+ESC</translation>
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
+<translation id="885387440427703469">Acquisizione schermo disattivata</translation>
 <translation id="8870509716567206129">L'app non supporta la modalità Schermo diviso.</translation>
 <translation id="8874184842967597500">Non connesso</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>

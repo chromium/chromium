@@ -280,7 +280,6 @@
 <translation id="3103579948980282461">ສີແດງອົມມ່ວງປານກາງ</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">ຫຍໍ້ລົງ</translation>
-<translation id="311015743332597320">ປັດສີ່ນິ້ວມືໄປຂວາ</translation>
 <translation id="3112457281078985179">ເພື່ອເປີດ ຫຼື ປິດ ChromeVox, ໃຫ້ໃຊ້ Control+Alt+Z.</translation>
 <translation id="3131002934070407451">ອ່ານໝາຍເລກເປັນ:</translation>
 <translation id="3134461040845705080">ອ່ານເທົ່ານັ້ນ</translation>
@@ -901,7 +900,6 @@
 <translation id="812886159861361726">ຢຸດການດາວໂຫຼດໄວ້ແລ້ວ <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">ບໍ່ມີເຊວຂ້າງເທິງ</translation>
 <translation id="8138880386467279117">ແຕະ</translation>
-<translation id="8173092779156526980">ປັດໄປຊ້າຍດ້ວຍສີ່ນິ້ວມື</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ ເສັ້ນຂີດຢູ່ກ້ອງ}other{ # ເສັ້ນຂີດຢູ່ກ້ອງ}}</translation>
 <translation id="8184828902145951186">ແຖວ</translation>
 <translation id="8186185314313222077">ສະ​ຫຼັບ​ເຕັມ​ໜ້າ​ຈໍ</translation>

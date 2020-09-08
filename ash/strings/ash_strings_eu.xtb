@@ -116,6 +116,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2127372758936585790">Potentzia gutxiko kargagailua</translation>
 <translation id="2135456203358955318">Lupa ainguratua</translation>
 <translation id="2144487987174258011">Eguneratzeko, berrabiarazi Adobe Flash Player</translation>
+<translation id="2180011262286780504">Administratzaileak desgaitu egin du argazki-pantailak ateratzeko modua.</translation>
 <translation id="2208323208084708176">Mahaigain bateratuko modua</translation>
 <translation id="2220572644011485463">PIN kodea edo pasahitza</translation>
 <translation id="2222338659135520253">Saioa hasi egin behar da</translation>
@@ -239,6 +240,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> saretik deskonektatu nahi duzu?</translation>
 <translation id="3430396595145920809">Atzera egiteko, pasatu hatza eskuinetik ezkerrera</translation>
 <translation id="343571671045587506">Editatu abisua</translation>
+<translation id="3435967511775410570">Ezagutu da hatz-marka</translation>
 <translation id="3445925074670675829">USB-C gailua</translation>
 <translation id="3454224730401036106">Sare seguruago batera konektatu zaude orain</translation>
 <translation id="3465223694362104965">Beste teklatu bat konektatu da gailu honetara saioa hasi zenuen azken alditik. Teklatua erabili aurretik, ziurtatu fidagarria dela.</translation>
@@ -601,6 +603,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7654687942625752712">Ahozko argibideak desgaitzeko, eduki sakatuta bi bolumen-botoiak bost segundoz.</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">Autentifikatu hatz-markaren bidez</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 jakinarazpen}other{# jakinarazpen}}</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
@@ -618,6 +621,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7886277072580235377">Interneteko saioari buruzko informazioa ezabatu egingo da hura amaitzen duzunean. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Bidali mezu elektroniko bat</translation>
 <translation id="7897375687985782769">Pantaila biratzeko lasterbidea sakatu duzu. Pantaila biratu egin nahi duzu?</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">Kontu honen administratzaileak saio-hasiera anitzerako baimenak kendu ditu.</translation>
 <translation id="7933084174919150729">Profil nagusian soilik erabil daiteke Google-ren Laguntzailea.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> eta <ph name="SECOND_PARENT_EMAIL" /> kontuen bidez kudeatzen da kontu hau</translation>
@@ -628,6 +632,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7984197416080286869">Saiakera gehiegi egin dira hatz-markarekin</translation>
 <translation id="7994370417837006925">Saio-hasiera anitza</translation>
+<translation id="7995804128062002838">Ezin izan da atera argazki-pantaila</translation>
 <translation id="8000066093800657092">Ez dago sarerik</translation>
 <translation id="8004512796067398576">Gehikuntza</translation>
 <translation id="8029629653277878342">PIN kodea edo pasahitza behar da gailua babestuago edukitzeko</translation>
@@ -715,6 +720,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Bilaketa + Ihes</translation>
 <translation id="8853703225951107899">Oraindik ezin izan da egiaztatu PIN kodea edo pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, erabili pasahitz zaharra. Saioa amaitu eta gero aplikatuko da pasahitz berria.</translation>
+<translation id="885387440427703469">Desgaituta dago argazki-pantailak ateratzeko modua</translation>
 <translation id="8870509716567206129">Aplikazioak ez du onartzen pantaila zatitua erabiltzea.</translation>
 <translation id="8874184842967597500">Konektatu gabe</translation>
 <translation id="8877788021141246043">Ezarri abisu bat</translation>

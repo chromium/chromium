@@ -245,7 +245,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" />  KB/s</translation>
 <translation id="8685326675965865247">Zoek op je apparaat, in apps en instellingen en op internet. Gebruik de pijltoetsen om te navigeren in je apps.</translation>
 <translation id="8725488761726303204">+ nog <ph name="NUMBER" /></translation>
-<translation id="8730621377337864115">Gereed</translation>
+<translation id="8730621377337864115">Klaar</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 u}other{# u}}</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8806053966018712535">Map <ph name="FOLDER_NAME" /></translation>

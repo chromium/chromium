@@ -83,7 +83,7 @@
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1559739829547075274">Terug navigeren</translation>
 <translation id="1565432156062359693">Geen volgende lijst</translation>
-<translation id="1571643229714746283">ChromeVox gereed</translation>
+<translation id="1571643229714746283">ChromeVox klaar</translation>
 <translation id="1594072653727561613">menu</translation>
 <translation id="1610130962244179598">Overschakelen naar zespuntsbraille</translation>
 <translation id="161042844686301425">Cyaan</translation>
@@ -280,7 +280,6 @@
 <translation id="3103579948980282461">Middenvioletrood</translation>
 <translation id="3104705064753753826">waarschuwingsvenster</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
-<translation id="311015743332597320">Swipe met vier vingers naar rechts</translation>
 <translation id="3112457281078985179">Gebruik Ctrl + Alt + Z om ChromVox in of uit te schakelen.</translation>
 <translation id="3131002934070407451">Nummers lezen als:</translation>
 <translation id="3134461040845705080">alleen-lezen</translation>
@@ -411,7 +410,7 @@
 <translation id="4148180433151187540">{COUNT,plural, =1{accolade rechts}other{# accolades rechts}}</translation>
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4161104397932142764">{COUNT,plural, =1{seconde}other{seconden}}</translation>
-<translation id="4161663686871496107">Gesproken ChromeVox-feedback is gereed</translation>
+<translation id="4161663686871496107">Gesproken ChromeVox-feedback is klaar</translation>
 <translation id="4176463684765177261">Uitgeschakeld</translation>
 <translation id="4187322598335821254">Swipe omhoog of omlaag om per regel te navigeren</translation>
 <translation id="4188530942454211480">Vorige zin</translation>
@@ -901,7 +900,6 @@
 <translation id="812886159861361726">Download van <ph name="FILE_NAME" /> is gestopt</translation>
 <translation id="8129445297241948503">Geen cel hierboven beschikbaar</translation>
 <translation id="8138880386467279117">Touch</translation>
-<translation id="8173092779156526980">Swipe met vier vingers naar links</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
 <translation id="8184828902145951186">rij</translation>
 <translation id="8186185314313222077">volledig scherm in- of uitschakelen</translation>

@@ -511,6 +511,7 @@
 <translation id="158849752021629804">Патрабуецца хатняя сетка</translation>
 <translation id="1588870296199743671">Адкрыць спасылку з дапамогай...</translation>
 <translation id="1589055389569595240">Паказваць парады па правапісе і граматыцы</translation>
+<translation id="1591679663873027990">Дазволіць Parallels Desktop доступ да прылад USB. Parallels Desktop не захавае даных пра прыладу USB пасля яе вымання.</translation>
 <translation id="1593594475886691512">Ідзе фармаціраванне...</translation>
 <translation id="159359590073980872">Кэш відарысаў</translation>
 <translation id="1593926297800505364">Захаваць спосаб аплаты</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">Не ўдалося падключыць абагулены рэсурс. Праверце ўліковыя даныя і паўтарыце спробу.</translation>
 <translation id="1956050014111002555">У файле было некалькі сертыфікатаў, ні адзін з іх не быў імпартаваны:</translation>
 <translation id="1956390763342388273">Ваша дзеянне запампуе ўсе файлы з размяшчэння "<ph name="FOLDER_PATH" />". Рабіце гэта, толькі калі вы давяраеце сайту.</translation>
+<translation id="196040970347962278">Спачатку падключыцеся да інтэрнэту</translation>
 <translation id="1962233722219655970">Гэта старонка выкарыстоўвае праграму Native Client, якая не працуе на вашым камп'ютары.</translation>
 <translation id="1963227389609234879">Выдаліць усе</translation>
 <translation id="1963976881984600709">Стандартная абарона</translation>
@@ -1865,6 +1867,7 @@
 <translation id="321834671654278338">Праграма выдалення Linux</translation>
 <translation id="3220586366024592812">Працэс злучальніка <ph name="CLOUD_PRINT_NAME" /> даў збой. Перазапусціць яго?</translation>
 <translation id="3222066309010235055">Папярэдняя візуалізацыя: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Падключыць да віртуальнай машыны "<ph name="USB_VM_NAME" />"</translation>
 <translation id="3223531857777746191">Кнопка "Скінуць"</translation>
 <translation id="3225084153129302039">Стандартны фіялетавы аватар</translation>
 <translation id="3225319735946384299">Падпісванне кода</translation>
@@ -1877,6 +1880,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Перазапусціце прыладу на працягу дня}one{Перазапусціце прыладу на працягу # дня}few{Перазапусціце прыладу на працягу # дзён}many{Перазапусціце прыладу на працягу # дзён}other{Перазапусціце прыладу на працягу # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – памылка сеткі</translation>
 <translation id="3248902735035392926">Бяспека мае значэнне. Удзяліце некаторы час і <ph name="BEGIN_LINK" />праверце пашырэнні<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">Закрыць вокны ў рэжыме інкогніта</translation>
 <translation id="3251759466064201842">&lt;Не з'яўляецца часткай сертыфіката&gt;</translation>
 <translation id="3253225298092156258">Недаступна</translation>
 <translation id="3253448572569133955">Невядомы ўліковы запіс</translation>
@@ -2116,6 +2120,7 @@
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3528498924003805721">Прызначэнні ярлыкоў</translation>
 <translation id="3532273508346491126">Кіраванне сінхранізацыяй</translation>
+<translation id="3532521178906420528">Устанаўліваецца падключэнне да сеткі...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – гук выключаны</translation>
 <translation id="3537881477201137177">Яго можна будзе змяніць пазней у Наладах</translation>
 <translation id="3538066758857505094">Памылка выдалення Linux. Паўтарыце спробу.</translation>
@@ -3125,6 +3130,7 @@
 <translation id="4750394297954878236">Прапановы</translation>
 <translation id="475088594373173692">Першы карыстальнік</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
+<translation id="4752124003533492687">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />", адкрыйце Налады</translation>
 <translation id="4756378406049221019">Спыніць/Перазагрузіць</translation>
 <translation id="4756388243121344051">&amp;Гісторыя</translation>
 <translation id="4759238208242260848">Спампоўкі</translation>
@@ -4475,6 +4481,7 @@
 <translation id="6415900369006735853">Падключыцеся да інтэрнэту праз тэлефон</translation>
 <translation id="6416743254476733475">Дайце дазвол або заблакіруйце з камп'ютара.</translation>
 <translation id="6417265370957905582">Памочнік Google</translation>
+<translation id="6417468503703810114">Стандартныя дзеянні</translation>
 <translation id="6418160186546245112">Версія <ph name="IDS_SHORT_PRODUCT_NAME" /> будзе вернута да папярэдне ўсталяванай</translation>
 <translation id="6418481728190846787">Цалкам забараніць доступ для ўсіх праграм</translation>
 <translation id="6418511932144861495">Усталюйце крытычнае абнаўленне</translation>
@@ -4642,6 +4649,7 @@
 <translation id="6630752851777525409">Пашырэнне <ph name="EXTENSION_NAME" /> хоча атрымаць пастаянны доступ да сертыфіката, каб аўтэнтыфікаваць сябе ад вашага імя.</translation>
 <translation id="6635944431854494329">Уладальнік можа кіраваць гэтай функцыяй у меню "Налады &gt; Пашыраныя &gt; Аўтаматычна адпраўляць даныя пра выкарыстанне і дыягностыку ў Google".</translation>
 <translation id="6635956300022133031">Выбар і наладжванне галасоў сінтэзу маўлення</translation>
+<translation id="6636588250634969791">Перш чым працягваць, устаўце SIM-карту</translation>
 <translation id="6639554308659482635">Памяць SQLite</translation>
 <translation id="6641138807883536517">Створаны выпадковым чынам пароль модуля бяспекі недаступны. Пасля выкарыстання Powerwash гэта нармальна.</translation>
 <translation id="6642720633335369752">Каб пабачыць усе адкрытыя вокны праграм, правядзіце знізу ўверх і ўтрымлівайце.</translation>
@@ -5184,6 +5192,7 @@
 <translation id="7303900363563182677">Гэтаму сайту забаронены доступ да тэксту і відарысаў, скапіраваных у буфер абмену</translation>
 <translation id="7305123176580523628">USB-прынтар падключаны</translation>
 <translation id="730515362922783851">Абмен данымі з любымі прыладамі ў лакальнай сетцы або інтэрнэце</translation>
+<translation id="7306521477691455105">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />" да віртуальнай машыны "<ph name="USB_VM_NAME" />", адкрыйце Налады</translation>
 <translation id="7307129035224081534">Прыпынена</translation>
 <translation id="7308002049209013926">З дапамогай Панэлі запуску можна хутка адкрываць новыя праграмы і выконваць дзеянні. Каб адкрыць яе з клавіятуры, націсніце Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Паказаць &amp;элементы кіравання</translation>
@@ -5548,6 +5557,7 @@
 <translation id="7766082757934713382">Дапамагае знізіць выкарыстанне трафіка ў сетцы, прыпыняючы аўтаматычныя абнаўленні сістэмы і праграм</translation>
 <translation id="7766807826975222231">Азнаёміцца</translation>
 <translation id="7766838926148951335">Прыняць дазволы</translation>
+<translation id="7768507955883790804">Пры наведванні сайтаў яны будуць аўтаматычна ўлічваць гэту наладу</translation>
 <translation id="7768770796815395237">Змяніць</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
 <translation id="7769672763586021400">Ідэнтыфікатар мадэлі</translation>
@@ -6806,6 +6816,7 @@
 <translation id="947329552760389097">&amp;Праверыць элементы</translation>
 <translation id="951991426597076286">Адхіліць</translation>
 <translation id="952992212772159698">Неактыўнае</translation>
+<translation id="956444359529327203">Закрыць гасцявыя вокны</translation>
 <translation id="956500788634395331">Вы абаронены ад патэнцыйна шкодных пашырэнняў</translation>
 <translation id="957960681186851048">Гэты сайт паспрабаваў аўтаматычна спампаваць некалькі файлаў</translation>
 <translation id="9580706199804957">Не ўдалося падключыцца да сэрвісаў Google</translation>

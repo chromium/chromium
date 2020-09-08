@@ -511,6 +511,7 @@
 <translation id="158849752021629804">Потребна е домашна мрежа</translation>
 <translation id="1588870296199743671">Отвори ја врската со...</translation>
 <translation id="1589055389569595240">Прикажи правопис и граматика</translation>
+<translation id="1591679663873027990">Дајте ѝ дозвола на Parallels Desktop да пристапува до USB-уредите. Parallels Desktop нема да го запомни USB-уредот откако ќе се отстрани.</translation>
 <translation id="1593594475886691512">Се форматира...</translation>
 <translation id="159359590073980872">Кеш на слика</translation>
 <translation id="1593926297800505364">Зачувај го начинот на плаќање</translation>
@@ -827,6 +828,7 @@
 <translation id="1954813140452229842">Грешка при монтирање на споделувањето. Проверете ги вашите акредитиви и обидете се повторно.</translation>
 <translation id="1956050014111002555">Датотеката содржи повеќе сертификати, но не е увезен ниту еден:</translation>
 <translation id="1956390763342388273">Ќе се прикачат сите датотеки од „<ph name="FOLDER_PATH" />“. Направете го ова само ако му верувате на сајтот.</translation>
+<translation id="196040970347962278">Прво воспоставете интернет-врска</translation>
 <translation id="1962233722219655970">Оваа страница користи апликација за матичен клиент што не работи на вашиот компјутер.</translation>
 <translation id="1963227389609234879">Отстрани ги сите</translation>
 <translation id="1963976881984600709">Стандардна заштита</translation>
@@ -1865,6 +1867,7 @@
 <translation id="321834671654278338">Деинсталатор на Linux</translation>
 <translation id="3220586366024592812">Процесот за поврзувач на <ph name="CLOUD_PRINT_NAME" /> падна. Да се рестартира?</translation>
 <translation id="3222066309010235055">Претприкажувач: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Поврзете се со <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Копче за ресетирање</translation>
 <translation id="3225084153129302039">Стандарден виолетов аватар</translation>
 <translation id="3225319735946384299">Потпишување шифра</translation>
@@ -1877,6 +1880,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Ажурирајте го уредот во рок од еден ден}one{Ажурирајте го уредот во рок од # ден}other{Ажурирајте го уредот во рок од # дена}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - мрежна грешка</translation>
 <translation id="3248902735035392926">Безбедноста е значајна. Одвојте малку време и <ph name="BEGIN_LINK" />проверите ги екстензиите сега<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">Затвори ги сите „Инкогнито“</translation>
 <translation id="3251759466064201842">&lt;Не е дел од сертификатот&gt;</translation>
 <translation id="3253225298092156258">Не е достапна</translation>
 <translation id="3253448572569133955">Непозната сметка</translation>
@@ -2116,6 +2120,7 @@
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3528498924003805721">Цели на кратенки</translation>
 <translation id="3532273508346491126">Управување со синхронизацијата</translation>
+<translation id="3532521178906420528">Се воспоставува мрежна врска…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - звукот е исклучен</translation>
 <translation id="3537881477201137177">Ова може да го измените подоцна во „Поставки“</translation>
 <translation id="3538066758857505094">Грешка при деинсталирањето на Linux. Обидете се повторно.</translation>
@@ -3125,6 +3130,7 @@
 <translation id="4750394297954878236">Предлози</translation>
 <translation id="475088594373173692">Прв корисник</translation>
 <translation id="4751476147751820511">Сензори за движење или светлина</translation>
+<translation id="4752124003533492687">Отворете „Поставки“ за да го поврзете уредот <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Сопри/Вчитај повторно</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4759238208242260848">Преземања</translation>
@@ -4642,6 +4648,7 @@
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> сака постојан пристап до сертификат за да се автентицира во ваше име.</translation>
 <translation id="6635944431854494329">Сопственикот може да ја контролира функцијава од „Поставки &gt; Напредни &gt; Автоматски испраќај дијагностички податоци и податоци за користењето до Google“.</translation>
 <translation id="6635956300022133031">Изберете и приспособете гласови за „Од текст во говор“</translation>
+<translation id="6636588250634969791">Вметнете SIM-картичка пред да продолжите</translation>
 <translation id="6639554308659482635">Меморија на SQLite</translation>
 <translation id="6641138807883536517">Случајно создадената лозинка на заштитниот модул не е достапна. Тоа е нормално по „Фабричко ресетирање“.</translation>
 <translation id="6642720633335369752">За да ги видите сите отворени прозорци на апликацијата, повлечете нагоре од долниот дел на екранот и задржете.</translation>
@@ -5184,6 +5191,7 @@
 <translation id="7303900363563182677">На сајтов му е блокиран пристапот за гледање текст и слики копирани во привремената меморија</translation>
 <translation id="7305123176580523628">Поврзан е USB-печатач</translation>
 <translation id="730515362922783851">Разменете податоци со кој било уред на локалната мрежа или интернет</translation>
+<translation id="7306521477691455105">Отворете „Поставки“ и поврзете го уредот <ph name="USB_DEVICE_NAME" /> со <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Паузирано</translation>
 <translation id="7308002049209013926">За брзо стигнување до новите апликации и активности, користете го „Стартерот“. За да стигнете тука преку тастатурата, притиснете Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Прикажи &amp;контроли</translation>
@@ -6809,6 +6817,7 @@
 <translation id="947329552760389097">&amp;Проверете ги елементите</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="952992212772159698">Не е активиран</translation>
+<translation id="956444359529327203">Затвори ги сите гостински</translation>
 <translation id="956500788634395331">Заштитени сте од потенцијално штетни екстензии</translation>
 <translation id="957960681186851048">Сајтов се обиде автоматски да преземе повеќе датотеки</translation>
 <translation id="9580706199804957">Не можеше да се поврзе со услугите на Google</translation>
