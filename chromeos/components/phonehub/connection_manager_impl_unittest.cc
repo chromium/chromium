@@ -26,13 +26,22 @@ class FakeObserver : public ConnectionManager::Observer {
   FakeObserver() = default;
   ~FakeObserver() override = default;
 
-  size_t num_calls() const { return num_calls_; }
+  size_t status_num_calls() const { return status_changed_num_calls_; }
+  size_t message_cb_num_calls() const { return message_received_num_calls_; }
+
+  const std::string& last_message() const { return last_message_; }
 
   // ConnectionManager::Observer:
-  void OnStatusChanged() override { ++num_calls_; }
+  void OnStatusChanged() override { ++status_changed_num_calls_; }
+  void OnMessageReceived(const std::string& payload) override {
+    last_message_ = payload;
+    ++message_received_num_calls_;
+  }
 
  private:
-  size_t num_calls_ = 0;
+  size_t status_changed_num_calls_ = 0;
+  size_t message_received_num_calls_ = 0;
+  std::string last_message_;
 };
 
 }  // namespace
@@ -73,7 +82,13 @@ class ConnectionManagerImplTest : public testing::Test {
     return connection_manager_->GetStatus();
   }
 
-  size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
+  size_t GetNumStatusObserverCalls() const {
+    return fake_observer_.status_num_calls();
+  }
+
+  size_t GetNumMessageReceivedObserverCalls() const {
+    return fake_observer_.message_cb_num_calls();
+  }
 
   void CreateFakeConnectionAttempt() {
     auto fake_connection_attempt =
@@ -101,7 +116,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnection) {
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(1u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kConnecting, GetStatus());
 
   auto fake_client_channel =
@@ -110,7 +125,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnection) {
 
   // Status has been updated to connected, verify that the status observer has
   // been called.
-  EXPECT_EQ(2u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kConnected, GetStatus());
 }
 
@@ -120,7 +135,7 @@ TEST_F(ConnectionManagerImplTest, FailedToAttemptConnection) {
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(1u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kConnecting, GetStatus());
 
   fake_connection_attempt_->NotifyConnectionAttemptFailure(
@@ -129,7 +144,7 @@ TEST_F(ConnectionManagerImplTest, FailedToAttemptConnection) {
 
   // Status has been updated to disconnected, verify that the status observer
   // has been called.
-  EXPECT_EQ(2u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
 }
 
@@ -139,7 +154,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(1u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kConnecting, GetStatus());
 
   auto fake_client_channel =
@@ -150,15 +165,44 @@ TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
 
   // Status has been updated to connected, verify that the status observer has
   // been called.
-  EXPECT_EQ(2u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kConnected, GetStatus());
 
   // Simulate a disconnected channel.
   fake_client_channel_raw->NotifyDisconnected();
 
   // Expect status to be updated to disconnected.
-  EXPECT_EQ(3u, GetNumObserverCalls());
+  EXPECT_EQ(3u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
+}
+
+TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
+  CreateFakeConnectionAttempt();
+  connection_manager_->AttemptConnection();
+
+  // Status has been updated to connecting, verify that the status observer
+  // has been called.
+  EXPECT_EQ(1u, GetNumStatusObserverCalls());
+  EXPECT_EQ(ConnectionManager::Status::kConnecting, GetStatus());
+
+  auto fake_client_channel =
+      std::make_unique<chromeos::secure_channel::FakeClientChannel>();
+  chromeos::secure_channel::FakeClientChannel* fake_client_channel_raw =
+      fake_client_channel.get();
+  fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
+
+  // Status has been updated to connected, verify that the status observer has
+  // been called.
+  EXPECT_EQ(2u, GetNumStatusObserverCalls());
+  EXPECT_EQ(ConnectionManager::Status::kConnected, GetStatus());
+
+  // Simulate a message being sent.
+  const std::string expected_payload = "payload";
+  fake_client_channel_raw->NotifyMessageReceived(expected_payload);
+
+  // Expected MessageReceived() callback to be called.
+  EXPECT_EQ(1u, GetNumMessageReceivedObserverCalls());
+  EXPECT_EQ(expected_payload, fake_observer_.last_message());
 }
 
 TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutLocalDevice) {
@@ -169,7 +213,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutLocalDevice) {
 
   // Status is still disconnected since there is a missing device, verify that
   // the status observer did not get called (exited early).
-  EXPECT_EQ(0u, GetNumObserverCalls());
+  EXPECT_EQ(0u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
 }
 
@@ -182,7 +226,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutRemoteDevice) {
 
   // Status is still disconnected since there is a missing device, verify that
   // the status observer did not get called (exited early).
-  EXPECT_EQ(0u, GetNumObserverCalls());
+  EXPECT_EQ(0u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
 }
 

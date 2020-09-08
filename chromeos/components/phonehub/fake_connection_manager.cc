@@ -29,5 +29,9 @@ void FakeConnectionManager::AttemptConnection() {
     SetStatus(Status::kConnecting);
 }
 
+void FakeConnectionManager::SendMessage(const std::string& payload) {
+  sent_messages_.push_back(payload);
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

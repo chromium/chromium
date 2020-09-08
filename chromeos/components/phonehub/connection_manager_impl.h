@@ -45,6 +45,7 @@ class ConnectionManagerImpl
   // ConnectionManager:
   ConnectionManager::Status GetStatus() const override;
   void AttemptConnection() override;
+  void SendMessage(const std::string& payload) override;
 
  private:
   // chromeos::secure_channel::ConnectionAttempt::Delegate:

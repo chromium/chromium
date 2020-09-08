@@ -32,7 +32,10 @@ class ConnectionManager {
     ~Observer() override = default;
 
     // Called the status has changed; use GetStatus() to get the new status.
-    virtual void OnStatusChanged() = 0;
+    virtual void OnStatusChanged() {}
+
+    // Called when a payload message has been received.
+    virtual void OnMessageReceived(const std::string& payload) {}
   };
 
   ConnectionManager(const ConnectionManager&) = delete;
@@ -46,6 +49,9 @@ class ConnectionManager {
   // the connection.
   virtual void AttemptConnection() = 0;
 
+  // Sends a message with the specified |payload|.
+  virtual void SendMessage(const std::string& payload) = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -53,6 +59,7 @@ class ConnectionManager {
   ConnectionManager();
 
   void NotifyStatusChanged();
+  void NotifyMessageReceived(const std::string& payload);
 
  private:
   base::ObserverList<Observer> observer_list_;

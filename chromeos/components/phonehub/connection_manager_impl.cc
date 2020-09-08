@@ -4,6 +4,7 @@
 
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 
+#include "base/bind_helpers.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -73,6 +74,15 @@ void ConnectionManagerImpl::AttemptConnection() {
   NotifyStatusChanged();
 }
 
+void ConnectionManagerImpl::SendMessage(const std::string& payload) {
+  if (!channel_) {
+    PA_LOG(ERROR) << "SendMessage() failed because channel is null.";
+    return;
+  }
+
+  channel_->SendMessage(payload, base::DoNothing());
+}
+
 void ConnectionManagerImpl::OnConnectionAttemptFailure(
     chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "AttemptConnection() failed to establish connection.";
@@ -97,7 +107,7 @@ void ConnectionManagerImpl::OnDisconnected() {
 }
 
 void ConnectionManagerImpl::OnMessageReceived(const std::string& payload) {
-  // TODO(jimmyxgong): Handle the payload. This is just an empty stub.
+  NotifyMessageReceived(payload);
 }
 
 }  // namespace phonehub

@@ -23,6 +23,11 @@ void ConnectionManager::NotifyStatusChanged() {
     observer.OnStatusChanged();
 }
 
+void ConnectionManager::NotifyMessageReceived(const std::string& payload) {
+  for (auto& observer : observer_list_)
+    observer.OnMessageReceived(payload);
+}
+
 std::ostream& operator<<(std::ostream& stream,
                          ConnectionManager::Status status) {
   switch (status) {

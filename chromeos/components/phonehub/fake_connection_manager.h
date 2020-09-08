@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CONNECTION_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CONNECTION_MANAGER_H_
 
+#include <vector>
 #include "chromeos/components/phonehub/connection_manager.h"
 
 namespace chromeos {
@@ -15,14 +16,21 @@ class FakeConnectionManager : public ConnectionManager {
   FakeConnectionManager();
   ~FakeConnectionManager() override;
 
+  using ConnectionManager::NotifyMessageReceived;
+
   void SetStatus(Status status);
+  const std::vector<std::string>& sent_messages() const {
+    return sent_messages_;
+  }
 
  private:
   // ConnectionManager:
   Status GetStatus() const override;
   void AttemptConnection() override;
+  void SendMessage(const std::string& payload) override;
 
   Status status_;
+  std::vector<std::string> sent_messages_;
 };
 
 }  // namespace phonehub
