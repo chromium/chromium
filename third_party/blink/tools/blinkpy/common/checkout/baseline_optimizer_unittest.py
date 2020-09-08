@@ -67,6 +67,10 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release']
             },
+            'Fake Test Mac11.0': {
+                'port_name': 'mac-mac11.0',
+                'specifiers': ['Mac11.0', 'Release']
+            },
             'Fake Test Mac10.15': {
                 'port_name': 'mac-mac10.15',
                 'specifiers': ['Mac10.15', 'Release']
@@ -90,7 +94,7 @@ class BaselineOptimizerTest(unittest.TestCase):
         self.assertEqual(
             sorted(self.host.port_factory.all_port_names()), [
                 'linux-trusty', 'mac-mac10.12', 'mac-mac10.13', 'mac-mac10.14',
-                'mac-mac10.15', 'win-win10'
+                'mac-mac10.15', 'mac-mac11.0', 'win-win10'
             ])
 
     def _assert_optimization(self,

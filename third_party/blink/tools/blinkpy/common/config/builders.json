@@ -34,6 +34,16 @@
         "port_name": "mac-mac10.14",
         "specifiers": ["Mac10.14", "Release"]
     },
+    "Mac10.15 Tests": {
+        "master": "chromium.mac",
+        "port_name": "mac-mac10.15",
+        "specifiers": ["Mac10.15", "Release"]
+    },
+    "Mac11.0 Tests": {
+        "master": "chromium.fyi",
+        "port_name": "mac-mac11.0",
+        "specifiers": ["Mac11.0", "Release"]
+    },
     "Win7 Tests (1)": {
         "master": "chromium.win",
         "port_name": "win-win7",
@@ -84,6 +94,12 @@
         "master": "tryserver.blink",
         "port_name": "mac-mac10.15",
         "specifiers": ["Mac10.15", "Release"],
+        "is_try_builder": true
+    },
+    "mac11.0-blink-rel": {
+        "master": "tryserver.blink",
+        "port_name": "mac-mac11.0",
+        "specifiers": ["Mac11.0", "Release"],
         "is_try_builder": true
     },
     "win7-blink-rel": {

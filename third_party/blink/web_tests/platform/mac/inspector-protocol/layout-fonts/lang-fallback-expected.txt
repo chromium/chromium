@@ -148,7 +148,7 @@
 
 𐦡𐦢
 #script_meroitic:
-"Times" : 2
+"Noto Sans Meroitic" : 2
 
 ကခ
 #my:
@@ -204,7 +204,7 @@
 
 𑃑𑃒
 #script_sora_sompeng:
-"Times" : 2
+"Noto Sans SoraSomp" : 2
 
 ܑܒ
 #syr:
@@ -232,7 +232,7 @@
 
 ༁༂
 #bo:
-"Kokonor" : 2
+"Songti SC" : 2
 
 ⴱⴲ
 #script_tifinagh:

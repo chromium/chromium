@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Win Win7 Win10 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Mac11.0 Win Win7 Win10 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Skip ]
 
@@ -215,6 +215,7 @@ crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transf
 # Subpixel differences due to compositing on Mac10.14+.
 crbug.com/1079418 [ Mac10.14 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
 crbug.com/1079418 [ Mac10.15 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
+crbug.com/1079418 [ Mac11.0 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
 
 # This test depends on synchronous focus() which does not exist (anymore?).
 crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Failure ]
@@ -296,6 +297,7 @@ crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Fa
 crbug.com/887000 virtual/prefer_compositing_to_lcd_text/scrollbars/hidden-scrollbars-invisible.html [ Failure ]
 crbug.com/887000 [ Mac10.14 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
 crbug.com/887000 [ Mac10.15 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
+crbug.com/887000 [ Mac11.0 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
 
 crbug.com/882975 virtual/threaded/fast/events/pinch/gesture-pinch-zoom-prevent-in-handler.html [ Failure Pass ]
 crbug.com/882975 virtual/threaded/fast/events/pinch/scroll-visual-viewport-send-boundary-events.html [ Failure Pass ]
@@ -1308,6 +1310,7 @@ crbug.com/753671 [ Mac10.12 ] external/wpt/css/css-content/quotes-006.html [ Fai
 crbug.com/753671 [ Mac10.13 ] external/wpt/css/css-content/quotes-006.html [ Failure ]
 crbug.com/753671 [ Mac10.14 ] external/wpt/css/css-content/quotes-006.html [ Failure ]
 crbug.com/753671 [ Mac10.15 ] external/wpt/css/css-content/quotes-006.html [ Failure ]
+crbug.com/753671 [ Mac11.0 ] external/wpt/css/css-content/quotes-006.html [ Failure ]
 crbug.com/753671 [ Mac10.12 ] external/wpt/css/css-content/quotes-007.html [ Failure ]
 crbug.com/753671 [ Mac10.13 ] external/wpt/css/css-content/quotes-007.html [ Failure ]
 crbug.com/753671 [ Mac10.14 ] external/wpt/css/css-content/quotes-007.html [ Failure ]
@@ -1318,6 +1321,7 @@ crbug.com/753671 [ Mac10.14 ] external/wpt/css/css-content/quotes-012.html [ Fai
 crbug.com/753671 external/wpt/css/css-content/quotes-013.html [ Failure ]
 crbug.com/753671 [ Mac ] external/wpt/css/css-content/quotes-014.html [ Failure ]
 crbug.com/753671 [ Mac10.15 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
+crbug.com/753671 [ Mac11.0 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/753671 external/wpt/css/css-content/quotes-021.html [ Failure ]
 crbug.com/753671 external/wpt/css/css-content/quotes-022.html [ Failure ]
 crbug.com/989123 external/wpt/css/css-typed-om/the-stylepropertymap/computed/get-auto-min-size.html [ Failure ]
@@ -2567,6 +2571,7 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/webrtc-insertable-streams/RTCPeerConn
 crbug.com/626703 [ Mac10.13 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
 crbug.com/626703 external/wpt/content-security-policy/frame-src/frame-src-same-document.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Timeout ]
@@ -2586,6 +2591,7 @@ crbug.com/626703 external/wpt/webtransport/quic/client-indication.sub.any.html [
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-innerheight-innerwidth.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/626703 external/wpt/workers/Worker-replace-self.any.html [ Timeout ]
 crbug.com/626703 external/wpt/cookie-store/cookieStoreManager_getSubscriptions_multiple.tentative.https.any.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/cookie-store/serviceworker_oncookiechange_eventhandler_single_subscription.tentative.https.any.html [ Timeout ]
@@ -6541,6 +6547,7 @@ crbug.com/1107722 [ Mac ] http/tests/devtools/tracing/timeline-time/timeline-tim
 crbug.com/1107722 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-script-id.js [ Pass Failure ]
 crbug.com/1107722 [ Mac ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Pass Failure ]
 crbug.com/1107923 [ Mac10.15 ] inspector-protocol/debugger/wasm-streaming-url.js [ Pass Timeout Failure ]
+crbug.com/1107923 [ Mac11.0 ] inspector-protocol/debugger/wasm-streaming-url.js [ Pass Timeout Failure ]
 # Failing on Webkit Linux Leak
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Pass Failure ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Pass Failure ]
@@ -6625,3 +6632,8 @@ crbug.com/1115091 [ Linux ] external/wpt/payment-request/secure-payment-confirma
 
 # Sheriff 2020-09-08
 crbug.com/1124978 [ Mac ] virtual/threaded-composited-iframes/external/wpt/is-input-pending/tentative/same-origin-subframe.sub.html [ Pass Failure ]
+
+# Mac11.0 rebaseline
+crbug.com/1122490 [ Mac11.0 ] virtual/text-antialias/mac-system-ui-weight.html [ Failure ]
+crbug.com/1122490 [ Mac11.0 ] virtual/text-antialias/mac-system-ui-trak.html [ Failure ]
+crbug.com/1123002 [ Mac11.0 ] external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-between-Rs.html [ Failure ]
