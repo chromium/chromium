@@ -474,6 +474,7 @@ def ci_builder(
             bq_table = "luci-resultdb.chromium.ci_test_results",
         )],
         notifies = notifies,
+        isolated_server = "https://isolateserver.appspot.com",
         **kwargs
     )
 
