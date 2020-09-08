@@ -89,9 +89,12 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // OnDialogInitialized() will not work until then.
   auto* extra_button = model_->extra_button(GetPassKey());
   if (extra_button) {
-    OnViewCreatedForField(SetExtraView(std::make_unique<MdTextButton>(
-                              this, extra_button->label(GetPassKey()))),
-                          extra_button);
+    OnViewCreatedForField(
+        SetExtraView(std::make_unique<MdTextButton>(
+            base::BindRepeating(&ui::DialogModelButton::OnPressed,
+                                base::Unretained(extra_button), GetPassKey()),
+            extra_button->label(GetPassKey()))),
+        extra_button);
   }
 
   SetButtons(button_mask);
@@ -327,13 +330,6 @@ void BubbleDialogModelHost::NotifyComboboxSelectedIndexChanged(
   view_to_field_[combobox]
       ->AsCombobox(GetPassKey())
       ->OnSelectedIndexChanged(GetPassKey(), combobox->GetSelectedIndex());
-}
-
-void BubbleDialogModelHost::ButtonPressed(Button* sender,
-                                          const ui::Event& event) {
-  view_to_field_[sender]
-      ->AsButton(GetPassKey())
-      ->OnPressed(GetPassKey(), event);
 }
 
 void BubbleDialogModelHost::OnPerformAction(Combobox* combobox) {

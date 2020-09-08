@@ -112,16 +112,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
   // TODO(pbos): Replace uses of this with set_callback().
   void set_listener(ButtonListener* listener) {
-    if (!listener) {
-      set_callback(base::DoNothing());
-      return;
-    }
-
-    set_callback(base::BindRepeating(
-        [](ButtonListener* listener, Button* button, const ui::Event& event) {
-          listener->ButtonPressed(button, event);
-        },
-        listener, this));
+    set_callback(ListenerToPressedCallback(this, listener));
   }
 
   void set_callback(PressedCallback callback) {
@@ -255,6 +246,12 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   // no default action and checkboxes.
   explicit Button(ButtonListener* listener = nullptr);
   explicit Button(PressedCallback callback);
+
+  // Wraps a ButtonListener for |button| into a PressedCallback, used during
+  // migration from ButtonListener to PressedCallback to let child classes use
+  // PressedCallback versions of parent constructors.
+  static PressedCallback ListenerToPressedCallback(Button* button,
+                                                   ButtonListener* listener);
 
   // Called when the button has been clicked or tapped and should request focus
   // if necessary.

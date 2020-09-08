@@ -31,7 +31,6 @@ class Textfield;
 // platform-agnostic model-delegate code.
 class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
                                            public ui::DialogModelHost,
-                                           public ButtonListener,
                                            public ComboboxListener {
  public:
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a
@@ -52,9 +51,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   void Close() override;
   void SelectAllText(int unique_id) override;
   void OnFieldAdded(ui::DialogModelField* field) override;
-
-  // ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // ComboboxListener:
   void OnPerformAction(views::Combobox* combobox) override;

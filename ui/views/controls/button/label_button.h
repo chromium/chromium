@@ -33,12 +33,17 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
  public:
   METADATA_HEADER(LabelButton);
 
-  // Creates a LabelButton with ButtonPressed() events sent to |listener| and
-  // label |text|. |button_context| is a value from views::style::TextContext
-  // and determines the appearance of |text|.
+  // TODO(pbos): Replace with uses of PressedCallback version below.
   explicit LabelButton(ButtonListener* listener = nullptr,
                        const base::string16& text = base::string16(),
                        int button_context = style::CONTEXT_BUTTON);
+  // Creates a LabelButton with pressed events sent to |callback| and label
+  // |text|. |button_context| is a value from views::style::TextContext and
+  // determines the appearance of |text|.
+  explicit LabelButton(PressedCallback callback,
+                       const base::string16& text = base::string16(),
+                       int button_context = style::CONTEXT_BUTTON);
+
   ~LabelButton() override;
 
   // Gets or sets the image shown for the specified button state.

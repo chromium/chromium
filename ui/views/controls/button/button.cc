@@ -480,9 +480,8 @@ void Button::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
 
-Button::Button(ButtonListener* listener) : Button(PressedCallback()) {
-  set_listener(listener);
-}
+Button::Button(ButtonListener* listener)
+    : Button(ListenerToPressedCallback(this, listener)) {}
 
 Button::Button(PressedCallback callback)
     : AnimationDelegateViews(this),
@@ -494,6 +493,18 @@ Button::Button(PressedCallback callback)
   SetInstallFocusRingOnFocus(PlatformStyle::kPreferFocusRings);
   button_controller_ = std::make_unique<ButtonController>(
       this, std::make_unique<DefaultButtonControllerDelegate>(this));
+}
+
+Button::PressedCallback Button::ListenerToPressedCallback(
+    Button* button,
+    ButtonListener* listener) {
+  if (!listener)
+    return base::DoNothing();
+  return base::BindRepeating(
+      [](ButtonListener* listener, Button* button, const ui::Event& event) {
+        listener->ButtonPressed(button, event);
+      },
+      listener, button);
 }
 
 void Button::RequestFocusFromEvent() {

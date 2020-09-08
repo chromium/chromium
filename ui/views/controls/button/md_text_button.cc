@@ -33,7 +33,14 @@ namespace views {
 MdTextButton::MdTextButton(ButtonListener* listener,
                            const base::string16& text,
                            int button_context)
-    : LabelButton(listener, text, button_context) {
+    : MdTextButton(ListenerToPressedCallback(this, listener),
+                   text,
+                   button_context) {}
+
+MdTextButton::MdTextButton(PressedCallback callback,
+                           const base::string16& text,
+                           int button_context)
+    : LabelButton(std::move(callback), text, button_context) {
   SetInkDropMode(InkDropMode::ON);
   set_has_ink_drop_action_on_click(true);
   set_show_ink_drop_when_hot_tracked(true);

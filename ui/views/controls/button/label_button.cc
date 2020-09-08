@@ -35,7 +35,14 @@ namespace views {
 LabelButton::LabelButton(ButtonListener* listener,
                          const base::string16& text,
                          int button_context)
-    : Button(listener),
+    : LabelButton(ListenerToPressedCallback(this, listener),
+                  text,
+                  button_context) {}
+
+LabelButton::LabelButton(PressedCallback callback,
+                         const base::string16& text,
+                         int button_context)
+    : Button(std::move(callback)),
       cached_normal_font_list_(
           style::GetFont(button_context, style::STYLE_PRIMARY)),
       cached_default_button_font_list_(
