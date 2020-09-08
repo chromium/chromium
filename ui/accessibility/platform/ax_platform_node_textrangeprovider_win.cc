@@ -829,6 +829,15 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Select() {
   DCHECK(!selection_end->IsNullPosition());
   DCHECK_EQ(selection_start->tree_id(), selection_end->tree_id());
 
+  // TODO(crbug.com/1124051): Blink does not support selection on the list
+  // markers. So if |selection_start| or |selection_end| are in list markers, we
+  // don't perform selection and return success. Remove this check once this bug
+  // is fixed.
+  if (selection_start->GetAnchor()->IsInListMarker() ||
+      selection_end->GetAnchor()->IsInListMarker()) {
+    return S_OK;
+  }
+
   AXPlatformNodeDelegate* delegate =
       GetDelegate(selection_start->tree_id(), selection_start->anchor_id());
   DCHECK(delegate);

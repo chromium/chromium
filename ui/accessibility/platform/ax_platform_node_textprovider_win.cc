@@ -76,18 +76,9 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
   auto start_offset = unignored_selection.anchor_offset;
   auto end_offset = unignored_selection.focus_offset;
 
-  // If there's no selected object, or if the selected object is on a single
-  // node that's not editable, return success and don't fill the SAFEARRAY.
-  //
-  // According to UIA's documentation, we should only fill the SAFEARRAY with a
-  // degenerate range if the degenerate range is on an editable node. Otherwise,
-  // the expectations are that the SAFEARRAY is set to nullptr. Here, we are
-  // explicitly not allocating an empty SAFEARRAY.
-  if (!anchor_object || !focus_object ||
-      (anchor_object == focus_object && start_offset == end_offset &&
-       !anchor_object->GetDelegate()->HasVisibleCaretOrSelection())) {
+  // If there's no selected object, return success and don't fill the SAFEARRAY.
+  if (!anchor_object || !focus_object)
     return S_OK;
-  }
 
   AXNodePosition::AXPositionInstance start =
       anchor_object->GetDelegate()->CreateTextPositionAt(start_offset);

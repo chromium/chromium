@@ -4442,13 +4442,91 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelect) {
     EXPECT_EQ(9, unignored_selection.anchor_offset);
     EXPECT_EQ(9, unignored_selection.focus_offset);
 
-    // Verify that no selection is returned since the element is not editable.
+    // Verify selection on degenerate range.
     document_provider->GetSelection(selection.Receive());
-    ASSERT_EQ(nullptr, selection.Get());
+    ASSERT_NE(nullptr, selection.Get());
+
+    EXPECT_HRESULT_SUCCEEDED(SafeArrayGetUBound(selection.Get(), 1, &ubound));
+    EXPECT_EQ(0, ubound);
+    EXPECT_HRESULT_SUCCEEDED(SafeArrayGetLBound(selection.Get(), 1, &lbound));
+    EXPECT_EQ(0, lbound);
+    EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+        selection.Get(), &index,
+        static_cast<void**>(&selected_text_range_provider)));
+    EXPECT_UIA_TEXTRANGE_EQ(selected_text_range_provider, L"");
 
     selected_text_range_provider.Reset();
     selection.Reset();
   }
+}
+
+// TODO(crbug.com/1124051): Remove this test once this crbug is fixed.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestITextRangeProviderSelectListMarker) {
+  ui::AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  ui::AXNodeData list_data;
+  list_data.id = 2;
+  list_data.role = ax::mojom::Role::kList;
+  root_data.child_ids.push_back(list_data.id);
+
+  ui::AXNodeData list_item_data;
+  list_item_data.id = 3;
+  list_item_data.role = ax::mojom::Role::kListItem;
+  list_data.child_ids.push_back(list_item_data.id);
+
+  ui::AXNodeData list_marker;
+  list_marker.id = 4;
+  list_marker.role = ax::mojom::Role::kListMarker;
+  list_item_data.child_ids.push_back(list_marker.id);
+
+  ui::AXNodeData static_text_data;
+  static_text_data.id = 5;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("1. ");
+  list_marker.child_ids.push_back(static_text_data.id);
+
+  ui::AXNodeData list_item_text_data;
+  list_item_text_data.id = 6;
+  list_item_text_data.role = ax::mojom::Role::kStaticText;
+  list_item_text_data.SetName("First Item");
+  list_item_data.child_ids.push_back(list_item_text_data.id);
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data,   list_data,        list_item_data,
+                  list_marker, static_text_data, list_item_text_data};
+  Init(update);
+  AXNode* root_node = GetRootAsAXNode();
+
+  // Text range related to "1. ".
+  AXNode* list_node = root_node->children()[0];
+  AXNode* list_item_node = list_node->children()[0];
+  AXNode* list_marker_node = list_item_node->children()[0];
+  ComPtr<ITextRangeProvider> list_marker_text_range_provider;
+  GetTextRangeProviderFromTextNode(list_marker_text_range_provider,
+                                   list_marker_node->children()[0]);
+
+  // A list marker text range performs select.
+  EXPECT_HRESULT_SUCCEEDED(list_marker_text_range_provider->Select());
+
+  // Verify selection was not performed on list marker range.
+  base::win::ScopedSafearray selection;
+  ComPtr<IRawElementProviderSimple> root_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(root_node);
+  ComPtr<ITextProvider> document_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node_raw->GetPatternProvider(UIA_TextPatternId, &document_provider));
+  EXPECT_HRESULT_SUCCEEDED(
+      document_provider->GetSelection(selection.Receive()));
+  ASSERT_EQ(nullptr, selection.Get());
+  selection.Reset();
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderFindText) {

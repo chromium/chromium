@@ -539,15 +539,29 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   selections.Reset();
   text_range_provider.Reset();
 
-  // Verify that we don't fill the SAFEARRAY when there is no selection and the
-  // node is not editable.
+  // Verify SAFEARRAY value for degenerate selection.
   selected_tree_data.sel_focus_object_id = 2;
   selected_tree_data.sel_anchor_object_id = 2;
   selected_tree_data.sel_anchor_offset = 1;
   selected_tree_data.sel_focus_offset = 1;
 
   root_text_provider->GetSelection(selections.Receive());
-  ASSERT_EQ(nullptr, selections.Get());
+  ASSERT_NE(nullptr, selections.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetUBound(selections.Get(), 1, &ubound));
+  EXPECT_EQ(0, ubound);
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetLBound(selections.Get(), 1, &lbound));
+  EXPECT_EQ(0, lbound);
+
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+      selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
+  text_content.Reset();
+  selections.Reset();
+  text_range_provider.Reset();
 
   // Now delete the tree (which will delete the associated elements) and verify
   // that UIA_E_ELEMENTNOTAVAILABLE is returned when calling GetSelection on
