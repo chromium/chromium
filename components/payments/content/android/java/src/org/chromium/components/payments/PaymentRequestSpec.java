@@ -24,21 +24,31 @@ import java.util.Collection;
  */
 @JNINamespace("payments::android")
 public class PaymentRequestSpec {
+    private final PaymentOptions mOptions;
+    private final Collection<PaymentMethodData> mMethodData;
     private long mNativePointer;
 
     /**
-     * Stores the information received from the renderer that invoked the Payment Request API.
-     * Creates an instance of native payment_request_spec.cc with the given parameters.
+     * Creates an instance to store the information received from the renderer that invoked the
+     * Payment Request API.
      * @param options The payment options, e.g., whether shipping is requested.
-     * @param details The payment details, e.g., the total amount.
      * @param methodData The list of supported payment method identifiers and corresponding payment
      * method specific data.
+     */
+    public PaymentRequestSpec(PaymentOptions options, Collection<PaymentMethodData> methodData) {
+        mOptions = options;
+        mMethodData = methodData;
+    }
+
+    /**
+     * Creates an instance of native payment_request_spec.cc with the existing and the given
+     * parameters.
+     * @param details The payment details, e.g., the total amount.
      * @param appLocale The current application locale.
      */
-    public PaymentRequestSpec(PaymentOptions options, PaymentDetails details,
-            Collection<PaymentMethodData> methodData, String appLocale) {
-        mNativePointer = PaymentRequestSpecJni.get().create(options.serialize(),
-                details.serialize(), MojoStructCollection.serialize(methodData), appLocale);
+    public void createNative(PaymentDetails details, String appLocale) {
+        mNativePointer = PaymentRequestSpecJni.get().create(mOptions.serialize(),
+                details.serialize(), MojoStructCollection.serialize(mMethodData), appLocale);
     }
 
     /**

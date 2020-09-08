@@ -411,15 +411,16 @@ public class PaymentRequestImpl
             mQueryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
 
-        if (parseAndValidateDetails(details)) {
+        mSpec = new PaymentRequestSpec(mPaymentOptions, mMethodData.values());
+        if (parseAndValidateDetails(details)
+                && parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
         } else {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
             return false;
         }
-        mSpec = new PaymentRequestSpec(mPaymentOptions, details, mMethodData.values(),
-                LocaleUtils.getDefaultLocaleString());
+        mSpec.createNative(details, LocaleUtils.getDefaultLocaleString());
 
         if (mRawTotal == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -948,7 +949,8 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (parseAndValidateDetails(details)) {
+        if (parseAndValidateDetails(details)
+                && parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
         } else {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -993,7 +995,8 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (parseAndValidateDetails(details)) {
+        if (parseAndValidateDetails(details)
+                && parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
         } else {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -1076,6 +1079,16 @@ public class PaymentRequestImpl
     }
 
     /**
+     * If executing on the skip-to-gpay flow, do the flow's specific validation for details. If
+     * valid, set shipping options for SkipToGPayHelper.
+     * @param details The details specified by the merchant.
+     * @return True if skip-to-gpay parameters are valid or when skip-to-gpay does not apply.
+     */
+    private boolean parseAndValidateDetailsForSkipToGPayHelper(PaymentDetails details) {
+        return mSkipToGPayHelper == null || mSkipToGPayHelper.setShippingOptionIfValid(details);
+    }
+
+    /**
      * Sets the total, display line items, and shipping options based on input and returns the
      * status boolean. That status is true for valid data, false for invalid data. If the input is
      * invalid, disconnects from the client. Both raw and UI versions of data are updated.
@@ -1095,10 +1108,6 @@ public class PaymentRequestImpl
             mRawLineItems = Collections.unmodifiableList(details.displayItems != null
                             ? Arrays.asList(details.displayItems)
                             : new ArrayList<>());
-        }
-
-        if (mSkipToGPayHelper != null && !mSkipToGPayHelper.setShippingOptionIfValid(details)) {
-            return false;
         }
 
         if (details.modifiers != null) {
