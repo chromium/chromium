@@ -69,18 +69,18 @@ TEST_F(KeyAccessibilityEnablerTest, TwoVolumeKeyDown) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 
-  ASSERT_FALSE(controller->spoken_feedback_enabled());
+  ASSERT_FALSE(controller->spoken_feedback().enabled());
   SendKeyEvent(&vol_down_press);
   SendKeyEvent(&vol_up_press);
   WaitForAccessibilityStatusChanged();
-  ASSERT_TRUE(controller->spoken_feedback_enabled());
+  ASSERT_TRUE(controller->spoken_feedback().enabled());
   SendKeyEvent(&vol_down_release);
   SendKeyEvent(&vol_up_release);
 
   SendKeyEvent(&vol_down_press);
   SendKeyEvent(&vol_up_press);
   WaitForAccessibilityStatusChanged();
-  ASSERT_FALSE(controller->spoken_feedback_enabled());
+  ASSERT_FALSE(controller->spoken_feedback().enabled());
 }
 
 }  // namespace ash

@@ -819,7 +819,7 @@ TEST_F(AutoclickTest, DoesActionOnBubbleWhenInDifferentModes) {
       Shell::Get()->accessibility_controller();
   // Enable autoclick from the accessibility controller so that the bubble is
   // constructed too.
-  accessibility_controller->SetAutoclickEnabled(true);
+  accessibility_controller->autoclick().SetEnabled(true);
   GetAutoclickController()->set_revert_to_left_click(false);
   std::vector<ui::MouseEvent> events;
 
@@ -911,7 +911,7 @@ TEST_F(AutoclickTest, DoesActionOnBubbleWhenInDifferentModes) {
 
 TEST_F(AutoclickTest,
        StartsGestureOnBubbleButDoesNotClickIfMouseMovedWhenPaused) {
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   GetAutoclickController()->set_revert_to_left_click(false);
   GetAutoclickController()->SetAutoclickEventType(
       AutoclickEventType::kNoAction);
@@ -967,7 +967,7 @@ TEST_F(AutoclickTest, ShelfAutohidesWithAutoclickBubble) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Enable autoclick. The shelf should remain invisible.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   AutoclickMenuView* menu = GetAutoclickMenuView();
   ASSERT_TRUE(menu);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -985,7 +985,7 @@ TEST_F(AutoclickTest, BubbleMovesWithShelfPositionChange) {
                        gfx::Rect(0, 0, 200, 200), true /* show */);
 
   // Set up autoclick and the shelf.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   Shell::Get()->accessibility_controller()->SetAutoclickMenuPosition(
       FloatingMenuPosition::kBottomRight);
   Shelf* shelf = GetPrimaryShelf();
@@ -1037,7 +1037,7 @@ TEST_F(AutoclickTest, AvoidsShelfBubble) {
   for (auto test : kTestCases) {
     GetSessionControllerClient()->SetSessionState(test.session_state);
     // Set up autoclick and the shelf.
-    Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+    Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
     Shell::Get()->accessibility_controller()->SetAutoclickMenuPosition(
         FloatingMenuPosition::kBottomRight);
     auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
@@ -1069,11 +1069,11 @@ TEST_F(AutoclickTest, ConfirmationDialogShownWhenDisablingFeature) {
   EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
 
   // No dialog shown when enabling the feature.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
 
   // A dialog should be shown when disabling the feature.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(false);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(false);
   AccessibilityFeatureDisableDialog* dialog =
       GetAutoclickController()->GetDisableDialogForTesting();
   ASSERT_TRUE(dialog);
@@ -1082,33 +1082,33 @@ TEST_F(AutoclickTest, ConfirmationDialogShownWhenDisablingFeature) {
   dialog->CancelDialog();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
-  EXPECT_TRUE(Shell::Get()->accessibility_controller()->autoclick_enabled());
+  EXPECT_TRUE(Shell::Get()->accessibility_controller()->autoclick().enabled());
   EXPECT_TRUE(GetAutoclickController()->IsEnabled());
 
   // Disable it again and close the dialog; the feature stays enabled.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(false);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(false);
   dialog = GetAutoclickController()->GetDisableDialogForTesting();
   ASSERT_TRUE(dialog);
   dialog->GetWidget()->Close();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
-  EXPECT_TRUE(Shell::Get()->accessibility_controller()->autoclick_enabled());
+  EXPECT_TRUE(Shell::Get()->accessibility_controller()->autoclick().enabled());
   EXPECT_TRUE(GetAutoclickController()->IsEnabled());
 
   // Try to disable it again, and this time accept the dialog to actually
   // disable the feature.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(false);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(false);
   dialog = GetAutoclickController()->GetDisableDialogForTesting();
   ASSERT_TRUE(dialog);
   dialog->AcceptDialog();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
-  EXPECT_FALSE(Shell::Get()->accessibility_controller()->autoclick_enabled());
+  EXPECT_FALSE(Shell::Get()->accessibility_controller()->autoclick().enabled());
   EXPECT_FALSE(GetAutoclickController()->IsEnabled());
 }
 
 TEST_F(AutoclickTest, HidesBubbleInFullscreenWhenCursorHides) {
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
 
@@ -1174,7 +1174,7 @@ TEST_F(AutoclickTest, HidesBubbleInFullscreenWhenCursorHides) {
 
 TEST_F(AutoclickTest, DoesNotHideBubbleWhenNotOverFullscreenWindow) {
   UpdateDisplay("800x600,800x600");
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
 
@@ -1195,7 +1195,7 @@ TEST_F(AutoclickTest, DoesNotHideBubbleWhenNotOverFullscreenWindow) {
 }
 
 TEST_F(AutoclickTest, DoesNotHideBubbleWhenOverInactiveFullscreenWindow) {
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
 

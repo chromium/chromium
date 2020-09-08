@@ -177,7 +177,7 @@ class ChromeVoxAccessibilityEventRewriterTest
 TEST_F(ChromeVoxAccessibilityEventRewriterTest, EventsNotConsumedWhenDisabled) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  EXPECT_FALSE(controller->spoken_feedback_enabled());
+  EXPECT_FALSE(controller->spoken_feedback().enabled());
 
   generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(1, event_recorder_.events_seen());
@@ -200,7 +200,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsConsumedWhenEnabled) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(controller->spoken_feedback_enabled());
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
 
   generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(1, event_recorder_.events_seen());
@@ -246,7 +246,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        KeysNotEatenWithChromeVoxDisabled) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  EXPECT_FALSE(controller->spoken_feedback_enabled());
+  EXPECT_FALSE(controller->spoken_feedback().enabled());
 
   // Send Search+Shift+Right.
   generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
@@ -278,7 +278,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(controller->spoken_feedback_enabled());
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
 
   // Initialize expected counts as variables for easier maintaiblity.
   size_t recorded_count = 0;
@@ -323,7 +323,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(controller->spoken_feedback_enabled());
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
 
   // Initialize expected counts as variables for easier maintaiblity.
   size_t recorded_count = 0;
@@ -446,7 +446,7 @@ class SwitchAccessAccessibilityEventRewriterTest : public AshTestBase {
     controller_ = Shell::Get()->accessibility_controller();
     controller_->SetAccessibilityEventRewriter(
         accessibility_event_rewriter_.get());
-    controller_->SetSwitchAccessEnabled(true);
+    controller_->switch_access().SetEnabled(true);
   }
 
   void TearDown() override {

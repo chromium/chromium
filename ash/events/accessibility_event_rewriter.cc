@@ -123,7 +123,7 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   // Save continuation for |OnUnhandledSpokenFeedbackEvent()|.
   chromevox_continuation_ = continuation;
 
-  if (!Shell::Get()->accessibility_controller()->spoken_feedback_enabled()) {
+  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return false;
   }
 

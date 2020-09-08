@@ -43,7 +43,8 @@ class SelectToSpeakTrayTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    Shell::Get()->accessibility_controller()->SetSelectToSpeakEnabled(true);
+    Shell::Get()->accessibility_controller()->select_to_speak().SetEnabled(
+        true);
   }
 
  protected:
@@ -76,9 +77,9 @@ TEST_F(SelectToSpeakTrayTest, BasicConstruction) {
 // Tests the icon disapears when select-to-speak is disabled and re-appears
 // when it is enabled.
 TEST_F(SelectToSpeakTrayTest, ShowsAndHidesWithSelectToSpeakEnabled) {
-  Shell::Get()->accessibility_controller()->SetSelectToSpeakEnabled(false);
+  Shell::Get()->accessibility_controller()->select_to_speak().SetEnabled(false);
   EXPECT_FALSE(IsVisible());
-  Shell::Get()->accessibility_controller()->SetSelectToSpeakEnabled(true);
+  Shell::Get()->accessibility_controller()->select_to_speak().SetEnabled(true);
   EXPECT_TRUE(IsVisible());
 }
 

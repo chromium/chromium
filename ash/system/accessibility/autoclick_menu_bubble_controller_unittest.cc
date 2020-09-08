@@ -47,7 +47,7 @@ class AutoclickMenuBubbleControllerTest : public AshTestBase {
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
-    Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+    Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
   }
 
   AutoclickMenuBubbleController* GetBubbleController() {

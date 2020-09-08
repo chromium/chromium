@@ -1543,7 +1543,7 @@ void SplitViewController::OnTabletControllerDestroyed() {
 void SplitViewController::OnAccessibilityStatusChanged() {
   // TODO(crubg.com/853588): Exit split screen if ChromeVox is turned on until
   // they are compatible.
-  if (Shell::Get()->accessibility_controller()->spoken_feedback_enabled())
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
     EndSplitView();
 }
 

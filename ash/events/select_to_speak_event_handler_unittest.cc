@@ -107,7 +107,7 @@ class SelectToSpeakEventHandlerTest : public AshTestBase {
     GetContext()->AddPreTargetHandler(&event_capturer_);
 
     controller_ = Shell::Get()->accessibility_controller();
-    controller_->SetSelectToSpeakEnabled(true);
+    controller_->select_to_speak().SetEnabled(true);
     controller_->SetSelectToSpeakEventHandlerDelegate(delegate_.get());
   }
 

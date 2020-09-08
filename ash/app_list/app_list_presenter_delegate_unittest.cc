@@ -4040,7 +4040,7 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest,
   // kHideShelfControlsInTabletMode enabled.
   // TODO(https://crbug.com/1050544) Use the a11y feature specific to showing
   // navigation buttons in tablet mode once it lands.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
 
   // Enter text in the searchbox, the app list should transition to fullscreen
   // search.

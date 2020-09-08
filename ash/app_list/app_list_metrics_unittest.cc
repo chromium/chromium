@@ -529,7 +529,7 @@ TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
   // kHideShelfControlsInTabletMode enabled.
   // TODO(https://crbug.com/1050544) Use the a11y feature specific to showing
   // navigation buttons in tablet mode once it lands.
-  Shell::Get()->accessibility_controller()->SetAutoclickEnabled(true);
+  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);

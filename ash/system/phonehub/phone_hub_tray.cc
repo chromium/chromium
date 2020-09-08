@@ -79,7 +79,7 @@ base::string16 PhoneHubTray::GetAccessibleNameForBubble() {
 }
 
 bool PhoneHubTray::ShouldEnableExtraKeyboardAccessibility() {
-  return Shell::Get()->accessibility_controller()->spoken_feedback_enabled();
+  return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
 void PhoneHubTray::HideBubble(const TrayBubbleView* bubble_view) {

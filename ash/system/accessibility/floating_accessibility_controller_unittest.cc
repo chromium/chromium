@@ -318,7 +318,7 @@ TEST_F(FloatingAccessibilityControllerTest, CollisionWithAutoclicksMenu) {
   accessibility_controller()->SetFloatingMenuPosition(
       FloatingMenuPosition::kTopRight);
 
-  accessibility_controller()->SetAutoclickEnabled(true);
+  accessibility_controller()->autoclick().SetEnabled(true);
 
   // Get the full root window bounds to test the position.
   gfx::Rect window_bounds = Shell::GetPrimaryRootWindow()->bounds();

@@ -1850,7 +1850,7 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
   const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
   // Don't let the shelf auto-hide when in tablet mode and Chromevox is on.
   if (in_tablet_mode &&
-      Shell::Get()->accessibility_controller()->spoken_feedback_enabled()) {
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return SHELF_AUTO_HIDE_SHOWN;
   }
 

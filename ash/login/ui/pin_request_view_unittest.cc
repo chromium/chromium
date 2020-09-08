@@ -653,14 +653,14 @@ TEST_F(PinRequestWidgetTest, SpokenFeedbackKeyCombo) {
 
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  EXPECT_FALSE(controller->spoken_feedback_enabled());
+  EXPECT_FALSE(controller->spoken_feedback().enabled());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressKey(ui::KeyboardCode(ui::KeyboardCode::VKEY_Z),
                       ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(controller->spoken_feedback_enabled());
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
 }
 
 }  // namespace ash

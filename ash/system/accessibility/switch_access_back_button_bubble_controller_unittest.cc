@@ -28,7 +28,7 @@ class SwitchAccessBackButtonBubbleControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    Shell::Get()->accessibility_controller()->SetSwitchAccessEnabled(true);
+    Shell::Get()->accessibility_controller()->switch_access().SetEnabled(true);
   }
 
   SwitchAccessBackButtonBubbleController* GetBubbleController() {

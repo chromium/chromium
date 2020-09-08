@@ -295,7 +295,7 @@ TEST_F(AccessibilityHighlightControllerTest, SetCaretBounds) {
 
   AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
-  accessibility_controller->SetCaretHighlightEnabled(true);
+  accessibility_controller->caret_highlight().SetEnabled(true);
 
   // Bounds inside the active window create a highlight.
   accessibility_controller->SetCaretBounds(gfx::Rect(10, 10, 1, 16));

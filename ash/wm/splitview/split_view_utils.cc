@@ -399,7 +399,7 @@ bool ShouldAllowSplitView() {
 
   // TODO(crubg.com/853588): Disallow window dragging and split screen while
   // ChromeVox is on until they are in a usable state.
-  if (Shell::Get()->accessibility_controller()->spoken_feedback_enabled())
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
     return false;
 
   return true;

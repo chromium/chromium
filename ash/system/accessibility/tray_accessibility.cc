@@ -85,26 +85,26 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
 
   if (spoken_feedback_view_ &&
       controller->IsSpokenFeedbackSettingVisibleInTray()) {
-    spoken_feedback_enabled_ = controller->spoken_feedback_enabled();
+    spoken_feedback_enabled_ = controller->spoken_feedback().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(spoken_feedback_view_,
                                               spoken_feedback_enabled_);
   }
 
   if (select_to_speak_view_ &&
       controller->IsSelectToSpeakSettingVisibleInTray()) {
-    select_to_speak_enabled_ = controller->select_to_speak_enabled();
+    select_to_speak_enabled_ = controller->select_to_speak().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(select_to_speak_view_,
                                               select_to_speak_enabled_);
   }
 
   if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
-    dictation_enabled_ = controller->dictation_enabled();
+    dictation_enabled_ = controller->dictation().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(dictation_view_,
                                               dictation_enabled_);
   }
 
   if (high_contrast_view_ && controller->IsHighContrastSettingVisibleInTray()) {
-    high_contrast_enabled_ = controller->high_contrast_enabled();
+    high_contrast_enabled_ = controller->high_contrast().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(high_contrast_view_,
                                               high_contrast_enabled_);
   }
@@ -125,59 +125,59 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
   }
 
   if (autoclick_view_ && controller->IsAutoclickSettingVisibleInTray()) {
-    autoclick_enabled_ = controller->autoclick_enabled();
+    autoclick_enabled_ = controller->autoclick().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(autoclick_view_,
                                               autoclick_enabled_);
   }
 
   if (virtual_keyboard_view_ &&
       controller->IsVirtualKeyboardSettingVisibleInTray()) {
-    virtual_keyboard_enabled_ = controller->virtual_keyboard_enabled();
+    virtual_keyboard_enabled_ = controller->virtual_keyboard().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(virtual_keyboard_view_,
                                               virtual_keyboard_enabled_);
   }
 
   if (switch_access_view_ && controller->IsSwitchAccessSettingVisibleInTray()) {
-    switch_access_enabled_ = controller->switch_access_enabled();
+    switch_access_enabled_ = controller->switch_access().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(switch_access_view_,
                                               switch_access_enabled_);
   }
 
   if (large_cursor_view_ && controller->IsLargeCursorSettingVisibleInTray()) {
-    large_cursor_enabled_ = controller->large_cursor_enabled();
+    large_cursor_enabled_ = controller->large_cursor().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(large_cursor_view_,
                                               large_cursor_enabled_);
   }
 
   if (mono_audio_view_ && controller->IsMonoAudioSettingVisibleInTray()) {
-    mono_audio_enabled_ = controller->mono_audio_enabled();
+    mono_audio_enabled_ = controller->mono_audio().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(mono_audio_view_,
                                               mono_audio_enabled_);
   }
 
   if (caret_highlight_view_ &&
       controller->IsCaretHighlightSettingVisibleInTray()) {
-    caret_highlight_enabled_ = controller->caret_highlight_enabled();
+    caret_highlight_enabled_ = controller->caret_highlight().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(caret_highlight_view_,
                                               caret_highlight_enabled_);
   }
 
   if (highlight_mouse_cursor_view_ &&
       controller->IsCursorHighlightSettingVisibleInTray()) {
-    highlight_mouse_cursor_enabled_ = controller->cursor_highlight_enabled();
+    highlight_mouse_cursor_enabled_ = controller->cursor_highlight().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(highlight_mouse_cursor_view_,
                                               highlight_mouse_cursor_enabled_);
   }
 
   if (highlight_keyboard_focus_view_ &&
       controller->IsFocusHighlightSettingVisibleInTray()) {
-    highlight_keyboard_focus_enabled_ = controller->focus_highlight_enabled();
+    highlight_keyboard_focus_enabled_ = controller->focus_highlight().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(
         highlight_keyboard_focus_view_, highlight_keyboard_focus_enabled_);
   }
 
   if (sticky_keys_view_ && controller->IsStickyKeysSettingVisibleInTray()) {
-    sticky_keys_enabled_ = controller->sticky_keys_enabled();
+    sticky_keys_enabled_ = controller->sticky_keys().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(sticky_keys_view_,
                                               sticky_keys_enabled_);
   }
@@ -195,7 +195,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
       Shell::Get()->accessibility_controller();
 
   if (controller->IsSpokenFeedbackSettingVisibleInTray()) {
-    spoken_feedback_enabled_ = controller->spoken_feedback_enabled();
+    spoken_feedback_enabled_ = controller->spoken_feedback().enabled();
     spoken_feedback_view_ = AddScrollListCheckableItem(
         kSystemMenuAccessibilityChromevoxIcon,
         l10n_util::GetStringUTF16(
@@ -205,7 +205,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsSelectToSpeakSettingVisibleInTray()) {
-    select_to_speak_enabled_ = controller->select_to_speak_enabled();
+    select_to_speak_enabled_ = controller->select_to_speak().enabled();
     select_to_speak_view_ = AddScrollListCheckableItem(
         kSystemMenuAccessibilitySelectToSpeakIcon,
         l10n_util::GetStringUTF16(
@@ -215,7 +215,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsDictationSettingVisibleInTray()) {
-    dictation_enabled_ = controller->dictation_enabled();
+    dictation_enabled_ = controller->dictation().enabled();
     dictation_view_ = AddScrollListCheckableItem(
         kDictationMenuIcon,
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION),
@@ -223,7 +223,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsHighContrastSettingVisibleInTray()) {
-    high_contrast_enabled_ = controller->high_contrast_enabled();
+    high_contrast_enabled_ = controller->high_contrast().enabled();
     high_contrast_view_ = AddScrollListCheckableItem(
         kSystemMenuAccessibilityContrastIcon,
         l10n_util::GetStringUTF16(
@@ -254,7 +254,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsAutoclickSettingVisibleInTray()) {
-    autoclick_enabled_ = controller->autoclick_enabled();
+    autoclick_enabled_ = controller->autoclick().enabled();
     autoclick_view_ = AddScrollListCheckableItem(
         kSystemMenuAccessibilityAutoClickIcon,
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_AUTOCLICK),
@@ -262,7 +262,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsVirtualKeyboardSettingVisibleInTray()) {
-    virtual_keyboard_enabled_ = controller->virtual_keyboard_enabled();
+    virtual_keyboard_enabled_ = controller->virtual_keyboard().enabled();
     virtual_keyboard_view_ = AddScrollListCheckableItem(
         kSystemMenuKeyboardIcon,
         l10n_util::GetStringUTF16(
@@ -275,7 +275,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsSwitchAccessSettingVisibleInTray()) {
-    switch_access_enabled_ = controller->switch_access_enabled();
+    switch_access_enabled_ = controller->switch_access().enabled();
     switch_access_view_ = AddScrollListCheckableItem(
         kSwitchAccessIcon,
         l10n_util::GetStringUTF16(
@@ -293,7 +293,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsLargeCursorSettingVisibleInTray()) {
-    large_cursor_enabled_ = controller->large_cursor_enabled();
+    large_cursor_enabled_ = controller->large_cursor().enabled();
     large_cursor_view_ = AddScrollListCheckableItem(
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_ACCESSIBILITY_LARGE_CURSOR),
@@ -302,14 +302,14 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsMonoAudioSettingVisibleInTray()) {
-    mono_audio_enabled_ = controller->mono_audio_enabled();
+    mono_audio_enabled_ = controller->mono_audio().enabled();
     mono_audio_view_ = AddScrollListCheckableItem(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO),
         mono_audio_enabled_, controller->IsEnterpriseIconVisibleForMonoAudio());
   }
 
   if (controller->IsCaretHighlightSettingVisibleInTray()) {
-    caret_highlight_enabled_ = controller->caret_highlight_enabled();
+    caret_highlight_enabled_ = controller->caret_highlight().enabled();
     caret_highlight_view_ = AddScrollListCheckableItem(
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_ACCESSIBILITY_CARET_HIGHLIGHT),
@@ -318,7 +318,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsCursorHighlightSettingVisibleInTray()) {
-    highlight_mouse_cursor_enabled_ = controller->cursor_highlight_enabled();
+    highlight_mouse_cursor_enabled_ = controller->cursor_highlight().enabled();
     highlight_mouse_cursor_view_ = AddScrollListCheckableItem(
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_MOUSE_CURSOR),
@@ -329,7 +329,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   // ChromeVox does its own focus highlighting.
   if (!spoken_feedback_enabled_ &&
       controller->IsFocusHighlightSettingVisibleInTray()) {
-    highlight_keyboard_focus_enabled_ = controller->focus_highlight_enabled();
+    highlight_keyboard_focus_enabled_ = controller->focus_highlight().enabled();
     highlight_keyboard_focus_view_ = AddScrollListCheckableItem(
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_KEYBOARD_FOCUS),
@@ -338,7 +338,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsStickyKeysSettingVisibleInTray()) {
-    sticky_keys_enabled_ = controller->sticky_keys_enabled();
+    sticky_keys_enabled_ = controller->sticky_keys().enabled();
     sticky_keys_view_ = AddScrollListCheckableItem(
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_ACCESSIBILITY_STICKY_KEYS),
@@ -355,7 +355,7 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
   using base::UserMetricsAction;
   if (spoken_feedback_view_ && view == spoken_feedback_view_ &&
       !controller->IsEnterpriseIconVisibleForSpokenFeedback()) {
-    bool new_state = !controller->spoken_feedback_enabled();
+    bool new_state = !controller->spoken_feedback().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_SpokenFeedbackEnabled")
                      : UserMetricsAction("StatusArea_SpokenFeedbackDisabled"));
@@ -364,29 +364,29 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     controller->SetSpokenFeedbackEnabled(new_state, A11Y_NOTIFICATION_NONE);
   } else if (select_to_speak_view_ && view == select_to_speak_view_ &&
              !controller->IsEnterpriseIconVisibleForSelectToSpeak()) {
-    bool new_state = !controller->select_to_speak_enabled();
+    bool new_state = !controller->select_to_speak().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_SelectToSpeakEnabled")
                      : UserMetricsAction("StatusArea_SelectToSpeakDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::SELECT_TO_SPEAK,
                               new_state);
-    controller->SetSelectToSpeakEnabled(new_state);
+    controller->select_to_speak().SetEnabled(new_state);
   } else if (dictation_view_ && view == dictation_view_ &&
              !controller->IsEnterpriseIconVisibleForDictation()) {
-    bool new_state = !controller->dictation_enabled();
+    bool new_state = !controller->dictation().enabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_DictationEnabled")
                            : UserMetricsAction("StatusArea_DictationDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::DICTATION, new_state);
-    controller->SetDictationEnabled(new_state);
+    controller->dictation().SetEnabled(new_state);
   } else if (high_contrast_view_ && view == high_contrast_view_ &&
              !controller->IsEnterpriseIconVisibleForHighContrast()) {
-    bool new_state = !controller->high_contrast_enabled();
+    bool new_state = !controller->high_contrast().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_HighContrastEnabled")
                      : UserMetricsAction("StatusArea_HighContrastDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::HIGH_CONTRAST,
                               new_state);
-    controller->SetHighContrastEnabled(new_state);
+    controller->high_contrast().SetEnabled(new_state);
   } else if (screen_magnifier_view_ && view == screen_magnifier_view_ &&
              !controller->IsEnterpriseIconVisibleForFullScreenMagnifier()) {
     bool new_state = !delegate->IsMagnifierEnabled();
@@ -414,84 +414,84 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     docked_magnifier_controller->SetEnabled(new_state);
   } else if (large_cursor_view_ && view == large_cursor_view_ &&
              !controller->IsEnterpriseIconVisibleForLargeCursor()) {
-    bool new_state = !controller->large_cursor_enabled();
+    bool new_state = !controller->large_cursor().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_LargeCursorEnabled")
                      : UserMetricsAction("StatusArea_LargeCursorDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::LARGE_CURSOR,
                               new_state);
-    controller->SetLargeCursorEnabled(new_state);
+    controller->large_cursor().SetEnabled(new_state);
   } else if (autoclick_view_ && view == autoclick_view_ &&
              !controller->IsEnterpriseIconVisibleForAutoclick()) {
-    bool new_state = !controller->autoclick_enabled();
+    bool new_state = !controller->autoclick().enabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_AutoClickEnabled")
                            : UserMetricsAction("StatusArea_AutoClickDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::AUTO_CLICK, new_state);
-    controller->SetAutoclickEnabled(new_state);
+    controller->autoclick().SetEnabled(new_state);
   } else if (virtual_keyboard_view_ && view == virtual_keyboard_view_ &&
              !controller->IsEnterpriseIconVisibleForVirtualKeyboard()) {
-    bool new_state = !controller->virtual_keyboard_enabled();
+    bool new_state = !controller->virtual_keyboard().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_VirtualKeyboardEnabled")
                      : UserMetricsAction("StatusArea_VirtualKeyboardDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::VIRTUAL_KEYBOARD,
                               new_state);
-    controller->SetVirtualKeyboardEnabled(new_state);
+    controller->virtual_keyboard().SetEnabled(new_state);
   } else if (switch_access_view_ && view == switch_access_view_ &&
              !controller->IsEnterpriseIconVisibleForSwitchAccess()) {
-    bool new_state = !controller->switch_access_enabled();
+    bool new_state = !controller->switch_access().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_SwitchAccessEnabled")
                      : UserMetricsAction("StatusArea_SwitchAccessDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::SWITCH_ACCESS,
                               new_state);
-    controller->SetSwitchAccessEnabled(new_state);
+    controller->switch_access().SetEnabled(new_state);
   } else if (caret_highlight_view_ && view == caret_highlight_view_ &&
              !controller->IsEnterpriseIconVisibleForCaretHighlight()) {
-    bool new_state = !controller->caret_highlight_enabled();
+    bool new_state = !controller->caret_highlight().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_CaretHighlightEnabled")
                      : UserMetricsAction("StatusArea_CaretHighlightDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::CARET_HIGHLIGHT,
                               new_state);
-    controller->SetCaretHighlightEnabled(new_state);
+    controller->caret_highlight().SetEnabled(new_state);
   } else if (mono_audio_view_ && view == mono_audio_view_ &&
              !controller->IsEnterpriseIconVisibleForMonoAudio()) {
-    bool new_state = !controller->mono_audio_enabled();
+    bool new_state = !controller->mono_audio().enabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_MonoAudioEnabled")
                            : UserMetricsAction("StatusArea_MonoAudioDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::MONO_AUDIO, new_state);
-    controller->SetMonoAudioEnabled(new_state);
+    controller->mono_audio().SetEnabled(new_state);
   } else if (highlight_mouse_cursor_view_ &&
              view == highlight_mouse_cursor_view_ &&
              !controller->IsEnterpriseIconVisibleForCursorHighlight()) {
-    bool new_state = !controller->cursor_highlight_enabled();
+    bool new_state = !controller->cursor_highlight().enabled();
     RecordAction(
         new_state
             ? UserMetricsAction("StatusArea_HighlightMouseCursorEnabled")
             : UserMetricsAction("StatusArea_HighlightMouseCursorDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::HIGHLIGHT_MOUSE_CURSOR,
                               new_state);
-    controller->SetCursorHighlightEnabled(new_state);
+    controller->cursor_highlight().SetEnabled(new_state);
   } else if (highlight_keyboard_focus_view_ &&
              view == highlight_keyboard_focus_view_ &&
              !controller->IsEnterpriseIconVisibleForFocusHighlight()) {
-    bool new_state = !controller->focus_highlight_enabled();
+    bool new_state = !controller->focus_highlight().enabled();
     RecordAction(
         new_state
             ? UserMetricsAction("StatusArea_HighlightKeyboardFocusEnabled")
             : UserMetricsAction("StatusArea_HighlightKeyboardFocusDisabled"));
     LogUserAccessibilityEvent(
         UserSettingsEvent::Event::HIGHLIGHT_KEYBOARD_FOCUS, new_state);
-    controller->SetFocusHighlightEnabled(new_state);
+    controller->focus_highlight().SetEnabled(new_state);
   } else if (sticky_keys_view_ && view == sticky_keys_view_ &&
              !controller->IsEnterpriseIconVisibleForStickyKeys()) {
-    bool new_state = !controller->sticky_keys_enabled();
+    bool new_state = !controller->sticky_keys().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_StickyKeysEnabled")
                      : UserMetricsAction("StatusArea_StickyKeysDisabled"));
     LogUserAccessibilityEvent(UserSettingsEvent::Event::STICKY_KEYS, new_state);
-    controller->SetStickyKeysEnabled(new_state);
+    controller->sticky_keys().SetEnabled(new_state);
   }
 }
 

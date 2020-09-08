@@ -540,11 +540,11 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
 
   // Enable a11y keyboard calls OnKeyboardTypeChanged() with false.
   EXPECT_CALL(configuration_delegate, OnKeyboardTypeChanged(false));
-  accessibility_controller->SetVirtualKeyboardEnabled(true);
+  accessibility_controller->virtual_keyboard().SetEnabled(true);
 
   // Disable a11y keyboard calls OnKeyboardTypeChanged() with true.
   EXPECT_CALL(configuration_delegate, OnKeyboardTypeChanged(true));
-  accessibility_controller->SetVirtualKeyboardEnabled(false);
+  accessibility_controller->virtual_keyboard().SetEnabled(false);
 
   keyboard.reset();
 }

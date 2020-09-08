@@ -52,7 +52,7 @@ VirtualKeyboardTray::~VirtualKeyboardTray() {
 void VirtualKeyboardTray::Initialize() {
   TrayBackgroundView::Initialize();
   SetVisiblePreferred(
-      Shell::Get()->accessibility_controller()->virtual_keyboard_enabled());
+      Shell::Get()->accessibility_controller()->virtual_keyboard().enabled());
 }
 
 base::string16 VirtualKeyboardTray::GetAccessibleNameForTray() {
@@ -100,7 +100,7 @@ bool VirtualKeyboardTray::PerformAction(const ui::Event& event) {
 
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
-      Shell::Get()->accessibility_controller()->virtual_keyboard_enabled();
+      Shell::Get()->accessibility_controller()->virtual_keyboard().enabled();
   SetVisiblePreferred(new_enabled);
 }
 

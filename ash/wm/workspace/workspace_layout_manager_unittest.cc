@@ -128,12 +128,12 @@ class ScopedStickyKeyboardEnabler {
  public:
   ScopedStickyKeyboardEnabler()
       : accessibility_controller_(Shell::Get()->accessibility_controller()),
-        enabled_(accessibility_controller_->virtual_keyboard_enabled()) {
-    accessibility_controller_->SetVirtualKeyboardEnabled(true);
+        enabled_(accessibility_controller_->virtual_keyboard().enabled()) {
+    accessibility_controller_->virtual_keyboard().SetEnabled(true);
   }
 
   ~ScopedStickyKeyboardEnabler() {
-    accessibility_controller_->SetVirtualKeyboardEnabled(enabled_);
+    accessibility_controller_->virtual_keyboard().SetEnabled(enabled_);
   }
 
  private:
@@ -1538,7 +1538,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
 
   // Enable spoken feedback.
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(controller->spoken_feedback_enabled());
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
 
   generator->MoveMouseTo(300, 300);
   generator->ClickLeftButton();
@@ -1550,7 +1550,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
 
   // Disable spoken feedback. Shadow underlay is restored.
   controller->SetSpokenFeedbackEnabled(false, A11Y_NOTIFICATION_NONE);
-  EXPECT_FALSE(controller->spoken_feedback_enabled());
+  EXPECT_FALSE(controller->spoken_feedback().enabled());
 
   generator->MoveMouseTo(300, 300);
   generator->ClickLeftButton();
@@ -1569,7 +1569,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackForArc) {
   TestAccessibilityControllerClient client;
 
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(controller->spoken_feedback_enabled());
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
 
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> window_arc(CreateTestWindowInShellWithDelegate(

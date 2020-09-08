@@ -26,12 +26,12 @@ bool DefaultAccessibilityDelegate::IsMagnifierEnabled() const {
 bool DefaultAccessibilityDelegate::ShouldShowAccessibilityMenu() const {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  return controller->spoken_feedback_enabled() || screen_magnifier_enabled_ ||
-         controller->autoclick_enabled() ||
-         controller->virtual_keyboard_enabled() ||
-         controller->mono_audio_enabled() ||
-         controller->large_cursor_enabled() ||
-         controller->high_contrast_enabled();
+  return controller->spoken_feedback().enabled() || screen_magnifier_enabled_ ||
+         controller->autoclick().enabled() ||
+         controller->virtual_keyboard().enabled() ||
+         controller->mono_audio().enabled() ||
+         controller->large_cursor().enabled() ||
+         controller->high_contrast().enabled();
 }
 
 void DefaultAccessibilityDelegate::SaveScreenMagnifierScale(double scale) {}

@@ -93,7 +93,7 @@ base::string16 HoldingSpaceTray::GetAccessibleNameForBubble() {
 }
 
 bool HoldingSpaceTray::ShouldEnableExtraKeyboardAccessibility() {
-  return Shell::Get()->accessibility_controller()->spoken_feedback_enabled();
+  return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
 void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {

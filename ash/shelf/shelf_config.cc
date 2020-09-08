@@ -56,13 +56,13 @@ void RecordReasonForShowingShelfControls() {
         kControlButtonsShownForShelfNavigationButtonsSetting;
   }
 
-  if (accessibility_controller->spoken_feedback_enabled())
+  if (accessibility_controller->spoken_feedback().enabled())
     buttons_shown_reason_mask |= kControlButtonsShownForSpokenFeedback;
 
-  if (accessibility_controller->switch_access_enabled())
+  if (accessibility_controller->switch_access().enabled())
     buttons_shown_reason_mask |= kControlButtonsShownForSwitchAccess;
 
-  if (accessibility_controller->autoclick_enabled())
+  if (accessibility_controller->autoclick().enabled())
     buttons_shown_reason_mask |= kControlButtonsShownForAutoclick;
 
   base::UmaHistogramExactLinear(
@@ -248,9 +248,9 @@ void ShelfConfig::OnAppListVisibilityWillChange(bool shown,
 
 bool ShelfConfig::ShelfControlsForcedShownForAccessibility() const {
   auto* accessibility_controller = Shell::Get()->accessibility_controller();
-  return accessibility_controller->spoken_feedback_enabled() ||
-         accessibility_controller->autoclick_enabled() ||
-         accessibility_controller->switch_access_enabled() ||
+  return accessibility_controller->spoken_feedback().enabled() ||
+         accessibility_controller->autoclick().enabled() ||
+         accessibility_controller->switch_access().enabled() ||
          accessibility_controller
              ->tablet_mode_shelf_navigation_buttons_enabled();
 }

@@ -547,7 +547,7 @@ void WorkspaceLayoutManager::NotifySystemUiAreaChanged() {
 }
 
 void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() {
-  if (Shell::Get()->accessibility_controller()->autoclick_enabled()) {
+  if (Shell::Get()->accessibility_controller()->autoclick().enabled()) {
     Shell::Get()
         ->accessibility_controller()
         ->UpdateAutoclickMenuBoundsIfNeeded();

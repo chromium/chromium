@@ -632,7 +632,7 @@ void WindowCycleList::InitWindowCycleView() {
   // We need to activate the widget if ChromeVox is enabled as ChromeVox
   // relies on activation.
   const bool spoken_feedback_enabled =
-      Shell::Get()->accessibility_controller()->spoken_feedback_enabled();
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 
   views::Widget* widget = new views::Widget();
   views::Widget::InitParams params;

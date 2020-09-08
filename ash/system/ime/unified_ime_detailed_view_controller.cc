@@ -81,8 +81,10 @@ void UnifiedIMEDetailedViewController::Update() {
 }
 
 bool UnifiedIMEDetailedViewController::ShouldShowKeyboardToggle() const {
-  return keyboard_suppressed_ &&
-         !Shell::Get()->accessibility_controller()->virtual_keyboard_enabled();
+  return keyboard_suppressed_ && !Shell::Get()
+                                      ->accessibility_controller()
+                                      ->virtual_keyboard()
+                                      .enabled();
 }
 
 }  // namespace ash

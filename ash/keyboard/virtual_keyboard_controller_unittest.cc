@@ -90,8 +90,8 @@ TEST_F(VirtualKeyboardControllerTest,
        ForceToShowKeyboardWithKeysetWhenAccessibilityKeyboardIsEnabled) {
   AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
-  accessibility_controller->SetVirtualKeyboardEnabled(true);
-  ASSERT_TRUE(accessibility_controller->virtual_keyboard_enabled());
+  accessibility_controller->virtual_keyboard().SetEnabled(true);
+  ASSERT_TRUE(accessibility_controller->virtual_keyboard().enabled());
 
   // Set up a mock ImeControllerClient to test keyset changes.
   TestImeControllerClient client;
@@ -100,7 +100,7 @@ TEST_F(VirtualKeyboardControllerTest,
   // Should show the keyboard without messing with accessibility prefs.
   GetVirtualKeyboardController()->ForceShowKeyboardWithKeyset(
       chromeos::input_method::ImeKeyset::kEmoji);
-  EXPECT_TRUE(accessibility_controller->virtual_keyboard_enabled());
+  EXPECT_TRUE(accessibility_controller->virtual_keyboard().enabled());
 
   // Keyset should be emoji.
   EXPECT_EQ(chromeos::input_method::ImeKeyset::kEmoji, client.last_keyset_);
@@ -113,10 +113,10 @@ TEST_F(VirtualKeyboardControllerTest,
   base::RunLoop().RunUntilIdle();
 
   // The keyboard should still be enabled.
-  EXPECT_TRUE(accessibility_controller->virtual_keyboard_enabled());
+  EXPECT_TRUE(accessibility_controller->virtual_keyboard().enabled());
 
   // Reset the accessibility prefs.
-  accessibility_controller->SetVirtualKeyboardEnabled(false);
+  accessibility_controller->virtual_keyboard().SetEnabled(false);
 
   // Keyset should be reset to none.
   EXPECT_EQ(chromeos::input_method::ImeKeyset::kNone, client.last_keyset_);

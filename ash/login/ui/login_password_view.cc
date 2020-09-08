@@ -731,7 +731,7 @@ void LoginPasswordView::ButtonPressed(views::Button* sender,
 
 void LoginPasswordView::HidePassword(bool chromevox_exception) {
   if (chromevox_exception &&
-      Shell::Get()->accessibility_controller()->spoken_feedback_enabled()) {
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return;
   }
   if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)

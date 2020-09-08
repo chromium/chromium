@@ -42,8 +42,8 @@ void SpokenFeedbackEnabler::OnTimer() {
       tick_count < kTimerTicksToToggleSpokenFeedback) {
     controller->PlaySpokenFeedbackToggleCountdown(tick_count);
   } else if (tick_count == kTimerTicksToToggleSpokenFeedback) {
-    controller->SetSpokenFeedbackEnabled(!controller->spoken_feedback_enabled(),
-                                         A11Y_NOTIFICATION_SHOW);
+    controller->SetSpokenFeedbackEnabled(
+        !controller->spoken_feedback().enabled(), A11Y_NOTIFICATION_SHOW);
     timer_.Stop();
   }
 }

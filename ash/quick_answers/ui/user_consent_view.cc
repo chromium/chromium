@@ -178,7 +178,10 @@ gfx::Size UserConsentView::CalculatePreferredSize() const {
 void UserConsentView::OnFocus() {
   // Unless screen-reader mode is enabled, transfer the focus to an actionable
   // button, otherwise retain to read out its contents.
-  if (!ash::Shell::Get()->accessibility_controller()->spoken_feedback_enabled())
+  if (!ash::Shell::Get()
+           ->accessibility_controller()
+           ->spoken_feedback()
+           .enabled())
     settings_button_->RequestFocus();
 }
 
@@ -202,7 +205,8 @@ std::vector<views::View*> UserConsentView::GetFocusableViews() {
   // The view itself is not included in focus loop, unless screen-reader is on.
   if (ash::Shell::Get()
           ->accessibility_controller()
-          ->spoken_feedback_enabled()) {
+          ->spoken_feedback()
+          .enabled()) {
     focusable_views.push_back(this);
   }
   focusable_views.push_back(settings_button_);

@@ -68,7 +68,8 @@ class CursorWindowControllerTest : public AshTestBase {
     // Cursor compositing will be enabled when high contrast mode is turned on.
     // Cursor compositing will be disabled when high contrast mode is the only
     // feature using it and is turned off.
-    Shell::Get()->accessibility_controller()->SetHighContrastEnabled(enabled);
+    Shell::Get()->accessibility_controller()->high_contrast().SetEnabled(
+        enabled);
     Shell::Get()->UpdateCursorCompositingEnabled();
   }
 

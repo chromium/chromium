@@ -225,7 +225,7 @@ base::string16 UnifiedMessageCenterBubble::GetAccessibleNameForBubble() {
 }
 
 bool UnifiedMessageCenterBubble::ShouldEnableExtraKeyboardAccessibility() {
-  return Shell::Get()->accessibility_controller()->spoken_feedback_enabled();
+  return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
 void UnifiedMessageCenterBubble::OnViewPreferredSizeChanged(

@@ -72,7 +72,7 @@ void PrivacyScreenToastController::ShowToast() {
       bubble_widget_->GetWindowBoundsInScreen().height());
 
   // Activate the bubble so ChromeVox can announce the toast.
-  if (Shell::Get()->accessibility_controller()->spoken_feedback_enabled()) {
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     bubble_widget_->widget_delegate()->SetCanActivate(true);
     bubble_widget_->Activate();
   }
@@ -123,7 +123,7 @@ void PrivacyScreenToastController::StartAutoCloseTimer() {
     return;
 
   int autoclose_delay = kTrayPopupAutoCloseDelayInSeconds;
-  if (Shell::Get()->accessibility_controller()->spoken_feedback_enabled())
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
     autoclose_delay = kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
 
   close_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(autoclose_delay),

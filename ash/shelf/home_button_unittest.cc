@@ -182,10 +182,11 @@ class HomeButtonVisibilityWithAccessibilityFeaturesTest
             enabled, A11Y_NOTIFICATION_NONE);
         break;
       case TestAccessibilityFeature::kAutoclick:
-        Shell::Get()->accessibility_controller()->SetAutoclickEnabled(enabled);
+        Shell::Get()->accessibility_controller()->autoclick().SetEnabled(
+            enabled);
         break;
       case TestAccessibilityFeature::kSwitchAccess:
-        Shell::Get()->accessibility_controller()->SetSwitchAccessEnabled(
+        Shell::Get()->accessibility_controller()->switch_access().SetEnabled(
             enabled);
         break;
     }

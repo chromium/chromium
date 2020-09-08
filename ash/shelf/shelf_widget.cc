@@ -1031,7 +1031,7 @@ void ShelfWidget::OnScrollEvent(ui::ScrollEvent* event) {
 
 void ShelfWidget::OnAccessibilityStatusChanged() {
   is_hotseat_forced_to_show_ =
-      Shell::Get()->accessibility_controller()->spoken_feedback_enabled();
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
   shelf_layout_manager_->UpdateVisibilityState();
 }
 

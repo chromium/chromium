@@ -101,7 +101,7 @@ void TouchExplorationManager::SetOutputLevel(int volume) {
 }
 
 void TouchExplorationManager::SilenceSpokenFeedback() {
-  if (GetA11yController()->spoken_feedback_enabled())
+  if (GetA11yController()->spoken_feedback().enabled())
     GetA11yController()->SilenceSpokenFeedback();
 }
 
@@ -168,7 +168,7 @@ void TouchExplorationManager::PlayTouchTypeEarcon() {
 void TouchExplorationManager::ToggleSpokenFeedback() {
   if (GetA11yController()->ShouldToggleSpokenFeedbackViaTouch()) {
     GetA11yController()->SetSpokenFeedbackEnabled(
-        !GetA11yController()->spoken_feedback_enabled(),
+        !GetA11yController()->spoken_feedback().enabled(),
         A11Y_NOTIFICATION_SHOW);
   }
 }
@@ -215,7 +215,7 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
           aura::client::kAccessibilityTouchExplorationPassThrough);
 
   const bool spoken_feedback_enabled =
-      GetA11yController()->spoken_feedback_enabled();
+      GetA11yController()->spoken_feedback().enabled();
 
   if (!touch_accessibility_enabler_) {
     // Always enable gesture to toggle spoken feedback.
