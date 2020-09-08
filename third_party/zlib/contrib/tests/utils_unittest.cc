@@ -144,3 +144,69 @@ TEST(ZlibTest, StreamingInflate) {
   ret = inflateEnd(&decomp_strm);
   EXPECT_EQ(ret, Z_OK);
 }
+
+TEST(ZlibTest, CRCHashBitsCollision) {
+  // The CRC32c of the hex sequences 2a,14,14,14 and 2a,14,db,14 have the same
+  // lower 9 bits. Since longest_match doesn't check match[2], a bad match could
+  // be chosen when the number of hash bits is <= 9. For this reason, the number
+  // of hash bits must be set higher, regardless of the memlevel parameter, when
+  // using CRC32c hashing for string matching. See https://crbug.com/1113596
+
+  std::vector<uint8_t> src = {
+      // Random byte; zlib doesn't match at offset 0.
+      123,
+
+      // This will look like 5-byte match.
+      0x2a,
+      0x14,
+      0xdb,
+      0x14,
+      0x15,
+
+      // Offer a 4-byte match to bump the next expected match length to 5.
+      0x2a,
+      0x14,
+      0x14,
+      0x14,
+
+      0x2a,
+      0x14,
+      0x14,
+      0x14,
+      0x15,
+  };
+
+  z_stream stream;
+  stream.zalloc = nullptr;
+  stream.zfree = nullptr;
+
+  // Using a low memlevel to try to reduce the number of hash bits. Negative
+  // windowbits means raw deflate, i.e. without the zlib header.
+  int ret = deflateInit2(&stream, /*comp level*/ 2, /*method*/ Z_DEFLATED,
+                         /*windowbits*/ -15, /*memlevel*/ 2,
+                         /*strategy*/ Z_DEFAULT_STRATEGY);
+  ASSERT_EQ(ret, Z_OK);
+  std::vector<uint8_t> compressed(100, '\0');
+  stream.next_out = compressed.data();
+  stream.avail_out = compressed.size();
+  stream.next_in = src.data();
+  stream.avail_in = src.size();
+  ret = deflate(&stream, Z_FINISH);
+  ASSERT_EQ(ret, Z_STREAM_END);
+  compressed.resize(compressed.size() - stream.avail_out);
+  deflateEnd(&stream);
+
+  ret = inflateInit2(&stream, /*windowbits*/ -15);
+  ASSERT_EQ(ret, Z_OK);
+  std::vector<uint8_t> decompressed(src.size(), '\0');
+  stream.next_in = compressed.data();
+  stream.avail_in = compressed.size();
+  stream.next_out = decompressed.data();
+  stream.avail_out = decompressed.size();
+  ret = inflate(&stream, Z_FINISH);
+  ASSERT_EQ(ret, Z_STREAM_END);
+  EXPECT_EQ(0U, stream.avail_out);
+  inflateEnd(&stream);
+
+  EXPECT_EQ(src, decompressed);
+}

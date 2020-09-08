@@ -304,10 +304,9 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
     s->w_size = 1 << s->w_bits;
     s->w_mask = s->w_size - 1;
 
-    if (x86_cpu_enable_simd) {
+    s->hash_bits = memLevel + 7;
+    if ((x86_cpu_enable_simd || arm_cpu_enable_crc32) && s->hash_bits < 15) {
         s->hash_bits = 15;
-    } else {
-        s->hash_bits = memLevel + 7;
     }
 
     s->hash_size = 1 << s->hash_bits;
