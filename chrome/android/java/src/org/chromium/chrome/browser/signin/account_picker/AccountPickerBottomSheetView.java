@@ -82,6 +82,13 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     /**
+     * The incognito interstitial view when the user clicks on incognito mode option.
+     */
+    View getIncognitoInterstitialView() {
+        return mIncognitoInterstitialView;
+    }
+
+    /**
      * The selected account is visible when the account list is collapsed.
      */
     View getSelectedAccountView() {

@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager;
@@ -45,12 +47,25 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
     public AccountPickerDelegate(WindowAndroid windowAndroid,
             WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
         mWindowAndroid = windowAndroid;
+        // TODO(crbug.com/1125459): Remove cast and pass the ChromeActiviy dependencies explicitly
+        // instead.
         mChromeActivity = (ChromeActivity) mWindowAndroid.getActivity().get();
         mTab = mChromeActivity.getActivityTab();
         mWebSigninBridgeFactory = webSigninBridgeFactory;
         mContinueUrl = continueUrl;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
+    }
+
+    /**
+     * Creates and return the {@link IncognitoInterstitialDelegate}.
+     */
+    public IncognitoInterstitialDelegate getIncognitoInterstitialDelegate() {
+        IncognitoInterstitialDelegate incognitoInterstitialDelegate =
+                new IncognitoInterstitialDelegate(mChromeActivity,
+                        mChromeActivity.getTabCreator(/*incognito=*/true),
+                        HelpAndFeedback.getInstance(), mTab.getUrlString());
+        return incognitoInterstitialDelegate;
     }
 
     /**
