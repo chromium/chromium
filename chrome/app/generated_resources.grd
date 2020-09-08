@@ -1751,10 +1751,6 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown in the download shelf when Chrome recommends uploading the file for additional scanning">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning?
       </message>
-      <message name="IDS_PROMPT_APP_DEEP_SCANNING_ALTERNATE"
-        desc="Message shown in the download shelf when Chrome recommends uploading the file for additional scanning.">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is unknown. Advanced Protection recommends sending this file to Google for scanning.
-      </message>
       <message name="IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD"
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is uncommon.">
         This file is not commonly downloaded and may be dangerous.
@@ -1868,10 +1864,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_SCAN_DOWNLOAD"
                desc="Text shown to upload a file for deep scanning.">
         Send
-      </message>
-      <message name="IDS_SCAN_DOWNLOAD_ALTERNATE"
-               desc="Text shown to upload a file for deep scanning.">
-        Scan
       </message>
 
       <!-- Download Tab Items -->
