@@ -5,6 +5,8 @@
 #ifndef BASE_THREADING_SCOPED_THREAD_PRIORITY_H_
 #define BASE_THREADING_SCOPED_THREAD_PRIORITY_H_
 
+#include <atomic>
+
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
@@ -38,56 +40,45 @@ enum class ThreadPriority : int;
 //   }
 //   Bar();
 //
-// The macro raises the thread priority to NORMAL for the scope when first
-// encountered. On Windows, loading a DLL on a background thread can lead to a
-// priority inversion on the loader lock and cause huge janks.
-#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY()                   \
-  base::internal::ScopedMayLoadLibraryAtBackgroundPriority                 \
-      INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                         \
-          scoped_may_load_library_at_background_priority)(FROM_HERE);      \
-  {                                                                        \
-    /* Thread-safe static local variable initialization ensures that */    \
-    /* OnScopeEntered() is only invoked the first time that this is */     \
-    /* encountered. */                                                     \
-    static bool INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(invoke_once) = \
-        INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                       \
-            scoped_may_load_library_at_background_priority)                \
-            .OnScopeEntered();                                             \
-    ALLOW_UNUSED_LOCAL(                                                    \
-        INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(invoke_once));         \
-  }
+// The macro raises the thread priority to NORMAL for the scope if no other
+// thread has completed the current scope already (multiple threads can racily
+// begin the initialization and will all be boosted for it). On Windows, loading
+// a DLL on a background thread can lead to a priority inversion on the loader
+// lock and cause huge janks.
+#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY()               \
+  static std::atomic_bool INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE( \
+      already_loaded){false};                                          \
+  base::internal::ScopedMayLoadLibraryAtBackgroundPriority             \
+      INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                     \
+          scoped_may_load_library_at_background_priority)(             \
+          FROM_HERE,                                                   \
+          &INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(already_loaded));
 
 // Like SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY, but raises the thread
 // priority every time the scope is entered. Use this around code that may
 // conditionally load a DLL each time it is executed, or which repeatedly loads
 // and unloads DLLs.
-#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY()   \
-  base::internal::ScopedMayLoadLibraryAtBackgroundPriority            \
-      INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                    \
-          scoped_may_load_library_at_background_priority)(FROM_HERE); \
-  {                                                                   \
-    INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                      \
-        scoped_may_load_library_at_background_priority)               \
-        .OnScopeEntered();                                            \
-  }
+#define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY() \
+  base::internal::ScopedMayLoadLibraryAtBackgroundPriority          \
+      INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                  \
+          scoped_may_load_library_at_background_priority)(FROM_HERE, nullptr);
 
 namespace internal {
 
 class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
  public:
-  explicit ScopedMayLoadLibraryAtBackgroundPriority(const Location& from_here);
+  // Boosts thread priority to NORMAL within its scope if |already_loaded| is
+  // nullptr or set to false.
+  explicit ScopedMayLoadLibraryAtBackgroundPriority(
+      const Location& from_here,
+      std::atomic_bool* already_loaded);
   ~ScopedMayLoadLibraryAtBackgroundPriority();
-
-  // The SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY() macro invokes this
-  // the first time that it is encountered. The
-  // SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY() macro invokes
-  // this every time it is encountered.
-  bool OnScopeEntered();
 
  private:
 #if defined(OS_WIN)
-  // The original priority when invoking OnScopeEntered().
+  // The original priority when invoking entering the scope().
   base::Optional<ThreadPriority> original_thread_priority_;
+  std::atomic_bool* const already_loaded_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ScopedMayLoadLibraryAtBackgroundPriority);
