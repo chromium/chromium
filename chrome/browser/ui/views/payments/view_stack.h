@@ -25,8 +25,7 @@ class ViewStack : public views::BoundsAnimatorObserver,
   ViewStack();
   ~ViewStack() override;
 
-  // Adds a view to the stack and starts animating it in from the right. This
-  // takes ownership of the view and calls set_owned_by_client() on it.
+  // Adds a view to the stack and starts animating it in from the right.
   // If |animate| is false, the view will simply be added to the hierarchy
   // without the sliding animation.
   void Push(std::unique_ptr<views::View> state, bool animate);
@@ -53,7 +52,7 @@ class ViewStack : public views::BoundsAnimatorObserver,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // Returns the top state of the stack.
-  views::View* top() { return stack_.back().get(); }
+  views::View* top() { return stack_.back(); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -80,7 +79,7 @@ class ViewStack : public views::BoundsAnimatorObserver,
 
   // Should be the last member, because views need to be destroyed before other
   // members, and members are destroyed in reverse order of their creation.
-  std::vector<std::unique_ptr<views::View>> stack_;
+  std::vector<views::View*> stack_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewStack);
 };
