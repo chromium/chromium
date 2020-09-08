@@ -21,7 +21,9 @@ class DesksController;
 // each animation type.
 class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
  public:
-  DeskAnimationBase(DesksController* controller, int ending_desk_index);
+  DeskAnimationBase(DesksController* controller,
+                    int ending_desk_index,
+                    bool is_continuous_gesture_animation);
   DeskAnimationBase(const DeskAnimationBase&) = delete;
   DeskAnimationBase& operator=(const DeskAnimationBase&) = delete;
   ~DeskAnimationBase() override;
@@ -35,8 +37,17 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
   void Launch();
 
   // Replaces a current animation with an animation to an adjacent desk. By
-  // default returns false as most animations do not support replacement.
+  // default returns false as most animations do not support replacing.
   virtual bool Replace(bool moving_left, DesksSwitchSource source);
+
+  // Updates a current animation by shifting its animating layer.
+  // |scroll_delta_x| is the amount of scroll change since the last scroll
+  // update event. Returns false if the animation does not support updating.
+  virtual bool Update(float scroll_delta_x);
+
+  // Ends a current animation, animating to a desk determined by the
+  // implementatiaion. Returns false if the animation does not support ending.
+  virtual bool End();
 
   // RootWindowDeskSwitchAnimator::Delegate:
   void OnStartingDeskScreenshotTaken(int ending_desk_index) override;
@@ -67,6 +78,11 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
 
   // The index of the desk that will be active after this animation ends.
   int ending_desk_index_;
+
+  // True if this animation is a continuous gesture animation. Update and End
+  // only work when this is true, and we do not start the animation when
+  // OnEndingDeskScreenshotTaken is called.
+  const bool is_continuous_gesture_animation_;
 
  private:
   // ThroughputTracker used for measuring this animation smoothness.

@@ -30,9 +30,11 @@ ui::Compositor* GetSelectedCompositorForAnimationSmoothness() {
 }  // namespace
 
 DeskAnimationBase::DeskAnimationBase(DesksController* controller,
-                                     int ending_desk_index)
+                                     int ending_desk_index,
+                                     bool is_continuous_gesture_animation)
     : controller_(controller),
       ending_desk_index_(ending_desk_index),
+      is_continuous_gesture_animation_(is_continuous_gesture_animation),
       throughput_tracker_(GetSelectedCompositorForAnimationSmoothness()
                               ->RequestNewThroughputTracker()) {
   DCHECK(controller_);
@@ -64,6 +66,14 @@ void DeskAnimationBase::Launch() {
 }
 
 bool DeskAnimationBase::Replace(bool moving_left, DesksSwitchSource source) {
+  return false;
+}
+
+bool DeskAnimationBase::Update(float scroll_delta_x) {
+  return false;
+}
+
+bool DeskAnimationBase::End() {
   return false;
 }
 
@@ -103,6 +113,12 @@ void DeskAnimationBase::OnEndingDeskScreenshotTaken() {
     if (!animator->ending_desk_screenshot_taken())
       return;
   }
+
+  // Continuous gesture animations do not want to start an animation on
+  // creation/replacement (because they want to update). They will request an
+  // animation explicitly if they need (gesture end).
+  if (is_continuous_gesture_animation_)
+    return;
 
   for (auto& animator : desk_switch_animators_)
     animator->StartAnimation();

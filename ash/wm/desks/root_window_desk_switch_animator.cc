@@ -226,6 +226,17 @@ bool RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
   return true;
 }
 
+bool RootWindowDeskSwitchAnimator::UpdateAnimation(float scroll_delta_x) {
+  // TODO(sammiequon): Fill in here.
+  return false;
+}
+
+void RootWindowDeskSwitchAnimator::EndAnimation() {
+  // TODO(sammiequon): Fill in here. Change |animation_finished_| here for now
+  // so the delegate will delete |this| after this function is called.
+  animation_finished_ = true;
+}
+
 void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {
   // |setting_new_transform_| is true we call SetTransform while an animation is
   // under progress. Do not notify our delegate in that case.

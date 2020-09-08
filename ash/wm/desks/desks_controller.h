@@ -123,6 +123,14 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // do nothing, no desk switch or hit the wall animation.
   bool ActivateAdjacentDesk(bool going_left, DesksSwitchSource source);
 
+  // Functions used by WmGestureHandler to modify the current touchpad desk
+  // animation, if it exists. StartAnimationForGesture starts a new animation to
+  // an adjacent desk, or replaces an existing gesture animation. It returns
+  // true if either of those were successful, false otherwise.
+  bool StartAnimationForGesture(bool move_left);
+  void UpdateAnimationForGesture(float scroll_delta_x);
+  void EndAnimationForGesture();
+
   // Moves |window| (which must belong to the currently active desk) to
   // |target_desk| (which must be a different desk).
   // |target_root| is provided if |window| is desired to be moved to another

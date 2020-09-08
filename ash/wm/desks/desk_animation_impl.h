@@ -25,6 +25,8 @@ class DeskActivationAnimation : public DeskAnimationBase {
 
   // DeskAnimationBase:
   bool Replace(bool moving_left, DesksSwitchSource source) override;
+  bool Update(float scroll_delta_x) override;
+  bool End() override;
   void OnStartingDeskScreenshotTakenInternal(int ending_desk_index) override;
   void OnDeskSwitchAnimationFinishedInternal() override;
   metrics_util::ReportCallback GetReportCallback() const override;

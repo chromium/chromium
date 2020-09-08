@@ -18,6 +18,10 @@ namespace ash {
 
 namespace {
 
+// The amount the fingers must move in a direction before a continuous gesture
+// animation is started. This is to minimize accidental scrolls.
+constexpr int kContinuousGestureMoveThresholdDp = 10;
+
 // Handles vertical 3-finger scroll gesture by entering overview on scrolling
 // up, and exiting it on scrolling down. If entering overview and window cycle
 // list is open, close the window cycle list.
@@ -63,21 +67,26 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
 
 }  // namespace
 
-WmGestureHandler::WmGestureHandler() = default;
+WmGestureHandler::WmGestureHandler()
+    : is_enhanced_desk_animations_(features::IsEnhancedDeskAnimations()) {}
 
 WmGestureHandler::~WmGestureHandler() = default;
 
 bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
+  // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
   if (event.type() == ui::ET_SCROLL_FLING_CANCEL) {
-    scroll_data_ = base::make_optional(ScrollData());
+    scroll_data_ = ScrollData();
     return false;
   }
 
+  // ET_SCROLL_FLING_START means a touchpad swipe has ended.
   if (event.type() == ui::ET_SCROLL_FLING_START) {
     bool success = EndScroll();
     DCHECK(!scroll_data_);
     return success;
   }
+
+  DCHECK_EQ(ui::ET_SCROLL, event.type());
 
   if (!scroll_data_)
     return false;
@@ -89,6 +98,7 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
     return false;
   }
 
+  // There is a finger switch, end the current gesture.
   if (scroll_data_->finger_count != 0 &&
       scroll_data_->finger_count != finger_count) {
     scroll_data_.reset();
@@ -97,6 +107,7 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
 
   scroll_data_->scroll_x += event.x_offset();
   scroll_data_->scroll_y += event.y_offset();
+
   // If the requirements to move the overview selector or the window cycle list
   // selector are met, reset |scroll_data_|. If both are open, move the cycle
   // list's selector.
@@ -105,8 +116,30 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
                                    scroll_data_->scroll_y) ||
       MoveOverviewSelection(finger_count, scroll_data_->scroll_x,
                             scroll_data_->scroll_y);
+
+  if (is_enhanced_desk_animations_ && finger_count == 4) {
+    DCHECK(!moved);
+    // Update the continuous desk animation if it has already been started,
+    // otherwise start it if it passes the threshold.
+    if (scroll_data_->continuous_gesture_started) {
+      DesksController::Get()->UpdateAnimationForGesture(event.x_offset());
+    } else if (std::abs(scroll_data_->scroll_x) >
+               kContinuousGestureMoveThresholdDp) {
+      if (!DesksController::Get()->StartAnimationForGesture(
+              /*move_left=*/event.x_offset() > 0)) {
+        // Starting an animation failed. This can happen if we are on the
+        // lockscreen or an ongoing animation from a different source is
+        // happening. In this case reset |scroll_data_| and wait for the next 4
+        // finger swipe.
+        scroll_data_.reset();
+        return false;
+      }
+      scroll_data_->continuous_gesture_started = true;
+    }
+  }
+
   if (moved)
-    scroll_data_ = base::make_optional(ScrollData());
+    scroll_data_ = ScrollData();
   scroll_data_->finger_count = finger_count;
   return moved;
 }
@@ -115,9 +148,11 @@ bool WmGestureHandler::EndScroll() {
   if (!scroll_data_)
     return false;
 
+  const int finger_count = scroll_data_->finger_count;
   const float scroll_x = scroll_data_->scroll_x;
   const float scroll_y = scroll_data_->scroll_y;
-  const int finger_count = scroll_data_->finger_count;
+  const bool continuous_gesture_started =
+      scroll_data_->continuous_gesture_started;
   scroll_data_.reset();
 
   if (finger_count == 0)
@@ -130,7 +165,16 @@ bool WmGestureHandler::EndScroll() {
     return MoveOverviewSelection(finger_count, scroll_x, scroll_y);
   }
 
-  return finger_count == 4 && HandleDesksSwitchHorizontalScroll(scroll_x);
+  if (finger_count != 4)
+    return false;
+
+  if (!is_enhanced_desk_animations_)
+    return HandleDesksSwitchHorizontalScroll(scroll_x);
+
+  if (continuous_gesture_started)
+    DesksController::Get()->EndAnimationForGesture();
+
+  return continuous_gesture_started;
 }
 
 bool WmGestureHandler::MoveOverviewSelection(int finger_count,

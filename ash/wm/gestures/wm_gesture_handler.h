@@ -6,7 +6,6 @@
 #define ASH_WM_GESTURES_WM_GESTURE_HANDLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/optional.h"
 
 namespace ui {
@@ -26,19 +25,29 @@ class ASH_EXPORT WmGestureHandler {
   static constexpr float kHorizontalThresholdDp = 330.f;
 
   WmGestureHandler();
+  WmGestureHandler(const WmGestureHandler&) = delete;
+  WmGestureHandler& operator=(const WmGestureHandler&) = delete;
   virtual ~WmGestureHandler();
 
   // Processes a scroll event and may switch desks, start overview or move the
   // overivew highlight. Returns true if the event has been handled and should
-  // not be processed further, false otherwise.
+  // not be processed further, false otherwise. Forwards events to
+  // DesksController if |is_enhanced_desk_animations_| is true.
   bool ProcessScrollEvent(const ui::ScrollEvent& event);
 
  private:
   // A struct containing the relevant data during a scroll session.
   struct ScrollData {
     int finger_count = 0;
+
+    // Values are cumulative (ex. |scroll_x| is the total x distance moved
+    // since the scroll began.
     float scroll_x = 0.f;
     float scroll_y = 0.f;
+
+    // Continuous gestures need to first pass a threshold before we update the
+    // UI. We still update this struct before that happens.
+    bool continuous_gesture_started = false;
   };
 
   // Called when a scroll is ended. Returns true if the scroll is processed.
@@ -63,7 +72,8 @@ class ASH_EXPORT WmGestureHandler {
   // Contains the data during a scroll session. Empty is no scroll is underway.
   base::Optional<ScrollData> scroll_data_;
 
-  DISALLOW_COPY_AND_ASSIGN(WmGestureHandler);
+  // True when the enhanced desk animations feature is enabled.
+  const bool is_enhanced_desk_animations_;
 };
 
 }  // namespace ash

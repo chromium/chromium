@@ -4,9 +4,11 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
@@ -21,6 +23,11 @@ constexpr char kDeskActivationSmoothnessHistogramName[] =
 constexpr char kDeskRemovalSmoothnessHistogramName[] =
     "Ash.Desks.AnimationSmoothness.DeskRemoval";
 
+bool IsForContinuousGestures(DesksSwitchSource source) {
+  return source == DesksSwitchSource::kDeskSwitchTouchpad &&
+         features::IsEnhancedDeskAnimations();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -30,7 +37,10 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
                                                  int starting_desk_index,
                                                  int ending_desk_index,
                                                  DesksSwitchSource source)
-    : DeskAnimationBase(controller, ending_desk_index), switch_source_(source) {
+    : DeskAnimationBase(controller,
+                        ending_desk_index,
+                        IsForContinuousGestures(source)),
+      switch_source_(source) {
   for (auto* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
@@ -87,6 +97,28 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   PrepareDeskForScreenshot(new_ending_desk_index);
   for (auto* animator : pending_animators)
     animator->TakeEndingDeskScreenshot();
+  return true;
+}
+
+bool DeskActivationAnimation::Update(float scroll_delta_x) {
+  if (!is_continuous_gesture_animation_)
+    return false;
+
+  for (const auto& animator : desk_switch_animators_)
+    animator->UpdateAnimation(scroll_delta_x);
+  return true;
+}
+
+bool DeskActivationAnimation::End() {
+  if (!is_continuous_gesture_animation_)
+    return false;
+
+  for (const auto& animator : desk_switch_animators_)
+    animator->EndAnimation();
+
+  // TODO(sammiequon): Remove this, this is temporary so we can destroy |this|
+  // before Update and End get filled out.
+  OnDeskSwitchAnimationFinished();
   return true;
 }
 
@@ -150,7 +182,9 @@ DeskRemovalAnimation::DeskRemovalAnimation(DesksController* controller,
                                            int desk_to_remove_index,
                                            int desk_to_activate_index,
                                            DesksCreationRemovalSource source)
-    : DeskAnimationBase(controller, desk_to_activate_index),
+    : DeskAnimationBase(controller,
+                        desk_to_activate_index,
+                        /*is_continuous_gesture_animation=*/false),
       desk_to_remove_index_(desk_to_remove_index),
       request_source_(source) {
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());

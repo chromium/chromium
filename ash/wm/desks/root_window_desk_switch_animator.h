@@ -219,6 +219,16 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   // to be taken.
   bool ReplaceAnimation(int new_ending_desk_index);
 
+  // Called as a user is performing a touchpad swipe. Requests a new screenshot
+  // if necessary based on the last direction as specified in |scroll_delta_x|.
+  // |scroll_delta_x| is in touchpad units, it will be converted to display
+  // units and then used to shift the animation layer.
+  bool UpdateAnimation(float scroll_delta_x);
+
+  // Called when a user ends a touchpad gesture. This will animate to the most
+  // visible desk.
+  void EndAnimation();
+
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
