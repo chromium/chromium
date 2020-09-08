@@ -674,45 +674,46 @@ TEST_F(NetworkContextTest, QuicUserAgentId) {
                                   ->user_agent_id);
 }
 
-TEST_F(NetworkContextTest, DataUrlSupport) {
-  mojom::NetworkContextParamsPtr context_params = CreateContextParams();
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(context_params));
-  EXPECT_FALSE(
-      network_context->url_request_context()->job_factory()->IsHandledProtocol(
-          url::kDataScheme));
-}
+TEST_F(NetworkContextTest, UnhandedProtocols) {
+  const GURL kUnsupportedUrls[] = {
+      // These are handled outside the network service.
+      GURL("data:,foo"),
+      GURL("file:///not/a/path/that/leads/anywhere/but/it/should/not/matter/"
+           "anyways"),
 
-TEST_F(NetworkContextTest, FileUrlSupportDisabled) {
-  mojom::NetworkContextParamsPtr context_params = CreateContextParams();
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(context_params));
-  EXPECT_FALSE(
-      network_context->url_request_context()->job_factory()->IsHandledProtocol(
-          url::kFileScheme));
-}
+      // FTP is handled by the network service on some platforms, but support
+      // for it is not enabled by default.
+      GURL("ftp://foo.test/"),
+  };
 
-TEST_F(NetworkContextTest, DisableFtpUrlSupport) {
-  mojom::NetworkContextParamsPtr context_params = CreateContextParams();
-  context_params->enable_ftp_url_support = false;
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(context_params));
-  EXPECT_FALSE(
-      network_context->url_request_context()->job_factory()->IsHandledProtocol(
-          url::kFtpScheme));
-}
+  for (const GURL& url : kUnsupportedUrls) {
+    mojom::NetworkContextParamsPtr context_params = CreateContextParams();
+    std::unique_ptr<NetworkContext> network_context =
+        CreateContextWithParams(std::move(context_params));
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-TEST_F(NetworkContextTest, EnableFtpUrlSupport) {
-  mojom::NetworkContextParamsPtr context_params = CreateContextParams();
-  context_params->enable_ftp_url_support = true;
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(context_params));
-  EXPECT_TRUE(
-      network_context->url_request_context()->job_factory()->IsHandledProtocol(
-          url::kFtpScheme));
+    mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+    mojom::URLLoaderFactoryParamsPtr params =
+        mojom::URLLoaderFactoryParams::New();
+    params->process_id = mojom::kBrowserProcessId;
+    params->is_corb_enabled = false;
+    network_context->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    TestURLLoaderClient client;
+    ResourceRequest request;
+    request.url = url;
+    loader_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
+        0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilComplete();
+    EXPECT_TRUE(client.has_received_completion());
+    EXPECT_EQ(net::ERR_UNKNOWN_URL_SCHEME,
+              client.completion_status().error_code);
+  }
 }
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
 #if BUILDFLAG(ENABLE_REPORTING)
 TEST_F(NetworkContextTest, DisableReporting) {

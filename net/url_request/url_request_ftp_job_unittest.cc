@@ -125,10 +125,6 @@ class MockURLRequestFtpJobFactory : public URLRequestJobFactory {
     return new URLRequestFtpJob(request, network_delegate, factory, auth_cache);
   }
 
-  bool IsHandledProtocol(const std::string& scheme) const override {
-    return scheme == "ftp";
-  }
-
   bool IsSafeRedirectTarget(const GURL& location) const override {
     return true;
   }

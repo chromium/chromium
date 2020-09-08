@@ -29,11 +29,6 @@ net::URLRequestJob* URLRequestInterceptingJobFactory::CreateJob(
   return job_factory_->CreateJob(request, network_delegate);
 }
 
-bool URLRequestInterceptingJobFactory::IsHandledProtocol(
-    const std::string& scheme) const {
-  return job_factory_->IsHandledProtocol(scheme);
-}
-
 bool URLRequestInterceptingJobFactory::IsSafeRedirectTarget(
     const GURL& location) const {
   return job_factory_->IsSafeRedirectTarget(location);

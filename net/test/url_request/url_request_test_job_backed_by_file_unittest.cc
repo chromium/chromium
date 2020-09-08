@@ -125,10 +125,6 @@ class TestJobFactory : public URLRequestJobFactory {
     return job;
   }
 
-  bool IsHandledProtocol(const std::string& scheme) const override {
-    return scheme == "file";
-  }
-
   bool IsSafeRedirectTarget(const GURL& location) const override {
     return false;
   }

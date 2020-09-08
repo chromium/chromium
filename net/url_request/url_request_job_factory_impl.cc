@@ -97,12 +97,6 @@ URLRequestJob* URLRequestJobFactoryImpl::CreateJob(
   return it->second->MaybeCreateJob(request, network_delegate);
 }
 
-bool URLRequestJobFactoryImpl::IsHandledProtocol(
-    const std::string& scheme) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::Contains(protocol_handler_map_, scheme);
-}
-
 bool URLRequestJobFactoryImpl::IsSafeRedirectTarget(
     const GURL& location) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
