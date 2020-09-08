@@ -64969,7 +64969,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessagePayloadSize" units="units"
-    expires_after="2020-10-11">
+    expires_after="2021-02-14">
   <owner>alexchau@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
