@@ -84,6 +84,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 // trigger the infinite feed.
 @property(nonatomic, assign) CGFloat discoverFeedHeight;
 
+// Whether this VC is observing the discoverFeedHeight using KVO or not.
+@property(nonatomic, assign) BOOL observingDiscoverFeedHeight;
+
 @end
 
 @implementation ContentSuggestionsViewController
@@ -115,11 +118,11 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 }
 
 - (void)dealloc {
-  // Only remove the FeedVC and observer if it was actually added to the
-  // hierarchy. |self.discoverFeedVC| is only added to the hierarchy at the same
-  // time the KVO observer is added to |self.feedView|, so its safe to remove.
-  if (self.discoverFeedVC.parentViewController) {
+  if (self.observingDiscoverFeedHeight) {
     [self.feedView removeObserver:self forKeyPath:@"contentSize"];
+    self.observingDiscoverFeedHeight = NO;
+  }
+  if (self.discoverFeedVC.parentViewController) {
     [self.discoverFeedVC willMoveToParentViewController:nil];
     [self.discoverFeedVC.view removeFromSuperview];
     [self.discoverFeedVC removeFromParentViewController];
@@ -433,6 +436,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
       // osberving its feedView.
       if (self.discoverFeedVC) {
         [self.feedView removeObserver:self forKeyPath:@"contentSize"];
+        self.observingDiscoverFeedHeight = NO;
         [self.discoverFeedVC willMoveToParentViewController:nil];
         [self.discoverFeedVC.view removeFromSuperview];
         [self.discoverFeedVC removeFromParentViewController];
@@ -455,6 +459,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
                         forKeyPath:@"contentSize"
                            options:0
                            context:nil];
+        self.observingDiscoverFeedHeight = YES;
         self.discoverFeedVC = newFeedViewController;
         return cell;
       }
