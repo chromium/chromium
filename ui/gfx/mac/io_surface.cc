@@ -70,7 +70,9 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
   return 0;
 }
 
-int32_t PixelFormat(gfx::BufferFormat format) {
+}  // namespace
+
+uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::R_8:
       return 'L008';
@@ -95,15 +97,12 @@ int32_t PixelFormat(gfx::BufferFormat format) {
     // Technically RGBA_1010102 should be accepted as 'R10k', but then it won't
     // be supported by CGLTexImageIOSurface2D(), so it's best to reject it here.
     case gfx::BufferFormat::YVU_420:
-      NOTREACHED();
       return 0;
   }
 
   NOTREACHED();
   return 0;
 }
-
-}  // namespace
 
 namespace internal {
 
@@ -236,7 +235,8 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
                                 &kCFTypeDictionaryValueCallBacks));
   AddIntegerValue(properties, kIOSurfaceWidth, size.width());
   AddIntegerValue(properties, kIOSurfaceHeight, size.height());
-  AddIntegerValue(properties, kIOSurfacePixelFormat, PixelFormat(format));
+  AddIntegerValue(properties, kIOSurfacePixelFormat,
+                  BufferFormatToIOSurfacePixelFormat(format));
   if (num_planes > 1) {
     CFDictionaryAddValue(properties, kIOSurfacePlaneInfo, planes);
   } else {

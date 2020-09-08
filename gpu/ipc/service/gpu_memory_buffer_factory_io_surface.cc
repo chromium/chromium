@@ -127,14 +127,32 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     IOSurfaceMap::iterator it = io_surfaces_.find(key);
     if (it != io_surfaces_.end())
       io_surface = it->second;
-  } else if (gpu::IsReservedClientId(client_id) && handle.mach_port) {
-    // Use the handle's Mach port, if it was specified by an internal
-    // client.
+  } else if (handle.mach_port) {
     io_surface.reset(IOSurfaceLookupFromMachPort(handle.mach_port.get()));
+    if (!io_surface) {
+      DLOG(ERROR) << "Failed to open IOSurface from handle.";
+      return nullptr;
+    }
+    // Ensure that the IOSurface has the same size and pixel format as those
+    // specified by |size| and |format|. A malicious client could lie about
+    // |size| or |format|, which, if subsequently used to determine parameters
+    // for bounds checking, could result in an out-of-bounds memory access.
+    uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
+    gfx::Size io_surface_size(IOSurfaceGetWidthOfPlane(io_surface, 0),
+                              IOSurfaceGetHeightOfPlane(io_surface, 0));
+    if (io_surface_format != BufferFormatToIOSurfacePixelFormat(format)) {
+      DLOG(ERROR)
+          << "IOSurface pixel format does not match specified buffer format.";
+      return nullptr;
+    }
+    if (io_surface_size != size) {
+      DLOG(ERROR) << "IOSurface size does not match specified size.";
+      return nullptr;
+    }
   }
   if (!io_surface) {
     DLOG(ERROR) << "Failed to find IOSurface based on key or handle.";
-    return scoped_refptr<gl::GLImage>();
+    return nullptr;
   }
 
   unsigned internalformat = gl::BufferFormatToGLInternalFormat(format);
