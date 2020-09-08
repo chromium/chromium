@@ -8612,7 +8612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.StateTransition.AnimationSmoothness" units="%"
-    expires_after="2021-01-03">
+    expires_after="2021-03-07">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" and
      name="EnterOrExitOverview" and
@@ -9246,7 +9246,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.OOMKills.Count" units="kills" expires_after="2021-01-03">
+<histogram name="Arc.OOMKills.Count" units="kills" expires_after="2021-03-07">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>Cumulative count of OOM kills in one user session.</summary>
@@ -34825,7 +34825,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2021-01-03">
+    enum="CrosDisksClientFormatError" expires_after="2021-03-07">
   <owner>austinct@chromium.org</owner>
   <summary>
     The error code of disk format signals received from the Chrome OS cros-disks
@@ -36742,7 +36742,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.Errors" enum="CryptohomeError"
-    expires_after="2021-01-03">
+    expires_after="2021-03-07">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Cryptohome errors.</summary>
@@ -36962,7 +36962,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.ParallelTasks" units="count"
-    expires_after="2021-01-01">
+    expires_after="2021-03-07">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -37127,7 +37127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.TimeToTakeTpmOwnership" units="ms"
-    expires_after="2021-01-03">
+    expires_after="2021-03-07">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -37145,7 +37145,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2021-01-03">
+<histogram name="CryptohomeClient" units="ms" expires_after="2021-03-07">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -77427,7 +77427,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.PromptToCompleteLoginTime" units="ms"
-    expires_after="2021-01-01">
+    expires_after="2021-03-07">
   <owner>rsorokin@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -153357,7 +153357,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SB2.RemoteCall.CanCheckUrl" enum="BooleanCanCheckUrl"
-    expires_after="2021-01-03">
+    expires_after="2021-03-07">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -168921,7 +168921,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementType"
-    enum="SiteEngagementServiceEngagementType" expires_after="2021-01-01">
+    enum="SiteEngagementServiceEngagementType" expires_after="2021-03-07">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -175494,7 +175494,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
-    enum="ActivationList" expires_after="2021-01-03">
+    enum="ActivationList" expires_after="2021-03-07">
   <owner>csharrison@chromium.org</owner>
   <summary>
     The ActivationList or NONE that the main frame navigation matched with.
@@ -188792,7 +188792,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeExecute" units="microseconds"
-    expires_after="2020-12-31">
+    expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188804,7 +188804,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeFinalize" units="microseconds"
-    expires_after="2020-12-31">
+    expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188816,7 +188816,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementExecute"
-    units="microseconds" expires_after="2020-12-31">
+    units="microseconds" expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188829,7 +188829,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementFinalize"
-    units="microseconds" expires_after="2020-12-31">
+    units="microseconds" expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188842,7 +188842,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementPrepare"
-    units="microseconds" expires_after="2020-12-31">
+    units="microseconds" expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188855,7 +188855,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementTotalTime"
-    units="microseconds" expires_after="2020-12-31">
+    units="microseconds" expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188880,7 +188880,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizePrepare" units="microseconds"
-    expires_after="2020-12-31">
+    expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188892,7 +188892,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalBackground" units="microseconds"
-    expires_after="2020-12-31">
+    expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -188916,7 +188916,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalTime" units="microseconds"
-    expires_after="2020-12-31">
+    expires_after="2021-03-07">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -195568,7 +195568,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Audio.ExpandRatePercent" units="%"
-    expires_after="2021-01-03">
+    expires_after="2021-03-07">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Measures the expand rate for an incoming WebRTC audio stream. The expand
@@ -195670,7 +195670,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Audio.ResidualEchoDetector.EchoLikelihood" units="%"
-    expires_after="2020-12-06">
+    expires_after="2021-03-07">
   <owner>hlundin@chromium.org</owner>
   <owner>ivoc@chromium.org</owner>
   <summary>
