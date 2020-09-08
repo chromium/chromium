@@ -630,6 +630,7 @@ js_compile_bundle("all_frames_web_bundle") {
     "web_state/js/resources/common.js",
     "web_state/js/resources/cookie.js",
     "web_state/js/resources/find_in_page.js",
+    "web_state/js/resources/share_workaround.js",
   ]
 }
 
