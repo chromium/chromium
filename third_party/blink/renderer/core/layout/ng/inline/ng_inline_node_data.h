@@ -22,10 +22,7 @@ struct CORE_EXPORT NGInlineNodeData : NGInlineItemsData {
     return static_cast<TextDirection>(base_direction_);
   }
 
-  bool HasGeneratedBreakOpportunity() const {
-    return has_generated_break_opportunity_;
-  }
-
+  bool CanUseFastEditing() const { return can_use_fast_editing_; }
   bool HasLineEvenIfEmpty() const { return has_line_even_if_empty_; }
   bool HasRuby() const { return has_ruby_; }
   bool IsEmptyInline() const { return is_empty_inline_; }
@@ -62,9 +59,8 @@ struct CORE_EXPORT NGInlineNodeData : NGInlineItemsData {
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection
 
-  // True if text content has U+200B, zero width space, representing generated
-  // break opportunity.
-  unsigned has_generated_break_opportunity_ : 1;
+  // True if we can use fast editing path.
+  unsigned can_use_fast_editing_ : 1;
 
   // True if there are no inline item items and the associated block is root
   // editable element or having "-internal-empty-line-height:fabricated",

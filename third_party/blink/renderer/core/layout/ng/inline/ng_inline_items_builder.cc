@@ -277,7 +277,6 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        nullptr);
   NGInlineItem& item = AppendBreakOpportunity(layout_object);
-  has_generated_break_opportunity_ = true;
   item.SetIsGeneratedForLineBreak();
   item.SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
 }
@@ -568,6 +567,7 @@ void NGInlineItemsBuilderTemplate<
           // after a forced break.
           if (item->Type() != NGInlineItem::kControl ||
               text_[item->StartOffset()] != kNewlineCharacter) {
+            can_use_fast_editing_ = false;
             AppendGeneratedBreakOpportunity(layout_object);
           }
         }
@@ -1240,7 +1240,7 @@ void NGInlineItemsBuilderTemplate<
   // |SegmentText()| will analyze the text and reset |is_bidi_enabled_| if it
   // doesn't contain any RTL characters.
   data->is_bidi_enabled_ = MayBeBidiEnabled();
-  data->has_generated_break_opportunity_ = HasGeneratedBreakOpportunity();
+  data->can_use_fast_editing_ = CanUseFastEditing();
   // Note: Even if |IsEmptyInline()| is true, |text_| isn't empty, e.g. it
   // holds U+FFFC(ORC) for float or abspos.
   data->has_line_even_if_empty_ =
