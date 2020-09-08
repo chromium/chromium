@@ -78,15 +78,12 @@ bool IsLacrosAllowed(Channel channel) {
 
   switch (channel) {
     case Channel::UNKNOWN:
-      // Developer builds can use lacros.
-      return true;
     case Channel::CANARY:
     case Channel::DEV:
-    case Channel::BETA: {
-      std::string canonical_email = user->GetAccountId().GetUserEmail();
-      return base::EndsWith(canonical_email, "google.com",
-                            base::CompareCase::INSENSITIVE_ASCII);
-    }
+    case Channel::BETA:
+      // Canary/dev/beta builds can use Lacros.
+      // Developer builds can use lacros.
+      return true;
     case Channel::STABLE:
       return false;
   }

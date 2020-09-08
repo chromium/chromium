@@ -39,28 +39,12 @@ class LacrosUtilTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
-TEST_F(LacrosUtilTest, AllowedForDeveloperBuild) {
+TEST_F(LacrosUtilTest, ChannelTest) {
   AddRegularUser("user@test.com");
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::UNKNOWN));
-}
-
-TEST_F(LacrosUtilTest, BlockedForRegularUser) {
-  AddRegularUser("user@test.com");
-  EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::CANARY));
-  EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::DEV));
-  EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::BETA));
-  EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::STABLE));
-}
-
-TEST_F(LacrosUtilTest, AllowedForGoogler) {
-  AddRegularUser("user@google.com");
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::CANARY));
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::DEV));
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::BETA));
-}
-
-TEST_F(LacrosUtilTest, BlockedForGoogler) {
-  AddRegularUser("user@google.com");
   EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::STABLE));
 }
 
