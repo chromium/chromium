@@ -837,7 +837,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @DisableIf.Build(hardware_is = "bullhead", message = "https://crbug.com/1119322")
+    @DisabledTest(message = "https://crbug.com/1119322")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/open_ntp_instead_of_start/true"})
     public void testHomeButton_OpenNTPInsteadOfStart() {
         // clang-format on
