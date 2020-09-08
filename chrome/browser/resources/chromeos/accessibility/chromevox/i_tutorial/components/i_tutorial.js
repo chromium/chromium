@@ -98,14 +98,11 @@ Polymer({
       type: Array,
       value: [
         {
-          content: [`Welcome to the ChromeVox tutorial. We noticed this might be
-            your first time using ChromeVox, so let's quickly cover the
-            basics. To exit this tutorial at any time, press the Escape
-            key, which is located in the top left corner of the
-            keyboard. To turn off ChromeVox, exit this tutorial and press
-            Control, Alt, and Z
-            at the same time. When you're ready, use the space bar to move
-            to the next lesson.`],
+          content: [`Welcome to the ChromeVox tutorial. To exit this tutorial
+            at any time, press the Escape key on the top left corner
+            of the keyboard. To turn off ChromeVox, hold Control and Alt, and
+            press Z. When you're ready, use the spacebar to move to the next
+            lesson.`],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
           actions: [
@@ -115,12 +112,10 @@ Polymer({
         },
 
         {
-          content:
-              [`Let's start with the keyboard layout. There are a few keys that
-            are crucial to know when using ChromeVox: Control, Shift,
-            Search, and the Arrow keys. To continue to the next lesson,
-            find and press the Control key, which is located in the bottom
-            left corner of the keyboard`],
+          content: [`Let's start with a few keys you'll use regularly: Control,
+            Shift, Search, and the Arrow keys. Find the Control key on the
+            bottom left corner of your keyboard. To continue, press the Control
+            key.`],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
           actions: [
@@ -130,11 +125,10 @@ Polymer({
         },
 
         {
-          content:
-              [`The Control key can be used at any time to silence any current
-            speech; please note, it does not prevent any new speech from being
-            announced. To continue to the next lesson, find and press
-            the left Shift key, which is directly above the Control key.`],
+          content: [`The Control key can be used at any time to temporarily stop
+            ChromeVox from speaking. Now, find the left Shift key, which is
+            directly above the Control key. To continue, press the left Shift
+            key.`],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
           actions: [
@@ -145,14 +139,11 @@ Polymer({
 
         {
           content:
-              [`We'll talk more about the shift key in later lessons, as it is
-            used in many ChromeVox commands. Let's
-            move on to the Search Key, which is arguably the most important
-            key to know when using ChromeVox. In ChromeVox, the Search key
-            is the modifier key. Most ChromeVox shortcuts start with the
-            Search key. On a Chromebook, the Search key is immediately
-            above the left Shift key. To continue to the next lesson,
-            find and press the Search key.`],
+              [`We'll talk more about the Shift key in later lessons, as it is
+            used in many ChromeVox commands. Next, you’ll learn about the
+            Search key. The Search key is used in combination with other keys
+            for ChromeVox commands. The Search key is immediately above the
+            left Shift key. To continue, press the Search key.`],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
           actions: [{
@@ -165,15 +156,11 @@ Polymer({
 
         {
           content: [
-            `Now that you know where the search key is, let's learn
-              some basic navigation. While holding search, use the arrow
-              keys to move ChromeVox around the screen. Press Search +
-              right arrow to move to the next instruction`,
-            `You can use Search + right arrow and search + left arrow to
-                move ChromeVox around the screen. Try pressing Search +
-                right arrow again.`,
+            `Now you’ll learn some basic navigation. You can hold Search and
+              press the arrow keys to move around the screen. To continue,
+              press Search + Right arrow.`,
             `If you reach an item you want to click, press Search + Space.
-                Try doing so now to move to the next lesson`,
+              Try it now to continue.`,
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
@@ -185,10 +172,6 @@ Polymer({
             },
             {
               type: 'key_sequence',
-              value: {cvoxModifier: true, keys: {keyCode: [39]}},
-            },
-            {
-              type: 'key_sequence',
               value: {cvoxModifier: true, keys: {keyCode: [32]}},
               afterActionMsg: 'Great! You pressed Search + space',
             }
@@ -197,13 +180,11 @@ Polymer({
         },
 
         {
-          content: [`In addition to ChromeVox navigation, you can also
-            use built-in keyboard commands to navigate the screen. ChromeVox
-            will respect these commands and they work even when ChromeVox is
-            off. The first example we have is Tab. Pressing Tab will move
-            keyboard focus, which ChromeVox will follow, to the next focusable
-            element. Try pressing the Tab key, which is located directly above
-            the Search key.`],
+          content: [
+            `You can also use the Tab key to move to the next interactive item
+            on the screen. Find the Tab key, which is directly above the Search
+            key. To continue, press the Tab key.`
+          ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
           actions: [{
@@ -216,8 +197,8 @@ Polymer({
 
         {
           content: [
-            `You can use Tab + Shift to move to the previous focusable element.
-            Try pressing the two together to move to the next lesson.`
+            `You can use Shift + Tab to move to the previous interactive item.
+            To continue, press Shift + Tab. `
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
@@ -229,10 +210,9 @@ Polymer({
         },
 
         {
-          content: [`Similar to using Search + Space, you can also use Enter to
-            activate elements. For example, Enter can be used to submit
-            text in a form field. Try pressing Enter now to move to the next
-            lesson.`],
+          content: [`You can also press Enter to activate items. For example,
+            Enter can be used to submit text in a form. To continue, press
+            Enter.`],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
           actions: [
@@ -242,18 +222,21 @@ Polymer({
         },
 
         {
-          content: [`Lastly, you will frequently encounter elements which
-            require you to select an item out of a list of choices. You can use
-            the up and down arrow keys to cycle through items. When you've found
-            the item you want to choose, you can simply stop pressing the arrow
-            keys. If you wish to practice this skill, find the Practice Area
-            button and press Enter or Search + Space to activate it. Otherwise,
-            find and press the Next Lesson button.`],
+          content: [
+            `There will be times when you need to select an item from a
+              drop-down list. To do so, first expand the list by pressing Enter
+              or Search + Space. Then use the Up and Down arrow keys to select
+              an item. Finally, collapse the list by pressing Enter or Search +
+              Space.`,
+            `You can try this out in the Practice Area. To continue, use Search
+              + Right or Tab to find the Next lesson button. Then press Search
+              + Space or Enter to activate.`
+          ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
-          practiceTitle: 'Practice Using Drop-Down Lists',
+          practiceTitle: 'Practice area: Drop-down lists',
           practiceInstructions:
-              `Try setting your favorite season from the list below.`,
+              `Try selecting your favorite season from the list.`,
           practiceFile: 'selects',
           practiceState: {},
           events: [],
@@ -263,11 +246,11 @@ Polymer({
         {
           title: 'Basic orientation complete!',
           content: [
-            `Well done! You have learned the basics of ChromeVox. You can
-                replay the basic orientation or exit this tutorial by
-                finding and activating the respective button below.`,
-            `After you setup your device, you can come back to this tutorial
-                and view more lessons by pressing Search + O, then T.`,
+            `Well done! You’ve learned the ChromeVox basics. You can go through
+              the tutorial again or exit this tutorial by finding and clicking
+              on a button below.`,
+            `After you set up your device, you can come back to this tutorial
+              and view more lessons by pressing Search + O, then T.`,
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.OOBE],
