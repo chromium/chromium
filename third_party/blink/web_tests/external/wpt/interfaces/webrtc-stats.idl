@@ -96,10 +96,12 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
  unsigned long        firCount;
  unsigned long        pliCount;
  unsigned long        sliCount;
+ double               totalProcessingDelay;
  DOMHighResTimeStamp  estimatedPlayoutTimestamp;
  double               jitterBufferDelay;
  unsigned long long   jitterBufferEmittedCount;
  unsigned long long   totalSamplesReceived;
+ unsigned long long   totalSamplesDecoded;
  unsigned long long   samplesDecodedWithSilk;
  unsigned long long   samplesDecodedWithCelt;
  unsigned long long   concealedSamples;
