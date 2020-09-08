@@ -1,0 +1,50 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "//chrome/browser/ui/ash/holding_space/holding_space_client_impl_browsertest.cc",
+    "//chrome/browser/ui/ash/holding_space/holding_space_keyed_service_browsertest.cc",
+    "//chrome/browser/ui/ash/holding_space/holding_space_ui_browsertest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "//chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.cc",
+    "//chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h",
+  ]
+
+  deps = [
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/test:test_support_ui",
+    "//ui/views",
+  ]
+}

@@ -13,14 +13,18 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/system/user/rounded_image_view.h"
-#include "ui/gfx/canvas.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace ash {
@@ -34,7 +38,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   image_ =
       AddChildView(std::make_unique<tray::RoundedImageView>(kTrayItemSize / 2));
 
-  label_ = AddChildView(std::make_unique<views::Label>());
+  label_ = AddChildView(std::make_unique<views::Label>(item_->text()));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   layout->SetFlexForView(label_, 1);
 
@@ -46,22 +50,37 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  SetBackground(views::CreateRoundedRectBackground(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
+      kHoldingSpaceChipCornerRadius));
+
+  GetViewAccessibility().OverrideName(item_->text());
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   set_ink_drop_visible_opacity(ShelfConfig::Get()->GetInkDropVisibleOpacity());
   set_notify_enter_exit_on_child(true);
+
+  // Ink drop layers should be clipped to match the corner radius of this view.
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kHoldingSpaceChipCornerRadius);
 
   Update();
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 
-const char* HoldingSpaceItemChipView::GetClassName() const {
-  return "HoldingSpaceItemChipView";
-}
-
 SkColor HoldingSpaceItemChipView::GetInkDropBaseColor() const {
   return ShelfConfig::Get()->GetInkDropBaseColor();
+}
+
+int HoldingSpaceItemChipView::GetDragOperations(const gfx::Point& point) {
+  return ui::DragDropTypes::DRAG_COPY;
+}
+
+void HoldingSpaceItemChipView::WriteDragData(const gfx::Point& point,
+                                             ui::OSExchangeData* data) {
+  data->SetFilename(item_->file_path());
 }
 
 void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
@@ -76,22 +95,6 @@ void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
       break;
   }
   views::InkDropHostView::OnMouseEvent(event);
-}
-
-void HoldingSpaceItemChipView::OnPaint(gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  SkColor color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  flags.setColor(color);
-
-  canvas->DrawRoundRect(GetContentsBounds(), kHoldingSpaceChipCornerRadius,
-                        flags);
-
-  views::InkDropHostView::OnPaint(canvas);
 }
 
 void HoldingSpaceItemChipView::ButtonPressed(views::Button* sender,
@@ -120,7 +123,9 @@ void HoldingSpaceItemChipView::AddPinButton() {
 
 void HoldingSpaceItemChipView::Update() {
   image_->SetImage(item_->image().image_skia(), {kTrayItemSize, kTrayItemSize});
-  label_->SetText(item_->text());
 }
+
+BEGIN_METADATA(HoldingSpaceItemChipView, views::InkDropHostView)
+END_METADATA
 
 }  // namespace ash

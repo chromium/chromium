@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Label;
@@ -27,16 +28,18 @@ class RoundedImageView;
 class ASH_EXPORT HoldingSpaceItemChipView : public views::InkDropHostView,
                                             public views::ButtonListener {
  public:
+  METADATA_HEADER(HoldingSpaceItemChipView);
+
   explicit HoldingSpaceItemChipView(const HoldingSpaceItem* item);
   HoldingSpaceItemChipView(const HoldingSpaceItemChipView&) = delete;
   HoldingSpaceItemChipView& operator=(const HoldingSpaceItemChipView&) = delete;
   ~HoldingSpaceItemChipView() override;
 
   // views::InkDropHostView:
-  const char* GetClassName() const override;
   SkColor GetInkDropBaseColor() const override;
+  int GetDragOperations(const gfx::Point& point) override;
+  void WriteDragData(const gfx::Point& point, ui::OSExchangeData*) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnPaint(gfx::Canvas* canvas) override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;

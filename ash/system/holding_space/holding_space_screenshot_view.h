@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_SCREENSHOT_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,6 +19,8 @@ class RoundedImageView;
 
 class ASH_EXPORT HoldingSpaceScreenshotView : public views::View {
  public:
+  METADATA_HEADER(HoldingSpaceScreenshotView);
+
   explicit HoldingSpaceScreenshotView(const HoldingSpaceItem* item);
   HoldingSpaceScreenshotView(const HoldingSpaceScreenshotView&) = delete;
   HoldingSpaceScreenshotView& operator=(const HoldingSpaceScreenshotView&) =
@@ -25,7 +28,8 @@ class ASH_EXPORT HoldingSpaceScreenshotView : public views::View {
   ~HoldingSpaceScreenshotView() override;
 
   // views::View:
-  const char* GetClassName() const override;
+  int GetDragOperations(const gfx::Point& point) override;
+  void WriteDragData(const gfx::Point& point, ui::OSExchangeData*) override;
 
  private:
   void Update();

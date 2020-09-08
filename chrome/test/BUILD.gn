@@ -1588,6 +1588,7 @@ if (!is_android) {
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
+        "//chrome/browser/ui/ash/holding_space:browser_tests",
         "//chrome/services/file_util/public/cpp:browser_tests",
         "//chromeos:test_support",
         "//chromeos/components/drivefs:test_support",
@@ -1620,8 +1621,6 @@ if (!is_android) {
         "../browser/policy/suggested_content_policy_browsertest.cc",
         "../browser/policy/system_features_policy_browsertest.cc",
         "../browser/renderer_context_menu/quick_answers_menu_observer_browsertest.cc",
-        "../browser/ui/ash/holding_space/holding_space_client_impl_browsertest.cc",
-        "../browser/ui/ash/holding_space/holding_space_keyed_service_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
       ]
     }

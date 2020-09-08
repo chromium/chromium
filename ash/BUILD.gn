@@ -2367,6 +2367,7 @@ static_library("test_support") {
     "//ash/public/cpp/external_arc:*",
   ]
   public = [
+    "public/cpp/holding_space/holding_space_test_api.h",
     "public/cpp/test/accessibility_controller_test_api.h",
     "public/cpp/test/assistant_test_api.h",
   ]
@@ -2447,6 +2448,7 @@ static_library("test_support") {
     "shelf/test/widget_animation_waiter.cc",
     "shelf/test/widget_animation_waiter.h",
     "shell_test_api.cc",
+    "system/holding_space/holding_space_test_api.cc",
     "system/message_center/test_notifier_settings_controller.cc",
     "system/message_center/test_notifier_settings_controller.h",
     "system/palette/palette_tray_test_api.cc",

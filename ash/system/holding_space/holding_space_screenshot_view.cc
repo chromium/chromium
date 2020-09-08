@@ -8,7 +8,10 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/user/rounded_image_view.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -20,6 +23,7 @@ HoldingSpaceScreenshotView::HoldingSpaceScreenshotView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  GetViewAccessibility().OverrideName(item_->text());
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   image_ =
@@ -30,12 +34,20 @@ HoldingSpaceScreenshotView::HoldingSpaceScreenshotView(
 
 HoldingSpaceScreenshotView::~HoldingSpaceScreenshotView() = default;
 
-const char* HoldingSpaceScreenshotView::GetClassName() const {
-  return "HoldingSpaceScreenshotView";
+int HoldingSpaceScreenshotView::GetDragOperations(const gfx::Point& point) {
+  return ui::DragDropTypes::DRAG_COPY;
+}
+
+void HoldingSpaceScreenshotView::WriteDragData(const gfx::Point& point,
+                                               ui::OSExchangeData* data) {
+  data->SetFilename(item_->file_path());
 }
 
 void HoldingSpaceScreenshotView::Update() {
   image_->SetImage(item_->image().image_skia(), kHoldingSpaceScreenshotSize);
 }
+
+BEGIN_METADATA(HoldingSpaceScreenshotView, views::View)
+END_METADATA
 
 }  // namespace ash
