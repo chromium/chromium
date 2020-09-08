@@ -601,8 +601,14 @@ class NGInlineNodeDataEditor final {
     DCHECK_EQ(it->layout_object_, layout_text_);
 
     // Copy part of item before replaced range.
-    if (it->start_offset_ < start_offset)
-      items.push_back(CopyItemBefore(*it, start_offset));
+    if (it->start_offset_ < start_offset) {
+      const NGInlineItem& new_item = CopyItemBefore(*it, start_offset);
+      items.push_back(new_item);
+      if (new_item.EndOffset() < start_offset) {
+        items.push_back(
+            NGInlineItem(*it, new_item.EndOffset(), start_offset, nullptr));
+      }
+    }
 
     // Skip items in replaced range.
     while (it->end_offset_ < end_offset)
@@ -624,7 +630,13 @@ class NGInlineNodeDataEditor final {
 
     // Copy part of item after replaced range.
     if (end_offset < it->end_offset_) {
-      items.push_back(CopyItemAfter(*it, end_offset));
+      const NGInlineItem& new_item = CopyItemAfter(*it, end_offset);
+      if (end_offset < new_item.StartOffset()) {
+        items.push_back(
+            NGInlineItem(*it, end_offset, new_item.StartOffset(), nullptr));
+        ShiftItem(&items.back(), diff);
+      }
+      items.push_back(new_item);
       ShiftItem(&items.back(), diff);
     }
 
@@ -679,7 +691,7 @@ class NGInlineNodeDataEditor final {
     if (end_offset == safe_start_offset)
       return NGInlineItem(item, start_offset, end_offset, nullptr);
     return NGInlineItem(
-        item, start_offset, end_offset,
+        item, safe_start_offset, end_offset,
         item.shape_result_->SubRange(safe_start_offset, end_offset));
   }
 
@@ -703,7 +715,7 @@ class NGInlineNodeDataEditor final {
     if (start_offset == safe_end_offset)
       return NGInlineItem(item, start_offset, end_offset, nullptr);
     return NGInlineItem(
-        item, start_offset, end_offset,
+        item, start_offset, safe_end_offset,
         item.shape_result_->SubRange(start_offset, safe_end_offset));
   }
 
@@ -718,28 +730,24 @@ class NGInlineNodeDataEditor final {
         item->shape_result_->CopyAdjustedOffset(item->start_offset_);
   }
 
-  // TODO(yosin): Once we can reproduce invalid |ShapeResult| offsets, we
-  // should make this function works only for |DCHECK_IS_ON()|.
   void VerifyItems(const Vector<NGInlineItem>& items) const {
+#if DCHECK_IS_ON()
     if (items.IsEmpty())
       return;
     unsigned last_offset = items.front().start_offset_;
     for (const NGInlineItem& item : items) {
-      CHECK_LE(item.start_offset_, item.end_offset_);
-      CHECK_EQ(last_offset, item.start_offset_);
+      DCHECK_LE(item.start_offset_, item.end_offset_);
+      DCHECK_EQ(last_offset, item.start_offset_);
       last_offset = item.end_offset_;
       if (!item.shape_result_ || item.layout_object_ != layout_text_)
         continue;
-      CHECK_LT(item.start_offset_, item.end_offset_);
-      if (item.shape_result_->StartIndex() == item.start_offset_) {
-        CHECK_LE(item.shape_result_->EndIndex(), item.end_offset_);
-      } else {
-        CHECK_LE(item.start_offset_, item.shape_result_->StartIndex());
-        CHECK_EQ(item.end_offset_, item.shape_result_->EndIndex());
-      }
+      DCHECK_LT(item.start_offset_, item.end_offset_);
+      DCHECK_EQ(item.shape_result_->StartIndex(), item.start_offset_);
+      DCHECK_EQ(item.shape_result_->EndIndex(), item.end_offset_);
     }
-    CHECK_EQ(last_offset,
-             block_flow_->GetNGInlineNodeData()->text_content.length());
+    DCHECK_EQ(last_offset,
+              block_flow_->GetNGInlineNodeData()->text_content.length());
+#endif
   }
 
   std::unique_ptr<NGInlineNodeData> data_;
