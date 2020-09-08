@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: audio */
 
-/**
- * @const
- */
+/** @const */
 chrome.audio = {};
 
 /**
@@ -44,6 +42,7 @@ chrome.audio.DeviceType = {
   LINEOUT: 'LINEOUT',
   POST_MIX_LOOPBACK: 'POST_MIX_LOOPBACK',
   POST_DSP_LOOPBACK: 'POST_DSP_LOOPBACK',
+  ALSA_LOOPBACK: 'ALSA_LOOPBACK',
   OTHER: 'OTHER',
 };
 
@@ -135,10 +134,10 @@ chrome.audio.LevelChangedEvent;
 
 /**
  * Gets a list of audio devices filtered based on |filter|.
- * @param {!chrome.audio.DeviceFilter} filter Device properties by which to
- *     filter the list of returned     audio devices. If the filter is not set
- *     or set to <code>{}</code>,     returned device list will contain all
- *     available audio devices.
+ * @param {?chrome.audio.DeviceFilter|undefined} filter Device properties by
+ *     which to filter the list of returned     audio devices. If the filter is
+ *     not set or set to <code>{}</code>,     returned device list will contain
+ *     all available audio devices.
  * @param {function(!Array<!chrome.audio.AudioDeviceInfo>): void} callback
  *     Reports the requested list of audio devices.
  * @see https://developer.chrome.com/extensions/audio#method-getDevices
