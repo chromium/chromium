@@ -18,15 +18,6 @@ enum FeatureType {
   TEST = 9999999;
 }
 
-// All groups of video tutorials with different languages.
-message VideoTutorialGroups {
-  // Records the prefferd language picked from UI.
-  string preferred_locale = 1;
-
-  // A list of video tutorial groups.
-  repeated VideoTutorialGroup groups = 2;
-}
-
 // A group of video tutorials with same language.
 message VideoTutorialGroup {
   // Language of the video, in ISO-639-1 two character format. Eg: en, pl, hi.
