@@ -1942,6 +1942,7 @@ template("chrome_public_apk_or_module_tmpl") {
                              "target_type",
                              "enable_lint",
                              "enable_multidex",
+                             "lint_baseline_file",
                              "lint_suppressions_dep",
                              "lint_suppressions_file",
                            ])

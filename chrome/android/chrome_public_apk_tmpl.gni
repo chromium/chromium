@@ -369,6 +369,18 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
     deps += [ "//chrome/android:chrome_all_java" ]
 
+    # Use a consistent baseline so that it is easy to regenerate by deleting the
+    # file and re-building the "android_lint" target.
+    if (defined(enable_lint) && enable_lint) {
+      if (!defined(lint_baseline_file)) {
+        lint_baseline_file = "//chrome/android/expectations/lint-baseline.xml"
+      }
+      if (!defined(lint_suppressions_file)) {
+        lint_suppressions_file =
+            "//chrome/android/expectations/lint-suppressions.xml"
+      }
+    }
+
     # Prefer to add this data_dep on the final target instead of java targets
     # like chrome_all_java so that all other targets can build in parallel with
     # lint.
