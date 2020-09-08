@@ -60,7 +60,6 @@ import java.lang.annotation.RetentionPolicy;
     private final View mTabView;
     private final BottomSheetController mBottomSheetController;
     private final int mToolbarViewHeightPx;
-    private final int mContainerTopPaddingPx;
     private @CloseReason int mCloseReason = CloseReason.OTHERS;
 
     /** A token held while the payment sheet is obscuring all visible tabs. */
@@ -87,15 +86,13 @@ import java.lang.annotation.RetentionPolicy;
      * @param observer The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @param tabView The view of the main tab.
      * @param toolbarViewHeightPx The height of the toolbar view in px.
-     * @param containerTopPaddingPx The padding top of bottom_sheet_toolbar_container in px
      * @param activityLifeCycleDispatcher The lifecycle dispatcher of the activity where this UI
      *         lives.
      * @param sheetController A {@link BottomSheetController} to show UI in.
      */
     /* package */ PaymentHandlerMediator(PropertyModel model, Runnable hider,
             WebContents webContents, PaymentHandlerUiObserver observer, View tabView,
-            int toolbarViewHeightPx, int containerTopPaddingPx,
-            ActivityLifecycleDispatcher activityLifeCycleDispatcher,
+            int toolbarViewHeightPx, ActivityLifecycleDispatcher activityLifeCycleDispatcher,
             BottomSheetController sheetController) {
         super(webContents);
         assert webContents != null;
@@ -107,7 +104,6 @@ import java.lang.annotation.RetentionPolicy;
         mModel.set(PaymentHandlerProperties.BACK_PRESS_CALLBACK, this::onSystemBackButtonClicked);
         mHider = hider;
         mPaymentHandlerUiObserver = observer;
-        mContainerTopPaddingPx = containerTopPaddingPx;
         mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
 
         mActivityLifecycleDispatcher = activityLifeCycleDispatcher;
@@ -144,8 +140,7 @@ import java.lang.annotation.RetentionPolicy;
 
     /** @return The height of visible area of the bottom sheet's content part. */
     private int contentVisibleHeight() {
-        return (int) (mTabView.getHeight() * FULL_HEIGHT_RATIO) - mToolbarViewHeightPx
-                - mContainerTopPaddingPx;
+        return (int) (mTabView.getHeight() * FULL_HEIGHT_RATIO) - mToolbarViewHeightPx;
     }
 
     // Implement BottomSheetObserver:
