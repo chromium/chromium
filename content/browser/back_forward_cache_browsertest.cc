@@ -740,8 +740,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BasicDocumentInitiated) {
 }
 
 // Navigate from back and forward repeatedly.
+// Disable the test due to flaky: crbug.com/1099395.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#define MAYBE_NavigateBackForwardRepeatedly \
+  DISABLED_NavigateBackForwardRepeatedly
+#else
+#define MAYBE_NavigateBackForwardRepeatedly _NavigateBackForwardRepeatedly
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       NavigateBackForwardRepeatedly) {
+                       MAYBE_NavigateBackForwardRepeatedly) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
