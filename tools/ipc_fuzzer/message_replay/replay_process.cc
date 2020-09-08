@@ -58,11 +58,6 @@ class FakeChildProcessImpl
     return disconnected_process_.get();
   }
 
-  void Initialize(mojo::PendingRemote<content::mojom::ChildProcessHostBootstrap>
-                      bootstrap) override {
-    bootstrap_.Bind(std::move(bootstrap));
-  }
-
   void BootstrapLegacyIpc(
       mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> receiver) override {
     mojo::FusePipes(std::move(receiver), std::move(legacy_ipc_bootstrap_));
@@ -70,7 +65,6 @@ class FakeChildProcessImpl
 
  private:
   mojo::PendingRemote<IPC::mojom::ChannelBootstrap> legacy_ipc_bootstrap_;
-  mojo::Remote<content::mojom::ChildProcessHostBootstrap> bootstrap_;
   mojo::Remote<content::mojom::ChildProcess> disconnected_process_;
 };
 

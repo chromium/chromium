@@ -46,6 +46,7 @@
 #include "content/child/browser_exposed_child_interfaces.h"
 #include "content/child/child_process.h"
 #include "content/common/child_process.mojom.h"
+#include "content/common/content_constants_internal.h"
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/common/mojo_core_library_support.h"
@@ -244,13 +245,11 @@ class ChildThreadImpl::IOThreadState
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
       base::WeakPtr<ChildThreadImpl> weak_main_thread,
       base::RepeatingClosure quit_closure,
-      ChildThreadImpl::Options::ServiceBinder service_binder,
-      mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver)
+      ChildThreadImpl::Options::ServiceBinder service_binder)
       : main_thread_task_runner_(std::move(main_thread_task_runner)),
         weak_main_thread_(std::move(weak_main_thread)),
         quit_closure_(std::move(quit_closure)),
-        service_binder_(std::move(service_binder)),
-        host_receiver_(std::move(host_receiver)) {}
+        service_binder_(std::move(service_binder)) {}
 
   // Used only in the deprecated Service Manager IPC mode.
   void BindChildProcessReceiver(
@@ -282,14 +281,6 @@ class ChildThreadImpl::IOThreadState
   ~IOThreadState() override = default;
 
   // mojom::ChildProcess:
-  void Initialize(mojo::PendingRemote<mojom::ChildProcessHostBootstrap>
-                      bootstrap) override {
-    // The browser only calls this method once.
-    DCHECK(host_receiver_);
-    mojo::Remote<mojom::ChildProcessHostBootstrap>(std::move(bootstrap))
-        ->BindProcessHost(std::move(host_receiver_));
-  }
-
   void ProcessShutdown() override {
     main_thread_task_runner_->PostTask(FROM_HERE,
                                        base::BindOnce(quit_closure_));
@@ -399,7 +390,6 @@ class ChildThreadImpl::IOThreadState
   mojo::BinderMap interface_binders_;
   bool wait_for_interface_binders_ = true;
   mojo::Receiver<mojom::ChildProcess> receiver_{this};
-  mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver_;
 
   // The pending legacy IPC channel endpoint to fuse with one we will eventually
   // receiver on the ChildProcess interface. Only used when not in the
@@ -505,14 +495,9 @@ ChildThreadImpl::ChildThreadImpl(base::RepeatingClosure quit_closure,
       channel_connected_factory_(
           new base::WeakPtrFactory<ChildThreadImpl>(this)),
       ipc_task_runner_(options.ipc_task_runner) {
-  mojo::PendingRemote<mojom::ChildProcessHost> remote_host;
-  auto host_receiver = remote_host.InitWithNewPipeAndPassReceiver();
-  child_process_host_ = mojo::SharedRemote<mojom::ChildProcessHost>(
-      std::move(remote_host), GetIOTaskRunner());
   io_thread_state_ = base::MakeRefCounted<IOThreadState>(
       base::ThreadTaskRunnerHandle::Get(), weak_factory_.GetWeakPtr(),
-      quit_closure_, std::move(options.service_binder),
-      std::move(host_receiver));
+      quit_closure_, std::move(options.service_binder));
 
   // |ExposeInterfacesToBrowser()| must be called exactly once. Subclasses which
   // set |exposes_interfaces_to_browser| in Options signify that they take
@@ -567,10 +552,8 @@ void ChildThreadImpl::Init(const Options& options) {
     IPC::Logging::GetInstance()->SetIPCSender(this);
 #endif
 
-  // Only one of these will be made valid by the block below. This determines
-  // whether we were launched in normal IPC mode or deprecated Service Manager
-  // IPC mode.
-  mojo::ScopedMessagePipeHandle child_process_pipe;
+  mojo::ScopedMessagePipeHandle child_process_pipe_for_receiver;
+  mojo::ScopedMessagePipeHandle child_process_host_pipe_for_remote;
   if (!IsInBrowserProcess()) {
     // If using a shared Mojo Core library, IPC support is already initialized.
     if (!IsMojoCoreSharedLibraryEnabled()) {
@@ -586,10 +569,25 @@ void ChildThreadImpl::Init(const Options& options) {
           mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
     }
     mojo::IncomingInvitation invitation = InitializeMojoIPCChannel();
-    child_process_pipe = invitation.ExtractMessagePipe(0);
+    child_process_pipe_for_receiver =
+        invitation.ExtractMessagePipe(kChildProcessReceiverAttachmentName);
+    child_process_host_pipe_for_remote =
+        invitation.ExtractMessagePipe(kChildProcessHostRemoteAttachmentName);
   } else {
-    child_process_pipe = options.mojo_invitation->ExtractMessagePipe(0);
+    child_process_pipe_for_receiver =
+        options.mojo_invitation->ExtractMessagePipe(
+            kChildProcessReceiverAttachmentName);
+    child_process_host_pipe_for_remote =
+        options.mojo_invitation->ExtractMessagePipe(
+            kChildProcessHostRemoteAttachmentName);
   }
+
+  // Now that we've recovered the message pipe for the ChildProcessHost, build
+  // our |child_process_host_| with it.
+  mojo::PendingRemote<mojom::ChildProcessHost> remote_host(
+      std::move(child_process_host_pipe_for_remote), /*version=*/0u);
+  child_process_host_ = mojo::SharedRemote<mojom::ChildProcessHost>(
+      std::move(remote_host), GetIOTaskRunner());
 
   sync_message_filter_ = channel_->CreateSyncMessageFilter();
 
@@ -635,7 +633,7 @@ void ChildThreadImpl::Init(const Options& options) {
     channel_->AddFilter(startup_filter);
   }
 
-  DCHECK(child_process_pipe.is_valid());
+  DCHECK(child_process_pipe_for_receiver.is_valid());
   mojo::PendingRemote<IPC::mojom::ChannelBootstrap> legacy_ipc_bootstrap;
   mojo::ScopedMessagePipeHandle legacy_ipc_channel_handle =
       legacy_ipc_bootstrap.InitWithNewPipeAndPassReceiver().PassPipe();
@@ -651,7 +649,7 @@ void ChildThreadImpl::Init(const Options& options) {
       base::BindOnce(&IOThreadState::BindChildProcessReceiverAndLegacyIpc,
                      io_thread_state_,
                      mojo::PendingReceiver<mojom::ChildProcess>(
-                         std::move(child_process_pipe)),
+                         std::move(child_process_pipe_for_receiver)),
                      std::move(legacy_ipc_bootstrap)));
 
   int connection_timeout = kConnectionTimeoutS;

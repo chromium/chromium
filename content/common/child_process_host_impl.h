@@ -38,7 +38,6 @@ class ChildProcessHostDelegate;
 class CONTENT_EXPORT ChildProcessHostImpl
     : public ChildProcessHost,
       public IPC::Listener,
-      public mojom::ChildProcessHostBootstrap,
       public mojom::ChildProcessHost {
  public:
   ~ChildProcessHostImpl() override;
@@ -88,10 +87,6 @@ class CONTENT_EXPORT ChildProcessHostImpl
 
   ChildProcessHostImpl(ChildProcessHostDelegate* delegate, IpcMode ipc_mode);
 
-  // mojom::ChildProcessHostBootstrap implementation:
-  void BindProcessHost(
-      mojo::PendingReceiver<mojom::ChildProcessHost> receiver) override;
-
   // mojom::ChildProcessHost implementation:
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
 
@@ -115,7 +110,6 @@ class CONTENT_EXPORT ChildProcessHostImpl
   bool opening_channel_;  // True while we're waiting the channel to be opened.
   std::unique_ptr<IPC::Channel> channel_;
   mojo::Remote<mojom::ChildProcess> child_process_;
-  mojo::Receiver<mojom::ChildProcessHostBootstrap> bootstrap_receiver_{this};
   mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
 
   // Holds all the IPC message filters.  Since this object lives on the IO

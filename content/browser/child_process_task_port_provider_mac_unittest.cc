@@ -28,8 +28,6 @@ using testing::WithArgs;
 
 class MockChildProcess : public mojom::ChildProcess {
  public:
-  MOCK_METHOD1(Initialize,
-               void(mojo::PendingRemote<mojom::ChildProcessHostBootstrap>));
   MOCK_METHOD0(ProcessShutdown, void());
   MOCK_METHOD1(GetTaskPort, void(GetTaskPortCallback));
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)

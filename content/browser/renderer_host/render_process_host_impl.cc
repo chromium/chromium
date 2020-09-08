@@ -143,6 +143,7 @@
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/child_process_host_impl.h"
+#include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/frame_messages.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -1304,28 +1305,19 @@ void InvokeBadMojoMessageCallbackForTesting(int render_process_id,
 // |mojom::ChildProcessHost| interface. This exists to allow the process host
 // to bind incoming receivers on the IO-thread without a main-thread hop if
 // necessary. Also owns the RPHI's |mojom::ChildProcess| remote.
-class RenderProcessHostImpl::IOThreadHostImpl
-    : public mojom::ChildProcessHostBootstrap,
-      public mojom::ChildProcessHost {
+class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
  public:
   IOThreadHostImpl(int render_process_id,
                    base::WeakPtr<RenderProcessHostImpl> weak_host,
                    std::unique_ptr<service_manager::BinderRegistry> binders,
-                   mojo::PendingReceiver<mojom::ChildProcessHostBootstrap>
-                       bootstrap_receiver)
+                   mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver)
       : render_process_id_(render_process_id),
         weak_host_(std::move(weak_host)),
         binders_(std::move(binders)),
-        bootstrap_receiver_(this, std::move(bootstrap_receiver)) {}
+        receiver_(this, std::move(host_receiver)) {}
   ~IOThreadHostImpl() override = default;
 
  private:
-  // mojom::ChildProcessHostBootstrap implementation:
-  void BindProcessHost(
-      mojo::PendingReceiver<mojom::ChildProcessHost> receiver) override {
-    receiver_.Bind(std::move(receiver));
-  }
-
   // mojom::ChildProcessHost implementation:
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override {
     const auto& interceptor = GetBindHostReceiverInterceptor();
@@ -1394,7 +1386,6 @@ class RenderProcessHostImpl::IOThreadHostImpl
   const int render_process_id_;
   const base::WeakPtr<RenderProcessHostImpl> weak_host_;
   std::unique_ptr<service_manager::BinderRegistry> binders_;
-  mojo::Receiver<mojom::ChildProcessHostBootstrap> bootstrap_receiver_;
   mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IOThreadHostImpl);
@@ -1907,8 +1898,15 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   // process.
   mojo_invitation_ = {};
   child_process_.reset();
-  child_process_.Bind(mojo::PendingRemote<mojom::ChildProcess>(
-      mojo_invitation_.AttachMessagePipe(0), /*version=*/0));
+  mojo::PendingRemote<mojom::ChildProcess> child_pending_remote(
+      mojo_invitation_.AttachMessagePipe(kChildProcessReceiverAttachmentName),
+      /*version=*/0);
+  child_process_.Bind(std::move(child_pending_remote));
+
+  // We'll bind this receiver to |io_thread_host_impl_| when it is created.
+  child_host_pending_receiver_ = mojo::PendingReceiver<mojom::ChildProcessHost>(
+      mojo_invitation_.AttachMessagePipe(
+          kChildProcessHostRemoteAttachmentName));
 
   // Bootstrap the IPC Channel.
   mojo::PendingRemote<IPC::mojom::ChannelBootstrap> bootstrap;
@@ -2553,11 +2551,10 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   GetContentClient()->browser()->ExposeInterfacesToRenderer(
       registry.get(), associated_interfaces_.get(), this);
 
-  mojo::PendingRemote<mojom::ChildProcessHostBootstrap> bootstrap_remote;
+  DCHECK(child_host_pending_receiver_);
   io_thread_host_impl_.emplace(
       GetIOThreadTaskRunner({}), GetID(), instance_weak_factory_->GetWeakPtr(),
-      std::move(registry), bootstrap_remote.InitWithNewPipeAndPassReceiver());
-  child_process_->Initialize(std::move(bootstrap_remote));
+      std::move(registry), std::move(child_host_pending_receiver_));
 }
 
 void RenderProcessHostImpl::BindRouteProvider(

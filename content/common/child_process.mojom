@@ -19,30 +19,9 @@ interface ChildProcessHost {
   BindHostReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
 };
 
-// An interface bound on the browser's IO thread to accept a ChildProcessHost
-// receiver from the child process. A remote to this interface is sent to child
-// processes via |ChildProcess.Initialize()| so that the child process may in
-// turn send back a ChildProcessHost receiver for the browser to bind. This
-// allows the child process to begin queuing messages on its ChildProcessHost
-// immediately upon startup without first waiting for
-// |ChildProcess.Initialize()|.
-//
-// NOTE: This is a separate interface and message rather than a simple reply to
-// |ChildProcess.Initialize()| because RenderProcessHostImpl binds its
-// ChildProcess remote on the main thread, and the ChildProcessHost receiver
-// needs to be accepted and bound on the IO thread without a main-thread hop.
-interface ChildProcessHostBootstrap {
-  BindProcessHost(pending_receiver<ChildProcessHost> receiver);
-};
-
 // A control interface the browser uses to drive the behavior of all types of
 // Content child processes.
 interface ChildProcess {
-  // The first message sent by the process host to the child process. This is
-  // sent to allow the child process to bootstrap its own ChildProcessHost
-  // interface, to which it may have already queued messages.
-  Initialize(pending_remote<ChildProcessHostBootstrap> boostrap);
-
   // Tells the child process that it's safe to shutdown.
   ProcessShutdown();
 

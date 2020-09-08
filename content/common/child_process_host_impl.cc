@@ -23,6 +23,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "content/common/content_constants_internal.h"
 #include "content/public/common/child_process_host_delegate.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -122,14 +123,19 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
     // disconnected pipe so it quietly discards messages.
     ignore_result(child_process_.BindNewPipeAndPassReceiver());
     channel_ = IPC::ChannelMojo::Create(
-        mojo_invitation_->AttachMessagePipe(0), IPC::Channel::MODE_SERVER, this,
-        base::ThreadTaskRunnerHandle::Get(),
+        mojo_invitation_->AttachMessagePipe(
+            kChildProcessReceiverAttachmentName),
+        IPC::Channel::MODE_SERVER, this, base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get(),
         mojo::internal::MessageQuotaChecker::MaybeCreate());
   } else if (ipc_mode_ == IpcMode::kNormal) {
     child_process_.Bind(mojo::PendingRemote<mojom::ChildProcess>(
-        mojo_invitation_->AttachMessagePipe(0), /*version=*/0));
-    child_process_->Initialize(bootstrap_receiver_.BindNewPipeAndPassRemote());
+        mojo_invitation_->AttachMessagePipe(
+            kChildProcessReceiverAttachmentName),
+        /*version=*/0));
+    receiver_.Bind(mojo::PendingReceiver<mojom::ChildProcessHost>(
+        mojo_invitation_->AttachMessagePipe(
+            kChildProcessHostRemoteAttachmentName)));
   }
 }
 
@@ -261,11 +267,6 @@ uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
   return static_cast<uint64_t>(base::PersistentHash(
              base::as_bytes(base::make_span(&child_process_id, 1)))) +
          1;
-}
-
-void ChildProcessHostImpl::BindProcessHost(
-    mojo::PendingReceiver<mojom::ChildProcessHost> receiver) {
-  receiver_.Bind(std::move(receiver));
 }
 
 void ChildProcessHostImpl::BindHostReceiver(

@@ -19,4 +19,7 @@ const int kTraceEventRendererMainThreadSortIndex = -1;
 
 const char kDoNotTrackHeader[] = "DNT";
 
+const int kChildProcessReceiverAttachmentName = 0;
+const int kChildProcessHostRemoteAttachmentName = 1;
+
 } // namespace content
