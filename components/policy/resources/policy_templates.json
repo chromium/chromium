@@ -10676,7 +10676,6 @@
       },
       'example_value': True,
       'id': 691,
-      'future': True,
       'caption': '''Enables the floating accessibility menu''',
       'tags': [],
       'desc': '''In kiosk mode, controls whether the floating accessibility menu is being shown.
@@ -11889,7 +11888,6 @@
         "spell_check_enabled": False,
         "voice_input_enabled": False
       },
-      'future': True,
       'id': 717,
       'caption': '''Enable or disable various features on the on-screen keyboard''',
       'tags': [],
@@ -17352,8 +17350,7 @@
       'owners': ['aoldemeier@chromium.org', 'okalitova@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:77-'],
-      'future': True,
+      'future_on': ['chrome_os'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -17385,7 +17382,6 @@
         },
       },
       'supported_on': ['chrome_os:80-'],
-      'future': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -17411,7 +17407,6 @@
     {
       'name': 'CrostiniArcAdbSideloadingAllowed',
       'owners': ['janagrill@chromium.org', 'okalitova@chromium.org'],
-      'future': True,
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -17429,7 +17424,7 @@
           'caption': '''Allow the user to use Android apps from untrusted sources''',
         },
       ],
-      'supported_on': ['chrome_os:84-'],
+      'future_on': ['chrome_os'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -17450,7 +17445,6 @@
       'name': 'DeviceCrostiniArcAdbSideloadingAllowed',
       'owners': ['janagrill@chromium.org', 'okalitova@chromium.org'],
       'device_only': True,
-      'future': True,
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -17473,7 +17467,7 @@
           'caption': '''Allow affiliated users of this device to use ADB sideloading''',
         },
       ],
-      'supported_on': ['chrome_os:84-'],
+      'future_on': ['chrome_os'],
       'features': {
         'dynamic_refresh': True,
       },
@@ -19445,7 +19439,6 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'future': True,
       'example_value': False,
       'id': 712,
       'caption': '''Allow <ph name="PLUGIN_VM_NAME">PluginVm</ph> Product Analytics''',
