@@ -388,9 +388,6 @@ void LayoutTable::UpdateLogicalWidth() {
         std::min(available_content_logical_width, max_width).Floor()));
   }
 
-  if (HasOverrideLogicalWidth())
-    SetLogicalWidth(std::max(LogicalWidth(), OverrideLogicalWidth()));
-
   // Ensure we aren't bigger than our max-width style.
   const Length& style_max_logical_width = StyleRef().LogicalMaxWidth();
   if ((style_max_logical_width.IsSpecified() &&
@@ -436,6 +433,8 @@ void LayoutTable::UpdateLogicalWidth() {
   // FIXME: When we convert to sub-pixel layout for tables we can remove the int
   // conversion. http://crbug.com/241198
   DCHECK_GE(LogicalWidth().Floor(), preferred_logical_widths.min_size.Floor());
+  if (HasOverrideLogicalWidth())
+    SetLogicalWidth(OverrideLogicalWidth());
 }
 
 // This method takes a ComputedStyle's logical width, min-width, or max-width

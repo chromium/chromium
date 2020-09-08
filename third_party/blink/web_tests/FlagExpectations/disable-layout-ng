@@ -682,3 +682,7 @@ crbug.com/591099 external/wpt/html/links/manifest/wrong-mime-type-text-plain-man
 
 ### virtual/stable/compositing/filters/
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
+
+# broken by https://chromium-review.googlesource.com/c/chromium/src/+/2392444
+crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-wide-content.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-fixed-min-width.html [ Failure ]
