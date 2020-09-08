@@ -18,8 +18,12 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/render_document_feature.h"
+#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,6 +58,24 @@ network::CrossOriginOpenerPolicy CoopUnsafeNone() {
   network::CrossOriginOpenerPolicy coop;
   // Using the default value.
   return coop;
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+CrossOriginIsolatedCrossOriginRedirectHandler(
+    const net::test_server::HttpRequest& request) {
+  GURL request_url = request.GetURL();
+  std::string dest =
+      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  net::test_server::RequestQuery query =
+      net::test_server::ParseQuery(request_url);
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
+  http_response->AddCustomHeader("Location", dest);
+  http_response->AddCustomHeader("Cross-Origin-Opener-Policy", "same-origin");
+  http_response->AddCustomHeader("Cross-Origin-Embedder-Policy",
+                                 "require-corp");
+  return http_response;
 }
 
 class CrossOriginOpenerPolicyBrowserTest
@@ -96,6 +118,11 @@ class CrossOriginOpenerPolicyBrowserTest
     https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     SetupCrossSiteRedirector(https_server());
     net::test_server::RegisterDefaultHandlers(&https_server_);
+    https_server_.RegisterDefaultHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/redirect-with-coop-coep-headers",
+        base::BindRepeating(CrossOriginIsolatedCrossOriginRedirectHandler)));
+
     ASSERT_TRUE(https_server()->Start());
   }
 
@@ -2313,6 +2340,31 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
     EXPECT_FALSE(current_si->IsCoopCoepCrossOriginIsolated());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       CrossOriginRedirectHasProperCrossOriginIsolatedState) {
+  GURL non_isolated_page(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  GURL isolated_page(
+      https_server()->GetURL("c.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp"));
+
+  GURL redirect_isolated_page(https_server()->GetURL(
+      "b.com", "/redirect-with-coop-coep-headers?" + isolated_page.spec()));
+
+  EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
+  SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(current_si->IsCoopCoepCrossOriginIsolated());
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_isolated_page, isolated_page));
+  current_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(current_si->IsCoopCoepCrossOriginIsolated());
+  EXPECT_TRUE(current_si->CoopCoepCrossOriginIsolatedOrigin()->IsSameOriginWith(
+      url::Origin::Create(isolated_page)));
 }
 
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
