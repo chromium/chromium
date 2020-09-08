@@ -1289,6 +1289,15 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
   if (blob_url_loader_factory) {
     DCHECK(params->url().SchemeIsBlob());
     pending_url_loader_factory = blob_url_loader_factory->Clone();
+  } else if (params->url().SchemeIsFile()) {
+    pending_url_loader_factory =
+        std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+            FileURLLoaderFactory::Create(
+                browser_context_->GetPath(),
+                browser_context_->GetSharedCorsOriginAccessList(),
+                // USER_VISIBLE because download should progress
+                // even when there is high priority work to do.
+                base::TaskPriority::USER_VISIBLE));
   } else if (rfh && params->url().SchemeIs(content::kChromeUIScheme)) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote;
@@ -1322,15 +1331,6 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
         non_network_uniquely_owned_factories;
     ContentBrowserClient::NonNetworkURLLoaderFactoryMap
         non_network_url_loader_factories;
-
-    // USER_VISIBLE because download should progress
-    // even when there is high priority work to do.
-    base::TaskPriority file_factory_priority = base::TaskPriority::USER_VISIBLE;
-    non_network_url_loader_factories.emplace(
-        url::kFileScheme, FileURLLoaderFactory::Create(
-                              browser_context_->GetPath(),
-                              browser_context_->GetSharedCorsOriginAccessList(),
-                              file_factory_priority));
 
     GetContentClient()
         ->browser()
