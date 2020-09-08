@@ -12,7 +12,10 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/release_notes/release_notes_notification.h"
+#include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,6 +24,7 @@
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_app_manager_browsertest.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
@@ -227,6 +231,47 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesIncognito) {
 #else
   // We just have 2 browsers, the incognito and regular. No new app opens.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+#endif
+}
+
+// Test that clicking the release notes notification opens Help App.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2LaunchReleaseNotesFromNotification) {
+  WaitForTestSystemAppInstall();
+  base::UserActionTester user_action_tester;
+  auto display_service =
+      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
+  auto release_notes_notification =
+      std::make_unique<chromeos::ReleaseNotesNotification>(profile());
+  auto release_notes_storage =
+      std::make_unique<chromeos::ReleaseNotesStorage>(profile());
+
+  // Force the release notes notification to show up.
+  profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, -1);
+  release_notes_notification->MaybeShowReleaseNotes();
+  // Assert that the notification really is there.
+  auto notifications = display_service->GetDisplayedNotificationsForType(
+      NotificationHandler::Type::TRANSIENT);
+  ASSERT_EQ(1u, notifications.size());
+  ASSERT_EQ("show_release_notes_notification", notifications[0].id());
+  // Then click.
+  display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                 "show_release_notes_notification",
+                                 base::nullopt, base::nullopt);
+
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("ReleaseNotes.NotificationShown"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ReleaseNotes.LaunchedNotification"));
+#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/updates")));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
+#else
+  // We just have the original browser. No new app opens.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
 #endif
 }
 
