@@ -897,9 +897,6 @@ if (enable_java_templates) {
   #     other.
   #   r_text_file: (optional) path to pre-generated R.txt to be used when
   #     generating R.java instead of resource-based aapt-generated one.
-  #   create_srcjar: If false, does not create an R.java file. Needed only for
-  #     prebuilts that have R.txt files that do not match their res/
-  #     (Play Services).
   #
   # Example:
   #   android_resources("foo_resources") {
@@ -937,8 +934,10 @@ if (enable_java_templates) {
     _build_config = _base_path + ".build_config"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
-    if (!defined(invoker.create_srcjar) || invoker.create_srcjar) {
-      _srcjar_path = _base_path + ".srcjar"
+    if (defined(invoker.create_srcjar)) {
+      assert(!invoker.create_srcjar,
+             "create_srcjar=true has been deprecated. " +
+                 "See https://crbug.com/1073476")
     }
 
     _deps = []
@@ -989,9 +988,6 @@ if (enable_java_templates) {
       if (defined(custom_package) || defined(android_manifest)) {
         r_text = _r_text_out_path
       }
-      if (defined(_srcjar_path)) {
-        srcjar = _srcjar_path
-      }
 
       possible_config_deps = _deps
     }
@@ -1018,9 +1014,6 @@ if (enable_java_templates) {
 
       if (defined(invoker.r_text_file)) {
         r_text_in_path = invoker.r_text_file
-      }
-      if (defined(_srcjar_path)) {
-        srcjar_path = _srcjar_path
       }
 
       # Always generate R.onResourcesLoaded() method, it is required for

@@ -4,8 +4,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Process Android resource directories to generate .resources.zip, R.txt and
-.srcjar files."""
+"""Process Android resource directories to generate .resources.zip and R.txt
+files."""
 
 import argparse
 import collections
@@ -54,9 +54,6 @@ def _ParseArgs(args):
       '--resource-zip-out',
       help='Path to a zip archive containing all resources from '
       '--resource-dirs, merged into a single directory tree.')
-
-  output_opts.add_argument('--srcjar-out',
-                    help='Path to .srcjar to contain the generated R.java.')
 
   output_opts.add_argument('--r-text-out',
                     help='Path to store the generated R.txt file.')
@@ -174,33 +171,6 @@ def _OnStaleMd5(options):
     if options.r_text_out:
       shutil.copyfile(r_txt_path, options.r_text_out)
 
-    if options.srcjar_out:
-      package = options.custom_package
-      if not package and options.android_manifest:
-        _, manifest_node, _ = manifest_utils.ParseManifest(
-            options.android_manifest)
-        package = manifest_utils.GetPackage(manifest_node)
-
-      # Don't create a .java file for the current resource target when no
-      # package name was provided (either by manifest or build rules).
-      if package:
-        # All resource IDs should be non-final here, but the
-        # onResourcesLoaded() method should only be generated if
-        # --shared-resources is used.
-        rjava_build_options = resource_utils.RJavaBuildOptions()
-        rjava_build_options.ExportAllResources()
-        rjava_build_options.ExportAllStyleables()
-        if options.shared_resources:
-          rjava_build_options.GenerateOnResourcesLoaded(fake=True)
-
-        # Not passing in custom_root_package_name or parent to keep
-        # file names unique.
-        resource_utils.CreateRJavaFiles(build.srcjar_dir, package, r_txt_path,
-                                        options.extra_res_packages,
-                                        rjava_build_options, options.srcjar_out)
-
-      build_utils.ZipDir(options.srcjar_out, build.srcjar_dir)
-
     if options.resource_zip_out:
       ignore_pattern = resource_utils.AAPT_IGNORE_PATTERN
       if options.strip_drawables:
@@ -218,7 +188,6 @@ def main(args):
   possible_output_paths = [
     options.resource_zip_out,
     options.r_text_out,
-    options.srcjar_out,
   ]
   output_paths = [x for x in possible_output_paths if x]
 

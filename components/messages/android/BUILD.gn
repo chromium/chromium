@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageBannerViewBinder.java",
     "java/src/org/chromium/components/messages/MessageStateHandler.java",
   ]
+  resources_package = "org.chromium.components.messages"
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -21,7 +22,6 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  custom_package = "org.chromium.components.messages"
   sources = [
     "java/res/drawable/message_bg_tinted.xml",
     "java/res/layout/message_banner_view.xml",
@@ -47,6 +47,7 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/components/messages/MessageBannerRenderTest.java",
   ]
+  resources_package = "org.chromium.components.messages"
   deps = [
     ":java",
     ":java_resources",

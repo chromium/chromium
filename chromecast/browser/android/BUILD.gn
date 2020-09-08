@@ -160,6 +160,7 @@ android_library("cast_shell_java") {
     "$java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
   ]
 
+  resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
     ":cast_shell_build_config_gen",
     ":chromecast_product_config",

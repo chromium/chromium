@@ -2197,9 +2197,6 @@ if (enable_java_templates) {
   #
   #   r_text_out_path: Path for the generated R.txt file.
   #
-  #   srcjar_path: (optional) Path to a generated .srcjar containing the
-  #                           generated R.java source file.
-  #
   template("prepare_resources") {
     action_with_pydeps(target_name) {
       set_sources_assignment_filter([])
@@ -2249,14 +2246,6 @@ if (enable_java_templates) {
         args += [
           "--android-manifest",
           rebase_path(invoker.android_manifest, root_build_dir),
-        ]
-      }
-
-      if (defined(invoker.srcjar_path)) {
-        outputs += [ invoker.srcjar_path ]
-        args += [
-          "--srcjar-out",
-          rebase_path(invoker.srcjar_path, root_build_dir),
         ]
       }
 

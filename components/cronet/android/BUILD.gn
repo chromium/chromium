@@ -439,6 +439,7 @@ android_library("cronet_sample_apk_java") {
     "sample/src/org/chromium/cronet_sample_apk/CronetSampleApplication.java",
   ]
 
+  resources_package = "org.chromium.cronet_sample_apk"
   deps = [
     ":cronet_sample_apk_resources",
     ":package_api_java",
