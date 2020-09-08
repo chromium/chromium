@@ -160,6 +160,7 @@ component("core") {
     "//third_party/blink/renderer/core/fullscreen",
     "//third_party/blink/renderer/core/geometry",
     "//third_party/blink/renderer/core/html",
+    "//third_party/blink/renderer/core/html/parser:parser",
     "//third_party/blink/renderer/core/imagebitmap",
     "//third_party/blink/renderer/core/input",
     "//third_party/blink/renderer/core/inspector",

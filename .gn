@@ -252,7 +252,6 @@ no_check_targets = [
   "//third_party/blink/renderer/core/workers:*",  # 289 errors
   "//third_party/blink/renderer/core/xmlhttprequest:*",  # 49 errors
   "//third_party/blink/renderer/core:*",  # 823 errors
-  "//third_party/blink/renderer/modules/accessibility:*",  # 7 errors
   "//third_party/blink/renderer/modules/animationworklet:*",  # 1 error
   "//third_party/blink/renderer/modules/background_fetch:*",  # 4 errors
   "//third_party/blink/renderer/modules/cache_storage:*",  # 3 errors
