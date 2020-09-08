@@ -20,6 +20,11 @@
 namespace media {
 
 namespace {
+
+// HW encoders expect a nonzero bitrate, so |kVEADefaultBitratePerPixel| is used
+// to estimate bits per second for ~30 fps with ~1/16 compression rate.
+constexpr int kVEADefaultBitratePerPixel = 2;
+
 Status SetUpVeaConfig(VideoCodecProfile profile,
                       const VideoEncoder::Options& opts,
                       VideoEncodeAccelerator::Config* config) {
@@ -29,9 +34,11 @@ Status SetUpVeaConfig(VideoCodecProfile profile,
 
   *config = VideoEncodeAccelerator::Config(
       PIXEL_FORMAT_I420, gfx::Size(opts.width, opts.height), profile,
-      opts.bitrate.value_or(1000000));
+      opts.bitrate.value_or(opts.width * opts.height *
+                            kVEADefaultBitratePerPixel));
   return Status();
 }
+
 }  // namespace
 
 class VideoEncodeAcceleratorAdapter::SharedMemoryPool
