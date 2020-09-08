@@ -90,8 +90,9 @@ class ASH_EXPORT CaptureModeController {
   // Called back when an attempt to save the image file has been completed, with
   // |success| indicating whether the attempt succeeded for failed. |png_bytes|
   // is the buffer containing the captured image in a PNG format, which will be
-  // used to show a preview of the image in a notification. If saving was
-  // successful, then the image was saved in |path|.
+  // used to show a preview of the image in a notification, and save it as a
+  // bitmap in the clipboard. If saving was successful, then the image was saved
+  // in |path|.
   void OnImageFileSaved(scoped_refptr<base::RefCountedMemory> png_bytes,
                         const base::FilePath& path,
                         bool success);

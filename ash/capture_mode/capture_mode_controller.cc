@@ -26,6 +26,8 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -166,6 +168,15 @@ void ShowFailureNotification() {
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_FAILURE_TITLE),
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_FAILURE_MESSAGE),
       /*optional_fields=*/{}, /*delegate=*/nullptr);
+}
+
+// Copies the bitmap representation of the given |image| to the clipboard.
+void CopyImageToClipboard(const gfx::Image& image) {
+  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  DCHECK(clipboard);
+  auto clipboard_data = std::make_unique<ui::ClipboardData>();
+  clipboard_data->SetBitmapData(image.AsBitmap());
+  clipboard->WriteClipboardData(std::move(clipboard_data));
 }
 
 }  // namespace
@@ -337,8 +348,9 @@ void CaptureModeController::OnImageFileSaved(
   }
 
   DCHECK(png_bytes && png_bytes->size());
-  // TODO(afakhry): Save image to clipboard.
-  ShowPreviewNotification(path, gfx::Image::CreateFrom1xPNGBytes(png_bytes));
+  const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
+  CopyImageToClipboard(image);
+  ShowPreviewNotification(path, image);
 }
 
 void CaptureModeController::ShowPreviewNotification(
