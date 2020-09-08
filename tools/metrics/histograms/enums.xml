@@ -42197,6 +42197,7 @@ from previous Chrome versions.
   <int value="-299841473" label="top-document-isolation:enabled"/>
   <int value="-297716805"
       label="CrossOriginMediaPlaybackRequiresUserGesture:disabled"/>
+  <int value="-296762162" label="ExoOrdinalMotion:enabled"/>
   <int value="-296179618" label="CookiesWithoutSameSiteMustBeSecure:enabled"/>
   <int value="-295237704" label="EnableRemovingAllThirdPartyCookies:enabled"/>
   <int value="-290672626" label="enable-asm-wasm"/>
@@ -43179,6 +43180,7 @@ from previous Chrome versions.
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
+  <int value="738962107" label="ExoOrdinalMotion:disabled"/>
   <int value="739938466"
       label="WebPaymentsPerMethodCanMakePaymentQuota:disabled"/>
   <int value="740056959" label="ImeServiceConnectable:enabled"/>

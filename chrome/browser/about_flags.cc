@@ -5817,6 +5817,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if defined(OS_CHROMEOS)
+    {"exo-ordinal-motion", flag_descriptions::kExoOrdinalMotionName,
+     flag_descriptions::kExoOrdinalMotionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kExoOrdinalMotion)},
+#endif  // defined(OS_CHROMEOS)
+
+#if defined(OS_CHROMEOS)
     {"exo-pointer-lock", flag_descriptions::kExoPointerLockName,
      flag_descriptions::kExoPointerLockDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kExoPointerLock)},

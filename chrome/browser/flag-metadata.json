@@ -2419,6 +2419,11 @@
     "expiry_milestone": 83
   },
   {
+    "name": "exo-ordinal-motion",
+    "owners": [ "hollingum@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "exo-pointer-lock",
     "owners": [ "hollingum@google.com" ],
     "expiry_milestone": 88

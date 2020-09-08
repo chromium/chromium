@@ -4006,6 +4006,11 @@ const char kEnterpriseReportingInChromeOSDescription[] =
     "Enable the enterprise cloud reporting in Chrome OS. This feature requires "
     "user level cloud management.";
 
+const char kExoOrdinalMotionName[] =
+    "Raw (unaccelerated) motion for Linux applications";
+const char kExoOrdinalMotionDescription[] =
+    "Send unaccelerated values as raw motion events to linux applications.";
+
 const char kExoPointerLockName[] = "Pointer lock for Linux applications";
 const char kExoPointerLockDescription[] =
     "Allow Linux applications to request a pointer lock, i.e. exclusive use of "

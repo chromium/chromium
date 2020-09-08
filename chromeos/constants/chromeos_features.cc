@@ -189,6 +189,10 @@ const base::Feature kEmojiSuggestAddition{"EmojiSuggestAddition",
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
+const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable pointer lock for Crostini windows.
 const base::Feature kExoPointerLock{"ExoPointerLock",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
