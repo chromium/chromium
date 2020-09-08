@@ -103,9 +103,7 @@ void FakeAmbientBackendControllerImpl::GetSettings(
 void FakeAmbientBackendControllerImpl::UpdateSettings(
     const AmbientSettings& settings,
     UpdateSettingsCallback callback) {
-  // Pretend to respond asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+  pending_update_callback_ = std::move(callback);
 }
 
 void FakeAmbientBackendControllerImpl::FetchSettingPreview(
@@ -143,6 +141,17 @@ void FakeAmbientBackendControllerImpl::FetchSettingsAndAlbums(
 void FakeAmbientBackendControllerImpl::SetPhotoRefreshInterval(
     base::TimeDelta interval) {
   NOTIMPLEMENTED();
+}
+
+void FakeAmbientBackendControllerImpl::ReplyUpdateSettings(bool success) {
+  if (!pending_update_callback_)
+    return;
+
+  std::move(pending_update_callback_).Run(success);
+}
+
+bool FakeAmbientBackendControllerImpl::IsUpdateSettingsPending() const {
+  return !pending_update_callback_.is_null();
 }
 
 }  // namespace ash

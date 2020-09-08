@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback.h"
 
 namespace ash {
 
@@ -39,6 +40,15 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void SetPhotoRefreshInterval(base::TimeDelta interval) override;
+
+  // Simulate to reply the request of UpdateSettings() with |success|.
+  void ReplyUpdateSettings(bool success);
+
+  // Whether there is a pending UpdateSettings() request.
+  bool IsUpdateSettingsPending() const;
+
+ private:
+  UpdateSettingsCallback pending_update_callback_;
 };
 
 }  // namespace ash

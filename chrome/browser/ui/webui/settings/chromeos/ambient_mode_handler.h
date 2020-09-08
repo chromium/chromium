@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "net/base/backoff_entry.h"
 
 namespace ash {
 struct AmbientSettings;
@@ -114,6 +115,18 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   base::Optional<ash::AmbientSettings> settings_;
 
   ash::PersonalAlbums personal_albums_;
+
+  // Whether the Settings updating is ongoing.
+  bool is_updating_backend_ = false;
+
+  // Whether there are pending updates.
+  bool has_pending_updates_for_backend_ = false;
+
+  // Backoff retries for UpdateSettings().
+  net::BackoffEntry update_settings_retry_backoff_;
+
+  // Number of attempts to update.
+  int update_settings_retries_ = 0;
 
   base::WeakPtrFactory<AmbientModeHandler> backend_weak_factory_{this};
   base::WeakPtrFactory<AmbientModeHandler> ui_update_weak_factory_{this};

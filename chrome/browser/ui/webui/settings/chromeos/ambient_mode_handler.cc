@@ -18,6 +18,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -42,6 +43,18 @@ constexpr int kBannerHeightPx = 160;
 // Strings for converting to and from AmbientModeTemperatureUnit enum.
 constexpr char kCelsius[] = "celsius";
 constexpr char kFahrenheit[] = "fahrenheit";
+
+constexpr int kMaxRetries = 3;
+
+constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
+    0,          // Number of initial errors to ignore.
+    500,        // Initial delay in ms.
+    2.0,        // Factor by which the waiting time will be multiplied.
+    0.2,        // Fuzzing percentage.
+    60 * 1000,  // Maximum delay in ms.
+    -1,         // Never discard the entry.
+    true,       // Use initial delay.
+};
 
 ash::AmbientModeTemperatureUnit ExtractTemperatureUnit(
     const base::ListValue* args) {
@@ -108,7 +121,8 @@ base::string16 GetAlbumDescription(const ash::PersonalAlbum& album) {
 
 }  // namespace
 
-AmbientModeHandler::AmbientModeHandler() = default;
+AmbientModeHandler::AmbientModeHandler()
+    : update_settings_retry_backoff_(&kRetryBackoffPolicy) {}
 
 AmbientModeHandler::~AmbientModeHandler() = default;
 
@@ -298,6 +312,14 @@ void AmbientModeHandler::SendAlbumPreview(
 }
 
 void AmbientModeHandler::UpdateSettings() {
+  if (is_updating_backend_) {
+    has_pending_updates_for_backend_ = true;
+    return;
+  }
+
+  has_pending_updates_for_backend_ = false;
+  is_updating_backend_ = true;
+
   DCHECK(settings_);
   ash::AmbientBackendController::Get()->UpdateSettings(
       *settings_, base::BindOnce(&AmbientModeHandler::OnUpdateSettings,
@@ -305,11 +327,26 @@ void AmbientModeHandler::UpdateSettings() {
 }
 
 void AmbientModeHandler::OnUpdateSettings(bool success) {
-  if (success)
-    return;
+  is_updating_backend_ = false;
+  update_settings_retry_backoff_.InformOfRequest(success);
 
-  // TODO(b/152921891): Retry a small fixed number of times, then only retry
-  // when user confirms in the error message dialog.
+  if (success) {
+    update_settings_retries_ = 0;
+  } else {
+    ++update_settings_retries_;
+    if (update_settings_retries_ >= kMaxRetries)
+      return;
+  }
+
+  if (has_pending_updates_for_backend_ || !success) {
+    const base::TimeDelta kDelay =
+        update_settings_retry_backoff_.GetTimeUntilRelease();
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AmbientModeHandler::UpdateSettings,
+                       backend_weak_factory_.GetWeakPtr()),
+        kDelay);
+  }
 }
 
 void AmbientModeHandler::RequestSettingsAndAlbums(
