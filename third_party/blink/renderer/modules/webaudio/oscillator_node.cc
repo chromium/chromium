@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -197,7 +198,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   bool has_frequency_changes = false;
   float* phase_increments = phase_increments_.Data();
 
-  float final_scale = periodic_wave_->RateScale();
+  float final_scale = periodic_wave_.Lock()->RateScale();
 
   if (frequency_->HasSampleAccurateValues() && frequency_->IsAudioRate()) {
     has_sample_accurate_values = true;
@@ -437,7 +438,8 @@ double OscillatorHandler::ProcessKRateScalar(int start,
                                              double virtual_read_index,
                                              float frequency,
                                              float rate_scale) const {
-  const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  auto periodic_wave = periodic_wave_.Lock();
+  const unsigned periodic_wave_size = periodic_wave->PeriodicWaveSize();
   const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
   const unsigned read_index_mask = periodic_wave_size - 1;
 
@@ -445,7 +447,7 @@ double OscillatorHandler::ProcessKRateScalar(int start,
   float* lower_wave_data = nullptr;
   float table_interpolation_factor = 0;
 
-  periodic_wave_->WaveDataForFundamentalFrequency(
+  periodic_wave->WaveDataForFundamentalFrequency(
       frequency, lower_wave_data, higher_wave_data, table_interpolation_factor);
 
   const float incr = frequency * rate_scale;
@@ -491,7 +493,8 @@ double OscillatorHandler::ProcessKRateScalar(int start,
 double OscillatorHandler::ProcessKRate(int n,
                                        float* dest_p,
                                        double virtual_read_index) const {
-  const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  auto periodic_wave = periodic_wave_.Lock();
+  const unsigned periodic_wave_size = periodic_wave->PeriodicWaveSize();
   const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
   const unsigned read_index_mask = periodic_wave_size - 1;
 
@@ -503,10 +506,10 @@ double OscillatorHandler::ProcessKRate(int n,
   const float detune_scale = DetuneToFrequencyMultiplier(detune_->FinalValue());
   frequency *= detune_scale;
   ClampFrequency(&frequency, 1, Context()->sampleRate() / 2);
-  periodic_wave_->WaveDataForFundamentalFrequency(
+  periodic_wave->WaveDataForFundamentalFrequency(
       frequency, lower_wave_data, higher_wave_data, table_interpolation_factor);
 
-  const float rate_scale = periodic_wave_->RateScale();
+  const float rate_scale = periodic_wave->RateScale();
   const float incr = frequency * rate_scale;
 
   if (incr >= kInterpolate2Point) {
@@ -552,9 +555,10 @@ std::tuple<int, double> OscillatorHandler::ProcessARateVector(
     float* destination,
     double virtual_read_index,
     const float* phase_increments) const {
-  float rate_scale = periodic_wave_->RateScale();
+  auto periodic_wave = periodic_wave_.Lock();
+  float rate_scale = periodic_wave->RateScale();
   float inv_rate_scale = 1 / rate_scale;
-  unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  unsigned periodic_wave_size = periodic_wave->PeriodicWaveSize();
   double inv_periodic_wave_size = 1.0 / periodic_wave_size;
   unsigned read_index_mask = periodic_wave_size - 1;
 
@@ -576,9 +580,9 @@ std::tuple<int, double> OscillatorHandler::ProcessARateVector(
       frequency[m] = inv_rate_scale * phase_incr;
     }
 
-    periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
-                                                    higher_wave_data,
-                                                    table_interpolation_factor);
+    periodic_wave->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
+                                                   higher_wave_data,
+                                                   table_interpolation_factor);
 
     // If all the phase increments are large enough, we can use linear
     // interpolation with a possibly vectorized implementation.  If not, we need
@@ -616,9 +620,10 @@ double OscillatorHandler::ProcessARateScalar(
     float* destination,
     double virtual_read_index,
     const float* phase_increments) const {
-  float rate_scale = periodic_wave_->RateScale();
+  auto periodic_wave = periodic_wave_.Lock();
+  float rate_scale = periodic_wave->RateScale();
   float inv_rate_scale = 1 / rate_scale;
-  unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  unsigned periodic_wave_size = periodic_wave->PeriodicWaveSize();
   double inv_periodic_wave_size = 1.0 / periodic_wave_size;
   unsigned read_index_mask = periodic_wave_size - 1;
 
@@ -630,9 +635,9 @@ double OscillatorHandler::ProcessARateScalar(
     float incr = phase_increments[m];
 
     float frequency = inv_rate_scale * incr;
-    periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
-                                                    higher_wave_data,
-                                                    table_interpolation_factor);
+    periodic_wave->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
+                                                   higher_wave_data,
+                                                   table_interpolation_factor);
 
     float sample = DoInterpolation(virtual_read_index, fabs(incr),
                                    read_index_mask, table_interpolation_factor,
@@ -684,8 +689,10 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
+  auto periodic_wave = periodic_wave_.Lock();
+
   // We must access m_periodicWave only inside the lock.
-  if (!periodic_wave_.Get()) {
+  if (!periodic_wave.Get()) {
     output_bus->Zero();
     return;
   }
@@ -703,7 +710,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  unsigned periodic_wave_size = periodic_wave->PeriodicWaveSize();
 
   float* dest_p = output_bus->Channel(0)->MutableData();
 
@@ -712,7 +719,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   // We keep virtualReadIndex double-precision since we're accumulating values.
   double virtual_read_index = virtual_read_index_;
 
-  float rate_scale = periodic_wave_->RateScale();
+  float rate_scale = periodic_wave->RateScale();
   bool has_sample_accurate_values =
       CalculateSampleAccuratePhaseIncrements(frames_to_process);
 
@@ -727,9 +734,9 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     float detune_scale = DetuneToFrequencyMultiplier(detune);
     frequency *= detune_scale;
     ClampFrequency(&frequency, 1, Context()->sampleRate() / 2);
-    periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
-                                                    higher_wave_data,
-                                                    table_interpolation_factor);
+    periodic_wave->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
+                                                   higher_wave_data,
+                                                   table_interpolation_factor);
   }
 
   float* phase_increments = phase_increments_.Data();

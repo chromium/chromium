@@ -33,7 +33,8 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     double virtual_read_index,
     float frequency,
     float rate_scale) const {
-  const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  auto periodic_wave = periodic_wave_.Lock();
+  const unsigned periodic_wave_size = periodic_wave->PeriodicWaveSize();
   const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
 
   float* higher_wave_data = nullptr;
@@ -42,7 +43,7 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
   const float incr = frequency * rate_scale;
   DCHECK_GE(incr, kInterpolate2Point);
 
-  periodic_wave_->WaveDataForFundamentalFrequency(
+  periodic_wave->WaveDataForFundamentalFrequency(
       frequency, lower_wave_data, higher_wave_data, table_interpolation_factor);
 
   const float32x4_t v_wave_size = vdupq_n_f32(periodic_wave_size);

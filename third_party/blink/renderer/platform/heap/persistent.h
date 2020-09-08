@@ -750,6 +750,28 @@ class CrossThreadWeakPersistent
     Parent::operator=(other);
     return *this;
   }
+
+  // Create a CrossThreadPersistent that keeps the underlying object alive if
+  // there is still on set. Can be used to work with an object on a different
+  // thread than it was allocated. Note that CTP does not block threads from
+  // terminating, in which case the reference would still be invalid.
+  const CrossThreadPersistent<T> Lock() const {
+    return CrossThreadPersistent<T>(*this);
+  }
+
+  // Disallow directly using CrossThreadWeakPersistent. Users must go through
+  // CrossThreadPersistent to access the pointee. Note that this does not
+  // guarantee that the object is still alive at that point. Users must check
+  // the state of CTP manually before invoking any calls.
+  T* operator->() const = delete;
+  T& operator*() const = delete;
+  // TODO(mlippautz): Also hide the following calls:
+  // - Parent::Get;
+  // - Parent::operator T*;
+
+ private:
+  template <typename U>
+  friend class CrossThreadPersistent;
 };
 
 template <typename T>

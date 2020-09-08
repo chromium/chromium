@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -63,7 +64,8 @@ MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
       source_(static_cast<MediaStreamAudioDestinationNode&>(node).source()),
       mix_bus_(AudioBus::Create(number_of_channels,
                                 audio_utilities::kRenderQuantumFrames)) {
-  source_->SetAudioFormat(number_of_channels, node.context()->sampleRate());
+  source_.Lock()->SetAudioFormat(number_of_channels,
+                                 node.context()->sampleRate());
   SetInternalChannelCountMode(kExplicit);
   Initialize();
 }
@@ -89,6 +91,8 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   // Synchronize with possible dynamic changes to the channel count.
   MutexTryLocker try_locker(process_lock_);
 
+  auto source = source_.Lock();
+
   // If we can get the lock, we can process normally by updating the
   // mix bus to a new channel count, if needed.  If not, just use the
   // old mix bus to do the mixing; we'll update the bus next time
@@ -99,7 +103,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
       mix_bus_ = AudioBus::Create(count, audio_utilities::kRenderQuantumFrames);
       // setAudioFormat has an internal lock.  This can cause audio to
       // glitch.  This is outside of our control.
-      source_->SetAudioFormat(count, Context()->sampleRate());
+      source->SetAudioFormat(count, Context()->sampleRate());
     }
   }
 
@@ -107,7 +111,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
 
   // consumeAudio has an internal lock (also used by setAudioFormat).
   // This can cause audio to glitch.  This is outside of our control.
-  source_->ConsumeAudio(mix_bus_.get(), number_of_frames);
+  source->ConsumeAudio(mix_bus_.get(), number_of_frames);
 }
 
 void MediaStreamAudioDestinationHandler::SetChannelCount(

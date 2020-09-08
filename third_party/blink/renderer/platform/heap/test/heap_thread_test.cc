@@ -248,7 +248,7 @@ class CrossThreadWeakPersistentTester : public AlternatingThreadTester {
     SwitchToWorkerThread();
 
     // Step 5: Make sure the weak persistent is cleared.
-    EXPECT_FALSE(object_.Get());
+    EXPECT_FALSE(object_);
     EXPECT_EQ(1, DestructorLockingObject::destructor_calls_);
 
     SwitchToWorkerThread();
