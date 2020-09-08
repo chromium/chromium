@@ -507,16 +507,6 @@ class AdsPageLoadMetricsObserverTest
     OnCpuTimingUpdate(render_frame_host, total_time);
   }
 
-  void OnHidden() { web_contents()->WasHidden(); }
-
-  void OnAppEnterBackground() { tester_->SimulateAppEnterBackground(); }
-
-  void OnShown() { web_contents()->WasShown(); }
-
-  void TriggerFirstUserActivation(RenderFrameHost* render_frame_host) {
-    tester_->SimulateFrameReceivedFirstUserActivation(render_frame_host);
-  }
-
   void AdvancePageDuration(base::TimeDelta delta) { clock_->Advance(delta); }
 
   // Returns the final RenderFrameHost after navigation commits.
@@ -742,10 +732,6 @@ class AdsPageLoadMetricsObserverTest
     histograms.ExpectUniqueSample(
         kCreativeOriginStatusWithThrottlingHistogramId,
         creative_origin_test.expected_origin_status, 1);
-  }
-
-  void TimingUpdate(const page_load_metrics::mojom::PageLoadTiming& timing) {
-    tester_->SimulateTimingUpdate(timing);
   }
 
   page_load_metrics::PageLoadMetricsObserverTester* tester() {
@@ -1503,7 +1489,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, AdPageLoadUKM) {
   timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
   timing.response_start = base::TimeDelta::FromSeconds(0);
   PopulateRequiredTimingFields(&timing);
-  TimingUpdate(timing);
+  tester()->SimulateTimingUpdate(timing);
   ResourceDataUpdate(
       main_rfh(), ResourceCached::kNotCached, 10 /* resource_size_in_kbyte */,
       "application/javascript" /* mime_type */, false /* is_ad_resource */);
@@ -1657,7 +1643,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {
   OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
 
   // Set the page activation and advance time by twelve more seconds.
-  TriggerFirstUserActivation(ad_frame);
+  tester()->SimulateFrameReceivedFirstUserActivation(ad_frame);
   AdvancePageDuration(base::TimeDelta::FromSeconds(12));
 
   // Perform some updates on ad and main frames. Usage 13%/16%.
@@ -1703,13 +1689,13 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsNoActivation) {
   OnCpuTimingUpdate(non_ad_frame, base::TimeDelta::FromMilliseconds(500));
 
   // Hide the page, and ensure we keep recording information.
-  OnHidden();
+  web_contents()->WasHidden();
 
   // Do some more work on the ad frame.
   OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
 
   // Show the page, nothing should change.
-  OnShown();
+  web_contents()->WasShown();
 
   // Do some more work on the main frame.
   OnCpuTimingUpdate(main_frame, base::TimeDelta::FromMilliseconds(500));
@@ -1755,7 +1741,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
 
   // Set the frame as activated after 2.5 seconds
   AdvancePageDuration(base::TimeDelta::FromMilliseconds(2500));
-  TriggerFirstUserActivation(ad_frame);
+  tester()->SimulateFrameReceivedFirstUserActivation(ad_frame);
 
   // Do some more work on the main frame.
   OnCpuTimingUpdate(main_frame, base::TimeDelta::FromMilliseconds(500));
@@ -2150,7 +2136,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdCpuInterventionInBackground) {
       SuffixedHistogram("Bytes.FullPage.Total2"), 0);
 
   // Background the page.
-  OnAppEnterBackground();
+  tester()->SimulateAppEnterBackground();
 
   // Verify reporting happened.
   histogram_tester().ExpectTotalCount(
@@ -2199,7 +2185,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
       SuffixedHistogram("Cpu.FullPage.TotalUsage2"), 0);
 
   // Background the page.
-  OnAppEnterBackground();
+  tester()->SimulateAppEnterBackground();
 
   // Verify reporting happened.
   histogram_tester().ExpectTotalCount(
@@ -2471,7 +2457,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Give the frame a user activation before the threshold would be hit.
-  TriggerFirstUserActivation(ad_frame);
+  tester()->SimulateFrameReceivedFirstUserActivation(ad_frame);
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
