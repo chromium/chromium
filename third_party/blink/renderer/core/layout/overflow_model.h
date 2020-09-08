@@ -202,10 +202,6 @@ class BoxVisualOverflowModel {
     self_visual_overflow_.Unite(rect);
   }
 
-  void ClearContentsVisualOverflow() {
-    contents_visual_overflow_ = LayoutRect();
-  }
-
   const LayoutRect& ContentsVisualOverflowRect() const {
     return contents_visual_overflow_;
   }
