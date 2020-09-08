@@ -191,6 +191,16 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
       cros_supported_configs_ =
           ChromeosVideoDecoderFactory::GetSupportedConfigs();
     }
+
+    if (cros_supported_configs_.has_value() &&
+        gpu_workarounds_.disable_accelerated_vp8_decode) {
+      base::EraseIf(*cros_supported_configs_,
+                    [](const SupportedVideoDecoderConfig& config) {
+                      return VP8PROFILE_MIN <= config.profile_min &&
+                             config.profile_max <= VP8PROFILE_MAX;
+                    });
+    }
+
     supported_config_map[VideoDecoderImplementation::kDefault] =
         *cros_supported_configs_;
     return supported_config_map;
