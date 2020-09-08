@@ -41,6 +41,7 @@ SettingsResetPromptDialog::SettingsResetPromptDialog(
     : browser_(nullptr), controller_(controller) {
   DCHECK(controller_);
 
+  SetShowIcon(false);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_SETTINGS_RESET_PROMPT_ACCEPT_BUTTON_LABEL));
@@ -100,10 +101,6 @@ void SettingsResetPromptDialog::Show(Browser* browser) {
 
 ui::ModalType SettingsResetPromptDialog::GetModalType() const {
   return ui::MODAL_TYPE_WINDOW;
-}
-
-bool SettingsResetPromptDialog::ShouldShowWindowIcon() const {
-  return false;
 }
 
 bool SettingsResetPromptDialog::ShouldShowCloseButton() const {

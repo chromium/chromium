@@ -921,13 +921,9 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     SizeToContents();
   }
 
-  void set_icon(const gfx::ImageSkia& icon) { icon_ = icon; }
-
   // BubbleDialogDelegateView:
   using BubbleDialogDelegateView::SetAnchorView;
   using BubbleDialogDelegateView::SizeToContents;
-  gfx::ImageSkia GetWindowIcon() override { return icon_; }
-  bool ShouldShowWindowIcon() const override { return !icon_.isNull(); }
   base::string16 GetWindowTitle() const override { return title_; }
   bool ShouldShowWindowTitle() const override { return !title_.empty(); }
   bool ShouldShowCloseButton() const override { return should_show_close_; }
@@ -951,7 +947,6 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   }
 
  private:
-  gfx::ImageSkia icon_;
   base::string16 title_;
   bool destroyed_ = false;
   bool should_show_close_ = false;
@@ -1166,7 +1161,8 @@ TEST_F(BubbleFrameViewTest, LayoutWithIcon) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(20, 80);
   bitmap.eraseColor(SK_ColorYELLOW);
-  delegate.set_icon(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  delegate.SetIcon(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  delegate.SetShowIcon(true);
 
   Widget* widget = BubbleDialogDelegateView::CreateBubble(&delegate);
   widget->Show();

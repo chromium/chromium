@@ -483,6 +483,7 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
         is_update_bubble_ ? &Controller::OnNopeUpdateClicked
                           : &Controller::OnNeverForThisSiteClicked));
   }
+  SetShowIcon(false);
 
   UpdateBubbleUIElements();
 }
@@ -581,10 +582,6 @@ bool PasswordSaveUpdateWithAccountStoreView::IsDialogButtonEnabled(
 
 gfx::ImageSkia PasswordSaveUpdateWithAccountStoreView::GetWindowIcon() {
   return gfx::ImageSkia();
-}
-
-bool PasswordSaveUpdateWithAccountStoreView::ShouldShowWindowIcon() const {
-  return false;
 }
 
 bool PasswordSaveUpdateWithAccountStoreView::ShouldShowCloseButton() const {

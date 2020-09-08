@@ -108,6 +108,7 @@ HatsBubbleView::HatsBubbleView(Browser* browser,
       close_bubble_helper_(this, browser),
       consent_callback_(std::move(consent_callback)) {
   chrome::RecordDialogCreation(chrome::DialogIdentifier::HATS_BUBBLE);
+  SetShowIcon(true);
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_HATS_BUBBLE_OK_LABEL));
@@ -151,10 +152,6 @@ base::string16 HatsBubbleView::GetWindowTitle() const {
 gfx::ImageSkia HatsBubbleView::GetWindowIcon() {
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_PRODUCT_LOGO_32);
-}
-
-bool HatsBubbleView::ShouldShowWindowIcon() const {
-  return true;
 }
 
 bool HatsBubbleView::ShouldShowCloseButton() const {

@@ -488,7 +488,6 @@ class BrowserView : public BrowserWindow,
   bool ShouldShowWindowTitle() const override;
   gfx::ImageSkia GetWindowAppIcon() override;
   gfx::ImageSkia GetWindowIcon() override;
-  bool ShouldShowWindowIcon() const override;
   bool ExecuteWindowsCommand(int command_id) override;
   std::string GetWindowName() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,

@@ -36,7 +36,6 @@ class RelaunchRecommendedBubbleView : public LocationBarBubbleDelegateView {
   base::string16 GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   gfx::ImageSkia GetWindowIcon() override;
-  bool ShouldShowWindowIcon() const override;
 
  protected:
   // LocationBarBubbleDelegateView:

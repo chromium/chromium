@@ -165,7 +165,7 @@ class VIEWS_EXPORT WidgetDelegate {
   virtual gfx::ImageSkia GetWindowIcon();
 
   // Returns true if a window icon should be shown.
-  virtual bool ShouldShowWindowIcon() const;
+  bool ShouldShowWindowIcon() const;
 
   // Execute a command in the window's controller. Returns true if the command
   // was handled, false if it was not.

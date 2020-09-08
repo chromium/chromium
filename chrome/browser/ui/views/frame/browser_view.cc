@@ -433,6 +433,16 @@ class ContentsSeparator : public views::Separator {
   }
 };
 
+bool ShouldShowWindowIcon(const Browser* browser) {
+#if defined(OS_CHROMEOS)
+  // For Chrome OS only, trusted windows (apps and settings) do not show a
+  // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
+  if (browser->is_trusted_source())
+    return false;
+#endif
+  return browser->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -532,6 +542,7 @@ const char BrowserView::kViewClassName[] = "BrowserView";
 
 BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     : views::ClientView(nullptr, nullptr), browser_(std::move(browser)) {
+  SetShowIcon(::ShouldShowWindowIcon(browser_.get()));
   SetHasWindowSizeControls(!chrome::IsRunningInForcedAppMode());
 
   browser_->tab_strip_model()->AddObserver(this);
@@ -2360,16 +2371,6 @@ bool BrowserView::ShouldShowWindowTitle() const {
     return true;
 #endif
 
-  return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
-}
-
-bool BrowserView::ShouldShowWindowIcon() const {
-#if defined(OS_CHROMEOS)
-  // For Chrome OS only, trusted windows (apps and settings) do not show a
-  // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
-  if (browser_->is_trusted_source())
-    return false;
-#endif
   return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
 

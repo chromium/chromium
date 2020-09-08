@@ -131,6 +131,7 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
                          password_type_.account_type() ==
                              ReusedPasswordAccountType::SAVED_PASSWORD;
 #endif
+  SetShowIcon(true);
   if (password_type.account_type() !=
           ReusedPasswordAccountType::SAVED_PASSWORD ||
       show_check_passwords) {
@@ -274,10 +275,6 @@ gfx::ImageSkia PasswordReuseModalWarningDialog::GetWindowIcon() {
                    ChromeLayoutProvider::Get()->GetDistanceMetric(
                        DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
                    gfx::kChromeIconGrey);
-}
-
-bool PasswordReuseModalWarningDialog::ShouldShowWindowIcon() const {
-  return true;
 }
 
 void PasswordReuseModalWarningDialog::OnGaiaPasswordChanged() {

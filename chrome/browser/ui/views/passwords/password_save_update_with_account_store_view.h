@@ -77,7 +77,6 @@ class PasswordSaveUpdateWithAccountStoreView
   views::View* GetInitiallyFocusedView() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   gfx::ImageSkia GetWindowIcon() override;
-  bool ShouldShowWindowIcon() const override;
   bool ShouldShowCloseButton() const override;
 
   // View:

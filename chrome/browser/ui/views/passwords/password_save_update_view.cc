@@ -308,6 +308,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
                         std::move(password_view_button));
   }
 
+  SetShowIcon(false);
   SetFootnoteView(CreateFooterView());
   SetCancelCallback(base::BindOnce(&PasswordSaveUpdateView::OnDialogCancelled,
                                    base::Unretained(this)));
@@ -373,10 +374,6 @@ bool PasswordSaveUpdateView::IsDialogButtonEnabled(
 
 gfx::ImageSkia PasswordSaveUpdateView::GetWindowIcon() {
   return gfx::ImageSkia();
-}
-
-bool PasswordSaveUpdateView::ShouldShowWindowIcon() const {
-  return false;
 }
 
 bool PasswordSaveUpdateView::ShouldShowCloseButton() const {

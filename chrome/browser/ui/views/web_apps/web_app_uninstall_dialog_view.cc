@@ -73,8 +73,9 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
       std::make_unique<WebAppInfoImageSource>(kIconSizeInDip, icon_bitmaps),
       image_size);
 
-  WidgetDelegate::SetShowCloseButton(false);
-  WidgetDelegate::SetTitle(l10n_util::GetStringFUTF16(
+  SetShowCloseButton(false);
+  SetShowIcon(true);
+  SetTitle(l10n_util::GetStringFUTF16(
       IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
       base::UTF8ToUTF16(provider->registrar().GetAppShortName(app_id_))));
 
@@ -155,10 +156,6 @@ ui::ModalType WebAppUninstallDialogDelegateView::GetModalType() const {
 
 gfx::ImageSkia WebAppUninstallDialogDelegateView::GetWindowIcon() {
   return image_;
-}
-
-bool WebAppUninstallDialogDelegateView::ShouldShowWindowIcon() const {
-  return true;
 }
 
 bool WebAppUninstallDialogDelegateView::Uninstall() {

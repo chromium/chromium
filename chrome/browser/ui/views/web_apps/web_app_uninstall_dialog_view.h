@@ -56,7 +56,6 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   // views::WidgetDelegate:
   ui::ModalType GetModalType() const override;
   gfx::ImageSkia GetWindowIcon() override;
-  bool ShouldShowWindowIcon() const override;
 
   // Uninstalls the web app. Returns true on success.
   bool Uninstall();

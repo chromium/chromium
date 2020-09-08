@@ -78,10 +78,6 @@ gfx::ImageSkia RelaunchRequiredDialogView::GetWindowIcon() {
                            gfx::kChromeIconGrey));
 }
 
-bool RelaunchRequiredDialogView::ShouldShowWindowIcon() const {
-  return true;
-}
-
 gfx::Size RelaunchRequiredDialogView::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
                         DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
@@ -104,6 +100,7 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
   SetButtonLabel(
       ui::DIALOG_BUTTON_CANCEL,
       l10n_util::GetStringUTF16(IDS_RELAUNCH_REQUIRED_CANCEL_BUTTON));
+  SetShowIcon(true);
   SetAcceptCallback(base::BindOnce(
       [](base::RepeatingClosure callback) {
         base::RecordAction(base::UserMetricsAction("RelaunchRequired_Accept"));
