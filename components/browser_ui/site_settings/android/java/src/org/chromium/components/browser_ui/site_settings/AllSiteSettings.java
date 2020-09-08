@@ -115,8 +115,10 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             mCategory = SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.ALL_SITES);
         }
-        assert (mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
-                || mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE));
+        if (!(mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
+                    || mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE))) {
+            throw new IllegalArgumentException("Use SingleCategorySettings instead.");
+        };
 
         ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
 

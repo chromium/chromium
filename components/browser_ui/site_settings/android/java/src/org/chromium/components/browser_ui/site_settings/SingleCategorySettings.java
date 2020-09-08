@@ -23,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -88,8 +87,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
     // The list that contains preferences.
     private RecyclerView mListView;
-    // The view to show when the list is empty.
-    private TextView mEmptyView;
     // The item for searching the list of items.
     private MenuItem mSearchItem;
     // The Site Settings Category we are showing.
@@ -152,10 +149,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             int chooserDataType = mCategory.getObjectChooserDataType();
             boolean hasEntries =
                     chooserDataType == -1 ? addWebsites(sites) : addChosenObjects(sites);
-
-            if (mEmptyView == null) return;
-
-            mEmptyView.setVisibility(hasEntries ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -305,8 +298,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                     browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
         }
 
-        assert !(mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
-                || mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE));
+        if (mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
+                || mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE)) {
+            throw new IllegalArgumentException("Use AllSiteSettings instead.");
+        }
 
         int contentType = mCategory.getContentSettingsType();
         mRequiresTriStateSetting =
