@@ -3423,6 +3423,8 @@ static_library("browser") {
       "nearby_sharing/nearby_per_session_discovery_manager.h",
       "nearby_sharing/nearby_process_manager.cc",
       "nearby_sharing/nearby_process_manager.h",
+      "nearby_sharing/nearby_receive_manager.cc",
+      "nearby_sharing/nearby_receive_manager.h",
       "nearby_sharing/nearby_share_settings.cc",
       "nearby_sharing/nearby_share_settings.h",
       "nearby_sharing/nearby_sharing_service.h",

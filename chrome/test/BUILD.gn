@@ -3793,6 +3793,7 @@ test("unit_tests") {
       "../browser/nearby_sharing/nearby_notification_manager_unittest.cc",
       "../browser/nearby_sharing/nearby_per_session_discovery_manager_unittest.cc",
       "../browser/nearby_sharing/nearby_process_manager_unittest.cc",
+      "../browser/nearby_sharing/nearby_receive_manager_unittest.cc",
       "../browser/nearby_sharing/nearby_share_settings_unittest.cc",
       "../browser/nearby_sharing/nearby_sharing_service_impl_unittest.cc",
       "../browser/nearby_sharing/paired_key_verification_runner_unittest.cc",

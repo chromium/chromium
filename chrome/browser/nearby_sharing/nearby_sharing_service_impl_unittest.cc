@@ -1481,7 +1481,7 @@ TEST_F(NearbySharingServiceImplTest,
 
   NearbySharingService::StatusCodes result2 = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
-  EXPECT_EQ(result2, NearbySharingService::StatusCodes::kError);
+  EXPECT_EQ(result2, NearbySharingService::StatusCodes::kOk);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
 }
 
@@ -1812,7 +1812,7 @@ TEST_F(NearbySharingServiceImplTest,
   MockTransferUpdateCallback callback2;
   NearbySharingService::StatusCodes result2 =
       service_->UnregisterReceiveSurface(&callback2);
-  EXPECT_EQ(result2, NearbySharingService::StatusCodes::kError);
+  EXPECT_EQ(result2, NearbySharingService::StatusCodes::kOk);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
 }
 
@@ -1825,7 +1825,8 @@ TEST_F(NearbySharingServiceImplTest, UnregisterReceiveSurfaceNeverRegistered) {
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result =
       service_->UnregisterReceiveSurface(&callback);
-  EXPECT_EQ(result, NearbySharingService::StatusCodes::kError);
+  // This is no longer considered an error condition.
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
 }
 

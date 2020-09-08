@@ -49,7 +49,7 @@ enum TransferStatus {
   // token on this device so the other user can compare it.
   kAwaitingRemoteAcceptance,
   // The current transfer is now in progress after both users accepted the
-  // tranfer on their devices.
+  // transfer on their devices.
   kInProgress,
 };
 
@@ -92,4 +92,50 @@ interface ConfirmationManager {
 
   // Cancels a connection to the current Share Target.
   Cancel() => (bool success);
+};
+
+// Observer interface to receive updates when high visibility has changed
+// and when an incoming share is requested and the user must confirm.
+//
+// This interface is implement in Javascript in the chrome://os-settings WebUI.
+interface ReceiveObserver {
+  // Called when high visibility receive state (foreground receive) has
+  // changed and the new value is provided.
+  OnHighVisibilityChanged(bool in_high_visibility);
+
+  // Called when a share request has arrived and the user must be asked to
+  // accept or reject the call. This will only trigger when the receive manager
+  // is in high visibility, otherwise the notification manager (background
+  // receive surface) will handle the events.
+  OnIncomingShare(ShareTarget share_target, string? connection_token);
+};
+
+// Allows the caller to observe changes to, query, or explicitly enter or exit
+// high visibility. Once in high visibility, the caller may observe incoming
+// shares and accept or reject them.
+//
+// This interface runs in the browser process and is bound by os-settings which
+// hosts the ui surface and implements the |ReceiveObserver|.
+interface ReceiveManager {
+  // Allows the caller to observe ReceiveManager events.
+  AddReceiveObserver(pending_remote<ReceiveObserver> observer);
+
+  // Determine if the user is currently in high visibility.
+  IsInHighVisibility() => (bool in_high_visibility);
+
+  // Attempt to explicitly enter high visibility. If |success| is true the
+  // receive manager is in high visibility state. If |success| is false the
+  // receive manager is not in high visibility state.
+  EnterHighVisibility() => (bool success);
+
+  // Attempt to explicitly exit high visibility. If |success| is true the
+  // receive manager is not in high visibility state. If |success| is false the
+  // receive manager is still in high visibility state.
+  ExitHighVisibility() => (bool success);
+
+  // Accept the incoming share request by the share target id.
+  Accept(mojo_base.mojom.UnguessableToken share_target_id) => (bool success);
+
+  // Reject the incoming share request by the share target id.
+  Reject(mojo_base.mojom.UnguessableToken share_target_id) => (bool success);
 };

@@ -253,7 +253,8 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
   if (foreground_send_transfer_callbacks_.HasObserver(transfer_callback) ||
       background_send_transfer_callbacks_.HasObserver(transfer_callback)) {
     NS_LOG(VERBOSE) << __func__
-                    << ": RegisterSendSurface failed. Already registered.";
+                    << ": RegisterSendSurface failed. Already registered for a "
+                       "different state.";
     return StatusCodes::kError;
   }
 
@@ -349,6 +350,20 @@ NearbySharingServiceImpl::UnregisterSendSurface(
   return StatusCodes::kOk;
 }
 
+base::ObserverList<TransferUpdateCallback>&
+NearbySharingServiceImpl::GetReceiveCallbacksFromState(
+    ReceiveSurfaceState state) {
+  switch (state) {
+    case ReceiveSurfaceState::kForeground:
+      return foreground_receive_callbacks_;
+    case ReceiveSurfaceState::kBackground:
+      return background_receive_callbacks_;
+    case ReceiveSurfaceState::kUnknown:
+      NOTREACHED();
+      return foreground_receive_callbacks_;
+  }
+}
+
 NearbySharingService::StatusCodes
 NearbySharingServiceImpl::RegisterReceiveSurface(
     TransferUpdateCallback* transfer_callback,
@@ -366,10 +381,17 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
     return StatusCodes::kTransferAlreadyInProgress;
   }
 
-  if (foreground_receive_callbacks_.HasObserver(transfer_callback) ||
-      background_receive_callbacks_.HasObserver(transfer_callback)) {
+  // We specifically allow re-registring with out error so it is clear to caller
+  // that the transfer_callback is currently registered.
+  if (GetReceiveCallbacksFromState(state).HasObserver(transfer_callback)) {
     NS_LOG(VERBOSE) << __func__
-                    << ": registerReceiveSurface failed. Already registered.";
+                    << ": transfer callback already registered, ignoring";
+    return StatusCodes::kOk;
+  } else if (foreground_receive_callbacks_.HasObserver(transfer_callback) ||
+             background_receive_callbacks_.HasObserver(transfer_callback)) {
+    NS_LOG(ERROR)
+        << __func__
+        << ":  transfer callback already registered but for a different state.";
     return StatusCodes::kError;
   }
 
@@ -380,11 +402,7 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
                                         last_incoming_metadata_->second);
   }
 
-  if (state == ReceiveSurfaceState::kForeground) {
-    foreground_receive_callbacks_.AddObserver(transfer_callback);
-  } else {
-    background_receive_callbacks_.AddObserver(transfer_callback);
-  }
+  GetReceiveCallbacksFromState(state).AddObserver(transfer_callback);
 
   NS_LOG(VERBOSE) << __func__ << ": A ReceiveSurface("
                   << ReceiveSurfaceStateToString(state)
@@ -405,8 +423,10 @@ NearbySharingServiceImpl::UnregisterReceiveSurface(
   if (!is_foreground && !is_background) {
     NS_LOG(VERBOSE)
         << __func__
-        << ": unregisterReceiveSurface failed. Unknown TransferUpdateCallback.";
-    return StatusCodes::kError;
+        << ": Unknown transfer callback was un-registered, ignoring.";
+    // We intentionally allow this be successful so the caller can be sure
+    // they are not registered anymore.
+    return StatusCodes::kOk;
   }
 
   if (foreground_receive_callbacks_.might_have_observers() &&

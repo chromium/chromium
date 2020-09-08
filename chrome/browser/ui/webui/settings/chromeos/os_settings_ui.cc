@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
@@ -167,6 +168,15 @@ void OSSettingsUI::BindInterface(
       NearbySharingServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   service->GetSettings()->Bind(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<nearby_share::mojom::ReceiveManager> receiver) {
+  NearbySharingService* service =
+      NearbySharingServiceFactory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<NearbyReceiveManager>(service),
+                              std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

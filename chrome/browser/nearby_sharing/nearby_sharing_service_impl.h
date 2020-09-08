@@ -77,6 +77,7 @@ class NearbySharingServiceImpl
       ShareTargetDiscoveredCallback* discovery_callback) override;
   StatusCodes RegisterReceiveSurface(TransferUpdateCallback* transfer_callback,
                                      ReceiveSurfaceState state) override;
+
   StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) override;
   StatusCodes SendAttachments(
@@ -128,6 +129,8 @@ class NearbySharingServiceImpl
   void OnEndpointLost(const std::string& endpoint_id) override;
 
  private:
+  base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
+      ReceiveSurfaceState state);
   bool IsVisibleInBackground(Visibility visibility);
   const base::Optional<std::vector<uint8_t>> CreateEndpointInfo(
       const base::Optional<std::string>& device_name);
