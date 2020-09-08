@@ -55,6 +55,11 @@ class PRINTING_EXPORT PrintingContextChromeos : public PrintingContext {
   std::string username_;
 };
 
+// This has the side effect of recording UMA for advanced attributes usage,
+// so only call once per job.
+PRINTING_EXPORT std::vector<ScopedCupsOption> SettingsToCupsOptions(
+    const PrintSettings& settings);
+
 }  // namespace printing
 
 #endif  // PRINTING_PRINTING_CONTEXT_CHROMEOS_H_

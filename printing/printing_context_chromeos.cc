@@ -103,7 +103,60 @@ void ReportEnumUsage(const std::string& attribute_name) {
   base::UmaHistogramEnumeration("Printing.CUPS.IppAttributes", it->second);
 }
 
-// This records UMA for advanced attributes usage, so only call once per job.
+// Given an integral |value| expressed in PWG units (1/100 mm), returns
+// the same value expressed in device units.
+int PwgUnitsToDeviceUnits(int value, float micrometers_per_device_unit) {
+  return ConvertUnitDouble(value, micrometers_per_device_unit, 10);
+}
+
+// Given a |media_size|, the specification of the media's |margins|, and
+// the number of micrometers per device unit, returns the rectangle
+// bounding the apparent printable area of said media.
+gfx::Rect RepresentPrintableArea(const gfx::Size& media_size,
+                                 const CupsPrinter::CupsMediaMargins& margins,
+                                 float micrometers_per_device_unit) {
+  // These values express inward encroachment by margins, away from the
+  // edges of the |media_size|.
+  int left_bound =
+      PwgUnitsToDeviceUnits(margins.left, micrometers_per_device_unit);
+  int bottom_bound =
+      PwgUnitsToDeviceUnits(margins.bottom, micrometers_per_device_unit);
+  int right_bound =
+      PwgUnitsToDeviceUnits(margins.right, micrometers_per_device_unit);
+  int top_bound =
+      PwgUnitsToDeviceUnits(margins.top, micrometers_per_device_unit);
+
+  // These values express the bounding box of the printable area on the
+  // page.
+  int printable_width = media_size.width() - (left_bound + right_bound);
+  int printable_height = media_size.height() - (top_bound + bottom_bound);
+
+  if (printable_width > 0 && printable_height > 0) {
+    return {left_bound, bottom_bound, printable_width, printable_height};
+  }
+
+  return {0, 0, media_size.width(), media_size.height()};
+}
+
+void SetPrintableArea(PrintSettings* settings,
+                      const PrintSettings::RequestedMedia& media,
+                      const CupsPrinter::CupsMediaMargins& margins,
+                      bool flip) {
+  if (!media.size_microns.IsEmpty()) {
+    float device_microns_per_device_unit =
+        static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
+    gfx::Size paper_size =
+        gfx::Size(media.size_microns.width() / device_microns_per_device_unit,
+                  media.size_microns.height() / device_microns_per_device_unit);
+
+    gfx::Rect paper_rect = RepresentPrintableArea(
+        paper_size, margins, device_microns_per_device_unit);
+    settings->SetPrinterPrintableArea(paper_size, paper_rect, flip);
+  }
+}
+
+}  // namespace
+
 std::vector<ScopedCupsOption> SettingsToCupsOptions(
     const PrintSettings& settings) {
   const char* sides = nullptr;
@@ -181,60 +234,6 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
 
   return options;
 }
-
-// Given an integral |value| expressed in PWG units (1/100 mm), returns
-// the same value expressed in device units.
-int PwgUnitsToDeviceUnits(int value, float micrometers_per_device_unit) {
-  return ConvertUnitDouble(value, micrometers_per_device_unit, 10);
-}
-
-// Given a |media_size|, the specification of the media's |margins|, and
-// the number of micrometers per device unit, returns the rectangle
-// bounding the apparent printable area of said media.
-gfx::Rect RepresentPrintableArea(const gfx::Size& media_size,
-                                 const CupsPrinter::CupsMediaMargins& margins,
-                                 float micrometers_per_device_unit) {
-  // These values express inward encroachment by margins, away from the
-  // edges of the |media_size|.
-  int left_bound =
-      PwgUnitsToDeviceUnits(margins.left, micrometers_per_device_unit);
-  int bottom_bound =
-      PwgUnitsToDeviceUnits(margins.bottom, micrometers_per_device_unit);
-  int right_bound =
-      PwgUnitsToDeviceUnits(margins.right, micrometers_per_device_unit);
-  int top_bound =
-      PwgUnitsToDeviceUnits(margins.top, micrometers_per_device_unit);
-
-  // These values express the bounding box of the printable area on the
-  // page.
-  int printable_width = media_size.width() - (left_bound + right_bound);
-  int printable_height = media_size.height() - (top_bound + bottom_bound);
-
-  if (printable_width > 0 && printable_height > 0) {
-    return {left_bound, bottom_bound, printable_width, printable_height};
-  }
-
-  return {0, 0, media_size.width(), media_size.height()};
-}
-
-void SetPrintableArea(PrintSettings* settings,
-                      const PrintSettings::RequestedMedia& media,
-                      const CupsPrinter::CupsMediaMargins& margins,
-                      bool flip) {
-  if (!media.size_microns.IsEmpty()) {
-    float device_microns_per_device_unit =
-        static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
-    gfx::Size paper_size =
-        gfx::Size(media.size_microns.width() / device_microns_per_device_unit,
-                  media.size_microns.height() / device_microns_per_device_unit);
-
-    gfx::Rect paper_rect = RepresentPrintableArea(
-        paper_size, margins, device_microns_per_device_unit);
-    settings->SetPrinterPrintableArea(paper_size, paper_rect, flip);
-  }
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
