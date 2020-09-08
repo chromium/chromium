@@ -45,6 +45,7 @@ group("closure_compile") {
     "add_supervision:closure_compile",
     "bluetooth_pairing_dialog:closure_compile",
     "crostini_installer:closure_compile",
+    "crostini_upgrader:closure_compile",
     "edu_login:closure_compile",
     "emulator:closure_compile",
     "gaia_action_buttons:closure_compile",
