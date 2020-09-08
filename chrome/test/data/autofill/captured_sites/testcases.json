@@ -47,7 +47,7 @@
     { "site_name": "chewy" },
     { "site_name": "cinemark" },
     { "site_name": "coach" },
-    { "site_name": "collage" },
+    { "site_name": "collage", "disabled":true, "bug_number":1121441 },
     { "site_name": "container_store" },
     { "site_name": "coolstuffinc" },
     { "site_name": "crate_and_barrel" },
