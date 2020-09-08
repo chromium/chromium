@@ -298,4 +298,20 @@ test(() => {
     }], details);
   });
 }, 'Large networkData value throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        action: 'authenticate',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        // Large fallbackUrl value.
+        fallbackUrl: 'https://fallback.example/ur' + 'l'.repeat(1024 * 1024)
+      },
+    }], details);
+  });
+}, 'Large fallbackUrl value throws exception.');
 </script>
