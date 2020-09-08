@@ -659,7 +659,9 @@ async function processOtherFilesInDirectory(
 
   // Iteration order is not guaranteed using `directory.entries()`, so we
   // sort it afterwards by modification time to ensure a consistent and logical
-  // order. More recent (i.e. higher timestamp) files should appear first.
+  // order. More recent (i.e. higher timestamp) files should appear first. In
+  // the case where timestamps are equal, the files will be sorted
+  // lexicographically according to their names.
   relatedFiles.sort((a, b) => {
     // Sort null files last if they racily appear.
     if (!a.file && !b.file) {
@@ -668,6 +670,8 @@ async function processOtherFilesInDirectory(
       return -1;
     } else if (!a.file) {
       return 1;
+    } else if (a.file.lastModified === b.file.lastModified) {
+      return a.file.name.localeCompare(b.file.name);
     }
     return b.file.lastModified - a.file.lastModified;
   });

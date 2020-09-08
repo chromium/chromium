@@ -310,7 +310,7 @@ TEST_F('MediaAppUIBrowserTest', 'ReLaunchableAfterFastLoad', async () => {
 
   // Second launch loads other files into `currentFiles`.
   await assertFilesLoaded(
-      directory, ['changed.png', 'file3.png', 'file4.png', 'file1.png'],
+      directory, ['changed.png', 'file1.png', 'file3.png', 'file4.png'],
       'fast files: check files after relaunching');
   const currentFilesAfterSecondLaunch = [...currentFiles];
   const loadedFilesSecondLaunch = await getLoadedFiles();
@@ -1020,37 +1020,37 @@ TEST_F('MediaAppUIBrowserTest', 'OpenFileIPC', async () => {
 });
 
 TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
-  const testFiles = [
-    {name: 'matroska.mkv'},
-    {name: 'jaypeg.jpg', type: 'image/jpeg'},
-    {name: 'text.txt', type: 'text/plain'},
-    {name: 'jiff.gif', type: 'image/gif'},
-    {name: 'world.webm', type: 'video/webm'},
-    {name: 'other.txt', type: 'text/plain'},
-    {name: 'noext', type: ''},
-    {name: 'html', type: 'text/html'},
-    {name: 'matroska.emkv'},
-  ];
-  const directory = await createMockTestDirectory(testFiles);
-  const [mkv, jpg, txt, gif, webm, other, ext, html] = directory.getFilesSync();
-  const imageAndVideoFiles = [mkv, jpg, gif, webm];
   // These files all have a last modified time of 0 so the order they end up in
-  // is the order they are added i.e. `matroska.mkv, jaypeg.jpg, jiff.gif,
+  // is their lexicographical order i.e. `jaypeg.jpg, jiff.gif, matroska.mkv,
   // world.webm`. When a file is loaded it becomes the "focus file" and files
   // get rotated around like such that we get `currentFiles = [focus file,
-  // ...larger files, ...smaller files]`.
+  // ...lexicographically larger files, ...lexicographically smaller files]`.
+  const testFiles = [
+    {name: 'html', type: 'text/html'},
+    {name: 'jaypeg.jpg', type: 'image/jpeg'},
+    {name: 'jiff.gif', type: 'image/gif'},
+    {name: 'matroska.emkv'},
+    {name: 'matroska.mkv'},
+    {name: 'noext', type: ''},
+    {name: 'other.txt', type: 'text/plain'},
+    {name: 'text.txt', type: 'text/plain'},
+    {name: 'world.webm', type: 'video/webm'},
+  ];
+  const directory = await createMockTestDirectory(testFiles);
+  const [html, jpg, gif, emkv, mkv, ext, other, txt, webm] =
+      directory.getFilesSync();
 
   await loadFilesWithoutSendingToGuest(directory, mkv);
-  assertFilesToBe(imageAndVideoFiles, 'mkv');
+  assertFilesToBe([mkv, webm, jpg, gif], 'mkv');
 
   await loadFilesWithoutSendingToGuest(directory, jpg);
-  assertFilenamesToBe('jaypeg.jpg,jiff.gif,world.webm,matroska.mkv', 'jpg');
+  assertFilesToBe([jpg, gif, mkv, webm], 'jpg');
 
   await loadFilesWithoutSendingToGuest(directory, gif);
-  assertFilenamesToBe('jiff.gif,world.webm,matroska.mkv,jaypeg.jpg', 'gif');
+  assertFilesToBe([gif, mkv, webm, jpg], 'gif');
 
   await loadFilesWithoutSendingToGuest(directory, webm);
-  assertFilenamesToBe('world.webm,matroska.mkv,jaypeg.jpg,jiff.gif', 'webm');
+  assertFilesToBe([webm, jpg, gif, mkv], 'webm');
 
   await loadFilesWithoutSendingToGuest(directory, txt);
   assertFilesToBe([txt, other], 'txt');
@@ -1065,9 +1065,17 @@ TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
 });
 
 TEST_F('MediaAppUIBrowserTest', 'SortedFiles', async () => {
-  // We want the more recent (i.e. higher timestamp) files first.
-  const filesInModifiedOrder = await Promise.all(
-      [6, 5, 4, 3, 2, 1, 0].map(n => createTestImageFile(1, 1, `${n}.png`, n)));
+  // We want the more recent (i.e. higher timestamp) files first. In the case of
+  // equal timestamp, it should sort lexicographically by filename.
+  const filesInModifiedOrder = await Promise.all([
+    createTestImageFile(1, 1, '6.png', 6),
+    createTestImageFile(1, 1, '5.png', 5),
+    createTestImageFile(1, 1, '4.png', 4),
+    createTestImageFile(1, 1, '2a.png', 2),
+    createTestImageFile(1, 1, '2b.png', 2),
+    createTestImageFile(1, 1, '1.png', 1),
+    createTestImageFile(1, 1, '0.png', 0),
+  ]);
   const files = [...filesInModifiedOrder];
   // Mix up files so that we can check they get sorted correctly.
   [files[4], files[2], files[3]] = [files[2], files[3], files[4]];
