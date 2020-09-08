@@ -344,8 +344,8 @@ void MathService::Divide(int32_t dividend,
 
 source_set("math") {
   sources = [
-    "math.cc",
-    "math.h",
+    "math_service.cc",
+    "math_service.h",
   ]
 
   deps = [
