@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/native_file_system_permission_context.h"
 #include "ipc/ipc_message.h"
 #include "third_party/blink/public/mojom/native_file_system/native_file_system_directory_handle.mojom-forward.h"
 #include "url/gurl.h"
@@ -23,6 +24,8 @@ class CONTENT_EXPORT NativeFileSystemEntryFactory
     : public base::RefCountedThreadSafe<NativeFileSystemEntryFactory,
                                         BrowserThread::DeleteOnUIThread> {
  public:
+  using UserAction = NativeFileSystemPermissionContext::UserAction;
+
   // Context from which a created handle is going to be used. This is used for
   // security and permission checks. Pass in the URL most relevant as the url
   // parameter. This url will be used for verifications later for SafeBrowsing
@@ -49,13 +52,15 @@ class CONTENT_EXPORT NativeFileSystemEntryFactory
   // passed in path is valid and represents a file.
   virtual blink::mojom::NativeFileSystemEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
-      const base::FilePath& file_path) = 0;
+      const base::FilePath& file_path,
+      UserAction user_action) = 0;
 
   // Creates a new NativeFileSystemEntryPtr from the path to a directory.
   // Assumes the passed in path is valid and represents a directory.
   virtual blink::mojom::NativeFileSystemEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
-      const base::FilePath& directory_path) = 0;
+      const base::FilePath& directory_path,
+      UserAction user_action) = 0;
 
  protected:
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;

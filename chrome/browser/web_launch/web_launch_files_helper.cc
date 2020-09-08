@@ -87,12 +87,14 @@ class EntriesBuilder {
                      web_contents->GetMainFrame()->GetRoutingID())) {}
 
   void AddFileEntry(const base::FilePath& path) {
-    entries_ref_->push_back(
-        entry_factory_->CreateFileEntryFromPath(context_, path));
+    entries_ref_->push_back(entry_factory_->CreateFileEntryFromPath(
+        context_, path,
+        content::NativeFileSystemEntryFactory::UserAction::kOpen));
   }
   void AddDirectoryEntry(const base::FilePath& path) {
-    entries_ref_->push_back(
-        entry_factory_->CreateDirectoryEntryFromPath(context_, path));
+    entries_ref_->push_back(entry_factory_->CreateDirectoryEntryFromPath(
+        context_, path,
+        content::NativeFileSystemEntryFactory::UserAction::kOpen));
   }
 
  private:

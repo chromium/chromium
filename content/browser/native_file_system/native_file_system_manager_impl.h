@@ -125,17 +125,12 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   // NativeFileSystemEntryFactory:
   blink::mojom::NativeFileSystemEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
-      const base::FilePath& file_path) override;
+      const base::FilePath& file_path,
+      UserAction user_action) override;
   blink::mojom::NativeFileSystemEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
-      const base::FilePath& directory_path) override;
-
-  // Same as CreateFileEntryFromPath, except informs the permission context that
-  // the returned entry should be writable, because this entry was the result of
-  // a "save" operation.
-  blink::mojom::NativeFileSystemEntryPtr CreateWritableFileEntryFromPath(
-      const BindingContext& binding_context,
-      const base::FilePath& file_path);
+      const base::FilePath& directory_path,
+      UserAction user_action) override;
 
   // Creates a new NativeFileSystemFileHandleImpl for a given url. Assumes the
   // passed in URL is valid and represents a file.
@@ -310,11 +305,6 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const base::FilePath& file_path,
       GetEntryFromDragDropTokenCallback token_resolved_callback,
       NativeFileSystemPermissionContext::HandleType file_type);
-
-  blink::mojom::NativeFileSystemEntryPtr CreateFileEntryFromPathImpl(
-      const BindingContext& binding_context,
-      const base::FilePath& file_path,
-      NativeFileSystemPermissionContext::UserAction user_action);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

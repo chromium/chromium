@@ -165,7 +165,9 @@ class NativeFileSystemManagerImplTest : public testing::Test {
         .WillOnce(testing::Return(grant));
 
     blink::mojom::NativeFileSystemEntryPtr entry =
-        manager_->CreateDirectoryEntryFromPath(kBindingContext, path);
+        manager_->CreateDirectoryEntryFromPath(
+            kBindingContext, path,
+            NativeFileSystemPermissionContext::UserAction::kOpen);
     return mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle>(
         std::move(entry->entry_handle->get_directory()));
   }
@@ -271,7 +273,9 @@ TEST_F(NativeFileSystemManagerImplTest, CreateFileEntryFromPath_Permissions) {
       .WillOnce(testing::Return(ask_grant_));
 
   blink::mojom::NativeFileSystemEntryPtr entry =
-      manager_->CreateFileEntryFromPath(kBindingContext, kTestPath);
+      manager_->CreateFileEntryFromPath(
+          kBindingContext, kTestPath,
+          NativeFileSystemPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -297,7 +301,9 @@ TEST_F(NativeFileSystemManagerImplTest,
       .WillOnce(testing::Return(allow_grant_));
 
   blink::mojom::NativeFileSystemEntryPtr entry =
-      manager_->CreateWritableFileEntryFromPath(kBindingContext, kTestPath);
+      manager_->CreateFileEntryFromPath(
+          kBindingContext, kTestPath,
+          NativeFileSystemPermissionContext::UserAction::kSave);
   mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -323,7 +329,9 @@ TEST_F(NativeFileSystemManagerImplTest,
       .WillOnce(testing::Return(ask_grant_));
 
   blink::mojom::NativeFileSystemEntryPtr entry =
-      manager_->CreateDirectoryEntryFromPath(kBindingContext, kTestPath);
+      manager_->CreateDirectoryEntryFromPath(
+          kBindingContext, kTestPath,
+          NativeFileSystemPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> handle(
       std::move(entry->entry_handle->get_directory()));
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -477,7 +485,9 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_Native_SingleFile) {
       .WillOnce(testing::Return(grant));
 
   blink::mojom::NativeFileSystemEntryPtr entry =
-      manager_->CreateFileEntryFromPath(kBindingContext, kTestPath);
+      manager_->CreateFileEntryFromPath(
+          kBindingContext, kTestPath,
+          NativeFileSystemPermissionContext::UserAction::kOpen);
   mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -680,13 +690,13 @@ TEST_F(NativeFileSystemManagerImplTest,
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, file_path, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
       .WillOnce(testing::Return(allow_grant_));
 
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, file_path, HandleType::kFile,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
       .WillOnce(testing::Return(allow_grant_));
 
   // Attempt to resolve `token_remote` and store the resulting
@@ -732,13 +742,13 @@ TEST_F(NativeFileSystemManagerImplTest,
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
                   kTestOrigin, kDirPath, HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
       .WillOnce(testing::Return(allow_grant_));
 
   EXPECT_CALL(permission_context_,
               GetWritePermissionGrant(
                   kTestOrigin, kDirPath, HandleType::kDirectory,
-                  NativeFileSystemPermissionContext::UserAction::kOpen))
+                  NativeFileSystemPermissionContext::UserAction::kDragAndDrop))
       .WillOnce(testing::Return(allow_grant_));
 
   // Attempt to resolve `token_remote` and store the resulting

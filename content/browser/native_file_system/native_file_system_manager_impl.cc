@@ -369,9 +369,11 @@ void NativeFileSystemManagerImpl::ResolveDragDropTokenWithFileType(
     HandleType file_type) {
   blink::mojom::NativeFileSystemEntryPtr entry;
   if (file_type == HandleType::kDirectory) {
-    entry = CreateDirectoryEntryFromPath(binding_context, file_path);
+    entry = CreateDirectoryEntryFromPath(binding_context, file_path,
+                                         UserAction::kDragAndDrop);
   } else {
-    entry = CreateFileEntryFromPath(binding_context, file_path);
+    entry = CreateFileEntryFromPath(binding_context, file_path,
+                                    UserAction::kDragAndDrop);
   }
 
   std::move(token_resolved_callback).Run(std::move(entry));
@@ -560,37 +562,37 @@ void NativeFileSystemManagerImpl::DeserializeHandle(
 blink::mojom::NativeFileSystemEntryPtr
 NativeFileSystemManagerImpl::CreateFileEntryFromPath(
     const BindingContext& binding_context,
-    const base::FilePath& file_path) {
-  return CreateFileEntryFromPathImpl(
-      binding_context, file_path,
-      NativeFileSystemPermissionContext::UserAction::kOpen);
-}
-
-blink::mojom::NativeFileSystemEntryPtr
-NativeFileSystemManagerImpl::CreateDirectoryEntryFromPath(
-    const BindingContext& binding_context,
-    const base::FilePath& file_path) {
+    const base::FilePath& file_path,
+    UserAction user_action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto url = CreateFileSystemURLFromPath(binding_context.origin, file_path);
 
   SharedHandleState shared_handle_state = GetSharedHandleStateForPath(
       file_path, binding_context.origin, std::move(url.file_system),
-      HandleType::kDirectory,
-      NativeFileSystemPermissionContext::UserAction::kOpen);
+      HandleType::kFile, user_action);
+
+  return blink::mojom::NativeFileSystemEntry::New(
+      blink::mojom::NativeFileSystemHandle::NewFile(
+          CreateFileHandle(binding_context, url.url, shared_handle_state)),
+      url.base_name);
+}
+
+blink::mojom::NativeFileSystemEntryPtr
+NativeFileSystemManagerImpl::CreateDirectoryEntryFromPath(
+    const BindingContext& binding_context,
+    const base::FilePath& file_path,
+    UserAction user_action) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto url = CreateFileSystemURLFromPath(binding_context.origin, file_path);
+
+  SharedHandleState shared_handle_state = GetSharedHandleStateForPath(
+      file_path, binding_context.origin, std::move(url.file_system),
+      HandleType::kDirectory, user_action);
 
   return blink::mojom::NativeFileSystemEntry::New(
       blink::mojom::NativeFileSystemHandle::NewDirectory(
           CreateDirectoryHandle(binding_context, url.url, shared_handle_state)),
       url.base_name);
-}
-
-blink::mojom::NativeFileSystemEntryPtr
-NativeFileSystemManagerImpl::CreateWritableFileEntryFromPath(
-    const BindingContext& binding_context,
-    const base::FilePath& file_path) {
-  return CreateFileEntryFromPathImpl(
-      binding_context, file_path,
-      NativeFileSystemPermissionContext::UserAction::kSave);
 }
 
 mojo::PendingRemote<blink::mojom::NativeFileSystemFileHandle>
@@ -854,8 +856,10 @@ void NativeFileSystemManagerImpl::DidVerifySensitiveDirectoryAccess(
 
   std::vector<blink::mojom::NativeFileSystemEntryPtr> result_entries;
   result_entries.reserve(entries.size());
-  for (const auto& entry : entries)
-    result_entries.push_back(CreateFileEntryFromPath(binding_context, entry));
+  for (const auto& entry : entries) {
+    result_entries.push_back(
+        CreateFileEntryFromPath(binding_context, entry, UserAction::kOpen));
+  }
   std::move(callback).Run(native_file_system_error::Ok(),
                           std::move(result_entries));
 }
@@ -876,7 +880,7 @@ void NativeFileSystemManagerImpl::DidCreateOrTruncateSaveFile(
     return;
   }
   result_entries.push_back(
-      CreateWritableFileEntryFromPath(binding_context, path));
+      CreateFileEntryFromPath(binding_context, path, UserAction::kSave));
   std::move(callback).Run(native_file_system_error::Ok(),
                           std::move(result_entries));
 }
@@ -996,24 +1000,6 @@ NativeFileSystemManagerImpl::CreateFileSystemURLFromPath(
   result.url = context()->CreateCrackedFileSystemURL(
       origin, storage::kFileSystemTypeIsolated, isolated_path);
   return result;
-}
-
-blink::mojom::NativeFileSystemEntryPtr
-NativeFileSystemManagerImpl::CreateFileEntryFromPathImpl(
-    const BindingContext& binding_context,
-    const base::FilePath& file_path,
-    NativeFileSystemPermissionContext::UserAction user_action) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto url = CreateFileSystemURLFromPath(binding_context.origin, file_path);
-
-  SharedHandleState shared_handle_state = GetSharedHandleStateForPath(
-      file_path, binding_context.origin, std::move(url.file_system),
-      HandleType::kFile, user_action);
-
-  return blink::mojom::NativeFileSystemEntry::New(
-      blink::mojom::NativeFileSystemHandle::NewFile(
-          CreateFileHandle(binding_context, url.url, shared_handle_state)),
-      url.base_name);
 }
 
 NativeFileSystemManagerImpl::SharedHandleState
