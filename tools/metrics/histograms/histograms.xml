@@ -82045,16 +82045,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MediaRecorder.VEAError"
-    enum="VideoDecodeAcceleratorError" expires_after="M87">
-  <owner>shenghao@chromium.org</owner>
+    enum="VideoDecodeAcceleratorError" expires_after="M95">
   <owner>mcasas@chromium.org</owner>
+  <owner>wtlee@chromium.org</owner>
   <summary>The errors HW video encode encounters in MediaRecorder.</summary>
 </histogram>
 
 <histogram name="Media.MediaRecorder.VEAUsed" enum="MediaRecorderVEAUsed"
-    expires_after="M87">
-  <owner>shenghao@chromium.org</owner>
+    expires_after="M95">
   <owner>mcasas@chromium.org</owner>
+  <owner>wtlee@chromium.org</owner>
   <summary>Whether HW video encode is used in MediaRecorder.</summary>
 </histogram>
 
@@ -83678,7 +83678,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VAJEA.EncoderResult" enum="VAJEAEncoderResult"
-    expires_after="M87">
+    expires_after="M95">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
