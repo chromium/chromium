@@ -199209,6 +199209,10 @@
     }
    },
    "custom-elements": {
+    "CustomElementRegistry-expected.txt": [
+     "9cc7752e07ddd736caa366fbb014fcf9a4f93bf4",
+     []
+    ],
     "HTMLElement-constructor-expected.txt": [
      "ca5b35f6cd8057907dc8e9bd209d961f067f76fd",
      []
@@ -295204,7 +295208,7 @@
    },
    "custom-elements": {
     "CustomElementRegistry.html": [
-     "cc81e3a2cd3945ceac4ff461b14903c3901b1ba4",
+     "15d983f1c49409c2afff240402fc4fad08820610",
      [
       null,
       {}
@@ -359378,6 +359382,13 @@
       ],
       "clipboard-event-handlers.tentative.html": [
        "d7362c4df286aac32875c787e2438eb334f264cc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-editable.html": [
+       "be107453eb9ef0b597bed4e076b82354b1145807",
        [
         null,
         {}
