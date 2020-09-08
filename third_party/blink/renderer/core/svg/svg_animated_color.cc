@@ -48,7 +48,8 @@ SVGPropertyBase* SVGColorProperty::CloneForAnimation(const String&) const {
   return nullptr;
 }
 
-static inline Color FallbackColorForCurrentColor(SVGElement* target_element) {
+static inline Color FallbackColorForCurrentColor(
+    const SVGElement* target_element) {
   DCHECK(target_element);
   if (const ComputedStyle* target_style = target_element->GetComputedStyle())
     return target_style->VisitedDependentColor(GetCSSPropertyColor());
@@ -56,15 +57,15 @@ static inline Color FallbackColorForCurrentColor(SVGElement* target_element) {
 }
 
 static inline WebColorScheme ColorSchemeForSVGElement(
-    SVGElement* target_element) {
+    const SVGElement* target_element) {
   DCHECK(target_element);
   if (const ComputedStyle* target_style = target_element->GetComputedStyle())
     return target_style->UsedColorScheme();
   return WebColorScheme::kLight;
 }
 
-void SVGColorProperty::Add(SVGPropertyBase* other,
-                           SVGElement* context_element) {
+void SVGColorProperty::Add(const SVGPropertyBase* other,
+                           const SVGElement* context_element) {
   DCHECK(context_element);
 
   Color fallback_color = FallbackColorForCurrentColor(context_element);
@@ -79,10 +80,10 @@ void SVGColorProperty::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement* context_element) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement* context_element) {
   StyleColor from_style_color = To<SVGColorProperty>(from_value)->style_color_;
   StyleColor to_style_color = To<SVGColorProperty>(to_value)->style_color_;
   StyleColor to_at_end_of_duration_style_color =
@@ -123,8 +124,9 @@ void SVGColorProperty::CalculateAnimatedValue(
                           roundf(animated_blue), roundf(animated_alpha)));
 }
 
-float SVGColorProperty::CalculateDistance(SVGPropertyBase* to_value,
-                                          SVGElement* context_element) {
+float SVGColorProperty::CalculateDistance(
+    const SVGPropertyBase* to_value,
+    const SVGElement* context_element) const {
   DCHECK(context_element);
   Color fallback_color = FallbackColorForCurrentColor(context_element);
   WebColorScheme color_scheme = ColorSchemeForSVGElement(context_element);

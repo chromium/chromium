@@ -73,7 +73,8 @@ SVGParsingError SVGPointList::SetValueAsString(const String& value) {
   });
 }
 
-void SVGPointList::Add(SVGPropertyBase* other, SVGElement* context_element) {
+void SVGPointList::Add(const SVGPropertyBase* other,
+                       const SVGElement* context_element) {
   auto* other_list = To<SVGPointList>(other);
 
   if (length() != other_list->length())
@@ -87,10 +88,10 @@ void SVGPointList::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement* context_element) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement* context_element) {
   auto* from_list = To<SVGPointList>(from_value);
   auto* to_list = To<SVGPointList>(to_value);
   auto* to_at_end_of_duration_list =
@@ -126,7 +127,8 @@ void SVGPointList::CalculateAnimatedValue(
   }
 }
 
-float SVGPointList::CalculateDistance(SVGPropertyBase* to, SVGElement*) {
+float SVGPointList::CalculateDistance(const SVGPropertyBase* to,
+                                      const SVGElement*) const {
   // FIXME: Distance calculation is not possible for SVGPointList right now. We
   // need the distance for every single value.
   return -1;

@@ -86,16 +86,17 @@ class SVGPreserveAspectRatio final
   bool Parse(const UChar*& ptr, const UChar* end, bool validate);
   bool Parse(const LChar*& ptr, const LChar* end, bool validate);
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SMILAnimationEffectParameters&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement* context_element) override;
-  float CalculateDistance(SVGPropertyBase* to,
-                          SVGElement* context_element) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement* context_element) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement* context_element) const override;
 
   static AnimatedPropertyType ClassType() {
     return kAnimatedPreserveAspectRatio;

@@ -63,16 +63,17 @@ class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
 
   // FIXME: remove below and just have this inherit AnimatableValue in
   // WebAnimations transition.
-  virtual void Add(SVGPropertyBase*, SVGElement*) = 0;
+  virtual void Add(const SVGPropertyBase*, const SVGElement*) = 0;
   virtual void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,
       unsigned repeat_count,
-      SVGPropertyBase* from,
-      SVGPropertyBase* to,
-      SVGPropertyBase* to_at_end_of_duration_value,
-      SVGElement*) = 0;
-  virtual float CalculateDistance(SVGPropertyBase* to, SVGElement*) = 0;
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) = 0;
+  virtual float CalculateDistance(const SVGPropertyBase* to,
+                                  const SVGElement*) const = 0;
 
   virtual AnimatedPropertyType GetType() const = 0;
 

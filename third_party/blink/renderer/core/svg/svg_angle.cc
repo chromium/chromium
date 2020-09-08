@@ -340,7 +340,7 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
   orient_type_->SetEnumValue(kSVGMarkerOrientAngle);
 }
 
-void SVGAngle::Add(SVGPropertyBase* other, SVGElement*) {
+void SVGAngle::Add(const SVGPropertyBase* other, const SVGElement*) {
   auto* other_angle = To<SVGAngle>(other);
 
   // Only respect by animations, if from and by are both specified in angles
@@ -364,10 +364,10 @@ void SVGAngle::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase* to_at_end_of_duration,
-    SVGElement*) {
+    const SVGPropertyBase* from,
+    const SVGPropertyBase* to,
+    const SVGPropertyBase* to_at_end_of_duration,
+    const SVGElement*) {
   auto* from_angle = To<SVGAngle>(from);
   auto* to_angle = To<SVGAngle>(to);
 
@@ -387,7 +387,8 @@ void SVGAngle::CalculateAnimatedValue(
   SetValue(animated_value);
 }
 
-float SVGAngle::CalculateDistance(SVGPropertyBase* other, SVGElement*) {
+float SVGAngle::CalculateDistance(const SVGPropertyBase* other,
+                                  const SVGElement*) const {
   return fabsf(Value() - To<SVGAngle>(other)->Value());
 }
 

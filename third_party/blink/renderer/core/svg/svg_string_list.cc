@@ -100,8 +100,8 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
   return builder.ToString();
 }
 
-void SVGStringListBase::Add(SVGPropertyBase* other,
-                            SVGElement* context_element) {
+void SVGStringListBase::Add(const SVGPropertyBase* other,
+                            const SVGElement* context_element) {
   // SVGStringList is never animated.
   NOTREACHED();
 }
@@ -110,15 +110,16 @@ void SVGStringListBase::CalculateAnimatedValue(
     const SMILAnimationEffectParameters&,
     float,
     unsigned,
-    SVGPropertyBase*,
-    SVGPropertyBase*,
-    SVGPropertyBase*,
-    SVGElement*) {
+    const SVGPropertyBase*,
+    const SVGPropertyBase*,
+    const SVGPropertyBase*,
+    const SVGElement*) {
   // SVGStringList is never animated.
   NOTREACHED();
 }
 
-float SVGStringListBase::CalculateDistance(SVGPropertyBase*, SVGElement*) {
+float SVGStringListBase::CalculateDistance(const SVGPropertyBase*,
+                                           const SVGElement*) const {
   // SVGStringList is never animated.
   NOTREACHED();
   return -1.0f;

@@ -58,15 +58,17 @@ class SVGTransformList final
   bool Parse(const UChar*& ptr, const UChar* end);
   bool Parse(const LChar*& ptr, const LChar* end);
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SMILAnimationEffectParameters&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from_value,
-                              SVGPropertyBase* to_value,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement*) override;
-  float CalculateDistance(SVGPropertyBase* to, SVGElement*) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from_value,
+      const SVGPropertyBase* to_value,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement*) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedTransformList; }
 

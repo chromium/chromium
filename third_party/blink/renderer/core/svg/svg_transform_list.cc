@@ -391,8 +391,8 @@ SVGPropertyBase* SVGTransformList::CloneForAnimation(
   return SVGListPropertyHelper::CloneForAnimation(value);
 }
 
-void SVGTransformList::Add(SVGPropertyBase* other,
-                           SVGElement* context_element) {
+void SVGTransformList::Add(const SVGPropertyBase* other,
+                           const SVGElement* context_element) {
   if (IsEmpty())
     return;
 
@@ -401,8 +401,8 @@ void SVGTransformList::Add(SVGPropertyBase* other,
     return;
 
   DCHECK_EQ(length(), 1u);
-  SVGTransform* from_transform = at(0);
-  SVGTransform* to_transform = other_list->at(0);
+  const SVGTransform* from_transform = at(0);
+  const SVGTransform* to_transform = other_list->at(0);
 
   DCHECK_EQ(from_transform->TransformType(), to_transform->TransformType());
   Clear();
@@ -413,10 +413,10 @@ void SVGTransformList::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement* context_element) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement* context_element) {
   // Spec: To animations provide specific functionality to get a smooth change
   // from the underlying value to the 'to' attribute value, which conflicts
   // mathematically with the requirement for additive transform animations to be
@@ -434,8 +434,8 @@ void SVGTransformList::CalculateAnimatedValue(
 
   // Get a reference to the from value before potentially cleaning it out (in
   // the case of a To animation.)
-  SVGTransform* to_transform = to_list->at(0);
-  SVGTransform* effective_from = nullptr;
+  const SVGTransform* to_transform = to_list->at(0);
+  const SVGTransform* effective_from = nullptr;
   // If there's an existing 'from'/underlying value of the same type use that,
   // else use a "zero transform".
   if (from_list->length() &&
@@ -452,7 +452,7 @@ void SVGTransformList::CalculateAnimatedValue(
 
   // Handle accumulation.
   if (repeat_count && parameters.is_cumulative) {
-    SVGTransform* effective_to_at_end =
+    const SVGTransform* effective_to_at_end =
         !to_at_end_of_duration_list->IsEmpty()
             ? to_at_end_of_duration_list->at(0)
             : MakeGarbageCollected<SVGTransform>(
@@ -473,8 +473,8 @@ void SVGTransformList::CalculateAnimatedValue(
   Append(current_transform);
 }
 
-float SVGTransformList::CalculateDistance(SVGPropertyBase* to_value,
-                                          SVGElement*) {
+float SVGTransformList::CalculateDistance(const SVGPropertyBase* to_value,
+                                          const SVGElement*) const {
   // FIXME: This is not correct in all cases. The spec demands that each
   // component (translate x and y for example) is paced separately. To implement
   // this we need to treat each component as individual animation everywhere.

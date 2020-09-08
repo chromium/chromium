@@ -113,7 +113,7 @@ SVGPropertyBase* SVGPath::CloneForAnimation(const String& value) const {
       MakeGarbageCollected<CSSPathValue>(std::move(byte_stream)));
 }
 
-void SVGPath::Add(SVGPropertyBase* other, SVGElement*) {
+void SVGPath::Add(const SVGPropertyBase* other, const SVGElement*) {
   const auto& other_path_byte_stream = To<SVGPath>(other)->ByteStream();
   if (ByteStream().size() != other_path_byte_stream.size() ||
       ByteStream().IsEmpty() || other_path_byte_stream.IsEmpty())
@@ -127,10 +127,10 @@ void SVGPath::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement*) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement*) {
   const auto& to = To<SVGPath>(*to_value);
   const SVGPathByteStream& to_stream = to.ByteStream();
 
@@ -175,7 +175,8 @@ void SVGPath::CalculateAnimatedValue(
   path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(new_stream));
 }
 
-float SVGPath::CalculateDistance(SVGPropertyBase* to, SVGElement*) {
+float SVGPath::CalculateDistance(const SVGPropertyBase* to,
+                                 const SVGElement*) const {
   // FIXME: Support paced animations.
   return -1;
 }

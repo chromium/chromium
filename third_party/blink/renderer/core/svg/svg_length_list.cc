@@ -79,7 +79,8 @@ SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
   });
 }
 
-void SVGLengthList::Add(SVGPropertyBase* other, SVGElement* context_element) {
+void SVGLengthList::Add(const SVGPropertyBase* other,
+                        const SVGElement* context_element) {
   auto* other_list = To<SVGLengthList>(other);
   if (length() != other_list->length())
     return;
@@ -95,10 +96,10 @@ void SVGLengthList::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement* context_element) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement* context_element) {
   auto* from_list = To<SVGLengthList>(from_value);
   auto* to_list = To<SVGLengthList>(to_value);
 
@@ -115,18 +116,20 @@ void SVGLengthList::CalculateAnimatedValue(
 
   const bool needs_neutral_element =
       !from_list_size || to_list_size != to_at_end_of_duration_list_size;
-  SVGLength* neutral = needs_neutral_element ? CreatePaddingItem() : nullptr;
+  const SVGLength* neutral =
+      needs_neutral_element ? CreatePaddingItem() : nullptr;
   for (uint32_t i = 0; i < to_list_size; ++i) {
-    SVGLength* from = from_list_size ? from_list->at(i) : neutral;
-    SVGLength* to_at_end = i < to_at_end_of_duration_list_size
-                               ? to_at_end_of_duration_list->at(i)
-                               : neutral;
+    const SVGLength* from = from_list_size ? from_list->at(i) : neutral;
+    const SVGLength* to_at_end = i < to_at_end_of_duration_list_size
+                                     ? to_at_end_of_duration_list->at(i)
+                                     : neutral;
     at(i)->CalculateAnimatedValue(parameters, percentage, repeat_count, from,
                                   to_list->at(i), to_at_end, context_element);
   }
 }
 
-float SVGLengthList::CalculateDistance(SVGPropertyBase* to, SVGElement*) {
+float SVGLengthList::CalculateDistance(const SVGPropertyBase* to,
+                                       const SVGElement*) const {
   // FIXME: Distance calculation is not possible for SVGLengthList right now. We
   // need the distance for every single value.
   return -1;

@@ -86,7 +86,7 @@ String SVGRect::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGRect::Add(SVGPropertyBase* other, SVGElement*) {
+void SVGRect::Add(const SVGPropertyBase* other, const SVGElement*) {
   value_ += To<SVGRect>(other)->Value();
 }
 
@@ -94,10 +94,10 @@ void SVGRect::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement*) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement*) {
   auto* from_rect = To<SVGRect>(from_value);
   auto* to_rect = To<SVGRect>(to_value);
   auto* to_at_end_of_duration_rect = To<SVGRect>(to_at_end_of_duration_value);
@@ -122,8 +122,8 @@ void SVGRect::CalculateAnimatedValue(
   value_ = FloatRect(animated_x, animated_y, animated_width, animated_height);
 }
 
-float SVGRect::CalculateDistance(SVGPropertyBase* to,
-                                 SVGElement* context_element) {
+float SVGRect::CalculateDistance(const SVGPropertyBase* to,
+                                 const SVGElement* context_element) const {
   // FIXME: Distance calculation is not possible for SVGRect right now. We need
   // the distance for every single value.
   return -1;

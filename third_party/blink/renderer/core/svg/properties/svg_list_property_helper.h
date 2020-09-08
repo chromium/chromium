@@ -117,8 +117,8 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
  protected:
   void DeepCopy(const Derived*);
 
-  bool AdjustFromToListValues(Derived* from_list,
-                              Derived* to_list,
+  bool AdjustFromToListValues(const Derived* from_list,
+                              const Derived* to_list,
                               float percentage);
 
   virtual ItemPropertyType* CreatePaddingItem() const {
@@ -136,8 +136,8 @@ void SVGListPropertyHelper<Derived, ItemProperty>::DeepCopy(
 
 template <typename Derived, typename ItemProperty>
 bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
-    Derived* from_list,
-    Derived* to_list,
+    const Derived* from_list,
+    const Derived* to_list,
     float percentage) {
   // If no 'to' value is given, nothing to animate.
   uint32_t to_list_size = to_list->length();

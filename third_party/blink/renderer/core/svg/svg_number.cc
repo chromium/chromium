@@ -70,7 +70,7 @@ SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   });
 }
 
-void SVGNumber::Add(SVGPropertyBase* other, SVGElement*) {
+void SVGNumber::Add(const SVGPropertyBase* other, const SVGElement*) {
   SetValue(value_ + To<SVGNumber>(other)->Value());
 }
 
@@ -78,10 +78,10 @@ void SVGNumber::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase* to_at_end_of_duration,
-    SVGElement*) {
+    const SVGPropertyBase* from,
+    const SVGPropertyBase* to,
+    const SVGPropertyBase* to_at_end_of_duration,
+    const SVGElement*) {
   auto* from_number = To<SVGNumber>(from);
   auto* to_number = To<SVGNumber>(to);
   auto* to_at_end_of_duration_number = To<SVGNumber>(to_at_end_of_duration);
@@ -91,7 +91,8 @@ void SVGNumber::CalculateAnimatedValue(
                         to_at_end_of_duration_number->Value(), value_);
 }
 
-float SVGNumber::CalculateDistance(SVGPropertyBase* other, SVGElement*) {
+float SVGNumber::CalculateDistance(const SVGPropertyBase* other,
+                                   const SVGElement*) const {
   return fabsf(value_ - To<SVGNumber>(other)->Value());
 }
 

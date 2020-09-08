@@ -217,7 +217,7 @@ String SVGTransform::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGTransform::Add(SVGPropertyBase*, SVGElement*) {
+void SVGTransform::Add(const SVGPropertyBase*, const SVGElement*) {
   // SVGTransform is not animated by itself.
   NOTREACHED();
 }
@@ -225,15 +225,16 @@ void SVGTransform::Add(SVGPropertyBase*, SVGElement*) {
 void SVGTransform::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                                           float,
                                           unsigned,
-                                          SVGPropertyBase*,
-                                          SVGPropertyBase*,
-                                          SVGPropertyBase*,
-                                          SVGElement*) {
+                                          const SVGPropertyBase*,
+                                          const SVGPropertyBase*,
+                                          const SVGPropertyBase*,
+                                          const SVGElement*) {
   // SVGTransform is not animated by itself.
   NOTREACHED();
 }
 
-float SVGTransform::CalculateDistance(SVGPropertyBase*, SVGElement*) {
+float SVGTransform::CalculateDistance(const SVGPropertyBase*,
+                                      const SVGElement*) const {
   // SVGTransform is not animated by itself.
   NOTREACHED();
 

@@ -430,7 +430,8 @@ String SVGPreserveAspectRatio::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGPreserveAspectRatio::Add(SVGPropertyBase* other, SVGElement*) {
+void SVGPreserveAspectRatio::Add(const SVGPropertyBase* other,
+                                 const SVGElement*) {
   NOTREACHED();
 }
 
@@ -438,15 +439,16 @@ void SVGPreserveAspectRatio::CalculateAnimatedValue(
     const SMILAnimationEffectParameters&,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase*,
-    SVGElement*) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase*,
+    const SVGElement*) {
   NOTREACHED();
 }
 
-float SVGPreserveAspectRatio::CalculateDistance(SVGPropertyBase* to_value,
-                                                SVGElement* context_element) {
+float SVGPreserveAspectRatio::CalculateDistance(
+    const SVGPropertyBase* to_value,
+    const SVGElement* context_element) const {
   // No paced animations for SVGPreserveAspectRatio.
   return -1;
 }

@@ -312,7 +312,8 @@ bool SVGLength::NegativeValuesForbiddenForAnimatedLengthAttribute(
   return no_negative_values_set.Contains(attr_name);
 }
 
-void SVGLength::Add(SVGPropertyBase* other, SVGElement* context_element) {
+void SVGLength::Add(const SVGPropertyBase* other,
+                    const SVGElement* context_element) {
   SVGLengthContext length_context(context_element);
   SetValue(Value(length_context) + To<SVGLength>(other)->Value(length_context),
            length_context);
@@ -322,10 +323,10 @@ void SVGLength::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement* context_element) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement* context_element) {
   auto* from_length = To<SVGLength>(from_value);
   auto* to_length = To<SVGLength>(to_value);
   auto* to_at_end_of_duration_length =
@@ -356,8 +357,8 @@ void SVGLength::CalculateAnimatedValue(
   value_ = CSSNumericLiteralValue::Create(animated_number, new_unit);
 }
 
-float SVGLength::CalculateDistance(SVGPropertyBase* to_value,
-                                   SVGElement* context_element) {
+float SVGLength::CalculateDistance(const SVGPropertyBase* to_value,
+                                   const SVGElement* context_element) const {
   SVGLengthContext length_context(context_element);
   auto* to_length = To<SVGLength>(to_value);
 

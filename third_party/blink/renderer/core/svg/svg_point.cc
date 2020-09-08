@@ -89,7 +89,7 @@ String SVGPoint::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGPoint::Add(SVGPropertyBase* other, SVGElement*) {
+void SVGPoint::Add(const SVGPropertyBase* other, const SVGElement*) {
   // SVGPoint is not animated by itself
   NOTREACHED();
 }
@@ -98,16 +98,16 @@ void SVGPoint::CalculateAnimatedValue(
     const SMILAnimationEffectParameters&,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement*) {
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement*) {
   // SVGPoint is not animated by itself
   NOTREACHED();
 }
 
-float SVGPoint::CalculateDistance(SVGPropertyBase* to,
-                                  SVGElement* context_element) {
+float SVGPoint::CalculateDistance(const SVGPropertyBase* to,
+                                  const SVGElement* context_element) const {
   // SVGPoint is not animated by itself
   NOTREACHED();
   return 0.0f;

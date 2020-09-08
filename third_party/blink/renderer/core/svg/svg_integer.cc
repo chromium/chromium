@@ -58,7 +58,7 @@ SVGParsingError SVGInteger::SetValueAsString(const String& string) {
   return valid ? SVGParseStatus::kNoError : SVGParseStatus::kExpectedInteger;
 }
 
-void SVGInteger::Add(SVGPropertyBase* other, SVGElement*) {
+void SVGInteger::Add(const SVGPropertyBase* other, const SVGElement*) {
   SetValue(value_ + To<SVGInteger>(other)->Value());
 }
 
@@ -66,10 +66,10 @@ void SVGInteger::CalculateAnimatedValue(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase* to_at_end_of_duration,
-    SVGElement*) {
+    const SVGPropertyBase* from,
+    const SVGPropertyBase* to,
+    const SVGPropertyBase* to_at_end_of_duration,
+    const SVGElement*) {
   auto* from_integer = To<SVGInteger>(from);
   auto* to_integer = To<SVGInteger>(to);
   auto* to_at_end_of_duration_integer = To<SVGInteger>(to_at_end_of_duration);
@@ -81,7 +81,8 @@ void SVGInteger::CalculateAnimatedValue(
   value_ = clampTo<int>(roundf(animated_float));
 }
 
-float SVGInteger::CalculateDistance(SVGPropertyBase* other, SVGElement*) {
+float SVGInteger::CalculateDistance(const SVGPropertyBase* other,
+                                    const SVGElement*) const {
   return abs(value_ - To<SVGInteger>(other)->Value());
 }
 

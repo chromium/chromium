@@ -41,8 +41,9 @@ SVGTransformDistance::SVGTransformDistance(SVGTransformType transform_type,
       cy_(cy),
       transform_(transform) {}
 
-SVGTransformDistance::SVGTransformDistance(SVGTransform* from_svg_transform,
-                                           SVGTransform* to_svg_transform)
+SVGTransformDistance::SVGTransformDistance(
+    const SVGTransform* from_svg_transform,
+    const SVGTransform* to_svg_transform)
     : angle_(0), cx_(0), cy_(0) {
   transform_type_ = from_svg_transform->TransformType();
   DCHECK_EQ(transform_type_, to_svg_transform->TransformType());
@@ -116,8 +117,8 @@ SVGTransformDistance SVGTransformDistance::ScaledDistance(
   return SVGTransformDistance();
 }
 
-SVGTransform* SVGTransformDistance::AddSVGTransforms(SVGTransform* first,
-                                                     SVGTransform* second,
+SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
+                                                     const SVGTransform* second,
                                                      unsigned repeat_count) {
   DCHECK_EQ(first->TransformType(), second->TransformType());
 
@@ -164,7 +165,7 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(SVGTransform* first,
 }
 
 SVGTransform* SVGTransformDistance::AddToSVGTransform(
-    SVGTransform* transform) const {
+    const SVGTransform* transform) const {
   DCHECK(transform_type_ == transform->TransformType() ||
          transform_type_ == SVGTransformType::kUnknown);
 

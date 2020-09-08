@@ -47,15 +47,17 @@ class SVGColorProperty final : public SVGPropertyBase {
   SVGPropertyBase* CloneForAnimation(const String&) const override;
   String ValueAsString() const override;
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SMILAnimationEffectParameters&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement*) override;
-  float CalculateDistance(SVGPropertyBase* to, SVGElement*) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement*) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedColor; }
   AnimatedPropertyType GetType() const override { return ClassType(); }
