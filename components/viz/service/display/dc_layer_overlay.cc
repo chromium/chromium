@@ -213,19 +213,14 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   dc_layer->color_space = gfx::ColorSpace::CreateSRGB();
 }
 
-// TODO(magchen): Once software protected video is enabled for all GPUs and
-// all configurations, RequiresOverlay() will be true for all protected video.
-bool RequiresOverlay(const QuadList::Iterator& it) {
-  if (it->material == DrawQuad::Material::kYuvVideoContent &&
-      (YUVVideoDrawQuad::MaterialCast(*it)->protected_video_type ==
-           gfx::ProtectedVideoType::kHardwareProtected ||
-       YUVVideoDrawQuad::MaterialCast(*it)->protected_video_type ==
-           gfx::ProtectedVideoType::kSoftwareProtected)) {
-    return true;
-  } else if (it->material == DrawQuad::Material::kTextureContent) {
-    return true;
+bool IsProtectedVideo(const QuadList::Iterator& it) {
+  if (it->material == DrawQuad::Material::kYuvVideoContent) {
+    const auto* yuv_quad = YUVVideoDrawQuad::MaterialCast(*it);
+    return yuv_quad->protected_video_type ==
+               gfx::ProtectedVideoType::kHardwareProtected ||
+           yuv_quad->protected_video_type ==
+               gfx::ProtectedVideoType::kSoftwareProtected;
   }
-
   return false;
 }
 
@@ -233,7 +228,7 @@ DCLayerResult IsUnderlayAllowed(const QuadList::Iterator& it) {
   if (!base::FeatureList::IsEnabled(features::kDirectCompositionUnderlays)) {
     return DC_LAYER_FAILED_OCCLUDED;
   }
-  if (it->shared_quad_state->opacity < 1.0f) {
+  if (it->ShouldDrawWithBlending()) {
     return DC_LAYER_FAILED_TRANSPARENT;
   }
   return DC_LAYER_SUCCESS;
@@ -432,7 +427,7 @@ void DCLayerOverlayProcessor::Process(
 
   // Used for whether overlay should be skipped
   int yuv_quads_in_quad_list = 0;
-  bool has_required_overlays = false;
+  bool has_protected_video_or_texture_overlays = false;
 
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it, ++index) {
     if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
@@ -465,9 +460,12 @@ void DCLayerOverlayProcessor::Process(
       RecordDCLayerResult(result, it);
       continue;
     }
-    const bool requires_overlay = RequiresOverlay(it);
-    if (requires_overlay)
-      has_required_overlays = true;
+
+    const bool is_protected_video = IsProtectedVideo(it);
+    const bool is_texture_quad =
+        it->material == DrawQuad::Material::kTextureContent;
+    if (is_protected_video || is_texture_quad)
+      has_protected_video_or_texture_overlays = true;
 
     if (candidate_index_list.size() == 0) {
       prev_index = index;
@@ -477,10 +475,11 @@ void DCLayerOverlayProcessor::Process(
     candidate_index_list.push_back(index);
   }
 
-  // We might not save power if there are more than one videos and only
-  // one is promoted to overlay. Skip overlay for this frame.
+  // We might not save power if there are more than one videos and only one is
+  // promoted to overlay. Skip overlays for this frame unless there are
+  // protected video or texture overlays.
   if (candidate_index_list.size() > 0 && yuv_quads_in_quad_list > 1 &&
-      !has_required_overlays) {
+      !has_protected_video_or_texture_overlays) {
     candidate_index_list.clear();
     // In this case, there is only one candidate in the list.
     RecordDCLayerResult(DC_LAYER_FAILED_TOO_MANY_OVERLAYS, prev_it);
@@ -504,8 +503,9 @@ void DCLayerOverlayProcessor::Process(
     const bool is_overlay = !HasOccludingQuads(
         gfx::RectF(quad_rectangle_in_target_space), quad_list->begin(), it);
 
-    // This draw quad must be displayed through the hardware overlay path.
-    const bool requires_overlay = RequiresOverlay(it);
+    // Protected video is always put in an overlay, but texture quads can be
+    // skipped if they're not underlay compatible.
+    const bool requires_overlay = IsProtectedVideo(it);
 
     // Skip quad if it's an underlay and underlays are not allowed.
     if (!is_overlay && !requires_overlay) {

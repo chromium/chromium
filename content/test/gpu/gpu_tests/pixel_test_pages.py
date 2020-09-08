@@ -489,6 +489,10 @@ class PixelTestPages(object):
                       base_name + '_CanvasLowLatencyWebGLRoundedCorners',
                       test_rect=[0, 0, 100, 100],
                       other_args={'no_overlay': True}),
+        PixelTestPage('pixel_canvas_low_latency_webgl_occluded.html',
+                      base_name + '_CanvasLowLatencyWebGLOccluded',
+                      test_rect=[0, 0, 100, 100],
+                      other_args={'no_overlay': True}),
     ]
 
   # Only add these tests on platforms where SwiftShader is enabled.
