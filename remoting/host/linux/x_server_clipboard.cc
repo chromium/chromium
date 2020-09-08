@@ -101,7 +101,7 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
 
   data_ = data;
 
-  AssertSelectionOwnership(XA_PRIMARY);
+  AssertSelectionOwnership(static_cast<uint32_t>(x11::Atom::PRIMARY));
   AssertSelectionOwnership(clipboard_atom_);
 }
 
@@ -230,7 +230,8 @@ void XServerClipboard::OnSelectionRequest(
       SendTimestampResponse(selection_event.requestor,
                             selection_event.property);
     } else if (selection_event.target == utf8_string_atom_ ||
-               selection_event.target == XA_STRING) {
+               selection_event.target ==
+                   static_cast<uint32_t>(x11::Atom::STRING)) {
       SendStringResponse(selection_event.requestor, selection_event.property,
                          selection_event.target);
     }
@@ -244,15 +245,15 @@ void XServerClipboard::OnSelectionClear(const x11::SelectionClearEvent& event) {
 }
 
 void XServerClipboard::SendTargetsResponse(Window requestor, Atom property) {
-  // Respond advertising XA_STRING, UTF8_STRING and TIMESTAMP data for the
-  // selection.
+  // Respond advertising x11::Atom::STRING, UTF8_STRING and TIMESTAMP data for
+  // the selection.
   Atom targets[3];
   targets[0] = timestamp_atom_;
   targets[1] = utf8_string_atom_;
-  targets[2] = XA_STRING;
-  XChangeProperty(connection_->display(), requestor, property, XA_ATOM, 32,
-                  PropModeReplace, reinterpret_cast<unsigned char*>(targets),
-                  3);
+  targets[2] = static_cast<uint32_t>(x11::Atom::STRING);
+  XChangeProperty(connection_->display(), requestor, property,
+                  static_cast<uint32_t>(x11::Atom::ATOM), 32, PropModeReplace,
+                  reinterpret_cast<unsigned char*>(targets), 3);
 }
 
 void XServerClipboard::SendTimestampResponse(Window requestor, Atom property) {
@@ -264,7 +265,8 @@ void XServerClipboard::SendTimestampResponse(Window requestor, Atom property) {
   // CurrentTime.  ICCCM recommends doing a zero-length property append,
   // and getting a timestamp from the subsequent PropertyNotify event.
   Time time = x11::CurrentTime;
-  XChangeProperty(connection_->display(), requestor, property, XA_INTEGER, 32,
+  XChangeProperty(connection_->display(), requestor, property,
+                  static_cast<uint32_t>(x11::Atom::INTEGER), 32,
                   PropModeReplace, reinterpret_cast<unsigned char*>(&time), 1);
 }
 
@@ -292,7 +294,8 @@ void XServerClipboard::HandleSelectionNotify(
   auto target = static_cast<uint32_t>(event.target);
   if (target == targets_atom_) {
     finished = HandleSelectionTargetsEvent(event, format, item_count, data);
-  } else if (target == utf8_string_atom_ || target == XA_STRING) {
+  } else if (target == utf8_string_atom_ ||
+             target == static_cast<uint32_t>(x11::Atom::STRING)) {
     finished = HandleSelectionStringEvent(event, format, item_count, data);
   }
 
@@ -323,7 +326,7 @@ bool XServerClipboard::HandleSelectionTargetsEvent(
       }
     }
   }
-  RequestSelectionString(selection, XA_STRING);
+  RequestSelectionString(selection, static_cast<uint32_t>(x11::Atom::STRING));
   return false;
 }
 
@@ -340,7 +343,8 @@ bool XServerClipboard::HandleSelectionStringEvent(
 
   std::string text(static_cast<char*>(data), item_count);
 
-  if (target == XA_STRING || target == utf8_string_atom_)
+  if (target == static_cast<uint32_t>(x11::Atom::STRING) ||
+      target == utf8_string_atom_)
     NotifyClipboardText(text);
 
   return true;

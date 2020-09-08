@@ -19,6 +19,7 @@
 #endif
 
 #if defined(USE_X11)
+#include "ui/base/x/x11_util.h"  // nogncheck
 #include "ui/gfx/x/x11.h"        // nogncheck
 #include "ui/gfx/x/x11_types.h"  // nogncheck
 #endif
@@ -135,13 +136,11 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
     NOTREACHED();
     return gfx::Size();
   }
-  XSizeHints hints;
-  long supplied_return;  // NOLINT(runtime/int)
-  XGetWMNormalHints(
-      gfx::GetXDisplay(),
-      static_cast<uint32_t>(
+  ui::SizeHints hints;
+  ui::GetWmNormalHints(
+      static_cast<x11::Window>(
           widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget()),
-      &hints, &supplied_return);
+      &hints);
   return gfx::Size(hints.min_width, hints.min_height);
 #else
   NOTREACHED();

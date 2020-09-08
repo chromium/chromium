@@ -33,6 +33,7 @@
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xf86vidmode.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
@@ -60,9 +61,9 @@ bool g_glx_mesa_swap_control_supported = false;
 bool g_glx_sgi_video_sync_supported = false;
 
 // A 24-bit RGB visual and colormap to use when creating offscreen surfaces.
-Visual* g_visual = nullptr;
+x11::VisualId g_visual{};
 int g_depth = static_cast<int>(x11::WindowClass::CopyFromParent);
-Colormap g_colormap = static_cast<int>(x11::WindowClass::CopyFromParent);
+x11::ColorMap g_colormap{};
 
 GLXFBConfig GetConfigForWindow(Display* display,
                                gfx::AcceleratedWidget window) {
@@ -524,14 +525,15 @@ bool GLSurfaceGLX::InitializeOneOff() {
   }
 
   auto* visual_picker = gl::GLVisualPickerGLX::GetInstance();
-  XVisualInfo visual_info = visual_picker->rgba_visual();
-  if (!visual_info.visual)
-    visual_info = visual_picker->system_visual();
-  g_visual = visual_info.visual;
-  g_depth = visual_info.depth;
-  g_colormap =
-      XCreateColormap(gfx::GetXDisplay(), DefaultRootWindow(gfx::GetXDisplay()),
-                      visual_info.visual, AllocNone);
+  auto visual_id = visual_picker->rgba_visual();
+  if (visual_id == x11::VisualId{})
+    visual_id = visual_picker->system_visual();
+  g_visual = visual_id;
+  auto* connection = x11::Connection::Get();
+  g_depth = connection->GetVisualInfoFromId(visual_id)->format->depth;
+  g_colormap = connection->GenerateId<x11::ColorMap>();
+  connection->CreateColormap({x11::ColormapAlloc::None, g_colormap,
+                              connection->default_root(), g_visual});
   // We create a dummy unmapped window for both the main Display and the video
   // sync Display so that the Nvidia driver can initialize itself before the
   // sandbox is set up.
@@ -591,9 +593,9 @@ void GLSurfaceGLX::ShutdownOneOff() {
   g_glx_mesa_swap_control_supported = false;
   g_glx_sgi_video_sync_supported = false;
 
-  g_visual = nullptr;
+  g_visual = {};
   g_depth = static_cast<int>(x11::WindowClass::CopyFromParent);
-  g_colormap = static_cast<int>(x11::WindowClass::CopyFromParent);
+  g_colormap = {};
 }
 
 // static
@@ -685,16 +687,25 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
   }
   size_ = gfx::Size(attributes.width, attributes.height);
 
-  XSetWindowAttributes swa = {
-      .background_pixmap = 0,
-      .background_pixel = 0,  // ARGB(0,0,0,0) for compositing WM
+  auto* conn = x11::Connection::Get();
+  auto window = conn->GenerateId<x11::Window>();
+  window_ = static_cast<uint32_t>(window);
+  x11::CreateWindowRequest req{
+      .depth = g_depth,
+      .wid = window,
+      .parent = static_cast<x11::Window>(parent_window_),
+      .width = size_.width(),
+      .height = size_.height(),
+      .c_class = x11::WindowClass::InputOutput,
+      .visual = g_visual,
+      .background_pixmap = x11::Pixmap::None,
       .border_pixel = 0,
-      .bit_gravity = NorthWestGravity,
+      .bit_gravity = x11::Gravity::NorthWest,
       .colormap = g_colormap,
   };
-  auto value_mask = CWBackPixmap | CWBitGravity | CWColormap | CWBorderPixel;
   if (ui::IsCompositingManagerPresent() &&
-      XVisualIDFromVisual(attributes.visual) == XVisualIDFromVisual(g_visual)) {
+      XVisualIDFromVisual(attributes.visual) ==
+          static_cast<uint32_t>(g_visual)) {
     // When parent and child are using the same visual, the back buffer will be
     // shared between parent and child. If WM compositing is enabled, we set
     // child's background pixel to ARGB(0,0,0,0), so ARGB(0,0,0,0) will be
@@ -702,22 +713,13 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
     // avoid an annoying flash when the child window is mapped below.
     // If WM compositing is disabled, we don't set the background pixel, so
     // nothing will be draw when the child window is mapped.
-    value_mask |= CWBackPixel;
+    req.background_pixel = 0;  // ARGB(0,0,0,0) for compositing WM
   }
-
-  window_ = static_cast<gfx::AcceleratedWidget>(XCreateWindow(
-      gfx::GetXDisplay(), static_cast<uint32_t>(parent_window_), 0 /* x */,
-      0 /* y */, size_.width(), size_.height(), 0 /* border_width */, g_depth,
-      static_cast<int>(x11::WindowClass::InputOutput), g_visual, value_mask,
-      &swa));
-  if (window_ == gfx::kNullAcceleratedWidget) {
-    LOG(ERROR) << "XCreateWindow failed";
-    return false;
-  }
-  XMapWindow(gfx::GetXDisplay(), static_cast<uint32_t>(window_));
+  conn->CreateWindow(req);
+  conn->MapWindow({window});
 
   RegisterEvents();
-  XFlush(gfx::GetXDisplay());
+  conn->Sync();
 
   GetConfig();
   if (!config_) {
@@ -909,18 +911,21 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 
   auto parent_window = ui::GetX11RootWindow();
 
-  XSetWindowAttributes attrs;
-  attrs.border_pixel = 0;
-  attrs.colormap = g_colormap;
-  window_ = static_cast<gfx::AcceleratedWidget>(
-      XCreateWindow(gfx::GetXDisplay(), static_cast<uint32_t>(parent_window), 0,
-                    0, size_.width(), size_.height(), 0, g_depth,
-                    static_cast<int>(x11::WindowClass::InputOutput), g_visual,
-                    CWBorderPixel | CWColormap, &attrs));
-  if (window_ == gfx::kNullAcceleratedWidget) {
-    LOG(ERROR) << "XCreateWindow failed";
-    return false;
-  }
+  auto* conn = x11::Connection::Get();
+  auto window = conn->GenerateId<x11::Window>();
+  window_ = static_cast<uint32_t>(window);
+  conn->CreateWindow({
+                         .depth = g_depth,
+                         .wid = window,
+                         .parent = parent_window,
+                         .width = size_.width(),
+                         .height = size_.height(),
+                         .c_class = x11::WindowClass::InputOutput,
+                         .visual = g_visual,
+                         .border_pixel = 0,
+                         .colormap = g_colormap,
+                     })
+      .Sync();
   GetConfig();
   if (!config_) {
     LOG(ERROR) << "Failed to get GLXConfig";

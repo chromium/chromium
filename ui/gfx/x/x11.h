@@ -16,13 +16,8 @@ extern "C" {
 #include <X11/Xlib.h>
 
 // And the rest so that nobody needs to include them manually...
-#include <X11/X.h>
 #include <X11/XKBlib.h>
-#include <X11/Xatom.h>
 #include <X11/Xlib-xcb.h>
-#include <X11/Xregion.h>
-#include <X11/Xutil.h>
-#include <X11/cursorfont.h>
 
 // Define XK_xxx before the #include of <X11/keysym.h> so that <X11/keysym.h>
 // defines all KeySyms we need.

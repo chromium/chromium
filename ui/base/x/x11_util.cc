@@ -1121,23 +1121,6 @@ x11::Future<void> SendClientMessage(x11::Window window,
   return SendEvent(event, target, event_mask);
 }
 
-XRefcountedMemory::XRefcountedMemory(unsigned char* x11_data, size_t length)
-    : x11_data_(length ? x11_data : nullptr), length_(length) {}
-
-const unsigned char* XRefcountedMemory::front() const {
-  return x11_data_.get();
-}
-
-size_t XRefcountedMemory::size() const {
-  return length_;
-}
-
-XRefcountedMemory::~XRefcountedMemory() = default;
-
-void XImageDeleter::operator()(XImage* image) const {
-  XDestroyImage(image);
-}
-
 void SetX11ErrorHandlers(XErrorHandler error_handler,
                          XIOErrorHandler io_error_handler) {
   XSetErrorHandler(error_handler ? error_handler : DefaultX11ErrorHandler);

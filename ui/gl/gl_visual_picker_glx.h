@@ -10,8 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_export.h"
 
 namespace base {
@@ -32,34 +32,34 @@ class GL_EXPORT GLVisualPickerGLX {
 
   ~GLVisualPickerGLX();
 
-  const XVisualInfo& system_visual() const { return system_visual_; }
+  x11::VisualId system_visual() const { return system_visual_; }
 
-  const XVisualInfo& rgba_visual() const { return rgba_visual_; }
+  x11::VisualId rgba_visual() const { return rgba_visual_; }
 
-  GLXFBConfig GetFbConfigForFormat(gfx::BufferFormat format) const;
+  x11::Glx::FbConfig GetFbConfigForFormat(gfx::BufferFormat format) const;
 
  private:
   friend struct base::DefaultSingletonTraits<GLVisualPickerGLX>;
 
-  XVisualInfo PickBestGlVisual(const std::vector<XVisualInfo>& visuals,
-                               bool want_alpha) const;
+  x11::VisualId PickBestGlVisual(
+      const x11::Glx::GetVisualConfigsReply& configs,
+      base::RepeatingCallback<bool(const x11::Connection::VisualInfo&)> pred,
+      bool want_alpha) const;
 
-  XVisualInfo PickBestSystemVisual(
-      const std::vector<XVisualInfo>& visuals) const;
+  x11::VisualId PickBestSystemVisual(
+      const x11::Glx::GetVisualConfigsReply& configs) const;
 
-  XVisualInfo PickBestRgbaVisual(const std::vector<XVisualInfo>& visuals) const;
+  x11::VisualId PickBestRgbaVisual(
+      const x11::Glx::GetVisualConfigsReply& configs) const;
 
   void FillConfigMap();
 
-  XDisplay* display_;
+  x11::Connection* const connection_;
 
-  bool has_glx_visual_rating_;
-  bool has_glx_multisample_;
+  x11::VisualId system_visual_;
+  x11::VisualId rgba_visual_;
 
-  XVisualInfo system_visual_;
-  XVisualInfo rgba_visual_;
-
-  base::flat_map<gfx::BufferFormat, GLXFBConfig> config_map_;
+  base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig> config_map_;
 
   GLVisualPickerGLX();
 

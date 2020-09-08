@@ -88,8 +88,7 @@ scoped_refptr<gl::GLContext> InitializeGLContext(gl::GLSurface* surface) {
 }
 
 std::string GetGLString(unsigned int pname) {
-  const char* gl_string =
-      reinterpret_cast<const char*>(glGetString(pname));
+  const char* gl_string = reinterpret_cast<const char*>(glGetString(pname));
   if (gl_string)
     return std::string(gl_string);
   return std::string();
@@ -124,8 +123,9 @@ std::string GetVersionFromString(const std::string& version_string) {
 }
 
 // Return the array index of the found name, or return -1.
-int StringContainsName(
-    const std::string& str, const std::string* names, size_t num_names) {
+int StringContainsName(const std::string& str,
+                       const std::string* names,
+                       size_t num_names) {
   std::vector<std::string> tokens = base::SplitString(
       str, " .,()-_", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   for (size_t ii = 0; ii < tokens.size(); ++ii) {
@@ -518,8 +518,10 @@ bool CollectGpuExtraInfo(GpuExtraInfo* gpu_extra_info,
   }
 
   if (gl::GetGLImplementation() == gl::kGLImplementationDesktopGL) {
-    gpu_extra_info->system_visual = visual_picker->system_visual().visualid;
-    gpu_extra_info->rgba_visual = visual_picker->rgba_visual().visualid;
+    gpu_extra_info->system_visual =
+        static_cast<uint32_t>(visual_picker->system_visual());
+    gpu_extra_info->rgba_visual =
+        static_cast<uint32_t>(visual_picker->rgba_visual());
 
     // With GLX, only BGR(A) buffer formats are supported.  EGL does not have
     // this restriction.
@@ -527,8 +529,9 @@ bool CollectGpuExtraInfo(GpuExtraInfo* gpu_extra_info,
         std::remove_if(gpu_extra_info->gpu_memory_buffer_support_x11.begin(),
                        gpu_extra_info->gpu_memory_buffer_support_x11.end(),
                        [&](gfx::BufferUsageAndFormat usage_and_format) {
-                         return !visual_picker->GetFbConfigForFormat(
-                             usage_and_format.format);
+                         return visual_picker->GetFbConfigForFormat(
+                                    usage_and_format.format) ==
+                                x11::Glx::FbConfig{};
                        }),
         gpu_extra_info->gpu_memory_buffer_support_x11.end());
   } else if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {

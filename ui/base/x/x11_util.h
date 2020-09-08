@@ -564,32 +564,6 @@ x11::Future<void> SendClientMessage(
     x11::EventMask event_mask = x11::EventMask::SubstructureNotify |
                                 x11::EventMask::SubstructureRedirect);
 
-// Manages a piece of X11 allocated memory as a RefCountedMemory segment. This
-// object takes ownership over the passed in memory and will free it with the
-// X11 allocator when done.
-class COMPONENT_EXPORT(UI_BASE_X) XRefcountedMemory
-    : public base::RefCountedMemory {
- public:
-  XRefcountedMemory(unsigned char* x11_data, size_t length);
-
-  // Overridden from RefCountedMemory:
-  const unsigned char* front() const override;
-  size_t size() const override;
-
- private:
-  ~XRefcountedMemory() override;
-
-  gfx::XScopedPtr<unsigned char> x11_data_;
-  size_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRefcountedMemory);
-};
-
-struct COMPONENT_EXPORT(UI_BASE_X) XImageDeleter {
-  void operator()(XImage* image) const;
-};
-using XScopedImage = std::unique_ptr<XImage, XImageDeleter>;
-
 // --------------------------------------------------------------------------
 // X11 error handling.
 // Sets the X Error Handlers. Passing NULL for either will enable the default

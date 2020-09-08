@@ -4,10 +4,7 @@
 
 #include "remoting/host/keyboard_layout_monitor.h"
 
-#include "ui/gfx/x/x11.h"
-
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -20,6 +17,9 @@
 #include "ui/base/glib/glib_signal.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/xkb.h"
+#include "ui/gfx/x/xproto_types.h"
 
 namespace remoting {
 
@@ -144,19 +144,17 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   // when switching between groups with different writing directions. As a
   // result, we have to use Xkb directly to get and monitor that information,
   // which is a pain.
-  Display* xdisplay = gdk_x11_display_get_xdisplay(display_);
-  int xkb_opcode;
-  int xkb_event;
-  int xkb_error;
-  int xkb_major = XkbMajorVersion;
-  int xkb_minor = XkbMinorVersion;
-  if (XkbQueryExtension(xdisplay, &xkb_opcode, &xkb_event, &xkb_error,
-                        &xkb_major, &xkb_minor)) {
-    xkb_event_type_ = xkb_event;
-    XkbStateRec xkb_state{};
-    XkbGetState(xdisplay, XkbUseCoreKbd, &xkb_state);
-    current_group_ = xkb_state.group;
-    gdk_window_add_filter(nullptr, OnXEventThunk, this);
+  auto* connection = x11::Connection::Get();
+  if (connection->xkb()
+          .UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
+          .Sync()) {
+    xkb_event_type_ = connection->xkb().first_event();
+    auto req = connection->xkb().GetState(
+        {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd)});
+    if (auto reply = req.Sync()) {
+      current_group_ = static_cast<int>(reply->group);
+      gdk_window_add_filter(nullptr, OnXEventThunk, this);
+    }
   }
 
   keymap_ = gdk_keymap_get_for_display(display_);
@@ -168,17 +166,11 @@ void GdkLayoutMonitorOnGtkThread::Start() {
 void GdkLayoutMonitorOnGtkThread::QueryLayout() {
   protocol::KeyboardLayout layout_message;
 
-  Display* xdisplay = gdk_x11_display_get_xdisplay(display_);
-  unsigned int shift_modifier = XkbKeysymToModifiers(xdisplay, GDK_KEY_Shift_L);
-  unsigned int numlock_modifier =
-      XkbKeysymToModifiers(xdisplay, GDK_KEY_Num_Lock);
-  unsigned int altgr_modifier =
-      XkbKeysymToModifiers(xdisplay, GDK_KEY_ISO_Level3_Shift);
-  unsigned int mod5_modifier =
-      XkbKeysymToModifiers(xdisplay, GDK_KEY_ISO_Level5_Shift);
+  unsigned int shift_modifier = ShiftMask;
+  unsigned int numlock_modifier = Mod2Mask;
+  unsigned int altgr_modifier = Mod5Mask;
 
   bool have_altgr = false;
-  bool have_mod5 = false;
 
   for (ui::DomCode key : KeyboardLayoutMonitorLinux::kSupportedKeys) {
     // Skip single-layout IME keys for now, as they are always present in the
@@ -202,15 +194,14 @@ void GdkLayoutMonitorOnGtkThread::QueryLayout() {
     for (int shift_level = 0; shift_level < 8; ++shift_level) {
       // Don't bother capturing higher shift levels if there's no configured way
       // to access them.
-      if ((shift_level & 2 && !have_altgr) || (shift_level & 4 && !have_mod5)) {
+      if ((shift_level & 2 && !have_altgr) || (shift_level & 4)) {
         continue;
       }
 
       // Always consider NumLock set and CapsLock unset for now.
       unsigned int modifiers = numlock_modifier |
                                (shift_level & 1 ? shift_modifier : 0) |
-                               (shift_level & 2 ? altgr_modifier : 0) |
-                               (shift_level & 4 ? mod5_modifier : 0);
+                               (shift_level & 2 ? altgr_modifier : 0);
       guint keyval = 0;
       gdk_keymap_translate_keyboard_state(
           keymap_, keycode, static_cast<GdkModifierType>(modifiers),
@@ -266,8 +257,6 @@ void GdkLayoutMonitorOnGtkThread::QueryLayout() {
 
       protocol::LayoutKeyFunction function = KeyvalToFunction(keyval);
       if (function == protocol::LayoutKeyFunction::ALT_GR) {
-        have_altgr = true;
-      } else if (function == protocol::LayoutKeyFunction::MOD5) {
         have_altgr = true;
       }
       key_actions[shift_level].set_function(function);

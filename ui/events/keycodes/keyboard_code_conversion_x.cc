@@ -572,6 +572,32 @@ void GetKeycodeAndModifiers(const x11::Event& event,
   }
 }
 
+bool IsKeypadKey(uint32_t keysym) {
+  return keysym >= XK_KP_Space && keysym <= XK_KP_Equal;
+}
+
+bool IsPrivateKeypadKey(uint32_t keysym) {
+  return keysym >= 0x11000000 && keysym <= 0x1100FFFF;
+}
+
+bool IsCursorKey(uint32_t keysym) {
+  return keysym >= XK_Home && keysym < XK_Select;
+}
+
+bool IsPFKey(uint32_t keysym) {
+  return keysym >= XK_KP_F1 && keysym <= XK_KP_F4;
+}
+
+bool IsFunctionKey(uint32_t keysym) {
+  return keysym >= XK_F1 && keysym <= XK_F35;
+}
+
+bool IsModifierKey(uint32_t keysym) {
+  return ((keysym >= XK_Shift_L) && (keysym <= XK_Hyper_R)) ||
+         ((keysym >= XK_ISO_Lock) && (keysym <= XK_ISO_Level5_Lock)) ||
+         keysym == XK_Mode_switch || keysym == XK_Num_Lock;
+}
+
 }  // namespace
 
 // Get an ui::KeyboardCode from an X keyevent
