@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,5 +46,15 @@ class ManagedByMenuItemViewBinder implements CustomViewBinder {
     @Override
     public boolean supportsEnterAnimation(int id) {
         return true;
+    }
+
+    @Override
+    public int getPixelHeight(Context context) {
+        // TODO(crbug.com/1124607): Update this menu item for new app menu.
+        int dividerLineHeight =
+                context.getResources().getDimensionPixelSize(R.dimen.divider_height);
+        int itemSize = context.getResources().getDimensionPixelSize(
+                R.dimen.overflow_menu_managed_by_min_height);
+        return dividerLineHeight + itemSize;
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -551,6 +552,11 @@ public class AppMenuAdapterTest extends DummyUiActivityTestCase {
         public boolean supportsEnterAnimation(int id) {
             return true;
         }
+
+        @Override
+        public int getPixelHeight(Context context) {
+            return 0;
+        }
     }
 
     private static class CustomViewBinderTwo implements CustomViewBinder {
@@ -588,6 +594,11 @@ public class AppMenuAdapterTest extends DummyUiActivityTestCase {
         @Override
         public boolean supportsEnterAnimation(int id) {
             return false;
+        }
+
+        @Override
+        public int getPixelHeight(Context context) {
+            return 0;
         }
     }
 }

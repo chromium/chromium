@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.appmenu;
 import android.content.pm.ActivityInfo;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -344,6 +345,28 @@ public class TabbedAppMenuTest {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals(5, actionBar.getChildCount());
         mRenderTestRule.render(getListView().getChildAt(0), "icon_row_share_enabled");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP})
+    public void testDividerLineMenuItem() throws IOException {
+        Menu menu = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator());
+        int firstDividerLineIndex = -1;
+        boolean foundDividerLine = false;
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.isVisible()) {
+                firstDividerLineIndex++;
+            }
+            if (item.getItemId() == R.id.divider_line_id) {
+                foundDividerLine = true;
+                break;
+            }
+        }
+        Assert.assertTrue("No divider line found.", foundDividerLine);
+        mRenderTestRule.render(getListView().getChildAt(firstDividerLineIndex), "divider_line");
     }
 
     private void showAppMenuAndAssertMenuShown() {

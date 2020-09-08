@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import android.content.Context;
+import android.content.res.TypedArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,6 +63,13 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
     @Override
     public boolean supportsEnterAnimation(int id) {
         return true;
+    }
+
+    @Override
+    public int getPixelHeight(Context context) {
+        TypedArray a = context.obtainStyledAttributes(
+                new int[] {android.R.attr.listPreferredItemHeightSmall});
+        return a.getDimensionPixelSize(0, 0);
     }
 
     private static class IncognitoMenuItemViewHolder {
