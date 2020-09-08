@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Touch-generated events should have the same target</title>
-<script src="../../../resources/testharness.js"></script>
-<script src="../../../resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 <p>Touch letter 'O' below to run the test. If a "PASS" result appears the test passes, otherwise it fails</p>
 <p><a href="#" id="link">Link</a> <span id="target">O</span></p>
 <div id="log"></div>
 <script>
 let input_gesture;
 const target = document.getElementById('target');
-const xPosition = target.offsetLeft + 2;
-const yPosition = target.offsetTop + 2;
+const xPosition = Math.ceil(target.offsetLeft + 2);
+const yPosition = Math.ceil(target.offsetTop + 2);
 
 function inject_input() {
-  return new Promise(function(resolve, reject) {
-    if (window.chrome && chrome.gpuBenchmarking) {
-      chrome.gpuBenchmarking.pointerActionSequence( [
-        {source: 'touch',
-         actions: [
-            { name: 'pointerDown', x: xPosition, y: yPosition },
-            { name: 'pointerUp' }
-        ]}], resolve);
-    } else {
-      reject();
-    }
-  });
+  let actions = new test_driver.Actions();
+  return actions
+        .addPointer("touchPointer", "touch")
+        .setPointer("touchPointer")
+        .pointerMove(xPosition, yPosition)
+        .pointerDown()
+        .pointerUp()
+        .send();
 }
+
 
 addEventListener('load', () => {
   input_gesture = inject_input();
