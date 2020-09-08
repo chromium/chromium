@@ -3860,6 +3860,7 @@ static_library("browser") {
       "//components/schema_org:extractor",
       "//components/services/app_service:lib",
       "//components/services/app_service/public/cpp:app_file_handling",
+      "//components/services/app_service/public/cpp:app_share_target",
       "//components/services/app_service/public/cpp:app_update",
       "//components/services/app_service/public/cpp:icon_loader",
       "//components/services/app_service/public/cpp:intents",

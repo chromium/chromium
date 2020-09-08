@@ -225,6 +225,10 @@ void WebApp::SetFileHandlers(apps::FileHandlers file_handlers) {
   file_handlers_ = std::move(file_handlers);
 }
 
+void WebApp::SetShareTarget(base::Optional<apps::ShareTarget> share_target) {
+  share_target_ = std::move(share_target);
+}
+
 void WebApp::SetAdditionalSearchTerms(
     std::vector<std::string> additional_search_terms) {
   additional_search_terms_ = std::move(additional_search_terms);
@@ -322,6 +326,8 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
     out << "  downloaded_icon_sizes_maskable_: " << size << std::endl;
   for (const apps::FileHandler& file_handler : app.file_handlers_)
     out << "  file_handler: " << file_handler << std::endl;
+  if (app.share_target_)
+    out << "  share_target: " << *app.share_target_ << std::endl;
   for (const std::string& additional_search_term : app.additional_search_terms_)
     out << "  additional_search_term: " << additional_search_term << std::endl;
   for (const apps::ProtocolHandlerInfo& protocol_handler :
@@ -359,10 +365,10 @@ bool operator==(const WebApp& app1, const WebApp& app2) {
                   app1.user_display_mode_, app1.user_page_ordinal_,
                   app1.user_launch_ordinal_, app1.chromeos_data_,
                   app1.is_locally_installed_, app1.is_in_sync_install_,
-                  app1.file_handlers_, app1.additional_search_terms_,
-                  app1.protocol_handlers_, app1.sync_fallback_data_,
-                  app1.last_launch_time_, app1.install_time_,
-                  app1.run_on_os_login_mode_) ==
+                  app1.file_handlers_, app1.share_target_,
+                  app1.additional_search_terms_, app1.protocol_handlers_,
+                  app1.sync_fallback_data_, app1.last_launch_time_,
+                  app1.install_time_, app1.run_on_os_login_mode_) ==
          std::tie(app2.app_id_, app2.sources_, app2.name_, app2.start_url_,
                   app2.description_, app2.scope_, app2.theme_color_,
                   app2.background_color_, app2.icon_infos_,
@@ -372,10 +378,10 @@ bool operator==(const WebApp& app1, const WebApp& app2) {
                   app2.user_display_mode_, app2.user_page_ordinal_,
                   app2.user_launch_ordinal_, app2.chromeos_data_,
                   app2.is_locally_installed_, app2.is_in_sync_install_,
-                  app2.file_handlers_, app2.additional_search_terms_,
-                  app2.protocol_handlers_, app2.sync_fallback_data_,
-                  app2.last_launch_time_, app2.install_time_,
-                  app2.run_on_os_login_mode_);
+                  app2.file_handlers_, app2.share_target_,
+                  app2.additional_search_terms_, app2.protocol_handlers_,
+                  app2.sync_fallback_data_, app2.last_launch_time_,
+                  app2.install_time_, app2.run_on_os_login_mode_);
 }
 
 bool operator!=(const WebApp& app1, const WebApp& app2) {

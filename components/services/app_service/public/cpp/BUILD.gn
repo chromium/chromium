@@ -16,6 +16,18 @@ source_set("app_file_handling") {
   ]
 }
 
+source_set("app_share_target") {
+  sources = [
+    "share_target.cc",
+    "share_target.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
 component("app_update") {
   output_name = "APP_UPDATE"
   sources = [

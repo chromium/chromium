@@ -186,6 +186,32 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
   }
 
+  if (web_app.share_target()) {
+    const apps::ShareTarget& share_target = *web_app.share_target();
+    auto* const mutable_share_target = local_data->mutable_share_target();
+    mutable_share_target->set_action(share_target.action.spec());
+    mutable_share_target->set_method(
+        apps::ShareTarget::MethodToString(share_target.method));
+    mutable_share_target->set_enctype(
+        apps::ShareTarget::EnctypeToString(share_target.enctype));
+
+    const apps::ShareTarget::Params& params = share_target.params;
+    auto* const mutable_share_target_params =
+        mutable_share_target->mutable_params();
+    mutable_share_target_params->set_title(params.title);
+    mutable_share_target_params->set_text(params.text);
+    mutable_share_target_params->set_url(params.url);
+
+    for (const auto& files_entry : params.files) {
+      ShareTargetParamsFile* mutable_share_target_files =
+          mutable_share_target_params->add_files();
+      mutable_share_target_files->set_name(files_entry.name);
+
+      for (const auto& file_type : files_entry.accept)
+        mutable_share_target_files->add_accept(file_type);
+    }
+  }
+
   for (const WebApplicationShortcutsMenuItemInfo& shortcut_info :
        web_app.shortcuts_menu_item_infos()) {
     WebAppShortcutsMenuItemInfoProto* shortcut_info_proto =
@@ -422,6 +448,48 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     file_handlers.push_back(std::move(file_handler));
   }
   web_app->SetFileHandlers(std::move(file_handlers));
+
+  if (local_data.has_share_target()) {
+    apps::ShareTarget share_target;
+    const ShareTarget& local_share_target = local_data.share_target();
+    const ShareTargetParams& local_share_target_params =
+        local_share_target.params();
+
+    GURL action(local_share_target.action());
+    if (action.is_empty() || !action.is_valid()) {
+      DLOG(ERROR) << "WebApp proto action parse error: "
+                  << action.possibly_invalid_spec();
+      return nullptr;
+    }
+
+    share_target.action = action;
+    share_target.method =
+        apps::ShareTarget::StringToMethod(local_share_target.method());
+    share_target.enctype =
+        apps::ShareTarget::StringToEnctype(local_share_target.enctype());
+    share_target.params.title = local_share_target_params.title();
+    share_target.params.text = local_share_target_params.text();
+    share_target.params.url = local_share_target_params.url();
+
+    for (const auto& share_target_params_file :
+         local_share_target_params.files()) {
+      apps::ShareTarget::Files files_entry;
+      files_entry.name = share_target_params_file.name();
+      for (const auto& file_type : share_target_params_file.accept()) {
+        if (base::Contains(files_entry.accept, file_type)) {
+          // We intentionally don't return a nullptr here; instead, duplicate
+          // entries are absorbed.
+          DLOG(ERROR) << "apps::ShareTarget::Files parsing encountered "
+                      << "duplicate file type";
+        } else {
+          files_entry.accept.push_back(file_type);
+        }
+      }
+      share_target.params.files.push_back(std::move(files_entry));
+    }
+
+    web_app->SetShareTarget(std::move(share_target));
+  }
 
   std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
   for (const auto& shortcut_info_proto :

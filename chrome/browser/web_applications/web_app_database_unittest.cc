@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/sync/model/model_type_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -96,6 +97,34 @@ class WebAppDatabaseTest : public WebAppTest {
     }
 
     return file_handlers;
+  }
+
+  static apps::ShareTarget CreateShareTarget(uint32_t suffix) {
+    apps::ShareTarget share_target;
+    share_target.action =
+        GURL("https://example.com/path/target/" + base::NumberToString(suffix));
+    share_target.method = (suffix % 2 == 0) ? apps::ShareTarget::Method::kPost
+                                            : apps::ShareTarget::Method::kGet;
+    share_target.enctype = (suffix / 2 % 2 == 0)
+                               ? apps::ShareTarget::Enctype::kMultipartFormData
+                               : apps::ShareTarget::Enctype::kFormUrlEncoded;
+
+    if (suffix % 3 != 0)
+      share_target.params.title = "title" + base::NumberToString(suffix);
+    if (suffix % 3 != 1)
+      share_target.params.text = "text" + base::NumberToString(suffix);
+    if (suffix % 3 != 2)
+      share_target.params.url = "url" + base::NumberToString(suffix);
+
+    for (uint32_t index = 0; index < suffix % 5; ++index) {
+      apps::ShareTarget::Files files;
+      files.name = "files" + base::NumberToString(index);
+      files.accept.push_back(".extension" + base::NumberToString(index));
+      files.accept.push_back("type/subtype" + base::NumberToString(index));
+      share_target.params.files.push_back(files);
+    }
+
+    return share_target;
   }
 
   static std::vector<apps::ProtocolHandlerInfo> CreateProtocolHandlers(
@@ -248,6 +277,8 @@ class WebAppDatabaseTest : public WebAppTest {
     app->SetIsGeneratedIcon(random.next_bool());
 
     app->SetFileHandlers(CreateFileHandlers(random.next_uint()));
+    if (random.next_bool())
+      app->SetShareTarget(CreateShareTarget(random.next_uint()));
     app->SetProtocolHandlers(CreateProtocolHandlers(random.next_uint()));
 
     const int num_additional_search_terms = random.next_uint(8);
@@ -348,7 +379,7 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   controller().Init();
   EXPECT_TRUE(registrar().is_empty());
 
-  const int num_apps = 100;
+  const int num_apps = 20;
   const std::string base_url = "https://example.com/path";
 
   auto app = CreateWebApp(base_url, 0);
@@ -429,7 +460,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 }
 
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps("https://example.com/path", 100);
+  Registry registry = WriteWebApps("https://example.com/path", 20);
 
   controller().Init();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
@@ -539,6 +570,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_FALSE(app->sync_fallback_data().scope.is_valid());
   EXPECT_TRUE(app->sync_fallback_data().icon_infos.empty());
   EXPECT_TRUE(app->file_handlers().empty());
+  EXPECT_FALSE(app->share_target().has_value());
   EXPECT_TRUE(app->additional_search_terms().empty());
   EXPECT_TRUE(app->protocol_handlers().empty());
   EXPECT_TRUE(app->last_launch_time().is_null());
@@ -595,6 +627,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_FALSE(app_copy->sync_fallback_data().scope.is_valid());
   EXPECT_TRUE(app_copy->sync_fallback_data().icon_infos.empty());
   EXPECT_TRUE(app_copy->file_handlers().empty());
+  EXPECT_FALSE(app_copy->share_target().has_value());
   EXPECT_TRUE(app_copy->additional_search_terms().empty());
   EXPECT_TRUE(app_copy->protocol_handlers().empty());
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
@@ -670,6 +703,28 @@ TEST_F(WebAppDatabaseTest, WebAppWithFileHandlersRoundTrip) {
   file_handlers.push_back(std::move(file_handler2));
 
   app->SetFileHandlers(std::move(file_handlers));
+
+  controller().RegisterApp(std::move(app));
+
+  Registry registry = database_factory().ReadRegistry();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+}
+
+TEST_F(WebAppDatabaseTest, WebAppWithShareTargetRoundTrip) {
+  controller().Init();
+
+  const std::string base_url = "https://example.com/path";
+  auto app = CreateWebApp(base_url, 0);
+  auto app_id = app->app_id();
+
+  apps::ShareTarget share_target;
+  share_target.action = GURL("https://example.com/path/target");
+  share_target.method = apps::ShareTarget::Method::kPost;
+  share_target.enctype = apps::ShareTarget::Enctype::kMultipartFormData;
+  share_target.params.title = "Title";
+  share_target.params.text = "Text";
+  share_target.params.url = "Url";
+  app->SetShareTarget(std::move(share_target));
 
   controller().RegisterApp(std::move(app));
 

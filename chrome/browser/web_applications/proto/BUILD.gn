@@ -6,6 +6,9 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "web_app.proto" ]
+  sources = [
+    "web_app.proto",
+    "web_app_share_target.proto",
+  ]
   link_deps = [ "//components/sync/protocol" ]
 }

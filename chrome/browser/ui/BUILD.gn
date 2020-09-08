@@ -2612,6 +2612,7 @@ static_library("ui") {
       "//components/login",
       "//components/metrics/structured:structured_events",
       "//components/services/app_service/public/cpp:app_file_handling",
+      "//components/services/app_service/public/cpp:app_share_target",
       "//components/services/app_service/public/cpp:app_update",
       "//components/services/app_service/public/cpp:icon_loader",
       "//components/services/app_service/public/cpp:instance_update",

@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 import "components/sync/protocol/web_app_specifics.proto";
+import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -154,4 +155,6 @@ message WebAppProto {
   // User preference: Run on OS Login mode for web app.
   // If present, the web app is configured to run on OS login.
   optional RunOnOsLoginMode user_run_on_os_login_mode = 24;
+
+  optional ShareTarget share_target = 25;
 }

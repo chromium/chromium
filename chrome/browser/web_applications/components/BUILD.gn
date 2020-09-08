@@ -117,6 +117,9 @@ source_set("components") {
     ]
   }
 
+  public_deps =
+      [ "//components/services/app_service/public/cpp:app_share_target" ]
+
   deps = [
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",

@@ -17,6 +17,7 @@
 #include "chrome/common/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/sync/model/string_ordinal.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -102,6 +103,10 @@ class WebApp {
   bool is_generated_icon() const { return is_generated_icon_; }
 
   const apps::FileHandlers& file_handlers() const { return file_handlers_; }
+
+  const base::Optional<apps::ShareTarget>& share_target() const {
+    return share_target_;
+  }
 
   const std::vector<std::string>& additional_search_terms() const {
     return additional_search_terms_;
@@ -191,6 +196,7 @@ class WebApp {
   void SetDownloadedShortcutsMenuIconsSizes(
       std::vector<std::vector<SquareSizePx>> icon_sizes);
   void SetFileHandlers(apps::FileHandlers file_handlers);
+  void SetShareTarget(base::Optional<apps::ShareTarget> share_target);
   void SetAdditionalSearchTerms(
       std::vector<std::string> additional_search_terms);
   void SetProtocolHandlers(
@@ -238,6 +244,7 @@ class WebApp {
   std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
   std::vector<std::vector<SquareSizePx>> downloaded_shortcuts_menu_icons_sizes_;
   apps::FileHandlers file_handlers_;
+  base::Optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
   base::Time last_launch_time_;
