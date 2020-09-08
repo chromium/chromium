@@ -540,6 +540,34 @@ TEST_P(SafeBrowsingTabHelperTest,
   EXPECT_EQ(kUnsafeResourceErrorCode, error.code);
 }
 
+// Tests the case of a subframe reload request that arrives when both the last
+// committed item and pending items are null, which happens in practice during
+// a back/forward navigation to a restore_session URL.
+TEST_P(SafeBrowsingTabHelperTest, StaleIframeReload) {
+  GURL unsafe_url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+
+  // Ensure that the navigation manager's state is consistent with what happens
+  // during a back/forward navigation to a restore_session URL.
+  ASSERT_FALSE(navigation_manager_->GetLastCommittedItem());
+  ASSERT_FALSE(navigation_manager_->GetPendingItem());
+
+  auto request_decision =
+      ShouldAllowRequestUrl(unsafe_url, /*for_main_frame=*/false,
+                            ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(request_decision.ShouldAllowNavigation());
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+
+  // Ensure that a subsequent main frame request is handled correctly.
+  GURL safe_url("http://chromium.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(safe_url).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+  auto response_decision = ShouldAllowResponseUrl(safe_url);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
 // Tests the case of a redirection chain, where all URLs in the chain are safe.
 TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChain) {
   GURL url1("http://chromium1.test");
