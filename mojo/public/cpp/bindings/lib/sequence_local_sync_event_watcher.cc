@@ -99,6 +99,8 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
     {
       base::AutoLock lock(ready_watchers_lock_);
       ready_watchers_.erase(iter->first);
+      if (ready_watchers_.empty())
+        event_.Reset();
     }
 
     registered_watchers_.erase(iter);
@@ -206,8 +208,10 @@ void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
       base::AutoLock lock(ready_watchers_lock_);
       std::swap(ready_watchers_, ready_watchers);
     }
-    if (ready_watchers.empty())
+    if (ready_watchers.empty()) {
+      event_.Reset();
       return;
+    }
 
     auto weak_self = weak_ptr_factory_.GetWeakPtr();
     for (auto* watcher : ready_watchers) {
