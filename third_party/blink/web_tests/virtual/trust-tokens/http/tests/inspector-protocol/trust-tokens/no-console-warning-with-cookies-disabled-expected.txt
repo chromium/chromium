@@ -1,0 +1,4 @@
+Check that no console error is printed on a Trust Tokens failure due to the subsystem being unavailable with third party cookies disabled.
+Log Enabled
+Trust Tokens operation concluded with expected failure, throwing exception "OperationError: Error executing Trust Tokens operation".
+

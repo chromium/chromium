@@ -80,11 +80,17 @@ class PLATFORM_EXPORT ResourceError final {
 
   bool IsCancellation() const;
 
-  // If the error was due to a Trust Tokens cache hit, the purpose of this
+  // Returns true if the error was the outcome of a Trust Tokens operation and
+  // the error does *not* represent an actionable failure:
+  // - If the error was due to a Trust Tokens cache hit, the purpose of this
   // request was to update some state in the network stack (with a response from
   // the server), but that this state was already present, so there was no need
   // to send the request.
-  bool IsTrustTokenCacheHit() const;
+  // - If the error was due to Trust Tokens unavailability---perhaps because the
+  // user has disabled the feature---then all Trust Tokens operations will fail
+  // even when everything is working as intended from the developer's
+  // perspective, so a console message isn't actionable.
+  bool IsUnactionableTrustTokensStatus() const;
 
   bool IsAccessCheck() const { return is_access_check_; }
   bool HasCopyInCache() const { return has_copy_in_cache_; }
