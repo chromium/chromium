@@ -1393,6 +1393,7 @@ void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
   auto group_view = std::make_unique<TabGroupViews>(this, group);
   layout_helper_->InsertGroupHeader(group, group_view->header());
   group_views_[group] = std::move(group_view);
+  SetStackedLayout(false);
 }
 
 void TabStrip::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
@@ -3486,14 +3487,7 @@ Tab* TabStrip::FindTabHitByPoint(const gfx::Point& point) {
 }
 
 void TabStrip::SwapLayoutIfNecessary() {
-  // TODO(crbug.com/1053707): Tab groups is disabled with stacked tabs to
-  // prevent crashes during development. This will not impact users unless tab
-  // groups are manually enabled.
-  // Tab groups should only be rolled out on devices where
-  // features::kWebUITabStrip is enabled which is mutually exclusive with
-  // stacked tabs.
-  bool needs_touch =
-      NeedsTouchLayout() && !base::FeatureList::IsEnabled(features::kTabGroups);
+  bool needs_touch = NeedsTouchLayout();
   bool using_touch = touch_layout_ != nullptr;
   if (needs_touch == using_touch)
     return;
@@ -3524,6 +3518,13 @@ void TabStrip::SwapLayoutIfNecessary() {
 
 bool TabStrip::NeedsTouchLayout() const {
   if (!stacked_layout_)
+    return false;
+
+  // If a group is active in the tabstrip, the layout will not be swapped to
+  // stacked mode due to incompatibility of the UI.
+  // As an alternative, Tab Groups do interoperate with the WebUI Tab Strip,
+  // which is enabled in situations when stacked tabs are not.
+  if (!group_views_.empty())
     return false;
 
   const int pinned_tab_count = GetPinnedTabCount();

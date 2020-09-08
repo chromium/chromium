@@ -541,6 +541,30 @@ TEST_P(TabStripTest, TabForEventWhenStacked) {
   }
 }
 
+// Creates a tab strip in stacked layout mode and creates a group.
+TEST_P(TabStripTest, TabGroupCreatedWhenStacked) {
+  tab_strip_parent_->SetBounds(0, 0, 250, GetLayoutConstant(TAB_HEIGHT));
+
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, true);
+  controller_->AddTab(2, false);
+  controller_->AddTab(3, false);
+  ASSERT_EQ(4, tab_strip_->tab_count());
+
+  // Switch to stacked layout mode and force a layout to ensure tabs stack.
+  tab_strip_->SetStackedLayout(true);
+  CompleteAnimationAndLayout();
+
+  // Create a tab group.
+  base::Optional<tab_groups::TabGroupId> group =
+      tab_groups::TabGroupId::GenerateNew();
+  controller_->MoveTabIntoGroup(0, group);
+  CompleteAnimationAndLayout();
+
+  // Expect the tabstrip to be taken out of stacked mode.
+  EXPECT_EQ(tab_strip_->stacked_layout(), false);
+}
+
 // Tests that the tab close buttons of non-active tabs are hidden when
 // the tabstrip is in stacked tab mode.
 TEST_P(TabStripTest, TabCloseButtonVisibilityWhenStacked) {
