@@ -9325,16 +9325,14 @@
       'features': {
         'dynamic_refresh': True,
       },
-      'deprecated': True,
       'example_value': [ 'madmax@managedchrome.com' ],
       'id': 122,
       'caption': '''Login user white list''',
       'tags': [],
       'desc': '''Defines the list of users that are allowed to login to the device. Entries are of the form <ph name="USER_ALLOWLIST_ENTRY_FORMAT">user@domain</ph>, such as <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE">madmax@managedchrome.com</ph>. To allow arbitrary users on a domain, use entries of the form <ph name="USER_ALLOWLIST_ENTRY_WILDCARD">*@domain</ph>.
 
-      If this policy is not configured, there are no restrictions on which users are allowed to sign in. Note that creating new users still requires the <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME">DeviceAllowNewUsers</ph> policy to be configured appropriately.
+      If this policy is not configured, there are no restrictions on which users are allowed to sign in. Note that creating new users still requires the <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME">DeviceAllowNewUsers</ph> policy to be configured appropriately.''',
 
-      This policy is deprecated, please use <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME">DeviceUserAllowlist</ph> instead.''',
       'arc_support': 'This policy controls who may start a <ph name="PRODUCT_OS_NAME">$2<ex>Chromium OS</ex></ph> session. It does not prevent users from signing in to additional Google accounts within Android. If you want to prevent this, configure the Android-specific <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME">accountTypesWithManagementDisabled</ph> policy as part of <ph name="ARC_POLICY_POLICY_NAME">ArcPolicy</ph>.',
     },
     {
@@ -9346,7 +9344,7 @@
         'items': { 'type': 'string' },
         'sensitiveValue': True,
       },
-      'supported_on': ['chrome_os:86-'],
+      'future_on': ['chrome_os'],
       'device_only': True,
       'features': {
         'dynamic_refresh': True,
@@ -14351,7 +14349,6 @@
       'features': {
         'dynamic_refresh': False,
       },
-      'deprecated': True,
       'example_value': [
         {
           'vendor_id' : 1027,
@@ -14367,9 +14364,7 @@
       'tags': ['system-security'],
       'desc': '''Setting the policy defines the list of USB devices users can detach from their kernel driver to use through the chrome.usb API directly inside a web app. Entries are pairs of USB Vendor Identifier and Product Identifier to identify specific hardware.
 
-      If not set, the list of a detachable USB devices is empty.
-
-      This policy is deprecated, please use <ph name="USB_DETACHABLE_ALLOWLIST">UsbDetachableAllowlist</ph> instead.''',
+      If not set, the list of a detachable USB devices is empty.''',
     },
     {
       'name': 'UsbDetachableAllowlist',
@@ -14386,7 +14381,7 @@
           },
         },
       },
-      'supported_on': ['chrome_os:86-'],
+      'future_on': ['chrome_os'],
       'device_only': True,
       'features': {
         'dynamic_refresh': False,
@@ -15504,7 +15499,6 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'deprecated': True,
       'example_value': {
         "url": "https://example.com/printerpolicy",
         "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeafdeadbeefdeadbeef"
@@ -15520,15 +15514,13 @@
 
       The file is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
 
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE">DeviceNativePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST">DevicePrintersBlocklist</ph>.
+      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE">DeviceNativePrintersAccessMode</ph>, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME">DeviceNativePrintersWhitelist</ph>, and <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME">DeviceNativePrintersBlacklist</ph>.
 
       This policy has no effect on whether users can configure printers on individual devices.  It is intended to be supplementary to the configuration of printers by individual users.
 
       This policy is additive to the <ph name="BULK_PRINTERS_POLICY_NAME">NativePrintersBulkConfiguration</ph>.
 
       If this policy is unset, there will be no device printers and the other <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN">DeviceNativePrinter*</ph> policies will be ignored.
-
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS">DevicePrinters</ph> instead.
       ''',
     },
     {
@@ -15563,7 +15555,6 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'deprecated': True,
       'example_value': 1,
       'caption': '''Device printers configuration access policy.''',
       'tags': [],
@@ -15572,8 +15563,6 @@
       Designates which access policy is used for bulk printer configuration. If <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is selected, all printers are shown. If <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is selected, <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST">DeviceNativePrintersBlacklist</ph> is used to restrict access to the specified printers.  If <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is selected, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST">DevicePrintersWhitelist</ph> designates only those printers which are selectable.
 
       If this policy is not set, <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is assumed.
-
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ACCESS_MODE">DevicePrintersAccessMode</ph> instead.
       ''',
     },
     {
@@ -15590,7 +15579,6 @@
       'features': {
         'dynamic_refresh': True,
       },
-      'deprecated': True,
       'example_value':  ["id1", "id2", "id3"],
       'caption': '''Disabled enterprise device printers''',
       'tags': [],
@@ -15599,8 +15587,6 @@
       This policy is only used if <ph name="PRINTERS_BLACKLIST">BlacklistRestriction</ph> is chosen for <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE">DeviceNativePrintersAccessMode</ph>.
 
       If this policy is used, all printers are provided to the user except for the ids listed in this policy. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY">DeviceNativePrinters</ph>.
-
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_BLOCKLIST">DevicePrintersBlocklist</ph> instead.
       ''',
     },
     {
@@ -15614,7 +15600,6 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -15627,8 +15612,6 @@
       This policy is only used if <ph name="PRINTERS_WHITELIST">WhitelistPrintersOnly</ph> is chosen for <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE">DeviceNativePrintersAccessMode</ph>
 
       If this policy is used, only the printers with ids matching the values in this policy are available to the user. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY">DeviceNativePrinters</ph>.
-
-      This policy is deprecated, please use <ph name="DEVICE_PRINTERS_ALLOWLIST">DevicePrintersAllowlist</ph> instead.
       ''',
     },
     {
@@ -15644,7 +15627,7 @@
           'hash': { 'type': 'string' }
         },
       },
-      'supported_on': ['chrome_os:86-'],
+      'future_on': ['chrome_os'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -15664,7 +15647,7 @@
 
       The file is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
 
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="DEVICE_PRINTERS_ACCESS_MODE">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST">DevicePrintersBlocklist</ph>.
+      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the file for printer configurations and make printers available in accordance with <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph>, and <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph>.
 
       This policy has no effect on whether users can configure printers on individual devices.  It is intended to be supplementary to the configuration of printers by individual users.
 
@@ -15678,7 +15661,7 @@
       'owners': ['skau@chromium.org', 'nikitapodguzov@chromium.org'],
       'id': 733,
       'device_only': True,
-      'supported_on': ['chrome_os:86-'],
+      'future_on': ['chrome_os'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -15708,9 +15691,9 @@
       'example_value': 1,
       'caption': '''Device printers configuration access policy.''',
       'tags': [],
-      'desc': '''Controls which printers from the <ph name="DEVICE_PRINTERS_POLICY">DeviceNativePrinters</ph> are available to users.
+      'desc': '''Controls which printers from the <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph> are available to users.
 
-      Designates which access policy is used for bulk printer configuration. If <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is selected, all printers are shown. If <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is selected, <ph name="DEVICE_PRINTERS_BLOCKLIST">DevicePrintersBlocklist</ph> is used to restrict access to the specified printers.  If <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is selected, <ph name="DEVICE_PRINTERS_ALLOWLIST">DevicePrintersAllowlist</ph> designates only those printers which are selectable.
+      Designates which access policy is used for bulk printer configuration. If <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is selected, all printers are shown. If <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is selected, <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME">DevicePrintersBlocklist</ph> is used to restrict access to the specified printers.  If <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is selected, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME">DevicePrintersAllowlist</ph> designates only those printers which are selectable.
 
       If this policy is not set, <ph name="PRINTERS_ALLOW_ALL">AllowAll</ph> is assumed.
       ''',
@@ -15718,7 +15701,7 @@
     {
       'name': 'DevicePrintersBlocklist',
       'owners': ['skau@chromium.org', 'nikitapodguzov@chromium.org', 'bmalcolm@chromium.org'],
-      'supported_on': ['chrome_os:86-'],
+      'future_on': ['chrome_os'],
       'device_only': True,
       'id': 734,
       'type': 'list',
@@ -15734,15 +15717,15 @@
       'tags': [],
       'desc': '''Specifies the printers which a user cannot use.
 
-      This policy is only used if <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE">DevicePrintersAccessMode</ph>.
+      This policy is only used if <ph name="PRINTERS_BLOCKLIST">BlocklistRestriction</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>.
 
-      If this policy is used, all printers are provided to the user except for the ids listed in this policy. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY">DeviceNativePrinters</ph>.
+      If this policy is used, all printers are provided to the user except for the ids listed in this policy. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
       ''',
     },
     {
       'name': 'DevicePrintersAllowlist',
       'owners': ['skau@chromium.org', 'nikitapodguzov@chromium.org', 'bmalcolm@chromium.org'],
-      'supported_on': ['chrome_os:86-'],
+      'future_on': ['chrome_os'],
       'device_only': True,
       'id': 735,
       'type': 'list',
@@ -15759,9 +15742,9 @@
       'tags': [],
       'desc': '''Specifies the printers which a user can use.
 
-      This policy is only used if <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE">DevicePrintersAccessMode</ph>
+      This policy is only used if <ph name="PRINTERS_ALLOWLIST">AllowlistPrintersOnly</ph> is chosen for <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME">DevicePrintersAccessMode</ph>
 
-      If this policy is used, only the printers with ids matching the values in this policy are available to the user. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY">DeviceNativePrinters</ph>.
+      If this policy is used, only the printers with ids matching the values in this policy are available to the user. The ids must correspond to the "id" or "guid" fields in the file specified in <ph name="DEVICE_PRINTERS_POLICY_NAME">DevicePrinters</ph>.
       ''',
     },
     {
