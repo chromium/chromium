@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -46,10 +47,10 @@ public class TopToolbarOverlayMediator {
     private final ControlContainer mToolbarContainer;
 
     /** Provides current tab. */
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ActivityTabProvider mTabSupplier;
 
     /** An observer that watches for changes in the active tab. */
-    private final Callback<Tab> mTabSupplierObserver;
+    private final ActivityTabProvider.ActivityTabObserver mTabSupplierObserver;
 
     /** Access to the current state of the browser controls. */
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -73,7 +74,7 @@ public class TopToolbarOverlayMediator {
     private Tab mLastActiveTab;
 
     TopToolbarOverlayMediator(PropertyModel model, Context context, LayoutManager layoutManager,
-            ControlContainer controlContainer, ObservableSupplier<Tab> tabSupplier,
+            ControlContainer controlContainer, ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Integer> viewportModeSupplier,
             ObservableSupplier<Boolean> androidViewShownSupplier) {
@@ -117,7 +118,7 @@ public class TopToolbarOverlayMediator {
 
         // Keep an observer attached to the visible tab (and only the visible tab) to update
         // properties including theme color.
-        mTabSupplierObserver = (tab) -> {
+        mTabSupplierObserver = (tab, hint) -> {
             if (mLastActiveTab != null) mLastActiveTab.removeObserver(currentTabObserver);
             if (tab == null) return;
 
@@ -127,7 +128,7 @@ public class TopToolbarOverlayMediator {
             updateThemeColor(mLastActiveTab);
             updateProgress();
         };
-        mTabSupplier.addObserver(mTabSupplierObserver);
+        mTabSupplier.addObserverAndTrigger(mTabSupplierObserver);
 
         mAndroidViewShownObserver = (shown) -> updateShadowState();
         mAndroidViewShownSupplier.addObserver(mAndroidViewShownObserver);
@@ -225,7 +226,7 @@ public class TopToolbarOverlayMediator {
     /** Clean up any state and observers. */
     void destroy() {
         mTabSupplier.removeObserver(mTabSupplierObserver);
-        mTabSupplierObserver.onResult(null);
+        mTabSupplierObserver.onActivityTabChanged(null, false);
         mLastActiveTab = null;
 
         mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);

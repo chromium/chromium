@@ -25,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.UiThreadTest;
@@ -32,6 +34,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -72,6 +75,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Mock
+    private ActivityTabProvider mTabSupplier;
 
     private long mLastDownTime;
 
@@ -160,7 +166,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container, null);
         mManager = mManagerPhone;
         CompositorAnimationHandler.setTestingMode(true);
-        mManager.init(mTabModelSelector, null, tabContentManager, null, null, null);
+        mManager.init(mTabModelSelector, null, tabContentManager, null, null, null, mTabSupplier);
         initializeMotionEvent();
     }
 
@@ -626,6 +632,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
         // Load the browser process.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });

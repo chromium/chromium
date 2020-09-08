@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.CompositorModelChangeProcessor;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
 import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
@@ -42,7 +42,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     public TopToolbarOverlayCoordinator(Context context,
             CompositorModelChangeProcessor.FrameRequestSupplier frameRequestSupplier,
             LayoutManager layoutManager, ControlContainer controlContainer,
-            ObservableSupplier<Tab> tabSupplier,
+            ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Integer> viewportModeSupplier,
             ObservableSupplier<Boolean> androidViewShownSupplier,

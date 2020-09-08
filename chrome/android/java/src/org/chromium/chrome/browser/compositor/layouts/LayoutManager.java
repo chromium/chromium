@@ -19,6 +19,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -152,14 +153,8 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     /** The animation handler responsible for updating all the browser compositor's animations. */
     private final CompositorAnimationHandler mAnimationHandler;
 
-    /**
-     * Current tab to provide Toolbar overlay with. Unlike TabModelSelector#getCurrentTab
-     * which returns null right after a tab is closed, this keeps the reference until
-     * TabModelObserver#didCloseTab is triggered for Toolbar overlay to have a chance
-     * to retrieve the right textbox color from it.
-     */
-    private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
-
+    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
+            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<BrowserControlsStateProvider>
@@ -177,7 +172,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             } else if (tab.getId() != lastId) {
                 tabSelected(tab.getId(), lastId, tab.isIncognito());
             }
-            mCurrentTabSupplier.set(tab);
         }
 
         @Override
@@ -220,8 +214,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         @Override
         public void didCloseTab(int tabId, boolean incognito) {
             tabClosed(tabId, incognito, false);
-            mCurrentTabSupplier.set(
-                    getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null);
         }
 
         @Override
@@ -250,7 +242,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
         mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
         mAndroidViewShownSupplier.set(true);
-        mCurrentTabSupplier = new ObservableSupplierImpl<>();
 
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
@@ -410,9 +401,8 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     public void init(TabModelSelector selector, TabCreatorManager creator,
             TabContentManager content, ControlContainer controlContainer,
             ContextualSearchManagementDelegate contextualSearchDelegate,
-            DynamicResourceLoader dynamicResourceLoader) {
+            DynamicResourceLoader dynamicResourceLoader, ActivityTabProvider tabProvider) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
-        mCurrentTabSupplier.set(selector.getCurrentTab());
 
         // Build Layouts
         mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
@@ -430,7 +420,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
                     -> getActiveLayout() != null ? getActiveLayout().getViewportMode()
                                                  : Layout.ViewportMode.ALWAYS_FULLSCREEN;
             mToolbarOverlay = new TopToolbarOverlayCoordinator(mContext, mFrameRequestSupplier,
-                    this, controlContainer, mCurrentTabSupplier, getBrowserControlsManager(),
+                    this, controlContainer, tabProvider, getBrowserControlsManager(),
                     viewportModeSupplier, mAndroidViewShownSupplier,
                     () -> renderHost.getResourceManager());
         }
@@ -473,7 +463,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     // mTabModelSelector should only be set once.
     public void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
-        mCurrentTabSupplier.set(selector.getCurrentTab());
+        mTabModelSelectorSupplier.set(selector);
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
             public void onShown(Tab tab, @TabSelectionType int type) {
@@ -534,7 +524,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             getTabModelSelector().getTabModelFilterProvider().removeTabModelFilterObserver(
                     mTabModelFilterObserver);
         }
-        mCurrentTabSupplier.set(null);
     }
 
     /**

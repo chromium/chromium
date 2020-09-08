@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
@@ -65,15 +66,17 @@ public class TopToolbarOverlayMediatorTest {
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
 
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    @Mock
+    private ActivityTabProvider mTabSupplier;
+
+    @Captor
+    private ArgumentCaptor<ActivityTabProvider.ActivityTabObserver> mActivityTabObserverCaptor;
+
     private ObservableSupplierImpl<Boolean> mAndroidViewShownSupplier;
 
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-
-        mTabSupplier = new ObservableSupplierImpl<>();
-        mTabSupplier.set(mTab);
 
         mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
         mAndroidViewShownSupplier.set(true);
@@ -100,9 +103,18 @@ public class TopToolbarOverlayMediatorTest {
                 mAndroidViewShownSupplier);
 
         // Ensure the observer is added to the initial tab.
+        verify(mTabSupplier).addObserverAndTrigger(mActivityTabObserverCaptor.capture());
+        setTabSupplierTab(mTab);
+
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
         verify(mBrowserControlsProvider).addObserver(mBrowserControlsObserverCaptor.capture());
+    }
+
+    /** Set the tab that will be returned by the supplier and trigger the observer event. */
+    private void setTabSupplierTab(Tab tab) {
+        when(mTabSupplier.get()).thenReturn(tab);
+        mActivityTabObserverCaptor.getValue().onActivityTabChanged(tab, false);
     }
 
     @After
@@ -113,7 +125,7 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     public void testTabObserverAfterTabSwitch() {
-        mTabSupplier.set(mTab2);
+        setTabSupplierTab(mTab2);
 
         // Make sure the tab observer for this overlay is only observing the "current" tab.
         verify(mTab).removeObserver(mTabObserverCaptor.getValue());
@@ -159,7 +171,7 @@ public class TopToolbarOverlayMediatorTest {
 
         // Ensure the progress is correct on tab switch.
         mTabObserverCaptor.getValue().onLoadProgressChanged(mTab, 0.f);
-        mTabSupplier.set(mTab2);
+        setTabSupplierTab(mTab2);
     }
 
     @Test
