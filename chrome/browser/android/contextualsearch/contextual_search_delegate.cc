@@ -168,6 +168,36 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
   // Disable cookies for this request.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
+  // Semantic details for this "Resolve" request:
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("contextual_search_resolve",
+                                          R"(
+          semantics {
+            sender: "Contextual Search"
+            description:
+              "Chromium can determine the best search term to apply for any "
+               "section of plain text for almost any page.  This sends page "
+               "data to Google and the response identifies what to search for "
+               "plus additional actionable information."
+            trigger:
+              "Triggered by an unhandled tap on plain text on most pages."
+            data:
+              "The URL and some page content from the current tab."
+            destination: GOOGLE_OWNED_SERVICE
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              "This feature can be disabled by turning off 'Touch to Search' in "
+              "Chrome for Android settings."
+            chrome_policy {
+              ContextualSearchEnabled {
+                  policy_options {mode: MANDATORY}
+                  ContextualSearchEnabled: false
+              }
+            }
+          })");
+
   // Add Chrome experiment state to the request headers.
   // Reset will delete any previous loader, and we won't get any callback.
   url_loader_ =
@@ -175,7 +205,7 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
           std::move(resource_request),
           variations::InIncognito::kNo,  // Impossible to be incognito at this
                                          // point.
-          NO_TRAFFIC_ANNOTATION_YET);
+          traffic_annotation);
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
