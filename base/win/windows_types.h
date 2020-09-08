@@ -215,9 +215,10 @@ struct CHROME_CONDITION_VARIABLE {
 #define WINAPI __stdcall
 #define CALLBACK __stdcall
 
-// Needed for optimal lock performance.
+// Needed for LockImpl.
 WINBASEAPI _Releases_exclusive_lock_(*SRWLock) VOID WINAPI
     ReleaseSRWLockExclusive(_Inout_ PSRWLOCK SRWLock);
+WINBASEAPI BOOLEAN WINAPI TryAcquireSRWLockExclusive(_Inout_ PSRWLOCK SRWLock);
 
 // Needed to support protobuf's GetMessage macro magic.
 WINUSERAPI BOOL WINAPI GetMessageW(_Out_ LPMSG lpMsg,

@@ -80,24 +80,7 @@ LockImpl::~LockImpl() {
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
 }
 
-bool LockImpl::Try() {
-  int rv = pthread_mutex_trylock(&native_handle_);
-  DCHECK(rv == 0 || rv == EBUSY) << ". " << SystemErrorCodeToString(rv);
-  return rv == 0;
-}
-
-void LockImpl::Lock() {
-  // The ScopedLockAcquireActivity below is relatively expensive and so its
-  // actions can become significant due to the very large number of locks that
-  // tend to be used throughout the build. It is also not needed unless the lock
-  // is contended.
-  //
-  // To avoid this cost in the vast majority of the calls, simply "try" the lock
-  // first and only do the (tracked) blocking call if that fails. |Try()| is
-  // cheap on platforms with futex(), as it doesn't call into the kernel.
-  if (Try())
-    return;
-
+void LockImpl::LockInternalWithTracking() {
   base::debug::ScopedLockAcquireActivity lock_activity(this);
   int rv = pthread_mutex_lock(&native_handle_);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
