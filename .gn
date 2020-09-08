@@ -256,7 +256,6 @@ no_check_targets = [
   "//third_party/blink/renderer/modules/background_fetch:*",  # 4 errors
   "//third_party/blink/renderer/modules/cache_storage:*",  # 3 errors
   "//third_party/blink/renderer/modules/canvas:*",  # 1 error
-  "//third_party/blink/renderer/modules/csspaint:*",  # 2 errors
   "//third_party/blink/renderer/modules/font_access:*",  # 3 errors
   "//third_party/blink/renderer/modules/imagecapture:*",  # 2 errors
   "//third_party/blink/renderer/modules/manifest:*",  # 2 errors

@@ -30,4 +30,6 @@ blink_modules_sources("csspaint") {
     "paint_worklet_proxy_client.cc",
     "paint_worklet_proxy_client.h",
   ]
+
+  public_deps = [ "//third_party/blink/renderer/modules/canvas:canvas" ]
 }
