@@ -1004,9 +1004,6 @@ void ThreadableLoader::DispatchDidFail(const ResourceError& error) {
 void ThreadableLoader::LoadRequest(
     ResourceRequest& request,
     ResourceLoaderOptions resource_loader_options) {
-  resource_loader_options.cors_handling_by_resource_fetcher =
-      kDisableCorsHandlingByResourceFetcher;
-
   if (out_of_blink_cors_) {
     if (request.GetCredentialsMode() ==
         network::mojom::CredentialsMode::kOmit) {

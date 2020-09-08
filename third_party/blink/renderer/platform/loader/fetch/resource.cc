@@ -843,32 +843,6 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   if (new_mode != existing_mode)
     return MatchStatus::kRequestModeDoesNotMatch;
 
-  switch (new_mode) {
-    case network::mojom::RequestMode::kNoCors:
-    case network::mojom::RequestMode::kNavigate:
-      break;
-
-    case network::mojom::RequestMode::kCors:
-    case network::mojom::RequestMode::kSameOrigin:
-    case network::mojom::RequestMode::kCorsWithForcedPreflight:
-      // We have two separate CORS handling logics in ThreadableLoader
-      // and ResourceLoader and sharing resources is difficult when they are
-      // handled differently.
-      if (options_.cors_handling_by_resource_fetcher !=
-          new_options.cors_handling_by_resource_fetcher) {
-        // If the existing one is handled in ThreadableLoader and the
-        // new one is handled in ResourceLoader, reusing the existing one will
-        // lead to CORS violations.
-        if (!options_.cors_handling_by_resource_fetcher)
-          return MatchStatus::kUnknownFailure;
-
-        // Otherwise (i.e., if the existing one is handled in ResourceLoader
-        // and the new one is handled in ThreadableLoader), reusing
-        // the existing one will lead to double check which is harmless.
-      }
-      break;
-  }
-
   return MatchStatus::kOk;
 }
 

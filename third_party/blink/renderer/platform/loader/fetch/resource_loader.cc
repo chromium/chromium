@@ -904,7 +904,6 @@ void ResourceLoader::DidReceiveResponseInternal(
       initial_request.GetRequestContext();
   network::mojom::RequestDestination request_destination =
       initial_request.GetRequestDestination();
-  network::mojom::RequestMode request_mode = initial_request.GetMode();
 
   const ResourceLoaderOptions& options = resource_->Options();
 
@@ -940,26 +939,6 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 
   if (response.WasFetchedViaServiceWorker()) {
-    if (options.cors_handling_by_resource_fetcher ==
-            kEnableCorsHandlingByResourceFetcher &&
-        request_mode == network::mojom::RequestMode::kCors &&
-        response.WasFallbackRequiredByServiceWorker()) {
-      DCHECK(resource_->RedirectChain().IsEmpty());
-      ResourceRequestHead last_request(resource_->GetResourceRequest());
-      DCHECK(!last_request.GetSkipServiceWorker());
-      // This code handles the case when a controlling service worker doesn't
-      // handle a cross origin request.
-      if (fetcher_->GetProperties().ShouldBlockLoadingSubResource()) {
-        // Cancel the request if we should not trigger a reload now.
-        HandleError(
-            ResourceError::CancelledError(response.CurrentRequestUrl()));
-        return;
-      }
-      last_request.SetSkipServiceWorker(true);
-      Restart(last_request);
-      return;
-    }
-
     // Run post-request CSP checks. This is the "Should response to request be
     // blocked by Content Security Policy?" algorithm in the CSP specification:
     // https://w3c.github.io/webappsec-csp/#should-block-response

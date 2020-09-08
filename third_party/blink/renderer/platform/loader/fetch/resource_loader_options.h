@@ -57,13 +57,6 @@ enum SynchronousPolicy : uint8_t {
   kRequestAsynchronously
 };
 
-// Used by the ThreadableLoader to turn off part of the CORS handling
-// logic in the ResourceFetcher to use its own CORS handling logic.
-enum CorsHandlingByResourceFetcher {
-  kDisableCorsHandlingByResourceFetcher,
-  kEnableCorsHandlingByResourceFetcher,
-};
-
 // Was the request generated from a "parser-inserted" element?
 // https://html.spec.whatwg.org/C/#parser-inserted
 enum ParserDisposition : uint8_t { kParserInserted, kNotParserInserted };
@@ -100,15 +93,6 @@ struct PLATFORM_EXPORT ResourceLoaderOptions {
   network::mojom::CSPDisposition content_security_policy_option;
   RequestInitiatorContext request_initiator_context;
   SynchronousPolicy synchronous_policy;
-
-  // When set to kDisableCorsHandlingByResourceFetcher, the ResourceFetcher
-  // suppresses part of its CORS handling logic.
-  // Used by ThreadableLoader which does CORS handling by itself.
-  // TODO(crbug.com/1053866): Remove the flag and relevant code.
-  CorsHandlingByResourceFetcher cors_handling_by_resource_fetcher;
-
-  // Corresponds to the CORS flag in the Fetch spec.
-  bool cors_flag;
 
   // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
   RejectCoepUnsafeNone reject_coep_unsafe_none = RejectCoepUnsafeNone(false);
