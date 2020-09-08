@@ -188,14 +188,14 @@ class AppMenuHandlerImpl
                 new ContextThemeWrapper(context, R.style.OverflowMenuThemeOverlay);
 
         if (mAppMenu == null) {
-            TypedArray a = wrapper.obtainStyledAttributes(new int[] {
-                    android.R.attr.listPreferredItemHeightSmall, android.R.attr.listDivider});
+            TypedArray a = wrapper.obtainStyledAttributes(
+                    new int[] {android.R.attr.listPreferredItemHeightSmall});
             int itemRowHeight = a.getDimensionPixelSize(0, 0);
             Drawable itemDivider = a.getDrawable(1);
             int itemDividerHeight = itemDivider != null ? itemDivider.getIntrinsicHeight() : 0;
             a.recycle();
-            mAppMenu = new AppMenu(mMenu, itemRowHeight, itemDividerHeight, this,
-                    context.getResources(), mDelegate.shouldShowIconBeforeItem());
+            mAppMenu = new AppMenu(mMenu, itemRowHeight, this, context.getResources(),
+                    mDelegate.shouldShowIconBeforeItem());
             mAppMenuDragHelper = new AppMenuDragHelper(context, mAppMenu, itemRowHeight);
         }
 

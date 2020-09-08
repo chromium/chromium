@@ -57,7 +57,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
 
     private final Menu mMenu;
     private final int mItemRowHeight;
-    private final int mItemDividerHeight;
     private final int mVerticalFadeDistance;
     private final int mNegativeSoftwareVerticalOffset;
     private final int mNegativeVerticalOffsetNotTopAnchored;
@@ -79,22 +78,18 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
      * Creates and sets up the App Menu.
      * @param menu Original menu created by the framework.
      * @param itemRowHeight Desired height for each app menu row.
-     * @param itemDividerHeight Desired height for the divider between app menu items.
      * @param handler AppMenuHandlerImpl receives callbacks from AppMenu.
      * @param res Resources object used to get dimensions and style attributes.
      * @param iconBeforeItem Whether icon is shown before the text.
      */
-    AppMenu(Menu menu, int itemRowHeight, int itemDividerHeight, AppMenuHandlerImpl handler,
-            Resources res, boolean iconBeforeItem) {
+    AppMenu(Menu menu, int itemRowHeight, AppMenuHandlerImpl handler, Resources res,
+            boolean iconBeforeItem) {
         mMenu = menu;
 
         mItemRowHeight = itemRowHeight;
         assert mItemRowHeight > 0;
 
         mHandler = handler;
-
-        mItemDividerHeight = itemDividerHeight;
-        assert mItemDividerHeight >= 0;
 
         mNegativeSoftwareVerticalOffset =
                 res.getDimensionPixelSize(R.dimen.menu_negative_software_vertical_offset);
