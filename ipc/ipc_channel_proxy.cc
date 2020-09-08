@@ -45,9 +45,7 @@ ChannelProxy::Context::Context(
   // need to either:
   // 1) Create the ChannelProxy on a different thread, or
   // 2) Just use Channel
-  // Note, we currently make an exception for a NULL listener. That usage
-  // basically works, but is outside the intent of ChannelProxy. This support
-  // will disappear, so please don't rely on it. See https://crbug.com/364241
+  // We make an exception for NULL listeners.
   DCHECK(!listener ||
          (ipc_task_runner_.get() != default_listener_task_runner_.get()));
 }
