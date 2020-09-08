@@ -349,12 +349,6 @@
       *“无特殊限制”，系统将根据“安全浏览”功能的分析结果检查下载内容是否符合常规安全限制。
 
       注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
-<translation id="1550222358325456797">此政策旨在控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY" /> 中的哪些打印机。
-
-      通过设置此政策，您可以指定对批量打印机配置使用哪项访问政策。如果选择 <ph name="PRINTERS_ALLOW_ALL" />，系统即会显示所有打印机。如果选择 <ph name="PRINTERS_BLOCKLIST" />，系统便会使用 <ph name="DEVICE_PRINTERS_BLOCKLIST" /> 来限制用户对指定打印机的访问权。如果选择 <ph name="PRINTERS_ALLOWLIST" />，<ph name="DEVICE_PRINTERS_ALLOWLIST" /> 则仅会指定可供用户选择的打印机。
-
-      如果您不设置此政策，系统将会默认使用 <ph name="PRINTERS_ALLOW_ALL" />。
-      </translation>
 <translation id="1553532014072799546">应用级使用时间限制白名单</translation>
 <translation id="1553956579506604198">禁止安装外部扩展程序</translation>
 <translation id="1555248923316727072">SAML 用户身份管理设置</translation>
@@ -367,6 +361,12 @@
 <translation id="1561967320164410511">用于个人认证的 U2F 和扩展程序</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">默认情况下使用“<ph name="PRODUCT_FRAME_NAME" />”</translation>
+<translation id="1587671452159346389">控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
+
+      通过设置此政策，您可以指定对批量打印机配置使用哪项访问政策。如果您选择 <ph name="PRINTERS_ALLOW_ALL" />，系统将会显示所有打印机。如果您选择 <ph name="PRINTERS_BLOCKLIST" />，系统便会使用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来限制用户对指定打印机的访问权。如果您选择 <ph name="PRINTERS_ALLOWLIST" />，<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 仅会指定可供用户选择的打印机。
+
+      如果此政策未设置，系统将会默认使用 <ph name="PRINTERS_ALLOW_ALL" />。
+      </translation>
 <translation id="1588240398285670601">浏览器设置</translation>
 <translation id="1588456836529393506">通过设置此政策，您可以创建一个网址格式列表，从而指定自动授权哪些网站访问具有给定供应商 ID 和产品 ID 的 USB 设备。每个列表项都必须包含设备和网址，此政策才会有效。设备部分中的每项都可包含供应商 ID 和产品 ID 字段。被省略的任何 ID 都会被视为通配符，但例外情况是：如果未指定供应商 ID，便无法指定产品 ID。否则，此政策将会无效。
 
@@ -466,12 +466,6 @@
 
       该政策的值应设置为供 <ph name="PRODUCT_OS_NAME" />下载服务条款的网址。该服务条款必须是纯文本，以 MIME 纯文本形式提供，不允许进行任何标记。</translation>
 <translation id="1750315445671978749">拦截所有下载内容</translation>
-<translation id="1752589537990399158">此政策旨在指定用户无法使用的打印机。
-
-      仅当为 <ph name="DEVICE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_BLOCKLIST" /> 时，才会用到此政策。
-
-      如果您设置了此政策，那么除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
-      </translation>
 <translation id="1760951637494635692">允许在这些网站上使用 Serial API</translation>
 <translation id="1767673020408652620">在处于零状态的搜索框内启用应用推荐</translation>
 <translation id="1780323582106687813">此政策已被弃用，请改用“<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />”政策。
@@ -1104,6 +1098,22 @@
       如果此政策已停用，当您使用可能不安全的命令行标记启动 Chrome 时，系统会禁止显示安全警告。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="2621383458880689826">为绑定到设备的企业打印机提供配置。
+
+      此政策让您能够为 <ph name="PRODUCT_OS_NAME" />设备提供打印机配置。格式与 NativePrinters 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入白名单/黑名单。
+
+      该文件不得超过 5MB，且必须用 JSON 编码。据估计，一个包含大约 21000 台打印机的文件在编码后的大小将会是 5MB。相应的加密哈希值用于验证下载内容是否完整。
+
+      系统会下载并缓存该文件。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
+
+      如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />将会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />、<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 和 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
+
+      此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。
+
+      此政策是 <ph name="BULK_PRINTERS_POLICY_NAME" /> 的附加内容。
+
+      如果您不设置此政策，便不存在任何设备打印机，同时其他 <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。
+      </translation>
 <translation id="2623014935069176671">等待首个用户活动</translation>
 <translation id="262740370354162807">允许将文档提交到 <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以请求用户授权其访问 USB 设备。
@@ -1270,6 +1280,12 @@
       如果您启用此设置，打印预览则会将操作系统默认打印机用作默认目标选项。</translation>
 <translation id="285627849510728211">设定日间高级电池充电模式配置</translation>
 <translation id="2856674246949497058">如果操作系统版本比目标版本新，则回滚到并持续使用目标版本。在此过程中，系统会执行 Powerwash 操作。</translation>
+<translation id="2869140260739354012">控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY" /> 中的哪些打印机。
+
+      通过设置此政策，您可以指定对批量打印机配置使用哪项访问政策。如果您选择 <ph name="PRINTERS_ALLOW_ALL" />，系统将会显示所有打印机。如果您选择 <ph name="PRINTERS_BLACKLIST" />，系统便会使用 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> 来限制用户对指定打印机的访问权。如果您选择 <ph name="PRINTERS_WHITELIST" />，<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> 仅会指定可供用户选择的打印机。
+
+      如果此政策未设置，系统将会默认使用 <ph name="PRINTERS_ALLOW_ALL" />。
+      </translation>
 <translation id="2869762730352628426">在登录屏幕上启用自动点击</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2874209944580848064">针对支持 Android 应用的 <ph name="PRODUCT_OS_NAME" />设备的注意事项：</translation>
@@ -1851,14 +1867,6 @@
       如果此设置处于停用状态，用户将不能使用 Smart Lock 登录功能。
 
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
-<translation id="380006997233063633">此政策旨在指定用户无法使用的打印机。
-
-      仅当为 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_BLACKLIST" /> 时，才会用到此政策。
-
-      如果您设置了此政策，那么除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
-
-      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_BLOCKLIST" />。
-      </translation>
 <translation id="3803171355925844705">不允许任何网站加载混合内容</translation>
 <translation id="3805659594028420438">启用TLS网域绑定证书扩展程序（已弃用）</translation>
 <translation id="3808945828600697669">指定已停用插件的列表</translation>
@@ -1902,6 +1910,12 @@
 <translation id="3838094946886335701">通过设置此政策（仅为建议性政策），您可以注册一个协议处理程序列表以与用户注册的协议处理程序列表合并，从而同时使用这两组协议处理程序。“protocol”属性应设为“mailto”之类的协议，“URL”属性应设为处理相应协议（“protocol”字段中指定的协议）的应用所采用的网址格式。该格式可以包含一个“%s”占位符（将会替换为被处理的网址）。
 
       用户无法卸载由政策注册的协议处理程序，但可通过安装新的默认处理程序来更改由政策安装的协议处理程序。</translation>
+<translation id="3848118497246496090">此政策旨在指定用户无法使用的打印机。
+
+      仅当为 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_BLACKLIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，那么除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
+      </translation>
 <translation id="3851039766298741586">报告有关当前自助服务终端会话的信息，例如应用 ID 和版本。
 
       如果此政策设为 false，则系统不会报告自助服务终端会话信息。如果此政策设为 true 或未设置，则系统会报告自助服务终端会话信息。</translation>
@@ -2038,6 +2052,12 @@
 <translation id="3965339130942650562">对待机用户执行退出操作前的超时时间</translation>
 <translation id="3973371701361892765">一律不自动隐藏任务栏</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
+<translation id="3980024487013511975">此政策旨在指定用户无法使用的打印机。
+
+      仅当为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，那么除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的“id”或“guid”字段相符。
+      </translation>
 <translation id="3984028218719007910">确定 <ph name="PRODUCT_OS_NAME" />是否要在退出后保留本地帐号数据。如果将此政策设置为 true，<ph name="PRODUCT_OS_NAME" />就不会持续保留帐号，且会在退出后舍弃用户会话中的所有数据。如果未配置此政策或将其设置为 false，设备就会保留（经过加密的）本地用户数据。</translation>
 <translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
 
@@ -2248,6 +2268,12 @@
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="4285674129118156176">允许独立用户使用 ARC</translation>
+<translation id="4309562700894844665">此政策旨在指定用户可以使用的打印机。
+
+      仅当为 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_WHITELIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
+      </translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">设备的指定基座 MAC 地址</translation>
 <translation id="4322842393287974810">允许自动启动零延迟的自助服务终端应用控制 <ph name="PRODUCT_OS_NAME" />版本</translation>
@@ -2378,14 +2404,6 @@
       如果此政策未设置，默认情况下，系统会对受企业管理的用户停用此政策，并对不受管理的用户启用此政策。</translation>
 <translation id="4555850956567117258">为该用户启用远程认证</translation>
 <translation id="4557134566541205630">默认搜索服务提供商新标签页网址</translation>
-<translation id="4558314937689062156">此政策旨在控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY" /> 中的哪些打印机。
-
-      通过设置此政策，您可以指定对批量打印机配置使用哪项访问政策。如果选择 <ph name="PRINTERS_ALLOW_ALL" />，系统即会显示所有打印机。如果选择 <ph name="PRINTERS_BLACKLIST" />，系统便会使用 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> 来限制用户对指定打印机的访问权。如果选择 <ph name="PRINTERS_WHITELIST" />，<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> 则仅会指定可供用户选择的打印机。
-
-      如果此政策未设置，系统将会默认使用 <ph name="PRINTERS_ALLOW_ALL" />。
-
-      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ACCESS_MODE" />。
-      </translation>
 <translation id="4562165737444703281">允许用户 [启用/配置] Crostini 端口转发</translation>
 <translation id="456686782928669977">此政策旨在控制是否从 <ph name="IE_PRODUCT_NAME" /> 的 SiteList 政策中加载规则。
 
@@ -2914,6 +2932,22 @@
       如果此政策设为“强制登录浏览器”，系统将向用户显示帐号选择对话框，并且用户必须选择并登录某个帐号才能使用浏览器。这样可确保针对受管理的帐号应用并强制执行与相应帐号关联的政策。默认情况下，此设置会为帐号开启 Chrome 同步功能，但同步功能已被网域管理员停用或已通过“SyncDisabled”政策停用的情况除外。BrowserGuestModeEnabled 的默认值将设为 false。请注意，启用此政策后，现有的未登录个人资料将处于锁定且不可访问的状态。有关详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/a/answer/7572556。此选项不支持 Linux 和 Android，如果您想在 Linux 和 Android 上使用此选项，系统将改用“允许登录浏览器”。
 
       如果此政策未设置，用户可以决定是否要启用浏览器登录选项并随意使用该选项。</translation>
+<translation id="5327325901414715560">为绑定到设备的企业打印机提供配置。
+
+      此政策让您能够为 <ph name="PRODUCT_OS_NAME" />设备提供打印机配置。格式与 NativePrinters 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入白名单/黑名单。
+
+      该文件不得超过 5MB，且必须用 JSON 编码。据估计，一个包含大约 21000 台打印机的文件在编码后的大小将会是 5MB。相应的加密哈希值用于验证下载内容是否完整。
+
+      系统会下载并缓存该文件。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
+
+      如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />将会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
+
+      此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。
+
+      此政策是 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 的附加内容。
+
+      如果您不设置此政策，便不存在任何设备打印机，同时其他 <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。
+      </translation>
 <translation id="532848608876725157">启用 DNS-over-HTTPS，且允许改用不安全的查询</translation>
 <translation id="5329007337159326804">警告：大概从 75 版（将于 2019 年 6 月左右推出）开始，<ph name="PRODUCT_NAME" /> 中将会彻底移除用于指定最高 TLS 版本的政策。
 
@@ -3140,11 +3174,6 @@
 
       如果未指定，则不会修改变体种子网址。</translation>
 <translation id="5561811616825571914">在登录屏幕上自动为这些网站选择客户端证书</translation>
-<translation id="5564345250641049313">以列表形式指定哪些用户能登录该设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录该设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
-
-      如果此政策未配置，任何用户都能登录该设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
-
-      此政策已被弃用，请改用 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="5564865786900450806">当 <ph name="PRODUCT_NAME" /> 在不再受支持的计算机或操作系统中运行时，禁止显示警告。
 
       如果此政策设为 False 或未设置，系统将会在此类不受支持的计算机或操作系统上显示警告。</translation>
@@ -3483,6 +3512,12 @@
 
       <ph name="PRODUCT_NAME" /> 会管理卷的根目录内容。因此，为避免丢失数据或发生其他错误，请勿将此政策设为根目录或任何有其他用途的目录。查看您可以使用的变量 (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables)。</translation>
 <translation id="6083631234867522991">Windows（Windows 客户端）：</translation>
+<translation id="6086225644749063677">此政策旨在指定用户可以使用的打印机。
+
+      仅当为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的“id”或“guid”字段相符。
+      </translation>
 <translation id="608788685013546076">设定用电高峰转移电量阈值（以百分比表示）</translation>
 <translation id="6089679180657323464">控制 Wilco 诊断和遥测控制器设置。</translation>
 <translation id="6091233616732024397">强制要求用户登录才能使用浏览器</translation>
@@ -3499,11 +3534,6 @@
           要在设备闲置时锁定屏幕，建议您采用以下方式：启用在系统处于暂停状态时锁定屏幕，并指示<ph name="PRODUCT_OS_NAME" />在闲置延迟时间过后进入暂停状态。只有在以下情况下才应使用此政策：系统进入暂停状态之前的很长一段时间内便应锁定屏幕，或者完全不需要启用在设备闲置时暂停系统。
 
           此政策的值应以毫秒为单位，且必须小于闲置延迟时间。</translation>
-<translation id="6096729330325888677">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
-
-      如果您不设置此政策，可分离式 USB 设备的列表便会是空的。
-
-      此政策已被弃用，请改用 <ph name="USB_DETACHABLE_ALLOWLIST" />。</translation>
 <translation id="6097601282776163274">启用以网址为键的匿名化数据收集功能</translation>
 <translation id="6099853574908182288">默认打印颜色模式</translation>
 <translation id="6102342563050263313">允许滚动至网址片段指定的文本所在的位置</translation>
@@ -3856,14 +3886,6 @@
       当设为 True 时，此政策允许设备触发 Powerwash。
       如果未设置，此政策会默认为 True，意即允许设备触发 Powerwash。
       </translation>
-<translation id="6613434166485278315">此政策旨在指定用户可以使用的打印机。
-
-      仅当为 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_WHITELIST" /> 时，才会用到此政策。
-
-      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
-
-      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ALLOWLIST" />。
-      </translation>
 <translation id="66265932317331474">报告 CPU 信息</translation>
 <translation id="6628043374475466084">不针对其检查上传内容是否违反敏感数据保护规则的网址格式</translation>
 <translation id="6628120204569232711">报告存储状态</translation>
@@ -4186,22 +4208,6 @@
 <translation id="7063895219334505671">在这些网站上允许弹出式窗口</translation>
 <translation id="706669471845501145">允许网站显示桌面通知</translation>
 <translation id="7068108874199666656">允许将要对所有用户应用的网络配置推送到 <ph name="PRODUCT_OS_NAME" />设备。网络配置是 JSON 格式的字符串，由开放网络配置格式定义。</translation>
-<translation id="7069358643254839205">为绑定到设备的企业打印机提供配置。
-
-      此政策让您能够为 <ph name="PRODUCT_OS_NAME" />设备提供打印机配置。格式与 NativePrinters 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入白名单/黑名单。
-
-      该文件不得超过 5MB，且必须用 JSON 编码。据估计，一个包含大约 21000 台打印机的文件在编码后的大小将会是 5MB。相应的加密哈希值用于验证下载内容是否完整。
-
-      系统会下载并缓存该文件。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
-
-      如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />将会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_PRINTERS_ACCESS_MODE" />、<ph name="DEVICE_PRINTERS_ALLOWLIST" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST" /> 向用户提供可用的打印机。
-
-      此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。
-
-      此政策是 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 的附加内容。
-
-      如果您不设置此政策，便不存在任何设备打印机，同时其他 <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。
-      </translation>
 <translation id="7070525176564511548">每周（168 小时）必须输入一次密码</translation>
 <translation id="7072208053150563108">设备密码更改率</translation>
 <translation id="7079519252486108041">在这些网站上阻止弹出式窗口</translation>
@@ -4605,12 +4611,6 @@
       如果用户的设备为受管理设备，则此功能的可用性还取决于相应的设备政策。
 
       如果用户的设备不是受管理设备，则此功能的可用性还取决于用户是不是设备所有者。</translation>
-<translation id="7567748950909116096">此政策旨在指定用户可以使用的打印机。
-
-      仅当为 <ph name="DEVICE_PRINTERS_ACCESS_MODE" /> 选择了 <ph name="PRINTERS_ALLOWLIST" /> 时，才会用到此政策
-
-      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY" /> 所指定文件内的“id”或“guid”字段相符。
-      </translation>
 <translation id="7570291542739287032">仅限云端</translation>
 <translation id="757395965347379751">启用此设置后，只要 SHA-1 签名证书成功验证并关联到本地安装的 CA 证书，<ph name="PRODUCT_NAME" /> 就会允许使用这些证书。
 
@@ -4679,24 +4679,6 @@
       如果您设置了此政策，用户便无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您不设置此政策，系统将启用默认的搜索服务提供商，而且用户可以设置搜索服务提供商列表。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
-<translation id="7673108452297907398">为绑定到设备的企业打印机提供配置。
-
-      此政策让您能够为 <ph name="PRODUCT_OS_NAME" />设备提供打印机配置。格式与 NativePrinters 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入白名单/黑名单。
-
-      该文件不得超过 5MB，且必须用 JSON 编码。据估计，一个包含大约 21000 台打印机的文件在编码后的大小将会是 5MB。相应的加密哈希值用于验证下载内容是否完整。
-
-      系统会下载并缓存该文件。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
-
-      如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />将会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />、<ph name="DEVICE_PRINTERS_ALLOWLIST" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST" /> 向用户提供可用的打印机。
-
-      此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。
-
-      此政策是 <ph name="BULK_PRINTERS_POLICY_NAME" /> 的附加内容。
-
-      如果您不设置此政策，便不存在任何设备打印机，同时其他 <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。
-
-      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS" />。
-      </translation>
 <translation id="7673194325208122247">时间段（毫秒）</translation>
 <translation id="7677220829878081413">
       如果此政策设为 ArcSession，且 Android 已启动，那么每当用户退出后，系统都会强制相应设备重新启动。
@@ -4883,6 +4865,9 @@
 <translation id="7953256619080733119">托管用户手动管理的例外主机</translation>
 <translation id="7956210013490975468">为 <ph name="PRODUCT_OS_NAME" />配置系统代理服务。</translation>
 <translation id="7958537754689366707">必须每 12 小时输入一次密码</translation>
+<translation id="7960293328203000385">此政策旨在以列表形式指定哪些用户能登录该设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录该设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
+
+      如果此政策未配置，任何用户都能登录该设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。</translation>
 <translation id="7961779417826583251">对于指定的一系列旧版证书授权机构，不强制执行证书透明化要求</translation>
 <translation id="7973609468423251675">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 

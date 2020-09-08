@@ -363,12 +363,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       * Không có hạn chế đặc biệt, thì các hạn chế bảo mật thông thường sẽ được áp dụng cho các tệp đã tải xuống dựa trên kết quả phân tích của dịch vụ Duyệt web an toàn.
 
       Lưu ý: Những hạn chế này áp dụng cho các tệp đã tải xuống được kích hoạt từ nội dung trang web, cũng như tùy chọn trình đơn "Đường liên kết tải xuống...". Những hạn chế này không áp dụng cho việc tải trang đang hiển thị xuống hay việc lưu ở dạng tệp PDF từ các tùy chọn in. Bạn có thể đọc thêm về dịch vụ Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
-<translation id="1550222358325456797">Kiểm soát những máy in trong <ph name="DEVICE_PRINTERS_POLICY" /> mà người dùng được phép sử dụng.
-
-      Chỉ định chính sách truy cập dùng cho cấu hình máy in số lượng lớn. Nếu bạn chọn <ph name="PRINTERS_ALLOW_ALL" />, thì tất cả máy in sẽ hiển thị. Nếu bạn chọn <ph name="PRINTERS_BLOCKLIST" />, thì <ph name="DEVICE_PRINTERS_BLOCKLIST" /> sẽ được dùng để hạn chế truy cập vào những máy in đã chỉ định. Nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" />, thì <ph name="DEVICE_PRINTERS_ALLOWLIST" /> sẽ chỉ chỉ định những máy in có thể chọn được.
-
-      Nếu bạn không đặt chính sách này, thì <ph name="PRINTERS_ALLOW_ALL" /> sẽ là tùy chọn mặc định.
-      </translation>
 <translation id="1553532014072799546">Danh sách cho phép về giới hạn thời gian cho mỗi ứng dụng</translation>
 <translation id="1553956579506604198">Chặn không cho cài đặt các tiện ích bên ngoài</translation>
 <translation id="1555248923316727072">Các tùy chọn cài đặt quản lý danh tính người dùng Saml</translation>
@@ -381,6 +375,12 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1561967320164410511">Tiện ích U2F+ để chứng thực cá nhân</translation>
 <translation id="1575015449587326319">Chính sách cấu hình dành cho Trình kết nối OnFileDownloaded của Chrome Enterprise</translation>
 <translation id="1583248206450240930">Sử dụng <ph name="PRODUCT_FRAME_NAME" /> theo mặc định</translation>
+<translation id="1587671452159346389">Kiểm soát những máy in trong <ph name="DEVICE_PRINTERS_POLICY_NAME" /> mà người dùng có thể sử dụng.
+
+      Chỉ định chính sách truy cập dùng cho cấu hình máy in số lượng lớn. Nếu bạn chọn <ph name="PRINTERS_ALLOW_ALL" />, tất cả máy in sẽ hiển thị. Nếu bạn chọn <ph name="PRINTERS_BLOCKLIST" />, <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> sẽ được dùng để hạn chế việc truy cập vào những máy in đã chỉ định. Nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> sẽ chỉ chỉ định những máy in có thể chọn được.
+
+      Nếu bạn không đặt chính sách này, <ph name="PRINTERS_ALLOW_ALL" /> sẽ là tùy chọn mặc định.
+      </translation>
 <translation id="1588240398285670601">Cài đặt của trình duyệt</translation>
 <translation id="1588456836529393506">Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web được hệ thống tự động cấp quyền truy cập vào thiết bị USB bằng mã sản phẩm và mã nhà cung cấp đã cho. Từng mục trong danh sách phải chứa các thiết bị và URL thì chính sách này mới hợp lệ. Mỗi mục trong các thiết bị có thể chứa trường mã sản phẩm và mã nhà cung cấp. Mọi mã bạn bỏ qua đều được coi là ký tự đại diện trừ trường hợp: Bạn không thể chỉ định mã sản phẩm nếu không chỉ định cả mã nhà cung cấp. Trong trường hợp khác, chính sách này sẽ không hợp lệ.
 
@@ -484,12 +484,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 
       Phải đặt chính sách thành một URL nơi <ph name="PRODUCT_OS_NAME" /> có thể tải xuống Điều khoản dịch vụ. Điều khoản dịch vụ phải là văn bản thuần túy, được phân phối dưới dạng văn bản/thuần túy loại MIME. Không cho phép đánh dấu.</translation>
 <translation id="1750315445671978749">Chặn tất cả các mục tải xuống</translation>
-<translation id="1752589537990399158">Chỉ định những máy in mà người dùng không thể sử dụng.
-
-      Chỉ sử dụng chính sách này nếu bạn đã chọn <ph name="PRINTERS_BLOCKLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE" />.
-
-      Nếu bạn sử dụng chính sách này, thì tất cả máy in sẽ được cung cấp cho người dùng ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với các trường "id" hoặc "guid" trong tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="1760951637494635692">Cho phép API nối tiếp trên các trang web này</translation>
 <translation id="1767673020408652620">Bật Ứng dụng đề xuất khi hộp tìm kiếm ở trạng thái 0</translation>
 <translation id="1780323582106687813">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />".
@@ -1135,6 +1129,22 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Khi bạn đặt chính sách này thành Tắt, cảnh báo bảo mật sẽ không hiện ra khi Chrome được chạy bằng cờ hiệu dòng lệnh có thể nguy hiểm.
 
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tùy chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
+<translation id="2621383458880689826">Cung cấp cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị.
+
+      Chính sách này cho phép bạn cung cấp cấu hình máy in cho các thiết bị <ph name="PRODUCT_OS_NAME" />.  Định dạng này giống với định dạng của từ điển NativePrinters có thêm trường "id" hoặc "guid" bắt buộc trên mỗi máy in để đưa vào danh sách cho phép hoặc danh sách cấm.
+
+      Kích thước tệp không được vượt quá 5 MB và phải được mã hóa ở định dạng JSON.  Theo ước tính, tệp có chứa khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB.  Hàm băm mật mã dùng để xác minh tính toàn vẹn của tệp tải xuống.
+
+      Tệp sẽ được tải xuống và lưu vào bộ nhớ đệm. Tệp này sẽ được tải lại xuống mỗi khi URL hoặc hàm băm thay đổi.
+
+      Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tải tệp cấu hình máy in xuống và cung cấp các máy in theo đúng <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> và <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
+
+      Chính sách này không ảnh hưởng đến việc người dùng có thể định cấu hình máy in trên từng thiết bị hay không.  Chính sách này nhằm bổ sung cho quá trình định cấu hình máy in theo từng người dùng.
+
+      Chính sách này bổ sung cho <ph name="BULK_PRINTERS_POLICY_NAME" />.
+
+      Nếu bạn không đặt chính sách này, hệ thống sẽ không bỏ qua máy in được kết nối với thiết bị cũng như các chính sách <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> khác.
+      </translation>
 <translation id="2623014935069176671">Đợi hoạt động người dùng đầu tiên</translation>
 <translation id="262740370354162807">Cho phép gửi tài liệu tới <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Nếu đặt chính sách này, bạn có thể liệt kê các mẫu URL chỉ định những trang web có thể yêu cầu người dùng cấp quyền truy cập vào thiết bị USB.
@@ -1301,6 +1311,12 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Nếu bạn bật cài đặt này, tính năng Xem trước bản in sẽ chọn máy in có sẵn trong hệ điều hành làm máy in mặc định.</translation>
 <translation id="285627849510728211">Đặt cấu hình ngày cho chế độ sạc pin nâng cao</translation>
 <translation id="2856674246949497058">Hạ cấp và tiếp tục sử dụng phiên bản đích nếu phiên bản hệ điều hành mới hơn phiên bản đích. Thực hiện powerwash trong quá trình này.</translation>
+<translation id="2869140260739354012">Kiểm soát những máy in trong <ph name="DEVICE_PRINTERS_POLICY" /> mà người dùng có thể sử dụng.
+
+      Chỉ định chính sách truy cập dùng cho cấu hình máy in số lượng lớn. Nếu bạn chọn <ph name="PRINTERS_ALLOW_ALL" />, tất cả máy in sẽ hiển thị. Nếu bạn chọn <ph name="PRINTERS_BLACKLIST" />, <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> sẽ được dùng để hạn chế việc truy cập vào những máy in đã chỉ định. Nếu bạn chọn <ph name="PRINTERS_WHITELIST" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> sẽ chỉ chỉ định những máy in có thể chọn được.
+
+      Nếu bạn không đặt chính sách này, <ph name="PRINTERS_ALLOW_ALL" /> sẽ là tùy chọn mặc định.
+      </translation>
 <translation id="2869762730352628426">Bật chế độ tự động nhấp trên màn hình đăng nhập</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2874209944580848064">Lưu ý dành cho thiết bị <ph name="PRODUCT_OS_NAME" /> hỗ trợ ứng dụng Android:</translation>
@@ -1889,14 +1905,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn tắt tùy chọn cài đặt này, thì người dùng sẽ không được phép sử dụng tính năng Đăng nhập bằng Smart Lock.
 
       Nếu bạn không đặt chính sách này, thì tùy chọn cài đặt mặc định sẽ không được cho phép cho người dùng do doanh nghiệp quan lý và được cho phép cho người dùng không được quản lý.</translation>
-<translation id="380006997233063633">Chỉ định những máy in mà người dùng không thể sử dụng.
-
-      Chỉ sử dụng chính sách này nếu bạn đã chọn <ph name="PRINTERS_BLACKLIST" /> cho <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
-
-      Nếu bạn sử dụng chính sách này, thì tất cả máy in sẽ được cung cấp cho người dùng ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với các trường "id" hoặc "guid" trong tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
-
-      Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="DEVICE_PRINTERS_BLOCKLIST" />.
-      </translation>
 <translation id="3803171355925844705">Không cho phép bất kỳ trang web nào tải nội dung hỗn hợp</translation>
 <translation id="3805659594028420438">Bật tiện ích chứng chỉ giới hạn miền TLS (không được chấp thuận)</translation>
 <translation id="3808945828600697669">Chỉ định danh sách các plugin bị vô hiệu hóa</translation>
@@ -1939,6 +1947,12 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3838094946886335701">Nếu đặt chính sách này (chỉ khi khuyên dùng), thì bạn có thể đăng ký danh sách các trình xử lý giao thức (sẽ hợp nhất với các trình xử lý giao thức mà người dùng đăng ký) để đưa vào sử dụng. Hãy đặt thuộc tính "giao thức" thành lược đồ, chẳng hạn như "mailto", và đặt thuộc tính "URL" thành mẫu URL của ứng dụng xử lý lược đồ được chỉ định trong trường "giao thức". Mẫu này có thể bao gồm trình giữ chỗ "%s" (thay bằng URL đã xử lý).
 
       Người dùng không thể xóa trình xử lý giao thức do chính sách đăng ký. Tuy nhiên, họ có thể thay đổi các trình xử lý giao thức do chính sách cài đặt bằng cách cài đặt một trình xử lý mặc định mới.</translation>
+<translation id="3848118497246496090">Chỉ định những máy in mà người dùng không thể sử dụng.
+
+      Chính sách này chỉ được dùng nếu bạn chọn <ph name="PRINTERS_BLACKLIST" /> cho <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
+
+      Nếu bạn sử dụng chính sách này, tất cả máy in sẽ được cung cấp cho người dùng ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với các trường "id" hoặc "guid" ở tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
+      </translation>
 <translation id="3851039766298741586">Báo cáo thông tin về phiên kiosk hiện hoạt, chẳng hạn như
       ID và phiên bản ứng dụng.
 
@@ -2079,6 +2093,12 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="3965339130942650562">Thời gian chờ cho tới khi đăng xuất của người dùng không hoạt động được thực thi</translation>
 <translation id="3973371701361892765">Không bao giờ tự động ẩn giá</translation>
 <translation id="3979738908158213640">Các URL sẽ được cấp quyền truy cập để chứng thực thiết bị trong khi xác thực SAML</translation>
+<translation id="3980024487013511975">Chỉ định những máy in mà người dùng không thể sử dụng.
+
+      Chính sách này chỉ được dùng nếu bạn chọn <ph name="PRINTERS_BLOCKLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+
+      Nếu bạn sử dụng chính sách này, tất cả máy in sẽ được cung cấp cho người dùng ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với các trường "id" hoặc "guid" ở tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      </translation>
 <translation id="3984028218719007910">Xác định liệu <ph name="PRODUCT_OS_NAME" /> có lưu dữ liệu tài khoản trên máy sau khi đăng xuất hay không. Nếu được đặt thành đúng, không có tài khoản lâu dài nào được <ph name="PRODUCT_OS_NAME" /> lưu và tất cả các dữ liệu từ phiên của người dùng sẽ bị hủy bỏ sau khi đăng xuất. Nếu chính sách này được đặt thành sai hoặc không được định cấu hình, thiết bị có thể lưu lại dữ liệu người dùng trên máy (được mã hóa).</translation>
 <translation id="398884292557092447">Nếu bạn đặt chính sách này thành True hoặc không đặt, thì người dùng có thể kiểm soát các nội dung đề xuất tự động điền cho thẻ tín dụng trong giao diện người dùng.
 
@@ -2288,6 +2308,12 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Khi bạn không đặt chính sách này, các trang web có thể yêu cầu quyền truy cập, nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="4285674129118156176">Cho phép người dùng không được liên kết sử dụng ARC</translation>
+<translation id="4309562700894844665">Chỉ định những máy in mà người dùng có thể sử dụng.
+
+      Chính sách này chỉ được dùng nếu bạn chọn <ph name="PRINTERS_WHITELIST" /> cho <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />
+
+      Nếu bạn sử dụng chính sách này, chỉ những máy in có mã nhận dạng khớp với các giá trị trong chính sách này mới được cung cấp cho người dùng. Các mã nhận dạng này phải tương ứng với trường "id" hoặc "guid" ở tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
+      </translation>
 <translation id="4311195029067684288">Đầy</translation>
 <translation id="4313767483634435271">Địa chỉ MAC chỉ định cho đế sạc của thiết bị</translation>
 <translation id="4322842393287974810">Cho phép ứng dụng kiosk tự động khởi chạy với độ trễ bằng không kiểm soát phiên bản <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2426,14 +2452,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu không đặt chính sách này, chế độ mặc định sẽ là tắt đối với người dùng do doanh nghiệp quản lý và bật đối với người dùng không được quản lý.</translation>
 <translation id="4555850956567117258">Cho phép chứng thực từ xa cho người dùng</translation>
 <translation id="4557134566541205630">URL trang thẻ mới của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
-<translation id="4558314937689062156">Kiểm soát những máy in trong <ph name="DEVICE_PRINTERS_POLICY" /> mà người dùng được phép sử dụng.
-
-      Chỉ định chính sách truy cập dùng cho cấu hình máy in số lượng lớn. Nếu bạn chọn <ph name="PRINTERS_ALLOW_ALL" />, thì tất cả máy in sẽ hiển thị. Nếu bạn chọn <ph name="PRINTERS_BLACKLIST" />, thì <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> sẽ được dùng để hạn chế truy cập vào những máy in đã chỉ định. Nếu bạn chọn <ph name="PRINTERS_WHITELIST" />, thì <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> sẽ chỉ chỉ định những máy in có thể chọn được.
-
-      Nếu bạn không đặt chính sách này, thì <ph name="PRINTERS_ALLOW_ALL" /> sẽ là tùy chọn mặc định.
-
-      Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="DEVICE_PRINTERS_ACCESS_MODE" />.
-      </translation>
 <translation id="4562165737444703281">Cho phép người dùng [bật/định cấu hình] dịch vụ chuyển tiếp cổng vào Crostini</translation>
 <translation id="456686782928669977">Chính sách này kiểm soát việc có tải các quy tắc từ chính sách SiteList của <ph name="IE_PRODUCT_NAME" /> hay không.
 
@@ -2978,6 +2996,22 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành "Buộc đăng nhập vào trình duyệt", thì người dùng sẽ thấy hộp thoại lựa chọn tài khoản và phải chọn rồi đăng nhập vào một tài khoản để sử dụng trình duyệt. Điều này đảm bảo rằng đối với tài khoản được quản lý, các chính sách liên kết với tài khoản sẽ được áp dụng và thực thi. Theo mặc định, việc này sẽ bật tính năng đồng bộ hóa trên Chrome cho tài khoản, trừ khi quản trị viên miền hoặc chính sách "SyncDisabled" đã tắt tính năng đó. Giá trị mặc định của BrowserGuestModeEnabled sẽ được đặt thành false. Lưu ý rằng sau khi bạn bật chính sách này, các hồ sơ chưa ký hiện tại sẽ bị khóa và không truy cập được. Để biết thêm thông tin, hãy xem bài viết này trong trung tâm trợ giúp: https://support.google.com/chrome/a/answer/7572556. Tùy chọn này không hỗ trợ Linux và Android, đồng thời sẽ là phương án dự phòng cho tùy chọn "Cho phép đăng nhập vào trình duyệt" nếu được dùng.
 
       Nếu bạn không đặt chính sách này, thì người dùng có thể chọn bật tùy chọn đăng nhập vào trình duyệt và sử dụng khi thấy phù hợp.</translation>
+<translation id="5327325901414715560">Cung cấp cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị.
+
+      Chính sách này cho phép bạn cung cấp cấu hình máy in cho các thiết bị <ph name="PRODUCT_OS_NAME" />.  Định dạng này giống với định dạng của từ điển NativePrinters có thêm trường "id" hoặc "guid" bắt buộc trên mỗi máy in để đưa vào danh sách cho phép hoặc danh sách cấm.
+
+      Kích thước tệp không được vượt quá 5 MB và phải được mã hóa ở định dạng JSON.  Theo ước tính, tệp có chứa khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB.  Hàm băm mật mã dùng để xác minh tính toàn vẹn của tệp tải xuống.
+
+      Tệp sẽ được tải xuống và lưu vào bộ nhớ đệm. Tệp này sẽ được tải lại xuống mỗi khi URL hoặc hàm băm thay đổi.
+
+      Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tải tệp cấu hình máy in xuống và cung cấp các máy in theo đúng <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> và <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+
+      Chính sách này không ảnh hưởng đến việc người dùng có thể định cấu hình máy in trên từng thiết bị hay không.  Chính sách này nhằm bổ sung cho quá trình định cấu hình máy in theo từng người dùng.
+
+      Chính sách này bổ sung cho <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
+
+      Nếu bạn không đặt chính sách này, hệ thống sẽ không bỏ qua máy in được kết nối với thiết bị cũng như các chính sách <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> khác.
+      </translation>
 <translation id="532848608876725157">Bật chế độ DNS qua HTTPS có phương án dự phòng cho truy vấn không an toàn</translation>
 <translation id="5329007337159326804">Cảnh báo: Chúng tôi sẽ xóa hoàn toàn chính sách phiên bản TLS tối đa khỏi <ph name="PRODUCT_NAME" /> từ khoảng phiên bản 75 (vào khoảng tháng 6 năm 2019).
 
@@ -3207,11 +3241,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu không được chỉ định, sẽ không sửa đổi URL khởi đầu Biến thể.</translation>
 <translation id="5561811616825571914">Tự động chọn chứng chỉ ứng dụng cho những trang web này trên màn hình đăng nhập</translation>
-<translation id="5564345250641049313">Xác định danh sách những người dùng được phép đăng nhập vào thiết bị. Các mục sẽ có dạng <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, chẳng hạn như <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Để cho phép người dùng bất kỳ trên một miền, hãy sử dụng các mục có dạng <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Nếu bạn không định cấu hình chính sách này, tất cả người dùng đều được phép đăng nhập. Lưu ý rằng việc tạo người dùng mới sẽ vẫn yêu cầu phải định cấu hình chính sách <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> một cách phù hợp.
-
-      Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5564865786900450806">Ẩn cảnh báo xuất hiện khi <ph name="PRODUCT_NAME" /> đang chạy trên máy tính hoặc hệ điều hành không còn được hỗ trợ.
 
       Nếu bạn không đặt hoặc đặt chính sách này thành false, thì cảnh báo sẽ xuất hiện trên các máy tính hoặc hệ điều hành không được hỗ trợ nêu trên.</translation>
@@ -3553,6 +3582,12 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       <ph name="PRODUCT_NAME" /> sẽ quản lý nội dung của thư mục gốc trên ổ đĩa. Vì vậy, để tránh mất dữ liệu hoặc các lỗi khác, không đặt chính sách này thành thư mục gốc hoặc bất kỳ thư mục nào được dùng cho các mục đích khác. Hãy xem các biến bạn có thể sử dụng (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="6083631234867522991">Windows (ứng dụng Windows):</translation>
+<translation id="6086225644749063677">Chỉ định những máy in mà người dùng có thể sử dụng.
+
+      Chính sách này chỉ được dùng nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />
+
+      Nếu bạn sử dụng chính sách này, chỉ những máy in có mã nhận dạng khớp với các giá trị trong chính sách này mới được cung cấp cho người dùng. Các mã nhận dạng này phải tương ứng với trường "id" hoặc "guid" ở tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      </translation>
 <translation id="608788685013546076">Đặt ngưỡng pin cho chế độ chuyển đổi điện năng cao điểm theo phần trăm</translation>
 <translation id="6089679180657323464">Kiểm soát các tùy chọn cài đặt của bộ điều khiển đo từ xa và chẩn đoán wilco.</translation>
 <translation id="6091233616732024397">Buộc người dùng đăng nhập để sử dụng trình duyệt</translation>
@@ -3569,11 +3604,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Cách khóa màn hình khi không sử dụng được khuyến nghị là bật khóa màn hình khi tạm ngừng và đặt <ph name="PRODUCT_OS_NAME" /> tạm ngừng sau độ trễ khi không sử dụng. Bạn chỉ nên sử dụng chính sách này khi khóa màn hình xảy ra sớm hơn thời gian tạm ngừng đáng kể hoặc khi tạm ngừng khi không sử dụng hoàn toàn không được mong muốn.
 
           Bạn phải chỉ định giá trị chính sách bằng mili giây. Các giá trị được giới hạn ở mức nhỏ hơn khoảng thời gian trễ khi không sử dụng.</translation>
-<translation id="6096729330325888677">Nếu đặt chính sách này, bạn có thể xác định danh sách các thiết bị USB mà người dùng có thể tháo khỏi trình điều khiển nhân hệ điều hành để sử dụng thông qua API chrome.usb ngay trong ứng dụng web. Các mục trong danh sách là những cặp Mã nhận dạng nhà cung cấp và Mã nhận dạng sản phẩm USB để xác định một phần cứng cụ thể.
-
-      Nếu bạn không đặt chính sách này, danh sách các thiết bị USB có thể tháo sẽ là danh sách trống.
-
-      Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="USB_DETACHABLE_ALLOWLIST" />.</translation>
 <translation id="6097601282776163274">Bật tính năng thu thập dữ liệu ẩn danh có khóa URL</translation>
 <translation id="6099853574908182288">Chế độ in màu mặc định</translation>
 <translation id="6102342563050263313">Bật tùy chọn cuộn đến những phần văn bản cụ thể trong URL</translation>
@@ -3930,14 +3960,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Khi bạn đặt chính sách này thành True, thì chính sách này sẽ cho phép thiết bị kích hoạt chức năng Powerwash.
       Nếu bạn không đặt chính sách này, thì chính sách này sẽ mặc định được đặt thành True, nghĩa là cho phép thiết bị kích hoạt chức năng Powerwash.
       </translation>
-<translation id="6613434166485278315">Chỉ định những máy in mà người dùng có thể sử dụng.
-
-      Chính sách này chỉ được dùng nếu bạn chọn <ph name="PRINTERS_WHITELIST" /> cho <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />
-
-      Nếu bạn sử dụng chính sách này, thì chỉ những máy in có mã nhận dạng khớp với các giá trị trong chính sách này mới được cung cấp cho người dùng. Các mã nhận dạng này phải tương ứng với trường "id" hoặc "guid" ở tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
-
-      Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="DEVICE_PRINTERS_ALLOWLIST" />.
-      </translation>
 <translation id="66265932317331474">Báo cáo thông tin CPU</translation>
 <translation id="6628043374475466084">Các mẫu URL không cần phải kiểm tra nội dung đã tải lên để xem có vi phạm quy tắc bảo vệ dữ liệu nhạy cảm hay không</translation>
 <translation id="6628120204569232711">Báo cáo trạng thái bộ nhớ</translation>
@@ -4263,22 +4285,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="7063895219334505671">Cho phép cửa sổ bật lên trên các trang web này</translation>
 <translation id="706669471845501145">Cho phép các trang web hiển thị thông báo trên màn hình</translation>
 <translation id="7068108874199666656">Cho phép áp dụng tùy chọn đẩy cấu hình mạng cho tất cả những người dùng thiết bị <ph name="PRODUCT_OS_NAME" />. Cấu hình mạng là một chuỗi có định dạng JSON như được xác định trong định dạng Cấu hình mạng mở.</translation>
-<translation id="7069358643254839205">Cung cấp cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị.
-
-      Chính sách này cho phép bạn cung cấp cấu hình máy in cho các thiết bị <ph name="PRODUCT_OS_NAME" />.  Định dạng này giống với định dạng của từ điển NativePrinters có thêm trường "id" hoặc "guid" bắt buộc trên mỗi máy in để đưa vào danh sách cho phép hoặc danh sách cấm.
-
-      Kích thước tệp không được vượt quá 5 MB và phải được mã hóa ở định dạng JSON.  Theo ước tính, tệp có chứa khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB.  Hàm băm mật mã dùng để xác minh tính toàn vẹn của tệp tải xuống.
-
-      Tệp sẽ được tải xuống và lưu vào bộ nhớ đệm. Tệp này sẽ được tải lại xuống mỗi khi URL hoặc hàm băm thay đổi.
-
-      Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tải tệp cấu hình máy in xuống và cung cấp các máy in theo đúng <ph name="DEVICE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_PRINTERS_ALLOWLIST" /> và <ph name="DEVICE_PRINTERS_BLOCKLIST" />.
-
-      Chính sách này không ảnh hưởng đến việc người dùng có thể định cấu hình máy in trên từng thiết bị hay không.  Chính sách này nhằm bổ sung cho quá trình định cấu hình máy in theo từng người dùng.
-
-      Chính sách này bổ sung cho <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
-
-      Nếu bạn không đặt chính sách này, hệ thống sẽ không bỏ qua máy in được kết nối với thiết bị cũng như các chính sách <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> khác.
-      </translation>
 <translation id="7070525176564511548">Yêu cầu nhập mật khẩu hàng tuần (168 giờ).</translation>
 <translation id="7072208053150563108">Tần suất thay đổi mật khẩu máy</translation>
 <translation id="7079519252486108041">Chặn cửa sổ bật lên trên các trang web này</translation>
@@ -4685,12 +4691,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu người dùng sử dụng thiết bị được quản lý, thì khả năng đặt chính sách này sẽ còn phụ thuộc vào chính sách tương ứng của thiết bị.
 
       Nếu người dùng sử dụng thiết bị không được quản lý, thì khả năng đặt chính sách này sẽ còn phụ thuộc vào việc người dùng có phải là chủ sở hữu thiết bị hay không.</translation>
-<translation id="7567748950909116096">Chỉ định những máy in mà người dùng có thể sử dụng.
-
-      Chỉ dùng chính sách này nếu bạn đã chọn <ph name="PRINTERS_ALLOWLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE" />
-
-      Nếu bạn sử dụng chính sách này, thì chỉ những máy in có mã nhận dạng khớp với các giá trị trong chính sách này mới được cung cấp cho người dùng. Các mã nhận dạng này phải tương ứng với các trường "id" hoặc "guid" trong tệp đã chỉ định trong <ph name="DEVICE_PRINTERS_POLICY" />.
-      </translation>
 <translation id="7570291542739287032">Chỉ trên đám mây</translation>
 <translation id="757395965347379751">Khi bạn bật cài đặt này, <ph name="PRODUCT_NAME" /> sẽ cho phép các chứng chỉ có chữ ký SHA-1 miễn là các chứng chỉ xác thực thành công và cung cấp đến chứng chỉ CA được cài đặt cục bộ.
 
@@ -4760,24 +4760,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thì người dùng sẽ không thay đổi được trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, nhà cung cấp dịch vụ tìm kiếm mặc định sẽ được bật và người dùng có thể đặt danh sách nhà cung cấp dịch vụ tìm kiếm.
 
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tùy chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
-<translation id="7673108452297907398">Cung cấp cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị.
-
-      Chính sách này cho phép bạn cung cấp cấu hình máy in cho các thiết bị <ph name="PRODUCT_OS_NAME" />.  Định dạng này giống với định dạng của từ điển NativePrinters có thêm trường "id" hoặc "guid" bắt buộc trên mỗi máy in để đưa vào danh sách cho phép hoặc danh sách cấm.
-
-      Kích thước tệp không được vượt quá 5 MB và phải được mã hóa ở định dạng JSON.  Theo ước tính, tệp có chứa khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB.  Hàm băm mật mã dùng để xác minh tính toàn vẹn của tệp tải xuống.
-
-      Tệp sẽ được tải xuống và lưu vào bộ nhớ đệm. Tệp này sẽ được tải lại xuống mỗi khi URL hoặc hàm băm thay đổi.
-
-      Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tải tệp cấu hình máy in xuống và cung cấp các máy in theo đúng <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_PRINTERS_ALLOWLIST" /> và <ph name="DEVICE_PRINTERS_BLOCKLIST" />.
-
-      Chính sách này không ảnh hưởng đến việc người dùng có thể định cấu hình máy in trên từng thiết bị hay không.  Chính sách này nhằm bổ sung cho quá trình định cấu hình máy in theo từng người dùng.
-
-      Chính sách này bổ sung cho <ph name="BULK_PRINTERS_POLICY_NAME" />.
-
-      Nếu bạn không đặt chính sách này, hệ thống sẽ không bỏ qua máy in được kết nối với thiết bị cũng như các chính sách <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> khác.
-
-      Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="DEVICE_PRINTERS" />.
-      </translation>
 <translation id="7673194325208122247">Khoảng thời gian (mili giây)</translation>
 <translation id="7677220829878081413">
       Khi bạn đặt chính sách này thành ArcSession, nếu Android đã khởi động, thì chính sách này sẽ buộc thiết bị khởi động lại khi người dùng đăng xuất.
@@ -4961,6 +4943,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="7953256619080733119">Lưu trữ ngoại lệ hướng dẫn người dùng được quản lý</translation>
 <translation id="7956210013490975468">Định cấu hình dịch vụ Proxy hệ thống cho <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Yêu cầu cứ 12 giờ nhập mật khẩu một lần</translation>
+<translation id="7960293328203000385">Xác định danh sách những người dùng được phép đăng nhập vào thiết bị. Các mục sẽ có dạng <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, chẳng hạn như <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Để cho phép người dùng bất kỳ trên một miền, hãy sử dụng các mục có dạng <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+      Nếu bạn không định cấu hình chính sách này, tất cả người dùng đều được phép đăng nhập. Lưu ý rằng việc tạo người dùng mới sẽ vẫn yêu cầu phải định cấu hình chính sách <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> một cách phù hợp.</translation>
 <translation id="7961779417826583251">Tắt mục cài đặt buộc thực thi Tính minh bạch của chứng chỉ cho một danh sách Tổ chức phát hành chứng chỉ kế thừa</translation>
 <translation id="7973609468423251675">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
