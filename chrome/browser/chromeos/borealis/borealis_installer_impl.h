@@ -29,6 +29,9 @@ class BorealisInstallerImpl : public BorealisInstaller {
   // Cancels the installation process.
   void Cancel() override;
 
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+
  private:
   enum class State {
     kIdle,

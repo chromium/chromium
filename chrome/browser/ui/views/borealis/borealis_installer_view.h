@@ -24,6 +24,8 @@ class Profile;
 class BorealisInstallerView : public views::DialogDelegateView,
                               public borealis::BorealisInstaller::Observer {
  public:
+  using InstallingState = borealis::BorealisInstaller::InstallingState;
+
   explicit BorealisInstallerView(Profile* profile);
 
   // Disallow copy and assign.
@@ -51,6 +53,8 @@ class BorealisInstallerView : public views::DialogDelegateView,
   base::string16 GetPrimaryMessage() const;
   base::string16 GetSecondaryMessage() const;
 
+  void SetInstallingStateForTesting(InstallingState new_state);
+
  private:
   class TitleLabel;
   enum class State {
@@ -59,8 +63,6 @@ class BorealisInstallerView : public views::DialogDelegateView,
     kCompleted,       // Installation process completed.
     kError,           // Something unexpected happened.
   };
-
-  using InstallingState = borealis::BorealisInstaller::InstallingState;
 
   ~BorealisInstallerView() override;
 

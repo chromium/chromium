@@ -5621,7 +5621,7 @@
       Your device is low on storage. To increase free space, delete files from device.
   </message>
   <message name="IDS_BOREALIS_GENERIC_ERROR_MESSAGE" desc="" translateable="false">
-      Couldn't install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>. Please try again later.
+      Couldn't install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>. Please try again later. Error code: <ph name="ERROR_CODE">$2<ex>7</ex></ph>.
   </message>
   <!--
     ==================================================================================

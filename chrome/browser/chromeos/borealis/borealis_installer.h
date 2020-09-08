@@ -55,8 +55,8 @@ class BorealisInstaller : public KeyedService {
   // Cancels the installation process.
   virtual void Cancel() = 0;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
  protected:
   ~BorealisInstaller() override;

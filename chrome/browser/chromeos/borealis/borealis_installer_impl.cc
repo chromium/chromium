@@ -43,12 +43,22 @@ void BorealisInstallerImpl::Cancel() {
   }
 }
 
+void BorealisInstallerImpl::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void BorealisInstallerImpl::RemoveObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.RemoveObserver(observer);
+}
+
 void BorealisInstallerImpl::StartDlcInstallation() {
   state_ = State::kInstalling;
   UpdateInstallingState(InstallingState::kInstallingDlc);
 
   chromeos::DlcserviceClient::Get()->Install(
-      "borealis-dlc",
+      kBorealisDlcName,
       base::BindOnce(&BorealisInstallerImpl::OnDlcInstallationCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
@@ -57,8 +67,13 @@ void BorealisInstallerImpl::StartDlcInstallation() {
 }
 
 void BorealisInstallerImpl::InstallationEnded(InstallationResult result) {
-  state_ = State::kIdle;
-  installing_state_ = InstallingState::kInactive;
+  // If another installation is in progress, we don't want to reset any states
+  // and interfere with the process. When that process completes, it will reset
+  // these states.
+  if (result != InstallationResult::kOperationInProgress) {
+    state_ = State::kIdle;
+    installing_state_ = InstallingState::kInactive;
+  }
   for (auto& observer : observers_) {
     observer.OnInstallationEnded(result);
   }
@@ -119,10 +134,6 @@ void BorealisInstallerImpl::OnDlcInstallationCompleted(
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
   if (state_ == State::kCancelling) {
-    // Since DLC installation is currently the only step of installation,
-    // Borealis has actually been installed by this stage. This is calling
-    // CancelFinished() instead of InstallFinished(), to help provide clarity
-    // and also make it easier to add new installation steps in the future.
     InstallationEnded(InstallationResult::kCancelled);
     return;
   }
@@ -149,7 +160,7 @@ void BorealisInstallerImpl::OnDlcInstallationCompleted(
   } else if (install_result.error == dlcservice::kErrorNeedReboot) {
     LOG(ERROR)
         << "Device has pending update and needs a reboot to use Borealis DLC.";
-    result = InstallationResult::kDlcBusy;
+    result = InstallationResult::kDlcNeedReboot;
   } else if (install_result.error == dlcservice::kErrorAllocation) {
     LOG(ERROR) << "Device needs to free space to use Borealis DLC.";
     result = InstallationResult::kDlcNeedSpace;

@@ -3114,8 +3114,6 @@ source_set("unit_tests") {
     "authpolicy/authpolicy_helper.unittest.cc",
     "base/file_flusher_unittest.cc",
     "bluetooth/debug_logs_manager_unittest.cc",
-    "borealis/borealis_installer_mock.cc",
-    "borealis/borealis_installer_mock.h",
     "cert_provisioning/cert_provisioning_invalidator_unittest.cc",
     "cert_provisioning/cert_provisioning_platform_keys_helpers_unittest.cc",
     "cert_provisioning/cert_provisioning_scheduler_unittest.cc",

@@ -257,6 +257,7 @@ base::string16 BorealisInstallerView::GetPrimaryMessage() const {
       DCHECK(result_);
       switch (*result_) {
         case borealis::BorealisInstaller::InstallationResult::kNotAllowed:
+        case borealis::BorealisInstaller::InstallationResult::kDlcUnsupported:
           return l10n_util::GetStringFUTF16(
               IDS_BOREALIS_INSTALLER_NOT_ALLOWED_TITLE, app_name_);
         default:
@@ -303,13 +304,20 @@ base::string16 BorealisInstallerView::GetSecondaryMessage() const {
           return l10n_util::GetStringFUTF16(
               IDS_BOREALIS_DLC_NEED_REBOOT_FAILED_MESSAGE, app_name_);
         case ResultEnum::kDlcNeedSpace:
-          return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_MESSAGE, app_name_);
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_MESSAGE);
         case ResultEnum::kDlcUnknown:
-          return l10n_util::GetStringFUTF16(IDS_BOREALIS_GENERIC_ERROR_MESSAGE,
-                                            app_name_);
+          return l10n_util::GetStringFUTF16(
+              IDS_BOREALIS_GENERIC_ERROR_MESSAGE, app_name_,
+              base::NumberToString16(
+                  static_cast<std::underlying_type_t<ResultEnum>>(*result_)));
       }
   }
+}
+
+void BorealisInstallerView::SetInstallingStateForTesting(
+    InstallingState new_state) {
+  installing_state_ = new_state;
 }
 
 int BorealisInstallerView::GetCurrentDialogButtons() const {

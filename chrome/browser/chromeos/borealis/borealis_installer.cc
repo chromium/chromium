@@ -20,14 +20,4 @@ std::string BorealisInstaller::GetInstallingStateName(InstallingState state) {
   }
 }
 
-void BorealisInstaller::AddObserver(Observer* observer) {
-  DCHECK(!observer);
-  observers_.AddObserver(observer);
-}
-
-void BorealisInstaller::RemoveObserver(Observer* observer) {
-  DCHECK(!observer);
-  observers_.RemoveObserver(observer);
-}
-
 }  // namespace borealis
