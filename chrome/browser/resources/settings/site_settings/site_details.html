@@ -122,83 +122,83 @@
       </cr-button>
     </div>
     <div class="list-frame">
-      <site-details-permission category="{{ContentSettingsTypes.GEOLOCATION}}"
+      <site-details-permission category="[[ContentSettingsTypes.GEOLOCATION]]"
           icon="cr:location-on" id="geolocation"
           label="$i18n{siteSettingsLocation}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.CAMERA}}"
+      <site-details-permission category="[[ContentSettingsTypes.CAMERA]]"
           icon="cr:videocam" id="camera"
           label="$i18n{siteSettingsCamera}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.MIC}}"
+      <site-details-permission category="[[ContentSettingsTypes.MIC]]"
           icon="cr:mic" id="mic"
           label="$i18n{siteSettingsMic}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.SENSORS}}"
+          category="[[ContentSettingsTypes.SENSORS]]"
           icon="settings:sensors" id="sensors"
           label="$i18n{siteSettingsSensors}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.NOTIFICATIONS}}"
+      <site-details-permission category="[[ContentSettingsTypes.NOTIFICATIONS]]"
           icon="settings:notifications" id="notifications"
           label="$i18n{siteSettingsNotifications}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.JAVASCRIPT}}"
+      <site-details-permission category="[[ContentSettingsTypes.JAVASCRIPT]]"
           icon="settings:code" id="javascript"
           label="$i18n{siteSettingsJavascript}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.PLUGINS}}"
+      <site-details-permission category="[[ContentSettingsTypes.PLUGINS]]"
           icon="cr:extension" id="plugins" label="$i18n{siteSettingsFlash}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.IMAGES}}"
+      <site-details-permission category="[[ContentSettingsTypes.IMAGES]]"
           icon="settings:photo" id="images" label="$i18n{siteSettingsImages}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.POPUPS}}"
+      <site-details-permission category="[[ContentSettingsTypes.POPUPS]]"
           icon="cr:open-in-new" id="popups" label="$i18n{siteSettingsPopups}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.ADS}}"
+          category="[[ContentSettingsTypes.ADS]]"
           icon="settings:ads" id="ads"
           label="$i18n{siteSettingsAds}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.BACKGROUND_SYNC}}"
+          category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
           icon="cr:sync" id="backgroundSync"
           label="$i18n{siteSettingsBackgroundSync}">
       </site-details-permission>
-      <site-details-permission category="{{ContentSettingsTypes.SOUND}}"
+      <site-details-permission category="[[ContentSettingsTypes.SOUND]]"
           icon="settings:volume-up" id="sound"
           label="$i18n{siteSettingsSound}"
           use-automatic-label="[[blockAutoplayEnabled]]">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.AUTOMATIC_DOWNLOADS}}"
+          category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
           icon="cr:file-download" id="automaticDownloads"
           label="$i18n{siteSettingsAutomaticDownloads}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.MIDI_DEVICES}}" icon="settings:midi"
+          category="[[ContentSettingsTypes.MIDI_DEVICES]]" icon="settings:midi"
           id="midiDevices" label="$i18n{siteSettingsMidiDevices}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.USB_DEVICES}}" icon="settings:usb"
+          category="[[ContentSettingsTypes.USB_DEVICES]]" icon="settings:usb"
           id="usbDevices" label="$i18n{siteSettingsUsbDevices}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.SERIAL_PORTS}}"
+          category="[[ContentSettingsTypes.SERIAL_PORTS]]"
           icon="settings:serial-port" id="serialPorts"
           label="$i18n{siteSettingsSerialPorts}">
       </site-details-permission>
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <site-details-permission
-            category="{{ContentSettingsTypes.BLUETOOTH_DEVICES}}"
+            category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
             icon="settings:bluetooth" id="bluetoothDevices"
             label="$i18n{siteSettingsBluetoothDevices}">
         </site-details-permission>
       </template>
       <template is="dom-if" if="[[enableFileSystemWriteContentSetting_]]">
         <site-details-permission
-            category="{{ContentSettingsTypes.FILE_SYSTEM_WRITE}}"
+            category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
             icon="settings:save-original" id="fileSystemWrite"
             label="$i18n{siteSettingsFileSystemWrite}">
         </site-details-permission>
@@ -209,54 +209,54 @@
           label="$i18n{siteSettingsHidDevices}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.UNSANDBOXED_PLUGINS}}"
+          category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
           icon="cr:extension" id="unsandboxedPlugins"
           label="$i18n{siteSettingsUnsandboxedPlugins}">
       </site-details-permission>
 <if expr="chromeos">
       <site-details-permission
-          category="{{ContentSettingsTypes.PROTECTED_CONTENT}}"
+          category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
           icon="settings:protected-content" id="protectedContent"
           label="$i18n{siteSettingsProtectedContentIdentifiers}">
       </site-details-permission>
 </if>
       <site-details-permission
-          category="{{ContentSettingsTypes.CLIPBOARD}}"
+          category="[[ContentSettingsTypes.CLIPBOARD]]"
           icon="settings:clipboard" id="clipboard"
           label="$i18n{siteSettingsClipboard}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.PAYMENT_HANDLER}}"
+          category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
           icon="settings:payment-handler" id="paymentHandler"
           label="$i18n{siteSettingsPaymentHandler}">
       </site-details-permission>
       <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
         <site-details-permission
-            category="{{ContentSettingsTypes.BLUETOOTH_SCANNING}}"
+            category="[[ContentSettingsTypes.BLUETOOTH_SCANNING]]"
             icon="settings:bluetooth-scanning" id="bluetoothScanning"
             label="$i18n{siteSettingsBluetoothScanning}">
         </site-details-permission>
       </template>
       <template is="dom-if" if="[[enableInsecureContentContentSetting_]]">
         <site-details-permission
-            category="{{ContentSettingsTypes.MIXEDSCRIPT}}"
+            category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
             icon="settings:insecure-content" id="mixed-script"
             label="$i18n{siteSettingsInsecureContent}">
         </site-details-permission>
       </template>
       <site-details-permission
-          category="{{ContentSettingsTypes.AR}}"
+          category="[[ContentSettingsTypes.AR]]"
           icon="settings:vr-headset" id="ar"
           label="$i18n{siteSettingsAr}">
       </site-details-permission>
       <site-details-permission
-          category="{{ContentSettingsTypes.VR}}"
+          category="[[ContentSettingsTypes.VR]]"
           icon="settings:vr-headset" id="vr"
           label="$i18n{siteSettingsVr}">
       </site-details-permission>
       <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
         <site-details-permission
-            category="{{ContentSettingsTypes.WINDOW_PLACEMENT}}"
+            category="[[ContentSettingsTypes.WINDOW_PLACEMENT]]"
             icon="settings:window-placement" id="windowPlacement"
             label="$i18n{siteSettingsWindowPlacement}">
         </site-details-permission>

@@ -83,10 +83,10 @@
           <category-default-setting
               toggle-off-label="$i18n{siteSettingsAutoDownloadBlock}"
               toggle-on-label="$i18n{siteSettingsAutoDownloadAskRecommended}"
-              category="{{ContentSettingsTypes.AUTOMATIC_DOWNLOADS}}">
+              category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.AUTOMATIC_DOWNLOADS}}"
+              category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -100,10 +100,10 @@
               toggle-off-label="$i18n{siteSettingsBackgroundSyncBlocked}"
               toggle-on-label=
                   "$i18n{siteSettingsAllowRecentlyClosedSitesRecommended}"
-              category="{{ContentSettingsTypes.BACKGROUND_SYNC}}">
+              category="[[ContentSettingsTypes.BACKGROUND_SYNC]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.BACKGROUND_SYNC}}"
+              category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -115,13 +115,13 @@
             search-term="{{searchFilter_}}">
           <media-picker label="$i18n{siteSettingsCameraLabel}" type="camera">
           </media-picker>
-          <category-default-setting category="{{ContentSettingsTypes.CAMERA}}"
+          <category-default-setting category="[[ContentSettingsTypes.CAMERA]]"
               toggle-off-label="$i18n{siteSettingsBlocked}"
               toggle-on-label=
                   "$i18n{siteSettingsAskBeforeAccessingRecommended}">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.CAMERA}}" read-only-list
+              category="[[ContentSettingsTypes.CAMERA]]" read-only-list
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -153,12 +153,12 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryImages}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting category="{{ContentSettingsTypes.IMAGES}}"
+          <category-default-setting category="[[ContentSettingsTypes.IMAGES]]"
               toggle-off-label="$i18n{siteSettingsDontShowImages}"
               toggle-on-label="$i18n{siteSettingsShowAllRecommended}">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.IMAGES}}"
+              category="[[ContentSettingsTypes.IMAGES]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -188,10 +188,10 @@
           <category-default-setting
               toggle-off-label="$i18n{siteSettingsBlocked}"
               toggle-on-label="$i18n{siteSettingsAskBeforeAccessingRecommended}"
-              category="{{ContentSettingsTypes.GEOLOCATION}}">
+              category="[[ContentSettingsTypes.GEOLOCATION]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.GEOLOCATION}}" read-only-list
+              category="[[ContentSettingsTypes.GEOLOCATION]]" read-only-list
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -222,10 +222,10 @@
           <category-default-setting
               toggle-off-label="$i18n{siteSettingsBlocked}"
               toggle-on-label="$i18n{siteSettingsAllowedRecommended}"
-              category="{{ContentSettingsTypes.JAVASCRIPT}}">
+              category="[[ContentSettingsTypes.JAVASCRIPT]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.JAVASCRIPT}}"
+              category="[[ContentSettingsTypes.JAVASCRIPT]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -238,7 +238,7 @@
           <category-default-setting
               toggle-off-label="$i18n{siteSettingsSoundBlock}"
               toggle-on-label="$i18n{siteSettingsSoundAllowRecommended}"
-              category="{{ContentSettingsTypes.SOUND}}">
+              category="[[ContentSettingsTypes.SOUND]]">
           </category-default-setting>
           <settings-toggle-button
               id="block-autoplay-setting"
@@ -251,7 +251,7 @@
               no-set-pref>
           </settings-toggle-button>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.SOUND}}"
+              category="[[ContentSettingsTypes.SOUND]]"
               block-header="$i18n{siteSettingsBlockSound}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -263,13 +263,13 @@
             search-term="{{searchFilter_}}">
           <media-picker label="$i18n{siteSettingsMicrophoneLabel}" type="mic">
           </media-picker>
-          <category-default-setting category="{{ContentSettingsTypes.MIC}}"
+          <category-default-setting category="[[ContentSettingsTypes.MIC]]"
               toggle-off-label="$i18n{siteSettingsBlocked}"
               toggle-on-label=
                   "$i18n{siteSettingsAskBeforeAccessingRecommended}">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.MIC}}" read-only-list
+              category="[[ContentSettingsTypes.MIC]]" read-only-list
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -282,10 +282,10 @@
           <category-default-setting
               toggle-off-label="$i18n{siteSettingsSensorsBlock}"
               toggle-on-label="$i18n{siteSettingsSensorsAllow}"
-              category="{{ContentSettingsTypes.SENSORS}}">
+              category="[[ContentSettingsTypes.SENSORS]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.SENSORS}}" read-only-list
+              category="[[ContentSettingsTypes.SENSORS]]" read-only-list
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -299,7 +299,7 @@
             <category-default-setting
                 toggle-off-label="$i18n{siteSettingsNotificationsAsk}"
                 toggle-on-label="$i18n{siteSettingsNotificationsAsk}"
-                category="{{ContentSettingsTypes.NOTIFICATIONS}}"
+                category="[[ContentSettingsTypes.NOTIFICATIONS]]"
                 sub-option-pref="{{prefs.profile.content_settings.enable_quiet_permission_ui.notifications}}"
                 sub-option-label=
                     "$i18n{siteSettingsEnableQuietNotificationPrompts}"
@@ -312,12 +312,12 @@
                 toggle-on-label="$i18n{siteSettingsCategoryNotifications}"
                 toggle-off-description="$i18n{siteSettingsNotificationsBlock}"
                 toggle-on-description="$i18n{siteSettingsNotificationsAsk}"
-                category="{{ContentSettingsTypes.NOTIFICATIONS}}"
+                category="[[ContentSettingsTypes.NOTIFICATIONS]]"
                 sub-option-mode="none">
             </category-default-setting>
           </template>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.NOTIFICATIONS}}"
+              category="[[ContentSettingsTypes.NOTIFICATIONS]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -334,7 +334,7 @@
               hidden="[[!pluginsHasDiscardedExceptions_]]">
             $i18nRaw{warningAboutIgnoredWildcardedPatternsForFlash}
           </div>
-          <category-default-setting category="{{ContentSettingsTypes.PLUGINS}}"
+          <category-default-setting category="[[ContentSettingsTypes.PLUGINS]]"
               toggle-off-label="$i18n{siteSettingsFlashBlockRecommended}"
               toggle-on-label="$i18n{siteSettingsFlashAskFirst}">
           </category-default-setting>
@@ -348,7 +348,7 @@
           </a>
 </if>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.PLUGINS}}"
+              category="[[ContentSettingsTypes.PLUGINS]]"
               block-header="$i18n{siteSettingsBlock}" read-only-list
               search-filter="[[searchFilter_]]"
               site-lists-have-discarded-exceptions="{{pluginsHasDiscardedExceptions_}}">
@@ -359,12 +359,12 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryPopups}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting category="{{ContentSettingsTypes.POPUPS}}"
+          <category-default-setting category="[[ContentSettingsTypes.POPUPS]]"
               toggle-off-label="$i18n{siteSettingsBlockedRecommended}"
               toggle-on-label="$i18n{siteSettingsAllowed}">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.POPUPS}}"
+              category="[[ContentSettingsTypes.POPUPS]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -377,12 +377,12 @@
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
             <category-default-setting
-                category="{{ContentSettingsTypes.ADS}}"
+                category="[[ContentSettingsTypes.ADS]]"
                 toggle-off-label="$i18n{siteSettingsAdsBlockRecommended}"
                 toggle-on-label="$i18n{siteSettingsAllowed}">
             </category-default-setting>
             <category-setting-exceptions
-                category="{{ContentSettingsTypes.ADS}}"
+                category="[[ContentSettingsTypes.ADS]]"
                 read-only-list
                 block-header="$i18n{siteSettingsBlock}"
                 search-filter="[[searchFilter_]]">
@@ -398,10 +398,10 @@
               toggle-off-label="$i18n{siteSettingsUnsandboxedPluginsBlock}"
               toggle-on-label=
                   "$i18n{siteSettingsUnsandboxedPluginsAskRecommended}"
-              category="{{ContentSettingsTypes.UNSANDBOXED_PLUGINS}}">
+              category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.UNSANDBOXED_PLUGINS}}"
+              category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -415,10 +415,10 @@
               toggle-off-label="$i18n{siteSettingsMidiDevicesBlock}"
               toggle-on-label=
                   "$i18n{siteSettingsMidiDevicesAskRecommended}"
-              category="{{ContentSettingsTypes.MIDI_DEVICES}}">
+              category="[[ContentSettingsTypes.MIDI_DEVICES]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.MIDI_DEVICES}}" read-only-list
+              category="[[ContentSettingsTypes.MIDI_DEVICES]]" read-only-list
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -430,11 +430,11 @@
               toggle-off-label="$i18n{siteSettingsUsbDevicesBlock}"
               toggle-on-label=
                   "$i18n{siteSettingsUsbDevicesAskRecommended}"
-              category="{{ContentSettingsTypes.USB_DEVICES}}">
+              category="[[ContentSettingsTypes.USB_DEVICES]]">
           </category-default-setting>
           <chooser-exception-list
-              category="{{ContentSettingsTypes.USB_DEVICES}}"
-              chooser-type="{{ChooserType.USB_DEVICES}}">
+              category="[[ContentSettingsTypes.USB_DEVICES]]"
+              chooser-type="[[ChooserType.USB_DEVICES]]">
           </chooser-exception-list>
         </settings-subpage>
       </template>
@@ -444,11 +444,11 @@
               toggle-off-label="$i18n{siteSettingsSerialPortsBlock}"
               toggle-on-label=
                   "$i18n{siteSettingsSerialPortsAskRecommended}"
-              category="{{ContentSettingsTypes.SERIAL_PORTS}}">
+              category="[[ContentSettingsTypes.SERIAL_PORTS]]">
           </category-default-setting>
           <chooser-exception-list
-              category="{{ContentSettingsTypes.SERIAL_PORTS}}"
-              chooser-type="{{ChooserType.SERIAL_PORTS}}">
+              category="[[ContentSettingsTypes.SERIAL_PORTS]]"
+              chooser-type="[[ChooserType.SERIAL_PORTS]]">
           </chooser-exception-list>
         </settings-subpage>
       </template>
@@ -459,11 +459,11 @@
                 toggle-off-label="$i18n{siteSettingsBluetoothDevicesBlock}"
                 toggle-on-label=
                     "$i18n{siteSettingsBluetoothDevicesAskRecommended}"
-                category="{{ContentSettingsTypes.BLUETOOTH_DEVICES}}">
+                category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]">
             </category-default-setting>
             <chooser-exception-list
-                category="{{ContentSettingsTypes.BLUETOOTH_DEVICES}}"
-                chooser-type="{{ChooserType.BLUETOOTH_DEVICES}}">
+                category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
+                chooser-type="[[ChooserType.BLUETOOTH_DEVICES]]">
             </chooser-exception-list>
           </settings-subpage>
         </template>
@@ -476,10 +476,10 @@
                 toggle-off-label="$i18n{siteSettingsFileSystemWriteBlock}"
                 toggle-on-label=
                     "$i18n{siteSettingsFileSystemWriteAskRecommended}"
-                category="{{ContentSettingsTypes.FILE_SYSTEM_WRITE}}">
+                category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]">
             </category-default-setting>
             <category-setting-exceptions
-                category="{{ContentSettingsTypes.FILE_SYSTEM_WRITE}}"
+                category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
                 read-only-list
                 block-header="$i18n{siteSettingsBlock}"
                 search-filter="[[searchFilter_]]">
@@ -549,7 +549,7 @@
           <template is="dom-if"
               if="[[prefs.settings.privacy.drm_enabled.value]]">
             <category-setting-exceptions
-                category="{{ContentSettingsTypes.PROTECTED_CONTENT}}"
+                category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
                 block-header="$i18n{siteSettingsBlock}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
@@ -564,10 +564,10 @@
           <category-default-setting
               toggle-off-label="$i18n{siteSettingsClipboardBlock}"
               toggle-on-label="$i18n{siteSettingsClipboardAskRecommended}"
-              category="{{ContentSettingsTypes.CLIPBOARD}}">
+              category="[[ContentSettingsTypes.CLIPBOARD]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.CLIPBOARD}}"
+              category="[[ContentSettingsTypes.CLIPBOARD]]"
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
@@ -600,10 +600,10 @@
                 toggle-off-label="$i18n{siteSettingsBluetoothScanningBlock}"
                 toggle-on-label=
                     "$i18n{siteSettingsBluetoothScanningAskRecommended}"
-                category="{{ContentSettingsTypes.BLUETOOTH_SCANNING}}">
+                category="[[ContentSettingsTypes.BLUETOOTH_SCANNING]]">
             </category-default-setting>
             <category-setting-exceptions
-                category="{{ContentSettingsTypes.BLUETOOTH_SCANNING}}"
+                category="[[ContentSettingsTypes.BLUETOOTH_SCANNING]]"
                 read-only-list
                 block-header="$i18n{siteSettingsBlock}"
                 search-filter="[[searchFilter_]]">
@@ -619,10 +619,10 @@
               toggle-off-label="$i18n{siteSettingsVrBlock}"
               toggle-on-label=
                   "$i18n{siteSettingsVrAskRecommended}"
-              category="{{ContentSettingsTypes.VR}}">
+              category="[[ContentSettingsTypes.VR]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.VR}}"
+              category="[[ContentSettingsTypes.VR]]"
               read-only-list
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
@@ -637,10 +637,10 @@
               toggle-off-label="$i18n{siteSettingsArBlock}"
               toggle-on-label=
                   "$i18n{siteSettingsArAskRecommended}"
-              category="{{ContentSettingsTypes.AR}}">
+              category="[[ContentSettingsTypes.AR]]">
           </category-default-setting>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.AR}}"
+              category="[[ContentSettingsTypes.AR]]"
               read-only-list
               block-header="$i18n{siteSettingsBlock}"
               search-filter="[[searchFilter_]]">
@@ -656,10 +656,10 @@
                 toggle-off-label="$i18n{siteSettingsWindowPlacementBlock}"
                 toggle-on-label=
                     "$i18n{siteSettingsWindowPlacementAskRecommended}"
-                category="{{ContentSettingsTypes.WINDOW_PLACEMENT}}">
+                category="[[ContentSettingsTypes.WINDOW_PLACEMENT]]">
             </category-default-setting>
             <category-setting-exceptions
-                category="{{ContentSettingsTypes.WINDOW_PLACEMENT}}"
+                category="[[ContentSettingsTypes.WINDOW_PLACEMENT]]"
                 block-header="$i18n{siteSettingsBlock}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
