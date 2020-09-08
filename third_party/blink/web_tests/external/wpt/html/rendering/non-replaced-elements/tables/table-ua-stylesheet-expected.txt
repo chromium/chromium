@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Computed 'display' on table should match html spec
-PASS Computed 'box-sizing' on table should match html spec
-PASS Computed 'border-spacing' on table should match html spec
-PASS Computed 'border-collapse' on table should match html spec
-FAIL Computed 'text-indent' on table should match html spec assert_equals: expected "0px" but got "100px"
-Harness: the test ran to completion.
-
