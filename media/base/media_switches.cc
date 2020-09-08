@@ -775,6 +775,9 @@ const base::Feature kKaleidoscopeForceShowFirstRunExperience{
 const base::Feature kKaleidoscopeModule{"KaleidoscopeModule",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kKaleidoscopeModuleCacheOnly{
+    "KaleidoscopeModuleCacheOnly", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kUseFakeDeviceForMediaStream{
     "use-fake-device-for-media-stream", base::FEATURE_DISABLED_BY_DEFAULT};
 

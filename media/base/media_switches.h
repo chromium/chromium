@@ -139,6 +139,7 @@ MEDIA_EXPORT extern const base::Feature kKaleidoscope;
 MEDIA_EXPORT extern const base::Feature
     kKaleidoscopeForceShowFirstRunExperience;
 MEDIA_EXPORT extern const base::Feature kKaleidoscopeModule;
+MEDIA_EXPORT extern const base::Feature kKaleidoscopeModuleCacheOnly;
 MEDIA_EXPORT extern const base::Feature kLiveCaption;
 MEDIA_EXPORT extern const base::Feature kLowDelayVideoRenderingOnLiveStream;
 MEDIA_EXPORT extern const base::Feature kMediaCapabilitiesQueryGpuFactories;

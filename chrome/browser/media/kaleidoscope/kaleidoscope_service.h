@@ -22,6 +22,17 @@ class GetCollectionsRequest;
 
 class KaleidoscopeService : public KeyedService {
  public:
+  static const char kNTPModuleCacheHitHistogramName[];
+
+  // When we try and ger Kaleidoscope data we store whether we hit the cache in
+  // |kNTPModuleCacheHitHistogramName|. Do not change the numbering since this
+  // is recorded.
+  enum class CacheHitResult {
+    kCacheHit = 0,
+    kCacheMiss = 1,
+    kMaxValue = kCacheMiss,
+  };
+
   explicit KaleidoscopeService(Profile* profile);
   ~KaleidoscopeService() override;
   KaleidoscopeService(const KaleidoscopeService&) = delete;

@@ -38577,6 +38577,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Del Fail -MaxPathCheck Fail - MoveFileEx Fail - CopyDelDir Fail"/>
 </enum>
 
+<enum name="KaleidoscopeCacheHit">
+  <int value="0" label="Cache Hit"/>
+  <int value="1" label="Cache Miss"/>
+</enum>
+
 <enum name="KaleidoscopeFirstRunProgress">
   <int value="0" label="Completed"/>
   <int value="1" label="Provider Selection"/>

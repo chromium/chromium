@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/media/history/media_history_store.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_service_factory.h"
@@ -133,6 +134,9 @@ class GetCollectionsRequest {
 
 }  // namespace
 
+const char KaleidoscopeService::kNTPModuleCacheHitHistogramName[] =
+    "Media.Kaleidoscope.NewTabPage.CacheHitWhenForced";
+
 KaleidoscopeService::KaleidoscopeService(Profile* profile) : profile_(profile) {
   DCHECK(!profile->IsOffTheRecord());
 }
@@ -182,12 +186,28 @@ void KaleidoscopeService::OnGotCachedData(
     media::mojom::GetCollectionsResponsePtr cached) {
   // If we got cached data then return that.
   if (cached) {
+    if (base::FeatureList::IsEnabled(media::kKaleidoscopeModuleCacheOnly)) {
+      base::UmaHistogramEnumeration(kNTPModuleCacheHitHistogramName,
+                                    CacheHitResult::kCacheHit);
+    }
+
     std::move(callback).Run(std::move(cached));
     return;
   }
 
-  // Add the callback.
-  pending_callbacks_.push_back(std::move(callback));
+  // If the module is set to "cache only" then we will return an empty response
+  // and fire the request in the background. The next time the user opens the
+  // NTP they will see the recommendations.
+  if (base::FeatureList::IsEnabled(media::kKaleidoscopeModuleCacheOnly)) {
+    base::UmaHistogramEnumeration(kNTPModuleCacheHitHistogramName,
+                                  CacheHitResult::kCacheMiss);
+
+    std::move(callback).Run(media::mojom::GetCollectionsResponse::New(
+        "", media::mojom::GetCollectionsResult::kFailed));
+  } else {
+    // Add the callback.
+    pending_callbacks_.push_back(std::move(callback));
+  }
 
   // Create the request.
   if (!request_) {

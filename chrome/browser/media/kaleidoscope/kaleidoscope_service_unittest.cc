@@ -8,8 +8,11 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "media/base/media_switches.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -219,6 +222,59 @@ TEST_F(KaleidoscopeServiceTest, NetworkFail) {
 
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(url_loader_factory()->pending_requests()->empty());
+}
+
+TEST_F(KaleidoscopeServiceTest, ForceCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kKaleidoscopeModuleCacheOnly);
+
+  {
+    base::HistogramTester histogram_tester;
+
+    bool resolved = false;
+    GetService()->GetCollections(
+        CreateCredentials(), "123", "abcd",
+        base::BindLambdaForTesting(
+            [&](media::mojom::GetCollectionsResponsePtr result) {
+              EXPECT_TRUE(result->response.empty());
+              EXPECT_EQ(media::mojom::GetCollectionsResult::kFailed,
+                        result->result);
+              resolved = true;
+            }));
+
+    WaitForRequest();
+
+    // Check the callback is resolved before the fetch.
+    EXPECT_TRUE(resolved);
+
+    histogram_tester.ExpectUniqueSample(
+        KaleidoscopeService::kNTPModuleCacheHitHistogramName,
+        KaleidoscopeService::CacheHitResult::kCacheMiss, 1);
+  }
+
+  // Resolve the fetch to store the data.
+  ASSERT_TRUE(RespondToFetch(kTestData));
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // If we call again then we should hit the cache.
+    GetService()->GetCollections(
+        CreateCredentials(), "123", "abcd",
+        base::BindLambdaForTesting(
+            [&](media::mojom::GetCollectionsResponsePtr result) {
+              EXPECT_EQ(kTestData, result->response);
+              EXPECT_EQ(media::mojom::GetCollectionsResult::kSuccess,
+                        result->result);
+            }));
+
+    task_environment()->RunUntilIdle();
+    EXPECT_TRUE(url_loader_factory()->pending_requests()->empty());
+
+    histogram_tester.ExpectUniqueSample(
+        KaleidoscopeService::kNTPModuleCacheHitHistogramName,
+        KaleidoscopeService::CacheHitResult::kCacheHit, 1);
+  }
 }
 
 }  // namespace kaleidoscope
