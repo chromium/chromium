@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/infobars/infobar_container_coordinator.h"
 
+#import <WebKit/WebKit.h>
+
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -27,8 +29,11 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -69,7 +74,13 @@ class InfobarContainerCoordinatorTest : public PlatformTest {
   InfobarContainerCoordinatorTest()
       : browser_(std::make_unique<TestBrowser>()),
         base_view_controller_([[FakeBaseViewController alloc] init]),
-        positioner_([[TestContainerCoordinatorPositioner alloc] init]) {
+        positioner_([[TestContainerCoordinatorPositioner alloc] init]),
+        web_view_([[WKWebView alloc]
+            initWithFrame:scoped_window_.Get().bounds
+            configuration:[[WKWebViewConfiguration alloc] init]]),
+        content_view_([[CRWWebViewContentView alloc]
+            initWithWebView:web_view_
+                 scrollView:web_view_.scrollView]) {
     // Enable kIOSInfobarUIReboot flag.
     feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
                                    {kInfobarUIRebootOnlyiOS13});
@@ -84,6 +95,15 @@ class InfobarContainerCoordinatorTest : public PlatformTest {
     navigation_manager_ = navigation_manager.get();
     web_state->SetNavigationManager(std::move(navigation_manager));
     web_state->SetBrowserState(browser_->GetBrowserState());
+    web_state->SetView(content_view_);
+    CRWWebViewScrollViewProxy* scroll_view_proxy =
+        [[CRWWebViewScrollViewProxy alloc] init];
+    UIScrollView* scroll_view = [[UIScrollView alloc] init];
+    [scroll_view_proxy setScrollView:scroll_view];
+    id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
+    [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
+    web_state->SetWebViewProxy(web_view_proxy_mock);
+
     browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
                                                 WebStateList::INSERT_NO_FLAGS,
                                                 WebStateOpener());
@@ -187,6 +207,14 @@ class InfobarContainerCoordinatorTest : public PlatformTest {
   void AddSecondWebstate() {
     std::unique_ptr<web::TestWebState> second_web_state =
         std::make_unique<web::TestWebState>();
+    second_web_state->SetView(content_view_);
+    CRWWebViewScrollViewProxy* scroll_view_proxy =
+        [[CRWWebViewScrollViewProxy alloc] init];
+    UIScrollView* scroll_view = [[UIScrollView alloc] init];
+    [scroll_view_proxy setScrollView:scroll_view];
+    id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
+    [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
+    second_web_state->SetWebViewProxy(web_view_proxy_mock);
     InfoBarManagerImpl::CreateForWebState(second_web_state.get());
     InfobarBadgeTabHelper::CreateForWebState(second_web_state.get());
     browser_->GetWebStateList()->InsertWebState(1, std::move(second_web_state),
@@ -221,6 +249,9 @@ class InfobarContainerCoordinatorTest : public PlatformTest {
   std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> infobar_delegate_;
   ConfirmInfoBarController* legacy_controller_;
   std::unique_ptr<ConfirmInfoBarDelegate> legacy_infobar_delegate_;
+  ScopedKeyWindow scoped_window_;
+  WKWebView* web_view_ = nil;
+  CRWWebViewContentView* content_view_ = nil;
 };
 
 // Tests infobarBannerState is InfobarBannerPresentationState::Presented once an
