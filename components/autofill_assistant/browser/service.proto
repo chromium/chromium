@@ -543,6 +543,8 @@ message CollectUserDataResultProto {
   // Indicates whether the UI was shown to the user. This can be false if
   // only the login section was requested and the choice was implicitly made.
   optional bool shown_to_user = 16;
+  // Indicates that the chosen login option was missing the username.
+  optional bool login_missing_username = 17;
 
   reserved 7, 8;
 }
