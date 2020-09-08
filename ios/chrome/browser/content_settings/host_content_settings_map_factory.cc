@@ -46,7 +46,6 @@ HostContentSettingsMapFactory::BuildServiceInstanceFor(
   return base::MakeRefCounted<HostContentSettingsMap>(
       browser_state->GetPrefs(), browser_state->IsOffTheRecord(),
       false /* store_last_modified */,
-      false /* migrate_requesting_and_top_level_origin_settings */,
       false /*restore_session*/);
   // TODO(crbug.com/1081711): Set restore_session to whether or not the phone
   // has been reset, which would mirror iOS's cookie store.

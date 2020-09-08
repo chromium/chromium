@@ -263,7 +263,6 @@ class PasswordProtectionServiceTest : public ::testing::TestWithParam<bool> {
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
         false /* store_last_modified */,
-        false /* migrate_requesting_and_top_level_origin_settings */,
         false /* restore_session*/);
     database_manager_ = new MockSafeBrowsingDatabaseManager();
     password_protection_service_ =

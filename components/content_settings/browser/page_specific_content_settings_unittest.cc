@@ -49,7 +49,8 @@ class PageSpecificContentSettingsTest
     RenderViewHostTestHarness::SetUp();
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
-        &prefs_, false, false, false, false);
+        &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
+        false /* restore_session*/);
     PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<TestPageSpecificContentSettingsDelegate>(

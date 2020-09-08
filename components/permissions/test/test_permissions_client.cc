@@ -13,8 +13,9 @@ namespace {
 scoped_refptr<HostContentSettingsMap> CreateSettingsMap(
     sync_preferences::TestingPrefServiceSyncable* prefs) {
   HostContentSettingsMap::RegisterProfilePrefs(prefs->registry());
-  return base::MakeRefCounted<HostContentSettingsMap>(prefs, false, false,
-                                                      false, false);
+  return base::MakeRefCounted<HostContentSettingsMap>(
+      prefs, false /* is_off_the_record */, false /* store_last_modified */,
+      false /* restore_session */);
 }
 
 }  // namespace

@@ -244,7 +244,6 @@ HostContentSettingsMap::HostContentSettingsMap(
     PrefService* prefs,
     bool is_off_the_record,
     bool store_last_modified,
-    bool migrate_requesting_and_top_level_origin_settings,
     bool restore_session)
     : RefcountedKeyedService(base::ThreadTaskRunnerHandle::Get()),
 #ifndef NDEBUG
@@ -284,8 +283,7 @@ HostContentSettingsMap::HostContentSettingsMap(
   content_settings_providers_[DEFAULT_PROVIDER] = std::move(default_provider);
 
   InitializePluginsDataSettings();
-  if (migrate_requesting_and_top_level_origin_settings)
-    MigrateSettingsPrecedingPermissionDelegationActivation();
+  MigrateSettingsPrecedingPermissionDelegationActivation();
   RecordExceptionMetrics();
 }
 
