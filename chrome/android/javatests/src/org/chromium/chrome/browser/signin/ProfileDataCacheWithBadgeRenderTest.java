@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -42,6 +43,7 @@ import java.io.IOException;
  * bitmap comparison to simplify access to the compared images on buildbots (via result_details).
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
