@@ -1,0 +1,35 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromeos.ime;
+
+// Wrapper message to contain either internal messages or public messages.
+message Wrapper {
+  oneof param {
+    string internal_request = 1;
+    string internal_reply = 2;
+    Request request = 3;
+    Reply reply = 4;
+  }
+}
+
+// Message from Chrome to the shared library.
+message Request {
+  // The sequence id of the request.
+  optional int32 seq_id = 1;
+
+  oneof param { OnFocus on_focus = 2; }
+}
+
+// Message from the shared library to Chrome.
+message Reply {
+  // The sequence id of the reply.
+  optional int32 seq_id = 1;
+}
+
+// Protobuf version of InputEngine::OnFocus in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message OnFocus {
+  // TODO(crbug/1019541): Add information about the input field.
+}

@@ -10,6 +10,7 @@
 #include "build/buildflag.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
+#include "chromeos/services/ime/public/proto/messages.pb.h"
 
 namespace chromeos {
 namespace ime {
@@ -61,6 +62,14 @@ class ClientDelegate : public ImeClientDelegate {
   // The InputChannel remote used to talk to the client.
   mojo::Remote<mojom::InputChannel> client_remote_;
 };
+
+std::vector<uint8_t> SerializeRequest(const ime::Request& request) {
+  ime::Wrapper wrapper;
+  *wrapper.mutable_request() = request;
+  std::vector<uint8_t> output;
+  wrapper.SerializeToArray(output.data(), output.size());
+  return output;
+}
 
 }  // namespace
 
@@ -132,6 +141,14 @@ bool DecoderEngine::BindRequest(
 bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
   return engine_main_entry_ &&
          engine_main_entry_->IsImeSupported(ime_spec.c_str());
+}
+
+void DecoderEngine::OnFocus() {
+  ime::Request request;
+  request.set_seq_id(current_seq_id_++);
+  *request.mutable_on_focus() = ime::OnFocus();
+
+  ProcessMessage(SerializeRequest(request), base::DoNothing());
 }
 
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,

@@ -107,6 +107,10 @@ void InputEngine::ProcessMessage(const std::vector<uint8_t>& message,
   NOTIMPLEMENTED();  // Protobuf message is not used in the rulebased engine.
 }
 
+void InputEngine::OnFocus() {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 void InputEngine::ProcessKeypressForRulebased(
     mojom::PhysicalKeyEventPtr event,
     ProcessKeypressForRulebasedCallback callback) {

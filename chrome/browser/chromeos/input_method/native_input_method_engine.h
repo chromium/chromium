@@ -92,6 +92,7 @@ class NativeInputMethodEngine : public InputMethodEngine {
     // mojom::InputChannel:
     void ProcessMessage(const std::vector<uint8_t>& message,
                         ProcessMessageCallback callback) override {}
+    void OnFocus() override {}
     void ProcessKeypressForRulebased(
         ime::mojom::PhysicalKeyEventPtr event,
         ProcessKeypressForRulebasedCallback callback) override {}
@@ -103,12 +104,12 @@ class NativeInputMethodEngine : public InputMethodEngine {
     void FlushForTesting();
 
     // Returns whether this is connected to the input engine.
-    bool IsConnectedForTesting() const { return connected_to_engine_; }
+    bool IsConnectedForTesting() const { return active_engine_id_.has_value(); }
 
    private:
     // Called when this is connected to the input engine. |bound| indicates
     // the success of the connection.
-    void OnConnected(base::Time start, bool bound);
+    void OnConnected(base::Time start, std::string engine_id, bool bound);
 
     // Called when there's a connection error.
     void OnError(base::Time start);
@@ -123,7 +124,7 @@ class NativeInputMethodEngine : public InputMethodEngine {
     mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
     mojo::Receiver<ime::mojom::InputChannel> receiver_from_engine_;
     mojo::Remote<ime::mojom::InputChannel> remote_to_engine_;
-    bool connected_to_engine_ = false;
+    base::Optional<std::string> active_engine_id_;
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
   };

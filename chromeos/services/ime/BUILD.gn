@@ -37,6 +37,7 @@ source_set("lib") {
     "//chromeos/services/ime/public/cpp:rulebased",
     "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
     "//chromeos/services/ime/public/mojom",
+    "//chromeos/services/ime/public/proto:messages_proto",
   ]
 }
 

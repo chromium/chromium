@@ -112,6 +112,9 @@ interface InputChannel {
   // protobuf message.
   ProcessMessage(array<uint8> message) => (array<uint8> result);
 
+  // Called when there's a new focused input field.
+  OnFocus();
+
   // Process a PhysicalKeyEvent using the rule-based engine and return a
   // KeypressResponseForRulebased object with a list of operations to be handled
   // by the caller.

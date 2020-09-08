@@ -32,6 +32,7 @@ class DecoderEngine : public InputEngine {
 
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
+  void OnFocus() override;
 
  private:
   // Try to load the decoding functions from some decoder shared library.
@@ -49,6 +50,9 @@ class DecoderEngine : public InputEngine {
   ImeCrosPlatform* platform_ = nullptr;
 
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
+
+  // Sequence ID for protobuf messages sent from the engine.
+  int current_seq_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(DecoderEngine);
 };

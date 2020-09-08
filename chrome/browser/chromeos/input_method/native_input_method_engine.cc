@@ -154,7 +154,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
         new_engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
         receiver_from_engine_.BindNewPipeAndPassRemote(), {},
         base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
-                       base::Time::Now()));
+                       base::Time::Now(), new_engine_id));
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
@@ -167,6 +167,11 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
     const IMEEngineHandlerInterface::InputContext& context) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnFocus(context.id);
+
+  if (active_engine_id_ && ShouldUseFstMojoEngine(*active_engine_id_) &&
+      remote_to_engine_.is_bound()) {
+    remote_to_engine_->OnFocus();
+  }
 
   base_observer_->OnFocus(context);
 }
@@ -320,13 +325,14 @@ void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
 }
 
 void NativeInputMethodEngine::ImeObserver::OnConnected(base::Time start,
+                                                       std::string engine_id,
                                                        bool bound) {
   LogLatency("InputMethod.Mojo.Extension.ActivateIMELatency",
              base::Time::Now() - start);
   LogEvent(bound ? ImeServiceEvent::kActivateImeSuccess
                  : ImeServiceEvent::kActivateImeSuccess);
 
-  connected_to_engine_ = bound;
+  active_engine_id_ = engine_id;
 }
 
 void NativeInputMethodEngine::ImeObserver::OnError(base::Time start) {
@@ -340,6 +346,8 @@ void NativeInputMethodEngine::ImeObserver::OnError(base::Time start) {
   } else {
     LogEvent(ImeServiceEvent::kServiceDisconnected);
   }
+
+  active_engine_id_.reset();
 }
 
 void NativeInputMethodEngine::ImeObserver::OnKeyEventResponse(
