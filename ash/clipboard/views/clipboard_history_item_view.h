@@ -31,9 +31,11 @@ class ClipboardHistoryItemView : public views::View,
   // Initializes the menu item.
   void Init();
 
-  // Called when the selection state will change. `target_is_selected` indicates
-  // the target selection state.
-  void SelectionWillChange(bool target_is_selected);
+  // Returns whether the menu item is under selection.
+  bool IsSelected() const;
+
+  // Called when the selection state has changed.
+  void OnSelectionChanged();
 
  protected:
   // The button to delete the menu item and its corresponding clipboard data.
@@ -60,8 +62,8 @@ class ClipboardHistoryItemView : public views::View,
     // Install DeleteButton on the contents view.
     void InstallDeleteButton();
 
-    // Called when the parent's selection state will change.
-    void SelectionWillChange(bool target_is_selected);
+    // Called when the `container_`'s selection state has changed.
+    void OnSelectionChanged();
 
     const views::View* delete_button() const { return delete_button_; }
 
@@ -96,7 +98,9 @@ class ClipboardHistoryItemView : public views::View,
 
   ContentsView* contents_view_ = nullptr;
 
-  const views::View* main_button_ = nullptr;
+  views::View* main_button_ = nullptr;
+
+  views::PropertyChangedSubscription subscription_;
 };
 
 }  // namespace ash

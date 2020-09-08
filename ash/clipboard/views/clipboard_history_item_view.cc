@@ -44,12 +44,8 @@ class MainButton : public views::Button {
   // views::Button:
   const char* GetClassName() const override { return "MainButton"; }
 
-  void StateChanged(ButtonState old_state) override {
-    container_->SelectionWillChange(IsSelected());
-  }
-
   void PaintButtonContents(gfx::Canvas* canvas) override {
-    if (!IsSelected())
+    if (!container_->IsSelected())
       return;
 
     // Highlight the background when the menu item is selected or pressed.
@@ -62,18 +58,6 @@ class MainButton : public views::Button {
 
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawRect(GetLocalBounds(), flags);
-  }
-
-  bool IsSelected() const {
-    // We should check both the mouse hovering state and the button state,
-    // because:
-    // (1) When the menu item is selected by the key traversal, the item is not
-    // hovered by mouse.
-    // (2) When the mouse moves within the bounds of DeleteButton, the menu item
-    // is still selected but the button state is not
-    // `ButtonState::STATE_HOVERED`.
-    return IsMouseHovered() || GetState() == ButtonState::STATE_HOVERED ||
-           GetState() == ButtonState::STATE_PRESSED;
   }
 
   // The parent view.
@@ -96,11 +80,11 @@ ClipboardHistoryItemView::ContentsView::ContentsView(
 
 ClipboardHistoryItemView::ContentsView::~ContentsView() = default;
 
-void ClipboardHistoryItemView::ContentsView::SelectionWillChange(
-    bool target_is_selected) {
-  // Update |delete_button_|'s visiblity if the selection state switches.
-  if (target_is_selected ^ delete_button_->GetVisible())
-    delete_button_->SetVisible(target_is_selected);
+void ClipboardHistoryItemView::ContentsView::OnSelectionChanged() {
+  // Update `delete_button_`'s visibility if the selection state switches.
+  const bool is_selected = container_->IsSelected();
+  if (is_selected != delete_button_->GetVisible())
+    delete_button_->SetVisible(is_selected);
 }
 
 void ClipboardHistoryItemView::ContentsView::InstallDeleteButton() {
@@ -178,10 +162,18 @@ void ClipboardHistoryItemView::Init() {
   main_button_ = AddChildView(std::make_unique<MainButton>(this));
 
   contents_view_ = AddChildView(CreateContentsView());
+
+  subscription_ = container_->AddSelectedChangedCallback(base::BindRepeating(
+      &ClipboardHistoryItemView::OnSelectionChanged, base::Unretained(this)));
 }
 
-void ClipboardHistoryItemView::SelectionWillChange(bool target_is_selected) {
-  contents_view_->SelectionWillChange(target_is_selected);
+bool ClipboardHistoryItemView::IsSelected() const {
+  return container_->IsSelected();
+}
+
+void ClipboardHistoryItemView::OnSelectionChanged() {
+  contents_view_->OnSelectionChanged();
+  main_button_->SchedulePaint();
 }
 
 gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
