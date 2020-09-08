@@ -48,6 +48,7 @@ struct Config {
       feedwire::Capability::DISMISS_COMMAND,
       feedwire::Capability::UI_THEME_V2,
       feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
+      feedwire::Capability::PREFETCH_METADATA,
   };
 
   Config();
