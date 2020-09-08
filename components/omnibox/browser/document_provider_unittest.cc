@@ -533,16 +533,16 @@ TEST_F(DocumentProviderTest, MatchDescriptionString) {
               base::ASCIIToUTF16("Red Lightning - Google Sheets"));
     EXPECT_EQ(matches[4].description, base::ASCIIToUTF16(""));
 
-    // Also verify description_for_shortcuts does not include dates.
+    // Also verify description_for_shortcuts does not include dates & owners.
     EXPECT_EQ(matches.size(), 5u);
     EXPECT_EQ(matches[0].description_for_shortcuts,
-              base::ASCIIToUTF16("Green Moon - Google Docs"));
+              base::ASCIIToUTF16("Google Docs"));
     EXPECT_EQ(matches[1].description_for_shortcuts,
-              base::ASCIIToUTF16("Blue Sunset - Google Drive"));
+              base::ASCIIToUTF16("Google Drive"));
     EXPECT_EQ(matches[2].description_for_shortcuts,
               base::ASCIIToUTF16("Google Sheets"));
     EXPECT_EQ(matches[3].description_for_shortcuts,
-              base::ASCIIToUTF16("Red Lightning - Google Sheets"));
+              base::ASCIIToUTF16("Google Sheets"));
     EXPECT_EQ(matches[4].description_for_shortcuts, base::ASCIIToUTF16(""));
   }
 }

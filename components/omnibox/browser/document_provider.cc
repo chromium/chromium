@@ -888,10 +888,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
           display_owner && !owners.empty() ? *owners[0] : "");
       AutocompleteMatch::AddLastClassificationIfNecessary(
           &match.description_class, 0, ACMatchClassification::DIM);
-      // Exclude date from description_for_shortcut to avoid showing stale dates
-      // from the shortcuts provider.
-      match.description_for_shortcuts = GetMatchDescription(
-          "", mimetype, display_owner && !owners.empty() ? *owners[0] : "");
+      // Exclude date & owner from description_for_shortcut to avoid showing
+      // stale data from the shortcuts provider.
+      match.description_for_shortcuts = GetMatchDescription("", mimetype, "");
       AutocompleteMatch::AddLastClassificationIfNecessary(
           &match.description_class_for_shortcuts, 0,
           ACMatchClassification::DIM);
