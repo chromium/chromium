@@ -167,8 +167,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kTestCases),
                          ::testing::PrintToStringParamName());
 
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
-// Flaky on Windows ASAN https://crbug.com/1045521
+#if defined(OS_CHROMEOS) || defined(MEMORY_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(OS_FUCHSIA)
+// TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
 #define MAYBE_PartialRaster PartialRaster
@@ -211,8 +212,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
 // Flaky on Linux TSAN. https://crbug.com/707711
 #define MAYBE_PartialRaster DISABLED_PartialRaster
-#elif defined(OS_WIN) && defined(ADDRESS_SANITIZER)
-// Flaky on Windows ASAN https://crbug.com/1045521
+#elif defined(OS_CHROMEOS) || defined(MEMORY_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(OS_FUCHSIA)
+// TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
 #define MAYBE_PartialRaster PartialRaster
