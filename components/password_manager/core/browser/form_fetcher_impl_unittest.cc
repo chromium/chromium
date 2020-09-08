@@ -566,6 +566,35 @@ TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsOnHTTPSites) {
   EXPECT_FALSE(form_fetcher_->IsBlacklisted());
 }
 
+// Test that ensures HTTP passwords are not migrated on non HTML forms.
+TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsOnNonHTMLForms) {
+  GURL::Replacements https_rep;
+  https_rep.SetSchemeStr(url::kHttpsScheme);
+  const GURL https_url = form_digest_.url.ReplaceComponents(https_rep);
+  form_digest_ = PasswordStore::FormDigest(
+      PasswordForm::Scheme::kBasic, https_url.GetOrigin().spec(), https_url);
+
+  // A new form fetcher is created to be able to set the form digest and
+  // migration flag.
+  form_fetcher_ = std::make_unique<FormFetcherImpl>(
+      form_digest_, &client_, true /* should_migrate_http_passwords */);
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  form_fetcher_->AddConsumer(&consumer_);
+
+  Fetch();
+  // No migration takes places upon receiving empty results from the store, and
+  // hence no data are read/added from/to the store.
+  EXPECT_CALL(*mock_store_, GetLogins).Times(0);
+  EXPECT_CALL(*mock_store_, AddLogin).Times(0);
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  std::vector<PasswordForm> empty_forms;
+  store_consumer()->OnGetPasswordStoreResultsFrom(mock_store_.get(),
+                                                  MakeResults(empty_forms));
+  EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(), IsEmpty());
+  EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
+  EXPECT_FALSE(form_fetcher_->IsBlacklisted());
+}
+
 // Test that ensures HTTP passwords are only migrated on HTTPS sites when no
 // HTTPS credentials are available.
 TEST_P(FormFetcherImplTest, TryToMigrateHTTPPasswordsOnHTTPSSites) {

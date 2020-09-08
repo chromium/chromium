@@ -73,7 +73,9 @@ FormFetcherImpl::FormFetcherImpl(PasswordStore::FormDigest form_digest,
                                  bool should_migrate_http_passwords)
     : form_digest_(std::move(form_digest)),
       client_(client),
-      should_migrate_http_passwords_(should_migrate_http_passwords) {}
+      should_migrate_http_passwords_(
+          should_migrate_http_passwords &&
+          form_digest_.scheme == autofill::PasswordForm::Scheme::kHtml) {}
 
 FormFetcherImpl::~FormFetcherImpl() = default;
 

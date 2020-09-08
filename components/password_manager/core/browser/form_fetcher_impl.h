@@ -101,7 +101,8 @@ class FormFetcherImpl : public FormFetcher,
   // List of compromised credentials for the current domain.
   std::vector<CompromisedCredentials> compromised_credentials_;
 
-  // Indicates whether HTTP passwords should be migrated to HTTPS.
+  // Indicates whether HTTP passwords should be migrated to HTTPS. This is
+  // always false for non HTML forms.
   const bool should_migrate_http_passwords_;
 
  private:
