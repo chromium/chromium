@@ -257,11 +257,14 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
 
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
   for (auto& value : enabled_features_value->GetList()) {
-    if (!value.is_int())
-      NOTREACHED();
+    DCHECK(value.is_int());
+    int feature_value = value.GetInt();
+    // Filter invalid enums from other browser versions.
+    if (!sync_pb::SharingSpecificFields::EnabledFeatures_IsValid(feature_value))
+      continue;
 
     enabled_features.insert(
-        static_cast<SharingSpecificFields::EnabledFeatures>(value.GetInt()));
+        static_cast<SharingSpecificFields::EnabledFeatures>(feature_value));
   }
 
   return syncer::DeviceInfo::SharingInfo(std::move(*vapid_target_info),

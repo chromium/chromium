@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -34,6 +35,8 @@ const char kDeviceSenderIdP256dh[] = "test_sender_id_p256dh";
 
 const char kAuthorizedEntity[] = "authorized_entity";
 
+const char kSharingInfoEnabledFeatures[] = "enabled_features";
+
 }  // namespace
 
 class SharingSyncPreferenceTest : public testing::Test {
@@ -50,6 +53,20 @@ class SharingSyncPreferenceTest : public testing::Test {
          kDeviceSenderIdAuthToken},
         std::set<sync_pb::SharingSpecificFields::EnabledFeatures>{
             sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2});
+  }
+
+  void AddEnabledFeature(int feature) {
+    const base::DictionaryValue* registration =
+        prefs_.GetDictionary(prefs::kSharingLocalSharingInfo);
+    base::Value enabled_features =
+        registration->FindListKey(kSharingInfoEnabledFeatures)->Clone();
+
+    enabled_features.Append(feature);
+
+    DictionaryPrefUpdate local_sharing_info_update(
+        &prefs_, prefs::kSharingLocalSharingInfo);
+    local_sharing_info_update->SetKey(kSharingInfoEnabledFeatures,
+                                      std::move(enabled_features));
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -118,6 +135,18 @@ TEST_F(SharingSyncPreferenceTest, GetLocalSharingInfoForSync) {
   auto sharing_info = GetDefaultSharingInfo();
   sharing_sync_preference_.SetLocalSharingInfo(sharing_info);
 
+  EXPECT_EQ(sharing_info,
+            SharingSyncPreference::GetLocalSharingInfoForSync(&prefs_));
+}
+
+TEST_F(SharingSyncPreferenceTest, GetLocalSharingInfoForSync_InvalidEnum) {
+  auto sharing_info = GetDefaultSharingInfo();
+  sharing_sync_preference_.SetLocalSharingInfo(sharing_info);
+
+  // Add invalid enabled feature enum value.
+  AddEnabledFeature(/*feature=*/-1);
+
+  // Expect invalid enum value to be filtered out.
   EXPECT_EQ(sharing_info,
             SharingSyncPreference::GetLocalSharingInfoForSync(&prefs_));
 }
