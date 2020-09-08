@@ -188,8 +188,11 @@ CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
   DCHECK(object.IsSVGChild());
   if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
     const ComputedStyle& style = object.StyleRef();
-    return CompositingReasonsForAnimation(object) |
-           CompositingReasonsForWillChange(style);
+    auto reasons = CompositingReasonsForAnimation(object) |
+                   CompositingReasonsForWillChange(style);
+    if (style.HasBackdropFilter())
+      reasons |= CompositingReason::kBackdropFilter;
+    return reasons;
   }
   return CompositingReason::kNone;
 }

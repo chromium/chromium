@@ -164,11 +164,15 @@ void GraphicsLayer::AppendAdditionalInfoAsJSON(LayerTreeFlags flags,
     }
   }
 
+  if (ShouldCreateLayersAfterPaint()) {
+    json.SetBoolean("shouldCreateLayersAfterPaint", true);
+  } else {
 #if DCHECK_IS_ON()
-  if (HasLayerState() && DrawsContent() &&
-      (flags & kLayerTreeIncludesPaintRecords))
-    json.SetValue("paintRecord", RecordAsJSON(*CapturePaintRecord()));
+    if (HasLayerState() && DrawsContent() &&
+        (flags & kLayerTreeIncludesPaintRecords))
+      json.SetValue("paintRecord", RecordAsJSON(*CapturePaintRecord()));
 #endif
+  }
 }
 
 void GraphicsLayer::SetParent(GraphicsLayer* layer) {
@@ -641,6 +645,7 @@ void GraphicsLayer::SetElementId(const CompositorElementId& id) {
 
 sk_sp<PaintRecord> GraphicsLayer::CapturePaintRecord() const {
   DCHECK(PaintsContentOrHitTest());
+  DCHECK(!ShouldCreateLayersAfterPaint());
 
   if (client_.ShouldThrottleRendering())
     return sk_sp<PaintRecord>(new PaintRecord);
@@ -699,6 +704,7 @@ void GraphicsLayer::SetContentsLayerState(
 
 scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList(
     PaintingControlSetting painting_control) {
+  DCHECK(!ShouldCreateLayersAfterPaint());
   TRACE_EVENT0("blink,benchmark", "GraphicsLayer::PaintContents");
 
   if (painting_control == SUBSEQUENCE_CACHING_DISABLED)
