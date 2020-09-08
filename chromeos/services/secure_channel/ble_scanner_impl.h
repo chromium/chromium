@@ -34,7 +34,6 @@ class BleScannerImpl : public BleScanner,
   class Factory {
    public:
     static std::unique_ptr<BleScanner> Create(
-        Delegate* delegate,
         BleServiceDataHelper* service_data_helper,
         BleSynchronizerBase* ble_synchronizer,
         scoped_refptr<device::BluetoothAdapter> adapter);
@@ -43,7 +42,6 @@ class BleScannerImpl : public BleScanner,
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<BleScanner> CreateInstance(
-        Delegate* delegate,
         BleServiceDataHelper* service_data_helper,
         BleSynchronizerBase* ble_synchronizer,
         scoped_refptr<device::BluetoothAdapter> adapter) = 0;
@@ -67,8 +65,7 @@ class BleScannerImpl : public BleScanner,
         device::BluetoothDevice* bluetooth_device);
   };
 
-  BleScannerImpl(Delegate* delegate,
-                 BleServiceDataHelper* service_data_helper,
+  BleScannerImpl(BleServiceDataHelper* service_data_helper,
                  BleSynchronizerBase* ble_synchronizer,
                  scoped_refptr<device::BluetoothAdapter> adapter);
 

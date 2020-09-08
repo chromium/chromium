@@ -149,7 +149,6 @@ class FakeBleScannerFactory : public BleScannerImpl::Factory {
  private:
   // BleScannerImpl::Factory:
   std::unique_ptr<BleScanner> CreateInstance(
-      BleScanner::Delegate* delegate,
       BleServiceDataHelper* service_data_helper,
       BleSynchronizerBase* ble_synchronizer_base,
       scoped_refptr<device::BluetoothAdapter> adapter) override {
@@ -159,7 +158,7 @@ class FakeBleScannerFactory : public BleScannerImpl::Factory {
     EXPECT_EQ(expected_mock_adapter_, adapter);
     EXPECT_FALSE(instance_);
 
-    auto instance = std::make_unique<FakeBleScanner>(delegate);
+    auto instance = std::make_unique<FakeBleScanner>();
     instance_ = instance.get();
     return instance;
   }

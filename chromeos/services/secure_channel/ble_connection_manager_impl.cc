@@ -215,14 +215,17 @@ BleConnectionManagerImpl::BleConnectionManagerImpl(
                                              ble_service_data_helper_,
                                              ble_synchronizer_.get(),
                                              timer_factory)),
-      ble_scanner_(BleScannerImpl::Factory::Create(this /* delegate */,
-                                                   ble_service_data_helper_,
+      ble_scanner_(BleScannerImpl::Factory::Create(ble_service_data_helper_,
                                                    ble_synchronizer_.get(),
                                                    bluetooth_adapter)),
       secure_channel_disconnector_(
-          SecureChannelDisconnectorImpl::Factory::Create()) {}
+          SecureChannelDisconnectorImpl::Factory::Create()) {
+  ble_scanner_->AddObserver(this);
+}
 
-BleConnectionManagerImpl::~BleConnectionManagerImpl() = default;
+BleConnectionManagerImpl::~BleConnectionManagerImpl() {
+  ble_scanner_->RemoveObserver(this);
+}
 
 void BleConnectionManagerImpl::PerformAttemptBleInitiatorConnection(
     const DeviceIdPair& device_id_pair,

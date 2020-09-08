@@ -19,7 +19,7 @@ namespace secure_channel {
 // Test BleScanner implementation.
 class FakeBleScanner : public BleScanner {
  public:
-  explicit FakeBleScanner(Delegate* delegate);
+  FakeBleScanner();
   ~FakeBleScanner() override;
 
   size_t num_scan_filter_changes_handled() const {
@@ -41,11 +41,11 @@ class FakeBleScanner : public BleScanner {
   DISALLOW_COPY_AND_ASSIGN(FakeBleScanner);
 };
 
-// Test BleScanner::Delegate implementation.
-class FakeBleScannerDelegate : public BleScanner::Delegate {
+// Test BleScanner::Observer implementation.
+class FakeBleScannerObserver : public BleScanner::Observer {
  public:
-  FakeBleScannerDelegate();
-  ~FakeBleScannerDelegate() override;
+  FakeBleScannerObserver();
+  ~FakeBleScannerObserver() override;
 
   using ScannedResultList = std::vector<std::tuple<multidevice::RemoteDeviceRef,
                                                    device::BluetoothDevice*,
@@ -62,7 +62,7 @@ class FakeBleScannerDelegate : public BleScanner::Delegate {
 
   ScannedResultList handled_scan_results_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScannerDelegate);
+  DISALLOW_COPY_AND_ASSIGN(FakeBleScannerObserver);
 };
 
 }  // namespace secure_channel

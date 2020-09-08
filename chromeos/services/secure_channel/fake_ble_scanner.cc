@@ -8,7 +8,7 @@ namespace chromeos {
 
 namespace secure_channel {
 
-FakeBleScanner::FakeBleScanner(Delegate* delegate) : BleScanner(delegate) {}
+FakeBleScanner::FakeBleScanner() = default;
 
 FakeBleScanner::~FakeBleScanner() = default;
 
@@ -27,11 +27,11 @@ void FakeBleScanner::HandleScanFilterChange() {
   ++num_scan_filter_changes_handled_;
 }
 
-FakeBleScannerDelegate::FakeBleScannerDelegate() = default;
+FakeBleScannerObserver::FakeBleScannerObserver() = default;
 
-FakeBleScannerDelegate::~FakeBleScannerDelegate() = default;
+FakeBleScannerObserver::~FakeBleScannerObserver() = default;
 
-void FakeBleScannerDelegate::OnReceivedAdvertisement(
+void FakeBleScannerObserver::OnReceivedAdvertisement(
     multidevice::RemoteDeviceRef remote_device,
     device::BluetoothDevice* bluetooth_device,
     ConnectionRole connection_role) {

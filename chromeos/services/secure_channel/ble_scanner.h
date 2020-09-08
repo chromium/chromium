@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
@@ -26,9 +28,9 @@ namespace secure_channel {
 // received from a remote device.
 class BleScanner {
  public:
-  class Delegate {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Delegate() = default;
+    ~Observer() override = default;
     virtual void OnReceivedAdvertisement(
         multidevice::RemoteDeviceRef remote_device,
         device::BluetoothDevice* bluetooth_device,
@@ -51,8 +53,11 @@ class BleScanner {
 
   bool HasScanFilter(const ScanFilter& scan_filter);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
-  explicit BleScanner(Delegate* delegate);
+  BleScanner();
 
   virtual void HandleScanFilterChange() = 0;
 
@@ -66,7 +71,7 @@ class BleScanner {
       ConnectionRole connection_role);
 
  private:
-  Delegate* delegate_;
+  base::ObserverList<Observer> observer_list_;
 
   base::flat_set<ScanFilter> scan_filters_;
 

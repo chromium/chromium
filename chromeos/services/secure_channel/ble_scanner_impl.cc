@@ -35,17 +35,16 @@ BleScannerImpl::Factory* BleScannerImpl::Factory::test_factory_ = nullptr;
 
 // static
 std::unique_ptr<BleScanner> BleScannerImpl::Factory::Create(
-    Delegate* delegate,
     BleServiceDataHelper* service_data_helper,
     BleSynchronizerBase* ble_synchronizer,
     scoped_refptr<device::BluetoothAdapter> adapter) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(delegate, service_data_helper,
-                                         ble_synchronizer, adapter);
+    return test_factory_->CreateInstance(service_data_helper, ble_synchronizer,
+                                         adapter);
   }
 
-  return base::WrapUnique(new BleScannerImpl(delegate, service_data_helper,
-                                             ble_synchronizer, adapter));
+  return base::WrapUnique(
+      new BleScannerImpl(service_data_helper, ble_synchronizer, adapter));
 }
 
 // static
@@ -64,12 +63,10 @@ BleScannerImpl::ServiceDataProvider::ExtractProximityAuthServiceData(
       device::BluetoothUUID(kAdvertisingServiceUuid));
 }
 
-BleScannerImpl::BleScannerImpl(Delegate* delegate,
-                               BleServiceDataHelper* service_data_helper,
+BleScannerImpl::BleScannerImpl(BleServiceDataHelper* service_data_helper,
                                BleSynchronizerBase* ble_synchronizer,
                                scoped_refptr<device::BluetoothAdapter> adapter)
-    : BleScanner(delegate),
-      service_data_helper_(service_data_helper),
+    : service_data_helper_(service_data_helper),
       ble_synchronizer_(ble_synchronizer),
       adapter_(adapter),
       service_data_provider_(std::make_unique<ServiceDataProvider>()) {

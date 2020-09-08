@@ -13,7 +13,7 @@ namespace chromeos {
 
 namespace secure_channel {
 
-BleScanner::BleScanner(Delegate* delegate) : delegate_(delegate) {}
+BleScanner::BleScanner() = default;
 
 BleScanner::~BleScanner() = default;
 
@@ -43,6 +43,14 @@ bool BleScanner::HasScanFilter(const ScanFilter& scan_filter) {
   return base::Contains(scan_filters_, scan_filter);
 }
 
+void BleScanner::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void BleScanner::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 DeviceIdPairSet BleScanner::GetAllDeviceIdPairs() {
   DeviceIdPairSet set;
   for (const auto& scan_filter : scan_filters_)
@@ -54,8 +62,10 @@ void BleScanner::NotifyReceivedAdvertisementFromDevice(
     const multidevice::RemoteDeviceRef& remote_device,
     device::BluetoothDevice* bluetooth_device,
     ConnectionRole connection_role) {
-  delegate_->OnReceivedAdvertisement(remote_device, bluetooth_device,
+  for (auto& observer : observer_list_) {
+    observer.OnReceivedAdvertisement(remote_device, bluetooth_device,
                                      connection_role);
+  }
 }
 
 std::ostream& operator<<(std::ostream& stream,

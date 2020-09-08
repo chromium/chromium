@@ -82,7 +82,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_delegate_ = std::make_unique<FakeBleScannerDelegate>();
+    fake_delegate_ = std::make_unique<FakeBleScannerObserver>();
     fake_ble_service_data_helper_ =
         std::make_unique<FakeBleServiceDataHelper>();
     fake_ble_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
@@ -91,8 +91,9 @@ class SecureChannelBleScannerImplTest : public testing::Test {
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
 
     ble_scanner_ = BleScannerImpl::Factory::Create(
-        fake_delegate_.get(), fake_ble_service_data_helper_.get(),
-        fake_ble_synchronizer_.get(), mock_adapter_);
+        fake_ble_service_data_helper_.get(), fake_ble_synchronizer_.get(),
+        mock_adapter_);
+    ble_scanner_->AddObserver(fake_delegate_.get());
 
     auto fake_service_data_provider =
         std::make_unique<FakeServiceDataProvider>();
@@ -122,6 +123,10 @@ class SecureChannelBleScannerImplTest : public testing::Test {
             }));
   }
 
+  void TearDown() override {
+    ble_scanner_->RemoveObserver(fake_delegate_.get());
+  }
+
   void AddScanFilter(const BleScanner::ScanFilter& scan_filter) {
     EXPECT_FALSE(ble_scanner_->HasScanFilter(scan_filter));
     ble_scanner_->AddScanFilter(scan_filter);
@@ -149,7 +154,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
 
   void ProcessScanResultAndVerifyNoDeviceIdentified(
       const std::string& service_data) {
-    const FakeBleScannerDelegate::ScannedResultList& results =
+    const FakeBleScannerObserver::ScannedResultList& results =
         fake_delegate_->handled_scan_results();
 
     size_t num_results_before_call = results.size();
@@ -161,7 +166,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
       const std::string& service_data,
       multidevice::RemoteDeviceRef expected_remote_device,
       bool is_background_advertisement) {
-    const FakeBleScannerDelegate::ScannedResultList& results =
+    const FakeBleScannerObserver::ScannedResultList& results =
         fake_delegate_->handled_scan_results();
 
     fake_ble_service_data_helper_->SetIdentifiedDevice(
@@ -242,7 +247,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
 
   const multidevice::RemoteDeviceRefList test_devices_;
 
-  std::unique_ptr<FakeBleScannerDelegate> fake_delegate_;
+  std::unique_ptr<FakeBleScannerObserver> fake_delegate_;
   std::unique_ptr<FakeBleServiceDataHelper> fake_ble_service_data_helper_;
   std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;

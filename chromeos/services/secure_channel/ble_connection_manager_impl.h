@@ -41,7 +41,7 @@ class TimerFactory;
 // this process is complete, an AuthenticatedChannel is returned to the client.
 class BleConnectionManagerImpl : public BleConnectionManager,
                                  public BleAdvertiser::Delegate,
-                                 public BleScanner::Delegate,
+                                 public BleScanner::Observer,
                                  public SecureChannel::Observer {
  public:
   class Factory {
@@ -131,7 +131,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
   void OnFailureToGenerateAdvertisement(
       const DeviceIdPair& device_id_pair) override;
 
-  // BleScanner::Delegate:
+  // BleScanner::Observer:
   void OnReceivedAdvertisement(multidevice::RemoteDeviceRef remote_device,
                                device::BluetoothDevice* bluetooth_device,
                                ConnectionRole connection_role) override;
