@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_EVENT_GENERATOR_H_
 #define UI_ACCESSIBILITY_AX_EVENT_GENERATOR_H_
 
+#include <bitset>
 #include <map>
 #include <ostream>
 #include <set>
