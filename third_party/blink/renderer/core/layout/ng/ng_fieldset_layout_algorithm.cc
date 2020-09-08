@@ -269,12 +269,6 @@ void NGFieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
     intrinsic_block_size_ = legend_margin_end_offset;
 
     is_legend_past_border_ = true;
-
-    // If the legend is larger than the width of the fieldset block-start
-    // border, the actual padding edge of the fieldset will be moved
-    // accordingly. This will be the block-start offset for the fieldset
-    // contents anonymous box.
-    borders_.block_start = legend_margin_end_offset;
   }
 
   // If the margin box of the legend is at least as tall as the fieldset
