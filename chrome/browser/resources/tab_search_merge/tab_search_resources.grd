@@ -16,6 +16,9 @@
                file="${root_gen_dir}/chrome/browser/resources/tab_search/app.js"
                type="BINDATA"
                use_base_dir="false" />
+      <include name="IDR_FUSE_JS"
+               file="../../../../third_party/fusejs/dist/fuse.basic.esm.min.js"
+               type="BINDATA"/>
       <include name="IDR_TAB_SEARCH_API_PROXY_JS"
                file="tab_search_api_proxy.js"
                type="BINDATA" />
