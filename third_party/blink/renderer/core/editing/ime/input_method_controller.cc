@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/events/composition_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
@@ -724,18 +723,14 @@ void InputMethodController::AddImeTextSpans(
 
     switch (ime_text_span.GetType()) {
       case ImeTextSpan::Type::kComposition: {
-        Color background_color =
-            GetDocument().GetPage() && ime_text_span.InterimCharSelection()
-                ? LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
-                      GetDocument()
-                          .GetPage()
-                          ->GetVisualViewport()
-                          .UsedColorScheme())
-                : ime_text_span.BackgroundColor();
+        ImeTextSpanUnderlineStyle underline_style =
+            ime_text_span.InterimCharSelection()
+                ? ImeTextSpanUnderlineStyle::kSolid
+                : ime_text_span.UnderlineStyle();
         GetDocument().Markers().AddCompositionMarker(
             ephemeral_line_range, ime_text_span.UnderlineColor(),
-            ime_text_span.Thickness(), ime_text_span.UnderlineStyle(),
-            ime_text_span.TextColor(), background_color);
+            ime_text_span.Thickness(), underline_style,
+            ime_text_span.TextColor(), ime_text_span.BackgroundColor());
         break;
       }
       case ImeTextSpan::Type::kAutocorrect:
