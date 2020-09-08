@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+#include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -859,6 +860,56 @@ std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
   return std::make_pair(CSPDirectiveName::Unknown, nullptr);
 }
 
+// Check that all plugin-types allowed by the intersection of the policies in
+// |policies_b| are also allowed by |policy_a|.
+bool PluginTypesSubsumes(
+    const mojom::ContentSecurityPolicy& policy_a,
+    const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b) {
+  // Note that `policy->plugin_types == base::nullopt` means all plugin-types
+  // are allowed, while if `policy->plugin_types` is the empty vector than no
+  // plugin-types are allowed.
+
+  if (!policy_a.plugin_types.has_value())
+    // |types_a| allows everything.
+    return true;
+
+  if (policies_b.empty())
+    return false;
+
+  // Compute the intersection of the allowed plugin-types from |policies_b|.
+  // First, find the first non-null plugin-types entry in |policies_b|.
+  base::Optional<base::flat_set<std::string>> types_b;
+  auto it = policies_b.begin();
+  for (; it != policies_b.end(); ++it) {
+    if ((*it)->plugin_types.has_value()) {
+      types_b = base::flat_set<std::string>((*it)->plugin_types.value());
+      break;
+    }
+  }
+
+  // If |types_b| is base::nullopt, then no policy in |policies_b| specified
+  // any plugin-types, so |policies_b| allows everything.
+  if (!types_b.has_value())
+    return false;
+
+  // Now complete the intersection by considering the remaining policies of
+  // |policies_b|.
+  for (; it != policies_b.end(); ++it) {
+    if ((*it)->plugin_types.has_value()) {
+      base::flat_set<std::string> set((*it)->plugin_types.value());
+      base::EraseIf(types_b.value(),
+                    [&set](const auto& type) { return !set.contains(type); });
+    }
+  }
+
+  // Check that every plugin-type in |types_b| is allowed by |types_a|.
+  return util::ranges::all_of(types_b.value(), [&](const std::string& type_b) {
+    return util::ranges::any_of(
+        policy_a.plugin_types.value(),
+        [&](const std::string& type_a) { return type_a == type_b; });
+  });
+}
+
 }  // namespace
 
 void AddContentSecurityPolicyFromHeaders(
@@ -1038,10 +1089,12 @@ bool IsValidRequiredCSPAttr(
 bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
               const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b,
               const url::Origin& origin_b) {
-  if (policy_a.directives.empty())
+  if (policy_a.header->type == mojom::ContentSecurityPolicyType::kReport)
     return true;
 
-  if (policy_a.header->type == mojom::ContentSecurityPolicyType::kReport)
+  if (!PluginTypesSubsumes(policy_a, policies_b))
+    return false;
+  if (policy_a.directives.empty())
     return true;
 
   if (policies_b.empty())
@@ -1080,8 +1133,8 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
       if (source_list.second)
         returned.push_back(source_list.second);
     }
-    // TODO(amalika): Add checks for plugin-types, sandbox, disown-opener,
-    // navigation-to, worker-src.
+    // TODO(amalika): Add checks for sandbox, disown-opener,
+    // navigation-to.
     return CSPSourceListSubsumes(*required.second, returned, required.first,
                                  origin_b);
   });
