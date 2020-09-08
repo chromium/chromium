@@ -143,7 +143,8 @@ class CC_EXPORT ScrollbarController {
     return cancelable_autoscroll_task_ != nullptr;
   }
   bool ScrollbarScrollIsActive() const { return scrollbar_scroll_is_active_; }
-  void DidUnregisterScrollbar(ElementId element_id);
+  void DidUnregisterScrollbar(ElementId element_id,
+                              ScrollbarOrientation orientation);
   ScrollbarLayerImplBase* ScrollbarLayer() const;
   void WillBeginImplFrame();
   void ResetState();

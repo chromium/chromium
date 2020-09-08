@@ -24,6 +24,7 @@ struct CompositorCommitData;
 class LayerTreeHostImpl;
 class LayerTreeSettings;
 class ScrollTree;
+enum class ScrollbarOrientation;
 
 // This is the interface that LayerTreeHostImpl and the "graphics" side of the
 // compositor uses to talk to the compositor ThreadedInputHandler. This
@@ -55,7 +56,8 @@ class InputDelegateForCompositor {
 
   // Called to let the input handler know that a scrollbar for the given
   // elementId has been removed.
-  virtual void DidUnregisterScrollbar(ElementId scroll_element_id) = 0;
+  virtual void DidUnregisterScrollbar(ElementId scroll_element_id,
+                                      ScrollbarOrientation orientation) = 0;
 
   // Called to let the input handler know that a scroll offset animation has
   // completed.

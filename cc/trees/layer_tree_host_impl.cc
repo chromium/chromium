@@ -4037,10 +4037,12 @@ void LayerTreeHostImpl::RegisterScrollbarAnimationController(
 }
 
 void LayerTreeHostImpl::DidUnregisterScrollbarLayer(
-    ElementId scroll_element_id) {
-  scrollbar_animation_controllers_.erase(scroll_element_id);
+    ElementId scroll_element_id,
+    ScrollbarOrientation orientation) {
+  if (ScrollbarsFor(scroll_element_id).empty())
+    scrollbar_animation_controllers_.erase(scroll_element_id);
   if (input_delegate_)
-    input_delegate_->DidUnregisterScrollbar(scroll_element_id);
+    input_delegate_->DidUnregisterScrollbar(scroll_element_id, orientation);
 }
 
 ScrollbarAnimationController*
