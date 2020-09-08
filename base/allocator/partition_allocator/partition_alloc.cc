@@ -228,33 +228,6 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment) {
   // This is a "magic" value so we can test if a root pointer is valid.
   inverted_self = ~reinterpret_cast<uintptr_t>(this);
 
-  // Precalculate some shift and mask constants used in the hot path.
-  // Example: malloc(41) == 101001 binary.
-  // Order is 6 (1 << 6-1) == 32 is highest bit set.
-  // order_index is the next three MSB == 010 == 2.
-  // sub_order_index_mask is a mask for the remaining bits == 11 (masking to 01
-  // for
-  // the sub_order_index).
-  size_t order;
-  for (order = 0; order <= kBitsPerSizeT; ++order) {
-    size_t order_index_shift;
-    if (order < kNumBucketsPerOrderBits + 1)
-      order_index_shift = 0;
-    else
-      order_index_shift = order - (kNumBucketsPerOrderBits + 1);
-    order_index_shifts[order] = order_index_shift;
-    size_t sub_order_index_mask;
-    if (order == kBitsPerSizeT) {
-      // This avoids invoking undefined behavior for an excessive shift.
-      sub_order_index_mask =
-          static_cast<size_t>(-1) >> (kNumBucketsPerOrderBits + 1);
-    } else {
-      sub_order_index_mask = ((static_cast<size_t>(1) << order) - 1) >>
-                             (kNumBucketsPerOrderBits + 1);
-    }
-    order_sub_index_masks[order] = sub_order_index_mask;
-  }
-
   // Set up the actual usable buckets first.
   // Note that typical values (i.e. min allocation size of 8) will result in
   // pseudo buckets (size==9 etc. or more generally, size is not a multiple
@@ -282,7 +255,7 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment) {
   // Then set up the fast size -> bucket lookup table.
   bucket = &buckets[0];
   Bucket** bucket_ptr = &bucket_lookups[0];
-  for (order = 0; order <= kBitsPerSizeT; ++order) {
+  for (size_t order = 0; order <= kBitsPerSizeT; ++order) {
     for (j = 0; j < kNumBucketsPerOrder; ++j) {
       if (order < kMinBucketedOrder) {
         // Use the bucket of the finest granularity for malloc(0) etc.

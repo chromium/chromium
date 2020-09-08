@@ -265,6 +265,92 @@ class BASE_EXPORT PartitionStatsDumper {
                                          const PartitionBucketMemoryStats*) = 0;
 };
 
+namespace {
+// Precalculate some shift and mask constants used in the hot path.
+// Example: malloc(41) == 101001 binary.
+// Order is 6 (1 << 6-1) == 32 is highest bit set.
+// order_index is the next three MSB == 010 == 2.
+// sub_order_index_mask is a mask for the remaining bits == 11 (masking to 01
+// for the sub_order_index).
+constexpr size_t OrderIndexShift(size_t order) {
+  if (order < kNumBucketsPerOrderBits + 1)
+    return 0;
+
+  return order - (kNumBucketsPerOrderBits + 1);
+}
+
+constexpr size_t OrderSubIndexMask(size_t order) {
+  if (order == kBitsPerSizeT)
+    return static_cast<size_t>(-1) >> (kNumBucketsPerOrderBits + 1);
+
+  return ((static_cast<size_t>(1) << order) - 1) >>
+         (kNumBucketsPerOrderBits + 1);
+}
+
+#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#define BITS_PER_SIZE_T 64
+static_assert(kBitsPerSizeT == 64, "");
+#else
+#define BITS_PER_SIZE_T 32
+static_assert(kBitsPerSizeT == 32, "");
+#endif
+
+constexpr size_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
+    OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
+    OrderIndexShift(3),  OrderIndexShift(4),  OrderIndexShift(5),
+    OrderIndexShift(6),  OrderIndexShift(7),  OrderIndexShift(8),
+    OrderIndexShift(9),  OrderIndexShift(10), OrderIndexShift(11),
+    OrderIndexShift(12), OrderIndexShift(13), OrderIndexShift(14),
+    OrderIndexShift(15), OrderIndexShift(16), OrderIndexShift(17),
+    OrderIndexShift(18), OrderIndexShift(19), OrderIndexShift(20),
+    OrderIndexShift(21), OrderIndexShift(22), OrderIndexShift(23),
+    OrderIndexShift(24), OrderIndexShift(25), OrderIndexShift(26),
+    OrderIndexShift(27), OrderIndexShift(28), OrderIndexShift(29),
+    OrderIndexShift(30), OrderIndexShift(31), OrderIndexShift(32),
+#if BITS_PER_SIZE_T == 64
+    OrderIndexShift(33), OrderIndexShift(34), OrderIndexShift(35),
+    OrderIndexShift(36), OrderIndexShift(37), OrderIndexShift(38),
+    OrderIndexShift(39), OrderIndexShift(40), OrderIndexShift(41),
+    OrderIndexShift(42), OrderIndexShift(43), OrderIndexShift(44),
+    OrderIndexShift(45), OrderIndexShift(46), OrderIndexShift(47),
+    OrderIndexShift(48), OrderIndexShift(49), OrderIndexShift(50),
+    OrderIndexShift(51), OrderIndexShift(52), OrderIndexShift(53),
+    OrderIndexShift(54), OrderIndexShift(55), OrderIndexShift(56),
+    OrderIndexShift(57), OrderIndexShift(58), OrderIndexShift(59),
+    OrderIndexShift(60), OrderIndexShift(61), OrderIndexShift(62),
+    OrderIndexShift(63), OrderIndexShift(64)
+#endif
+};
+
+constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
+    OrderSubIndexMask(0),  OrderSubIndexMask(1),  OrderSubIndexMask(2),
+    OrderSubIndexMask(3),  OrderSubIndexMask(4),  OrderSubIndexMask(5),
+    OrderSubIndexMask(6),  OrderSubIndexMask(7),  OrderSubIndexMask(8),
+    OrderSubIndexMask(9),  OrderSubIndexMask(10), OrderSubIndexMask(11),
+    OrderSubIndexMask(12), OrderSubIndexMask(13), OrderSubIndexMask(14),
+    OrderSubIndexMask(15), OrderSubIndexMask(16), OrderSubIndexMask(17),
+    OrderSubIndexMask(18), OrderSubIndexMask(19), OrderSubIndexMask(20),
+    OrderSubIndexMask(21), OrderSubIndexMask(22), OrderSubIndexMask(23),
+    OrderSubIndexMask(24), OrderSubIndexMask(25), OrderSubIndexMask(26),
+    OrderSubIndexMask(27), OrderSubIndexMask(28), OrderSubIndexMask(29),
+    OrderSubIndexMask(30), OrderSubIndexMask(31), OrderSubIndexMask(32),
+#if BITS_PER_SIZE_T == 64
+    OrderSubIndexMask(33), OrderSubIndexMask(34), OrderSubIndexMask(35),
+    OrderSubIndexMask(36), OrderSubIndexMask(37), OrderSubIndexMask(38),
+    OrderSubIndexMask(39), OrderSubIndexMask(40), OrderSubIndexMask(41),
+    OrderSubIndexMask(42), OrderSubIndexMask(43), OrderSubIndexMask(44),
+    OrderSubIndexMask(45), OrderSubIndexMask(46), OrderSubIndexMask(47),
+    OrderSubIndexMask(48), OrderSubIndexMask(49), OrderSubIndexMask(50),
+    OrderSubIndexMask(51), OrderSubIndexMask(52), OrderSubIndexMask(53),
+    OrderSubIndexMask(54), OrderSubIndexMask(55), OrderSubIndexMask(56),
+    OrderSubIndexMask(57), OrderSubIndexMask(58), OrderSubIndexMask(59),
+    OrderSubIndexMask(60), OrderSubIndexMask(61), OrderSubIndexMask(62),
+    OrderSubIndexMask(63), OrderSubIndexMask(64)
+#endif
+};
+
+}  // namespace
+
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
 template <bool thread_safe>
@@ -304,9 +390,6 @@ struct BASE_EXPORT PartitionRoot {
   char* next_tag_bitmap_page = nullptr;
 #endif
 
-  // Some pre-computed constants.
-  size_t order_index_shifts[kBitsPerSizeT + 1] = {};
-  size_t order_sub_index_masks[kBitsPerSizeT + 1] = {};
   // The bucket lookup table lets us map a size_t to a bucket quickly.
   // The trailing +1 caters for the overflow case for very large allocation
   // sizes.  It is one flat array instead of a 2D array because in the 2D
@@ -696,9 +779,9 @@ PartitionRoot<thread_safe>::SizeToBucket(size_t size) const {
   size_t order = kBitsPerSizeT - bits::CountLeadingZeroBitsSizeT(size);
   // The order index is simply the next few bits after the most significant bit.
   size_t order_index =
-      (size >> order_index_shifts[order]) & (kNumBucketsPerOrder - 1);
+      (size >> kOrderIndexShift[order]) & (kNumBucketsPerOrder - 1);
   // And if the remaining bits are non-zero we must bump the bucket up.
-  size_t sub_order_index = size & order_sub_index_masks[order];
+  size_t sub_order_index = size & kOrderSubIndexMask[order];
   Bucket* bucket = bucket_lookups[(order << kNumBucketsPerOrderBits) +
                                   order_index + !!sub_order_index];
   PA_CHECK(bucket);
