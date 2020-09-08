@@ -126,8 +126,8 @@ write_file(build_vars_file, _build_vars_json, "json")
 # TODO(agrieve): Update bot recipes to use .json format.
 if (enable_java_templates) {
   _lines = [ "final_android_sdk=${_build_vars_json.final_android_sdk}" ]
-  if (defined(_build_vars_json.android_secondary_abi_cpu)) {
-    _lines += [ "android_secondary_abi_toolchain=${_build_vars_json.android_secondary_abi_cpu}" ]
+  if (defined(_build_vars_json.android_secondary_abi_toolchain)) {
+    _lines += [ "android_secondary_abi_toolchain=${_build_vars_json.android_secondary_abi_toolchain}" ]
   }
   write_file("$root_build_dir/build_vars.txt", _lines)
 }
