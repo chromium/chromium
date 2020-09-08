@@ -30,6 +30,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "PIN_MIGRATION";
     case KeepAliveOrigin::REMOTE_DEBUGGING:
       return out << "REMOTE_DEBUGGING";
+    case KeepAliveOrigin::DEVTOOLS_WINDOW:
+      return out << "DEVTOOLS_WINDOW";
     case KeepAliveOrigin::NOTIFICATION:
       return out << "NOTIFICATION";
     case KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT:
