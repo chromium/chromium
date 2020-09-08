@@ -97,9 +97,6 @@ const base::Feature kTranslateRankerQuery{"TranslateRankerQuery",
 const base::Feature kTranslateRankerEnforcement{
     "TranslateRankerEnforcement", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kTranslateRankerAutoBlacklistOverride{
-    "TranslateRankerAutoBlacklistOverride", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kTranslateRankerPreviousLanguageMatchesOverride{
     "TranslateRankerPreviousLanguageMatchesOverride",
     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -160,8 +157,6 @@ TranslateRankerImpl::TranslateRankerImpl(const base::FilePath& model_path,
       is_query_enabled_(base::FeatureList::IsEnabled(kTranslateRankerQuery)),
       is_enforcement_enabled_(
           base::FeatureList::IsEnabled(kTranslateRankerEnforcement)),
-      is_auto_blacklist_override_enabled_(base::FeatureList::IsEnabled(
-          translate::kTranslateRankerAutoBlacklistOverride)),
       is_previous_language_matches_override_enabled_(
           base::FeatureList::IsEnabled(
               translate::kTranslateRankerPreviousLanguageMatchesOverride)) {
@@ -381,9 +376,8 @@ bool TranslateRankerImpl::ShouldOverrideDecision(
   DCHECK(metrics::TranslateEventProto::EventType_IsValid(event_type));
   if ((event_type == metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE &&
        is_previous_language_matches_override_enabled_) ||
-      (event_type ==
-           metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST &&
-       is_auto_blacklist_override_enabled_)) {
+      event_type ==
+          metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST) {
     translate_event->add_decision_overrides(
         static_cast<metrics::TranslateEventProto::EventType>(event_type));
     DVLOG(3) << "Overriding decision of type: " << event_type;

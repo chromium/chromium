@@ -42,7 +42,6 @@ extern const char kDefaultTranslateRankerModelURL[];
 // enabling enforcement implies (forces) enabling queries.
 extern const base::Feature kTranslateRankerQuery;
 extern const base::Feature kTranslateRankerEnforcement;
-extern const base::Feature kTranslateRankerAutoBlacklistOverride;
 extern const base::Feature kTranslateRankerPreviousLanguageMatchesOverride;
 
 struct TranslateRankerFeatures {
@@ -150,10 +149,6 @@ class TranslateRankerImpl : public TranslateRanker {
   // Tracks whether or not translate ranker enforcement is enabled. Note that
   // that also enables the code paths for translate ranker querying.
   bool is_enforcement_enabled_ = true;
-
-  // When set to true, overrides UI suppression caused by auto blacklist in
-  // bubble UI.
-  bool is_auto_blacklist_override_enabled_ = false;
 
   // When set to true, overrides UI suppression when previous language
   // matches current language in bubble UI.
