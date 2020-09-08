@@ -29,7 +29,8 @@ function setSubmitListener(form, fetchDataUrl) {
   form.addEventListener('submit', event => {
     event.preventDefault();
     const dataUrl = fetchDataUrl();
-    window.open(`${FIREBASE_HOST}/viewer.html?load_url=${dataUrl}`);
+    window.open(
+        `${FIREBASE_HOST}/viewer.html?load_url=${dataUrl}&authenticate=1`);
   });
 }
 
