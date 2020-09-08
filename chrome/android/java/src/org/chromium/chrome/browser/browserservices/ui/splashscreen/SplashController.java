@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinis
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabOrientationController;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -85,6 +87,7 @@ public class SplashController
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final TwaFinishHandler mFinishHandler;
+    private final CustomTabActivityTabProvider mTabProvider;
 
     private SplashDelegate mDelegate;
 
@@ -120,13 +123,15 @@ public class SplashController
     public SplashController(ChromeActivity<?> activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabObserverRegistrar tabObserverRegistrar,
-            CustomTabOrientationController orientationController, TwaFinishHandler finishHandler) {
+            CustomTabOrientationController orientationController, TwaFinishHandler finishHandler,
+            CustomTabActivityTabProvider tabProvider) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabObserverRegistrar = tabObserverRegistrar;
         mObservers = new ObserverList<>();
         mTranslucencyRemovalStrategy = TranslucencyRemoval.NONE;
         mFinishHandler = finishHandler;
+        mTabProvider = tabProvider;
 
         boolean isWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);
@@ -211,6 +216,15 @@ public class SplashController
     public void onPageLoadFailed(Tab tab, int errorCode) {
         if (canHideSplashScreen()) {
             hideSplash(tab, true /* loadFailed */);
+        }
+    }
+
+    @Override
+    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+        if (!tab.isLoading() && isInteractable
+                && mTabProvider.getInitialTabCreationMode() == TabCreationMode.RESTORED
+                && canHideSplashScreen()) {
+            hideSplash(tab, false /* loadFailed */);
         }
     }
 
