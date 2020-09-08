@@ -843,6 +843,9 @@ class FileTable extends cr.ui.Table {
     label.className = 'detail-name';
     label.appendChild(
         filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
+    if (locationInfo.isDriveBased) {
+      label.appendChild(filelist.renderPinned(this.ownerDocument));
+    }
     return label;
   }
 
@@ -1081,7 +1084,7 @@ class FileTable extends cr.ui.Table {
                 [entry],
                 [
                   'availableOffline', 'customIconUrl', 'shared',
-                  'isMachineRoot', 'isExternalMedia', 'hosted'
+                  'isMachineRoot', 'isExternalMedia', 'hosted', 'pinned'
                 ])[0],
             util.isTeamDriveRoot(entry));
       });
@@ -1106,7 +1109,7 @@ class FileTable extends cr.ui.Table {
     const dateId = item.id + '-date';
     filelist.decorateListItem(item, entry, assert(this.metadataModel_));
     item.setAttribute('file-name', entry.name);
-    item.querySelector('.entry-name').setAttribute('id', nameId);
+    item.querySelector('.detail-name').setAttribute('id', nameId);
     item.querySelector('.size').setAttribute('id', sizeId);
     item.querySelector('.date').setAttribute('id', dateId);
     item.setAttribute('aria-labelledby', nameId);

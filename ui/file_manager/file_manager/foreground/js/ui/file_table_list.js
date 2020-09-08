@@ -144,7 +144,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
   // not on an external backend, externalProps is not available.
   const externalProps = metadataModel.getCache([entry], [
     'hosted', 'availableOffline', 'customIconUrl', 'shared', 'isMachineRoot',
-    'isExternalMedia'
+    'isExternalMedia', 'pinned'
   ])[0];
   filelist.updateListItemExternalProps(
       li, externalProps, util.isTeamDriveRoot(entry));
@@ -213,27 +213,29 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
+ * Renders the Drive pinned marker in the detail table.
+ * @return {!HTMLDivElement} Created element.
+ */
+filelist.renderPinned = (doc) => {
+  const icon = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
+  icon.className = 'detail-pinned';
+  icon.setAttribute('aria-label', str('OFFLINE_COLUMN_LABEL'));
+  return icon;
+};
+
+/**
  * Updates grid item or table row for the externalProps.
  * @param {cr.ui.ListItem} li List item.
  * @param {Object} externalProps Metadata.
  */
 filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
   if (li.classList.contains('file')) {
-    if (externalProps.availableOffline === false) {
-      li.classList.add('dim-offline');
-    } else {
-      li.classList.remove('dim-offline');
-    }
-    // TODO(mtomasz): Consider adding some vidual indication for files which
-    // are not cached on LTE. Currently we show them as normal files.
-    // crbug.com/246611.
-
-    if (externalProps.hosted === true) {
-      li.classList.add('dim-hosted');
-    } else {
-      li.classList.remove('dim-hosted');
-    }
+    li.classList.toggle(
+        'dim-offline', externalProps.availableOffline === false);
+    li.classList.toggle('dim-hosted', !!externalProps.hosted);
   }
+
+  li.classList.toggle('pinned', !!externalProps.pinned);
 
   const iconDiv = li.querySelector('.detail-icon');
   if (!iconDiv) {

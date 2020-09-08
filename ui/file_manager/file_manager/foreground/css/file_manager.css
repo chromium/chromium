@@ -2554,7 +2554,10 @@ input.rename {
   text-align: inherit;
 }
 
-.table-row-cell .filename-label,
+.table-row-cell .filename-label {
+  flex: initial;
+}
+
 .table-row-cell input.rename {
   flex: auto;
 }
@@ -3284,6 +3287,20 @@ body.files-ng #list-container li .detail-checkmark {
 body.files-ng #list-container li .detail-thumbnail {
   height: 32px;
   width: 32px;
+}
+
+.detail-pinned {
+  display: none;
+}
+
+body.files-ng #list-container li.pinned:not([renaming]) .detail-pinned {
+  -webkit-mask-image: url(../images/files/ui/offline.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: currentColor;
+  display: flex;
+  height: 40px;
+  width: 40px;
 }
 
 #new-folder-button {

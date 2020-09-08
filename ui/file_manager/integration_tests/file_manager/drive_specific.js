@@ -227,14 +227,16 @@ testcase.drivePinMultiple = async () => {
       '#file-context-menu:not([hidden]) ' +
           '[command="#toggle-pinned"]:not([checked])');
 
-  // Wait the toggle pinned async action to finish, so the next call to display
-  // context menu is after the action has finished.
+  // Wait for the toggle pinned async action to finish, so the next call to
+  // display context menu is after the action has finished.
   await remoteCall.waitForElement(appId, '#file-context-menu[hidden]');
 
-  // Wait the pinned action to finish, it's flagged in the file list by
-  // removing CSS class "dim-offline".
+  // Wait for the pinned action to finish, it's flagged in the file list by
+  // removing CSS class "dim-offline" and adding class "pinned".
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="world.ogv"]');
+  await remoteCall.waitForElement(
+      appId, '#file-list .pinned[file-name="world.ogv"] .detail-pinned');
 
   // Select world.ogv by itself.
   await remoteCall.waitAndClickElement(
@@ -272,16 +274,16 @@ testcase.drivePinFileMobileNetwork = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseRightClick', appId, ['.table-row[selected]']));
 
-  // Wait menu to appear and click on toggle pinned.
+  // Wait for the menu to appear and click on toggle pinned.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
   await remoteCall.waitAndClickElement(
       appId, '[command="#toggle-pinned"]:not([hidden]):not([disabled])');
 
-  // Wait the toggle pinned async action to finish, so the next call to display
-  // context menu is after the action has finished.
+  // Wait for the toggle pinned async action to finish, so the next call to
+  // display context menu is after the action has finished.
   await remoteCall.waitForElement(appId, '#file-context-menu[hidden]');
 
-  // Wait the pinned action to finish, it's flagged in the file list by
+  // Wait for the pinned action to finish, it's flagged in the file list by
   // removing CSS class "dim-offline".
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="hello.txt"]');
@@ -293,6 +295,8 @@ testcase.drivePinFileMobileNetwork = async () => {
 
   // Check: File is pinned.
   await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
+  await remoteCall.waitForElement(
+      appId, '#file-list .pinned[file-name="hello.txt"] .detail-pinned');
   await repeatUntil(async () => {
     const idSet =
         await remoteCall.callRemoteTestUtil('getNotificationIDs', null, []);
