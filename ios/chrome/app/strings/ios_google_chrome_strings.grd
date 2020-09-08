@@ -185,13 +185,10 @@ locale.  The strings in this file are specific to iOS.
         Make Chrome Your Default
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser promotion modal. [iOS only]">
-        You can now use Chrome any time you tap links in messages, documents, and other apps.
+        To make Chrome your default, Open Settings, tap Default Browser App, and select Chrome.
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE" desc="Message when the user taps the addition information button in the default browser promotion modal. [iOS only]">
-        To make Chrome your default:
-        1. Open Settings. 
-        2. Tap Default Browser App.
-        3. Select Chrome.
+          You can now use Chrome any time you tap links in messages, documents, and other apps.
       </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chrome?
