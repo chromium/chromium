@@ -29,7 +29,7 @@ class GoogleServiceAuthError {
     // cached credentials have expired.
     INVALID_GAIA_CREDENTIALS = 1,
 
-    // The GAIA user is not authorized to use the service.
+    // Chrome does not have credentials (tokens) for this account.
     USER_NOT_SIGNED_UP = 2,
 
     // Could not connect to server to verify credentials. This could be in
