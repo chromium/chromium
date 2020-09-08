@@ -87,12 +87,8 @@ void LiteVideoHintAgent::SetLiteVideoHint(
 }
 
 void LiteVideoHintAgent::StopThrottling() {
-  // TODO(rajendrant): Send the stop throttling signal to browser process, after
-  // some K rebuffer events had occurred.
-  DCHECK(HasLiteVideoHint());
-  for (auto* throttle : active_throttles_) {
+  for (auto* throttle : active_throttles_)
     throttle->ResumeIfThrottled();
-  }
   kilobytes_buffered_before_throttle_ = 0;
 }
 
