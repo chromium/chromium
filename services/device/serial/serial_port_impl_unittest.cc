@@ -4,6 +4,7 @@
 
 #include "services/device/serial/serial_port_impl.h"
 
+#include "base/stl_util.h"
 #include "base/test/bind_test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -94,7 +95,51 @@ class SerialPortImplTest : public DeviceServiceTestBase {
     MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
     DCHECK_EQ(result, MOJO_RESULT_OK);
   }
+
+  mojo::ScopedDataPipeConsumerHandle StartReading(
+      mojom::SerialPort* serial_port) {
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    CreateDataPipe(&producer, &consumer);
+    serial_port->StartReading(std::move(producer));
+    return consumer;
+  }
+
+  mojo::ScopedDataPipeProducerHandle StartWriting(
+      mojom::SerialPort* serial_port) {
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    CreateDataPipe(&producer, &consumer);
+    serial_port->StartWriting(std::move(consumer));
+    return producer;
+  }
 };
+
+TEST_F(SerialPortImplTest, StartIoBeforeOpen) {
+  mojo::Remote<mojom::SerialPort> serial_port;
+  mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher_remote;
+  mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher> watcher =
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<mojom::SerialPortConnectionWatcher>(),
+          watcher_remote.InitWithNewPipeAndPassReceiver());
+  SerialPortImpl::Create(
+      base::FilePath(FILE_PATH_LITERAL("/dev/fakeserialmojo")),
+      serial_port.BindNewPipeAndPassReceiver(), std::move(watcher_remote),
+      task_environment_.GetMainThreadTaskRunner());
+
+  mojo::ScopedDataPipeConsumerHandle consumer = StartReading(serial_port.get());
+  mojo::ScopedDataPipeProducerHandle producer = StartWriting(serial_port.get());
+
+  // Write some data so that StartWriting() will cause a call to Write().
+  static const char kBuffer[] = "test";
+  uint32_t bytes_written = base::size(kBuffer);
+  MojoResult result =
+      producer->WriteData(&kBuffer, &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
+  DCHECK_EQ(result, MOJO_RESULT_OK);
+  DCHECK_EQ(bytes_written, base::size(kBuffer));
+
+  base::RunLoop().RunUntilIdle();
+}
 
 TEST_F(SerialPortImplTest, WatcherClosedWhenPortClosed) {
   mojo::Remote<mojom::SerialPort> serial_port;
@@ -139,10 +184,7 @@ TEST_F(SerialPortImplTest, FlushRead) {
   mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher> watcher;
   CreatePort(&serial_port, &watcher);
 
-  mojo::ScopedDataPipeProducerHandle producer;
-  mojo::ScopedDataPipeConsumerHandle consumer;
-  CreateDataPipe(&producer, &consumer);
-  serial_port->StartReading(std::move(producer));
+  mojo::ScopedDataPipeConsumerHandle consumer = StartReading(serial_port.get());
 
   // Calling Flush(kReceive) should cause the data pipe to close.
   base::RunLoop watcher_loop;
@@ -170,10 +212,7 @@ TEST_F(SerialPortImplTest, FlushWrite) {
   mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher> watcher;
   CreatePort(&serial_port, &watcher);
 
-  mojo::ScopedDataPipeProducerHandle producer;
-  mojo::ScopedDataPipeConsumerHandle consumer;
-  CreateDataPipe(&producer, &consumer);
-  serial_port->StartWriting(std::move(consumer));
+  mojo::ScopedDataPipeProducerHandle producer = StartWriting(serial_port.get());
 
   // Calling Flush(kTransmit) should cause the data pipe to close.
   base::RunLoop watcher_loop;
@@ -201,10 +240,7 @@ TEST_F(SerialPortImplTest, Drain) {
   mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher> watcher;
   CreatePort(&serial_port, &watcher);
 
-  mojo::ScopedDataPipeProducerHandle producer;
-  mojo::ScopedDataPipeConsumerHandle consumer;
-  CreateDataPipe(&producer, &consumer);
-  serial_port->StartWriting(std::move(consumer));
+  mojo::ScopedDataPipeProducerHandle producer = StartWriting(serial_port.get());
 
   // Drain() will wait for the data pipe to close before replying.
   producer.reset();
