@@ -58,7 +58,8 @@ TEST_F(
             realTts, AbstractTts.RATE, false);
 
         mockFeedback.call(doCmd('showTtsSettings'))
-            .expectSpeech('Text-to-Speech voice settings subpage back button')
+            .expectSpeech(
+                /(Settings)|(Text-to-Speech voice settings subpage back button)/)
 
             // ChromeVox presents a 0% to 100% scale.
             // Ensure we have the default rate.
