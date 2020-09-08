@@ -57,7 +57,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   SetPINRequestHandler(
       const base::flat_set<FidoTransportProtocol>& supported_transports,
       GetPINCallback get_pin_callback,
-      FinishedCallback finished_callback);
+      FinishedCallback finished_callback,
+      std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory =
+          std::make_unique<FidoDiscoveryFactory>());
   ~SetPINRequestHandler() override;
 
   // ProvidePIN may be called after |get_pin_callback| has been used to indicate
@@ -95,7 +97,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   // The pointed-at object is owned by the |FidoRequestHandlerBase| superclass
   // of this class.
   FidoAuthenticator* authenticator_ = nullptr;
-  FidoDiscoveryFactory fido_discovery_factory_;
+  std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory_;
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<SetPINRequestHandler> weak_factory_{this};
 
