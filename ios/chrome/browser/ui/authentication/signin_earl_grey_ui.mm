@@ -152,11 +152,15 @@ using chrome_test_util::SignOutAccountsButton;
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode
                              closeButton:(BOOL)closeButton {
   [ChromeEarlGreyUI waitForAppToIdle];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(kSigninPromoViewId),
-                                   grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+
+  // The sign-in promo is not visible when showing illustrated empty states.
+  if (![ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(
+                                     grey_accessibilityID(kSigninPromoViewId),
+                                     grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()];
+  }
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -169,10 +173,13 @@ using chrome_test_util::SignOutAccountsButton;
           assertWithMatcher:grey_nil()];
       break;
     case SigninPromoViewModeWarmState:
-      [[EarlGrey
-          selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
-                                              grey_sufficientlyVisible(), nil)]
-          assertWithMatcher:grey_notNil()];
+      if (![ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+        [[EarlGrey
+            selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
+                                                grey_sufficientlyVisible(),
+                                                nil)]
+            assertWithMatcher:grey_notNil()];
+      }
       break;
   }
   if (closeButton) {
