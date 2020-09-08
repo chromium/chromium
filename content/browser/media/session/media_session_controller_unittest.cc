@@ -433,6 +433,20 @@ TEST_F(MediaSessionControllerTest,
 }
 
 TEST_F(MediaSessionControllerTest,
+       AddPlayerWhenEnteringPictureInPicturePaused) {
+  controller_->SetMetadata(
+      /*has_audio=*/false, /*has_video=*/false,
+      media::MediaContentType::Persistent);
+  ASSERT_TRUE(controller_->OnPlaybackStarted());
+  controller_->OnPlaybackPaused(/*reached_end_of_stream=*/false);
+  ASSERT_FALSE(media_session()->IsActive());
+
+  contents()->SetHasPictureInPictureVideo(true);
+  controller_->PictureInPictureStateChanged(true);
+  EXPECT_FALSE(media_session()->IsActive());
+}
+
+TEST_F(MediaSessionControllerTest,
        AddPlayerInitiallyPictureInPictureWithNoAudio) {
   contents()->SetHasPictureInPictureVideo(true);
 

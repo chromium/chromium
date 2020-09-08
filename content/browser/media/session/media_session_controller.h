@@ -106,6 +106,7 @@ class CONTENT_EXPORT MediaSessionController
   static int player_count_;
   const int player_id_ = player_count_++;
 
+  bool is_paused_ = true;
   // Playing or paused, but not ended.
   bool is_playback_in_progress_ = false;
   bool has_audio_ = false;

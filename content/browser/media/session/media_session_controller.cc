@@ -43,6 +43,7 @@ void MediaSessionController::SetMetadata(
 }
 
 bool MediaSessionController::OnPlaybackStarted() {
+  is_paused_ = false;
   is_playback_in_progress_ = true;
   return AddOrRemovePlayer();
 }
@@ -132,6 +133,8 @@ bool MediaSessionController::IsPictureInPictureAvailable(int player_id) const {
 }
 
 void MediaSessionController::OnPlaybackPaused(bool reached_end_of_stream) {
+  is_paused_ = true;
+
   if (reached_end_of_stream) {
     is_playback_in_progress_ = false;
     AddOrRemovePlayer();
@@ -197,6 +200,12 @@ bool MediaSessionController::AddOrRemovePlayer() {
       OnSuspend(player_id_);
       return false;
     }
+
+    // Need to synchronise paused/playing state in case we're adding the player
+    // because of entering Picture-In-Picture.
+    if (is_paused_)
+      media_session_->OnPlayerPaused(this, player_id_);
+
     return true;
   }
 
