@@ -254133,6 +254133,11 @@
     ]
   },
   "mac-mojo-rel": {},
+  "mac-official": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "mac-osxbeta-rel": {
     "gtest_tests": [
       {

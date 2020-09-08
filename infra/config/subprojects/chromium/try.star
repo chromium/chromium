@@ -145,6 +145,13 @@ try_.chromium_builder(
 )
 
 try_.chromium_builder(
+    name = "mac-official",
+    branch_selector = branches.STANDARD_RELEASES,
+    cores = None,
+    os = os.MAC_ANY,
+)
+
+try_.chromium_builder(
     name = "win-official",
     branch_selector = branches.STANDARD_RELEASES,
     os = os.WINDOWS_DEFAULT,
