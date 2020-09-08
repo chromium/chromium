@@ -44,7 +44,6 @@ public class NetworkActivationRequest extends NetworkCallback {
         mConnectivityManager =
                 (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
-        mNativePtr = nativePtr;
         if (mConnectivityManager == null) return;
 
         try {
@@ -54,6 +53,10 @@ public class NetworkActivationRequest extends NetworkCallback {
                             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                             .build(),
                     this);
+
+            // Only track the native pointer (and thus allow future unregistration) if the above
+            // call succeeds.
+            mNativePtr = nativePtr;
         } catch (SecurityException e) {
             // On some older devices the CHANGE_NETWORK_STATE permission is not sufficient to allow
             // use of {@code requestNetwork} above and it will throw a SecurityException. Do nothing
