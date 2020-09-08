@@ -9,8 +9,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/svg/svg_string_list_tear_off.h"
+#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -20,6 +19,7 @@
 namespace blink {
 
 class ExecutionContext;
+class SVGStringListTearOff;
 
 class CORE_EXPORT Dactyloscoper {
   DISALLOW_NEW();
