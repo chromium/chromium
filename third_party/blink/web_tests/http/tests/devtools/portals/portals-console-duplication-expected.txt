@@ -1,0 +1,16 @@
+Tests that console messages aren't duplicated after portal activation
+Message count: 3
+console-duplication-host.html:4 host
+console-duplication-portal-1.html:3 portal-1
+console-duplication-portal-2.html:3 portal-2
+
+first activate (without adoption)
+console-duplication-host.html:4 host
+console-duplication-portal-1.html:3 portal-1
+console-duplication-portal-2.html:3 portal-2
+
+second activate (with adoption)
+console-duplication-host.html:4 host
+console-duplication-portal-1.html:3 portal-1
+console-duplication-portal-2.html:3 portal-2
+

@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<script>
+  console.log('portal-2');
+  window.onportalactivate = e => {
+    document.body.appendChild(e.adoptPredecessor());
+  }
+</script>
