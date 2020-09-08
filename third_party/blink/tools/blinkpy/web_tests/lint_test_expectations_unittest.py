@@ -356,7 +356,10 @@ class LintTest(LoggingTestCase):
             '[ win ] virtual/foo/test/test1.html [ Failure ]\n'
             '[ mac release ] virtual/foo/test/test1.html [ Pass ]\n'
             'test/test2.html [ Failure ]\n'
-            'crbug.com/1234 virtual/foo/test/test2.html [ Failure ]')
+            'crbug.com/1234 virtual/foo/test/test2.html [ Failure ]\n'
+            'test/subtest/test2.html [ Failure ]\n'
+            'virtual/foo/test/subtest/* [ Pass ]\n'
+            'virtual/foo/test/subtest/test2.html [ Failure ]')
         port.expectations_dict = lambda: {
             'testexpectations': test_expectations
         }

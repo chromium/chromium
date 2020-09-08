@@ -217,24 +217,34 @@ def _check_redundant_virtual_expectations(host, port, path, expectations):
         return []
 
     failures = []
-    expectations_by_test = {}
-    for exp in expectations:
-        if exp.test:
-            expectations_by_test.setdefault(exp.test, []).append(exp)
-
+    base_expectations_by_test = {}
+    virtual_expectations = []
+    virtual_globs = []
     for exp in expectations:
         if not exp.test:
             continue
 
         base_test = port.lookup_virtual_test_base(exp.test)
-        if not base_test:
-            continue
+        if base_test:
+            virtual_expectations.append((exp, base_test))
+            if exp.is_glob:
+                virtual_globs.append(exp.test[:-1])
+        else:
+            base_expectations_by_test.setdefault(exp.test, []).append(exp)
 
-        for base_exp in expectations_by_test.get(base_test, []):
+    for (exp, base_test) in virtual_expectations:
+        for base_exp in base_expectations_by_test.get(base_test, []):
             if (base_exp.results == exp.results
                     and base_exp.is_slow_test == exp.is_slow_test
                     and base_exp.tags.issubset(exp.tags)
-                    and base_exp.reason == exp.reason):
+                    and base_exp.reason == exp.reason
+                    # Don't report redundant expectation in the following case
+                    # bar/test.html [ Failure ]
+                    # virtual/foo/bar/* [ Pass ]
+                    # virtual/foo/bar/test.html [ Failure ]
+                    # For simplicity, tags of the glob expectations are ignored.
+                    and not any(exp.test != glob and exp.test.startswith(glob)
+                                for glob in virtual_globs)):
                 error = "{}:{} Expectation '{}' is redundant with '{}' in line {}".format(
                     host.filesystem.basename(path), exp.lineno, exp.test,
                     base_test, base_exp.lineno)
@@ -314,10 +324,10 @@ def _check_non_wpt_in_android_override(host, port, path, expectations):
     failures = []
     for exp in expectations:
         if exp.test and not port.is_wpt_test(exp.test):
-          error = "{}:{} Expectation '{}' is for a non WPT test".format(
-              host.filesystem.basename(path), exp.lineno, exp.to_string())
-          failures.append(error)
-          _log.error(error)
+            error = "{}:{} Expectation '{}' is for a non WPT test".format(
+                host.filesystem.basename(path), exp.lineno, exp.to_string())
+            failures.append(error)
+            _log.error(error)
     return failures
 
 
