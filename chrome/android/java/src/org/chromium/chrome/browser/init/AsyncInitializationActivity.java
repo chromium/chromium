@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
@@ -241,11 +242,11 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) return;
             String url = IntentHandler.getUrlFromIntent(intent);
             if (url == null) return;
-            // TODO(https://crbug.com/1041781): Use the current profile (i.e., regular profile or
-            // incognito profile) instead of always using regular profile. It is wrong and needs to
-            // be fixed.
-            WarmupManager.getInstance().maybePreconnectUrlAndSubResources(
-                    Profile.getLastUsedRegularProfile(), url);
+            // Blocking pre-connect for all off-the-record profiles.
+            if (!IncognitoUtils.hasAnyIncognitoExtra(intent)) {
+                WarmupManager.getInstance().maybePreconnectUrlAndSubResources(
+                        Profile.getLastUsedRegularProfile(), url);
+            }
         } finally {
             TraceEvent.end("maybePreconnect");
         }

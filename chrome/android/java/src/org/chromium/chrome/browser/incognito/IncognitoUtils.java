@@ -8,14 +8,18 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
@@ -142,6 +146,19 @@ public class IncognitoUtils {
      */
     public static boolean isIncognitoModeManaged() {
         return IncognitoUtilsJni.get().getIncognitoModeManaged();
+    }
+
+    /**
+     * Whether intent has any extra that indicates an incognito tab will be launched.
+     * @param intent A non-null intent
+     * @return True if there is any incognito related extra, otherwise return false.
+     */
+    public static boolean hasAnyIncognitoExtra(@NonNull Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_INCOGNITO_MODE, false)
+                || IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                || IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
     }
 
     @VisibleForTesting
