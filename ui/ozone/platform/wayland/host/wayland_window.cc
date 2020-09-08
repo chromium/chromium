@@ -361,6 +361,28 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   return true;
 }
 
+WaylandWindow* WaylandWindow::GetParentWindow(
+    gfx::AcceleratedWidget parent_widget) {
+  auto* parent_window =
+      connection_->wayland_window_manager()->GetWindow(parent_widget);
+
+  // If propagated parent has already had a child, it means that |this| is a
+  // submenu of a 3-dot menu. In aura, the parent of a 3-dot menu and its
+  // submenu is the main native widget, which is the main window. In contrast,
+  // Wayland requires a menu window to be a parent of a submenu window. Thus,
+  // check if the suggested parent has a child. If yes, take its child as a
+  // parent of |this|.
+  // Another case is a notifcation window or a drop down window, which do not
+  // have a parent in aura. In this case, take the current focused window as a
+  // parent.
+
+  if (!parent_window)
+    parent_window =
+        connection_->wayland_window_manager()->GetCurrentFocusedWindow();
+
+  return parent_window ? parent_window->GetTopMostChildWindow() : nullptr;
+}
+
 WaylandWindow* WaylandWindow::GetRootParentWindow() {
   return parent_window_ ? parent_window_->GetRootParentWindow() : this;
 }
@@ -443,11 +465,6 @@ WaylandWindow* WaylandWindow::GetTopMostChildWindow() {
 
 bool WaylandWindow::IsOpaqueWindow() const {
   return opacity_ == ui::PlatformWindowOpacity::kOpaqueWindow;
-}
-
-bool WaylandWindow::IsActive() const {
-  // Please read the comment where the IsActive method is declared.
-  return false;
 }
 
 uint32_t WaylandWindow::DispatchEventToDelegate(

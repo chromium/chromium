@@ -22,41 +22,28 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
   switch (properties.type) {
     case PlatformWindowType::kMenu:
     case PlatformWindowType::kPopup:
-      if (connection->IsDragInProgress()) {
+      // We are unable to create a popup or menu window, because they require a
+      // parent window to be set. Thus, create a normal window instead then.
+      if (properties.parent_widget == gfx::kNullAcceleratedWidget &&
+          !connection->wayland_window_manager()->GetCurrentFocusedWindow()) {
+        window.reset(new WaylandToplevelWindow(delegate, connection));
+      } else if (connection->IsDragInProgress()) {
         // We are in the process of drag and requested a popup. Most probably,
         // it is an arrow window.
-        window = std::make_unique<WaylandAuxiliaryWindow>(delegate, connection);
+        window.reset(new WaylandAuxiliaryWindow(delegate, connection));
       } else {
-        auto* parent_window =
-            connection->wayland_window_manager()->FindParentForNewWindow(
-                properties.parent_widget);
-        if (parent_window) {
-          // Set the parent window in advance otherwise it is not possible to
-          // know if the WaylandPopup is able to find one and if
-          // WaylandWindow::Initialize() fails or not. Otherwise,
-          // WaylandWindow::Create() returns nullptr and makes the browser to
-          // fail. To fix this problem, search for the parent window and if
-          // one is not found, create WaylandToplevelWindow instead. It's
-          // also worth noting that searching twice (one time here and another
-          // by WaylandPopup) is a bad practice, and the parent window is set
-          // here instead.
-          window = std::make_unique<WaylandPopup>(delegate, connection);
-          window->set_parent_window(parent_window);
-        } else {
-          window =
-              std::make_unique<WaylandToplevelWindow>(delegate, connection);
-        }
+        window.reset(new WaylandPopup(delegate, connection));
       }
       break;
     case PlatformWindowType::kTooltip:
-      window = std::make_unique<WaylandAuxiliaryWindow>(delegate, connection);
+      window.reset(new WaylandAuxiliaryWindow(delegate, connection));
       break;
     case PlatformWindowType::kWindow:
     case PlatformWindowType::kBubble:
     case PlatformWindowType::kDrag:
       // TODO(msisov): Figure out what kind of surface we need to create for
       // bubble and drag windows.
-      window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
+      window.reset(new WaylandToplevelWindow(delegate, connection));
       break;
     default:
       NOTREACHED();
