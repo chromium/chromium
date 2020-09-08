@@ -358,7 +358,9 @@ bool MixerInputConnection::HandleAudioBuffer(
   }
 
   DCHECK_EQ(data - buffer->data(), kAudioMessageHeaderSize);
-  DCHECK_EQ(sample_format_, mixer_service::SAMPLE_FORMAT_FLOAT_P);
+  if (sample_format_ != mixer_service::SAMPLE_FORMAT_FLOAT_P) {
+    return HandleAudioData(data, size, timestamp);
+  }
 
   int32_t num_frames = size / (sizeof(float) * num_channels_);
   DCHECK_EQ(sizeof(int32_t), 4u);
