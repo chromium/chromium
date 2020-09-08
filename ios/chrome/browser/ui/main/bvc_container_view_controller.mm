@@ -43,10 +43,6 @@
   [self.view addSubview:bvc.view];
   [bvc didMoveToParentViewController:self];
 
-  // Let the system know that the child has changed so appearance updates can
-  // be made.
-  [self setNeedsStatusBarAppearanceUpdate];
-
   if (IsThumbStripEnabled()) {
     // The background needs to be clear to allow the thumb strip to be seen
     // during the enter/exit thumb strip animation.

@@ -216,6 +216,9 @@
   // container.
   if (self.bvcContainer) {
     self.bvcContainer.currentBVC = viewController;
+    self.baseViewController.childViewControllerForStatusBarStyle =
+        viewController;
+    [self.baseViewController setNeedsStatusBarAppearanceUpdate];
     if (completion) {
       completion();
     }
