@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Backup agent for Chrome, using Android key/value backup.
@@ -184,6 +185,7 @@ public class ChromeBackupAgent extends BackupAgent {
             ParcelFileDescriptor newState) throws IOException {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
+        final AtomicReference<CoreAccountInfo> syncAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
         Boolean nativePrefsRead = PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
@@ -191,6 +193,10 @@ public class ChromeBackupAgent extends BackupAgent {
             // preferences. Although Chrome requests the backup, it doesn't happen
             // immediately, so by the time it does Chrome may not be running.
             if (!initializeBrowser()) return false;
+
+            syncAccount.set(IdentityServicesProvider.get()
+                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .getPrimaryAccountInfo(ConsentLevel.SYNC));
 
             String[] nativeBackupNames = ChromeBackupAgentJni.get().getBoolBackupNames(this);
             boolean[] nativeBackupValues = ChromeBackupAgentJni.get().getBoolBackupValues(this);
@@ -244,13 +250,9 @@ public class ChromeBackupAgent extends BackupAgent {
         }
 
         // Finally add the user id.
-        CoreAccountInfo accountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC);
         backupNames.add(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_KEY);
         backupValues.add(ApiCompatibilityUtils.getBytesUtf8(
-                accountInfo == null ? "" : accountInfo.getEmail()));
+                syncAccount.get() == null ? "" : syncAccount.get().getEmail()));
 
         BackupState newBackupState = new BackupState(backupNames, backupValues);
 

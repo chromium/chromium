@@ -47,7 +47,7 @@ public class Profile implements BrowserContextHandle {
         if (sLastUsedProfileForTesting != null) {
             return sLastUsedProfileForTesting;
         }
-        assert ThreadUtils.runningOnUiThread();
+        ThreadUtils.assertOnUiThread();
         // TODO(crbug.com/704025): turn this into an assert once the bug is fixed
         if (!ProfileManager.isInitialized()) {
             throw new IllegalStateException("Browser hasn't finished initialization yet!");
