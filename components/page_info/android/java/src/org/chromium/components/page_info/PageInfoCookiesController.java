@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -64,6 +65,15 @@ public class PageInfoCookiesController
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         mSubPage = new PageInfoCookiesPreference();
+        PageInfoCookiesPreference.PageInfoCookiesViewParams params =
+                new PageInfoCookiesPreference.PageInfoCookiesViewParams();
+        params.onCheckedChangedCallback = this::onCheckedChangedCallback;
+        params.onClearCallback = this::clearData;
+        params.onCookieSettingsLinkClicked = mDelegate::showCookieSettings;
+        params.disableCookieDeletion = WebsitePreferenceBridge.isCookieDeletionDisabled(
+                mMainController.getBrowserContext(), mFullUrl);
+        mSubPage.setParams(params);
+
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().add(mSubPage, "FOO").commitNow();
         return mSubPage.requireView();
@@ -71,12 +81,6 @@ public class PageInfoCookiesController
 
     @Override
     public void onSubPageAttached() {
-        PageInfoCookiesPreference.PageInfoCookiesViewParams params =
-                new PageInfoCookiesPreference.PageInfoCookiesViewParams();
-        params.onCheckedChangedCallback = this::onCheckedChangedCallback;
-        params.onClearCallback = this::clearData;
-        params.onCookieSettingsLinkClicked = mDelegate::showCookieSettings;
-        mSubPage.setParams(params);
         // TODO(crbug.com/1077766): Get storage size.
         mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
         mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);

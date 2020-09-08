@@ -37,6 +37,7 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
         public Callback<Boolean> onCheckedChangedCallback;
         public Runnable onClearCallback;
         public Runnable onCookieSettingsLinkClicked;
+        public boolean disableCookieDeletion;
     }
 
     @Override
@@ -66,6 +67,9 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
             mParams.onClearCallback.run();
             return true;
         });
+        if (mParams.disableCookieDeletion) {
+            clearButton.setEnabled(false);
+        }
     }
 
     public void setParams(PageInfoCookiesViewParams params) {
