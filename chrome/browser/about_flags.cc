@@ -5816,6 +5816,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMacCoreLocationImplementation)},
 #endif
 
+#if defined(OS_MAC)
+    {"enable-new-mac-notification-api",
+     flag_descriptions::kNewMacNotificationAPIName,
+     flag_descriptions::kNewMacNotificationAPIDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kNewMacNotificationAPI)},
+#endif
+
 #if defined(OS_CHROMEOS)
     {"exo-ordinal-motion", flag_descriptions::kExoOrdinalMotionName,
      flag_descriptions::kExoOrdinalMotionDescription, kOsCrOS,

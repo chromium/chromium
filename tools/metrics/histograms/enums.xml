@@ -40902,6 +40902,7 @@ from previous Chrome versions.
   <int value="-1618707999" label="enable-webfonts-intervention-v2"/>
   <int value="-1617183455" label="OfflineRecentPages:disabled"/>
   <int value="-1616855537" label="enable-manual-password-generation:disabled"/>
+  <int value="-1615901413" label="NewMacNotificationAPI:enabled"/>
   <int value="-1615727417" label="OmniboxSearchReadyIncognito:enabled"/>
   <int value="-1615704396"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:disabled"/>
@@ -43740,6 +43741,7 @@ from previous Chrome versions.
   <int value="1318073661" label="MaterialDesignExtensions:enabled"/>
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>
   <int value="1319068611" label="SecondaryUiMd:disabled"/>
+  <int value="1319498514" label="NewMacNotificationAPI:disabled"/>
   <int value="1319725131" label="enable-distance-field-text"/>
   <int value="1320201920" label="enable-touchpad-three-finger-click"/>
   <int value="1320450434" label="ArcUsbStorageUI:disabled"/>

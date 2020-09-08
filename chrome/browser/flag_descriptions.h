@@ -424,6 +424,9 @@ extern const char kPostQuantumCECPQ2Description[];
 extern const char kMacCoreLocationImplementationName[];
 extern const char kMacCoreLocationImplementationDescription[];
 
+extern const char kNewMacNotificationAPIName[];
+extern const char kNewMacNotificationAPIDescription[];
+
 extern const char kMaintainShelfStateWhenEnteringOverviewName[];
 extern const char kMaintainShelfStateWhenEnteringOverviewDescription[];
 

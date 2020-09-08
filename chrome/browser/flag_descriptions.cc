@@ -710,6 +710,12 @@ const char kMacCoreLocationImplementationName[] =
 const char kMacCoreLocationImplementationDescription[] =
     "Enables usage of the Core Location APIs on macOS for geolocation";
 
+const char kNewMacNotificationAPIName[] =
+    "Determines which notification API to use on macOS devices";
+const char kNewMacNotificationAPIDescription[] =
+    "Enables the usage of Apple's new notification API which will run on macOS "
+    "10.14+";
+
 const char kMaintainShelfStateWhenEnteringOverviewName[] =
     "Allow Home Launcher Shelf In Overview";
 const char kMaintainShelfStateWhenEnteringOverviewDescription[] =

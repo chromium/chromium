@@ -36,6 +36,12 @@ const base::Feature kNearbySharing{"NearbySharing",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_MAC)
+// Enables the usage of Apple's new Notification API on macOS 10.14+
+const base::Feature kNewMacNotificationAPI{"NewMacNotificationAPI",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 // Enables taking snapshots of the user data directory after a major
 // milestone update and restoring them after a version rollback.

@@ -1818,6 +1818,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "enable-new-mac-notification-api",
+    "owners": [ "knollr", "peter", "adelm@google.com"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-new-profile-picker",
     "owners": [ "msalama" ],
     "expiry_milestone": 90
