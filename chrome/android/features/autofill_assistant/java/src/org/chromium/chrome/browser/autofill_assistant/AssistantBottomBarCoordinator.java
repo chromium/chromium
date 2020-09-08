@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
@@ -60,6 +62,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     private WebContents mWebContents;
     private ApplicationViewportInsetSupplier mWindowApplicationInsetSupplier;
     private final ChromeAccessibilityUtil.Observer mAccessibilityObserver;
+    private final BottomSheetObserver mBottomSheetObserver;
 
     // Child coordinators.
     private final AssistantHeaderCoordinator mHeaderCoordinator;
@@ -98,8 +101,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     AssistantBottomBarCoordinator(Activity activity, AssistantModel model,
             BottomSheetController controller,
             ApplicationViewportInsetSupplier applicationViewportInsetSupplier,
-            TabObscuringHandler tabObscuringHandler,
-            AssistantBottomSheetContent.Delegate bottomSheetDelegate) {
+            TabObscuringHandler tabObscuringHandler) {
         mModel = model;
         mBottomSheetController = controller;
         mTabObscuringHandler = tabObscuringHandler;
@@ -114,7 +116,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         if (currentSheetContent instanceof AssistantBottomSheetContent) {
             mContent = (AssistantBottomSheetContent) currentSheetContent;
         } else {
-            mContent = new AssistantBottomSheetContent(activity, bottomSheetDelegate);
+            mContent = new AssistantBottomSheetContent(activity, model::getBottomBarDelegate);
         }
 
         // Replace or set the content to the actual Autofill Assistant views.
@@ -189,9 +191,14 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         setHorizontalMargins(mInfoBoxCoordinator.getView());
         setHorizontalMargins(mDetailsCoordinator.getView());
 
-        controller.addObserver(new EmptyBottomSheetObserver() {
+        mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
             public void onSheetStateChanged(int newState) {
+                if (newState == SheetState.PEEK || newState == SheetState.HALF
+                        || newState == SheetState.FULL) {
+                    mModel.setBottomSheetState(newState);
+                }
+
                 // Note: recycler view updates while the bottom sheet is SCROLLING result in a
                 // BottomSheet assertion.
                 if (newState != BottomSheetController.SheetState.SCROLLING) {
@@ -210,13 +217,14 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                 updateVisualViewportHeight();
             }
-        });
+        };
+        controller.addObserver(mBottomSheetObserver);
 
         // Show or hide the bottom sheet content when the Autofill Assistant visibility is changed.
         model.addObserver((source, propertyKey) -> {
             if (AssistantModel.VISIBLE == propertyKey) {
                 if (model.get(AssistantModel.VISIBLE)) {
-                    showContentAndExpand();
+                    showContent(/* shouldExpand = */ false, /* animate = */ false);
                 } else {
                     hide();
                 }
@@ -320,6 +328,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         resetVisualViewportHeight();
         mWindowApplicationInsetSupplier.removeSupplier(mInsetSupplier);
         ChromeAccessibilityUtil.get().removeObserver(mAccessibilityObserver);
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
 
         if (mObscuringToken != TokenHolder.INVALID_TOKEN) {
             mTabObscuringHandler.unobscureAllTabs(mObscuringToken);
@@ -334,9 +343,9 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     }
 
     /** Request showing the Assistant bottom bar view and expand the sheet. */
-    public void showContentAndExpand() {
-        BottomSheetUtils.showContentAndExpand(
-                mBottomSheetController, mContent, /* animate= */ true);
+    public void showContent(boolean shouldExpand, boolean animate) {
+        BottomSheetUtils.showContentAndMaybeExpand(
+                mBottomSheetController, mContent, shouldExpand, animate);
     }
 
     /** Hide the Assistant bottom bar view. */
@@ -371,6 +380,10 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     /** Collapse the bottom sheet to the peek mode. */
     void collapse() {
         mBottomSheetController.collapseSheet(/* animate = */ true);
+    }
+
+    void restoreState(@SheetState int state) {
+        BottomSheetUtils.restoreState(mBottomSheetController, mContent, state);
     }
 
     @Override

@@ -124,13 +124,14 @@ public class AutofillAssistantUiTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         BottomSheetController bottomSheetController =
                 TestThreadUtils.runOnUiThreadBlocking(this::initializeBottomSheet);
-        AssistantCoordinator assistantCoordinator = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> new AssistantCoordinator(getActivity(), bottomSheetController,
-                                getActivity().getTabObscuringHandler(),
-                                /* overlayCoordinator= */ null,
-                                /* keyboardCoordinatorDelegate= */ null,
-                                /* bottomSheetDelegate= */ null));
+        AssistantCoordinator assistantCoordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AssistantCoordinator coordinator = new AssistantCoordinator(getActivity(),
+                    bottomSheetController, getActivity().getTabObscuringHandler(),
+                    /* overlayCoordinator= */ null,
+                    /* keyboardCoordinatorDelegate= */ null);
+            coordinator.show();
+            return coordinator;
+        });
 
         // Bottom sheet is shown in the BottomSheet when creating the AssistantCoordinator.
         View contentView = AutofillAssistantUiTestUtil.getBottomSheetController(getActivity())
@@ -257,13 +258,14 @@ public class AutofillAssistantUiTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         BottomSheetController bottomSheetController =
                 TestThreadUtils.runOnUiThreadBlocking(this::initializeBottomSheet);
-        AssistantCoordinator assistantCoordinator = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> new AssistantCoordinator(getActivity(), bottomSheetController,
-                                getActivity().getTabObscuringHandler(),
-                                /* overlayCoordinator= */ null,
-                                /* keyboardCoordinatorDelegate= */ null,
-                                /* bottomSheetDelegate= */ null));
+        AssistantCoordinator assistantCoordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AssistantCoordinator coordinator = new AssistantCoordinator(getActivity(),
+                    bottomSheetController, getActivity().getTabObscuringHandler(),
+                    /* overlayCoordinator= */ null,
+                    /* keyboardCoordinatorDelegate= */ null);
+            coordinator.show();
+            return coordinator;
+        });
 
         // Bottom sheet is shown in the BottomSheet when creating the AssistantCoordinator.
         View contentView = AutofillAssistantUiTestUtil.getBottomSheetController(getActivity())

@@ -397,6 +397,32 @@ std::string SafeConvertJavaStringToNative(
   return native_string;
 }
 
+BottomSheetState ToNativeBottomSheetState(int state) {
+  switch (state) {
+    case 1:
+      return BottomSheetState::COLLAPSED;
+    case 2:
+    case 3:
+      return BottomSheetState::EXPANDED;
+    default:
+      return BottomSheetState::UNDEFINED;
+  }
+}
+
+int ToJavaBottomSheetState(BottomSheetState state) {
+  switch (state) {
+    case BottomSheetState::COLLAPSED:
+      return 1;
+    case BottomSheetState::UNDEFINED:
+      // The current assumption is that Autobot always starts with the bottom
+      // sheet expanded.
+    case BottomSheetState::EXPANDED:
+      return 2;
+    default:
+      return -1;
+  }
+}
+
 }  // namespace ui_controller_android_utils
 
 }  // namespace autofill_assistant

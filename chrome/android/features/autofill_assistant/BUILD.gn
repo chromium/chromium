@@ -83,6 +83,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AbstractListObserver.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAccessibilityUtils.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomBarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomBarDelegate.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomBarNativeDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDialogButton.java",
@@ -185,6 +187,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomBarNativeDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDialogButton.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPopup.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantModel.java",

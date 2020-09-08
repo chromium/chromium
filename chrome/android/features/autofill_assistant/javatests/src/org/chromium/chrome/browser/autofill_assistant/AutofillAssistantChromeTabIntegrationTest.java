@@ -11,10 +11,13 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -39,8 +42,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.PeekMode;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.StopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
@@ -80,10 +85,11 @@ public class AutofillAssistantChromeTabIntegrationTest {
         return mTestServer.getURL(HTML_DIRECTORY + page);
     }
 
-    private void setupScripts(AutofillAssistantTestScript... scripts) {
+    private AutofillAssistantTestService setupScripts(AutofillAssistantTestScript... scripts) {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Arrays.asList(scripts));
         testService.scheduleForInjection();
+        return testService;
     }
 
     private void startAutofillAssistantOnTab(String pageToLoad) {
@@ -263,6 +269,170 @@ public class AutofillAssistantChromeTabIntegrationTest {
                         mTestRule.getActivity().getCurrentTabModel(), initialTabId));
         waitUntilViewAssertionTrue(withText("Prompt B"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
         waitUntilViewMatchesCondition(withText("Prompt A"), isCompletelyDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    public void switchingTabsRestoresBottomSheetState() {
+        ArrayList<ActionProto> listA = new ArrayList<>();
+        listA.add((ActionProto) ActionProto.newBuilder()
+                          .setConfigureBottomSheet(
+                                  org.chromium.chrome.browser.autofill_assistant.proto
+                                          .ConfigureBottomSheetProto.newBuilder()
+                                          .setPeekMode(PeekMode.HANDLE)
+                                          .setExpand(false)
+                                          .setCollapse(true)
+                                          .setResizeTimeoutMs(1000))
+                          .setActionDelayMs(500)
+                          .build());
+        listA.add((ActionProto) ActionProto.newBuilder()
+                          .setPrompt(PromptProto.newBuilder()
+                                             .setMessage("Prompt A")
+                                             .setBrowseMode(true)
+                                             .addChoices(PromptProto.Choice.newBuilder()))
+                          .build());
+
+        AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath(TEST_PAGE_A)
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Done")))
+                        .build(),
+                listA);
+        ArrayList<ActionProto> listB = new ArrayList<>();
+        listB.add((ActionProto) ActionProto.newBuilder()
+                          .setPrompt(PromptProto.newBuilder()
+                                             .setMessage("Prompt B")
+                                             .setBrowseMode(true)
+                                             .addChoices(PromptProto.Choice.newBuilder()))
+                          .build());
+
+        AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath(TEST_PAGE_B)
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Done")))
+                        .build(),
+                listB);
+
+        int initialTabId =
+                TabModelUtils.getCurrentTabId(mTestRule.getActivity().getCurrentTabModel());
+
+        setupScripts(scriptA, scriptB);
+        startAutofillAssistantOnTab(TEST_PAGE_A);
+
+        waitUntilViewMatchesCondition(withId(R.id.autofill_assistant), isDisplayed());
+        waitUntilViewMatchesCondition(withText("Prompt A"), not(isDisplayed()));
+
+        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
+                mTestRule.getActivity(), getURL(TEST_PAGE_B), false);
+        waitUntilViewAssertionTrue(allOf(withText("Sticky"), isDescendantOfA(withId(R.id.header))),
+                doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+
+        startAutofillAssistantOnTab(TEST_PAGE_B);
+        waitUntilViewMatchesCondition(withText("Prompt B"), isCompletelyDisplayed());
+
+        ChromeTabUtils.switchTabInCurrentTabModel(mTestRule.getActivity(),
+                TabModelUtils.getTabIndexById(
+                        mTestRule.getActivity().getCurrentTabModel(), initialTabId));
+        waitUntilViewAssertionTrue(withText("Prompt B"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        waitUntilViewMatchesCondition(withId(R.id.autofill_assistant), isDisplayed());
+        waitUntilViewMatchesCondition(withText("Prompt A"), not(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1123958")
+    public void switchTabBetweenDifferentPeekModes() {
+        ArrayList<ActionProto> listA = new ArrayList<>();
+        listA.add((ActionProto) ActionProto.newBuilder()
+                          .setConfigureBottomSheet(
+                                  org.chromium.chrome.browser.autofill_assistant.proto
+                                          .ConfigureBottomSheetProto.newBuilder()
+                                          .setPeekMode(PeekMode.HANDLE_HEADER)
+                                          .setExpand(false)
+                                          .setCollapse(true)
+                                          .setResizeTimeoutMs(1000))
+                          .setActionDelayMs(500)
+                          .build());
+        listA.add((ActionProto) ActionProto.newBuilder()
+                          .setPrompt(PromptProto.newBuilder()
+                                             .setMessage("Prompt message")
+                                             .addChoices(PromptProto.Choice.newBuilder().setChip(
+                                                     ChipProto.newBuilder()
+                                                             .setText("Sticky")
+                                                             .setSticky(true)
+                                                             .setType(org.chromium.chrome.browser
+                                                                              .autofill_assistant
+                                                                              .proto.ChipType
+                                                                              .HIGHLIGHTED_ACTION)))
+                                             .setAllowInterrupt(false)
+                                             .setDisableForceExpandSheet(true)
+                                  /*.setBrowseMode(true)*/)
+                          .build());
+
+        AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath(TEST_PAGE_A)
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Done")))
+                        .build(),
+                listA);
+        ArrayList<ActionProto> listB = new ArrayList<>();
+        listB.add((ActionProto) ActionProto.newBuilder()
+                          .setPrompt(PromptProto.newBuilder()
+                                             .setMessage("Prompt B")
+                                             .setBrowseMode(true)
+                                             .addChoices(PromptProto.Choice.newBuilder()))
+                          .build());
+
+        AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath(TEST_PAGE_B)
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Done")))
+                        .build(),
+                listB);
+
+        int initialTabId =
+                TabModelUtils.getCurrentTabId(mTestRule.getActivity().getCurrentTabModel());
+
+        AutofillAssistantTestService autofillAssistantTestService = setupScripts(scriptA, scriptB);
+        startAutofillAssistantOnTab(TEST_PAGE_A);
+        waitUntilViewMatchesCondition(
+                allOf(withText("Sticky"), isDescendantOfA(withId(R.id.header))),
+                isCompletelyDisplayed());
+
+        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
+                mTestRule.getActivity(), getURL(TEST_PAGE_B), false);
+        waitUntilViewAssertionTrue(allOf(withText("Sticky"), isDescendantOfA(withId(R.id.header))),
+                doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+
+        startAutofillAssistantOnTab(TEST_PAGE_B);
+        waitUntilViewMatchesCondition(withText("Prompt B"), isCompletelyDisplayed());
+
+        Espresso.pressBack();
+        waitUntilViewMatchesCondition(
+                withId(R.id.status_message), allOf(withText("Prompt B"), not(isDisplayed())));
+        onView(withId(R.id.autofill_assistant)).check(matches(isDisplayed()));
+
+        int secondTabId =
+                TabModelUtils.getCurrentTabId(mTestRule.getActivity().getCurrentTabModel());
+
+        ChromeTabUtils.switchTabInCurrentTabModel(mTestRule.getActivity(),
+                TabModelUtils.getTabIndexById(
+                        mTestRule.getActivity().getCurrentTabModel(), initialTabId));
+        waitUntilViewAssertionTrue(withText("Prompt B"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        waitUntilViewMatchesCondition(
+                allOf(withText("Sticky"), isDescendantOfA(withId(R.id.header))),
+                isCompletelyDisplayed());
+
+        ChromeTabUtils.switchTabInCurrentTabModel(mTestRule.getActivity(),
+                TabModelUtils.getTabIndexById(
+                        mTestRule.getActivity().getCurrentTabModel(), secondTabId));
+        waitUntilViewMatchesCondition(withId(R.id.autofill_assistant), isDisplayed());
+        onView(allOf(withId(R.id.status_message), withText("Prompt B")))
+                .check(matches(not(isDisplayed())));
     }
 
     @Test

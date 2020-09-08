@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/rectf.h"
@@ -189,6 +190,18 @@ class UiDelegate {
 
   // Peek mode state and whether it was changed automatically last time.
   virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
+
+  // Gets the bottom sheet state.
+  virtual BottomSheetState GetBottomSheetState() = 0;
+
+  // Sets the state of the bottom sheet.
+  virtual void SetBottomSheetState(BottomSheetState state) = 0;
+
+  // Gets whether the tab associated with this controller is currently selected.
+  virtual bool IsTabSelected() = 0;
+
+  // Sets whether the tab associated with this controller is currently selected.
+  virtual void SetTabSelected(bool selected) = 0;
 
   // Fills in the overlay colors.
   virtual void GetOverlayColors(OverlayColors* colors) const = 0;

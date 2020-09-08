@@ -93,6 +93,8 @@ static_library("browser") {
     "basic_interactions.h",
     "batch_element_checker.cc",
     "batch_element_checker.h",
+    "bottom_sheet_state.cc",
+    "bottom_sheet_state.h",
     "chip.cc",
     "chip.h",
     "client.h",
