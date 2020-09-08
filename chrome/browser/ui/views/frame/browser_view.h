@@ -592,6 +592,10 @@ class BrowserView : public BrowserWindow,
   // Create and open the tab search bubble.
   void CreateTabSearchBubble() override;
 
+  AccessibilityFocusHighlight* GetAccessibilityFocusHighlightForTesting() {
+    return accessibility_focus_highlight_.get();
+  }
+
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
