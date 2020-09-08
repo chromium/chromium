@@ -37,7 +37,7 @@ public class IncognitoInterstitialDelegate {
      * Open the help centre article regarding Incognito usage.
      */
     @MainThread
-    public void openLearnMorePage() {
+    void openLearnMorePage() {
         ThreadUtils.assertOnUiThread();
         mHelpAndFeedback.show(mActivity,
                 mActivity.getString(R.string.help_context_incognito_learn_more),
@@ -48,7 +48,7 @@ public class IncognitoInterstitialDelegate {
      * Navigates to |mCurrentUrl| in a new incognito tab.
      */
     @MainThread
-    public void openCurrentUrlInIncognitoTab() {
+    void openCurrentUrlInIncognitoTab() {
         // TODO(https://crbug.com/1120334): Add metrics to web sign-in flow.
         ThreadUtils.assertOnUiThread();
         mIncognitoTabCreator.launchUrl(mCurrentUrl, TabLaunchType.FROM_CHROME_UI);
