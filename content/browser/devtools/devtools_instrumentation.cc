@@ -561,12 +561,23 @@ bool WillCreateURLLoaderFactory(
 
 void OnNavigationRequestWillBeSent(
     const NavigationRequest& navigation_request) {
-  auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
-      RenderFrameDevToolsAgentHost::GetFor(
-          navigation_request.frame_tree_node()));
-  if (!agent_host)
-    return;
-  agent_host->OnNavigationRequestWillBeSent(navigation_request);
+  // Note this intentionally deviates from the usual instrumentation signal
+  // logic and dispatches to all agents upwards from the frame, to make sure
+  // the security checks are properly applied even if no DevTools session is
+  // established for the navigated frame itself. This is because the page
+  // agent may navigate all of its subframes currently.
+  for (RenderFrameHostImpl* rfh =
+           navigation_request.frame_tree_node()->current_frame_host();
+       rfh; rfh = rfh->GetParent()) {
+    // Only check frames that qualify as DevTools targets, i.e. (local)? roots.
+    if (!RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(rfh))
+      continue;
+    auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
+        RenderFrameDevToolsAgentHost::GetFor(rfh));
+    if (!agent_host)
+      continue;
+    agent_host->OnNavigationRequestWillBeSent(navigation_request);
+  }
 
   // Make sure both back-ends yield the same timestamp.
   auto timestamp = base::TimeTicks::Now();

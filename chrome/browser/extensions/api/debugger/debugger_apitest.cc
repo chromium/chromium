@@ -381,4 +381,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       NavigateSubframe) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com",
+      "/extensions/api_test/debugger_navigate_subframe/inspected_page.html"));
+  ASSERT_TRUE(
+      RunExtensionTestWithArg("debugger_navigate_subframe", url.spec().c_str()))
+      << message_;
+}
+
 }  // namespace extensions
