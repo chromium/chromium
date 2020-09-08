@@ -24,6 +24,7 @@
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -54,6 +55,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
@@ -337,7 +339,7 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
   // diff on this image and a reference image.
   void PdfToPng() {
     int num_pages;
-    double max_width_in_points = 0;
+    float max_width_in_points = 0;
     std::vector<uint8_t> bitmap_data;
     double total_height_in_pixels = 0;
     std::string pdf_data;
@@ -353,14 +355,14 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
         ConvertUnitDouble(max_width_in_points, kPointsPerInch, kDpi);
 
     for (int i = 0; i < num_pages; ++i) {
-      double width_in_points, height_in_points;
-      ASSERT_TRUE(chrome_pdf::GetPDFPageSizeByIndex(
-          pdf_span, i, &width_in_points, &height_in_points));
+      base::Optional<gfx::SizeF> size_in_points =
+          chrome_pdf::GetPDFPageSizeByIndex(pdf_span, i);
+      ASSERT_TRUE(size_in_points.has_value());
 
-      double width_in_pixels = ConvertUnitDouble(
-          width_in_points, kPointsPerInch, kDpi);
+      double width_in_pixels = ConvertUnitDouble(size_in_points.value().width(),
+                                                 kPointsPerInch, kDpi);
       double height_in_pixels = ConvertUnitDouble(
-          height_in_points, kPointsPerInch, kDpi);
+          size_in_points.value().height(), kPointsPerInch, kDpi);
 
       // The image will be rotated if |width_in_pixels| is greater than
       // |height_in_pixels|. This is because the page will be rotated to fit

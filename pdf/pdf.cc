@@ -11,6 +11,7 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace chrome_pdf {
 
@@ -85,7 +86,7 @@ void SetPDFUsePrintMode(int mode) {
 
 bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                    int* page_count,
-                   double* max_page_width) {
+                   float* max_page_width) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   return engine_exports->GetPDFDocInfo(pdf_buffer, page_count, max_page_width);
@@ -104,15 +105,13 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFStructTreeForPage(pdf_buffer, page_index);
 }
 
-bool GetPDFPageSizeByIndex(base::span<const uint8_t> pdf_buffer,
-                           int page_number,
-                           double* width,
-                           double* height) {
+base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
+    base::span<const uint8_t> pdf_buffer,
+    int page_number) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   chrome_pdf::PDFEngineExports* engine_exports =
       chrome_pdf::PDFEngineExports::Get();
-  return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_number, width,
-                                               height);
+  return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_number);
 }
 
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,

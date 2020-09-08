@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -42,6 +43,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -352,13 +354,12 @@ class HeadlessWebContentsPDFTest : public HeadlessAsyncDevTooledBrowserTest {
     EXPECT_EQ(std::ceil(kDocHeight / kPaperHeight), num_pages);
 
     for (int i = 0; i < num_pages; i++) {
-      double width_in_points;
-      double height_in_points;
-      EXPECT_TRUE(chrome_pdf::GetPDFPageSizeByIndex(
-          pdf_span, i, &width_in_points, &height_in_points));
-      EXPECT_EQ(static_cast<int>(width_in_points),
+      base::Optional<gfx::SizeF> size_in_points =
+          chrome_pdf::GetPDFPageSizeByIndex(pdf_span, i);
+      ASSERT_TRUE(size_in_points.has_value());
+      EXPECT_EQ(static_cast<int>(size_in_points.value().width()),
                 static_cast<int>(kPaperWidth * printing::kPointsPerInch));
-      EXPECT_EQ(static_cast<int>(height_in_points),
+      EXPECT_EQ(static_cast<int>(size_in_points.value().height()),
                 static_cast<int>(kPaperHeight * printing::kPointsPerInch));
 
       gfx::Rect rect(kPaperWidth * kDpi, kPaperHeight * kDpi);

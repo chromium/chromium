@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/optional.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_print.h"
@@ -22,6 +23,7 @@
 #include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 using printing::ConvertUnitDouble;
@@ -376,7 +378,7 @@ std::vector<uint8_t> PDFiumEngineExports::ConvertPdfDocumentToNupPdf(
 
 bool PDFiumEngineExports::GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                                         int* page_count,
-                                        double* max_page_width) {
+                                        float* max_page_width) {
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
     return false;
@@ -438,22 +440,18 @@ base::Value PDFiumEngineExports::GetPDFStructTreeForPage(
   return RecursiveGetStructTree(struct_root_elem);
 }
 
-bool PDFiumEngineExports::GetPDFPageSizeByIndex(
+base::Optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
-    int page_number,
-    double* width,
-    double* height) {
+    int page_number) {
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
-  if (!doc || !width || !height)
-    return false;
+  if (!doc)
+    return base::nullopt;
 
   FS_SIZEF size;
   if (!FPDF_GetPageSizeByIndexF(doc.get(), page_number, &size))
-    return false;
+    return base::nullopt;
 
-  *width = size.width;
-  *height = size.height;
-  return true;
+  return gfx::SizeF(size.width, size.height);
 }
 
 }  // namespace chrome_pdf

@@ -84,12 +84,12 @@ std::vector<gfx::SizeF> GetPdfPageSizes(base::span<const uint8_t> pdf_data) {
 
   std::vector<gfx::SizeF> sizes;
   for (int i = 0; i < num_pages; ++i) {
-    double width;
-    double height;
-    if (!chrome_pdf::GetPDFPageSizeByIndex(pdf_data, i, &width, &height))
+    base::Optional<gfx::SizeF> page_size =
+        chrome_pdf::GetPDFPageSizeByIndex(pdf_data, i);
+    if (!page_size.has_value())
       return {};
 
-    sizes.push_back({width, height});
+    sizes.push_back(page_size.value());
   }
 
   return sizes;

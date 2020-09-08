@@ -25,6 +25,7 @@ typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
 namespace gfx {
 class Rect;
 class Size;
+class SizeF;
 }  // namespace gfx
 
 namespace chrome_pdf {
@@ -103,7 +104,7 @@ void SetPDFUsePrintMode(int mode);
 // Returns false if the document is not valid.
 bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                    int* page_count,
-                   double* max_page_width);
+                   float* max_page_width);
 
 // Whether the PDF is Tagged (see 10.7 "Tagged PDF" in PDF Reference 1.7).
 // Returns true if it's a tagged (accessible) PDF, false if it's a valid
@@ -120,13 +121,11 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
 //     rendered.
 // |page_number| is the page number that the function will get the dimensions
 //     of.
-// |width| is the output for the width of the page in points.
-// |height| is the output for the height of the page in points.
-// Returns false if the document or the page number are not valid.
-bool GetPDFPageSizeByIndex(base::span<const uint8_t> pdf_buffer,
-                           int page_number,
-                           double* width,
-                           double* height);
+// Returns the size of the page in points, or nullopt if the document or the
+// page number are not valid.
+base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
+    base::span<const uint8_t> pdf_buffer,
+    int page_number);
 
 // Renders PDF page into 4-byte per pixel BGRA color bitmap.
 // |pdf_buffer| is the buffer that contains the entire PDF document to be
