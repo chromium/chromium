@@ -305,9 +305,10 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
 #pragma mark - UIAccessibility
 
 - (CGPoint)accessibilityActivationPoint {
-  // Center the activation point over the button.
+  // Center the activation point over the info button, so that double-tapping
+  // triggers to show the popover.
   CGRect buttonFrame = UIAccessibilityConvertFrameToScreenCoordinates(
-      self.contentView.frame, self);
+      self.trailingButton.frame, self);
   return CGPointMake(CGRectGetMidX(buttonFrame), CGRectGetMidY(buttonFrame));
 }
 
