@@ -58,6 +58,13 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
 
+  // Check first for an accelerator action.
+  if (commandData.acceleratorAction) {
+    chrome.accessibilityPrivate.performAcceleratorAction(
+        commandData.acceleratorAction);
+    return;
+  }
+
   // Map gestures to arrow keys while within menus belonging to the desktop or
   // generally in the ChromeVox Panel.
   if (ChromeVoxState.instance.currentRange) {

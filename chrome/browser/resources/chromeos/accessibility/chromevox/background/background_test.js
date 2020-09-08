@@ -2994,3 +2994,24 @@ TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', function() {
             .replay();
       });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight4ByContainers', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(`<p>test</p>`, function(root) {
+    mockFeedback.call(doGesture('swipeRight4'))
+        .expectSpeech('Launcher', 'Button', 'Shelf', 'Tool bar', ', window')
+        .call(doGesture('swipeRight4'))
+        .expectSpeech('Shelf', 'Tool bar')
+        .call(doGesture('swipeRight4'))
+        .expectSpeech(/Status tray*/)
+        .call(doGesture('swipeRight4'))
+        .expectSpeech(/Address and search bar*/)
+
+        .call(doGesture('swipeLeft4'))
+        .expectSpeech(/Status tray*/)
+        .call(doGesture('swipeLeft4'))
+        .expectSpeech('Shelf', 'Tool bar')
+
+        .replay();
+  });
+});

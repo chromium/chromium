@@ -13,9 +13,11 @@ goog.require('KeyCode');
  * @type {!Object<string,
  *     {
  *     msgId: string,
- *     command: string,
- *     menuKeyOverride: ({keyCode: KeyCode, modifiers: ({ctrl:
- * boolean}|undefined)}|undefined)
+ *     command: (string|undefined),
+ *     acceleratorAction:
+ *      (chrome.accessibilityPrivate.AcceleratorAction|undefined),
+ *     menuKeyOverride:
+ *      ({keyCode: KeyCode, modifiers: ({ctrl: boolean}|undefined)}|undefined)
  *    }>}
  * @const
  */
@@ -49,6 +51,16 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
   'swipeDown3': {msgId: 'swipedown3_gesture', command: 'previousPage'},
   'swipeLeft3': {msgId: 'swipeleft3_gesture', command: 'previousGranularity'},
   'swipeRight3': {msgId: 'swiperight3_gesture', command: 'nextGranularity'},
+  'swipeLeft4': {
+    msgId: 'swipeleft4_gesture',
+    acceleratorAction:
+        chrome.accessibilityPrivate.AcceleratorAction.FOCUS_PREVIOUS_PANE
+  },
+  'swipeRight4': {
+    msgId: 'swiperight4_gesture',
+    acceleratorAction:
+        chrome.accessibilityPrivate.AcceleratorAction.FOCUS_NEXT_PANE
+  },
 
   'touchExplore': {msgId: 'touch_explore_gesture'},
 

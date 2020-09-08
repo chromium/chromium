@@ -2969,6 +2969,12 @@
   <message desc="Describes a gesture to be performed on a touch screen." name="IDS_CHROMEVOX_SWIPERIGHT3_GESTURE">
     Swipe three fingers right
   </message>
+  <message desc="Describes a gesture to be performed on a touch screen." name="IDS_CHROMEVOX_SWIPELEFT4_GESTURE" is_accessibility_with_no_ui="true">
+    Swipe four fingers left
+  </message>
+  <message desc="Describes a gesture to be performed on a touch screen." name="IDS_CHROMEVOX_SWIPERIGHT4_GESTURE" is_accessibility_with_no_ui="true">
+    Swipe four fingers right
+  </message>
   <message desc="Describes a gesture to be performed on a touch screen." name="IDS_CHROMEVOX_TAP2_GESTURE">
     Tap with two fingers
   </message>
