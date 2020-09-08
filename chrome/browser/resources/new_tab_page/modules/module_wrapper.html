@@ -3,22 +3,36 @@
     background-color: var(--ntp-background-override-color);
     border: solid var(--ntp-border-color) 1px;
     border-radius: 5px;
+    display: block;
   }
 
   #header {
     align-items: center;
     display: flex;
     height: 22px;
-    margin: 16px;
+    padding: 16px;
   }
 
   #title {
     color: var(--cr-primary-text-color);
   }
 
-  #name {
+  #name,
+  #dot {
     color: var(--cr-secondary-text-color);
     white-space: pre;
+  }
+
+  #headerSpacer {
+    flex-grow: 1;
+  }
+
+  #toggleButton {
+    --cr-icon-image: url(chrome://resources/images/icon_expand_less.svg);
+  }
+
+  :host([collapsed_]) #toggleButton {
+    --cr-icon-image: url(chrome://resources/images/icon_expand_more.svg);
   }
 
   #moduleElement {
@@ -27,9 +41,20 @@
     justify-content: center;
     overflow: hidden;
   }
+
+  :host([collapsed_]) #title,
+  :host([collapsed_]) #dot,
+  :host([collapsed_]) #moduleElement {
+    display: none;
+  }
 </style>
 <div id="header">
   <span id="title">[[descriptor.title]]</span>
-  <span id="name"> • [[descriptor.name]]</span>
+  <span id="dot"> • </span>
+  <span id="name">[[descriptor.name]]</span>
+  <div id="headerSpacer"></div>
+  <!-- TODO(crbug.com/1124089): Add title attribute. -->
+  <cr-icon-button id="toggleButton" on-click="onToggleButtonClick_">
+  </cr-icon-button>
 </div>
 <div id="moduleElement"></div>
