@@ -34,8 +34,8 @@ public class GoogleAccountsParams {
      */
     public final boolean isSameTab;
 
-    GoogleAccountsParams(@GoogleAccountServiceType int serviceType, String email, Uri continueUri,
-            boolean isSameTab) {
+    public GoogleAccountsParams(@GoogleAccountServiceType int serviceType, String email,
+            Uri continueUri, boolean isSameTab) {
         this.serviceType = serviceType;
         this.email = email;
         this.continueUri = continueUri;
