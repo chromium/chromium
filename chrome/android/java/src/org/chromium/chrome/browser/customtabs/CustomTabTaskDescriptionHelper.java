@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -203,8 +204,8 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     }
 
     private void updateTaskDescription() {
-        ApiCompatibilityUtils.setTaskDescription(
-                mActivity, computeTitle(), computeIcon(), computeThemeColor());
+        mActivity.setTaskDescription(new ActivityManager.TaskDescription(
+                computeTitle(), computeIcon(), computeThemeColor()));
     }
 
     /**

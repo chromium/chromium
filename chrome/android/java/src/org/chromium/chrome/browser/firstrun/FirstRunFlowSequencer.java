@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -115,7 +116,9 @@ public abstract class FirstRunFlowSequencer  {
 
     @VisibleForTesting
     protected boolean shouldSkipFirstUseHints() {
-        return ApiCompatibilityUtils.shouldSkipFirstUseHints(mActivity.getContentResolver());
+        return Settings.Secure.getInt(
+                       mActivity.getContentResolver(), Settings.Secure.SKIP_FIRST_USE_HINTS, 0)
+                != 0;
     }
 
     @VisibleForTesting

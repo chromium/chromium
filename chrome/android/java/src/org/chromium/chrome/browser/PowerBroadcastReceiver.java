@@ -10,11 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -44,7 +44,9 @@ public class PowerBroadcastReceiver extends BroadcastReceiver {
     static class PowerManagerHelper {
         /** @return whether the screen is on or not. */
         public boolean isScreenOn(Context context) {
-            return ApiCompatibilityUtils.isInteractive();
+            PowerManager powerManager =
+                    (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            return powerManager.isInteractive();
         }
     }
 

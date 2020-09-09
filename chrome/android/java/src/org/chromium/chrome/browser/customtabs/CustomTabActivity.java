@@ -8,6 +8,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -109,8 +109,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
 
         // Setting task title and icon to be null will preserve the client app's title and icon.
-        ApiCompatibilityUtils.setTaskDescription(this, null, null,
-                mIntentDataProvider.getToolbarColor());
+        setTaskDescription(new ActivityManager.TaskDescription(
+                null, null, mIntentDataProvider.getToolbarColor()));
+
         getComponent().resolveBottomBarDelegate().showBottomBarIfNecessary();
     }
 

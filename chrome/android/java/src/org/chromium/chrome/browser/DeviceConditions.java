@@ -18,7 +18,6 @@ import android.os.PowerManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;
 
@@ -183,8 +182,10 @@ public class DeviceConditions {
     public static boolean isCurrentlyScreenOnAndUnlocked(Context context) {
         KeyguardManager keyguardManager =
                 (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-        return keyguardManager != null && !keyguardManager.isKeyguardLocked()
-                && ApiCompatibilityUtils.isInteractive();
+        if (keyguardManager == null || keyguardManager.isKeyguardLocked()) return false;
+
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        return powerManager.isInteractive();
     }
 
     private static Intent getBatteryStatus(Context context) {
