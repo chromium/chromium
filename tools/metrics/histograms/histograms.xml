@@ -66421,7 +66421,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2020-09-13">
+    expires_after="2021-09-01">
   <owner>jmadill@chromium.org</owner>
   <summary>
     ANGLE's currently active D3D shader model version. Logged once every startup
