@@ -16,6 +16,7 @@ blink_modules_sources("imagecapture") {
     "//media",
     "//media/capture/mojom:image_capture_blink",
     "//skia",
+    "//third_party/blink/renderer/modules/permissions:permissions",
     "//third_party/libyuv",
   ]
 }

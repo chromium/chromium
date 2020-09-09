@@ -101,6 +101,8 @@ blink_modules_sources("mediastream") {
     "//third_party/blink/renderer/modules/peerconnection:peerconnection",
     "//third_party/libyuv:libyuv",
   ]
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/modules/imagecapture:imagecapture" ]
 
   public_deps = [ "//media/capture:capture_lib" ]
 }
