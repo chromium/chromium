@@ -226,8 +226,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, IsFocused_AtLoad) {
       NavigateToURL(shell(), GetTestUrl("render_frame_host", "focus.html")));
 
   // The main frame should be focused.
-  WebContents* web_contents = shell()->web_contents();
-  EXPECT_EQ(web_contents->GetMainFrame(), web_contents->GetFocusedFrame());
+  EXPECT_EQ(web_contents()->GetMainFrame(), web_contents()->GetFocusedFrame());
 }
 
 // Test that if the content changes the focused frame, it is correctly exposed.
@@ -235,19 +234,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, IsFocused_Change) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GetTestUrl("render_frame_host", "focus.html")));
 
-  WebContents* web_contents = shell()->web_contents();
-
   std::string frames[2] = {"frame1", "frame2"};
   for (const std::string& frame : frames) {
-    ExecuteScriptAndGetValue(web_contents->GetMainFrame(),
+    ExecuteScriptAndGetValue(web_contents()->GetMainFrame(),
                              "focus" + frame + "()");
 
     // The main frame is not the focused frame in the frame tree but the main
     // frame is focused per RFHI rules because one of its descendant is focused.
     // TODO(mlamouri): we should check the frame focus state per RFHI, see the
     // general comment at the beginning of this test file.
-    EXPECT_NE(web_contents->GetMainFrame(), web_contents->GetFocusedFrame());
-    EXPECT_EQ(frame, web_contents->GetFocusedFrame()->GetFrameName());
+    EXPECT_NE(web_contents()->GetMainFrame(),
+              web_contents()->GetFocusedFrame());
+    EXPECT_EQ(frame, web_contents()->GetFocusedFrame()->GetFrameName());
   }
 }
 
@@ -256,29 +254,26 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoveFocusedFrame) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GetTestUrl("render_frame_host", "focus.html")));
 
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "focusframe4()");
 
-  ExecuteScriptAndGetValue(web_contents->GetMainFrame(), "focusframe4()");
-
-  EXPECT_NE(web_contents->GetMainFrame(), web_contents->GetFocusedFrame());
-  EXPECT_EQ("frame4", web_contents->GetFocusedFrame()->GetFrameName());
+  EXPECT_NE(web_contents()->GetMainFrame(), web_contents()->GetFocusedFrame());
+  EXPECT_EQ("frame4", web_contents()->GetFocusedFrame()->GetFrameName());
   EXPECT_EQ("frame3",
-            web_contents->GetFocusedFrame()->GetParent()->GetFrameName());
-  EXPECT_NE(-1, web_contents->GetFrameTree()->focused_frame_tree_node_id_);
+            web_contents()->GetFocusedFrame()->GetParent()->GetFrameName());
+  EXPECT_NE(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 
-  ExecuteScriptAndGetValue(web_contents->GetMainFrame(), "detachframe(3)");
-  EXPECT_EQ(nullptr, web_contents->GetFocusedFrame());
-  EXPECT_EQ(-1, web_contents->GetFrameTree()->focused_frame_tree_node_id_);
+  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "detachframe(3)");
+  EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
+  EXPECT_EQ(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 
-  ExecuteScriptAndGetValue(web_contents->GetMainFrame(), "focusframe2()");
-  EXPECT_NE(nullptr, web_contents->GetFocusedFrame());
-  EXPECT_NE(web_contents->GetMainFrame(), web_contents->GetFocusedFrame());
-  EXPECT_NE(-1, web_contents->GetFrameTree()->focused_frame_tree_node_id_);
+  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "focusframe2()");
+  EXPECT_NE(nullptr, web_contents()->GetFocusedFrame());
+  EXPECT_NE(web_contents()->GetMainFrame(), web_contents()->GetFocusedFrame());
+  EXPECT_NE(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 
-  ExecuteScriptAndGetValue(web_contents->GetMainFrame(), "detachframe(2)");
-  EXPECT_EQ(nullptr, web_contents->GetFocusedFrame());
-  EXPECT_EQ(-1, web_contents->GetFrameTree()->focused_frame_tree_node_id_);
+  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "detachframe(2)");
+  EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
+  EXPECT_EQ(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 }
 
 // Test that a frame is visible/hidden depending on its WebContents visibility
@@ -286,33 +281,31 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoveFocusedFrame) {
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        GetVisibilityState_Basic) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
-  WebContents* web_contents = shell()->web_contents();
 
-  web_contents->WasShown();
+  web_contents()->WasShown();
   EXPECT_EQ(PageVisibilityState::kVisible,
-            web_contents->GetMainFrame()->GetVisibilityState());
+            web_contents()->GetMainFrame()->GetVisibilityState());
 
-  web_contents->WasHidden();
+  web_contents()->WasHidden();
   EXPECT_EQ(PageVisibilityState::kHidden,
-            web_contents->GetMainFrame()->GetVisibilityState());
+            web_contents()->GetMainFrame()->GetVisibilityState());
 }
 
 // Test that a frame visibility can be overridden by the ContentBrowserClient.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        GetVisibilityState_Override) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
-  WebContents* web_contents = shell()->web_contents();
 
   PrerenderTestContentBrowserClient new_client;
   ContentBrowserClient* old_client = SetBrowserClientForTesting(&new_client);
 
-  web_contents->WasShown();
+  web_contents()->WasShown();
   EXPECT_EQ(PageVisibilityState::kVisible,
-            web_contents->GetMainFrame()->GetVisibilityState());
+            web_contents()->GetMainFrame()->GetVisibilityState());
 
   new_client.EnableVisibilityOverride(PageVisibilityState::kHiddenButPainting);
   EXPECT_EQ(PageVisibilityState::kHiddenButPainting,
-            web_contents->GetMainFrame()->GetVisibilityState());
+            web_contents()->GetMainFrame()->GetVisibilityState());
 
   SetBrowserClientForTesting(old_client);
 }
@@ -323,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        URLLoaderFactoryNotTrusted) {
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
-  shell()->web_contents()->GetMainFrame()->CreateNetworkServiceDefaultFactory(
+  web_contents()->GetMainFrame()->CreateNetworkServiceDefaultFactory(
       url_loader_factory.BindNewPipeAndPassReceiver());
 
   std::unique_ptr<network::ResourceRequest> request =
@@ -501,9 +494,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        MAYBE_IframeBeforeUnloadParentHang) {
   RenderFrameHostFactoryForBeforeUnloadInterceptor interceptor;
 
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   TestJavaScriptDialogManager dialog_manager;
-  wc->SetDelegate(&dialog_manager);
+  web_contents()->SetDelegate(&dialog_manager);
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   // Make an iframe with a beforeunload handler.
@@ -511,10 +503,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       "var iframe = document.createElement('iframe');"
       "document.body.appendChild(iframe);"
       "iframe.contentWindow.onbeforeunload=function(e){return 'x'};";
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
-  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(content::ExecuteScript(web_contents(), script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // JavaScript onbeforeunload dialogs require a user gesture.
-  for (auto* frame : wc->GetAllFrames())
+  for (auto* frame : web_contents()->GetAllFrames())
     frame->ExecuteJavaScriptWithUserGestureForTests(base::string16());
 
   // Force a process switch by going to a privileged page. The beforeunload
@@ -525,8 +517,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   shell()->LoadURL(web_ui_page);
   dialog_manager.Wait();
 
-  RenderFrameHostImpl* main_frame =
-      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
   EXPECT_TRUE(main_frame->is_waiting_for_beforeunload_completion());
 
   // Answer the dialog.
@@ -536,63 +527,61 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // beforeunload completion callback timer isn't functioning then the
   // navigation will hang forever and this test will time out. If this waiting
   // for the load stop works, this test won't time out.
-  EXPECT_TRUE(WaitForLoadStop(wc));
-  EXPECT_EQ(web_ui_page, wc->GetLastCommittedURL());
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(web_ui_page, web_contents()->GetLastCommittedURL());
 
-  wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
+  web_contents()->SetDelegate(nullptr);
+  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Tests that a gesture is required in a frame before it can request a
 // beforeunload dialog.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        BeforeUnloadDialogRequiresGesture) {
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   TestJavaScriptDialogManager dialog_manager;
-  wc->SetDelegate(&dialog_manager);
+  web_contents()->SetDelegate(&dialog_manager);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.
-  wc->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
+  web_contents()->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
 
   // Reload. There should be no beforeunload dialog because there was no gesture
   // on the page. If there was, this WaitForLoadStop call will hang.
-  wc->GetController().Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(wc));
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // Give the page a user gesture and try reloading again. This time there
   // should be a dialog. If there is no dialog, the call to Wait will hang.
-  wc->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+  web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       base::string16());
-  wc->GetController().Reload(ReloadType::NORMAL, false);
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   dialog_manager.Wait();
 
   // Answer the dialog.
   dialog_manager.Run(true, base::string16());
-  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // The reload should have cleared the user gesture bit, so upon leaving again
   // there should be no beforeunload dialog.
   shell()->LoadURL(GURL("about:blank"));
-  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
+  web_contents()->SetDelegate(nullptr);
+  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Test for crbug.com/80401.  Canceling a beforeunload dialog should reset
 // the URL to the previous page's URL.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        CancelBeforeUnloadResetsURL) {
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   TestJavaScriptDialogManager dialog_manager;
-  wc->SetDelegate(&dialog_manager);
+  web_contents()->SetDelegate(&dialog_manager);
 
   GURL url(GetTestUrl("render_frame_host", "beforeunload.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  PrepContentsForBeforeUnloadTest(wc);
+  PrepContentsForBeforeUnloadTest(web_contents());
 
   // Navigate to a page that triggers a cross-site transition.
   GURL url2(embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -602,21 +591,21 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Cancel the dialog.
   dialog_manager.reset_url_invalidate_count();
   dialog_manager.Run(false, base::string16());
-  EXPECT_FALSE(wc->IsLoading());
+  EXPECT_FALSE(web_contents()->IsLoading());
 
   // Verify there are no pending history items after the dialog is cancelled.
   // (see crbug.com/93858)
-  NavigationEntry* entry = wc->GetController().GetPendingEntry();
+  NavigationEntry* entry = web_contents()->GetController().GetPendingEntry();
   EXPECT_EQ(nullptr, entry);
-  EXPECT_EQ(url, wc->GetVisibleURL());
+  EXPECT_EQ(url, web_contents()->GetVisibleURL());
 
   // There should have been at least one NavigationStateChange event for
   // invalidating the URL in the address bar, to avoid leaving the stale URL
   // visible.
   EXPECT_GE(dialog_manager.url_invalidate_count(), 1);
 
-  wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
+  web_contents()->SetDelegate(nullptr);
+  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Helper class for beforunload tests.  Sets up a custom dialog manager for the
@@ -629,10 +618,6 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
     : public RenderFrameHostImplBrowserTest {
  public:
   RenderFrameHostImplBeforeUnloadBrowserTest() {}
-
-  WebContentsImpl* web_contents() {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
 
   TestJavaScriptDialogManager* dialog_manager() {
     return dialog_manager_.get();
@@ -1239,7 +1224,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, POSTNavigation) {
   GURL post_url = http_server.GetURL("/echotitle");
 
   // Navigate to a page with a form.
-  TestNavigationObserver observer(shell()->web_contents());
+  TestNavigationObserver observer(web_contents());
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_EQ(url, observer.last_navigation_url());
   EXPECT_TRUE(observer.last_navigation_succeeded());
@@ -1250,9 +1235,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, POSTNavigation) {
       NavigateToURL(shell(), submit_url, post_url /* expected_commit_url */));
 
   // Check that a proper POST navigation was done.
-  EXPECT_EQ("text=&select=a",
-            base::UTF16ToASCII(shell()->web_contents()->GetTitle()));
-  EXPECT_EQ(post_url, shell()->web_contents()->GetLastCommittedURL());
+  EXPECT_EQ("text=&select=a", base::UTF16ToASCII(web_contents()->GetTitle()));
+  EXPECT_EQ(post_url, web_contents()->GetLastCommittedURL());
   EXPECT_TRUE(shell()
                   ->web_contents()
                   ->GetController()
@@ -1260,10 +1244,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, POSTNavigation) {
                   ->GetHasPostData());
 
   // Reload and verify the form was submitted.
-  shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_EQ("text=&select=a",
-            base::UTF16ToASCII(shell()->web_contents()->GetTitle()));
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ("text=&select=a", base::UTF16ToASCII(web_contents()->GetTitle()));
   CHECK_EQ(2, post_counter);
 }
 
@@ -1321,22 +1304,21 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FastNavigationAbort) {
   // ensure that we won't trigger a same-site cross-RFH navigation.
   // TODO(crbug.com/1099193): This should also work on cross-RFH same-site
   // navigations.
-  DisableProactiveBrowsingInstanceSwapFor(
-      shell()->web_contents()->GetMainFrame());
+  DisableProactiveBrowsingInstanceSwapFor(web_contents()->GetMainFrame());
 
   // Now make a navigation. |observer| will make a document.open() call at
   // ReadyToCommit time - see
   // NavigationHandleGrabber::SendingNavigationCommitted(). The navigation
   // should get aborted because of the document.open() in the navigating RFH.
-  NavigationHandleGrabber observer(shell()->web_contents());
+  NavigationHandleGrabber observer(web_contents());
   const base::string16 title = base::ASCIIToUTF16("done");
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "window.location.href='/title2.html'"));
+  EXPECT_TRUE(
+      ExecuteScript(web_contents(), "window.location.href='/title2.html'"));
   observer.WaitForTitle2();
   // Flush IPCs to make sure the renderer didn't tell us to navigate. Need to
   // make two round trips.
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), ""));
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), ""));
+  EXPECT_TRUE(ExecuteScript(web_contents(), ""));
+  EXPECT_TRUE(ExecuteScript(web_contents(), ""));
   EXPECT_FALSE(observer.committed_title2());
 }
 
@@ -1344,11 +1326,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        TerminationDisablersClearedOnRendererCrash) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_rfh1 =
-      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+  RenderFrameHostImpl* main_rfh1 = web_contents()->GetMainFrame();
 
   EXPECT_TRUE(main_rfh1->GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler));
@@ -1365,11 +1345,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // This should not trigger a DCHECK once the renderer sends up the termination
   // disabler flags.
-  shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  RenderFrameHostImpl* main_rfh2 =
-      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+  RenderFrameHostImpl* main_rfh2 = web_contents()->GetMainFrame();
   EXPECT_TRUE(main_rfh2->GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler));
 }
@@ -1617,10 +1596,10 @@ class ScopedFakeInterfaceBrokerRequestInjector
 class ScopedInterfaceRequestMonitor
     : public blink::mojom::BrowserInterfaceBrokerInterceptorForTesting {
  public:
-  ScopedInterfaceRequestMonitor(RenderFrameHost* render_frame_host,
+  ScopedInterfaceRequestMonitor(RenderFrameHostImpl* render_frame_host,
                                 base::StringPiece interface_name,
                                 base::RepeatingClosure callback)
-      : rfhi_(static_cast<RenderFrameHostImpl*>(render_frame_host)),
+      : rfhi_(render_frame_host),
         impl_(receiver().SwapImplForTesting(this)),
         interface_name_(interface_name),
         request_callback_(callback) {}
@@ -1694,7 +1673,6 @@ class DidFinishNavigationObserver : public WebContentsObserver {
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTest,
     EarlyInterfaceRequestsFromNewDocumentDispatchedAfterNavigationFinished) {
-  WebContents* web_contents = shell()->web_contents();
   const GURL first_url(embedded_test_server()->GetURL("/title1.html"));
   const GURL second_url(embedded_test_server()->GetURL("/title2.html"));
 
@@ -1716,7 +1694,7 @@ IN_PROC_BROWSER_TEST_F(
   // Replace the |interface_broker_receiver| argument in the next
   // DidCommitProvisionalLoad message coming from the renderer with the
   // rigged |interface_broker_with_pending_requests| from above.
-  ScopedFakeInterfaceBrokerRequestInjector injector(web_contents);
+  ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
   injector.set_fake_receiver_for_next_commit(
       std::move(interface_broker_receiver_with_pending_receiver));
 
@@ -1726,11 +1704,12 @@ IN_PROC_BROWSER_TEST_F(
   bool did_finish_navigation = false;
 
   // Start the same-process navigation.
-  TestNavigationManager navigation_manager(web_contents, second_url);
+  TestNavigationManager navigation_manager(web_contents(), second_url);
   shell()->LoadURL(second_url);
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   auto* committing_rfh =
-      navigation_manager.GetNavigationHandle()->GetRenderFrameHost();
+      NavigationRequest::From(navigation_manager.GetNavigationHandle())
+          ->GetRenderFrameHost();
 
   DidFinishNavigationObserver navigation_finish_observer(
       committing_rfh, base::BindLambdaForTesting([&did_finish_navigation]() {
@@ -1780,7 +1759,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // |interface_broker_receiver| from above, whose client end is controlled by
   // this test; then trigger a navigation.
   {
-    ScopedFakeInterfaceBrokerRequestInjector injector(shell()->web_contents());
+    ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
     injector.set_fake_receiver_for_next_commit(
         std::move(interface_broker_receiver));
 
@@ -1791,8 +1770,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // The test below only works for same-RFH navigations, so we need to ensure
   // that we won't trigger a same-site cross-RFH navigation.
-  DisableProactiveBrowsingInstanceSwapFor(
-      shell()->web_contents()->GetMainFrame());
+  DisableProactiveBrowsingInstanceSwapFor(web_contents()->GetMainFrame());
 
   // Prepare an interface receiver for FrameHostTestInterface.
   mojo::Remote<mojom::FrameHostTestInterface> test_interface;
@@ -1803,7 +1781,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // RenderFrameHostImpl.
   base::MockCallback<base::RepeatingClosure>
       dispatched_interface_request_callback;
-  auto* main_rfh = shell()->web_contents()->GetMainFrame();
+  auto* main_rfh = web_contents()->GetMainFrame();
   ScopedInterfaceRequestMonitor monitor(
       main_rfh, mojom::FrameHostTestInterface::Name_,
       dispatched_interface_request_callback.Get());
@@ -1871,7 +1849,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-    ScopedFakeInterfaceBrokerRequestInjector injector(shell()->web_contents());
+    ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
     injector.set_fake_receiver_for_next_commit(
         std::move(*interface_broker_receiver));
 
@@ -1888,11 +1866,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
         subframe_url.spec().c_str());
     ASSERT_TRUE(ExecuteScript(shell(), script));
 
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
+    FrameTreeNode* root = web_contents()->GetFrameTree()->root();
     ASSERT_EQ(1u, root->child_count());
     FrameTreeNode* child = root->child_at(0u);
 
@@ -1943,11 +1919,9 @@ IN_PROC_BROWSER_TEST_F(
   // empty document regardless of when/how/if the `src` attribute is set.
 
   ASSERT_TRUE(ExecuteScript(shell(), kNavigateToOneThenTwoScript));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   ASSERT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0u);
 
@@ -1958,7 +1932,7 @@ IN_PROC_BROWSER_TEST_F(
   // Set the `src` attribute again to trigger navigation (3).
 
   TestFrameNavigationObserver commit_observer(child->current_frame_host());
-  ScopedFakeInterfaceBrokerRequestInjector injector(shell()->web_contents());
+  ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
   injector.set_fake_receiver_for_next_commit(mojo::NullReceiver());
 
   ASSERT_TRUE(ExecuteScript(shell(), kNavigateToThreeScript));
@@ -2001,9 +1975,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   CheckURLOriginAndNetworkIsolationKey(root, main_frame_url, main_frame_origin,
                                        expected_main_frame_key);
 
@@ -2013,7 +1985,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       f.id = 'myiframe';
       document.body.append(f);
   )"));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ASSERT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0u);
@@ -2028,7 +2000,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       iframe.contentWindow.location.hash = 'foo';
   )"));
 
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   CheckURLOriginAndNetworkIsolationKey(
       child, subframe_url_two, main_frame_origin, expected_main_frame_key);
@@ -2071,20 +2043,17 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   CheckURLOriginAndNetworkIsolationKey(root, main_frame_url, main_frame_origin,
                                        expected_main_frame_key);
 
   // Create popup.
   WebContentsAddedObserver popup_observer;
   ASSERT_TRUE(ExecuteScript(shell(), "var w = window.open('');"));
-  WebContents* popup = popup_observer.GetWebContents();
+  WebContentsImpl* popup =
+      static_cast<WebContentsImpl*>(popup_observer.GetWebContents());
 
-  FrameTreeNode* popup_frame =
-      static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())
-          ->frame_tree_node();
+  FrameTreeNode* popup_frame = popup->GetMainFrame()->frame_tree_node();
   CheckURLOriginAndNetworkIsolationKey(
       popup_frame, popup_url_one, main_frame_origin, expected_main_frame_key);
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
@@ -2125,9 +2094,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       net::NetworkIsolationKey(origin, origin);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   CheckURLOriginAndNetworkIsolationKey(root, main_frame_url, origin,
                                        expected_network_isolation_key);
   ASSERT_EQ(1u, root->child_count());
@@ -2186,9 +2153,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       main_frame_origin, main_frame_origin);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   CheckURLOriginAndNetworkIsolationKey(
       root, main_frame_url, main_frame_origin,
       expected_main_frame_network_isolation_key);
@@ -2253,9 +2218,7 @@ IN_PROC_BROWSER_TEST_F(
       main_frame_origin, main_frame_origin);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   CheckURLOriginAndNetworkIsolationKey(
       root, main_frame_url, main_frame_origin,
       expected_main_frame_network_isolation_key);
@@ -2280,7 +2243,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // The middle iframe navigates the innermost iframe to about:blank. It should
   // then have the same NetworkIsolationKey as the middle iframe.
-  TestNavigationObserver nav_observer1(shell()->web_contents());
+  TestNavigationObserver nav_observer1(web_contents());
   ASSERT_TRUE(ExecJs(
       middle_iframe->current_frame_host(),
       "var iframe = "
@@ -2295,7 +2258,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // The innermost iframe, now at about:blank, navigates itself back its
   // original location, which should make it use c.test's NIK again.
-  TestNavigationObserver nav_observer2(shell()->web_contents());
+  TestNavigationObserver nav_observer2(web_contents());
   ASSERT_TRUE(
       ExecJs(innermost_iframe->current_frame_host(), "window.history.back();"));
   nav_observer2.WaitForNavigationFinished();
@@ -2310,7 +2273,7 @@ IN_PROC_BROWSER_TEST_F(
   // Despite c.test initiating the navigation, the iframe should be using
   // b.test's NIK, since the navigation entry was created by a navigation
   // initiated by b.test.
-  TestNavigationObserver nav_observer3(shell()->web_contents());
+  TestNavigationObserver nav_observer3(web_contents());
   ASSERT_TRUE(ExecJs(innermost_iframe->current_frame_host(),
                      "window.history.forward();"));
   nav_observer3.WaitForNavigationFinished();
@@ -2344,7 +2307,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   base::RunLoop wait_until_connection_error_loop_2;
 
   {
-    ScopedFakeInterfaceBrokerRequestInjector injector(shell()->web_contents());
+    ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
     injector.set_fake_receiver_for_next_commit(
         interface_broker_1.BindNewPipeAndPassReceiver());
     interface_broker_1.set_disconnect_handler(
@@ -2354,11 +2317,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // The test below only makes sense for same-RFH navigations, so we need to
   // ensure that we won't trigger a same-site cross-RFH navigation.
-  DisableProactiveBrowsingInstanceSwapFor(
-      shell()->web_contents()->GetMainFrame());
+  DisableProactiveBrowsingInstanceSwapFor(web_contents()->GetMainFrame());
 
   {
-    ScopedFakeInterfaceBrokerRequestInjector injector(shell()->web_contents());
+    ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
     injector.set_fake_receiver_for_next_commit(
         interface_broker_2.BindNewPipeAndPassReceiver());
     interface_broker_2.set_disconnect_handler(
@@ -2424,11 +2386,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        GetCanonicalUrlAfterRendererCrash) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame =
-      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
 
   // Make the renderer crash.
   RenderProcessHost* renderer_process = main_frame->GetProcess();
@@ -2451,9 +2411,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   GURL blocked_url(embedded_test_server()->GetURL(
       "blocked.com", "/frame-ancestors-none.html"));
-  WebContents* web_contents = shell()->web_contents();
-  NavigationHandleObserver navigation_observer(web_contents, blocked_url);
-  EXPECT_TRUE(NavigateIframeToURL(web_contents, "child0", blocked_url));
+  NavigationHandleObserver navigation_observer(web_contents(), blocked_url);
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child0", blocked_url));
 
   // Verify that the NavigationHandle / NavigationRequest didn't leak.
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
@@ -2479,53 +2438,51 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        BeforeUnloadDialogSuppressedForDiscard) {
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   TestJavaScriptDialogManager dialog_manager;
-  wc->SetDelegate(&dialog_manager);
+  web_contents()->SetDelegate(&dialog_manager);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.
-  wc->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
+  web_contents()->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
 
   // Give the page a user gesture so javascript beforeunload works, and then
   // dispatch a before unload with discard as a reason. This should return
   // without any dialog being seen.
-  wc->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+  web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       base::string16());
-  wc->GetMainFrame()->DispatchBeforeUnload(
+  web_contents()->GetMainFrame()->DispatchBeforeUnload(
       RenderFrameHostImpl::BeforeUnloadType::DISCARD, false);
   dialog_manager.Wait();
   EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
   EXPECT_EQ(1, dialog_manager.num_beforeunload_fired_seen());
   EXPECT_FALSE(dialog_manager.proceed());
 
-  wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
+  web_contents()->SetDelegate(nullptr);
+  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        PendingDialogMakesDiscardUnloadReturnFalse) {
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   TestJavaScriptDialogManager dialog_manager;
-  wc->SetDelegate(&dialog_manager);
+  web_contents()->SetDelegate(&dialog_manager);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.
-  wc->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
+  web_contents()->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
 
   // Give the page a user gesture so javascript beforeunload works, and then
   // dispatch a before unload with discard as a reason. This should return
   // without any dialog being seen.
-  wc->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+  web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       base::string16());
 
   // Launch an alert javascript dialog. This pending dialog should block a
   // subsequent discarding before unload request.
-  wc->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
       base::ASCIIToUTF16("setTimeout(function(){alert('hello');}, 10);"),
       base::NullCallback());
   dialog_manager.Wait();
@@ -2534,7 +2491,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Dispatch a before unload request while the first is still blocked
   // on the dialog, and expect it to return false immediately (synchronously).
-  wc->GetMainFrame()->DispatchBeforeUnload(
+  web_contents()->GetMainFrame()->DispatchBeforeUnload(
       RenderFrameHostImpl::BeforeUnloadType::DISCARD, false);
   dialog_manager.Wait();
   EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
@@ -2545,8 +2502,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // doesn't leak.
   dialog_manager.Run(true, base::string16());
 
-  wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
+  web_contents()->SetDelegate(nullptr);
+  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -2562,10 +2519,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // renderer. Any document will do.
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  auto* frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+  auto* frame = web_contents()->GetMainFrame();
   auto* process = static_cast<RenderProcessHostImpl*>(frame->GetProcess());
   ASSERT_EQ(0, process->get_media_stream_count_for_testing());
 
@@ -2602,15 +2558,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // state.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        MAYBE_VisibilityScrolledOutOfView) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
   GURL main_frame(embedded_test_server()->GetURL("/iframe_out_of_view.html"));
   GURL child_url(embedded_test_server()->GetURL("/hello.html"));
 
   // This will set up the page frame tree as A(A1()).
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* nested_iframe_node = root->child_at(0);
   NavigateFrameToURL(nested_iframe_node, child_url);
 
@@ -2621,15 +2574,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // Test that a frame is visible/hidden depending on its WebContents visibility
 // state.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, VisibilityChildInView) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
   GURL main_frame(embedded_test_server()->GetURL("/iframe_clipped.html"));
   GURL child_url(embedded_test_server()->GetURL("/hello.html"));
 
   // This will set up the page frame tree as A(A1()).
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* nested_iframe_node = root->child_at(0);
   NavigateFrameToURL(nested_iframe_node, child_url);
 
@@ -2639,8 +2589,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, VisibilityChildInView) {
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        OriginOfFreshFrame_Subframe_NavCancelledByDocWrite) {
-  WebContents* web_contents = shell()->web_contents();
-  NavigationController& controller = web_contents->GetController();
+  NavigationController& controller = web_contents()->GetController();
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_EQ(1, controller.GetEntryCount());
@@ -2663,7 +2612,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   )";
   GURL cross_site_url(embedded_test_server()->GetURL("bar.com", "/hung"));
   std::string script = JsReplace(kScriptTemplate, cross_site_url);
-  EXPECT_EQ(main_origin.Serialize(), EvalJs(web_contents, script));
+  EXPECT_EQ(main_origin.Serialize(), EvalJs(web_contents(), script));
 
   // The subframe navigation should be cancelled and therefore shouldn't
   // contribute an extra history entry.
@@ -2671,8 +2620,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Browser-side origin should match the renderer-side origin.
   // See also https://crbug.com/932067.
-  ASSERT_EQ(2u, web_contents->GetAllFrames().size());
-  RenderFrameHost* subframe = web_contents->GetAllFrames()[1];
+  ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
+  RenderFrameHost* subframe = web_contents()->GetAllFrames()[1];
   EXPECT_EQ(main_origin, subframe->GetLastCommittedOrigin());
 }
 
@@ -2702,15 +2651,14 @@ class RenderFrameHostCreatedObserver : public WebContentsObserver {
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        OriginOfFreshFrame_SandboxedSubframe) {
-  WebContents* web_contents = shell()->web_contents();
-  NavigationController& controller = web_contents->GetController();
+  NavigationController& controller = web_contents()->GetController();
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_EQ(1, controller.GetEntryCount());
   url::Origin main_origin = url::Origin::Create(main_url);
 
   // Navigate a sandboxed frame to a cross-origin '/hung'.
-  RenderFrameHostCreatedObserver subframe_observer(web_contents);
+  RenderFrameHostCreatedObserver subframe_observer(web_contents());
   const char kScriptTemplate[] = R"(
       const frame = document.createElement('iframe');
       frame.sandbox = 'allow-scripts';
@@ -2719,13 +2667,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   )";
   GURL cross_site_url(embedded_test_server()->GetURL("bar.com", "/hung"));
   std::string script = JsReplace(kScriptTemplate, cross_site_url);
-  EXPECT_TRUE(ExecJs(web_contents, script));
+  EXPECT_TRUE(ExecJs(web_contents(), script));
 
   // Wait for a new subframe, but ignore the frame returned by
   // |subframe_observer| (it might be the speculative one, not the current one).
   subframe_observer.Wait();
-  ASSERT_EQ(2u, web_contents->GetAllFrames().size());
-  RenderFrameHost* subframe = web_contents->GetAllFrames()[1];
+  ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
+  RenderFrameHost* subframe = web_contents()->GetAllFrames()[1];
 
   // The browser-side origin of the *sandboxed* subframe should be set to an
   // *opaque* origin (with the parent's origin as the precursor origin).
@@ -2741,16 +2689,15 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        OriginOfFreshFrame_Subframe_AboutBlankAndThenDocWrite) {
-  WebContents* web_contents = shell()->web_contents();
-  NavigationController& controller = web_contents->GetController();
+  NavigationController& controller = web_contents()->GetController();
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_EQ(1, controller.GetEntryCount());
   url::Origin main_origin = url::Origin::Create(main_url);
 
   // Create a new about:blank subframe and document.write into it.
-  TestNavigationObserver load_observer(web_contents);
-  RenderFrameHostCreatedObserver subframe_observer(web_contents);
+  TestNavigationObserver load_observer(web_contents());
+  RenderFrameHostCreatedObserver subframe_observer(web_contents());
   const char kScript[] = R"(
       const frame = document.createElement('iframe');
       // Don't set |frame.src| - have the frame commit an initial about:blank.
@@ -2762,7 +2709,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       doc.write(html);
       doc.close();
   )";
-  ExecuteScriptAsync(web_contents, kScript);
+  ExecuteScriptAsync(web_contents(), kScript);
 
   // Wait for the new subframe to be created - this will be still before the
   // commit of about:blank.
@@ -2778,8 +2725,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Browser-side origin should match the renderer-side origin.
   // See also https://crbug.com/932067.
-  ASSERT_EQ(2u, web_contents->GetAllFrames().size());
-  RenderFrameHost* subframe2 = web_contents->GetAllFrames()[1];
+  ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
+  RenderFrameHost* subframe2 = web_contents()->GetAllFrames()[1];
   EXPECT_EQ(subframe, subframe2);  // No swaps are expected.
   EXPECT_EQ(main_origin, subframe2->GetLastCommittedOrigin());
   EXPECT_EQ(main_origin.Serialize(), EvalJs(subframe2, "window.origin"));
@@ -2787,7 +2734,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        OriginOfFreshFrame_Popup_NavCancelledByDocWrite) {
-  WebContents* web_contents = shell()->web_contents();
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   url::Origin main_origin = url::Origin::Create(main_url);
@@ -2808,7 +2754,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   )";
   GURL cross_site_url(embedded_test_server()->GetURL("bar.com", "/hung"));
   std::string script = JsReplace(kScriptTemplate, cross_site_url);
-  EXPECT_EQ(main_origin.Serialize(), EvalJs(web_contents, script));
+  EXPECT_EQ(main_origin.Serialize(), EvalJs(web_contents(), script));
 
   // Browser-side origin should match the renderer-side origin.
   // See also https://crbug.com/932067.
@@ -2822,14 +2768,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        OriginOfFreshFrame_Popup_AboutBlankAndThenDocWrite) {
-  WebContents* web_contents = shell()->web_contents();
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   url::Origin main_origin = url::Origin::Create(main_url);
 
   // Create a new about:blank popup and document.write into it.
   WebContentsAddedObserver popup_observer;
-  TestNavigationObserver load_observer(web_contents);
+  TestNavigationObserver load_observer(web_contents());
   const char kScript[] = R"(
       // Empty |url| argument means that the popup will commit an initial
       // about:blank.
@@ -2841,7 +2786,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       doc.write(html);
       doc.close();
   )";
-  ExecuteScriptAsync(web_contents, kScript);
+  ExecuteScriptAsync(web_contents(), kScript);
 
   // Wait for the new popup to be created (this will be before the popup commits
   // the initial about:blank page).
@@ -2865,8 +2810,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       embedded_test_server()->GetURL("foo.com", "/page_with_iframe.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
 
-  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
   EXPECT_TRUE(main_frame->AccessibilityIsMainFrame());
 
   ASSERT_EQ(1u, main_frame->child_count());
@@ -2877,8 +2821,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        RequestSnapshotAXTreeAfterRenderProcessHostDeath) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+  auto* rfh = web_contents()->GetMainFrame();
 
   // Kill the renderer process.
   RenderProcessHostWatcher crash_observer(
@@ -2909,14 +2852,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       URLLoaderInterceptor::SetupRequestFailForURL(object_url,
                                                    net::ERR_BLOCKED_BY_CLIENT);
 
-  auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
-  TestNavigationObserver observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                     JsReplace("setUrl($1, true);", object_url)));
+  auto* rfh = web_contents()->GetMainFrame();
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(rfh, JsReplace("setUrl($1, true);", object_url)));
   observer.Wait();
   EXPECT_EQ(rfh->GetLastCommittedOrigin().Serialize(),
-            EvalJs(shell()->web_contents(), "window.origin"));
+            EvalJs(web_contents(), "window.origin"));
 }
 
 // Regression test for crbug.com/953934. It shouldn't crash if we quickly remove
@@ -2927,8 +2868,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       FILE_PATH_LITERAL("remove_object_element_with_invalid_data.html"));
 
   RenderProcessHostWatcher crash_observer(
-      shell()->web_contents(),
-      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+      web_contents(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
   // This navigates to a page with an object element that will fail to load.
   // When document load event hits, it'll attempt to remove that object element.
@@ -2937,8 +2877,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // soon, let's wait until the document.readyState finalizes. We don't really
   // care if that succeeds since, in the failing case, the renderer is crashing.
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  ignore_result(
-      WaitForRenderFrameReady(shell()->web_contents()->GetMainFrame()));
+  ignore_result(WaitForRenderFrameReady(web_contents()->GetMainFrame()));
 
   EXPECT_TRUE(crash_observer.did_exit_normally());
 }
@@ -2947,8 +2886,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        SchedulerTrackedFeatures) {
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  RenderFrameHostImpl* main_frame = reinterpret_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
   // Simulate getting 0b1 as a feature vector from the renderer.
   static_cast<blink::mojom::LocalFrameHost*>(main_frame)
       ->DidChangeActiveSchedulerTrackedFeatures(0b1u);
@@ -2968,10 +2906,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // like "document loaded" will show up here.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
-  main_frame = reinterpret_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
-  static_cast<blink::mojom::LocalFrameHost*>(main_frame)
-      ->DidChangeActiveSchedulerTrackedFeatures(0b0u);
+  main_frame = web_contents()->GetMainFrame();
+  main_frame->DidChangeActiveSchedulerTrackedFeatures(0b0u);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -2992,9 +2928,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   {
-    WebContentsImpl* wc =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
-    RenderFrameHostImpl* main_frame = wc->GetMainFrame();
+    RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
 
     EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
     ASSERT_EQ(2u, main_frame->child_count());
@@ -3085,10 +3019,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   GURL trusty_url(kTrustMeUrl);
   EXPECT_TRUE(NavigateToURL(shell(), trusty_url));
   {
-    WebContentsImpl* wc =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
-    RenderFrameHostImpl* main_frame =
-        static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+    RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
     EXPECT_EQ(trusty_url.GetOrigin(),
               main_frame->GetLastCommittedURL().GetOrigin());
 
@@ -3150,10 +3081,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   GURL trusty_if_secure_url(kTrustMeIfEmbeddingSecureUrl);
   EXPECT_TRUE(NavigateToURL(shell(), trusty_if_secure_url));
   {
-    WebContentsImpl* wc =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
-    RenderFrameHostImpl* main_frame =
-        static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+    RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
     EXPECT_EQ(trusty_if_secure_url.GetOrigin(),
               main_frame->GetLastCommittedURL().GetOrigin());
 
@@ -3233,9 +3161,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   GURL other_url = https_server()->GetURL("c.test", "/");
   EXPECT_TRUE(NavigateToURL(shell(), insecure_url));
   {
-    WebContentsImpl* wc =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
-    RenderFrameHostImpl* main_frame = wc->GetMainFrame();
+    RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
 
     EXPECT_EQ("a.test", main_frame->GetLastCommittedURL().host());
     EXPECT_EQ("http", main_frame->frame_tree_node()->current_origin().scheme());
@@ -3311,9 +3237,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
-    WebContentsImpl* wc =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
-    RenderFrameHostImpl* main_frame = wc->GetMainFrame();
+    RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
 
     EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
 
@@ -3361,9 +3285,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
         embedded_test_server()->GetURL("a.com", "/csp_sandboxed_frame.html");
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
-    WebContentsImpl* wc =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
-    RenderFrameHostImpl* main_frame = wc->GetMainFrame();
+    RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
     EXPECT_EQ(url, main_frame->GetLastCommittedURL());
     EXPECT_TRUE(main_frame->GetLastCommittedOrigin().opaque());
 
@@ -3388,8 +3310,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = wc->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
 
   EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
 
@@ -3421,9 +3342,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame =
-      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
   EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
 
   ASSERT_EQ(1u, main_frame->child_count());
@@ -3476,9 +3395,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   GURL subframe_url = GetFileURL(FILE_PATH_LITERAL("title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame =
-      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
   EXPECT_EQ(main_frame_url, main_frame->GetLastCommittedURL());
   EXPECT_TRUE(net::SiteForCookies::FromUrl(GURL("file:///"))
                   .IsEquivalent(main_frame->ComputeSiteForCookies()));
@@ -3499,8 +3416,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = wc->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
 
   EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
 
@@ -3547,7 +3463,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // particular, after https://crbug.com/981339, a different RenderFrameHost will
 // be used for reloading the file. File access must be correctly granted.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FileReloadAfterCrash) {
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // 1. Navigate a local file with an iframe.
   GURL main_frame_url = GetFileURL(FILE_PATH_LITERAL("page_with_iframe.html"));
@@ -3555,18 +3470,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FileReloadAfterCrash) {
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
   // 2. Crash.
-  RenderProcessHost* process = wc->GetMainFrame()->GetProcess();
+  RenderProcessHost* process = web_contents()->GetMainFrame()->GetProcess();
   RenderProcessHostWatcher crash_observer(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   process->Shutdown(0);
   crash_observer.Wait();
 
   // 3. Reload.
-  wc->GetController().Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(wc));
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // Check the document is correctly reloaded.
-  RenderFrameHostImpl* main_document = wc->GetMainFrame();
+  RenderFrameHostImpl* main_document = web_contents()->GetMainFrame();
   ASSERT_EQ(1u, main_document->child_count());
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
@@ -3580,26 +3495,24 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FileReloadAfterCrash) {
 
 // Make sure a webui can be reloaded after a crash.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, WebUiReloadAfterCrash) {
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-
   // 1. Navigate a local file with an iframe.
   GURL main_frame_url(std::string(kChromeUIScheme) + "://" +
                       std::string(kChromeUIGpuHost));
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
   // 2. Crash.
-  RenderProcessHost* process = wc->GetMainFrame()->GetProcess();
+  RenderProcessHost* process = web_contents()->GetMainFrame()->GetProcess();
   RenderProcessHostWatcher crash_observer(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   process->Shutdown(0);
   crash_observer.Wait();
 
   // 3. Reload.
-  wc->GetController().Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(wc));
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // Check the document is correctly reloaded.
-  RenderFrameHostImpl* main_document = wc->GetMainFrame();
+  RenderFrameHostImpl* main_document = web_contents()->GetMainFrame();
   EXPECT_EQ(main_frame_url, main_document->GetLastCommittedURL());
   // Execute script in an isolated world to avoid causing a Trusted Types
   // violation due to eval.
@@ -3670,7 +3583,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   LeaveInPendingDeletionState(rfh_a);
 
   // 3) Start navigation to B, but don't commit yet.
-  TestNavigationManager manager(shell()->web_contents(), url_b);
+  TestNavigationManager manager(web_contents(), url_b);
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
@@ -3782,7 +3695,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   crash_observer.Wait();
 
   // 3) Start navigation to B, but don't commit yet.
-  TestNavigationManager manager(shell()->web_contents(), url_b);
+  TestNavigationManager manager(web_contents(), url_b);
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
@@ -3813,8 +3726,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // sure the second navigation will not be cross-process.
   ASSERT_TRUE(NavigateToURL(shell(), first_url));
 
-  RenderFrameHostImpl* main_rfh =
-      static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+  RenderFrameHostImpl* main_rfh = web_contents()->GetMainFrame();
   EXPECT_TRUE(main_rfh->DocumentUsedWebOTP());
 
   ASSERT_TRUE(NavigateToURL(shell(), second_url));
@@ -3878,8 +3790,7 @@ IN_PROC_BROWSER_TEST_F(
   for (auto test : test_cases) {
     SCOPED_TRACE(test.url);
     EXPECT_TRUE(NavigateToURL(shell(), test.url));
-    RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+    RenderFrameHostImpl* rfhi = web_contents()->GetMainFrame();
     EXPECT_EQ(test.expected_internal,
               rfhi->last_committed_client_security_state()->ip_address_space);
     EXPECT_EQ(test.expected_web_facing, EvalJs(rfhi, "document.addressSpace"));
@@ -3891,7 +3802,7 @@ IN_PROC_BROWSER_TEST_F(
     ComputeIFrameLoopbackIPAddressSpace) {
   {
     base::string16 expected_title(base::UTF8ToUTF16("LOADED"));
-    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+    TitleWatcher title_watcher(web_contents(), expected_title);
     EXPECT_TRUE(
         NavigateToURL(shell(), embedded_test_server()->GetURL(
                                    "/do-not-treat-as-public-address.html")));
@@ -3940,13 +3851,12 @@ IN_PROC_BROWSER_TEST_F(
   // `filesystem:`, `about:blank`, and `about:srcdoc` all inherit the assertion.
   {
     base::string16 expected_title(base::UTF8ToUTF16("LOADED"));
-    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+    TitleWatcher title_watcher(web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                            "/treat-as-public-address.html")));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
-    std::vector<RenderFrameHost*> frames =
-        shell()->web_contents()->GetAllFrames();
+    std::vector<RenderFrameHost*> frames = web_contents()->GetAllFrames();
     for (auto* frame : frames) {
       auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
       if (frame->GetLastCommittedURL().IsAboutBlank()) {
@@ -4389,8 +4299,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadingStateResetOnNavigation) {
       "Content-Type: text/html; charset=utf-8\r\n"
       "\r\n");
   navigation_observer.WaitForNavigationFinished();
-  EXPECT_FALSE(static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame())
-                   ->IsDOMContentLoaded());
+  EXPECT_FALSE(web_contents->GetMainFrame()->IsDOMContentLoaded());
   EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
 }
 
@@ -4597,12 +4506,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        RemoteObjectEnumerateProperties) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  WebContents* web_contents = shell()->web_contents();
-  RemoteObjectInjector injector(web_contents);
+  RemoteObjectInjector injector(web_contents());
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "Object.keys(testObject).join(' ');";
-  auto result = EvalJs(web_contents, kScript);
+  auto result = EvalJs(web_contents(), kScript);
   EXPECT_EQ(base::JoinString(kMainObject.methods, " "),
             result.value.GetString());
 }
@@ -4611,36 +4519,33 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        RemoteObjectInvokeNonexistentMethod) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  WebContents* web_contents = shell()->web_contents();
-  RemoteObjectInjector injector(web_contents);
+  RemoteObjectInjector injector(web_contents());
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.getInnerId();";
-  EXPECT_FALSE(EvalJs(web_contents, kScript).error.empty());
+  EXPECT_FALSE(EvalJs(web_contents(), kScript).error.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        RemoteObjectInvokeMethodReturningNumber) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  WebContents* web_contents = shell()->web_contents();
-  RemoteObjectInjector injector(web_contents);
+  RemoteObjectInjector injector(web_contents());
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.getId();";
-  EXPECT_EQ(kMainObject.id, EvalJs(web_contents, kScript));
+  EXPECT_EQ(kMainObject.id, EvalJs(web_contents(), kScript));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        RemoteObjectInvokeMethodTakingArray) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  WebContents* web_contents = shell()->web_contents();
-  RemoteObjectInjector injector(web_contents);
+  RemoteObjectInjector injector(web_contents());
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.readArray([6, 8, 2]);";
-  EXPECT_TRUE(EvalJs(web_contents, kScript).error.empty());
+  EXPECT_TRUE(EvalJs(web_contents(), kScript).error.empty());
   EXPECT_EQ(
       3, injector.GetObjectHost().GetMockObject()->get_num_elements_received());
 }
@@ -4649,20 +4554,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        RemoteObjectInvokeMethodReturningObject) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  WebContents* web_contents = shell()->web_contents();
-  RemoteObjectInjector injector(web_contents);
+  RemoteObjectInjector injector(web_contents());
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.getInnerObject().getInnerId();";
-  EXPECT_EQ(kInnerObject.id, EvalJs(web_contents, kScript));
+  EXPECT_EQ(kInnerObject.id, EvalJs(web_contents(), kScript));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        RemoteObjectInvokeMethodException) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  WebContents* web_contents = shell()->web_contents();
-  RemoteObjectInjector injector(web_contents);
+  RemoteObjectInjector injector(web_contents());
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string error_message = "hahaha";
@@ -4675,7 +4578,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       testObject.readArray(array);
     )",
                                   error_message);
-  auto error = EvalJs(web_contents, kScript).error;
+  auto error = EvalJs(web_contents(), kScript).error;
   EXPECT_NE(error.find(error_message), std::string::npos);
 }
 
@@ -4683,24 +4586,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoteObjectRelease) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  WebContents* web_contents = shell()->web_contents();
-  RemoteObjectInjector injector(web_contents);
+  RemoteObjectInjector injector(web_contents());
   SetupRemoteObjectInvocation(shell(), url);
 
   EXPECT_EQ(
       "object",
       EvalJs(
-          web_contents,
+          web_contents(),
           "globalInner = testObject.getInnerObject(); typeof globalInner; "));
 
   EXPECT_FALSE(injector.GetObjectHost().release_object_called_for_object(
       kInnerObject.id));
-  EXPECT_EQ("object", EvalJs(web_contents, "gc(); typeof globalInner;"));
+  EXPECT_EQ("object", EvalJs(web_contents(), "gc(); typeof globalInner;"));
   EXPECT_FALSE(injector.GetObjectHost().release_object_called_for_object(
       kInnerObject.id));
   EXPECT_EQ(
       "undefined",
-      EvalJs(web_contents, "delete globalInner; gc(); typeof globalInner;"));
+      EvalJs(web_contents(), "delete globalInner; gc(); typeof globalInner;"));
   EXPECT_TRUE(injector.GetObjectHost().release_object_called_for_object(
       kInnerObject.id));
 }
