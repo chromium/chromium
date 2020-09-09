@@ -306,14 +306,15 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private void setUpChromeProvidedSharingOptionsProviderTest(boolean printingEnabled) {
         Mockito.when(mPrefService.getBoolean(anyString())).thenReturn(printingEnabled);
 
-        mChromeProvidedSharingOptionsProvider =
-                new ChromeProvidedSharingOptionsProvider(mActivity, mTabProvider,
-                        /*bottomSheetController=*/null,
-                        new ShareSheetBottomSheetContent(mActivity, mShareSheetCoordinator),
-                        new ShareParams.Builder(null, "", "").build(),
-                        new ChromeShareExtras.Builder().build(),
-                        /*TabPrinterDelegate=*/null,
-                        /*shareStartTime=*/0, mShareSheetCoordinator);
+        ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"").build();
+        mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(mActivity,
+                mTabProvider,
+                /*bottomSheetController=*/null,
+                new ShareSheetBottomSheetContent(mActivity, mShareSheetCoordinator, shareParams),
+                new ShareParams.Builder(null, "", "").build(),
+                new ChromeShareExtras.Builder().build(),
+                /*TabPrinterDelegate=*/null,
+                /*shareStartTime=*/0, mShareSheetCoordinator);
     }
 
     private void assertCorrectModelsAreInTheRightOrder(

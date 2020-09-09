@@ -21,11 +21,13 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.printing.PrintShareActivity;
 import org.chromium.chrome.browser.printing.TabPrinter;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -300,11 +302,11 @@ public class ShareDelegateImpl implements ShareDelegate {
             } else if (sharingHubEnabled && !chromeShareExtras.sharingTabGroup()) {
                 // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
                 // Re-enable it when tab group sharing is supported by sharing hub.
-                ShareSheetCoordinator coordinator =
-                        new ShareSheetCoordinator(controller, lifecycleDispatcher, tabProvider,
-                                new ShareSheetPropertyModelBuilder(controller,
-                                        ContextUtils.getApplicationContext().getPackageManager()),
-                                printCallback);
+                ShareSheetCoordinator coordinator = new ShareSheetCoordinator(controller,
+                        lifecycleDispatcher, tabProvider,
+                        new ShareSheetPropertyModelBuilder(controller,
+                                ContextUtils.getApplicationContext().getPackageManager()),
+                        printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()));
                 // TODO(crbug/1009124): open custom share sheet.
                 coordinator.showShareSheet(params, chromeShareExtras, shareStartTime);
             } else {

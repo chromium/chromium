@@ -20827,6 +20827,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SharingHubAndroid.BottomRowScrolled">
+  <obsolete>
+    Renamed to SharingHubAndroid.ThirdPartyAppsScrolled 09/2020.
+  </obsolete>
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <description>
@@ -20856,6 +20859,15 @@ should be able to be added at any place in this file.
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <description>
     The &quot;Copy URL&quot; option was selected in the sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubAndroid.FirstPartyAppsScrolled">
+  <owner>kmilka@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The chrome app row was horizontally scrolled. Recorded only once per open
+    share sheet.
   </description>
 </action>
 
@@ -20937,7 +20949,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubAndroid.ThirdPartyAppsScrolled">
+  <owner>kmilka@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The third party app row was horizontally scrolled. Recorded only once per
+    open share sheet.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.TopRowScrolled">
+  <obsolete>
+    Renamed to SharingHubAndroid.FirstPartyAppsScrolled 09/2020.
+  </obsolete>
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <description>

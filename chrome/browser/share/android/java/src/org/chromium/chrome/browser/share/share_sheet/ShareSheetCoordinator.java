@@ -6,8 +6,12 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -22,11 +26,14 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.favicon.IconType;
+import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,6 +63,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private ShareSheetBottomSheetContent mBottomSheet;
     private WindowAndroid mWindowAndroid;
+    private final BottomSheetObserver mBottomSheetObserver;
+    private final LargeIconBridge mIconBridge;
+    private String mUrl;
+    private Bitmap mIconForPreview;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -69,14 +80,15 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
-            ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab) {
+            ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
+            LargeIconBridge iconBridge) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mTabProvider = tabProvider;
         mPropertyModelBuilder = modelBuilder;
         mPrintTabCallback = printTab;
-        BottomSheetObserver bottomSheetObserver = new EmptyBottomSheetObserver() {
+        mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
             public void onSheetContentChanged(BottomSheetContent bottomSheet) {
                 super.onSheetContentChanged(bottomSheet);
@@ -89,7 +101,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 }
             }
         };
-        mBottomSheetController.addObserver(bottomSheetObserver);
+        mBottomSheetController.addObserver(mBottomSheetObserver);
+        mIconBridge = iconBridge;
     }
 
     protected void destroy() {
@@ -122,16 +135,17 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             }
         }
 
-        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, this);
+        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, this, params);
+        fetchFavicon(mActivity, params.getUrl());
 
         mShareStartTime = shareStartTime;
         mContentTypes = ShareSheetPropertyModelBuilder.getContentTypes(params, chromeShareExtras);
-        List<PropertyModel> chromeFeatures =
-                createTopRowPropertyModels(mActivity, params, chromeShareExtras, mContentTypes);
-        List<PropertyModel> thirdPartyApps = createBottomRowPropertyModels(
+        List<PropertyModel> firstPartyApps =
+                createFirstPartyPropertyModels(mActivity, params, chromeShareExtras, mContentTypes);
+        List<PropertyModel> thirdPartyApps = createThirdPartyPropertyModels(
                 mActivity, params, mContentTypes, chromeShareExtras.saveLastUsed());
 
-        mBottomSheet.createRecyclerViews(chromeFeatures, thirdPartyApps, message);
+        mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, message);
 
         boolean shown = mBottomSheetController.requestShowContent(mBottomSheet, true);
         if (shown) {
@@ -157,7 +171,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         showShareSheetWithMessage(message, params, chromeShareExtras, shareStartTime);
     }
 
-    List<PropertyModel> createTopRowPropertyModels(Activity activity, ShareParams shareParams,
+    List<PropertyModel> createFirstPartyPropertyModels(Activity activity, ShareParams shareParams,
             ChromeShareExtras chromeShareExtras, Set<Integer> contentTypes) {
         if (mExcludeFirstParty) {
             return new ArrayList<>();
@@ -172,7 +186,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     @VisibleForTesting
-    List<PropertyModel> createBottomRowPropertyModels(Activity activity, ShareParams params,
+    List<PropertyModel> createThirdPartyPropertyModels(Activity activity, ShareParams params,
             Set<Integer> contentTypes, boolean saveLastUsed) {
         if (params == null) return null;
         List<PropertyModel> models = mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet,
@@ -220,7 +234,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         }
 
         mIsMultiWindow = isMultiWindow;
-        mBottomSheet.createChromeFeatureRecyclerViews(
+        mBottomSheet.createFirstPartyRecyclerViews(
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         mContentTypes, mIsMultiWindow));
         mBottomSheetController.requestShowContent(mBottomSheet, /*animate=*/false);
@@ -233,9 +247,64 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         if ((oldRight - oldLeft) == (right - left)) {
             return;
         }
-        mBottomSheet.getTopRowView().invalidate();
-        mBottomSheet.getTopRowView().requestLayout();
-        mBottomSheet.getBottomRowView().invalidate();
-        mBottomSheet.getBottomRowView().requestLayout();
+        mBottomSheet.getFirstPartyView().invalidate();
+        mBottomSheet.getFirstPartyView().requestLayout();
+        mBottomSheet.getThirdPartyView().invalidate();
+        mBottomSheet.getThirdPartyView().requestLayout();
+    }
+
+    /** Fetches the favicon for the given url. **/
+    void fetchFavicon(Activity activity, String url) {
+        if (!url.isEmpty()) {
+            // Update mActivity so it's non-null in onFaviconAvailable in tests.
+            mActivity = activity;
+            mUrl = url;
+            mIconBridge.getLargeIconForStringUrl(url,
+                    activity.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
+                    this::onFaviconAvailable);
+        }
+    }
+
+    /**
+     * Passed as the callback to {@link LargeIconBridge#getLargeIconForStringUrl}
+     * by showShareSheetWithMessage.
+     */
+    void onFaviconAvailable(@Nullable Bitmap icon, @ColorInt int fallbackColor,
+            boolean isColorDefault, @IconType int iconType) {
+        // If we didn't get a favicon, generate a monogram instead
+        if (icon == null) {
+            RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
+            icon = iconGenerator.generateIconForUrl(mUrl);
+            // generateIconForUrl might return null if the URL is empty or the domain cannot be
+            // resolved. See https://crbug.com/987101
+            // TODO(1120093): Handle the case where generating an icon fails.
+            if (icon == null) {
+                return;
+            }
+        }
+
+        int size = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.sharing_hub_preview_monogram_size);
+
+        mIconForPreview = Bitmap.createScaledBitmap(icon, size, size, true);
+
+        if (mBottomSheet != null) {
+            mBottomSheet.setFaviconForPreview(mIconForPreview);
+        }
+    }
+
+    private RoundedIconGenerator createRoundedIconGenerator(@ColorInt int iconColor) {
+        Resources resources = mActivity.getResources();
+        int iconSize = resources.getDimensionPixelSize(R.dimen.sharing_hub_preview_monogram_size);
+        int cornerRadius = iconSize / 2;
+        int textSize =
+                resources.getDimensionPixelSize(R.dimen.sharing_hub_preview_monogram_text_size);
+
+        return new RoundedIconGenerator(iconSize, iconSize, cornerRadius, iconColor, textSize);
+    }
+
+    @VisibleForTesting
+    Bitmap getIconForPreview() {
+        return mIconForPreview;
     }
 }

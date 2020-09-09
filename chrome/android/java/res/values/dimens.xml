@@ -602,4 +602,7 @@
     <dimen name="overflow_menu_update_min_height">40sp</dimen>
     <dimen name="overflow_menu_update_padding">12dp</dimen>
 
+    <!-- Sharing Hub dimensions -->
+    <dimen name="sharing_hub_preview_monogram_text_size">24dp</dimen>
+    <dimen name="sharing_hub_preview_monogram_size">48dp</dimen>
 </resources>

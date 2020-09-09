@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -37,6 +39,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private final ShareSheetCoordinator mShareSheetCoordinator;
     private ViewGroup mToolbarView;
     private ViewGroup mContentView;
+    private ShareParams mParams;
 
     /**
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
@@ -44,9 +47,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * @param context The context the share sheet was launched from.
      * @param shareSheetCoordinator The Cooredinator that instatiated this BottomSheetContent.
      */
-    ShareSheetBottomSheetContent(Context context, ShareSheetCoordinator shareSheetCoordinator) {
+    ShareSheetBottomSheetContent(
+            Context context, ShareSheetCoordinator shareSheetCoordinator, ShareParams params) {
         mContext = context;
         mShareSheetCoordinator = shareSheetCoordinator;
+        mParams = params;
         createContentView();
     }
 
@@ -59,37 +64,47 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * Creates a new share sheet view with two rows based on the provided PropertyModels.
      *
      * @param activity The activity the share sheet belongs to.
-     * @param topRowModels The PropertyModels used to build the top row.
-     * @param bottomRowModels The PropertyModels used to build the bottom row.
+     * @param firstPartyModels The PropertyModels used to build the top row.
+     * @param thirdPartyModels The PropertyModels used to build the bottom row.
      * @param message The message to show on top of the share sheet.
      */
-    void createRecyclerViews(
-            List<PropertyModel> topRowModels, List<PropertyModel> bottomRowModels, String message) {
+    void createRecyclerViews(List<PropertyModel> firstPartyModels,
+            List<PropertyModel> thirdPartyModels, String message) {
+        // A success/failure message can be shown for features such as LinkToText.
         if (!message.isEmpty()) {
             TextView messageView = this.getContentView().findViewById(R.id.message);
             messageView.setVisibility(View.VISIBLE);
             messageView.setText(message);
+            View preview = this.getContentView().findViewById(R.id.preview_header);
+            preview.setVisibility(View.GONE);
+        }
+        // If there's no message to be shown, show a preview of the content to be shared.
+        else {
+            TextView titleView = this.getContentView().findViewById(R.id.title_preview);
+            titleView.setText(mParams.getTitle());
+            TextView urlView = this.getContentView().findViewById(R.id.url_preview);
+            urlView.setText(mParams.getUrl());
         }
 
-        createChromeFeatureRecyclerViews(topRowModels);
+        createFirstPartyRecyclerViews(firstPartyModels);
 
-        RecyclerView bottomRow = this.getContentView().findViewById(R.id.share_sheet_other_apps);
+        RecyclerView thirdParty = this.getContentView().findViewById(R.id.share_sheet_other_apps);
         populateView(
-                bottomRowModels, this.getContentView().findViewById(R.id.share_sheet_other_apps));
-        bottomRow.addOnScrollListener(
-                new ScrollEventReporter("SharingHubAndroid.BottomRowScrolled"));
+                thirdPartyModels, this.getContentView().findViewById(R.id.share_sheet_other_apps));
+        thirdParty.addOnScrollListener(
+                new ScrollEventReporter("SharingHubAndroid.ThirdPartyAppsScrolled"));
     }
 
-    void createChromeFeatureRecyclerViews(List<PropertyModel> chromeFeatureModels) {
-        RecyclerView chromeFeatureRow =
+    void createFirstPartyRecyclerViews(List<PropertyModel> firstPartyModels) {
+        RecyclerView firstPartyRow =
                 this.getContentView().findViewById(R.id.share_sheet_chrome_apps);
-        if (chromeFeatureModels != null && chromeFeatureModels.size() > 0) {
+        if (firstPartyModels != null && firstPartyModels.size() > 0) {
             View divider = this.getContentView().findViewById(R.id.share_sheet_divider);
             divider.setVisibility(View.VISIBLE);
-            chromeFeatureRow.setVisibility(View.VISIBLE);
-            populateView(chromeFeatureModels, chromeFeatureRow);
-            chromeFeatureRow.addOnScrollListener(
-                    new ScrollEventReporter("SharingHubAndroid.TopRowScrolled"));
+            firstPartyRow.setVisibility(View.VISIBLE);
+            populateView(firstPartyModels, firstPartyRow);
+            firstPartyRow.addOnScrollListener(
+                    new ScrollEventReporter("SharingHubAndroid.FirstPartyAppsScrolled"));
         }
     }
 
@@ -120,6 +135,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         }
     }
 
+    void setFaviconForPreview(Bitmap icon) {
+        ImageView imageView = this.getContentView().findViewById(R.id.image_preview);
+        imageView.setImageBitmap(icon);
+    }
+
     /**
      * One-shot reporter that records the first time the user scrolls a {@link RecyclerView}.
      */
@@ -146,11 +166,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         return mContentView;
     }
 
-    protected View getTopRowView() {
+    protected View getFirstPartyView() {
         return mContentView.findViewById(R.id.share_sheet_chrome_apps);
     }
 
-    protected View getBottomRowView() {
+    protected View getThirdPartyView() {
         return mContentView.findViewById(R.id.share_sheet_other_apps);
     }
 
