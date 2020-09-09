@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -28,10 +29,11 @@ class ClipboardHistory;
 
 // Used to show the clipboard history menu, which holds the last few things
 // copied.
-class ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
+class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
  public:
   static std::unique_ptr<ClipboardHistoryMenuModelAdapter> Create(
       ui::SimpleMenuModel::Delegate* delegate,
+      base::RepeatingClosure menu_closed_callback,
       const ClipboardHistory* clipboard_history);
 
   ClipboardHistoryMenuModelAdapter(const ClipboardHistoryMenuModelAdapter&) =
@@ -66,8 +68,10 @@ class ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
  private:
-  ClipboardHistoryMenuModelAdapter(std::unique_ptr<ui::SimpleMenuModel> model,
-                                   const ClipboardHistory* clipboard_history);
+  ClipboardHistoryMenuModelAdapter(
+      std::unique_ptr<ui::SimpleMenuModel> model,
+      base::RepeatingClosure menu_closed_callback,
+      const ClipboardHistory* clipboard_history);
 
   // views::MenuModelAdapter:
   views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,

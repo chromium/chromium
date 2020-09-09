@@ -54,6 +54,10 @@ class ASH_EXPORT ClipboardHistoryController {
     return nudge_controller_.get();
   }
 
+  const ClipboardHistoryMenuModelAdapter* context_menu_for_test() const {
+    return context_menu_.get();
+  }
+
  private:
   class AcceleratorTarget;
   class MenuDelegate;
@@ -63,10 +67,14 @@ class ASH_EXPORT ClipboardHistoryController {
   void ExecuteSelectedMenuItem(int event_flags);
   void MenuOptionSelected(int command_id, int event_flags);
 
-  // Delete the menu item being selected and its corresponding data.
-  void DeleteSelectedMenuItem();
+  // Delete the menu item being selected and its corresponding data. If no item
+  // is selected, do nothing.
+  void DeleteSelectedMenuItemIfAny();
 
   gfx::Rect CalculateAnchorRect() const;
+
+  // Called when the contextual menu is closed.
+  void OnMenuClosed();
 
   // The menu being shown.
   std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;

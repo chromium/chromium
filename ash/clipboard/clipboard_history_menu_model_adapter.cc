@@ -5,11 +5,9 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
 #include "ash/clipboard/clipboard_history.h"
-#include "ash/clipboard/clipboard_history_controller.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
-#include "ash/shell.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -23,9 +21,11 @@ namespace ash {
 std::unique_ptr<ClipboardHistoryMenuModelAdapter>
 ClipboardHistoryMenuModelAdapter::Create(
     ui::SimpleMenuModel::Delegate* delegate,
+    base::RepeatingClosure menu_closed_callback,
     const ClipboardHistory* clipboard_history) {
   return base::WrapUnique(new ClipboardHistoryMenuModelAdapter(
-      std::make_unique<ui::SimpleMenuModel>(delegate), clipboard_history));
+      std::make_unique<ui::SimpleMenuModel>(delegate),
+      std::move(menu_closed_callback), clipboard_history));
 }
 
 ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
@@ -70,9 +70,12 @@ void ClipboardHistoryMenuModelAdapter::Cancel() {
 base::Optional<int>
 ClipboardHistoryMenuModelAdapter::GetSelectedMenuItemCommand() const {
   DCHECK(root_view_);
+
+  // `root_view_` may be selected if no menu item is under selection.
   auto* menu_item = root_view_->GetMenuController()->GetSelectedMenuItem();
-  return menu_item ? base::make_optional(menu_item->GetCommand())
-                   : base::nullopt;
+  return menu_item && menu_item != root_view_
+             ? base::make_optional(menu_item->GetCommand())
+             : base::nullopt;
 }
 
 const ClipboardHistoryItem&
@@ -101,8 +104,9 @@ gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
 
 ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
     std::unique_ptr<ui::SimpleMenuModel> model,
+    base::RepeatingClosure menu_closed_callback,
     const ClipboardHistory* clipboard_history)
-    : views::MenuModelAdapter(model.get()),
+    : views::MenuModelAdapter(model.get(), std::move(menu_closed_callback)),
       model_(std::move(model)),
       clipboard_history_(clipboard_history) {}
 

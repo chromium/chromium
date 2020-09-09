@@ -55,27 +55,45 @@ class ClipboardHistoryController::AcceleratorTarget
     : public ui::AcceleratorTarget {
  public:
   explicit AcceleratorTarget(ClipboardHistoryController* controller)
-      : controller_(controller) {}
+      : controller_(controller),
+        show_menu_combo_(
+            ui::Accelerator(/*key_code=*/ui::VKEY_V,
+                            /*modifiers=*/ui::EF_COMMAND_DOWN,
+                            /*key_state=*/ui::Accelerator::KeyState::PRESSED)),
+        delete_selected_(ui::Accelerator(
+            /*key_code=*/ui::VKEY_BACK,
+            /*modifiers=*/ui::EF_NONE,
+            /*key_state=*/ui::Accelerator::KeyState::PRESSED)) {}
   AcceleratorTarget(const AcceleratorTarget&) = delete;
   AcceleratorTarget& operator=(const AcceleratorTarget&) = delete;
   ~AcceleratorTarget() override = default;
 
   void Init() {
-    ui::Accelerator show_menu_combo(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-    show_menu_combo.set_key_state(ui::Accelerator::KeyState::PRESSED);
     // Register, but no need to unregister because this outlives
     // AcceleratorController.
     Shell::Get()->accelerator_controller()->Register(
-        {show_menu_combo}, /*accelerator_target=*/this);
+        {show_menu_combo_}, /*accelerator_target=*/this);
+  }
+
+  void OnMenuShown() {
+    Shell::Get()->accelerator_controller()->Register(
+        {delete_selected_}, /*accelerator_target=*/this);
+  }
+
+  void OnMenuClosed() {
+    Shell::Get()->accelerator_controller()->Unregister(
+        {delete_selected_}, /*accelerator_target=*/this);
   }
 
  private:
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
-    if (controller_->IsMenuShowing())
-      controller_->ExecuteSelectedMenuItem(accelerator.modifiers());
+    DCHECK(accelerator == show_menu_combo_ || accelerator == delete_selected_);
+
+    if (accelerator == show_menu_combo_)
+      HandleShowMenuCombo();
     else
-      controller_->ShowMenu();
+      HandleDeleteSelected();
     return true;
   }
 
@@ -83,8 +101,27 @@ class ClipboardHistoryController::AcceleratorTarget
     return controller_->IsMenuShowing() || controller_->CanShowMenu();
   }
 
+  void HandleShowMenuCombo() {
+    if (controller_->IsMenuShowing())
+      controller_->ExecuteSelectedMenuItem(show_menu_combo_.modifiers());
+    else
+      controller_->ShowMenu();
+  }
+
+  void HandleDeleteSelected() {
+    DCHECK(controller_->IsMenuShowing());
+    controller_->DeleteSelectedMenuItemIfAny();
+  }
+
   // The controller responsible for showing the Clipboard History menu.
   ClipboardHistoryController* const controller_;
+
+  // The accelerator to show the menu or execute the selected menu item.
+  const ui::Accelerator show_menu_combo_;
+
+  // The accelerator to delete the selected menu item. It is only registered
+  // while the menu is showing.
+  const ui::Accelerator delete_selected_;
 };
 
 // ClipboardHistoryController::MenuDelegate ------------------------------------
@@ -100,7 +137,7 @@ class ClipboardHistoryController::MenuDelegate
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override {
     if (command_id == ClipboardHistoryUtil::kDeleteCommandId) {
-      controller_->DeleteSelectedMenuItem();
+      controller_->DeleteSelectedMenuItemIfAny();
       return;
     }
 
@@ -155,8 +192,14 @@ void ClipboardHistoryController::ShowMenu() {
     return;
 
   context_menu_ = ClipboardHistoryMenuModelAdapter::Create(
-      menu_delegate_.get(), clipboard_history_.get());
+      menu_delegate_.get(),
+      base::BindRepeating(&ClipboardHistoryController::OnMenuClosed,
+                          base::Unretained(this)),
+      clipboard_history_.get());
   context_menu_->Run(CalculateAnchorRect());
+
+  DCHECK(IsMenuShowing());
+  accelerator_target_->OnMenuShown();
 }
 
 void ClipboardHistoryController::MenuOptionSelected(int command_id,
@@ -232,11 +275,14 @@ void ClipboardHistoryController::MenuOptionSelected(int command_id,
       base::TimeDelta::FromMilliseconds(200));
 }
 
-void ClipboardHistoryController::DeleteSelectedMenuItem() {
+void ClipboardHistoryController::DeleteSelectedMenuItemIfAny() {
   DCHECK(context_menu_);
   auto selected_command = context_menu_->GetSelectedMenuItemCommand();
 
-  DCHECK(selected_command.has_value());
+  // Return early if no item is selected.
+  if (!selected_command.has_value())
+    return;
+
   DCHECK_GE(*selected_command, ClipboardHistoryUtil::kFirstItemCommandId);
 
   clipboard_history_->RemoveItemForId(
@@ -283,6 +329,10 @@ gfx::Rect ClipboardHistoryController::CalculateAnchorRect() const {
 
   return gfx::Rect(display::Screen::GetScreen()->GetCursorScreenPoint(),
                    gfx::Size());
+}
+
+void ClipboardHistoryController::OnMenuClosed() {
+  accelerator_target_->OnMenuClosed();
 }
 
 }  // namespace ash

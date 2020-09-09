@@ -8,6 +8,7 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/shell.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -76,12 +77,33 @@ ash::ClipboardHistoryController* GetClipboardHistoryController() {
   return ash::Shell::Get()->clipboard_history_controller();
 }
 
+const ash::ClipboardHistoryMenuModelAdapter* GetContextMenu() {
+  return GetClipboardHistoryController()->context_menu_for_test();
+}
+
 const std::list<ash::ClipboardHistoryItem>& GetClipboardItems() {
   return GetClipboardHistoryController()->history()->GetItems();
 }
 
 gfx::Rect GetClipboardHistoryMenuBoundsInScreen() {
   return GetClipboardHistoryController()->GetMenuBoundsInScreenForTest();
+}
+
+bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
+  const std::list<ash::ClipboardHistoryItem>& items = GetClipboardItems();
+  if (items.size() != texts.size())
+    return false;
+
+  auto items_iter = items.cbegin();
+  const auto* texts_iter = texts.begin();
+  while (items_iter != items.cend() && texts_iter != texts.end()) {
+    if (items_iter->data().text() != *texts_iter)
+      return false;
+    ++items_iter;
+    ++texts_iter;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -351,6 +373,52 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield->GetText()));
   Release(ui::KeyboardCode::VKEY_COMMAND);
+}
+
+// Verifies that the selected item should be deleted by the backspace key.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
+                       DeleteItemViaBackspaceKey) {
+  LoginUser(account_id1_);
+
+  // Write some things to the clipboard.
+  SetClipboardText("A");
+  SetClipboardText("B");
+  SetClipboardText("C");
+
+  // Show the menu.
+  ShowContextMenuViaAccelerator();
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  ASSERT_EQ(3, GetContextMenu()->GetMenuItemsCount());
+
+  // No item is selected. So pressing the backspace key has no effect.
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+  EXPECT_EQ(3, GetContextMenu()->GetMenuItemsCount());
+  EXPECT_TRUE(VerifyClipboardTextData({"C", "B", "A"}));
+
+  // Select the first menu item via key then delete it. Verify the menu and the
+  // clipboard history.
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+  EXPECT_EQ(2, GetContextMenu()->GetMenuItemsCount());
+  EXPECT_TRUE(VerifyClipboardTextData({"B", "A"}));
+
+  // Select the second menu item via key then delete it. Verify the menu and the
+  // clipboard history.
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+  EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
+  EXPECT_TRUE(VerifyClipboardTextData({"B"}));
+
+  // Delete the last item. Verify that the menu is closed.
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Trigger the accelerator of opening the clipboard history menu. No menu
+  // shows because of the empty history data.
+  ShowContextMenuViaAccelerator();
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
 // Flaky: crbug.com/1123542
