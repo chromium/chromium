@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_COMBOBOX_COMBOBOX_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
@@ -14,6 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/style/typography.h"
 
@@ -30,7 +32,6 @@ namespace test {
 class ComboboxTestApi;
 }
 
-class ComboboxListener;
 class FocusRing;
 class MenuRunner;
 class PrefixSelector;
@@ -43,6 +44,8 @@ class VIEWS_EXPORT Combobox : public View,
                               public ui::ComboboxModelObserver {
  public:
   METADATA_HEADER(Combobox);
+
+  using PerformActionCallback = base::RepeatingClosure;
 
   static constexpr int kDefaultComboboxTextContext = style::CONTEXT_BUTTON;
   static constexpr int kDefaultComboboxTextStyle = style::STYLE_PRIMARY;
@@ -63,8 +66,24 @@ class VIEWS_EXPORT Combobox : public View,
 
   const gfx::FontList& GetFontList() const;
 
-  // Sets the listener which will be called when a selection has been made.
-  void set_listener(ComboboxListener* listener) { listener_ = listener; }
+  // TODO(pbos): Migrate users of this to set_callback().
+  void set_listener(ComboboxListener* listener) {
+    if (!listener) {
+      set_callback(base::DoNothing());
+      return;
+    }
+
+    set_callback(base::BindRepeating(
+        [](ComboboxListener* listener, Combobox* combobox) {
+          listener->OnPerformAction(combobox);
+        },
+        listener, this));
+  }
+
+  // Sets the callback which will be called when a selection has been made.
+  void set_callback(PerformActionCallback callback) {
+    callback_ = std::move(callback);
+  }
 
   // Gets/Sets the selected index.
   int GetSelectedIndex() const { return selected_index_; }
@@ -170,8 +189,8 @@ class VIEWS_EXPORT Combobox : public View,
   // in the drop-down menu.
   const int text_style_;
 
-  // Our listener. Not owned. Notified when the selected index change.
-  ComboboxListener* listener_ = nullptr;
+  // Callback notified when the selected index changes.
+  PerformActionCallback callback_ = base::DoNothing();
 
   // The current selected index; -1 and means no selection.
   int selected_index_ = -1;

@@ -30,7 +30,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/combobox/combobox_util.h"
 #include "ui/views/controls/combobox/empty_combobox_model.h"
 #include "ui/views/controls/focus_ring.h"
@@ -677,10 +676,9 @@ void Combobox::OnPerformAction() {
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
   SchedulePaint();
 
-  if (listener_)
-    listener_->OnPerformAction(this);
+  callback_.Run();
 
-  // Note |this| may be deleted by |listener_|.
+  // Note |this| may be deleted by |callback_|.
 }
 
 gfx::Size Combobox::GetContentSize() const {
