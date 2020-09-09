@@ -32,4 +32,9 @@ public class MockContextualSearchPolicy extends ContextualSearchPolicy {
     public boolean isPromoAvailable() {
         return false;
     }
+
+    @Override
+    public boolean isUserUndecided() {
+        return false;
+    }
 }

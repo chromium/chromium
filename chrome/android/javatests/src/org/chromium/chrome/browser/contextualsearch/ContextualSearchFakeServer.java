@@ -57,7 +57,6 @@ class ContextualSearchFakeServer
     private boolean mUseInvalidLowPriorityPath;
 
     private String mSearchTermRequested;
-    private boolean mShouldUseHttps;
     private boolean mIsOnline = true;
     private boolean mIsExactResolve;
 
@@ -464,14 +463,6 @@ class ContextualSearchFakeServer
     }
 
     /**
-     * Sets whether to return an HTTPS URL instead of HTTP, from {@link #getBasePageUrl}.
-     */
-    @VisibleForTesting
-    void setShouldUseHttps(boolean setting) {
-        mShouldUseHttps = setting;
-    }
-
-    /**
      * @return Whether onShow() was ever called for the current {@code WebContents}.
      */
     @VisibleForTesting
@@ -494,7 +485,6 @@ class ContextualSearchFakeServer
     void reset() {
         mLoadedUrl = null;
         mSearchTermRequested = null;
-        mShouldUseHttps = false;
         mIsOnline = true;
         mLoadedUrlCount = 0;
         mUseInvalidLowPriorityPath = false;
@@ -570,11 +560,13 @@ class ContextualSearchFakeServer
     @Nullable
     public URL getBasePageUrl() {
         URL baseUrl = mBaseManager.getBasePageUrl();
-        if (mShouldUseHttps && baseUrl != null) {
+        if (baseUrl != null) {
             try {
-                return new URL(baseUrl.toString().replace("http://", "https://"));
+                // Return plain HTTP URLs so we can test that we don't give them our legacy privacy
+                // exceptions.
+                return new URL(baseUrl.toString().replace("https://", "http://"));
             } catch (MalformedURLException e) {
-                // TODO(donnd): Auto-generated catch block
+                // TODO(donnd): Replace Auto-generated catch block
                 e.printStackTrace();
             }
         }

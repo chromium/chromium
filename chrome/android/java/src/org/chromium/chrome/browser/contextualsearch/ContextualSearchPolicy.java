@@ -153,7 +153,7 @@ class ContextualSearchPolicy {
             return false;
         }
 
-        return isPromoAvailable() ? isBasePageHTTP(mNetworkCommunicator.getBasePageUrl()) : true;
+        return !isUserUndecided(); // The user must have decided on privacy to resolve page content.
     }
 
     /** @return Whether a long-press gesture can resolve. */
@@ -169,7 +169,7 @@ class ContextualSearchPolicy {
     boolean canSendSurroundings() {
         if (mDidOverrideDecidedStateForTesting) return mDecidedStateForTesting;
 
-        return isPromoAvailable() ? isBasePageHTTP(mNetworkCommunicator.getBasePageUrl()) : true;
+        return !isUserUndecided(); // The user must have decided on privacy to send page content.
     }
 
     /**
