@@ -92,9 +92,11 @@ _TARGETS_REQUIRE_ASH_CHROME = [
     '.*interactive_ui_tests'
 ]
 
+
 def _GetAshChromeDirPath(version):
   """Returns a path to the dir storing the downloaded version of ash-chrome."""
   return os.path.join(_PREBUILT_ASH_CHROME_DIR, version)
+
 
 def _remove_unused_ash_chrome_versions(version_to_skip):
   """Removes unused ash-chrome versions to save disk space.
@@ -211,6 +213,7 @@ def _GetLatestVersionOfAshChrome():
     with open(tmp.name, 'r') as f:
       return f.read().strip()
 
+
 def _RunTestWithAshChrome(args, forward_args):
   """Runs tests with ash-chrome.
 
@@ -230,25 +233,44 @@ def _RunTestWithAshChrome(args, forward_args):
 
     ash_env = os.environ.copy()
     ash_env['XDG_RUNTIME_DIR'] = tmp_xdg_dir_name
-    ash_process = subprocess.Popen([
+    ash_cmd = [
         ash_chrome_file,
         '--user-data-dir=%s' % tmp_ash_data_dir_name,
         '--enable-wayland-server',
         '--no-startup-window',
-    ],
-                                   env=ash_env)
+    ]
 
-    # Determine whether ash-chrome is up and running by checking whether two
-    # files (lock file + socket) have been created in the |XDG_RUNTIME_DIR|.
-    # TODO(crbug.com/1107966): Figure out a more reliable hook to determine the
-    # status of ash-chrome, likely through mojo connection.
-    time_to_wait = 20
-    time_counter = 0
-    while len(os.listdir(tmp_xdg_dir_name)) < 2:
-      time.sleep(0.5)
-      time_counter += 0.5
-      if time_counter > time_to_wait:
-        raise RuntimeError('Timed out waiting for ash-chrome to start')
+    ash_process_has_started = False
+    total_tries = 3
+    num_tries = 0
+    while not ash_process_has_started and num_tries < total_tries:
+      num_tries += 1
+      ash_process = subprocess.Popen(ash_cmd, env=ash_env)
+
+      # Determine whether ash-chrome is up and running by checking whether two
+      # files (lock file + socket) have been created in the |XDG_RUNTIME_DIR|.
+      # TODO(crbug.com/1107966): Figure out a more reliable hook to determine
+      # the status of ash-chrome, likely through mojo connection.
+      time_to_wait = 10
+      time_counter = 0
+      while len(os.listdir(tmp_xdg_dir_name)) < 2:
+        time.sleep(0.5)
+        time_counter += 0.5
+        if time_counter > time_to_wait:
+          break
+
+      if len(os.listdir(tmp_xdg_dir_name)) >= 2:
+        ash_process_has_started = True
+        break
+
+      logging.warning('Starting ash-chrome timed out after %ds', time_to_wait)
+      logging.warning('Printing the output of "ps aux" for debugging:')
+      subprocess.call(['ps', 'aux'])
+      if ash_process and ash_process.poll() is None:
+        ash_process.kill()
+
+    if not ash_process_has_started:
+      raise RuntimeError('Timed out waiting for ash-chrome to start')
 
     test_env = os.environ.copy()
     test_env['EGL_PLATFORM'] = 'surfaceless'
