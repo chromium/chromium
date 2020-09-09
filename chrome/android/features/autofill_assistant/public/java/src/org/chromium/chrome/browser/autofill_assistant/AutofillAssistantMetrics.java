@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
@@ -52,6 +54,9 @@ import org.chromium.content_public.browser.WebContents;
      */
     /* package */ static void recordLiteScriptStarted(
             WebContents webContents, @LiteScriptStarted int started) {
+        if (!areWebContentsValid(webContents)) {
+            return;
+        }
         new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
                 /* eventName = */ "AutofillAssistant.LiteScriptStarted",
                 /* metricName = */ "LiteScriptStarted",
@@ -63,6 +68,9 @@ import org.chromium.content_public.browser.WebContents;
      */
     /* package */ static void recordLiteScriptFinished(
             WebContents webContents, @LiteScriptFinishedState int finishedState) {
+        if (!areWebContentsValid(webContents)) {
+            return;
+        }
         new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
                 /* eventName = */ "AutofillAssistant.LiteScriptFinished",
                 /* metricName = */ "LiteScriptFinished",
@@ -74,9 +82,20 @@ import org.chromium.content_public.browser.WebContents;
      */
     /* package */ static void recordLiteScriptOnboarding(
             WebContents webContents, @LiteScriptOnboarding int onboarding) {
+        if (!areWebContentsValid(webContents)) {
+            return;
+        }
         new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
                 /* eventName = */ "AutofillAssistant.LiteScriptOnboarding",
                 /* metricName = */ "LiteScriptOnboarding",
                 /* metricValue = */ onboarding);
+    }
+
+    /**
+     * Returns whether {@code webContents} are non-null and valid. Invalid webContents will cause a
+     * failed DCHECK when attempting to report UKM metrics.
+     */
+    private static boolean areWebContentsValid(@Nullable WebContents webContents) {
+        return webContents != null && !webContents.isDestroyed();
     }
 }

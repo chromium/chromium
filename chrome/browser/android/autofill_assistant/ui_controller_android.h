@@ -67,6 +67,10 @@ class UiControllerAndroid : public ControllerObserver {
               Client* client,
               UiDelegate* ui_delegate);
 
+  // Detaches the UI from |ui_delegate_|. It will stop receiving notifications
+  // from the delegate until it is attached again.
+  void Detach();
+
   // Returns true if the UI is attached to a delegate.
   bool IsAttached() { return ui_delegate_ != nullptr; }
 

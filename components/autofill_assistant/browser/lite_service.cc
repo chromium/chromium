@@ -31,6 +31,10 @@ LiteService::~LiteService() {
   }
 }
 
+bool LiteService::IsLiteService() const {
+  return true;
+}
+
 void LiteService::GetScriptsForUrl(const GURL& url,
                                    const TriggerContext& trigger_context,
                                    ResponseCallback callback) {

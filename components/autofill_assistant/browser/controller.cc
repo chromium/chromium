@@ -1144,9 +1144,12 @@ bool Controller::Start(const GURL& deeplink_url,
 }
 
 void Controller::ShowFirstMessageAndStart() {
-  SetStatusMessage(
-      l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
-                                base::UTF8ToUTF16(GetCurrentURL().host())));
+  // Only show default status message if necessary.
+  if (status_message_.empty()) {
+    SetStatusMessage(
+        l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
+                                  base::UTF8ToUTF16(GetCurrentURL().host())));
+  }
   if (step_progress_bar_configuration_.has_value() &&
       step_progress_bar_configuration_->use_step_progress_bar()) {
     SetProgressActiveStep(0);
@@ -1543,9 +1546,14 @@ void Controller::OnScriptError(const std::string& error_message,
   if (state_ == AutofillAssistantState::STOPPED)
     return;
 
-  RequireUI();
-  SetStatusMessage(error_message);
-  SetProgressBarErrorState(true);
+  // For lite scripts, don't attach the UI on error, and don't show an error
+  // while shutting down.
+  if (!IsRunningLiteScript()) {
+    RequireUI();
+    SetStatusMessage(error_message);
+    SetProgressBarErrorState(true);
+  }
+
   EnterStoppedState();
 
   if (tracking_) {
@@ -1586,7 +1594,8 @@ void Controller::OnFatalError(const std::string& error_message,
 void Controller::RecordDropOutOrShutdown(Metrics::DropOutReason reason) {
   // If there is an UI, we wait for it to be closed before shutting down (the UI
   // will call |ShutdownIfNecessary|).
-  if (client_->HasHadUI()) {
+  // Lite scripts go away immediately, even if UI is currently being shown.
+  if (client_->HasHadUI() && !IsRunningLiteScript()) {
     // We report right away to make sure we don't lose this reason if the client
     // is unexpectedly destroyed while the error message is showing (for example
     // if the tab is closed).
@@ -1943,10 +1952,14 @@ void Controller::WriteUserData(
 }
 
 bool Controller::StateNeedsUI(AutofillAssistantState state) {
-  if (!trigger_context_ || !trigger_context_->is_lite_script()) {
-    return StateNeedsUiInRegularScript(state, browse_mode_invisible_);
+  if (IsRunningLiteScript()) {
+    return StateNeedsUiInLiteScript(state);
   }
-  return StateNeedsUiInLiteScript(state);
+  return StateNeedsUiInRegularScript(state, browse_mode_invisible_);
+}
+
+bool Controller::IsRunningLiteScript() const {
+  return service_ ? service_->IsLiteService() : false;
 }
 
 ElementArea* Controller::touchable_element_area() {

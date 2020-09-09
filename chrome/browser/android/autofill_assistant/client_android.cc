@@ -587,12 +587,23 @@ void ClientAndroid::InvalidateAccessToken(const std::string& access_token) {
 }
 
 void ClientAndroid::CreateController(std::unique_ptr<Service> service) {
+  // Persist status message when hot-swapping controllers.
+  std::string status_message;
+  if (controller_) {
+    status_message = controller_->GetStatusMessage();
+    DestroyController();
+  }
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
       std::move(service));
+  controller_->SetStatusMessage(status_message);
 }
 
 void ClientAndroid::DestroyController() {
+  if (controller_ && ui_controller_android_ &&
+      ui_controller_android_->IsAttachedTo(controller_.get())) {
+    ui_controller_android_->Detach();
+  }
   controller_.reset();
   started_ = false;
 }

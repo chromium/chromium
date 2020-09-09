@@ -40,9 +40,6 @@ class TriggerContext {
   // Returns all parameters as a map.
   virtual std::map<std::string, std::string> GetParameters() const = 0;
 
-  // Returns true if this is a lite script run.
-  bool is_lite_script() const;
-
   // Returns the value of a specific parameter, if present.
   virtual base::Optional<std::string> GetParameter(
       const std::string& name) const = 0;

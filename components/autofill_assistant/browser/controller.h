@@ -245,6 +245,7 @@ class Controller : public ScriptExecutorDelegate,
   const GenericUserInterfaceProto* GetGenericUiProto() const override;
   bool ShouldShowOverlay() const override;
   void ShutdownIfNecessary() override;
+  bool IsRunningLiteScript() const override;
 
  private:
   friend ControllerTest;
