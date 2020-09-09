@@ -4325,7 +4325,7 @@
       },
       'example_value': False,
       'id': 89,
-      'caption': '''Cross-origin HTTP Basic Auth prompts''',
+      'caption': '''Cross-origin HTTP Authentication prompts''',
       'tags': ['website-sharing'],
       'desc': '''Setting the policy to Enabled allows third-party images on a page to show an authentication prompt.
 
