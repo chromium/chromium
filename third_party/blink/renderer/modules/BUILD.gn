@@ -168,6 +168,8 @@ component("modules") {
 
   if (is_android) {
     sub_modules += [ "//third_party/blink/renderer/modules/remote_objects" ]
+  } else {
+    sub_modules += [ "//third_party/blink/renderer/modules/serial" ]
   }
 
   deps = [
@@ -187,10 +189,6 @@ component("modules") {
 
   public_deps = sub_modules
   allow_circular_includes_from = sub_modules
-
-  if (!is_android) {
-    deps += [ "//third_party/blink/renderer/modules/serial" ]
-  }
 
   if (is_win) {
     cflags =

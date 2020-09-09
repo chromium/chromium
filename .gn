@@ -258,7 +258,6 @@ no_check_targets = [
   "//third_party/blink/renderer/modules/manifest:*",  # 2 errors
   "//third_party/blink/renderer/modules/media_capabilities:*",  # 5 errors
   "//third_party/blink/renderer/modules/peerconnection:*",  # 43 errors
-  "//third_party/blink/renderer/modules/serial:*",  # 1 error
   "//third_party/blink/renderer/modules/service_worker:*",  # 23 errors
   "//third_party/blink/renderer/modules/webcodecs:*",  # 13 errors
   "//third_party/blink/renderer/modules/webtransport:*",  # 16 errors
