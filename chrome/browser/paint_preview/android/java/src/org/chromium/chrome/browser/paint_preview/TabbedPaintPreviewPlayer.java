@@ -234,6 +234,8 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     }
 
     public boolean isShowingAndNeedsBadge() {
+        if (mTab == null) return false;
+
         return mTab.getTabViewManager().isShowing(this);
     }
 
