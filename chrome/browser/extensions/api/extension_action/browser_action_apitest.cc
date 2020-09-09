@@ -148,26 +148,23 @@ class BrowserActionApiCanvasTest : public BrowserActionApiTest {
   }
 };
 
-enum class TestVariation {
-  kUseEventPage,
-  kUseServiceWorker,
-};
+using ContextType = ExtensionBrowserTest::ContextType;
 
 class BrowserActionApiLazyTest
     : public BrowserActionApiTest,
-      public testing::WithParamInterface<TestVariation> {
+      public testing::WithParamInterface<ContextType> {
  public:
   BrowserActionApiLazyTest() {
     // Service Workers are currently only available on certain channels, so set
     // the channel for those tests.
-    if (GetParam() == TestVariation::kUseServiceWorker)
+    if (GetParam() == ContextType::kServiceWorker)
       current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
   }
 
   const extensions::Extension* LoadExtensionWithParamFlags(
       const base::FilePath& path) {
     int flags = kFlagEnableFileAccess;
-    if (GetParam() == TestVariation::kUseServiceWorker)
+    if (GetParam() == ContextType::kServiceWorker)
       flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
     return LoadExtensionWithFlags(path, flags);
   }
@@ -247,17 +244,17 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Update) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, UpdateSvg) {
   // TODO(crbug.com/1064671): Service Workers currently don't support loading
   // SVG images.
-  const bool expect_failure = GetParam() == TestVariation::kUseServiceWorker;
+  const bool expect_failure = GetParam() == ContextType::kServiceWorker;
   ASSERT_NO_FATAL_FAILURE(
       RunUpdateTest("browser_action/update_svg", expect_failure));
 }
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          BrowserActionApiLazyTest,
-                         ::testing::Values(TestVariation::kUseEventPage));
+                         ::testing::Values(ContextType::kEventPage));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          BrowserActionApiLazyTest,
-                         ::testing::Values(TestVariation::kUseServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_TRUE(RunExtensionTest("browser_action/no_icon")) << message_;
