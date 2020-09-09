@@ -207,12 +207,6 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
         reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
   } else {
     DCHECK(command_type == COMMAND_STAT64);
-#if defined(__ANDROID_API__) && __ANDROID_API__ < 21
-    // stat64 is not defined for older Android API versions in newer NDK
-    // versions.
-    RAW_CHECK(reply->AddIntToMessage(-ENOSYS));
-    return;
-#else
     struct stat64 sb;
     int sts = follow_links ? stat64(file_to_access, &sb)
                            : lstat64(file_to_access, &sb);
@@ -223,7 +217,6 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
     RAW_CHECK(reply->AddIntToMessage(0));
     RAW_CHECK(
         reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
-#endif  // defined(__ANDROID_API__) && __ANDROID_API__ < 21
   }
 }
 

@@ -157,6 +157,9 @@ bool BrokerProcess::IsSyscallAllowed(int sysno) const {
 #if defined(__NR_fstatat)
     case __NR_fstatat:
 #endif
+#if defined(__NR_fstatat64)
+    case __NR_fstatat64:
+#endif
 #if defined(__x86_64__) || defined(__aarch64__)
     case __NR_newfstatat:
 #endif
@@ -174,9 +177,13 @@ bool BrokerProcess::IsSyscallAllowed(int sysno) const {
 
 #if !defined(__aarch64__)
     case __NR_unlink:
+      return !fast_check_in_client_ ||
+             allowed_command_set_.test(COMMAND_UNLINK);
 #endif
     case __NR_unlinkat:
+      // If rmdir() doesn't exist, unlinkat is used with AT_REMOVEDIR.
       return !fast_check_in_client_ ||
+             allowed_command_set_.test(COMMAND_RMDIR) ||
              allowed_command_set_.test(COMMAND_UNLINK);
 
     default:
@@ -242,6 +249,33 @@ int BrokerProcess::Unlink(const char* pathname) const {
 #else
 #define BROKER_UNPOISON_STRING(x)
 #endif
+
+namespace {
+// Validates the args passed to a *statat*() syscall and performs the syscall
+// using |broker_process|.
+int PerformStatat(const sandbox::arch_seccomp_data& args,
+                  BrokerProcess* broker_process,
+                  bool arch64) {
+  if (static_cast<int>(args.args[0]) != AT_FDCWD)
+    return -EPERM;
+  // Only allow the AT_SYMLINK_NOFOLLOW flag which is used by some libc
+  // implementations for lstat().
+  if ((static_cast<int>(args.args[3]) & ~AT_SYMLINK_NOFOLLOW) != 0)
+    return -EINVAL;
+
+  const bool follow_links =
+      !(static_cast<int>(args.args[3]) & AT_SYMLINK_NOFOLLOW);
+  if (arch64) {
+    return broker_process->Stat64(
+        reinterpret_cast<const char*>(args.args[1]), follow_links,
+        reinterpret_cast<struct stat64*>(args.args[2]));
+  }
+
+  return broker_process->Stat(reinterpret_cast<const char*>(args.args[1]),
+                              follow_links,
+                              reinterpret_cast<struct stat*>(args.args[2]));
+}
+}  // namespace
 
 // static
 intptr_t BrokerProcess::SIGSYS_Handler(const sandbox::arch_seccomp_data& args,
@@ -367,23 +401,15 @@ intptr_t BrokerProcess::SIGSYS_Handler(const sandbox::arch_seccomp_data& args,
 #endif
 #if defined(__NR_fstatat)
     case __NR_fstatat:
-      if (static_cast<int>(args.args[0]) != AT_FDCWD)
-        return -EPERM;
-      if (static_cast<int>(args.args[3]) != 0)
-        return -EINVAL;
-      return broker_process->Stat(reinterpret_cast<const char*>(args.args[1]),
-                                  true,
-                                  reinterpret_cast<struct stat*>(args.args[2]));
+      return PerformStatat(args, broker_process, /*arch64=*/false);
+#endif
+#if defined(__NR_fstatat64)
+    case __NR_fstatat64:
+      return PerformStatat(args, broker_process, /*arch64=*/true);
 #endif
 #if defined(__NR_newfstatat)
     case __NR_newfstatat:
-      if (static_cast<int>(args.args[0]) != AT_FDCWD)
-        return -EPERM;
-      if (static_cast<int>(args.args[3]) != 0)
-        return -EINVAL;
-      return broker_process->Stat(reinterpret_cast<const char*>(args.args[1]),
-                                  true,
-                                  reinterpret_cast<struct stat*>(args.args[2]));
+      return PerformStatat(args, broker_process, /*arch64=*/false);
 #endif
 #if defined(__NR_unlink)
     case __NR_unlink:
@@ -391,13 +417,24 @@ intptr_t BrokerProcess::SIGSYS_Handler(const sandbox::arch_seccomp_data& args,
           reinterpret_cast<const char*>(args.args[0]));
 #endif
 #if defined(__NR_unlinkat)
-    case __NR_unlinkat:
-      // TODO(tsepez): does not support AT_REMOVEDIR flag.
+    case __NR_unlinkat: {
       if (static_cast<int>(args.args[0]) != AT_FDCWD)
         return -EPERM;
+
+      int flags = static_cast<int>(args.args[2]);
+
+      if (flags == AT_REMOVEDIR) {
+        return broker_process->Rmdir(
+            reinterpret_cast<const char*>(args.args[1]));
+      }
+
+      if (flags != 0)
+        return -EPERM;
+
       return broker_process->Unlink(
           reinterpret_cast<const char*>(args.args[1]));
-#endif
+    }
+#endif  // defined(__NR_unlinkat)
     default:
       RAW_CHECK(false);
       return -ENOSYS;

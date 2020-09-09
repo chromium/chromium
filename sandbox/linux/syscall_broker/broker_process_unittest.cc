@@ -21,6 +21,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -30,6 +32,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "sandbox/linux/syscall_broker/broker_client.h"
+#include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/tests/scoped_temporary_file.h"
 #include "sandbox/linux/tests/test_utils.h"
 #include "sandbox/linux/tests/unit_tests.h"
@@ -1453,80 +1456,108 @@ TEST(BrokerProcess, UnlinkHost) {
 }
 
 TEST(BrokerProcess, IsSyscallAllowed) {
-  const struct {
-    int sysno;
-    BrokerCommand command;
-  } kSyscallToCommandMap[] = {
+  const base::flat_map<BrokerCommand, base::flat_set<int>> kSysnosForCommand = {
+      {COMMAND_ACCESS,
+       {__NR_faccessat,
 #if defined(__NR_access)
-    {__NR_access, COMMAND_ACCESS},
+        __NR_access
 #endif
-    {__NR_faccessat, COMMAND_ACCESS},
+       }},
+      {COMMAND_MKDIR,
+       {__NR_mkdirat,
 #if defined(__NR_mkdir)
-    {__NR_mkdir, COMMAND_MKDIR},
+        __NR_mkdir
 #endif
-    {__NR_mkdirat, COMMAND_MKDIR},
+       }},
+      {COMMAND_OPEN,
+       {__NR_openat,
 #if defined(__NR_open)
-    {__NR_open, COMMAND_OPEN},
+        __NR_open
 #endif
-    {__NR_openat, COMMAND_OPEN},
+       }},
+      {COMMAND_READLINK,
+       {__NR_readlinkat,
 #if defined(__NR_readlink)
-    {__NR_readlink, COMMAND_READLINK},
+        __NR_readlink
 #endif
-    {__NR_readlinkat, COMMAND_READLINK},
+       }},
+      {COMMAND_RENAME,
+       {__NR_renameat,
 #if defined(__NR_rename)
-    {__NR_rename, COMMAND_RENAME},
+        __NR_rename
 #endif
-    {__NR_renameat, COMMAND_RENAME},
+       }},
+      {COMMAND_UNLINK,
+       {__NR_unlinkat,
+#if defined(__NR_unlink)
+        __NR_unlink
+#endif
+       }},
+      {COMMAND_RMDIR,
+       {__NR_unlinkat,
 #if defined(__NR_rmdir)
-    {__NR_rmdir, COMMAND_RMDIR},
+        __NR_rmdir
 #endif
+       }},
+      {COMMAND_STAT,
+       {
 #if defined(__NR_stat)
-    {__NR_stat, COMMAND_STAT},
+           __NR_stat,
 #endif
 #if defined(__NR_lstat)
-    {__NR_lstat, COMMAND_STAT},
+           __NR_lstat,
 #endif
 #if defined(__NR_fstatat)
-    {__NR_fstatat, COMMAND_STAT},
+           __NR_fstatat,
+#endif
+#if defined(__NR_fstatat64)
+           __NR_fstatat64,
 #endif
 #if defined(__NR_newfstatat)
-    {__NR_newfstatat, COMMAND_STAT},
+           __NR_newfstatat,
 #endif
 #if defined(__NR_stat64)
-    {__NR_stat64, COMMAND_STAT},
+           __NR_stat64,
 #endif
 #if defined(__NR_lstat64)
-    {__NR_lstat64, COMMAND_STAT},
+           __NR_lstat64,
 #endif
-#if defined(__NR_unlink)
-    {__NR_unlink, COMMAND_UNLINK},
-#endif
-    {__NR_unlinkat, COMMAND_UNLINK},
-  };
+       }}};
 
-  for (const auto& test : kSyscallToCommandMap) {
+  // First gather up all the syscalls numbers we want to test.
+  base::flat_set<int> all_sysnos;
+  for (const auto& command_sysno_set_pair : kSysnosForCommand) {
+    all_sysnos.insert(command_sysno_set_pair.second.begin(),
+                      command_sysno_set_pair.second.end());
+  }
+
+  for (const auto& test : kSysnosForCommand) {
     // Test with fast_check_in_client.
     {
-      SCOPED_TRACE(base::StringPrintf("fast check, sysno=%d", test.sysno));
-      BrokerProcess process(ENOSYS, MakeBrokerCommandSet({test.command}), {},
-                            true, true);
-      EXPECT_TRUE(process.IsSyscallAllowed(test.sysno));
-      for (const auto& other : kSyscallToCommandMap) {
-        SCOPED_TRACE(base::StringPrintf("others test, sysno=%d", other.sysno));
-        EXPECT_EQ(other.command == test.command,
-                  process.IsSyscallAllowed(other.sysno));
+      BrokerCommand command = test.first;
+      const base::flat_set<int>& sysnos = test.second;
+      SCOPED_TRACE(base::StringPrintf("fast check, command=%d", command));
+      BrokerProcess process(ENOSYS, MakeBrokerCommandSet({command}), {},
+                            /*fast_check_in_client=*/true,
+                            /*quiet_failures_for_tests=*/true);
+      // Check that only the correct system calls are allowed.
+      for (int sysno : all_sysnos) {
+        SCOPED_TRACE(base::StringPrintf("test syscalls, sysno=%d", sysno));
+        EXPECT_EQ(sysnos.count(sysno) > 0, process.IsSyscallAllowed(sysno));
       }
     }
 
     // Test without fast_check_in_client.
     {
-      SCOPED_TRACE(base::StringPrintf("no fast check, sysno=%d", test.sysno));
-      BrokerProcess process(ENOSYS, MakeBrokerCommandSet({test.command}), {},
-                            false, true);
-      EXPECT_TRUE(process.IsSyscallAllowed(test.sysno));
-      for (const auto& other : kSyscallToCommandMap) {
-        SCOPED_TRACE(base::StringPrintf("others test, sysno=%d", other.sysno));
-        EXPECT_TRUE(process.IsSyscallAllowed(other.sysno));
+      BrokerCommand command = test.first;
+      SCOPED_TRACE(base::StringPrintf("no fast check, command=%d", command));
+      BrokerProcess process(ENOSYS, MakeBrokerCommandSet({command}), {},
+                            /*fast_check_in_client=*/false,
+                            /*quiet_failures_for_tests=*/true);
+      // Check that all system calls are allowed.
+      for (int sysno : all_sysnos) {
+        SCOPED_TRACE(base::StringPrintf("test syscalls, sysno=%d", sysno));
+        EXPECT_TRUE(process.IsSyscallAllowed(sysno));
       }
     }
   }
