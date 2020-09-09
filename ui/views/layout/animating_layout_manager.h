@@ -74,7 +74,7 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   // Describes if and how the bounds of the host view can be animated as part of
   // layout animations, if the preferred size of the layout changes.
-  enum BoundsAnimationMode {
+  enum class BoundsAnimationMode {
     // Default behavior: the host view will always take the space given to it by
     // its parent view and child views will animate within those bounds. Useful
     // for cases where the layout is in a fixed-size container or dialog, but
