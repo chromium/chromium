@@ -77,7 +77,7 @@ BleScannerImpl::~BleScannerImpl() {
   adapter_->RemoveObserver(this);
 }
 
-void BleScannerImpl::HandleScanFilterChange() {
+void BleScannerImpl::HandleScanRequestChange() {
   UpdateDiscoveryStatus();
 }
 
@@ -206,7 +206,7 @@ void BleScannerImpl::HandleDeviceUpdated(
       service_data_str, GetAllDeviceIdPairs());
 
   // There was service data for the ProximityAuth UUID, but it did not apply to
-  // any active scan filters. The advertisement was likely from a nearby device
+  // any active scan requests. The advertisement was likely from a nearby device
   // attempting a ProximityAuth connection for another account.
   if (!potential_result)
     return;
@@ -225,18 +225,20 @@ void BleScannerImpl::HandlePotentialScanResult(
                                        ? ConnectionRole::kListenerRole
                                        : ConnectionRole::kInitiatorRole;
 
-  // Check to see if a corresponding scan filter exists. At this point, it is
+  // Check to see if a corresponding scan request exists. At this point, it is
   // possible that a scan result was received for the correct DeviceIdPair but
   // incorrect ConnectionRole.
-  bool does_corresponding_scan_filter_exist = false;
-  for (const auto& scan_filter : scan_filters()) {
-    if (scan_filter.first.remote_device_id() !=
+  bool does_corresponding_scan_request_exist = false;
+  for (const auto& scan_request : scan_requests()) {
+    if (scan_request.remote_device_id() !=
         potential_result.first.GetDeviceId()) {
       continue;
     }
 
-    if (scan_filter.second == connection_role) {
-      does_corresponding_scan_filter_exist = true;
+    // TODO(khorimoto): Also handle Nearby cases; currently, it is assumed that
+    // only BLE scan results are handled.
+    if (scan_request.connection_role() == connection_role) {
+      does_corresponding_scan_request_exist = true;
       break;
     }
   }
@@ -247,12 +249,12 @@ void BleScannerImpl::HandlePotentialScanResult(
   for (const auto& character : service_data)
     ss << static_cast<uint32_t>(character);
 
-  if (!does_corresponding_scan_filter_exist) {
+  if (!does_corresponding_scan_request_exist) {
     PA_LOG(WARNING) << "BleScannerImpl::HandleDeviceUpdated(): Received scan "
                     << "result from device with ID \""
                     << potential_result.first.GetTruncatedDeviceIdForLogs()
                     << "\", but it did not correspond to an active scan "
-                    << "filter. Service data: " << ss.str()
+                    << "request. Service data: " << ss.str()
                     << ", Background advertisement: "
                     << (potential_result.second ? "true" : "false");
     return;

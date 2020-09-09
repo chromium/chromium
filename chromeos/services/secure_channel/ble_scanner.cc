@@ -17,30 +17,31 @@ BleScanner::BleScanner() = default;
 
 BleScanner::~BleScanner() = default;
 
-void BleScanner::AddScanFilter(const ScanFilter& scan_filter) {
-  if (base::Contains(scan_filters_, scan_filter)) {
-    PA_LOG(ERROR) << "BleScanner::AddScanFilter(): Tried to add a scan filter "
-                  << "which already existed. Filter: " << scan_filter;
+void BleScanner::AddScanRequest(const ConnectionAttemptDetails& scan_request) {
+  if (base::Contains(scan_requests_, scan_request)) {
+    PA_LOG(ERROR) << "BleScanner::AddScanRequest(): Tried to add a scan "
+                  << "request which already existed: " << scan_request;
     NOTREACHED();
   }
 
-  scan_filters_.insert(scan_filter);
-  HandleScanFilterChange();
+  scan_requests_.insert(scan_request);
+  HandleScanRequestChange();
 }
 
-void BleScanner::RemoveScanFilter(const ScanFilter& scan_filter) {
-  if (!base::Contains(scan_filters_, scan_filter)) {
-    PA_LOG(ERROR) << "BleScanner::RemoveScanFilter(): Tried to remove a scan "
-                  << "filter which was not present. Filter: " << scan_filter;
+void BleScanner::RemoveScanRequest(
+    const ConnectionAttemptDetails& scan_request) {
+  if (!base::Contains(scan_requests_, scan_request)) {
+    PA_LOG(ERROR) << "BleScanner::RemoveScanRequest(): Tried to remove a scan "
+                  << "request which was not present: " << scan_request;
     NOTREACHED();
   }
 
-  scan_filters_.erase(scan_filter);
-  HandleScanFilterChange();
+  scan_requests_.erase(scan_request);
+  HandleScanRequestChange();
 }
 
-bool BleScanner::HasScanFilter(const ScanFilter& scan_filter) {
-  return base::Contains(scan_filters_, scan_filter);
+bool BleScanner::HasScanRequest(const ConnectionAttemptDetails& scan_request) {
+  return base::Contains(scan_requests_, scan_request);
 }
 
 void BleScanner::AddObserver(Observer* observer) {
@@ -53,8 +54,8 @@ void BleScanner::RemoveObserver(Observer* observer) {
 
 DeviceIdPairSet BleScanner::GetAllDeviceIdPairs() {
   DeviceIdPairSet set;
-  for (const auto& scan_filter : scan_filters_)
-    set.insert(scan_filter.first);
+  for (const auto& scan_request : scan_requests_)
+    set.insert(scan_request.device_id_pair());
   return set;
 }
 
@@ -66,13 +67,6 @@ void BleScanner::NotifyReceivedAdvertisementFromDevice(
     observer.OnReceivedAdvertisement(remote_device, bluetooth_device,
                                      connection_role);
   }
-}
-
-std::ostream& operator<<(std::ostream& stream,
-                         const BleScanner::ScanFilter& scan_filter) {
-  stream << "{device_id_pair: " << scan_filter.first
-         << ", connection_role: " << scan_filter.second << "}";
-  return stream;
 }
 
 }  // namespace secure_channel

@@ -127,10 +127,10 @@ class SecureChannelBleScannerImplTest : public testing::Test {
     ble_scanner_->RemoveObserver(fake_delegate_.get());
   }
 
-  void AddScanFilter(const BleScanner::ScanFilter& scan_filter) {
-    EXPECT_FALSE(ble_scanner_->HasScanFilter(scan_filter));
-    ble_scanner_->AddScanFilter(scan_filter);
-    EXPECT_TRUE(ble_scanner_->HasScanFilter(scan_filter));
+  void AddScanRequest(const ConnectionAttemptDetails& scan_filter) {
+    EXPECT_FALSE(ble_scanner_->HasScanRequest(scan_filter));
+    ble_scanner_->AddScanRequest(scan_filter);
+    EXPECT_TRUE(ble_scanner_->HasScanRequest(scan_filter));
   }
 
   // StartDiscoverySession in the mock adapter mostly for the purpose of
@@ -146,10 +146,10 @@ class SecureChannelBleScannerImplTest : public testing::Test {
         base::RepeatingClosure());
   }
 
-  void RemoveScanFilter(const BleScanner::ScanFilter& scan_filter) {
-    EXPECT_TRUE(ble_scanner_->HasScanFilter(scan_filter));
-    ble_scanner_->RemoveScanFilter(scan_filter);
-    EXPECT_FALSE(ble_scanner_->HasScanFilter(scan_filter));
+  void RemoveScanRequest(const ConnectionAttemptDetails& scan_filter) {
+    EXPECT_TRUE(ble_scanner_->HasScanRequest(scan_filter));
+    ble_scanner_->RemoveScanRequest(scan_filter);
+    EXPECT_FALSE(ble_scanner_->HasScanRequest(scan_filter));
   }
 
   void ProcessScanResultAndVerifyNoDeviceIdentified(
@@ -263,27 +263,29 @@ class SecureChannelBleScannerImplTest : public testing::Test {
 };
 
 TEST_F(SecureChannelBleScannerImplTest, UnrelatedScanResults) {
-  BleScanner::ScanFilter filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                             test_devices()[1].GetDeviceId()),
-                                ConnectionRole::kListenerRole);
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kListenerRole);
 
-  AddScanFilter(filter);
+  AddScanRequest(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
   EXPECT_TRUE(discovery_session_is_active());
 
   ProcessScanResultAndVerifyNoDeviceIdentified("unrelatedServiceData");
 
-  RemoveScanFilter(filter);
+  RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
-  BleScanner::ScanFilter filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                             test_devices()[1].GetDeviceId()),
-                                ConnectionRole::kListenerRole);
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kListenerRole);
 
-  AddScanFilter(filter);
+  AddScanRequest(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
   EXPECT_TRUE(discovery_session_is_active());
 
@@ -295,55 +297,59 @@ TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
 
   ProcessScanResultAndVerifyNoDeviceIdentified("wrongRoleServiceData");
 
-  RemoveScanFilter(filter);
+  RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Background) {
-  BleScanner::ScanFilter filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                             test_devices()[1].GetDeviceId()),
-                                ConnectionRole::kListenerRole);
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kListenerRole);
 
-  AddScanFilter(filter);
+  AddScanRequest(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
   EXPECT_TRUE(discovery_session_is_active());
 
   ProcessScanResultAndVerifyDevice("device0ServiceData", test_devices()[0],
                                    true /* is_background_advertisement */);
 
-  RemoveScanFilter(filter);
+  RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Foreground) {
-  BleScanner::ScanFilter filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                             test_devices()[1].GetDeviceId()),
-                                ConnectionRole::kInitiatorRole);
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kInitiatorRole);
 
-  AddScanFilter(filter);
+  AddScanRequest(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
   EXPECT_TRUE(discovery_session_is_active());
 
   ProcessScanResultAndVerifyDevice("device0ServiceData", test_devices()[0],
                                    false /* is_background_advertisement */);
 
-  RemoveScanFilter(filter);
+  RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
-  BleScanner::ScanFilter filter_1(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                               test_devices()[1].GetDeviceId()),
-                                  ConnectionRole::kInitiatorRole);
-  BleScanner::ScanFilter filter_2(DeviceIdPair(test_devices()[2].GetDeviceId(),
-                                               test_devices()[1].GetDeviceId()),
-                                  ConnectionRole::kInitiatorRole);
+  ConnectionAttemptDetails filter_1(
+      DeviceIdPair(test_devices()[0].GetDeviceId(),
+                   test_devices()[1].GetDeviceId()),
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionRole::kInitiatorRole);
+  ConnectionAttemptDetails filter_2(
+      DeviceIdPair(test_devices()[2].GetDeviceId(),
+                   test_devices()[1].GetDeviceId()),
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionRole::kInitiatorRole);
 
-  AddScanFilter(filter_1);
-  AddScanFilter(filter_2);
+  AddScanRequest(filter_1);
+  AddScanRequest(filter_2);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
   EXPECT_TRUE(discovery_session_is_active());
 
@@ -352,7 +358,7 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
                                    false /* is_background_advertisement */);
 
   // Remove the identified device from the list of scan filters.
-  RemoveScanFilter(filter_1);
+  RemoveScanRequest(filter_1);
 
   // No additional BLE command should have been posted, since the existing scan
   // should not have been stopped.
@@ -360,13 +366,13 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
   EXPECT_TRUE(discovery_session_is_active());
 
   // Remove the scan filter, and verify that the scan stopped.
-  RemoveScanFilter(filter_2);
+  RemoveScanRequest(filter_2);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
 
   // Add the scan filter back again; this should start the discovery session
   // back up again.
-  AddScanFilter(filter_2);
+  AddScanRequest(filter_2);
   InvokeStartDiscoveryCallback(true /* success */, 2u /* command_index */);
   EXPECT_TRUE(discovery_session_is_active());
 
@@ -375,16 +381,17 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
                                    false /* is_background_advertisement */);
 
   // Remove the scan filter, and verify that the scan stopped.
-  RemoveScanFilter(filter_2);
+  RemoveScanRequest(filter_2);
   InvokeStopDiscoveryCallback(true /* success */, 3u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures) {
-  BleScanner::ScanFilter filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                             test_devices()[1].GetDeviceId()),
-                                ConnectionRole::kListenerRole);
-  AddScanFilter(filter);
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kListenerRole);
+  AddScanRequest(filter);
 
   // A request was made to start discovery; simulate this request failing.
   InvokeStartDiscoveryCallback(false /* success */, 0u /* command_index */);
@@ -400,7 +407,7 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures) {
 
   // Remove scan filters, which should trigger BleScanner to stop the
   // discovery session.
-  RemoveScanFilter(filter);
+  RemoveScanRequest(filter);
 
   // Simulate a failure to stop.
   InvokeStopDiscoveryCallback(false /* success */, 3u /* command_index */);
@@ -416,13 +423,14 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures) {
 }
 
 TEST_F(SecureChannelBleScannerImplTest, StartAndStop_EdgeCases) {
-  BleScanner::ScanFilter filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                             test_devices()[1].GetDeviceId()),
-                                ConnectionRole::kListenerRole);
-  AddScanFilter(filter);
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kListenerRole);
+  AddScanRequest(filter);
 
   // Remove scan filters before the start discovery callback succeeds.
-  RemoveScanFilter(filter);
+  RemoveScanRequest(filter);
 
   // Complete starting the discovery session.
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
@@ -435,13 +443,14 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStop_EdgeCases) {
 }
 
 TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures_EdgeCases) {
-  BleScanner::ScanFilter filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
-                                             test_devices()[1].GetDeviceId()),
-                                ConnectionRole::kListenerRole);
-  AddScanFilter(filter);
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kListenerRole);
+  AddScanRequest(filter);
 
   // Remove scan filters before the start discovery callback succeeds.
-  RemoveScanFilter(filter);
+  RemoveScanRequest(filter);
 
   // Fail the pending call to start a discovery session.
   InvokeStartDiscoveryCallback(false /* success */, 0u /* command_index */);

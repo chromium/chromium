@@ -70,7 +70,7 @@ class BleScannerImpl : public BleScanner,
                  scoped_refptr<device::BluetoothAdapter> adapter);
 
   // BleScanner:
-  void HandleScanFilterChange() override;
+  void HandleScanRequestChange() override;
 
   // device::BluetoothAdapter::Observer:
   void DeviceAdvertisementReceived(device::BluetoothAdapter* adapter,

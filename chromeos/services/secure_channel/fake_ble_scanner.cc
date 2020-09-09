@@ -12,19 +12,19 @@ FakeBleScanner::FakeBleScanner() = default;
 
 FakeBleScanner::~FakeBleScanner() = default;
 
-std::vector<BleScanner::ScanFilter>
-FakeBleScanner::GetAllScanFiltersForRemoteDevice(
+std::vector<ConnectionAttemptDetails>
+FakeBleScanner::GetAllScanRequestsForRemoteDevice(
     const std::string& remote_device_id) {
-  std::vector<ScanFilter> all_scan_filters_for_remote_device;
-  for (const auto& scan_filter : scan_filters()) {
-    if (scan_filter.first.remote_device_id() == remote_device_id)
-      all_scan_filters_for_remote_device.push_back(scan_filter);
+  std::vector<ConnectionAttemptDetails> all_scan_requests_for_remote_device;
+  for (const auto& scan_request : scan_requests()) {
+    if (scan_request.remote_device_id() == remote_device_id)
+      all_scan_requests_for_remote_device.push_back(scan_request);
   }
-  return all_scan_filters_for_remote_device;
+  return all_scan_requests_for_remote_device;
 }
 
-void FakeBleScanner::HandleScanFilterChange() {
-  ++num_scan_filter_changes_handled_;
+void FakeBleScanner::HandleScanRequestChange() {
+  ++num_scan_request_changes_handled_;
 }
 
 FakeBleScannerObserver::FakeBleScannerObserver() = default;

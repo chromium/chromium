@@ -237,8 +237,9 @@ void BleConnectionManagerImpl::PerformAttemptBleInitiatorConnection(
       device_id_pair.remote_device_id(), ConnectionRole::kInitiatorRole);
 
   ble_advertiser_->AddAdvertisementRequest(device_id_pair, connection_priority);
-  ble_scanner_->AddScanFilter(
-      BleScanner::ScanFilter(device_id_pair, ConnectionRole::kInitiatorRole));
+  ble_scanner_->AddScanRequest(ConnectionAttemptDetails(
+      device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionRole::kInitiatorRole));
 }
 
 void BleConnectionManagerImpl::PerformUpdateBleInitiatorConnectionPriority(
@@ -269,8 +270,9 @@ void BleConnectionManagerImpl::PerformCancelBleInitiatorConnectionAttempt(
     return;
 
   ble_advertiser_->RemoveAdvertisementRequest(device_id_pair);
-  ble_scanner_->RemoveScanFilter(
-      BleScanner::ScanFilter(device_id_pair, ConnectionRole::kInitiatorRole));
+  ble_scanner_->RemoveScanRequest(ConnectionAttemptDetails(
+      device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionRole::kInitiatorRole));
 }
 
 void BleConnectionManagerImpl::PerformAttemptBleListenerConnection(
@@ -282,8 +284,9 @@ void BleConnectionManagerImpl::PerformAttemptBleListenerConnection(
   StartConnectionAttemptTimerMetricsIfNecessary(
       device_id_pair.remote_device_id(), ConnectionRole::kListenerRole);
 
-  ble_scanner_->AddScanFilter(
-      BleScanner::ScanFilter(device_id_pair, ConnectionRole::kListenerRole));
+  ble_scanner_->AddScanRequest(ConnectionAttemptDetails(
+      device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionRole::kListenerRole));
 }
 
 void BleConnectionManagerImpl::PerformUpdateBleListenerConnectionPriority(
@@ -309,8 +312,9 @@ void BleConnectionManagerImpl::PerformCancelBleListenerConnectionAttempt(
   if (notifying_remote_device_id_ == device_id_pair.remote_device_id())
     return;
 
-  ble_scanner_->RemoveScanFilter(
-      BleScanner::ScanFilter(device_id_pair, ConnectionRole::kListenerRole));
+  ble_scanner_->RemoveScanRequest(ConnectionAttemptDetails(
+      device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionRole::kListenerRole));
 }
 
 void BleConnectionManagerImpl::OnAdvertisingSlotEnded(

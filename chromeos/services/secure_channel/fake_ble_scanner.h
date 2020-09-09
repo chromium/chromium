@@ -22,21 +22,21 @@ class FakeBleScanner : public BleScanner {
   FakeBleScanner();
   ~FakeBleScanner() override;
 
-  size_t num_scan_filter_changes_handled() const {
-    return num_scan_filter_changes_handled_;
+  size_t num_scan_request_changes_handled() const {
+    return num_scan_request_changes_handled_;
   }
 
-  std::vector<ScanFilter> GetAllScanFiltersForRemoteDevice(
+  std::vector<ConnectionAttemptDetails> GetAllScanRequestsForRemoteDevice(
       const std::string& remote_device_id);
 
   // Public for testing.
-  using BleScanner::scan_filters;
   using BleScanner::NotifyReceivedAdvertisementFromDevice;
+  using BleScanner::scan_requests;
 
  private:
-  void HandleScanFilterChange() override;
+  void HandleScanRequestChange() override;
 
-  size_t num_scan_filter_changes_handled_ = 0u;
+  size_t num_scan_request_changes_handled_ = 0u;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBleScanner);
 };

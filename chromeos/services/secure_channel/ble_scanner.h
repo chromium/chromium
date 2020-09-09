@@ -13,19 +13,21 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "chromeos/services/secure_channel/connection_attempt_details.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 
 namespace device {
 class BluetoothDevice;
-}
+}  // namespace device
 
 namespace chromeos {
 
 namespace secure_channel {
 
 // Performs BLE scans and notifies its delegate when an advertisement has been
-// received from a remote device.
+// received from a remote device. This class allows clients to specify what type
+// of connection they are scanning for and filters results accordingly.
 class BleScanner {
  public:
   class Observer : public base::CheckedObserver {
@@ -39,19 +41,17 @@ class BleScanner {
 
   virtual ~BleScanner();
 
-  using ScanFilter = std::pair<DeviceIdPair, ConnectionRole>;
+  // Adds a scan request for the provided ConnectionAttemptDetails. If no scan
+  // requests were previously present, adding a scan request will start a BLE
+  // discovery session.
+  void AddScanRequest(const ConnectionAttemptDetails& scan_request);
 
-  // Adds a scan filter for the provided ScanFilter. If no scan filters were
-  // previously present, adding a scan filter will start a BLE discovery session
-  // and attempt to create a connection.
-  void AddScanFilter(const ScanFilter& scan_filter);
+  // Removes a scan request for the provided ConnectionAttemptDetails. If this
+  // function removes the only remaining request, the ongoing BLE discovery
+  // session will stop.
+  void RemoveScanRequest(const ConnectionAttemptDetails& scan_request);
 
-  // Removes a scan filter for the provided ScanFilter. If this function
-  // removes the only remaining filter, the ongoing BLE discovery session will
-  // stop.
-  void RemoveScanFilter(const ScanFilter& scan_filter);
-
-  bool HasScanFilter(const ScanFilter& scan_filter);
+  bool HasScanRequest(const ConnectionAttemptDetails& scan_request);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -59,10 +59,12 @@ class BleScanner {
  protected:
   BleScanner();
 
-  virtual void HandleScanFilterChange() = 0;
+  virtual void HandleScanRequestChange() = 0;
 
-  bool should_discovery_session_be_active() { return !scan_filters_.empty(); }
-  const base::flat_set<ScanFilter>& scan_filters() { return scan_filters_; }
+  bool should_discovery_session_be_active() { return !scan_requests_.empty(); }
+  const base::flat_set<ConnectionAttemptDetails>& scan_requests() {
+    return scan_requests_;
+  }
   DeviceIdPairSet GetAllDeviceIdPairs();
 
   void NotifyReceivedAdvertisementFromDevice(
@@ -73,13 +75,10 @@ class BleScanner {
  private:
   base::ObserverList<Observer> observer_list_;
 
-  base::flat_set<ScanFilter> scan_filters_;
+  base::flat_set<ConnectionAttemptDetails> scan_requests_;
 
   DISALLOW_COPY_AND_ASSIGN(BleScanner);
 };
-
-std::ostream& operator<<(std::ostream& stream,
-                         const BleScanner::ScanFilter& scan_filter);
 
 }  // namespace secure_channel
 

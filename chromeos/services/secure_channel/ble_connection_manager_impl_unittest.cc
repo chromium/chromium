@@ -420,13 +420,15 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     if (expected_to_add_request) {
       EXPECT_EQ(connection_priority,
                 *fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kInitiatorRole)));
+      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kInitiatorRole)));
     } else {
       EXPECT_FALSE(
           fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_FALSE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kInitiatorRole)));
+      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kInitiatorRole)));
     }
   }
 
@@ -443,13 +445,15 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     if (expected_to_update_priority) {
       EXPECT_EQ(connection_priority,
                 *fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kInitiatorRole)));
+      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kInitiatorRole)));
     } else {
       EXPECT_FALSE(
           fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_FALSE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kInitiatorRole)));
+      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kInitiatorRole)));
     }
   }
 
@@ -458,8 +462,9 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                                           ConnectionRole::kInitiatorRole);
     manager_->CancelBleInitiatorConnectionAttempt(device_id_pair);
     EXPECT_FALSE(fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-    EXPECT_FALSE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-        device_id_pair, ConnectionRole::kInitiatorRole)));
+    EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+        device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+        ConnectionRole::kInitiatorRole)));
   }
 
   void AttemptBleListenerConnection(const DeviceIdPair& device_id_pair,
@@ -481,11 +486,13 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
             should_cancel_attempt_on_failure));
 
     if (expected_to_add_request) {
-      EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kListenerRole)));
+      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kListenerRole)));
     } else {
-      EXPECT_FALSE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kListenerRole)));
+      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kListenerRole)));
     }
   }
 
@@ -500,11 +507,13 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                                                   connection_priority);
 
     if (expected_to_update_priority) {
-      EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kListenerRole)));
+      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kListenerRole)));
     } else {
-      EXPECT_FALSE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-          device_id_pair, ConnectionRole::kListenerRole)));
+      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+          device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+          ConnectionRole::kListenerRole)));
     }
   }
 
@@ -512,8 +521,9 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     RemoveFromRemoteDeviceIdToMetadataMap(device_id_pair,
                                           ConnectionRole::kListenerRole);
     manager_->CancelBleListenerConnectionAttempt(device_id_pair);
-    EXPECT_FALSE(fake_ble_scanner()->HasScanFilter(
-        BleScanner::ScanFilter(device_id_pair, ConnectionRole::kListenerRole)));
+    EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+        device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
+        ConnectionRole::kListenerRole)));
   }
 
   void SimulateBleSlotEnding(const DeviceIdPair& device_id_pair,
@@ -562,7 +572,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                     .empty());
     EXPECT_TRUE(
         fake_ble_scanner()
-            ->GetAllScanFiltersForRemoteDevice(remote_device.GetDeviceId())
+            ->GetAllScanRequestsForRemoteDevice(remote_device.GetDeviceId())
             .empty());
 
     FakeSecureChannelConnection* last_created_secure_channel =
@@ -637,14 +647,18 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
           EXPECT_EQ(std::get<2>(tuple),
                     *fake_ble_advertiser()->GetPriorityForRequest(
                         std::get<0>(tuple)));
-          EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-              std::get<0>(tuple), ConnectionRole::kInitiatorRole)));
+          EXPECT_TRUE(
+              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+                  std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
+                  ConnectionRole::kInitiatorRole)));
           break;
         }
 
         case ConnectionRole::kListenerRole: {
-          EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-              std::get<0>(tuple), ConnectionRole::kListenerRole)));
+          EXPECT_TRUE(
+              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+                  std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
+                  ConnectionRole::kListenerRole)));
           break;
         }
       }
@@ -680,14 +694,18 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
           EXPECT_EQ(std::get<2>(tuple),
                     *fake_ble_advertiser()->GetPriorityForRequest(
                         std::get<0>(tuple)));
-          EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-              std::get<0>(tuple), ConnectionRole::kInitiatorRole)));
+          EXPECT_TRUE(
+              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+                  std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
+                  ConnectionRole::kInitiatorRole)));
           break;
         }
 
         case ConnectionRole::kListenerRole: {
-          EXPECT_TRUE(fake_ble_scanner()->HasScanFilter(BleScanner::ScanFilter(
-              std::get<0>(tuple), ConnectionRole::kListenerRole)));
+          EXPECT_TRUE(
+              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+                  std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
+                  ConnectionRole::kListenerRole)));
           break;
         }
       }
