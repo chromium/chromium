@@ -99,13 +99,10 @@ ImageLoaderClient.prototype.load = function(request, callback) {
   ImageLoaderClient.recordPercentage('Cache.Usage',
       this.cache_.size() / ImageLoaderClient.CACHE_MEMORY_LIMIT * 100.0);
 
-  // Replace the extension id.
-  const sourceId = chrome.i18n.getMessage('@@extension_id');
-  const targetId = ImageLoaderClient.EXTENSION_ID;
-
+  // Replace the client extension id with the image loader extension id.
   request.url = request.url.replace(
-      'filesystem:chrome-extension://' + sourceId,
-      'filesystem:chrome-extension://' + targetId);
+      /filesystem:chrome-extension:\/\/[a-z]+/,
+      'filesystem:chrome-extension://' + ImageLoaderClient.EXTENSION_ID);
 
   // Try to load from cache, if available.
   const cacheKey = LoadImageRequest.cacheKey(request);
