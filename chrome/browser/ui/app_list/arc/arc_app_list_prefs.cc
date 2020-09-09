@@ -1155,12 +1155,14 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
   if (app_id == arc::kPlayStoreAppId)
     updated_name = l10n_util::GetStringUTF8(IDS_ARC_PLAYSTORE_ICON_TITLE_BETA);
 
+  base::Time last_launch_time;
   const bool was_tracked = tracked_apps_.count(app_id);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_old_info;
   if (was_tracked) {
     app_old_info = GetApp(app_id);
     DCHECK(app_old_info);
     DCHECK(launchable);
+    last_launch_time = app_old_info->last_launch_time;
     if (updated_name != app_old_info->name) {
       for (auto& observer : observer_list_)
         observer.OnAppNameUpdated(app_id, updated_name);
@@ -1194,7 +1196,7 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
     ready_apps_.insert(app_id);
 
   AppInfo app_info(updated_name, package_name, activity, intent_uri,
-                   icon_resource_id, base::Time(), GetInstallTime(app_id),
+                   icon_resource_id, last_launch_time, GetInstallTime(app_id),
                    sticky, notifications_enabled, app_ready, suspended,
                    launchable && arc::ShouldShowInLauncher(app_id), shortcut,
                    launchable);
