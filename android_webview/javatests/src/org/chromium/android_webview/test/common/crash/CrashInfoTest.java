@@ -51,6 +51,20 @@ public class CrashInfoTest {
     }
 
     /**
+     * Create a hidden {@link CrashInfo} object for testing.
+     *
+     * {@code appPackageName} is used as a representative of crash keys in tests.
+     */
+    public static CrashInfo createHiddenCrashInfo(String localId, long captureTime, String uploadId,
+            long uploadTime, String appPackageName, UploadState state) {
+        CrashInfo crashInfo =
+                createCrashInfo(localId, captureTime, uploadId, uploadTime, appPackageName, state);
+        crashInfo.isHidden = true;
+
+        return crashInfo;
+    }
+
+    /**
      * Test that merging two {@code CrashInfo} objects works correctly.
      */
     @Test

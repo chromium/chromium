@@ -88,6 +88,11 @@ public class CrashInfoEqualityMatcher extends BaseMatcher<CrashInfo> {
             builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "captureTime",
                     c.captureTime, mCrashInfo.captureTime));
         }
+
+        if (mCrashInfo.isHidden != c.isHidden) {
+            builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "isHidden", c.isHidden,
+                    mCrashInfo.isHidden));
+        }
         // empty means a match
         return builder.length() == 0 ? null : builder.toString();
     }

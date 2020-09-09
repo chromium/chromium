@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.devui.util;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.json.JSONException;
 
 import org.chromium.android_webview.common.crash.CrashInfo;
@@ -69,7 +71,8 @@ public class WebViewCrashLogParser extends CrashInfoLoader {
         return infoList;
     }
 
-    private static String readEntireFile(File file) throws IOException {
+    @VisibleForTesting
+    public static String readEntireFile(File file) throws IOException {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             byte[] data = new byte[(int) file.length()];
             fileInputStream.read(data);

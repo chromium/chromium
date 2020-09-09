@@ -148,6 +148,9 @@ public class WebViewCrashInfoCollector {
     public static void updateCrashLogFileWithNewCrashInfo(CrashInfo crashInfo) {
         File logDir = SystemWideCrashDirectories.getWebViewCrashLogDir();
         File[] logFiles = logDir.listFiles();
+        if (logFiles == null) {
+            return;
+        }
         for (File logFile : logFiles) {
             // Ignore non-json files.
             if (!logFile.isFile() || !logFile.getName().endsWith(".json")) continue;
