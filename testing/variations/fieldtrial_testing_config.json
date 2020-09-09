@@ -5972,6 +5972,23 @@
             ]
         }
     ],
+    "SafeBrowsingEnhancedProtectionAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacyReorderedAndroid",
+                        "SafeBrowsingEnhancedProtection",
+                        "SafeBrowsingSecuritySectionUIAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingPasswordProtectionForSavedPasswords": [
         {
             "platforms": [
@@ -6038,58 +6055,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingPasswordProtectionShowDomainsForSavedPasswords"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingRealTimeUrlLookupEnabled": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingRealTimeUrlLookupEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingRealTimeUrlLookupEnabledAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SafeBrowsingRealTimeUrlLookupMemoryThresholdMb": "4096"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingRealTimeUrlLookupEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingRealTimeUrlLookupEnabledAndroidAllDevices": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingRealTimeUrlLookupEnabledForAllAndroidDevices"
                     ]
                 }
             ]
@@ -7645,6 +7610,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnterpriseConnectorsEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebProtectRealTimeURLCheck": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingRealTimeUrlLookupEnabledForEnterprise"
                     ]
                 }
             ]
