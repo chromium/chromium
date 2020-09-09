@@ -38,7 +38,7 @@
 #include "ui/touch_selection/touch_selection_controller.h"
 
 #if defined(OS_WIN)
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
 #endif  // defined(OS_WIN)

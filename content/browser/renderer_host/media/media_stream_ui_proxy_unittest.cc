@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "build/build_config.h"
-#include "content/browser/frame_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_stream_request.h"

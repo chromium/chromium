@@ -12,7 +12,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

@@ -41,4 +41,7 @@ specific_include_rules = {
   "render_widget_host_view_mac\.mm": [
     "+content/public/browser/web_contents.h",
   ],
+  "popup_menu_helper_mac.mm": [
+    "+content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h",
+  ]
 }

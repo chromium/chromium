@@ -1,36 +1,43 @@
-# General renderer_host owners
+# COMPONENT: Internals>Core
+# COMPONENT: Internals>Sandbox>SiteIsolation
+# TEAM: site-isolation-dev@chromium.org
+
+# Compositing and input related code.
 kenrb@chromium.org
 
-# for *aura*
-per-file *aura*=sadrul@chromium.org
-
-# for GPU-related stuff in *mac*
-kbr@chromium.org
-ccameron@chromium.org
-
-# for *android*
-per-file *android*=khushalsagar@chromium.org
-
-# For touch/gesture specific changes
+# Touch input and gesture relatated code.
 rjkroege@chromium.org
 sadrul@chromium.org
 
-# For surface ID propagation and synchronization
+# Surface ID propagation and synchronization, and compositing embedding
+# via DelegatedFrame*.
 jonross@chromium.org
 
-# DelegatedFrame*
-per-file *delegated_frame*=jonross@chromium.org
+# RenderFrame/Frame related code.
+acolwell@chromium.org
+arthursonzogni@chromium.org
 
-# WebSQL
+# Aura platform code.
+per-file *aura*=sadrul@chromium.org
+
+# Mac platform GPU-related code.
+per-file *mac*=kbr@chromium.org
+per-file *mac*=ccameron@chromium.org
+
+# Android platform code.
+per-file *android*=khushalsagar@chromium.org
+
+# WebSQL.
 per-file web_database_*=jsbell@chromium.org
 per-file web_database_*=pwnall@chromium.org
 
-# Embedded Frame Sinks (eg. Offscreen Canvas)
+# Embedded Frame Sinks (eg. Offscreen Canvas).
 per-file embedded_frame_sink*.*=xlai@chromium.org
 per-file embedded_frame_sink*.*=junov@chromium.org
 per-file embedded_frame_sink*.*=kylechar@chromium.org
 
-# DirectWrite Font Code
+# DirectWrite font code.
 per-file dwrite_*=drott@chromium.org
 
-# COMPONENT: Internals>Core
+# BackForwardCache.
+per-file back_forward_cache*=altimin@chromium.org

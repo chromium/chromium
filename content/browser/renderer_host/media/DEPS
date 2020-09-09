@@ -1,9 +1,4 @@
 specific_include_rules = {
-  # TODO(miu): Need to relocate MediaStreamManager/DispatcherHost/UIProxy and
-  # friends to somewhere more appropriate.  Perhaps content/browser/media?
-  "media_stream_ui_proxy(_unittest)?\.cc": [
-    "+content/browser/frame_host",
-  ],
   "service_video_capture_device_launcher\.cc": [
     "+media/capture/capture_switches.h",
   ],
