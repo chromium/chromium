@@ -51,7 +51,7 @@ bool CanCauseSignal(int sig) {
 #endif  // !defined(ARCH_CPU_ARM64)
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
          sig == SIGILL ||
-#endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL
+#endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
          sig == SIGPIPE ||
          sig == SIGSEGV ||
 #if defined(OS_APPLE)
@@ -466,12 +466,16 @@ TEST(Signals, Raise_HandlerReraisesToDefault) {
     }
 
 #if defined(OS_APPLE)
-    if (sig == SIGBUS) {
-      // Signal handlers can’t distinguish between SIGBUS arising out of a
-      // hardware fault and SIGBUS raised asynchronously.
-      // Signals::RestoreHandlerAndReraiseSignalOnReturn() assumes that SIGBUS
-      // comes from a hardware fault, but this test uses raise(), so the
-      // re-raise test must be skipped.
+    if (sig == SIGBUS
+#if defined(ARCH_CPU_ARM64)
+        || sig == SIGILL || sig == SIGSEGV
+#endif  // defined(ARCH_CPU_ARM64)
+       ) {
+      // Signal handlers can’t distinguish between these signals arising out of
+      // hardware faults and raised asynchronously.
+      // Signals::RestoreHandlerAndReraiseSignalOnReturn() assumes that they
+      // come from hardware faults, but this test uses raise(), so the re-raise
+      // test must be skipped.
       continue;
     }
 #endif  // defined(OS_APPLE)
@@ -493,12 +497,16 @@ TEST(Signals, Raise_HandlerReraisesToPrevious) {
     }
 
 #if defined(OS_APPLE)
-    if (sig == SIGBUS) {
-      // Signal handlers can’t distinguish between SIGBUS arising out of a
-      // hardware fault and SIGBUS raised asynchronously.
-      // Signals::RestoreHandlerAndReraiseSignalOnReturn() assumes that SIGBUS
-      // comes from a hardware fault, but this test uses raise(), so the
-      // re-raise test must be skipped.
+    if (sig == SIGBUS
+#if defined(ARCH_CPU_ARM64)
+        || sig == SIGILL || sig == SIGSEGV
+#endif  // defined(ARCH_CPU_ARM64)
+       ) {
+      // Signal handlers can’t distinguish between these signals arising out of
+      // hardware faults and raised asynchronously.
+      // Signals::RestoreHandlerAndReraiseSignalOnReturn() assumes that they
+      // come from hardware faults, but this test uses raise(), so the re-raise
+      // test must be skipped.
       continue;
     }
 #endif  // defined(OS_APPLE)

@@ -14,20 +14,25 @@
 
 #include "util/mac/mac_util.h"
 
+#include <Availability.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/build_config.h"
+#include "util/mac/sysctl.h"
 
 extern "C" {
 // Private CoreFoundation internals. See 10.9.2 CF-855.14/CFPriv.h and
@@ -56,9 +61,10 @@ extern const CFStringRef _kCFSystemVersionBuildVersionKey WEAK_IMPORT;
 
 namespace {
 
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
 // Returns the running system’s Darwin major version. Don’t call this, it’s an
 // implementation detail and its result is meant to be cached by
-// MacOSXMinorVersion().
+// MacOSVersionNumber().
 //
 // This is very similar to Chromium’s base/mac/mac_util.mm
 // DarwinMajorVersionInternal().
@@ -92,6 +98,7 @@ int DarwinMajorVersion() {
 
   return darwin_major_version;
 }
+#endif  // DT < 10.12
 
 // Helpers for the weak-imported private CoreFoundation internals.
 
@@ -118,9 +125,10 @@ const void* TryCFDictionaryGetValue(CFDictionaryRef dictionary,
 }
 
 // Converts |version| to a triplet of version numbers on behalf of
-// MacOSXVersion(). Returns true on success. If |version| does not have the
-// expected format, returns false. |version| must be in the form "10.9.2" or
-// just "10.9". In the latter case, |bugfix| will be set to 0.
+// MacOSVersionNumber() and MacOSVersionComponents(). Returns true on success.
+// If |version| does not have the expected format, returns false. |version| must
+// be in the form "10.9.2" or just "10.9". In the latter case, |bugfix| will be
+// set to 0.
 bool StringToVersionNumbers(const std::string& version,
                             int* major,
                             int* minor,
@@ -180,20 +188,62 @@ std::string IORegistryEntryDataPropertyAsString(io_registry_entry_t entry,
 
 namespace crashpad {
 
-int MacOSXMinorVersion() {
-  // The Darwin major version is always 4 greater than the macOS minor version
-  // for Darwin versions beginning with 6, corresponding to Mac OS X 10.2.
-  static int mac_os_x_minor_version = DarwinMajorVersion() - 4;
-  DCHECK(mac_os_x_minor_version >= 2);
-  return mac_os_x_minor_version;
+int MacOSVersionNumber() {
+  static int macos_version_number = []() {
+    // kern.osproductversion is a lightweight way to get the operating system
+    // version from the kernel without having to open any files or spin up any
+    // threads, but it’s only available in macOS 10.12 and later.
+    std::string macos_version_number_string =
+        ReadStringSysctlByName("kern.osproductversion",
+                               __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_12);
+    if (!macos_version_number_string.empty()) {
+      int major;
+      int minor;
+      int bugfix;
+      if (StringToVersionNumbers(
+              macos_version_number_string, &major, &minor, &bugfix)) {
+        DCHECK_GE(major, 10);
+        DCHECK_LE(major, 99);
+        DCHECK_GE(minor, 0);
+        DCHECK_LE(minor, 99);
+        DCHECK_GE(bugfix, 0);
+        DCHECK_LE(bugfix, 99);
+        return major * 1'00'00 + minor * 1'00 + bugfix;
+      }
+    }
+
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_12
+    // On macOS 10.12 and later, the sysctlbyname above should have been
+    // successful.
+    NOTREACHED();
+    return -1;
+#else  // DT >= 10.12
+    // The Darwin major version is always 4 greater than the macOS minor version
+    // for Darwin versions beginning with 6, corresponding to Mac OS X 10.2,
+    // through Darwin 19, corresponding to macOS 10.15.
+    int darwin_major_version = DarwinMajorVersion();
+    DCHECK_GE(darwin_major_version, 6);
+    DCHECK_LE(darwin_major_version, 19);
+
+    int macos_version_number = 10'00'00 + (darwin_major_version - 4) * 1'00;
+
+    // On macOS 10.12 and later, the sysctlbyname above should have been
+    // successful.
+    DCHECK_LT(macos_version_number, 10'12'00);
+
+    return macos_version_number;
+#endif  // DT >= 10.12
+  }();
+
+  return macos_version_number;
 }
 
-bool MacOSXVersion(int* major,
-                   int* minor,
-                   int* bugfix,
-                   std::string* build,
-                   bool* server,
-                   std::string* version_string) {
+bool MacOSVersionComponents(int* major,
+                            int* minor,
+                            int* bugfix,
+                            std::string* build,
+                            bool* server,
+                            std::string* version_string) {
   base::ScopedCFTypeRef<CFDictionaryRef> dictionary(
       TryCFCopyServerVersionDictionary());
   if (dictionary) {
@@ -217,7 +267,16 @@ bool MacOSXVersion(int* major,
     success = false;
   } else {
     version = base::SysCFStringRefToUTF8(version_cf);
-    success &= StringToVersionNumbers(version, major, minor, bugfix);
+    if (!StringToVersionNumbers(version, major, minor, bugfix)) {
+      success = false;
+    } else {
+      DCHECK_GE(*major, 10);
+      DCHECK_LE(*major, 99);
+      DCHECK_GE(*minor, 0);
+      DCHECK_LE(*minor, 99);
+      DCHECK_GE(*bugfix, 0);
+      DCHECK_LE(*bugfix, 99);
+    }
   }
 
   CFStringRef build_cf = base::mac::CFCast<CFStringRef>(
@@ -270,8 +329,17 @@ void MacModelAndBoard(std::string* model, std::string* board_id) {
   if (platform_expert) {
     model->assign(
         IORegistryEntryDataPropertyAsString(platform_expert, CFSTR("model")));
+#if defined(ARCH_CPU_X86_FAMILY)
+    CFStringRef kBoardProperty = CFSTR("board-id");
+#elif defined(ARCH_CPU_ARM64)
+    // TODO(https://crashpad.chromium.org/bug/352): When production arm64
+    // hardware is available, determine whether board-id works and switch to it
+    // if feasible, otherwise, determine whether target-type remains a viable
+    // alternative.
+    CFStringRef kBoardProperty = CFSTR("target-type");
+#endif
     board_id->assign(IORegistryEntryDataPropertyAsString(platform_expert,
-                                                         CFSTR("board-id")));
+                                                         kBoardProperty));
   } else {
     model->clear();
     board_id->clear();

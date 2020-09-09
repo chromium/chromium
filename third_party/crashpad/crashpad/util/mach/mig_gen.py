@@ -59,17 +59,25 @@ def generate_interface(defs,
     subprocess.check_call(command)
 
 
-def parse_args(args):
+def parse_args(args, multiple_arch=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--clang-path', help='Path to Clang')
+    parser.add_argument('--clang-path', help='Path to clang')
     parser.add_argument('--mig-path', help='Path to mig')
     parser.add_argument('--migcom-path', help='Path to migcom')
-    parser.add_argument('--arch', help='Target architecture')
+    if not multiple_arch:
+        parser.add_argument('--arch', help='Target architecture')
+    else:
+        parser.add_argument(
+            '--arch',
+            default=[],
+            action='append',
+            help='Target architecture (may appear multiple times)')
     parser.add_argument('--sdk', help='Path to SDK')
-    parser.add_argument('--include',
-                        default=[],
-                        action='append',
-                        help='Additional include directory')
+    parser.add_argument(
+        '--include',
+        default=[],
+        action='append',
+        help='Additional include directory (may appear multiple times)')
     parser.add_argument('defs')
     parser.add_argument('user_c')
     parser.add_argument('server_c')

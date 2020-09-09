@@ -143,7 +143,7 @@ void Multiprocess::Run() {
     if (exception_swallower.get()) {
       ExceptionSwallower::SwallowExceptions();
     }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     if (reason_ == kTerminationSignal && Signals::IsCrashSignal(code_)) {
       Signals::InstallDefaultHandler(code_);
     }

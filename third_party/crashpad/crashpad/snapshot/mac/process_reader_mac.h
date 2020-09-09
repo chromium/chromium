@@ -15,6 +15,7 @@
 #ifndef CRASHPAD_SNAPSHOT_MAC_PROCESS_READER_MAC_H_
 #define CRASHPAD_SNAPSHOT_MAC_PROCESS_READER_MAC_H_
 
+#include <Availability.h>
 #include <mach/mach.h>
 #include <stdint.h>
 #include <sys/time.h>
@@ -30,6 +31,14 @@
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/posix/process_info.h"
 #include "util/process/process_memory_mac.h"
+
+#if defined(ARCH_CPU_32_BIT) ||  \
+    (!defined(ARCH_CPU_ARM64) && \
+     __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_15)
+// There’s no 32-bit x86 environment on macOS 10.15 or later, and there’s no
+// 32-bit ARM environment for macOS at all.
+#define CRASHPAD_MAC_32_BIT_SUPPORT 1
+#endif  // ARCH_CPU_32_BIT || (!ARCH_CPU_ARM64 && DT < 10.15)
 
 namespace crashpad {
 
@@ -116,7 +125,11 @@ class ProcessReaderMac {
   bool Initialize(task_t task);
 
   //! \return `true` if the target task is a 64-bit process.
+#if defined(CRASHPAD_MAC_32_BIT_SUPPORT) || DOXYGEN
   bool Is64Bit() const { return is_64_bit_; }
+#else  // CRASHPAD_MAC_32_BIT_SUPPORT
+  bool Is64Bit() const { return true; }
+#endif  // CRASHPAD_MAC_32_BIT_SUPPORT
 
   //! \return The target task’s process ID.
   pid_t ProcessID() const { return process_info_.ProcessID(); }
@@ -240,10 +253,12 @@ class ProcessReaderMac {
   task_t task_;  // weak
   InitializationStateDcheck initialized_;
 
+#if defined(CRASHPAD_MAC_32_BIT_SUPPORT)
   // This shadows a method of process_info_, but it’s accessed so frequently
   // that it’s given a first-class field to save a call and a few bit operations
   // on each access.
   bool is_64_bit_;
+#endif  // CRASHPAD_MAC_32_BIT_SUPPORT
 
   bool initialized_threads_;
   bool initialized_modules_;

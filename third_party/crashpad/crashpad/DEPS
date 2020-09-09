@@ -42,7 +42,7 @@ deps = {
       '7bde79cc274d06451bf65ae82c012a5d3e476b5a',
   'crashpad/third_party/mini_chromium/mini_chromium':
       Var('chromium_git') + '/chromium/mini_chromium@' +
-      '891e31d0b649ec9fa98ca5745f9dcd14a34de34c',
+      'e0008f2714a76c7f2a3854fa75774427a886d6b9',
   'crashpad/third_party/libfuzzer/src':
       Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git@' +
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
@@ -76,26 +76,6 @@ deps = {
       {
         'package': 'fuchsia/clang/linux-amd64',
         'version': 'goma',
-      },
-    ],
-    'condition': 'checkout_fuchsia and host_os == "linux"',
-    'dep_type': 'cipd'
-  },
-  'crashpad/third_party/fuchsia/qemu/mac-amd64': {
-    'packages': [
-      {
-        'package': 'fuchsia/qemu/mac-amd64',
-        'version': 'latest'
-      },
-    ],
-    'condition': 'checkout_fuchsia and host_os == "mac"',
-    'dep_type': 'cipd'
-  },
-  'crashpad/third_party/fuchsia/qemu/linux-amd64': {
-    'packages': [
-      {
-        'package': 'fuchsia/qemu/linux-amd64',
-        'version': 'latest'
       },
     ],
     'condition': 'checkout_fuchsia and host_os == "linux"',

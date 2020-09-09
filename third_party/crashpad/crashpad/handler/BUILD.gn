@@ -185,9 +185,9 @@ if (crashpad_is_android) {
 
     if (crashpad_is_in_chromium) {
       no_default_deps = true
+      remove_configs =
+          [ "//build/config/android:default_orderfile_instrumentation" ]
     }
-    remove_configs =
-        [ "//build/config/android:default_orderfile_instrumentation" ]
   }
 }
 

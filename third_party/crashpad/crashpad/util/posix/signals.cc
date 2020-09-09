@@ -46,10 +46,10 @@ constexpr int kCrashSignals[] = {
 #if defined(SIGEMT)
     SIGEMT,
 #endif  // defined(SIGEMT)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     SIGXCPU,
     SIGXFSZ,
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 };
 
 // These are the non-core-generating but terminating signals.
@@ -86,9 +86,9 @@ constexpr int kTerminateSignals[] = {
     SIGXCPU,
     SIGXFSZ,
 #endif  // defined(OS_APPLE)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     SIGIO,
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 };
 
 bool InstallHandlers(const std::vector<int>& signals,
@@ -189,22 +189,25 @@ bool Signals::WillSignalReraiseAutonomously(const siginfo_t* siginfo) {
   // pointer), will not reoccur on their own when returning from the signal
   // handler.
   //
-  // Unfortunately, on macOS, when SIGBUS is received asynchronously via kill(),
-  // siginfo->si_code makes it appear as though it was actually received via a
-  // hardware fault. See 10.12.3 xnu-3789.41.3/bsd/dev/i386/unix_signal.c
-  // sendsig(). Asynchronous SIGBUS will not re-raise itself autonomously, but
-  // this function (acting on information from the kernel) behaves as though it
-  // will. This isn’t ideal, but asynchronous SIGBUS is an unexpected condition.
-  // The alternative, to never treat SIGBUS as autonomously re-raising, is a bad
-  // idea because the explicit re-raise would lose properties associated with
-  // the the original signal, which are valuable for debugging and are visible
-  // to a Mach exception handler. Since SIGBUS is normally received
-  // synchronously in response to a hardware fault, don’t sweat the unexpected
-  // asynchronous case.
+  // Unfortunately, on macOS, when SIGBUS (on all CPUs) and SIGILL and SIGSEGV
+  // (on arm64) is received asynchronously via kill(), siginfo->si_code makes it
+  // appear as though it was actually received via a hardware fault. See 10.15.6
+  // xnu-6153.141.1/bsd/dev/i386/unix_signal.c sendsig() and 10.15.6
+  // xnu-6153.141.1/bsd/dev/arm/unix_signal.c sendsig(). Received
+  // asynchronously, these signals will not re-raise themselves autonomously,
+  // but this function (acting on information from the kernel) behaves as though
+  // they will. This isn’t ideal, but these signals occurring asynchronously is
+  // an unexpected condition. The alternative, to never treat these signals as
+  // autonomously re-raising, is a bad idea because the explicit re-raise would
+  // lose properties associated with the the original signal, which are valuable
+  // for debugging and are visible to a Mach exception handler. Since these
+  // signals are normally received synchronously in response to a hardware
+  // fault, don’t sweat the unexpected asynchronous case.
   //
-  // SIGSEGV on macOS originating from a general protection fault is a more
-  // difficult case: si_code is cleared, making the signal appear asynchronous.
-  // See 10.12.3 xnu-3789.41.3/bsd/dev/i386/unix_signal.c sendsig().
+  // SIGSEGV on macOS on x86[_64] originating from a general protection fault is
+  // a more difficult case: si_code is cleared, making the signal appear
+  // asynchronous. See 10.15.6 xnu-6153.141.1/bsd/dev/i386/unix_signal.c
+  // sendsig().
   const int sig = siginfo->si_signo;
   const int code = siginfo->si_code;
 

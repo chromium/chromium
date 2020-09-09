@@ -19,7 +19,7 @@
 
 #if defined(OS_FUCHSIA)
 #include <lib/zx/process.h>
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include <sys/types.h>
 #elif defined(OS_WIN)
 #include <windows.h>
@@ -32,7 +32,8 @@ namespace test {
 
 #if defined(OS_FUCHSIA)
 using ProcessType = zx::unowned_process;
-#elif defined(OS_LINUX) || defined(OS_ANDROID) || DOXYGEN
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    DOXYGEN
 //! \brief Alias for platform-specific type to represent a process.
 using ProcessType = pid_t;
 #elif defined(OS_WIN)

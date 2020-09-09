@@ -175,7 +175,14 @@ bool ProcessInfo::Arguments(std::vector<std::string>* argv) const {
       return false;
     }
 
-    args_size = args_size_estimate + 1;
+    // TODO(https://crashpad.chromium.org/bug/355): This was increased from + 1
+    // to + 32 to work around a new bug in macOS 11.0db6 20A5364e that has
+    // broken {CTL_KERN, KERN_PROCARGS2} such that it will not work properly
+    // unless provided with a buffer at least 17 bytes larger than indicated in
+    // args_size_estimate. If this bug is fixed prior to the 11.0 release,
+    // remove the workaround and go back to + 1. (A positive offset is needed
+    // for the reasons described above.)
+    args_size = args_size_estimate + 32;
     args.resize(args_size);
     rv = sysctl(mib, base::size(mib), &args[0], &args_size, nullptr, 0);
     if (rv != 0) {

@@ -60,7 +60,7 @@
 #include "handler/linux/cros_crash_report_exception_handler.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include <unistd.h>
 
 #include "handler/linux/crash_report_exception_handler.h"
@@ -86,9 +86,6 @@
 #include "util/win/handle.h"
 #include "util/win/initial_client_data.h"
 #include "util/win/session_end_watcher.h"
-#elif defined(OS_LINUX)
-#include "handler/linux/crash_report_exception_handler.h"
-#include "handler/linux/exception_handler_server.h"
 #endif  // OS_APPLE
 
 namespace crashpad {
@@ -125,9 +122,9 @@ void Usage(const base::FilePath& me) {
 "                            Address_debug_critical_section\n"
 "                              use precreated data to register initial client\n"
 #endif  // OS_WIN
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 "      --initial-client-fd=FD  a socket connected to a client.\n"
-#endif  // OS_ANDROID || OS_LINUX
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 #if defined(OS_APPLE)
 "      --mach-service=SERVICE  register SERVICE with the bootstrap server\n"
 #endif  // OS_APPLE
@@ -154,7 +151,7 @@ void Usage(const base::FilePath& me) {
 "      --reset-own-crash-exception-port-to-system-default\n"
 "                              reset the server's exception handler to default\n"
 #endif  // OS_APPLE
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 "      --sanitization-information=SANITIZATION_INFORMATION_ADDRESS\n"
 "                              the address of a SanitizationInformation struct.\n"
 "      --shared-client-connection the file descriptor provided by\n"
@@ -162,7 +159,7 @@ void Usage(const base::FilePath& me) {
 "                              clients\n"
 "      --trace-parent-with-exception=EXCEPTION_INFORMATION_ADDRESS\n"
 "                              request a dump for the handler's parent process\n"
-#endif  // OS_LINUX || OS_ANDROID
+#endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
 "      --url=URL               send crash reports to this Breakpad server URL,\n"
 "                              only if uploads are enabled for the database\n"
 #if defined(OS_CHROMEOS)
@@ -197,7 +194,7 @@ struct Options {
   std::string mach_service;
   int handshake_fd;
   bool reset_own_crash_exception_port_to_system_default;
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   VMAddress exception_information_address;
   VMAddress sanitization_information_address;
   int initial_client_fd;
@@ -280,7 +277,8 @@ class CallMetricsRecordNormalExit {
   DISALLOW_COPY_AND_ASSIGN(CallMetricsRecordNormalExit);
 };
 
-#if defined(OS_APPLE) || defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_APPLE) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+  defined(OS_ANDROID)
 
 void HandleCrashSignal(int sig, siginfo_t* siginfo, void* context) {
   MetricsRecordExit(Metrics::LifetimeMilestone::kCrashed);
@@ -539,9 +537,9 @@ int HandlerMain(int argc,
 #if defined(OS_WIN)
     kOptionInitialClientData,
 #endif  // OS_WIN
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
     kOptionInitialClientFD,
-#endif  // OS_ANDROID || OS_LINUX
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 #if defined(OS_APPLE)
     kOptionMachService,
 #endif  // OS_APPLE
@@ -562,7 +560,7 @@ int HandlerMain(int argc,
 #if defined(OS_APPLE)
     kOptionResetOwnCrashExceptionPortToSystemDefault,
 #endif  // OS_APPLE
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     kOptionSanitizationInformation,
     kOptionSharedClientConnection,
     kOptionTraceParentWithException,
@@ -597,9 +595,9 @@ int HandlerMain(int argc,
      nullptr,
      kOptionInitialClientData},
 #endif  // OS_APPLE
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
     {"initial-client-fd", required_argument, nullptr, kOptionInitialClientFD},
-#endif  // OS_ANDROID || OS_LINUX
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 #if defined(OS_APPLE)
     {"mach-service", required_argument, nullptr, kOptionMachService},
 #endif  // OS_APPLE
@@ -635,7 +633,7 @@ int HandlerMain(int argc,
      nullptr,
      kOptionResetOwnCrashExceptionPortToSystemDefault},
 #endif  // OS_APPLE
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     {"sanitization-information",
      required_argument,
      nullptr,
@@ -648,7 +646,7 @@ int HandlerMain(int argc,
      required_argument,
      nullptr,
      kOptionTraceParentWithException},
-#endif  // OS_LINUX || OS_ANDROID
+#endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
     {"url", required_argument, nullptr, kOptionURL},
 #if defined(OS_CHROMEOS)
     {"use-cros-crash-reporter",
@@ -677,7 +675,7 @@ int HandlerMain(int argc,
   options.handshake_fd = -1;
 #endif
   options.identify_client_via_url = true;
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   options.initial_client_fd = kInvalidFileHandle;
 #endif
   options.periodic_tasks = true;
@@ -733,7 +731,7 @@ int HandlerMain(int argc,
         break;
       }
 #endif  // OS_WIN
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
       case kOptionInitialClientFD: {
         if (!base::StringToInt(optarg, &options.initial_client_fd)) {
           ToolSupport::UsageHint(me, "failed to parse --initial-client-fd");
@@ -741,7 +739,7 @@ int HandlerMain(int argc,
         }
         break;
       }
-#endif  // OS_ANDROID || OS_LINUX
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
       case kOptionMetrics: {
         options.metrics_dir = base::FilePath(
             ToolSupport::CommandLineArgumentToFilePathStringType(optarg));
@@ -797,7 +795,7 @@ int HandlerMain(int argc,
         break;
       }
 #endif  // OS_APPLE
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
       case kOptionSanitizationInformation: {
         if (!StringToNumber(optarg,
                             &options.sanitization_information_address)) {
@@ -819,7 +817,7 @@ int HandlerMain(int argc,
         }
         break;
       }
-#endif  // OS_LINUX || OS_ANDROID
+#endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
       case kOptionURL: {
         options.url = optarg;
         break;
@@ -885,7 +883,7 @@ int HandlerMain(int argc,
         me, "--initial-client-data and --pipe-name are incompatible");
     return ExitFailure();
   }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   if (!options.exception_information_address &&
       options.initial_client_fd == kInvalidFileHandle) {
     ToolSupport::UsageHint(
@@ -978,7 +976,7 @@ int HandlerMain(int argc,
     upload_thread.Get()->Start();
   }
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   std::unique_ptr<ExceptionHandlerServer::Delegate> exception_handler;
 #else
   std::unique_ptr<CrashReportExceptionHandler> exception_handler;
@@ -1029,7 +1027,7 @@ int HandlerMain(int argc,
       user_stream_sources);
 #endif  // OS_CHROMEOS
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   if (options.exception_information_address) {
     ExceptionHandlerProtocol::ClientInformation info;
     info.exception_information_address = options.exception_information_address;
@@ -1039,7 +1037,7 @@ int HandlerMain(int argc,
                ? EXIT_SUCCESS
                : ExitFailure();
   }
-#endif  // OS_LINUX || OS_ANDROID
+#endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
 
   ScopedStoppable prune_thread;
   if (options.periodic_tasks) {
@@ -1101,7 +1099,7 @@ int HandlerMain(int argc,
   if (!options.pipe_name.empty()) {
     exception_handler_server.SetPipeName(base::UTF8ToUTF16(options.pipe_name));
   }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   ExceptionHandlerServer exception_handler_server;
 #endif  // OS_APPLE
 
@@ -1123,7 +1121,7 @@ int HandlerMain(int argc,
     exception_handler_server.InitializeWithInheritedDataForInitialClient(
         options.initial_client_data, exception_handler.get());
   }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   if (options.initial_client_fd == kInvalidFileHandle ||
       !exception_handler_server.InitializeWithClient(
           ScopedFileHandle(options.initial_client_fd),

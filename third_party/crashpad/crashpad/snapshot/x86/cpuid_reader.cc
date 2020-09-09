@@ -16,13 +16,14 @@
 
 #include <stddef.h>
 
-#include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 
 #if defined(OS_WIN)
 #include <immintrin.h>
 #include <intrin.h>
 #endif  // OS_WIN
+
+#if defined(ARCH_CPU_X86_FAMILY)
 
 namespace crashpad {
 namespace internal {
@@ -132,3 +133,5 @@ void CpuidReader::Cpuid(uint32_t cpuinfo[4], uint32_t leaf) const {
 
 }  // namespace internal
 }  // namespace crashpad
+
+#endif  // ARCH_CPU_X86_FAMILY

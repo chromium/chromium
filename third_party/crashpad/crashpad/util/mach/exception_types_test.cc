@@ -269,7 +269,7 @@ TEST(ExceptionTypes, IsExceptionNonfatalResource) {
       EXC_RESOURCE_ENCODE_TYPE_FLAVOR(RESOURCE_TYPE_CPU, FLAVOR_CPU_MONITOR);
   EXPECT_TRUE(IsExceptionNonfatalResource(EXC_RESOURCE, code, pid));
 
-  if (MacOSXMinorVersion() >= 10) {
+  if (MacOSVersionNumber() >= 10'10'00) {
     // FLAVOR_CPU_MONITOR_FATAL was introduced in OS X 10.10.
     code = EXC_RESOURCE_ENCODE_TYPE_FLAVOR(RESOURCE_TYPE_CPU,
                                            FLAVOR_CPU_MONITOR_FATAL);

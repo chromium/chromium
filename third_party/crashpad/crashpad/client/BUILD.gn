@@ -116,6 +116,7 @@ static_library("client") {
     deps += [ "../third_party/fuchsia" ]
     if (crashpad_is_in_fuchsia) {
       deps += [ "//sdk/lib/fdio" ]
+      configs += [ "//build/config:Wno-conversion" ]
     }
   }
 }

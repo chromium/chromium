@@ -22,7 +22,7 @@
 #include <mach/mach.h>
 #elif defined(OS_WIN)
 #include "util/win/address_types.h"
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "util/linux/address_types.h"
 #elif defined(OS_FUCHSIA)
 #include <zircon/types.h>
@@ -130,7 +130,7 @@ std::string CheckedAddressRangeGeneric<ValueType, SizeType>::AsString() const {
 template class CheckedAddressRangeGeneric<mach_vm_address_t, mach_vm_size_t>;
 #elif defined(OS_WIN)
 template class CheckedAddressRangeGeneric<WinVMAddress, WinVMSize>;
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 template class CheckedAddressRangeGeneric<LinuxVMAddress, LinuxVMSize>;
 #elif defined(OS_FUCHSIA)
 template class CheckedAddressRangeGeneric<zx_vaddr_t, size_t>;

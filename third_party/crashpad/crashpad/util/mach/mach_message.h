@@ -183,7 +183,7 @@ const mach_msg_trailer_t* MachMessageTrailerFromHeader(
 bool MachMessageDestroyReceivedPort(mach_port_t port,
                                     mach_msg_type_name_t port_right_type);
 
-#if !defined(OS_IOS) || DOXYGEN
+#if defined(OS_MAC) || DOXYGEN
 
 //! \brief Returns the process ID of a Mach message’s sender from its audit
 //!     trailer.
@@ -201,7 +201,7 @@ bool MachMessageDestroyReceivedPort(mach_port_t port,
 //!     audit information.
 pid_t AuditPIDFromMachMessageTrailer(const mach_msg_trailer_t* trailer);
 
-#endif  // !OS_IOS
+#endif  // OS_MAC
 
 }  // namespace crashpad
 

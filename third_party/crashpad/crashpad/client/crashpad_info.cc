@@ -94,7 +94,8 @@ extern "C" int* CRASHPAD_NOTE_REFERENCE;
 
 // static
 CrashpadInfo* CrashpadInfo::GetCrashpadInfo() {
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    defined(OS_FUCHSIA)
   // This otherwise-unused reference is used so that any module that
   // references GetCrashpadInfo() will also include the note in the
   // .note.crashpad.info section. That note in turn contains the address of
