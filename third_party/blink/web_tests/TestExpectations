@@ -4649,7 +4649,6 @@ crbug.com/722212 fast/events/pointerevents/mouse-pointer-event-properties.html [
 crbug.com/722943 [ Win ] media/audio-repaint.html [ Crash ]
 
 # Sheriff failures 2018-08-15
-crbug.com/874567 [ Mac ] svg/custom/getscreenctm-in-scrollable-div-area-nested.xhtml [ Pass Failure ]
 crbug.com/874837 [ Win ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Pass Failure ]
 crbug.com/874931 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/mousewheel-scroll.html [ Pass Failure Crash ]
 crbug.com/875003 [ Win ] editing/caret/caret-is-hidden-when-no-focus.html [ Pass Failure ]
