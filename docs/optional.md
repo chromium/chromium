@@ -6,8 +6,8 @@
 
 ## History
 
-[base::Optional<T>](https://code.google.com/p/chromium/codesearch#chromium/src/base/optional.h)
-is an implementation of [std::optional<T>](http://en.cppreference.com/w/cpp/utility/optional),
+[base::Optional<T>](https://source.chromium.org/chromium/chromium/src/+/HEAD:base/optional.h)
+is an implementation of [std::optional<T>](https://en.cppreference.com/w/cpp/utility/optional),
 initially a C++ experimental feature and now part of the C++17 standard. The
 Chromium's implementation is as close as possible to the specification. The
 differences are listed at the beginning of the header. The most important
@@ -17,8 +17,8 @@ instead of `std::`. Also, following Chromium coding style, the class is named
 
 ## API description
 
-For a deep API description, please have a look at [std::optional<T>](http://en.cppreference.com/w/cpp/utility/optional)
-or the [Chromium implementation](https://code.google.com/p/chromium/codesearch#chromium/src/base/optional.h).
+For a deep API description, please have a look at [std::optional<T>](https://en.cppreference.com/w/cpp/utility/optional)
+or the [Chromium implementation](https://source.chromium.org/chromium/chromium/src/+/HEAD:base/optional.h).
 
 When initialized without a value, `base::Optional<T>` will be empty. When empty,
 the `operator bool` will return `false` and `value()` should not be called. An
@@ -110,7 +110,7 @@ It is recommended to not use `base::Optional<T>` as a function parameter as it
 will force the callers to use `base::Optional<T>`. Instead, it is recommended to
 keep using `T*` for arguments that can be omitted, with `nullptr` representing
 no value. A helper, `base::OptionalOrNullptr`, is available in
-[stl_util.h](https://code.google.com/p/chromium/codesearch#chromium/src/base/stl_util.h)
+[stl_util.h](https://source.chromium.org/chromium/chromium/src/+/HEAD:base/stl_util.h)
 and can make it easier to convert `base::Optional<T>` to `T*`.
 
 Furthermore, depending on `T`, MSVC might fail to compile code using

@@ -78,7 +78,7 @@ overview of this documentation and links back to various portions.
 [isolated-testing-infra]: https://www.chromium.org/developers/testing/isolated-testing/infrastructure
 [chromium.gpu]: https://ci.chromium.org/p/chromium/g/chromium.gpu/console
 [chromium.gpu.fyi]: https://ci.chromium.org/p/chromium/g/chromium.gpu.fyi/console
-[tools/build workspace]: https://code.google.com/p/chromium/codesearch#chromium/build/scripts/slave/recipe_modules/chromium_tests/chromium_gpu_fyi.py
+[tools/build workspace]: https://source.chromium.org/chromium/chromium/tools/build/+/HEAD:recipes/recipe_modules/chromium_tests/builders/chromium_gpu_fyi.py
 [bots-presentation]: https://docs.google.com/presentation/d/1BC6T7pndSqPFnituR7ceG7fMY7WaGqYHhx5i9ECa8EI/edit?usp=sharing
 
 ## Fleet Status
