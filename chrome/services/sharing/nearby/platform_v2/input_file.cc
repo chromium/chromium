@@ -30,12 +30,13 @@ ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {
   if (!file_.IsValid())
     return Exception::kIo;
 
-  ByteArray bytes(size);
-  int bytes_read = file_.ReadAtCurrentPos(bytes.data(), bytes.size());
-  if (bytes_read != size)
+  char buf[size];
+  int num_bytes_read = file_.ReadAtCurrentPos(buf, size);
+
+  if (num_bytes_read < 0 || num_bytes_read > GetTotalSize())
     return Exception::kIo;
 
-  return ExceptionOr<ByteArray>(std::move(bytes));
+  return ExceptionOr<ByteArray>(ByteArray(buf, num_bytes_read));
 }
 
 Exception InputFile::Close() {
