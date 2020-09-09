@@ -2579,6 +2579,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded at the same time as &quot;CustomTabs.Visible&quot;, this metric
     should eventually replace that one. This additionally distinguishes between
     Trusted Web Activities, WebAPKs and Webapps.
+
+    As of M87, this histogram is logged on a log start, rather than log end to
+    tag more logs.
   </summary>
 </histogram>
 
@@ -37638,6 +37641,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     differently for these tabs since it will be possible to warm up the browser
     process and prepare resources for specific urls ahead of time via a service
     connection. This histogram can be used to cluster these metric differently.
+
+    As of M87, this histogram is logged on a log start, rather than log end to
+    tag more logs.
   </summary>
 </histogram>
 
