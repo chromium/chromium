@@ -1159,7 +1159,7 @@ try_.chromium_mac_builder(
     goma_jobs = goma.jobs.J150,
     os = os.MAC_10_13,
     main_list_view = settings.main_list_view_name,
-    tryjob = try_.job(),
+    tryjob = try_.job(cancel_stale = False),
 )
 
 try_.chromium_mac_builder(
