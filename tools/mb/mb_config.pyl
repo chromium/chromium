@@ -401,7 +401,8 @@
       'Chromium Win Goma RBE Staging (clobber)': 'release_bot_x86_minimal_symbols',
 
       'Chromium Android ARM 32-bit Goma RBE ToT': 'android_release_bot_minimal_symbols',
-      'Chromium Android ARM 32-bit Goma RBE ToT (ATS)': 'android_release_bot_minimal_symbols_java_goma',
+      # TODO(b/167942918): re-enable java goma?
+      'Chromium Android ARM 32-bit Goma RBE ToT (ATS)': 'android_release_bot_minimal_symbols',
       'Chromium Android ARM 32-bit Goma RBE Staging': 'android_release_bot_minimal_symbols',
 
       'chromeos-amd64-generic-rel-goma-rbe-tot': 'chromeos_amd64-generic',
@@ -1260,12 +1261,6 @@
 
     'android_release_bot_minimal_symbols': [
       'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
-    ],
-
-    # TODO(crbug.com/726475): Remove this when we use goma for javac by default.
-    'android_release_bot_minimal_symbols_java_goma': [
-      'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
-      'use_java_goma',
     ],
 
     'android_release_bot_minimal_symbols_arm64': [
@@ -3078,11 +3073,6 @@
 
     'use_java_coverage': {
       'gn_args': 'use_jacoco_coverage=true',
-    },
-
-    # TODO(crbug.com/726475): Remove this when we use goma for javac by default.
-    'use_java_goma': {
-      'gn_args': 'use_java_goma=true',
     },
 
     'v8_simulate_arm': {
