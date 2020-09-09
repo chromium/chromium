@@ -171,7 +171,9 @@ bool VulkanSurface::Initialize(VulkanDeviceQueue* device_queue,
   }
 
   constexpr auto kRequiredUsageFlags =
-      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  constexpr auto kOptionalUsageFlags =
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
   if ((surface_caps.supportedUsageFlags & kRequiredUsageFlags) !=
       kRequiredUsageFlags) {
     DLOG(ERROR) << "Vulkan surface doesn't support necessary usage. "
@@ -179,7 +181,8 @@ bool VulkanSurface::Initialize(VulkanDeviceQueue* device_queue,
                 << std::hex << surface_caps.supportedUsageFlags;
   }
 
-  image_usage_flags_ = surface_caps.supportedUsageFlags;
+  image_usage_flags_ = (kRequiredUsageFlags | kOptionalUsageFlags) &
+                       surface_caps.supportedUsageFlags;
 
   return true;
 }
