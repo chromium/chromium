@@ -93,6 +93,12 @@ class MinimumVersionPolicyHandlerTest
   base::Value CreatePolicyValue(base::Value requirements,
                                 bool unmanaged_user_restricted);
 
+  base::Value CreateSingleRequirementPolicyValue(
+      const std::string& version,
+      int warning,
+      int eol_warning,
+      bool unmanaged_user_restricted);
+
   void VerifyUpdateRequiredNotification(const base::string16& expected_title,
                                         const base::string16& expected_message);
 
@@ -237,6 +243,17 @@ base::Value MinimumVersionPolicyHandlerTest::CreatePolicyValue(
   return dict;
 }
 
+base::Value MinimumVersionPolicyHandlerTest::CreateSingleRequirementPolicyValue(
+    const std::string& version,
+    int warning,
+    int eol_warning,
+    bool unmanaged_user_restricted) {
+  base::Value requirement_list(base::Value::Type::LIST);
+  requirement_list.Append(CreateRequirement(version, warning, eol_warning));
+  return CreatePolicyValue(std::move(requirement_list),
+                           unmanaged_user_restricted);
+}
+
 void MinimumVersionPolicyHandlerTest::VerifyUpdateRequiredNotification(
     const base::string16& expected_title,
     const base::string16& expected_message) {
@@ -313,20 +330,12 @@ TEST_F(MinimumVersionPolicyHandlerTest, CriticalUpdates) {
       .Times(1)
       .WillOnce(testing::Return(false));
 
-  // Create policy value as a list of requirements.
-  base::Value requirement_list(base::Value::Type::LIST);
-  base::Value new_version_no_warning =
-      CreateRequirement(kNewVersion, kNoWarning, kLongWarning);
-  base::Value newer_version_long_warning =
-      CreateRequirement(kNewerVersion, kLongWarning, kNoWarning);
-  requirement_list.Append(std::move(new_version_no_warning));
-  requirement_list.Append(std::move(newer_version_long_warning));
-
   // Set new value for pref and check that requirements are not satisfied.
   // As the warning time is set to zero, the user should be logged out of the
   // session.
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kNoWarning, kLongWarning,
+      false /* unmanaged_user_restricted */));
   // Start the run loop to wait for EOL status fetch.
   run_loop.Run();
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
@@ -356,16 +365,11 @@ TEST_F(MinimumVersionPolicyHandlerTest, CriticalUpdatesUnmanagedUser) {
   // Set user as unmanaged.
   SetUserManaged(false);
 
-  // Create policy value as a list of requirements.
-  base::Value requirement_list(base::Value::Type::LIST);
-  base::Value new_version_no_warning =
-      CreateRequirement(kNewVersion, kNoWarning, kLongWarning);
-  requirement_list.Append(std::move(new_version_no_warning));
-
   // Set new value for pref and check that requirements are not satisfied.
   // Unmanaged user should not be logged out of the session.
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kNoWarning, kLongWarning,
+      false /* unmanaged_user_restricted */));
   // Start the run loop to wait for EOL status fetch.
   run_loop.Run();
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
@@ -409,12 +413,9 @@ TEST_F(MinimumVersionPolicyHandlerTest, DeadlineTimerExpired) {
 
   // Create and set pref value to invoke policy handler such that update is
   // required with a long warning time.
-  base::Value requirement_list(base::Value::Type::LIST);
-  requirement_list.Append(
-      CreateRequirement(kNewVersion, kLongWarning, kLongWarning));
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
-
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kLongWarning, kLongWarning,
+      false /* unmanaged_user_restricted */));
   run_loop.Run();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
@@ -448,12 +449,9 @@ TEST_F(MinimumVersionPolicyHandlerTest, NoNetworkNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
-  base::Value requirement_list(base::Value::Type::LIST);
-  requirement_list.Append(
-      CreateRequirement(kNewVersion, kLongWarning, kLongWarning));
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
-
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kLongWarning, kLongWarning,
+      false /* unmanaged_user_restricted */));
   run_loop.Run();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
@@ -470,7 +468,6 @@ TEST_F(MinimumVersionPolicyHandlerTest, NoNetworkNotifications) {
   // Expire the notification timer to show new notification on the last day.
   const base::TimeDelta warning = base::TimeDelta::FromDays(kLongWarning - 1);
   task_environment.FastForwardBy(warning);
-
   base::string16 expected_title_last_day =
       base::ASCIIToUTF16("Last day to update Chrome device");
   base::string16 expected_message_last_day = base::ASCIIToUTF16(
@@ -499,11 +496,9 @@ TEST_F(MinimumVersionPolicyHandlerTest, MeteredNetworkNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
-  base::Value requirement_list(base::Value::Type::LIST);
-  requirement_list.Append(
-      CreateRequirement(kNewVersion, kLongWarning, kLongWarning));
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kLongWarning, kLongWarning,
+      false /* unmanaged_user_restricted */));
   run_loop.Run();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
@@ -520,7 +515,6 @@ TEST_F(MinimumVersionPolicyHandlerTest, MeteredNetworkNotifications) {
   // Expire the notification timer to show new notification on the last day.
   const base::TimeDelta warning = base::TimeDelta::FromDays(kLongWarning - 1);
   task_environment.FastForwardBy(warning);
-
   base::string16 expected_title_last_day =
       base::ASCIIToUTF16("Last day to update Chrome device");
   base::string16 expected_message_last_day = base::ASCIIToUTF16(
@@ -541,11 +535,9 @@ TEST_F(MinimumVersionPolicyHandlerTest, EolNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
-  base::Value requirement_list(base::Value::Type::LIST);
-  requirement_list.Append(
-      CreateRequirement(kNewVersion, kLongWarning, kLongWarning));
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kLongWarning, kLongWarning,
+      false /* unmanaged_user_restricted */));
   run_loop.Run();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
@@ -561,7 +553,6 @@ TEST_F(MinimumVersionPolicyHandlerTest, EolNotifications) {
   // Expire notification timer to show new notification a week before deadline.
   const base::TimeDelta warning = base::TimeDelta::FromDays(kLongWarning - 7);
   task_environment.FastForwardBy(warning);
-
   base::string16 expected_title_one_week =
       base::ASCIIToUTF16("Return Chrome device within 1 week");
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
@@ -569,7 +560,6 @@ TEST_F(MinimumVersionPolicyHandlerTest, EolNotifications) {
   // Expire the notification timer to show new notification on the last day.
   const base::TimeDelta warning_last_day = base::TimeDelta::FromDays(6);
   task_environment.FastForwardBy(warning_last_day);
-
   base::string16 expected_title_last_day =
       base::ASCIIToUTF16("Immediate return required");
   base::string16 expected_message_last_day = base::ASCIIToUTF16(
@@ -600,11 +590,9 @@ TEST_F(MinimumVersionPolicyHandlerTest, LastHourEolNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
-  base::Value requirement_list(base::Value::Type::LIST);
-  requirement_list.Append(
-      CreateRequirement(kNewVersion, kShortWarning, kShortWarning));
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kShortWarning, kShortWarning,
+      false /* unmanaged_user_restricted */));
   run_loop.Run();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
@@ -631,11 +619,9 @@ TEST_F(MinimumVersionPolicyHandlerTest, ChromeboxNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
-  base::Value requirement_list(base::Value::Type::LIST);
-  requirement_list.Append(
-      CreateRequirement(kNewVersion, kLongWarning, kLongWarning));
-  SetPolicyPref(CreatePolicyValue(std::move(requirement_list),
-                                  false /* unmanaged_user_restricted */));
+  SetPolicyPref(CreateSingleRequirementPolicyValue(
+      kNewVersion, kLongWarning, kLongWarning,
+      false /* unmanaged_user_restricted */));
   run_loop.Run();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
@@ -652,7 +638,6 @@ TEST_F(MinimumVersionPolicyHandlerTest, ChromeboxNotifications) {
   // Expire notification timer to show new notification a week before deadline.
   const base::TimeDelta warning = base::TimeDelta::FromDays(kLongWarning - 7);
   task_environment.FastForwardBy(warning);
-
   base::string16 expected_title_one_week =
       base::ASCIIToUTF16("Return Chromebox within 1 week");
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
