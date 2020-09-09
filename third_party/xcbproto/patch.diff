@@ -1,6 +1,71 @@
+diff -ru xcbproto/src/glx.xml src/src/glx.xml
+--- xcbproto/src/glx.xml	2020-09-04 10:01:19.893846873 -0700
++++ src/src/glx.xml	2020-09-04 10:00:42.997648219 -0700
+@@ -214,27 +214,27 @@
+ 
+ 	<!-- Enum for CopyContext: mask -->
+ 	<enum name="GC">
+-		<item name="GL_CURRENT_BIT"><bit>0</bit></item>
+-		<item name="GL_POINT_BIT"><bit>1</bit></item>
+-		<item name="GL_LINE_BIT"><bit>2</bit></item>
+-		<item name="GL_POLYGON_BIT"><bit>3</bit></item>
+-		<item name="GL_POLYGON_STIPPLE_BIT"><bit>4</bit></item>
+-		<item name="GL_PIXEL_MODE_BIT"><bit>5</bit></item>
+-		<item name="GL_LIGHTING_BIT"><bit>6</bit></item>
+-		<item name="GL_FOG_BIT"><bit>7</bit></item>
+-		<item name="GL_DEPTH_BUFFER_BIT"><bit>8</bit></item>
+-		<item name="GL_ACCUM_BUFFER_BIT"><bit>9</bit></item>
+-		<item name="GL_STENCIL_BUFFER_BIT"><bit>10</bit></item>
+-		<item name="GL_VIEWPORT_BIT"><bit>11</bit></item>
+-		<item name="GL_TRANSFORM_BIT"><bit>12</bit></item>
+-		<item name="GL_ENABLE_BIT"><bit>13</bit></item>
+-		<item name="GL_COLOR_BUFFER_BIT"><bit>14</bit></item>
+-		<item name="GL_HINT_BIT"><bit>15</bit></item>
+-		<item name="GL_EVAL_BIT"><bit>16</bit></item>
+-		<item name="GL_LIST_BIT"><bit>17</bit></item>
+-		<item name="GL_TEXTURE_BIT"><bit>18</bit></item>
+-		<item name="GL_SCISSOR_BIT"><bit>19</bit></item>
+-		<item name="GL_ALL_ATTRIB_BITS"><value>16777215<!--0x000ffffff--></value></item>
++		<item name="XPROTO_GL_CURRENT_BIT"><bit>0</bit></item>
++		<item name="XPROTO_GL_POINT_BIT"><bit>1</bit></item>
++		<item name="XPROTO_GL_LINE_BIT"><bit>2</bit></item>
++		<item name="XPROTO_GL_POLYGON_BIT"><bit>3</bit></item>
++		<item name="XPROTO_GL_POLYGON_STIPPLE_BIT"><bit>4</bit></item>
++		<item name="XPROTO_GL_PIXEL_MODE_BIT"><bit>5</bit></item>
++		<item name="XPROTO_GL_LIGHTING_BIT"><bit>6</bit></item>
++		<item name="XPROTO_GL_FOG_BIT"><bit>7</bit></item>
++		<item name="XPROTO_GL_DEPTH_BUFFER_BIT"><bit>8</bit></item>
++		<item name="XPROTO_GL_ACCUM_BUFFER_BIT"><bit>9</bit></item>
++		<item name="XPROTO_GL_STENCIL_BUFFER_BIT"><bit>10</bit></item>
++		<item name="XPROTO_GL_VIEWPORT_BIT"><bit>11</bit></item>
++		<item name="XPROTO_GL_TRANSFORM_BIT"><bit>12</bit></item>
++		<item name="XPROTO_GL_ENABLE_BIT"><bit>13</bit></item>
++		<item name="XPROTO_GL_COLOR_BUFFER_BIT"><bit>14</bit></item>
++		<item name="XPROTO_GL_HINT_BIT"><bit>15</bit></item>
++		<item name="XPROTO_GL_EVAL_BIT"><bit>16</bit></item>
++		<item name="XPROTO_GL_LIST_BIT"><bit>17</bit></item>
++		<item name="XPROTO_GL_TEXTURE_BIT"><bit>18</bit></item>
++		<item name="XPROTO_GL_SCISSOR_BIT"><bit>19</bit></item>
++		<item name="XPROTO_GL_ALL_ATTRIB_BITS"><value>16777215<!--0x000ffffff--></value></item>
+ 	</enum>
+ 
+ 	<request name="SwapBuffers" opcode="11">
+@@ -594,9 +594,9 @@
+ 	</request>
+ 
+ 	<enum name="RM">
+-		<item name="GL_RENDER"><value>7168</value></item>
+-		<item name="GL_FEEDBACK"><value>7169</value></item>
+-		<item name="GL_SELECT"><value>7170</value></item>
++		<item name="XPROTO_GL_RENDER"><value>7168</value></item>
++		<item name="XPROTO_GL_FEEDBACK"><value>7169</value></item>
++		<item name="XPROTO_GL_SELECT"><value>7170</value></item>
+ 	</enum>
+ 
+ 	<request name="Finish" opcode="108">
 diff -ru xcbproto/src/randr.xml src/src/randr.xml
---- xcbproto/src/randr.xml	2020-08-13 11:56:17.249075684 -0700
-+++ src/src/randr.xml	2020-08-03 10:33:29.428868544 -0700
+--- xcbproto/src/randr.xml	2020-09-04 10:01:19.893846873 -0700
++++ src/src/randr.xml	2020-07-07 18:37:12.793121218 -0700
 @@ -803,64 +803,6 @@
  		<item name="Lease">           <value>6</value></item>
  	</enum>
@@ -174,8 +239,8 @@ diff -ru xcbproto/src/randr.xml src/src/randr.xml
  	</event>
  </xcb>
 diff -ru xcbproto/src/shm.xml src/src/shm.xml
---- xcbproto/src/shm.xml	2020-08-13 11:56:17.253075706 -0700
-+++ src/src/shm.xml	2020-08-13 11:54:58.612654139 -0700
+--- xcbproto/src/shm.xml	2020-09-04 10:01:19.897846895 -0700
++++ src/src/shm.xml	2020-08-24 11:14:24.865499307 -0700
 @@ -78,7 +78,7 @@
      <field type="INT16" name="dst_x" />
      <field type="INT16" name="dst_y" />
@@ -186,8 +251,8 @@ diff -ru xcbproto/src/shm.xml src/src/shm.xml
      <pad bytes="1" />
      <field type="SEG" name="shmseg" />
 diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
---- xcbproto/src/xinput.xml	2020-08-13 11:56:17.253075706 -0700
-+++ src/src/xinput.xml	2020-08-13 11:15:42.336096659 -0700
+--- xcbproto/src/xinput.xml	2020-09-04 10:01:19.897846895 -0700
++++ src/src/xinput.xml	2020-08-24 11:14:24.865499307 -0700
 @@ -200,7 +200,12 @@
              <list type="STR" name="names">
                  <fieldref>devices_len</fieldref>
@@ -213,8 +278,8 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
          <item name="AllMaster"> <value>1</value> </item>
      </enum>
 diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
---- xcbproto/src/xproto.xml	2020-08-13 11:56:17.253075706 -0700
-+++ src/src/xproto.xml	2020-08-03 10:33:29.428868544 -0700
+--- xcbproto/src/xproto.xml	2020-09-04 10:01:19.897846895 -0700
++++ src/src/xproto.xml	2020-07-30 12:03:48.681938397 -0700
 @@ -4686,7 +4686,7 @@
      <field type="CARD8" name="left_pad" />
      <field type="CARD8" name="depth" />
@@ -233,3 +298,10 @@ diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
          <op op="*">
            <fieldref>length</fieldref>
            <value>4</value>
+Only in src/xcbgen: align.pyc
+Only in src/xcbgen: error.pyc
+Only in src/xcbgen: expr.pyc
+Only in src/xcbgen: __init__.pyc
+Only in src/xcbgen: matcher.pyc
+Only in src/xcbgen: state.pyc
+Only in src/xcbgen: xtypes.pyc

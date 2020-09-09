@@ -5,7 +5,6 @@
 #include "ui/gtk/x/gtk_event_loop_x11.h"
 
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
@@ -14,6 +13,10 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/x11.h"
+
+extern "C" {
+Window gdk_x11_window_get_xid(GdkWindow* window);
+}
 
 namespace ui {
 
@@ -80,8 +83,8 @@ void GtkEventLoopX11::ProcessGdkEventKey(const GdkEventKey& gdk_event_key) {
                                  : x11::KeyEvent::Release;
   if (gdk_event_key.send_event)
     key_event->response_type |= x11::kSendEventMask;
-  key_event->event = GDK_WINDOW_XID(gdk_event_key.window);
-  key_event->root = DefaultRootWindow(display);
+  key_event->event = gdk_x11_window_get_xid(gdk_event_key.window);
+  key_event->root = XDefaultRootWindow(display);
   key_event->time = gdk_event_key.time;
   key_event->detail = gdk_event_key.hardware_keycode;
   key_event->same_screen = true;

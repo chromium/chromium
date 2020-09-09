@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace x11 {
 

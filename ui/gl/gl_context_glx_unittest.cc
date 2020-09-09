@@ -36,7 +36,7 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   swa.background_pixmap = 0;
   swa.override_redirect = x11::True;
   auto xwindow = static_cast<x11::Window>(XCreateWindow(
-      xdisplay, DefaultRootWindow(xdisplay), 0, 0, 10,
+      xdisplay, XDefaultRootWindow(xdisplay), 0, 0, 10,
       10,  // x, y, width, height
       0,   // border width
       static_cast<int>(x11::WindowClass::CopyFromParent),  // depth

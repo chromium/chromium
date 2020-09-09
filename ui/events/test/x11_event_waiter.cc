@@ -5,29 +5,27 @@
 #include "ui/events/test/x11_event_waiter.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
 // static
 XEventWaiter* XEventWaiter::Create(x11::Window window,
                                    base::OnceClosure callback) {
-  Display* display = gfx::GetXDisplay();
-  static XEvent* marker_event = nullptr;
-  if (!marker_event) {
-    marker_event = new XEvent();
-    marker_event->xclient.type = ClientMessage;
-    marker_event->xclient.display = display;
-    marker_event->xclient.window = static_cast<uint32_t>(window);
-    marker_event->xclient.format = 8;
-  }
-  marker_event->xclient.message_type = static_cast<uint32_t>(MarkerEventAtom());
+  auto* connection = x11::Connection::Get();
 
-  XSendEvent(display, static_cast<uint32_t>(window), x11::False, 0,
-             marker_event);
-  XFlush(display);
+  x11::ClientMessageEvent marker_event{
+      .format = 8,
+      .window = window,
+      .type = MarkerEventAtom(),
+  };
+
+  x11::SendEvent(marker_event, window, x11::EventMask::NoEvent);
+  connection->Flush();
 
   // Will be deallocated when the expected event is received.
   return new XEventWaiter(std::move(callback));

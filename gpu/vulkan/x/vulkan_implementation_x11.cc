@@ -18,6 +18,7 @@
 #include "gpu/vulkan/x/vulkan_surface_x11.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 
 namespace gpu {
@@ -141,7 +142,7 @@ bool VulkanImplementationX11::GetPhysicalDevicePresentationSupport(
   XDisplay* display = gfx::GetXDisplay();
   return vkGetPhysicalDeviceXlibPresentationSupportKHR(
       device, queue_family_index, display,
-      XVisualIDFromVisual(DefaultVisual(display, DefaultScreen(display))));
+      XVisualIDFromVisual(XDefaultVisual(display, XDefaultScreen(display))));
 }
 
 std::vector<const char*>

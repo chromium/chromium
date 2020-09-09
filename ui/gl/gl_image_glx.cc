@@ -47,7 +47,7 @@ bool GLImageGLX::Initialize(XID pixmap) {
   int attrs[] = {GLX_FBCONFIG_ID, static_cast<uint32_t>(fbconfig_id), 0};
   int nitems;
   gfx::XScopedPtr<GLXFBConfig> configs(
-      glXChooseFBConfig(display, DefaultScreen(display), attrs, &nitems));
+      glXChooseFBConfig(display, XDefaultScreen(display), attrs, &nitems));
   if (!nitems)
     return false;
 

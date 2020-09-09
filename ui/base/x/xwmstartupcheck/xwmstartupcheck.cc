@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
   connection.MapWindow({dummy_window});
   connection.Flush();
 
-  int display_fd = ConnectionNumber(connection.display());
+  int display_fd = XConnectionNumber(connection.display());
 
   // Set deadline as 30s.
   struct timespec now, deadline;

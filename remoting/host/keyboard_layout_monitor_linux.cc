@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -40,32 +41,31 @@ class GtkThreadDeleter {
 
 // Can be constructed on any thread, but must be started and destroyed on the
 // main GTK+ thread (i.e., the GLib global default main context).
-class GdkLayoutMonitorOnGtkThread {
+class GdkLayoutMonitorOnGtkThread : public x11::Connection::Delegate {
  public:
   GdkLayoutMonitorOnGtkThread(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::WeakPtr<KeyboardLayoutMonitorLinux> weak_ptr);
 
   // Must be called on GTK Thread
-  ~GdkLayoutMonitorOnGtkThread();
+  ~GdkLayoutMonitorOnGtkThread() override;
   void Start();
 
  private:
+  // x11::Connection::Delegate:
+  bool ShouldContinueStream() const override;
+  void DispatchXEvent(x11::Event* event) override;
+
   void QueryLayout();
-  static GdkFilterReturn OnXEventThunk(GdkXEvent* xevent,
-                                       GdkEvent* event,
-                                       gpointer data);
-  GdkFilterReturn OnXEvent(XEvent* xevent, GdkEvent* event);
+  void OnConnectionData();
   CHROMEG_CALLBACK_0(GdkLayoutMonitorOnGtkThread,
                      void,
                      OnKeysChanged,
                      GdkKeymap*);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtr<KeyboardLayoutMonitorLinux> weak_ptr_;
-  // xkb_event_type_ is initialized in Start(). It is only used by OnXEvent,
-  // which is only registered as a callback after xkb_event_type_ has been
-  // initialized.
-  int xkb_event_type_;
+  std::unique_ptr<x11::Connection> connection_;
+  std::unique_ptr<base::FileDescriptorWatcher::Controller> controller_;
   GdkDisplay* display_ = nullptr;
   GdkKeymap* keymap_ = nullptr;
   int current_group_ = 0;
@@ -119,10 +119,8 @@ GdkLayoutMonitorOnGtkThread::GdkLayoutMonitorOnGtkThread(
 
 GdkLayoutMonitorOnGtkThread::~GdkLayoutMonitorOnGtkThread() {
   DCHECK(g_main_context_is_owner(g_main_context_default()));
-  if (handler_id_) {
+  if (handler_id_)
     g_signal_handler_disconnect(keymap_, handler_id_);
-    gdk_window_remove_filter(nullptr, OnXEventThunk, this);
-  }
 }
 
 void GdkLayoutMonitorOnGtkThread::Start() {
@@ -144,16 +142,28 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   // when switching between groups with different writing directions. As a
   // result, we have to use Xkb directly to get and monitor that information,
   // which is a pain.
-  auto* connection = x11::Connection::Get();
-  if (connection->xkb()
-          .UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
+  connection_ = std::make_unique<x11::Connection>();
+  auto& xkb = connection_->xkb();
+  if (xkb.UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
           .Sync()) {
-    xkb_event_type_ = connection->xkb().first_event();
-    auto req = connection->xkb().GetState(
+    auto req = xkb.GetState(
         {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd)});
     if (auto reply = req.Sync()) {
       current_group_ = static_cast<int>(reply->group);
-      gdk_window_add_filter(nullptr, OnXEventThunk, this);
+      constexpr auto kXkbAllStateComponentsMask =
+          static_cast<x11::Xkb::StatePart>(0x3fff);
+      xkb.SelectEvents({
+          .deviceSpec =
+              static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
+          .affectWhich = x11::Xkb::EventType::StateNotify,
+          .affectState = kXkbAllStateComponentsMask,
+          .stateDetails = x11::Xkb::StatePart::GroupState,
+      });
+      connection_->Flush();
+      controller_ = base::FileDescriptorWatcher::WatchReadable(
+          XConnectionNumber(connection_->display()),
+          base::BindRepeating(&GdkLayoutMonitorOnGtkThread::OnConnectionData,
+                              base::Unretained(this)));
     }
   }
 
@@ -161,6 +171,21 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   handler_id_ = g_signal_connect(keymap_, "keys-changed",
                                  G_CALLBACK(OnKeysChangedThunk), this);
   QueryLayout();
+}
+
+bool GdkLayoutMonitorOnGtkThread::ShouldContinueStream() const {
+  return true;
+}
+
+void GdkLayoutMonitorOnGtkThread::DispatchXEvent(x11::Event* event) {
+  if (auto* notify = event->As<x11::Xkb::StateNotifyEvent>()) {
+    int new_group = notify->baseGroup + notify->latchedGroup +
+                    static_cast<int16_t>(notify->lockedGroup);
+    if (new_group != current_group_) {
+      current_group_ = new_group;
+      QueryLayout();
+    }
+  }
 }
 
 void GdkLayoutMonitorOnGtkThread::QueryLayout() {
@@ -272,30 +297,8 @@ void GdkLayoutMonitorOnGtkThread::QueryLayout() {
                                 weak_ptr_, std::move(layout_message)));
 }
 
-// static
-GdkFilterReturn GdkLayoutMonitorOnGtkThread::OnXEventThunk(GdkXEvent* xevent,
-                                                           GdkEvent* event,
-                                                           gpointer data) {
-  // GdkXEvent is documented to be castable to the window-system event type
-  // XEvent in this case.
-  return static_cast<GdkLayoutMonitorOnGtkThread*>(data)->OnXEvent(
-      static_cast<XEvent*>(xevent), event);
-}
-
-GdkFilterReturn GdkLayoutMonitorOnGtkThread::OnXEvent(XEvent* xevent,
-                                                      GdkEvent* event) {
-  if (xevent->type == xkb_event_type_) {
-    XkbEvent* xkb_event = reinterpret_cast<XkbEvent*>(xevent);
-    if (xkb_event->any.xkb_type == XkbStateNotify) {
-      int new_group = XkbStateGroup(&xkb_event->state);
-      if (new_group != current_group_) {
-        current_group_ = new_group;
-        QueryLayout();
-      }
-    }
-  }
-  // GDK also needs to process this event.
-  return GDK_FILTER_CONTINUE;
+void GdkLayoutMonitorOnGtkThread::OnConnectionData() {
+  connection_->Dispatch(this);
 }
 
 void GdkLayoutMonitorOnGtkThread::OnKeysChanged(GdkKeymap* keymap) {

@@ -110,7 +110,7 @@ void TraceGLXApi::SetDisabledExtensions(
 bool GetGLWindowSystemBindingInfoGLX(const GLVersionInfo& gl_info,
                                      GLWindowSystemBindingInfo* info) {
   Display* display = glXGetCurrentDisplay();
-  const int screen = (display ? DefaultScreen(display) : 0);
+  const int screen = (display ? XDefaultScreen(display) : 0);
   const char* vendor = glXQueryServerString(display, screen, GLX_VENDOR);
   const char* version = glXQueryServerString(display, screen, GLX_VERSION);
   const char* extensions = glXQueryExtensionsString(display, screen);

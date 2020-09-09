@@ -11,6 +11,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace gpu {
 
@@ -124,7 +125,7 @@ bool VulkanSurfaceX11::CanDispatchXEvent(const x11::Event* x11_event) {
 void VulkanSurfaceX11::ForwardXExposeEvent(const x11::Event* event) {
   auto forwarded_event = *event->As<x11::ExposeEvent>();
   forwarded_event.window = parent_window_;
-  ui::SendEvent(forwarded_event, parent_window_, x11::EventMask::Exposure);
+  x11::SendEvent(forwarded_event, parent_window_, x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();
 }
 

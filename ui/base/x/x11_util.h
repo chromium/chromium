@@ -195,23 +195,6 @@ void SetProperty(x11::Window window,
   SetArrayProperty(window, name, type, std::vector<T>{value});
 }
 
-template <typename T>
-x11::Future<void> SendEvent(const T& event,
-                            x11::Window target,
-                            x11::EventMask mask) {
-  static_assert(T::type_id > 0, "T must be an x11::*Event type");
-  auto write_buffer = x11::Write(event);
-  DCHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
-  auto& first_buffer = write_buffer.GetBuffers()[0];
-  DCHECK_LE(first_buffer->size(), 32ul);
-  std::vector<uint8_t> event_bytes(32);
-  memcpy(event_bytes.data(), first_buffer->data(), first_buffer->size());
-
-  x11::SendEventRequest send_event{false, target, mask};
-  std::copy(event_bytes.begin(), event_bytes.end(), send_event.event.begin());
-  return x11::Connection::Get()->SendEvent(send_event);
-}
-
 COMPONENT_EXPORT(UI_BASE_X)
 void DeleteProperty(x11::Window window, x11::Atom name);
 

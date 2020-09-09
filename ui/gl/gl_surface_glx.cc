@@ -34,6 +34,7 @@
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xf86vidmode.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
@@ -93,7 +94,7 @@ GLXFBConfig GetConfigForWindow(Display* display,
 
   int num_elements = 0;
   gfx::XScopedPtr<GLXFBConfig> configs(
-      glXGetFBConfigs(display, DefaultScreen(display), &num_elements));
+      glXGetFBConfigs(display, XDefaultScreen(display), &num_elements));
   if (!configs.get()) {
     LOG(ERROR) << "glXGetFBConfigs failed.";
     return nullptr;
@@ -601,7 +602,7 @@ void GLSurfaceGLX::ShutdownOneOff() {
 // static
 std::string GLSurfaceGLX::QueryGLXExtensions() {
   Display* display = gfx::GetXDisplay();
-  const int screen = (display ? DefaultScreen(display) : 0);
+  const int screen = (display ? XDefaultScreen(display) : 0);
   const char* extensions = glXQueryExtensionsString(display, screen);
   if (extensions) {
     return std::string(extensions);
@@ -882,7 +883,7 @@ void NativeViewGLSurfaceGLX::ForwardExposeEvent(x11::Event* event) {
   auto forwarded_event = *event->As<x11::ExposeEvent>();
   auto window = static_cast<x11::Window>(parent_window_);
   forwarded_event.window = window;
-  ui::SendEvent(forwarded_event, window, x11::EventMask::Exposure);
+  x11::SendEvent(forwarded_event, window, x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();
 }
 

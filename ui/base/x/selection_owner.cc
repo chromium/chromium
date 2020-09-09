@@ -15,6 +15,7 @@
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -160,7 +161,7 @@ void SelectionOwner::OnSelectionRequest(const x11::Event& x11_event) {
   }
 
   // Send off the reply.
-  ui::SendEvent(reply, requestor, x11::EventMask::NoEvent);
+  x11::SendEvent(reply, requestor, x11::EventMask::NoEvent);
 }
 
 void SelectionOwner::OnSelectionClear(const x11::Event& event) {

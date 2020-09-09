@@ -20,6 +20,7 @@
 #include "base/single_thread_task_runner.h"
 #include "ui/events/devices/x11/xinput_util.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xinput.h"
 
@@ -161,7 +162,7 @@ void LocalHotkeyInputMonitorX11::Core::StartOnInputThread() {
   // Register OnConnectionData() to be called every time there is
   // something to read from |connection_|.
   controller_ = base::FileDescriptorWatcher::WatchReadable(
-      ConnectionNumber(connection_->display()),
+      XConnectionNumber(connection_->display()),
       base::BindRepeating(&Core::OnConnectionData, base::Unretained(this)));
 
   // Fetch pending events if any.

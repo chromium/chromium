@@ -12,11 +12,12 @@
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace remoting {
 
 XServerClipboard::XServerClipboard()
-    : clipboard_window_(BadValue),
+    : clipboard_window_(x11::None),
       clipboard_atom_(x11::None),
       large_selection_atom_(x11::None),
       selection_string_atom_(x11::None),
@@ -52,7 +53,7 @@ void XServerClipboard::Init(x11::Connection* connection,
 
   clipboard_window_ =
       XCreateSimpleWindow(connection_->display(),
-                          DefaultRootWindow(connection_->display()), 0, 0, 1,
+                          XDefaultRootWindow(connection_->display()), 0, 0, 1,
                           1,  // x, y, width, height
                           0, 0, 0);
 
@@ -88,7 +89,7 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
                                     const std::string& data) {
   DCHECK(connection_->display());
 
-  if (clipboard_window_ == BadValue)
+  if (clipboard_window_ == x11::None)
     return;
 
   // Currently only UTF-8 is supported.
@@ -106,7 +107,7 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
 }
 
 void XServerClipboard::ProcessXEvent(const x11::Event& event) {
-  if (clipboard_window_ == BadValue ||
+  if (clipboard_window_ == x11::None ||
       event.window() != static_cast<x11::Window>(clipboard_window_)) {
     return;
   }
@@ -211,33 +212,34 @@ void XServerClipboard::OnSelectionNotify(
 
 void XServerClipboard::OnSelectionRequest(
     const x11::SelectionRequestEvent& event) {
-  XSelectionEvent selection_event;
-  selection_event.type = SelectionNotify;
-  selection_event.display = connection_->display();
-  selection_event.requestor = static_cast<uint32_t>(event.requestor);
-  selection_event.selection = static_cast<uint32_t>(event.selection);
-  selection_event.time = static_cast<uint32_t>(event.time);
-  selection_event.target = static_cast<uint32_t>(event.target);
+  x11::SelectionNotifyEvent selection_event;
+  selection_event.requestor = event.requestor;
+  selection_event.selection = event.selection;
+  selection_event.time = event.time;
+  selection_event.target = event.target;
   auto property =
       event.property == x11::Atom::None ? event.target : event.property;
-  if (!IsSelectionOwner(selection_event.selection)) {
-    selection_event.property = x11::None;
+  if (!IsSelectionOwner(static_cast<uint32_t>(selection_event.selection))) {
+    selection_event.property = x11::Atom::None;
   } else {
-    selection_event.property = static_cast<uint32_t>(property);
-    if (selection_event.target == targets_atom_) {
-      SendTargetsResponse(selection_event.requestor, selection_event.property);
-    } else if (selection_event.target == timestamp_atom_) {
-      SendTimestampResponse(selection_event.requestor,
-                            selection_event.property);
-    } else if (selection_event.target == utf8_string_atom_ ||
-               selection_event.target ==
-                   static_cast<uint32_t>(x11::Atom::STRING)) {
-      SendStringResponse(selection_event.requestor, selection_event.property,
-                         selection_event.target);
+    selection_event.property = property;
+    if (selection_event.target == static_cast<x11::Atom>(targets_atom_)) {
+      SendTargetsResponse(static_cast<uint32_t>(selection_event.requestor),
+                          static_cast<uint32_t>(selection_event.property));
+    } else if (selection_event.target ==
+               static_cast<x11::Atom>(timestamp_atom_)) {
+      SendTimestampResponse(static_cast<uint32_t>(selection_event.requestor),
+                            static_cast<uint32_t>(selection_event.property));
+    } else if (selection_event.target ==
+                   static_cast<x11::Atom>(utf8_string_atom_) ||
+               selection_event.target == x11::Atom::STRING) {
+      SendStringResponse(static_cast<uint32_t>(selection_event.requestor),
+                         static_cast<uint32_t>(selection_event.property),
+                         static_cast<uint32_t>(selection_event.target));
     }
   }
-  XSendEvent(connection_->display(), selection_event.requestor, x11::False, 0,
-             reinterpret_cast<XEvent*>(&selection_event));
+  x11::SendEvent(selection_event, selection_event.requestor,
+                 x11::EventMask::NoEvent, connection_);
 }
 
 void XServerClipboard::OnSelectionClear(const x11::SelectionClearEvent& event) {

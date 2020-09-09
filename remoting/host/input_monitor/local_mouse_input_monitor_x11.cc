@@ -156,7 +156,7 @@ void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
   // Register OnConnectionData() to be called every time there is
   // something to read from |connection_|.
   controller_ = base::FileDescriptorWatcher::WatchReadable(
-      ConnectionNumber(connection_->display()),
+      XConnectionNumber(connection_->display()),
       base::BindRepeating(&Core::OnConnectionData, base::Unretained(this)));
 
   // Fetch pending events if any.

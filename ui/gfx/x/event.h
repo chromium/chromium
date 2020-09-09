@@ -70,6 +70,10 @@ class COMPONENT_EXPORT(X11) Event {
   uint32_t sequence() const { return sequence_; }
 
   x11::Window window() const { return window_ ? *window_ : x11::Window::None; }
+  void set_window(x11::Window window) {
+    if (window_)
+      *window_ = window;
+  }
 
  private:
   friend void ReadEvent(Event* event,

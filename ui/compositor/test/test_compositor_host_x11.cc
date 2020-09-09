@@ -30,7 +30,7 @@ void TestCompositorHostX11::Show() {
   XSetWindowAttributes swa;
   swa.override_redirect = x11::True;
   window_ = static_cast<x11::Window>(XCreateWindow(
-      display, XRootWindow(display, DefaultScreen(display)),  // parent
+      display, XDefaultRootWindow(display),  // parent
       bounds_.x(), bounds_.y(), bounds_.width(), bounds_.height(),
       0,                                                   // border width
       static_cast<int>(x11::WindowClass::CopyFromParent),  // depth

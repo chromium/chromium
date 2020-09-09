@@ -65,7 +65,6 @@ action("gen_xprotos") {
   foreach(proto, protos) {
     sources += [ "$xcbproto_path/src/${proto}.xml" ]
     outputs += [
-      "$target_gen_dir/${proto}_undef.h",
       "$target_gen_dir/${proto}.h",
       "$target_gen_dir/${proto}.cc",
     ]
@@ -85,6 +84,7 @@ component("xprotos") {
     "//base:i18n",
     "//ui/events/platform",
   ]
+  public_deps = [ "//ui/gfx/x/keysyms" ]
   sources = get_target_outputs(":gen_xprotos") + [
               "xproto_internal.h",
               "xproto_internal.cc",

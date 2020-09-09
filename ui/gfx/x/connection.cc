@@ -18,6 +18,7 @@
 #include "base/threading/thread_local.h"
 #include "ui/gfx/x/bigreq.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_switches.h"
@@ -301,7 +302,7 @@ int Connection::DefaultScreenId() const {
   // This is not part of the setup data as the server has no concept of a
   // default screen. Instead, it's part of the display name. Eg in
   // "localhost:0.0", the screen ID is the second "0".
-  return DefaultScreen(display_);
+  return XDefaultScreen(display_);
 }
 
 bool Connection::Ready() const {

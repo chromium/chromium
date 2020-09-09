@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/x/xproto.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 #include "ui/aura/client/aura_constants.h"
@@ -71,7 +72,7 @@ void DispatchMouseMotionEvent(DesktopWindowTreeHostLinux* desktop_host,
   xcb_generic_event_t ge;
   memset(&ge, 0, sizeof(ge));
   auto* xev = reinterpret_cast<xcb_motion_notify_event_t*>(&ge);
-  xev->response_type = MotionNotify;
+  xev->response_type = x11::MotionNotifyEvent::opcode;
   xev->event = static_cast<uint32_t>(desktop_host->GetAcceleratedWidget());
   xev->root = static_cast<uint32_t>(connection->default_screen().root);
   xev->child = 0;

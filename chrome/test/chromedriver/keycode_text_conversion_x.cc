@@ -14,6 +14,8 @@
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/x11.h"
 
 namespace {
@@ -109,7 +111,8 @@ bool GetXModifierMask(Display* display,
   for (int mod_index = 0; mod_index <= 8; ++mod_index) {
     for (int key_index = 0; key_index < max_mod_keys; ++key_index) {
       int key = mod_map->modifiermap[mod_index * max_mod_keys + key_index];
-      int keysym = XkbKeycodeToKeysym(display, key, 0, 0);
+      int keysym =
+          static_cast<int>(x11::Connection::Get()->KeycodeToKeysym(key, 0));
       if (modifier == kAltKeyModifierMask)
         found = keysym == XK_Alt_L || keysym == XK_Alt_R;
       else if (modifier == kMetaKeyModifierMask)

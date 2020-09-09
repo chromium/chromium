@@ -14,16 +14,15 @@ source_set("xkb") {
     "xkb_keysym.h",
   ]
 
-  public_deps = [ "//ui/base:buildflags" ]
+  public_deps = [
+    "//ui/base:buildflags",
+    "//ui/gfx/x/keysyms",
+  ]
 
   deps = [
     "//base",
     "//ui/events:dom_keycode_converter",
   ]
-
-  if (!use_xkbcommon) {
-    public_deps += [ "//ui/gfx/x" ]
-  }
 }
 
 if (use_x11 || ozone_platform_x11) {

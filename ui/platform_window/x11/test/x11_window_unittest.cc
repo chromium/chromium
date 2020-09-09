@@ -20,6 +20,8 @@
 #include "ui/gfx/transform.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 
 namespace ui {
@@ -386,21 +388,10 @@ TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   // Emulate the window manager exiting fullscreen via a window manager
   // accelerator key.
   {
-    XEvent xclient;
-    memset(&xclient, 0, sizeof(xclient));
-    xclient.type = ClientMessage;
-    xclient.xclient.window = static_cast<uint32_t>(x11_window);
-    xclient.xclient.message_type =
-        static_cast<uint32_t>(gfx::GetAtom("_NET_WM_STATE"));
-    xclient.xclient.format = 32;
-    xclient.xclient.data.l[0] = 0;
-    xclient.xclient.data.l[1] =
-        static_cast<uint32_t>(gfx::GetAtom("_NET_WM_STATE_FULLSCREEN"));
-    xclient.xclient.data.l[2] = 0;
-    xclient.xclient.data.l[3] = 1;
-    xclient.xclient.data.l[4] = 0;
-    XSendEvent(display, DefaultRootWindow(display), x11::False,
-               SubstructureRedirectMask | SubstructureNotifyMask, &xclient);
+    ui::SendClientMessage(
+        x11_window, ui::GetX11RootWindow(), gfx::GetAtom("_NET_WM_STATE"),
+        {0, static_cast<uint32_t>(gfx::GetAtom("_NET_WM_STATE_FULLSCREEN")), 0,
+         1, 0});
 
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", false);
     waiter.Wait();
@@ -448,7 +439,6 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   ui::X11EventSource::GetInstance()->DispatchXEvents();
 
   x11::Window x11_window = window->window();
-  Display* display = gfx::GetXDisplay();
 
   // Minimize by sending _NET_WM_STATE_HIDDEN
   {
@@ -456,18 +446,14 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
     atom_list.push_back(gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
     ui::SetAtomArrayProperty(x11_window, "_NET_WM_STATE", "ATOM", atom_list);
 
-    XEvent xevent;
-    memset(&xevent, 0, sizeof(xevent));
-    xevent.type = PropertyNotify;
-    xevent.xproperty.type = PropertyNotify;
-    xevent.xproperty.send_event = 1;
-    xevent.xproperty.display = display;
-    xevent.xproperty.window = static_cast<uint32_t>(x11_window);
-    xevent.xproperty.atom =
-        static_cast<uint32_t>(gfx::GetAtom("_NET_WM_STATE"));
-    xevent.xproperty.state = 0;
-    XSendEvent(display, DefaultRootWindow(display), x11::False,
-               SubstructureRedirectMask | SubstructureNotifyMask, &xevent);
+    x11::PropertyNotifyEvent xevent{
+        .send_event = true,
+        .window = x11_window,
+        .atom = gfx::GetAtom("_NET_WM_STATE"),
+    };
+    x11::SendEvent(xevent, ui::GetX11RootWindow(),
+                   x11::EventMask::SubstructureNotify |
+                       x11::EventMask::SubstructureRedirect);
 
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", true);
     waiter.Wait();
@@ -481,18 +467,14 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
     atom_list.push_back(gfx::GetAtom("_NET_WM_STATE_FOCUSED"));
     ui::SetAtomArrayProperty(x11_window, "_NET_WM_STATE", "ATOM", atom_list);
 
-    XEvent xevent;
-    memset(&xevent, 0, sizeof(xevent));
-    xevent.type = PropertyNotify;
-    xevent.xproperty.type = PropertyNotify;
-    xevent.xproperty.send_event = 1;
-    xevent.xproperty.display = display;
-    xevent.xproperty.window = static_cast<uint32_t>(x11_window);
-    xevent.xproperty.atom =
-        static_cast<uint32_t>(gfx::GetAtom("_NET_WM_STATE"));
-    xevent.xproperty.state = 0;
-    XSendEvent(display, DefaultRootWindow(display), x11::False,
-               SubstructureRedirectMask | SubstructureNotifyMask, &xevent);
+    x11::PropertyNotifyEvent xevent{
+        .send_event = true,
+        .window = x11_window,
+        .atom = gfx::GetAtom("_NET_WM_STATE"),
+    };
+    x11::SendEvent(xevent, ui::GetX11RootWindow(),
+                   x11::EventMask::SubstructureNotify |
+                       x11::EventMask::SubstructureRedirect);
 
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FOCUSED", true);
     waiter.Wait();

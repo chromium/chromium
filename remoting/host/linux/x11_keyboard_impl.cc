@@ -9,6 +9,7 @@
 #include "remoting/host/linux/unicode_to_keysym.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xtest.h"
 
 namespace {
@@ -80,12 +81,14 @@ std::vector<uint32_t> X11KeyboardImpl::GetUnusedKeycodes() {
 }
 
 void X11KeyboardImpl::PressKey(uint32_t keycode, uint32_t modifiers) {
-  XkbLockModifiers(display_, XkbUseCoreKbd, modifiers, modifiers);
+  XkbLockModifiers(display_, static_cast<unsigned>(x11::Xkb::Id::UseCoreKbd),
+                   modifiers, modifiers);
 
   connection_->xtest().FakeInput({x11::KeyEvent::Press, keycode});
   connection_->xtest().FakeInput({x11::KeyEvent::Release, keycode});
 
-  XkbLockModifiers(display_, XkbUseCoreKbd, modifiers, 0);
+  XkbLockModifiers(display_, static_cast<unsigned>(x11::Xkb::Id::UseCoreKbd),
+                   modifiers, 0);
 }
 
 bool X11KeyboardImpl::FindKeycode(uint32_t code_point,

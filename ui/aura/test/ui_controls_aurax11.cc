@@ -4,6 +4,10 @@
 
 #include "ui/aura/test/ui_controls_aurax11.h"
 
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
+#include "ui/gfx/x/xproto.h"
+
 namespace aura {
 namespace test {
 namespace {
@@ -42,9 +46,9 @@ bool UIControlsX11::SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                                bool alt,
                                                bool command,
                                                base::OnceClosure closure) {
-  XEvent xevent;
-  xevent.xkey = {};
-  xevent.xkey.type = x11::KeyEvent::Press;
+  x11::KeyEvent xevent;
+  xevent.detail = {};
+  xevent.opcode = x11::KeyEvent::Press;
   if (control)
     SetKeycodeAndSendThenMask(&xevent, XK_Control_L, ControlMask);
   if (shift)
@@ -53,13 +57,13 @@ bool UIControlsX11::SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
     SetKeycodeAndSendThenMask(&xevent, XK_Alt_L, Mod1Mask);
   if (command)
     SetKeycodeAndSendThenMask(&xevent, XK_Meta_L, Mod4Mask);
-  xevent.xkey.keycode = XKeysymToKeycode(
-      gfx::GetXDisplay(), ui::XKeysymForWindowsKeyCode(key, shift));
-  PostEventToWindowTreeHost(xevent, host_);
+  xevent.detail = x11::Connection::Get()->KeysymToKeycode(
+      static_cast<x11::KeySym>(ui::XKeysymForWindowsKeyCode(key, shift)));
+  PostEventToWindowTreeHost(host_, &xevent);
 
   // Send key release events.
-  xevent.xkey.type = x11::KeyEvent::Release;
-  PostEventToWindowTreeHost(xevent, host_);
+  xevent.opcode = x11::KeyEvent::Release;
+  PostEventToWindowTreeHost(host_, &xevent);
   if (alt)
     UnmaskAndSetKeycodeThenSend(&xevent, Mod1Mask, XK_Alt_L);
   if (shift)
@@ -68,7 +72,7 @@ bool UIControlsX11::SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
     UnmaskAndSetKeycodeThenSend(&xevent, ControlMask, XK_Control_L);
   if (command)
     UnmaskAndSetKeycodeThenSend(&xevent, Mod4Mask, XK_Meta_L);
-  DCHECK(!xevent.xkey.state);
+  DCHECK_EQ(xevent.state, x11::KeyButMask{});
   RunClosureAfterAllPendingUIEvents(std::move(closure));
   return true;
 }
@@ -96,16 +100,14 @@ bool UIControlsX11::SendMouseMoveNotifyWhenDone(int screen_x,
     // current mouse position as a result of XGrabPointer()
     host_->window()->MoveCursorTo(root_location);
   } else {
-    XEvent xevent;
-    xevent.xmotion = {};
-    XMotionEvent* xmotion = &xevent.xmotion;
-    xmotion->type = MotionNotify;
-    xmotion->x = root_location.x();
-    xmotion->y = root_location.y();
-    xmotion->state = button_down_mask;
-    xmotion->same_screen = x11::True;
+    x11::MotionNotifyEvent xevent{
+        .event_x = root_location.x(),
+        .event_y = root_location.y(),
+        .state = static_cast<x11::KeyButMask>(button_down_mask),
+        .same_screen = true,
+    };
     // WindowTreeHost will take care of other necessary fields.
-    PostEventToWindowTreeHost(xevent, host_);
+    PostEventToWindowTreeHost(host_, &xevent);
   }
   RunClosureAfterAllPendingUIEvents(std::move(closure));
   return true;
@@ -122,53 +124,51 @@ bool UIControlsX11::SendMouseEventsNotifyWhenDone(MouseButton type,
                                                   int button_state,
                                                   base::OnceClosure closure,
                                                   int accelerator_state) {
-  XEvent xevent;
-  xevent.xbutton = {};
-  XButtonEvent* xbutton = &xevent.xbutton;
+  x11::ButtonEvent xevent;
   gfx::Point mouse_loc = Env::GetInstance()->last_mouse_location();
   aura::client::ScreenPositionClient* screen_position_client =
       aura::client::GetScreenPositionClient(host_->window());
   if (screen_position_client) {
     screen_position_client->ConvertPointFromScreen(host_->window(), &mouse_loc);
   }
-  xbutton->x = mouse_loc.x();
-  xbutton->y = mouse_loc.y();
-  xbutton->same_screen = x11::True;
+  xevent.event_x = mouse_loc.x();
+  xevent.event_y = mouse_loc.y();
   switch (type) {
     case LEFT:
-      xbutton->button = 1;
-      xbutton->state = Button1Mask;
+      xevent.detail = static_cast<x11::Button>(1);
+      xevent.state = x11::KeyButMask::Button1;
       break;
     case MIDDLE:
-      xbutton->button = 2;
-      xbutton->state = Button2Mask;
+      xevent.detail = static_cast<x11::Button>(2);
+      xevent.state = x11::KeyButMask::Button2;
       break;
     case RIGHT:
-      xbutton->button = 3;
-      xbutton->state = Button3Mask;
+      xevent.detail = static_cast<x11::Button>(3);
+      xevent.state = x11::KeyButMask::Button3;
       break;
   }
 
   // Process accelerator key state.
   if (accelerator_state & ui_controls::kShift)
-    xbutton->state |= ShiftMask;
+    xevent.state = xevent.state | x11::KeyButMask::Shift;
   if (accelerator_state & ui_controls::kControl)
-    xbutton->state |= ControlMask;
+    xevent.state = xevent.state | x11::KeyButMask::Control;
   if (accelerator_state & ui_controls::kAlt)
-    xbutton->state |= Mod1Mask;
+    xevent.state = xevent.state | x11::KeyButMask::Mod1;
   if (accelerator_state & ui_controls::kCommand)
-    xbutton->state |= Mod4Mask;
+    xevent.state = xevent.state | x11::KeyButMask::Mod4;
 
   // WindowEventDispatcher will take care of other necessary fields.
   if (button_state & DOWN) {
-    xevent.xbutton.type = x11::ButtonEvent::Press;
-    PostEventToWindowTreeHost(xevent, host_);
-    button_down_mask |= xbutton->state;
+    xevent.opcode = x11::ButtonEvent::Press;
+    PostEventToWindowTreeHost(host_, &xevent);
+    button_down_mask |= static_cast<int>(xevent.state);
   }
   if (button_state & UP) {
-    xevent.xbutton.type = x11::ButtonEvent::Release;
-    PostEventToWindowTreeHost(xevent, host_);
-    button_down_mask = (button_down_mask | xbutton->state) ^ xbutton->state;
+    xevent.opcode = x11::ButtonEvent::Release;
+    PostEventToWindowTreeHost(host_, &xevent);
+    int state = static_cast<int>(xevent.state);
+    button_down_mask = (button_down_mask | state) ^ state;
   }
   RunClosureAfterAllPendingUIEvents(std::move(closure));
   return true;
@@ -187,20 +187,23 @@ void UIControlsX11::RunClosureAfterAllPendingUIEvents(
       std::move(closure));
 }
 
-void UIControlsX11::SetKeycodeAndSendThenMask(XEvent* xevent,
+void UIControlsX11::SetKeycodeAndSendThenMask(x11::KeyEvent* xevent,
                                               KeySym keysym,
                                               unsigned int mask) {
-  xevent->xkey.keycode = XKeysymToKeycode(gfx::GetXDisplay(), keysym);
-  PostEventToWindowTreeHost(*xevent, host_);
-  xevent->xkey.state |= mask;
+  xevent->detail =
+      x11::Connection::Get()->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
+  PostEventToWindowTreeHost(host_, xevent);
+  xevent->state = xevent->state | static_cast<x11::KeyButMask>(mask);
 }
 
-void UIControlsX11::UnmaskAndSetKeycodeThenSend(XEvent* xevent,
+void UIControlsX11::UnmaskAndSetKeycodeThenSend(x11::KeyEvent* xevent,
                                                 unsigned int mask,
                                                 KeySym keysym) {
-  xevent->xkey.state ^= mask;
-  xevent->xkey.keycode = XKeysymToKeycode(gfx::GetXDisplay(), keysym);
-  PostEventToWindowTreeHost(*xevent, host_);
+  xevent->state =
+      static_cast<x11::KeyButMask>(static_cast<uint32_t>(xevent->state) ^ mask);
+  xevent->detail =
+      x11::Connection::Get()->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
+  PostEventToWindowTreeHost(host_, xevent);
 }
 
 }  // namespace test

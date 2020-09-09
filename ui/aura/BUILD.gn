@@ -255,7 +255,6 @@ static_library("test_support") {
     sources += [
       "test/ui_controls_aurax11.cc",
       "test/ui_controls_aurax11.h",
-      "test/x11_event_sender.cc",
       "test/x11_event_sender.h",
     ]
 

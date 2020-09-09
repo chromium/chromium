@@ -24,8 +24,11 @@
 #include "ui/compositor/dip_util.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/test/x11_event_waiter.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/views/test/test_desktop_screen_x11.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
@@ -44,42 +47,15 @@ using ui_controls::UP;
 // Mask of the buttons currently down.
 unsigned button_down_mask = 0;
 
-// Restore Xlib constants that were #undef'ed by gen/ui/gfx/x/xproto.h.
-constexpr int CopyFromParent = 0;
-constexpr int InputOnly = 2;
-constexpr int KeyPress = 2;
-constexpr int KeyRelease = 3;
-constexpr int ButtonPress = 4;
-constexpr int ButtonRelease = 5;
-constexpr int Button1 = 1;
-constexpr int Button2 = 2;
-constexpr int Button3 = 3;
-
 class UIControlsDesktopX11 : public UIControlsAura {
  public:
   UIControlsDesktopX11()
-      : x_display_(gfx::GetXDisplay()),
+      : connection_(x11::Connection::Get()),
         x_root_window_(ui::GetX11RootWindow()),
-        x_window_(static_cast<x11::Window>(
-            XCreateWindow(x_display_,
-                          static_cast<uint32_t>(x_root_window_),
-                          -100,            // x
-                          -100,            // y
-                          10,              // width
-                          10,              // height
-                          0,               // border width
-                          CopyFromParent,  // depth
-                          InputOnly,
-                          reinterpret_cast<Visual*>(CopyFromParent),
-                          0,
-                          nullptr))) {
-    XStoreName(x_display_, static_cast<uint32_t>(x_window_),
-               "Chromium UIControlsDesktopX11 Window");
-  }
+        x_window_(
+            ui::CreateDummyWindow("Chromium UIControlsDesktopX11 Window")) {}
 
-  ~UIControlsDesktopX11() override {
-    XDestroyWindow(x_display_, static_cast<uint32_t>(x_window_));
-  }
+  ~UIControlsDesktopX11() override { connection_->DestroyWindow({x_window_}); }
 
   bool SendKeyPress(gfx::NativeWindow window,
                     ui::KeyboardCode key,
@@ -103,9 +79,8 @@ class UIControlsDesktopX11 : public UIControlsAura {
 
     aura::WindowTreeHost* host = window->GetHost();
 
-    XEvent xevent;
-    xevent.xkey = {};
-    xevent.xkey.type = KeyPress;
+    x11::KeyEvent xevent;
+    xevent.opcode = x11::KeyEvent::Press;
     if (control) {
       SetKeycodeAndSendThenMask(host, &xevent, XK_Control_L, ControlMask);
     }
@@ -113,21 +88,20 @@ class UIControlsDesktopX11 : public UIControlsAura {
       SetKeycodeAndSendThenMask(host, &xevent, XK_Shift_L, ShiftMask);
     if (alt)
       SetKeycodeAndSendThenMask(host, &xevent, XK_Alt_L, Mod1Mask);
-    xevent.xkey.keycode =
-        XKeysymToKeycode(x_display_, ui::XKeysymForWindowsKeyCode(key, shift));
-    aura::test::PostEventToWindowTreeHost(xevent, host);
+    xevent.detail = x11::Connection::Get()->KeysymToKeycode(
+        static_cast<x11::KeySym>(ui::XKeysymForWindowsKeyCode(key, shift)));
+    aura::test::PostEventToWindowTreeHost(host, &xevent);
 
     // Send key release events.
-    xevent.xkey.type = KeyRelease;
-    aura::test::PostEventToWindowTreeHost(xevent, host);
+    xevent.opcode = x11::KeyEvent::Release;
+    aura::test::PostEventToWindowTreeHost(host, &xevent);
     if (alt)
       UnmaskAndSetKeycodeThenSend(host, &xevent, Mod1Mask, XK_Alt_L);
     if (shift)
       UnmaskAndSetKeycodeThenSend(host, &xevent, ShiftMask, XK_Shift_L);
-    if (control) {
+    if (control)
       UnmaskAndSetKeycodeThenSend(host, &xevent, ControlMask, XK_Control_L);
-    }
-    DCHECK(!xevent.xkey.state);
+    DCHECK_EQ(xevent.state, x11::KeyButMask{});
     RunClosureAfterAllPendingUIEvents(std::move(closure));
     return true;
   }
@@ -163,16 +137,14 @@ class UIControlsDesktopX11 : public UIControlsAura {
       // current mouse position as a result of XGrabPointer()
       root_window->MoveCursorTo(root_location);
     } else {
-      XEvent xevent;
-      xevent.xmotion = {};
-      XMotionEvent* xmotion = &xevent.xmotion;
-      xmotion->type = MotionNotify;
-      xmotion->x = root_location.x();
-      xmotion->y = root_location.y();
-      xmotion->state = button_down_mask;
-      xmotion->same_screen = x11::True;
+      x11::MotionNotifyEvent xevent{
+          .event_x = root_location.x(),
+          .event_y = root_location.y(),
+          .state = static_cast<x11::KeyButMask>(button_down_mask),
+          .same_screen = true,
+      };
       // RootWindow will take care of other necessary fields.
-      aura::test::PostEventToWindowTreeHost(xevent, host);
+      aura::test::PostEventToWindowTreeHost(host, &xevent);
     }
     RunClosureAfterAllPendingUIEvents(std::move(closure));
     return true;
@@ -187,52 +159,51 @@ class UIControlsDesktopX11 : public UIControlsAura {
                                      int button_state,
                                      base::OnceClosure closure,
                                      int accelerator_state) override {
-    XEvent xevent;
-    xevent.xbutton = {};
-    XButtonEvent* xbutton = &xevent.xbutton;
+    x11::ButtonEvent xevent;
     gfx::Point mouse_loc = aura::Env::GetInstance()->last_mouse_location();
     aura::Window* root_window = RootWindowForPoint(mouse_loc);
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(root_window);
     if (screen_position_client)
       screen_position_client->ConvertPointFromScreen(root_window, &mouse_loc);
-    xbutton->x = mouse_loc.x();
-    xbutton->y = mouse_loc.y();
-    xbutton->same_screen = x11::True;
+    xevent.event_x = mouse_loc.x();
+    xevent.event_y = mouse_loc.y();
     switch (type) {
       case LEFT:
-        xbutton->button = Button1;
-        xbutton->state = Button1Mask;
+        xevent.detail = static_cast<x11::Button>(1);
+        xevent.state = x11::KeyButMask::Button1;
         break;
       case MIDDLE:
-        xbutton->button = Button2;
-        xbutton->state = Button2Mask;
+        xevent.detail = static_cast<x11::Button>(2);
+        xevent.state = x11::KeyButMask::Button2;
         break;
       case RIGHT:
-        xbutton->button = Button3;
-        xbutton->state = Button3Mask;
+        xevent.detail = static_cast<x11::Button>(3);
+        xevent.state = x11::KeyButMask::Button3;
         break;
     }
-    // Process the accelerator key state.
+
+    // Process accelerator key state.
     if (accelerator_state & ui_controls::kShift)
-      xbutton->state |= ShiftMask;
+      xevent.state = xevent.state | x11::KeyButMask::Shift;
     if (accelerator_state & ui_controls::kControl)
-      xbutton->state |= ControlMask;
+      xevent.state = xevent.state | x11::KeyButMask::Control;
     if (accelerator_state & ui_controls::kAlt)
-      xbutton->state |= Mod1Mask;
+      xevent.state = xevent.state | x11::KeyButMask::Mod1;
     if (accelerator_state & ui_controls::kCommand)
-      xbutton->state |= Mod4Mask;
+      xevent.state = xevent.state | x11::KeyButMask::Mod4;
 
     // RootWindow will take care of other necessary fields.
     if (button_state & DOWN) {
-      xevent.xbutton.type = ButtonPress;
-      aura::test::PostEventToWindowTreeHost(xevent, root_window->GetHost());
-      button_down_mask |= xbutton->state;
+      xevent.opcode = x11::ButtonEvent::Press;
+      aura::test::PostEventToWindowTreeHost(root_window->GetHost(), &xevent);
+      button_down_mask |= static_cast<int>(xevent.state);
     }
     if (button_state & UP) {
-      xevent.xbutton.type = ButtonRelease;
-      aura::test::PostEventToWindowTreeHost(xevent, root_window->GetHost());
-      button_down_mask = (button_down_mask | xbutton->state) ^ xbutton->state;
+      xevent.opcode = x11::ButtonEvent::Release;
+      aura::test::PostEventToWindowTreeHost(root_window->GetHost(), &xevent);
+      int state = static_cast<int>(xevent.state);
+      button_down_mask = (button_down_mask | state) ^ state;
     }
     RunClosureAfterAllPendingUIEvents(std::move(closure));
     return true;
@@ -266,25 +237,28 @@ class UIControlsDesktopX11 : public UIControlsAura {
   }
 
   void SetKeycodeAndSendThenMask(aura::WindowTreeHost* host,
-                                 XEvent* xevent,
+                                 x11::KeyEvent* xevent,
                                  KeySym keysym,
                                  unsigned int mask) {
-    xevent->xkey.keycode = XKeysymToKeycode(x_display_, keysym);
-    aura::test::PostEventToWindowTreeHost(*xevent, host);
-    xevent->xkey.state |= mask;
+    xevent->detail = x11::Connection::Get()->KeysymToKeycode(
+        static_cast<x11::KeySym>(keysym));
+    aura::test::PostEventToWindowTreeHost(host, xevent);
+    xevent->state = xevent->state | static_cast<x11::KeyButMask>(mask);
   }
 
   void UnmaskAndSetKeycodeThenSend(aura::WindowTreeHost* host,
-                                   XEvent* xevent,
+                                   x11::KeyEvent* xevent,
                                    unsigned int mask,
                                    KeySym keysym) {
-    xevent->xkey.state ^= mask;
-    xevent->xkey.keycode = XKeysymToKeycode(x_display_, keysym);
-    aura::test::PostEventToWindowTreeHost(*xevent, host);
+    xevent->state = static_cast<x11::KeyButMask>(
+        static_cast<uint32_t>(xevent->state) ^ mask);
+    xevent->detail = x11::Connection::Get()->KeysymToKeycode(
+        static_cast<x11::KeySym>(keysym));
+    aura::test::PostEventToWindowTreeHost(host, xevent);
   }
 
   // Our X11 state.
-  Display* x_display_;
+  x11::Connection* connection_;
   x11::Window x_root_window_;
 
   // Input-only window used for events.

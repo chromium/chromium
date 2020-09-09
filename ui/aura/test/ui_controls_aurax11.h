@@ -64,11 +64,11 @@ class UIControlsX11 : public ui_controls::UIControlsAura {
   void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure);
 
  private:
-  void SetKeycodeAndSendThenMask(XEvent* xevent,
+  void SetKeycodeAndSendThenMask(x11::KeyEvent* xevent,
                                  KeySym keysym,
                                  unsigned int mask);
 
-  void UnmaskAndSetKeycodeThenSend(XEvent* xevent,
+  void UnmaskAndSetKeycodeThenSend(x11::KeyEvent* xevent,
                                    unsigned int mask,
                                    KeySym keysym);
   WindowTreeHost* const host_;

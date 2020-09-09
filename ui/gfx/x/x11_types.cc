@@ -20,7 +20,7 @@ XDisplay* GetXDisplay() {
 }
 
 XDisplay* CloneXDisplay(XDisplay* display) {
-  return XOpenDisplay(DisplayString(display));
+  return XOpenDisplay(XDisplayString(display));
 }
 
 }  // namespace gfx

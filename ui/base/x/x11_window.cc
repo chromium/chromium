@@ -40,6 +40,7 @@
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {
@@ -1160,9 +1161,9 @@ void XWindow::ProcessEvent(x11::Event* xev) {
       } else if (protocol == gfx::GetAtom("_NET_WM_PING")) {
         x11::ClientMessageEvent reply_event = *client;
         reply_event.window = x_root_window_;
-        SendEvent(reply_event, x_root_window_,
-                  x11::EventMask::SubstructureNotify |
-                      x11::EventMask::SubstructureRedirect);
+        x11::SendEvent(reply_event, x_root_window_,
+                       x11::EventMask::SubstructureNotify |
+                           x11::EventMask::SubstructureRedirect);
       } else if (protocol == gfx::GetAtom("_NET_WM_SYNC_REQUEST")) {
         pending_counter_value_ =
             client->data.data32[2] +

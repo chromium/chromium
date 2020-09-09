@@ -8,10 +8,6 @@ import("//gpu/vulkan/features.gni")
 assert(enable_vulkan)
 assert(use_x11 || use_ozone)
 
-config("vulkan_x11") {
-  defines = [ "VK_USE_PLATFORM_XLIB_KHR" ]
-}
-
 component("x") {
   output_name = "vulkan_x11"
 
@@ -23,8 +19,6 @@ component("x") {
   ]
 
   defines = [ "IS_VULKAN_X11_IMPL" ]
-
-  public_configs = [ ":vulkan_x11" ]
 
   deps = [
     "//ui/base/x",

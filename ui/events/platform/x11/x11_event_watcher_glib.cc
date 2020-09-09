@@ -65,7 +65,7 @@ void X11EventWatcherGlib::StartWatching() {
     return;
 
   x_poll_ = std::make_unique<GPollFD>();
-  x_poll_->fd = ConnectionNumber(display);
+  x_poll_->fd = XConnectionNumber(display);
   x_poll_->events = G_IO_IN;
   x_poll_->revents = 0;
 

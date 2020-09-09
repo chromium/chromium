@@ -16,6 +16,7 @@
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 using base::Contains;
 
@@ -183,8 +184,8 @@ bool X11ClipboardOzone::OnSelectionRequest(
       .target = event.target,
       .property = event.property,
   };
-  SendEvent(selection_event, selection_event.requestor,
-            x11::EventMask::NoEvent);
+  x11::SendEvent(selection_event, selection_event.requestor,
+                 x11::EventMask::NoEvent);
   return true;
 }
 

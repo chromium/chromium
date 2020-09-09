@@ -32,6 +32,7 @@ GLES2/gl2ext.h
 EGL/eglplatform.h
  - Added EGLNative*Type for Mac.
  - Added EGLNative*Type for native linux framebuffers.
+ - Forward declare Xlib types instead of including Xlib headers.
 EGL/eglext.h
  - Added support for EGL_EXT_image_flush_external extension
  - Added support for EGL_ANGLE_stream_producer_d3d_texture

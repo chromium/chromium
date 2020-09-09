@@ -70,7 +70,7 @@ bool ShouldUseMitShm(x11::Connection* connection) {
   // codepath.  It may be possible in contrived cases for there to be a
   // false-positive, but in that case we'll just fallback to the non-SHM
   // codepath.
-  char* display_string = DisplayString(connection->display());
+  char* display_string = XDisplayString(connection->display());
   char* host = nullptr;
   int display_id = 0;
   int screen = 0;

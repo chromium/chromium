@@ -179,7 +179,7 @@ void UserInputMonitorLinuxCore::StartMonitor() {
   // Register OnConnectionData() to be called every time there is something to
   // read from |connection_|.
   watch_controller_ = base::FileDescriptorWatcher::WatchReadable(
-      ConnectionNumber(connection_->display()),
+      XConnectionNumber(connection_->display()),
       base::BindRepeating(&UserInputMonitorLinuxCore::OnConnectionData,
                           base::Unretained(this)));
 

@@ -6,10 +6,8 @@
 
 #include "build/build_config.h"
 #include "ui/events/keycodes/dom/dom_key.h"
-
-#ifndef XK_dead_greek
-#define XK_dead_greek 0xfe8c
-#endif
+#include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 
 namespace ui {
 

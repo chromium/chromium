@@ -34,7 +34,10 @@
 #include "gpu/tools/compositor_model_bench/render_model_utils.h"
 #include "gpu/tools/compositor_model_bench/render_models.h"
 #include "gpu/tools/compositor_model_bench/render_tree.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/init/gl_factory.h"
 
 using base::TimeTicks;
@@ -123,19 +126,16 @@ class Simulator {
 
   void ProcessEvents() {
     // Consume all the X events.
-    while (XPending(display_)) {
-      XEvent e;
-      XNextEvent(display_, &e);
-      switch (e.type) {
-        case Expose:
-          UpdateLoop();
-          break;
-        case ConfigureNotify:
-          Resize(e.xconfigure.width, e.xconfigure.height);
-          break;
-        default:
-          break;
-      }
+    connection_->Flush();
+    connection_->ReadResponses();
+    auto& events = connection_->events();
+    while (!events.empty()) {
+      auto event = std::move(events.front());
+      events.pop_front();
+      if (event.As<x11::ExposeEvent>())
+        UpdateLoop();
+      else if (auto* configure = event.As<x11::ConfigureNotifyEvent>())
+        Resize(configure->width, configure->height);
     }
   }
 
@@ -148,26 +148,21 @@ class Simulator {
   // Initialize X11. Returns true if successful. This method creates the
   // X11 window. Further initialization is done in X11VideoRenderer.
   bool InitX11() {
-    display_ = XOpenDisplay(nullptr);
+    connection_ = std::make_unique<x11::Connection>();
+    display_ = connection_->display();
     if (!display_) {
       LOG(FATAL) << "Cannot open display";
       return false;
     }
 
     // Get properties of the screen.
-    int screen = DefaultScreen(display_);
-    int root_window = XRootWindow(display_, screen);
+    int screen = XDefaultScreen(display_);
+    int root_window = XDefaultRootWindow(display_);
 
     // Creates the window.
-    window_ = XCreateSimpleWindow(display_,
-                                  root_window,
-                                  1,
-                                  1,
-                                  window_width_,
-                                  window_height_,
-                                  0,
-                                  BlackPixel(display_, screen),
-                                  BlackPixel(display_, screen));
+    window_ = XCreateSimpleWindow(
+        display_, root_window, 1, 1, window_width_, window_height_, 0,
+        XBlackPixel(display_, screen), XBlackPixel(display_, screen));
     XStoreName(display_, window_, "Compositor Model Bench");
 
     XSelectInput(display_, window_,
@@ -191,9 +186,9 @@ class Simulator {
     XVisualInfo visual_info_template;
     visual_info_template.visualid = XVisualIDFromVisual(attributes.visual);
     int visual_info_count = 0;
-    XVisualInfo* visual_info_list = XGetVisualInfo(display_, VisualIDMask,
-                                                   &visual_info_template,
-                                                   &visual_info_count);
+    constexpr int kVisualIdMask = 1;
+    XVisualInfo* visual_info_list = XGetVisualInfo(
+        display_, kVisualIdMask, &visual_info_template, &visual_info_count);
 
     for (int i = 0; i < visual_info_count && !gl_context_; ++i) {
       gl_context_ = glXCreateContext(display_, visual_info_list + i, 0,
@@ -246,10 +241,13 @@ class Simulator {
 
     glXSwapBuffers(display_, window_);
 
-    XExposeEvent ev = { Expose, 0, 1, display_, window_,
-                        0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0 };
-    XSendEvent(display_, window_, x11::False, ExposureMask,
-               reinterpret_cast<XEvent*>(&ev));
+    auto window = static_cast<x11::Window>(window_);
+    x11::ExposeEvent ev{
+        .window = window,
+        .width = WINDOW_WIDTH,
+        .height = WINDOW_HEIGHT,
+    };
+    x11::SendEvent(ev, window, x11::EventMask::Exposure);
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -334,6 +332,7 @@ class Simulator {
   // Amount of time to run each simulation
   int seconds_per_test_;
   // GUI data
+  std::unique_ptr<x11::Connection> connection_;
   Display* display_;
   Window window_;
   GLXContext gl_context_;

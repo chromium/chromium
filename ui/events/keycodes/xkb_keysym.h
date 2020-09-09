@@ -17,7 +17,7 @@
 
 #else  // !BUILDFLAG(USE_XKBCOMMON)
 
-#include "ui/gfx/x/x11.h"  // nogncheck
+#include "ui/gfx/x/keysyms/keysyms.h"
 
 using xkb_keysym_t = uint32_t;
 
