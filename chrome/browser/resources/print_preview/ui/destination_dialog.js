@@ -24,6 +24,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
@@ -93,6 +94,17 @@ Polymer({
       type: Object,
       value: null,
     },
+
+    // <if expr="chromeos">
+    /** @private */
+    saveToDriveFlagEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('printSaveToDrive');
+      },
+      readOnly: true,
+    },
+    // </if>
   },
 
   listeners: {
@@ -197,10 +209,30 @@ Polymer({
 
     this.updateList(
         'destinations_', destination => destination.key,
-        this.destinationStore.destinations(this.activeUser));
+        this.getDestinationList_());
 
     this.loadingDestinations_ =
         this.destinationStore.isPrintDestinationSearchInProgress;
+  },
+
+  /**
+   * @return {!Array<!Destination>}
+   * @private
+   */
+  getDestinationList_() {
+    const destinations = this.destinationStore.destinations(this.activeUser);
+    // <if expr="chromeos">
+    // When |saveToDriveFlagEnabled_| is true, we don't want to show a
+    // 'Save to Drive' option in the destination dialog.
+    if (this.saveToDriveFlagEnabled_) {
+      return destinations.filter(
+          destination => destination.id !== Destination.GooglePromotedId.DOCS &&
+              destination.id !==
+                  Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS);
+    }
+    // </if>
+
+    return destinations;
   },
 
   /** @private */
