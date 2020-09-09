@@ -66,9 +66,10 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
 
     class TabbedPaintPreviewObserver extends EmptyTabObserver {
         public void onFirstMeaningfulPaint() {
+            mMetricsHelper.onTabLoadFinished();
+
             if (!isShowingAndNeedsBadge()) return;
 
-            mMetricsHelper.onTabLoadFinished();
             long delayMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, INITIAL_REMOVE_DELAY_PARAM,
                     DEFAULT_INITIAL_REMOVE_DELAY_MS);
