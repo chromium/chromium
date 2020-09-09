@@ -18,12 +18,12 @@ using SeverityFromPrinter = printing::PrinterStatus::PrinterReason::Severity;
 
 TEST(CupsPrinterStatusCreatorTest, PrinterStatusToCupsPrinterStatus) {
   printing::PrinterStatus::PrinterReason reason1;
-  reason1.reason = ReasonFromPrinter::NONE;
-  reason1.severity = SeverityFromPrinter::REPORT;
+  reason1.reason = ReasonFromPrinter::kNone;
+  reason1.severity = SeverityFromPrinter::kReport;
 
   printing::PrinterStatus::PrinterReason reason2;
-  reason2.reason = ReasonFromPrinter::COVER_OPEN;
-  reason2.severity = SeverityFromPrinter::WARNING;
+  reason2.reason = ReasonFromPrinter::kCoverOpen;
+  reason2.severity = SeverityFromPrinter::kWarning;
 
   printing::PrinterStatus printer_status;
   printer_status.reasons.push_back(reason1);
@@ -47,102 +47,102 @@ TEST(CupsPrinterStatusCreatorTest, PrinterStatusToCupsPrinterStatus) {
 TEST(CupsPrinterStatusCreatorTest, PrinterSeverityToCupsSeverity) {
   EXPECT_EQ(
       CupsSeverity::kUnknownSeverity,
-      PrinterSeverityToCupsSeverity(SeverityFromPrinter::UNKNOWN_SEVERITY));
+      PrinterSeverityToCupsSeverity(SeverityFromPrinter::kUnknownSeverity));
   EXPECT_EQ(CupsSeverity::kReport,
-            PrinterSeverityToCupsSeverity(SeverityFromPrinter::REPORT));
+            PrinterSeverityToCupsSeverity(SeverityFromPrinter::kReport));
   EXPECT_EQ(CupsSeverity::kWarning,
-            PrinterSeverityToCupsSeverity(SeverityFromPrinter::WARNING));
+            PrinterSeverityToCupsSeverity(SeverityFromPrinter::kWarning));
   EXPECT_EQ(CupsSeverity::kError,
-            PrinterSeverityToCupsSeverity(SeverityFromPrinter::ERROR));
+            PrinterSeverityToCupsSeverity(SeverityFromPrinter::kError));
 }
 
 TEST(CupsPrinterStatusCreatorTest, PrinterReasonToCupsReason) {
   EXPECT_EQ(CupsReason::kDeviceError,
-            PrinterReasonToCupsReason(ReasonFromPrinter::FUSER_OVER_TEMP));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kFuserOverTemp));
   EXPECT_EQ(CupsReason::kDeviceError,
-            PrinterReasonToCupsReason(ReasonFromPrinter::FUSER_UNDER_TEMP));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kFuserUnderTemp));
   EXPECT_EQ(CupsReason::kDeviceError,
             PrinterReasonToCupsReason(
-                ReasonFromPrinter::INTERPRETER_RESOURCE_UNAVAILABLE));
+                ReasonFromPrinter::kInterpreterResourceUnavailable));
   EXPECT_EQ(CupsReason::kDeviceError,
-            PrinterReasonToCupsReason(ReasonFromPrinter::OPC_LIFE_OVER));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kOpcLifeOver));
   EXPECT_EQ(CupsReason::kDeviceError,
-            PrinterReasonToCupsReason(ReasonFromPrinter::OPC_NEAR_EOL));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kOpcNearEol));
 
   EXPECT_EQ(CupsReason::kDoorOpen,
-            PrinterReasonToCupsReason(ReasonFromPrinter::COVER_OPEN));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kCoverOpen));
   EXPECT_EQ(CupsReason::kDoorOpen,
-            PrinterReasonToCupsReason(ReasonFromPrinter::DOOR_OPEN));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kDoorOpen));
   EXPECT_EQ(CupsReason::kDoorOpen,
-            PrinterReasonToCupsReason(ReasonFromPrinter::INTERLOCK_OPEN));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kInterlockOpen));
 
   EXPECT_EQ(CupsReason::kLowOnInk,
-            PrinterReasonToCupsReason(ReasonFromPrinter::DEVELOPER_LOW));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kDeveloperLow));
   EXPECT_EQ(CupsReason::kLowOnInk,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MARKER_SUPPLY_LOW));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMarkerSupplyLow));
   EXPECT_EQ(
       CupsReason::kLowOnInk,
-      PrinterReasonToCupsReason(ReasonFromPrinter::MARKER_WASTE_ALMOST_FULL));
+      PrinterReasonToCupsReason(ReasonFromPrinter::kMarkerWasteAlmostFull));
   EXPECT_EQ(CupsReason::kLowOnInk,
-            PrinterReasonToCupsReason(ReasonFromPrinter::TONER_LOW));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kTonerLow));
 
   EXPECT_EQ(CupsReason::kLowOnPaper,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MEDIA_LOW));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMediaLow));
 
   EXPECT_EQ(CupsReason::kNoError,
-            PrinterReasonToCupsReason(ReasonFromPrinter::NONE));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kNone));
 
   EXPECT_EQ(CupsReason::kOutOfInk,
-            PrinterReasonToCupsReason(ReasonFromPrinter::DEVELOPER_EMPTY));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kDeveloperEmpty));
   EXPECT_EQ(CupsReason::kOutOfInk,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MARKER_SUPPLY_EMPTY));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMarkerSupplyEmpty));
   EXPECT_EQ(CupsReason::kOutOfInk,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MARKER_WASTE_FULL));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMarkerWasteFull));
   EXPECT_EQ(CupsReason::kOutOfInk,
-            PrinterReasonToCupsReason(ReasonFromPrinter::TONER_EMPTY));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kTonerEmpty));
 
   EXPECT_EQ(CupsReason::kOutOfPaper,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MEDIA_EMPTY));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMediaEmpty));
   EXPECT_EQ(CupsReason::kOutOfPaper,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MEDIA_NEEDED));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMediaNeeded));
 
   EXPECT_EQ(
       CupsReason::kOutputAreaAlmostFull,
-      PrinterReasonToCupsReason(ReasonFromPrinter::OUTPUT_AREA_ALMOST_FULL));
+      PrinterReasonToCupsReason(ReasonFromPrinter::kOutputAreaAlmostFull));
 
   EXPECT_EQ(CupsReason::kOutputFull,
-            PrinterReasonToCupsReason(ReasonFromPrinter::OUTPUT_AREA_FULL));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kOutputAreaFull));
 
   EXPECT_EQ(CupsReason::kPaperJam,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MEDIA_JAM));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMediaJam));
 
   EXPECT_EQ(CupsReason::kPaused,
-            PrinterReasonToCupsReason(ReasonFromPrinter::MOVING_TO_PAUSED));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kMovingToPaused));
   EXPECT_EQ(CupsReason::kPaused,
-            PrinterReasonToCupsReason(ReasonFromPrinter::PAUSED));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kPaused));
 
   EXPECT_EQ(CupsReason::kPrinterQueueFull,
-            PrinterReasonToCupsReason(ReasonFromPrinter::SPOOL_AREA_FULL));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kSpoolAreaFull));
 
   EXPECT_EQ(CupsReason::kPrinterUnreachable,
-            PrinterReasonToCupsReason(ReasonFromPrinter::CONNECTING_TO_DEVICE));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kConnectingToDevice));
   EXPECT_EQ(CupsReason::kPrinterUnreachable,
-            PrinterReasonToCupsReason(ReasonFromPrinter::SHUTDOWN));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kShutdown));
   EXPECT_EQ(CupsReason::kPrinterUnreachable,
-            PrinterReasonToCupsReason(ReasonFromPrinter::TIMED_OUT));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kTimedOut));
 
   EXPECT_EQ(CupsReason::kStopped,
-            PrinterReasonToCupsReason(ReasonFromPrinter::STOPPED_PARTLY));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kStoppedPartly));
   EXPECT_EQ(CupsReason::kStopped,
-            PrinterReasonToCupsReason(ReasonFromPrinter::STOPPING));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kStopping));
 
   EXPECT_EQ(CupsReason::kTrayMissing,
-            PrinterReasonToCupsReason(ReasonFromPrinter::INPUT_TRAY_MISSING));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kInputTrayMissing));
   EXPECT_EQ(CupsReason::kTrayMissing,
-            PrinterReasonToCupsReason(ReasonFromPrinter::OUTPUT_TRAY_MISSING));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kOutputTrayMissing));
 
   EXPECT_EQ(CupsReason::kUnknownReason,
-            PrinterReasonToCupsReason(ReasonFromPrinter::UNKNOWN_REASON));
+            PrinterReasonToCupsReason(ReasonFromPrinter::kUnknownReason));
 }
 
 }  // namespace chromeos

@@ -14,10 +14,10 @@ namespace printing {
 // reordered. Please keep in sync with PrinterStatusQueryResult in
 // src/tools/metrics/histograms/enums.xml.
 enum class PRINTING_EXPORT PrinterQueryResult {
-  UNKNOWN_FAILURE = 0,  // catchall error
-  SUCCESS = 1,          // successful
-  UNREACHABLE = 2,      // failed to reach the host
-  kMaxValue = UNREACHABLE
+  kUnknownFailure = 0,  // catchall error
+  kSuccess = 1,         // successful
+  kUnreachable = 2,     // failed to reach the host
+  kMaxValue = kUnreachable
 };
 
 }  // namespace printing

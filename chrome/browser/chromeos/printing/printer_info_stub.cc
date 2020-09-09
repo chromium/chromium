@@ -21,7 +21,7 @@ void QueryIppPrinter(const std::string& host,
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                printing::PrinterQueryResult::UNKNOWN_FAILURE,
+                                printing::PrinterQueryResult::kUnknownFailure,
                                 printing::PrinterStatus(), "Foo", "Bar",
                                 "Foo Bar", std::vector<std::string>{}, false));
 }

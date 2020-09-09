@@ -403,7 +403,7 @@ class CupsPrintersManagerImpl
     base::UmaHistogramEnumeration("Printing.CUPS.PrinterStatusQueryResult",
                                   result);
     switch (result) {
-      case PrinterQueryResult::UNREACHABLE: {
+      case PrinterQueryResult::kUnreachable: {
         PRINTER_LOG(ERROR)
             << "Printer status request failed. Could not reach printer "
             << printer_id;
@@ -415,7 +415,7 @@ class CupsPrintersManagerImpl
         std::move(cb).Run(std::move(error_printer_status));
         break;
       }
-      case PrinterQueryResult::UNKNOWN_FAILURE: {
+      case PrinterQueryResult::kUnknownFailure: {
         PRINTER_LOG(ERROR) << "Printer status request failed. Unknown failure "
                               "trying to reach printer "
                            << printer_id;
@@ -426,7 +426,7 @@ class CupsPrintersManagerImpl
         std::move(cb).Run(std::move(error_printer_status));
         break;
       }
-      case PrinterQueryResult::SUCCESS: {
+      case PrinterQueryResult::kSuccess: {
         // Record results from PrinterStatus before converting to
         // CupsPrinterStatus because the PrinterStatus enum contains more reason
         // buckets.

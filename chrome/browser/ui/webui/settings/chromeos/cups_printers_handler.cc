@@ -85,12 +85,12 @@ void OnRemovedPrinter(const Printer::PrinterProtocol& protocol, bool success) {
 
 // Log if the IPP attributes request was succesful.
 void RecordIppQueryResult(const PrinterQueryResult& result) {
-  bool reachable = (result != PrinterQueryResult::UNREACHABLE);
+  bool reachable = (result != PrinterQueryResult::kUnreachable);
   UMA_HISTOGRAM_BOOLEAN("Printing.CUPS.IppDeviceReachable", reachable);
 
   if (reachable) {
     // Only record whether the query was successful if we reach the printer.
-    bool query_success = (result == PrinterQueryResult::SUCCESS);
+    bool query_success = (result == PrinterQueryResult::kSuccess);
     UMA_HISTOGRAM_BOOLEAN("Printing.CUPS.IppAttributesSuccess", query_success);
   }
 }
@@ -480,7 +480,7 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::ListValue* args) {
   if (uri.GetLastParsingError().status != Uri::ParserStatus::kNoErrors ||
       !IsValidPrinterUri(uri)) {
     // Run the failure callback.
-    OnAutoconfQueried(callback_id, PrinterQueryResult::UNKNOWN_FAILURE,
+    OnAutoconfQueried(callback_id, PrinterQueryResult::kUnknownFailure,
                       printing::PrinterStatus(), "", "", "", {}, false);
     return;
   }
@@ -502,7 +502,7 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     bool ipp_everywhere) {
   RecordIppQueryResult(result);
 
-  const bool success = result == PrinterQueryResult::SUCCESS;
+  const bool success = result == PrinterQueryResult::kSuccess;
   if (success) {
     // If we queried a valid make and model, use it.  The mDNS record isn't
     // guaranteed to have it.  However, don't overwrite it if the printer
@@ -548,9 +548,9 @@ void CupsPrintersHandler::OnAutoconfQueried(
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere) {
   RecordIppQueryResult(result);
-  const bool success = result == PrinterQueryResult::SUCCESS;
+  const bool success = result == PrinterQueryResult::kSuccess;
 
-  if (result == PrinterQueryResult::UNREACHABLE) {
+  if (result == PrinterQueryResult::kUnreachable) {
     PRINTER_LOG(DEBUG) << "Could not reach printer";
     RejectJavascriptCallback(
         base::Value(callback_id),

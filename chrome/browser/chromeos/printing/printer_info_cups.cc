@@ -143,7 +143,7 @@ QueryResult QueryPrinterImpl(const std::string& host,
   result.result =
       ::printing::GetPrinterInfo(host, port, path, encrypted,
                                  &result.printer_info, &result.printer_status);
-  if (result.result != ::printing::PrinterQueryResult::SUCCESS) {
+  if (result.result != ::printing::PrinterQueryResult::kSuccess) {
     LOG(ERROR) << "Could not retrieve printer info";
   }
 
@@ -157,7 +157,7 @@ void OnPrinterQueried(chromeos::PrinterInfoCallback callback,
   const ::printing::PrinterQueryResult& result = query_result.result;
   const ::printing::PrinterInfo& printer_info = query_result.printer_info;
   const ::printing::PrinterStatus& printer_status = query_result.printer_status;
-  if (result != ::printing::PrinterQueryResult::SUCCESS) {
+  if (result != ::printing::PrinterQueryResult::kSuccess) {
     VLOG(1) << "Could not reach printer";
     std::move(callback).Run(result, ::printing::PrinterStatus(), std::string(),
                             std::string(), std::string(), {}, false);

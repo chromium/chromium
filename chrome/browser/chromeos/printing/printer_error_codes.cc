@@ -59,38 +59,38 @@ PrinterErrorCode PrinterErrorCodeFromPrinterStatusReasons(
     const ::printing::PrinterStatus& printer_status) {
   for (const auto& reason : printer_status.reasons) {
     switch (reason.reason) {
-      case PrinterReason::Reason::MEDIA_EMPTY:
-      case PrinterReason::Reason::MEDIA_NEEDED:
-      case PrinterReason::Reason::MEDIA_LOW:
+      case PrinterReason::Reason::kMediaEmpty:
+      case PrinterReason::Reason::kMediaNeeded:
+      case PrinterReason::Reason::kMediaLow:
         return PrinterErrorCode::OUT_OF_PAPER;
-      case PrinterReason::Reason::MEDIA_JAM:
+      case PrinterReason::Reason::kMediaJam:
         return PrinterErrorCode::PAPER_JAM;
-      case PrinterReason::Reason::TONER_EMPTY:
-      case PrinterReason::Reason::TONER_LOW:
-      case PrinterReason::Reason::DEVELOPER_EMPTY:
-      case PrinterReason::Reason::DEVELOPER_LOW:
-      case PrinterReason::Reason::MARKER_SUPPLY_EMPTY:
-      case PrinterReason::Reason::MARKER_SUPPLY_LOW:
-      case PrinterReason::Reason::MARKER_WASTE_FULL:
-      case PrinterReason::Reason::MARKER_WASTE_ALMOST_FULL:
+      case PrinterReason::Reason::kTonerEmpty:
+      case PrinterReason::Reason::kTonerLow:
+      case PrinterReason::Reason::kDeveloperEmpty:
+      case PrinterReason::Reason::kDeveloperLow:
+      case PrinterReason::Reason::kMarkerSupplyEmpty:
+      case PrinterReason::Reason::kMarkerSupplyLow:
+      case PrinterReason::Reason::kMarkerWasteFull:
+      case PrinterReason::Reason::kMarkerWasteAlmostFull:
         return PrinterErrorCode::OUT_OF_INK;
-      case PrinterReason::Reason::TIMED_OUT:
-      case PrinterReason::Reason::SHUTDOWN:
+      case PrinterReason::Reason::kTimedOut:
+      case PrinterReason::Reason::kShutdown:
         return PrinterErrorCode::PRINTER_UNREACHABLE;
-      case PrinterReason::Reason::DOOR_OPEN:
-      case PrinterReason::Reason::COVER_OPEN:
-      case PrinterReason::Reason::INTERLOCK_OPEN:
+      case PrinterReason::Reason::kDoorOpen:
+      case PrinterReason::Reason::kCoverOpen:
+      case PrinterReason::Reason::kInterlockOpen:
         return PrinterErrorCode::DOOR_OPEN;
-      case PrinterReason::Reason::INPUT_TRAY_MISSING:
-      case PrinterReason::Reason::OUTPUT_TRAY_MISSING:
+      case PrinterReason::Reason::kInputTrayMissing:
+      case PrinterReason::Reason::kOutputTrayMissing:
         return PrinterErrorCode::TRAY_MISSING;
-      case PrinterReason::Reason::OUTPUT_AREA_FULL:
-      case PrinterReason::Reason::OUTPUT_AREA_ALMOST_FULL:
+      case PrinterReason::Reason::kOutputAreaFull:
+      case PrinterReason::Reason::kOutputAreaAlmostFull:
         return PrinterErrorCode::OUTPUT_FULL;
-      case PrinterReason::Reason::STOPPING:
-      case PrinterReason::Reason::STOPPED_PARTLY:
-      case PrinterReason::Reason::PAUSED:
-      case PrinterReason::Reason::MOVING_TO_PAUSED:
+      case PrinterReason::Reason::kStopping:
+      case PrinterReason::Reason::kStoppedPartly:
+      case PrinterReason::Reason::kPaused:
+      case PrinterReason::Reason::kMovingToPaused:
         return PrinterErrorCode::STOPPED;
       default:
         break;

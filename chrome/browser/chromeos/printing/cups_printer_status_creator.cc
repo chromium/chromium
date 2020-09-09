@@ -27,55 +27,55 @@ CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
 
 CupsReason PrinterReasonToCupsReason(const ReasonFromPrinter& reason) {
   switch (reason) {
-    case ReasonFromPrinter::FUSER_OVER_TEMP:
-    case ReasonFromPrinter::FUSER_UNDER_TEMP:
-    case ReasonFromPrinter::INTERPRETER_RESOURCE_UNAVAILABLE:
-    case ReasonFromPrinter::OPC_LIFE_OVER:
-    case ReasonFromPrinter::OPC_NEAR_EOL:
+    case ReasonFromPrinter::kFuserOverTemp:
+    case ReasonFromPrinter::kFuserUnderTemp:
+    case ReasonFromPrinter::kInterpreterResourceUnavailable:
+    case ReasonFromPrinter::kOpcLifeOver:
+    case ReasonFromPrinter::kOpcNearEol:
       return CupsReason::kDeviceError;
-    case ReasonFromPrinter::COVER_OPEN:
-    case ReasonFromPrinter::DOOR_OPEN:
-    case ReasonFromPrinter::INTERLOCK_OPEN:
+    case ReasonFromPrinter::kCoverOpen:
+    case ReasonFromPrinter::kDoorOpen:
+    case ReasonFromPrinter::kInterlockOpen:
       return CupsReason::kDoorOpen;
-    case ReasonFromPrinter::DEVELOPER_LOW:
-    case ReasonFromPrinter::MARKER_SUPPLY_LOW:
-    case ReasonFromPrinter::MARKER_WASTE_ALMOST_FULL:
-    case ReasonFromPrinter::TONER_LOW:
+    case ReasonFromPrinter::kDeveloperLow:
+    case ReasonFromPrinter::kMarkerSupplyLow:
+    case ReasonFromPrinter::kMarkerWasteAlmostFull:
+    case ReasonFromPrinter::kTonerLow:
       return CupsReason::kLowOnInk;
-    case ReasonFromPrinter::MEDIA_LOW:
+    case ReasonFromPrinter::kMediaLow:
       return CupsReason::kLowOnPaper;
-    case ReasonFromPrinter::NONE:
+    case ReasonFromPrinter::kNone:
       return CupsReason::kNoError;
-    case ReasonFromPrinter::DEVELOPER_EMPTY:
-    case ReasonFromPrinter::MARKER_SUPPLY_EMPTY:
-    case ReasonFromPrinter::MARKER_WASTE_FULL:
-    case ReasonFromPrinter::TONER_EMPTY:
+    case ReasonFromPrinter::kDeveloperEmpty:
+    case ReasonFromPrinter::kMarkerSupplyEmpty:
+    case ReasonFromPrinter::kMarkerWasteFull:
+    case ReasonFromPrinter::kTonerEmpty:
       return CupsReason::kOutOfInk;
-    case ReasonFromPrinter::MEDIA_EMPTY:
-    case ReasonFromPrinter::MEDIA_NEEDED:
+    case ReasonFromPrinter::kMediaEmpty:
+    case ReasonFromPrinter::kMediaNeeded:
       return CupsReason::kOutOfPaper;
-    case ReasonFromPrinter::OUTPUT_AREA_ALMOST_FULL:
+    case ReasonFromPrinter::kOutputAreaAlmostFull:
       return CupsReason::kOutputAreaAlmostFull;
-    case ReasonFromPrinter::OUTPUT_AREA_FULL:
+    case ReasonFromPrinter::kOutputAreaFull:
       return CupsReason::kOutputFull;
-    case ReasonFromPrinter::MEDIA_JAM:
+    case ReasonFromPrinter::kMediaJam:
       return CupsReason::kPaperJam;
-    case ReasonFromPrinter::MOVING_TO_PAUSED:
-    case ReasonFromPrinter::PAUSED:
+    case ReasonFromPrinter::kMovingToPaused:
+    case ReasonFromPrinter::kPaused:
       return CupsReason::kPaused;
-    case ReasonFromPrinter::SPOOL_AREA_FULL:
+    case ReasonFromPrinter::kSpoolAreaFull:
       return CupsReason::kPrinterQueueFull;
-    case ReasonFromPrinter::CONNECTING_TO_DEVICE:
-    case ReasonFromPrinter::SHUTDOWN:
-    case ReasonFromPrinter::TIMED_OUT:
+    case ReasonFromPrinter::kConnectingToDevice:
+    case ReasonFromPrinter::kShutdown:
+    case ReasonFromPrinter::kTimedOut:
       return CupsReason::kPrinterUnreachable;
-    case ReasonFromPrinter::STOPPED_PARTLY:
-    case ReasonFromPrinter::STOPPING:
+    case ReasonFromPrinter::kStoppedPartly:
+    case ReasonFromPrinter::kStopping:
       return CupsReason::kStopped;
-    case ReasonFromPrinter::INPUT_TRAY_MISSING:
-    case ReasonFromPrinter::OUTPUT_TRAY_MISSING:
+    case ReasonFromPrinter::kInputTrayMissing:
+    case ReasonFromPrinter::kOutputTrayMissing:
       return CupsReason::kTrayMissing;
-    case ReasonFromPrinter::UNKNOWN_REASON:
+    case ReasonFromPrinter::kUnknownReason:
       return CupsReason::kUnknownReason;
   }
 }
@@ -83,13 +83,13 @@ CupsReason PrinterReasonToCupsReason(const ReasonFromPrinter& reason) {
 CupsSeverity PrinterSeverityToCupsSeverity(
     const SeverityFromPrinter& severity) {
   switch (severity) {
-    case SeverityFromPrinter::UNKNOWN_SEVERITY:
+    case SeverityFromPrinter::kUnknownSeverity:
       return CupsSeverity::kUnknownSeverity;
-    case SeverityFromPrinter::REPORT:
+    case SeverityFromPrinter::kReport:
       return CupsSeverity::kReport;
-    case SeverityFromPrinter::WARNING:
+    case SeverityFromPrinter::kWarning:
       return CupsSeverity::kWarning;
-    case SeverityFromPrinter::ERROR:
+    case SeverityFromPrinter::kError:
       return CupsSeverity::kError;
   }
 }
