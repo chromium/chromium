@@ -12,6 +12,7 @@ class StarMenuModel : public ui::SimpleMenuModel {
  public:
   StarMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                 bool bookmarked,
+                bool can_move_to_read_later,
                 bool exists_as_unread_in_read_later);
   StarMenuModel(const StarMenuModel&) = delete;
   StarMenuModel& operator=(const StarMenuModel&) = delete;
@@ -24,7 +25,9 @@ class StarMenuModel : public ui::SimpleMenuModel {
   };
 
  private:
-  void Build(bool bookmarked, bool exists_as_unread_in_read_later);
+  void Build(bool bookmarked,
+             bool can_move_to_read_later,
+             bool exists_as_unread_in_read_later);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_MENU_MODEL_H_

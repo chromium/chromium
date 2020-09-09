@@ -65,6 +65,8 @@ class ReadingListModelImpl : public ReadingListModel,
 
   void RemoveEntryByURL(const GURL& url) override;
 
+  bool IsUrlSupported(const GURL& url) override;
+
   const ReadingListEntry& AddEntry(const GURL& url,
                                    const std::string& title,
                                    reading_list::EntrySource source) override;

@@ -318,13 +318,17 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
     observer.ReadingListDidApplyChanges(this);
 }
 
+bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS();
+}
+
 const ReadingListEntry& ReadingListModelImpl::AddEntry(
     const GURL& url,
     const std::string& title,
     reading_list::EntrySource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  DCHECK(url.SchemeIsHTTPOrHTTPS());
+  DCHECK(IsUrlSupported(url));
   std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate>
       scoped_model_batch_updates = nullptr;
   if (GetEntryByURL(url)) {

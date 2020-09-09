@@ -89,6 +89,11 @@ class FakeReadingListModel : public ReadingListModel {
     return nullptr;
   }
 
+  bool IsUrlSupported(const GURL& url) override {
+    NOTREACHED();
+    return false;
+  }
+
   const ReadingListEntry& AddEntry(const GURL& url,
                                    const std::string& title,
                                    reading_list::EntrySource source) override {

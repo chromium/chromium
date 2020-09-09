@@ -1030,6 +1030,15 @@ bool CanBookmarkAllTabs(const Browser* browser) {
          CanBookmarkCurrentTab(browser);
 }
 
+bool CanMoveActiveTabToReadLater(Browser* browser) {
+  GURL url =
+      GetURLToBookmark(browser->tab_strip_model()->GetActiveWebContents());
+  ReadingListModel* model = GetReadingListModel(browser);
+  if (!model)
+    return false;
+  return model->IsUrlSupported(url);
+}
+
 bool MoveCurrentTabToReadLater(Browser* browser) {
   GURL url;
   base::string16 title;

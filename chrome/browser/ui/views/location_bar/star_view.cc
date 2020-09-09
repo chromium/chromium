@@ -77,7 +77,8 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
 void StarView::ExecuteCommand(ExecuteSource source) {
   if (base::FeatureList::IsEnabled(features::kReadLater)) {
     menu_model_ = std::make_unique<StarMenuModel>(
-        this, active(), chrome::IsCurrentTabUnreadInReadLater(browser_));
+        this, active(), chrome::CanMoveActiveTabToReadLater(browser_),
+        chrome::IsCurrentTabUnreadInReadLater(browser_));
     menu_runner_ = std::make_unique<views::MenuRunner>(
         menu_model_.get(),
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::FIXED_ANCHOR);
