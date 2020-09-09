@@ -61,13 +61,6 @@ const char* ShareTarget::MethodToString(ShareTarget::Method method) {
 }
 
 // static
-ShareTarget::Method ShareTarget::StringToMethod(
-    const base::StringPiece& method) {
-  return base::EqualsCaseInsensitiveASCII(method, "POST") ? Method::kPost
-                                                          : Method::kGet;
-}
-
-// static
 const char* ShareTarget::EnctypeToString(ShareTarget::Enctype enctype) {
   switch (enctype) {
     case Enctype::kFormUrlEncoded:
@@ -75,14 +68,6 @@ const char* ShareTarget::EnctypeToString(ShareTarget::Enctype enctype) {
     case Enctype::kMultipartFormData:
       return "multipart/form-data";
   }
-}
-
-// static
-ShareTarget::Enctype ShareTarget::StringToEnctype(
-    const base::StringPiece& enctype) {
-  return base::EqualsCaseInsensitiveASCII(enctype, "multipart/form-data")
-             ? Enctype::kMultipartFormData
-             : Enctype::kFormUrlEncoded;
 }
 
 std::ostream& operator<<(std::ostream& out, const ShareTarget& share_target) {

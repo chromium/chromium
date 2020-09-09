@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/metadata_batch.h"
@@ -28,6 +29,46 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
+
+namespace {
+
+ShareTarget_Method MethodToProto(apps::ShareTarget::Method method) {
+  switch (method) {
+    case apps::ShareTarget::Method::kGet:
+      return ShareTarget_Method_GET;
+    case apps::ShareTarget::Method::kPost:
+      return ShareTarget_Method_POST;
+  }
+}
+
+apps::ShareTarget::Method ProtoToMethod(ShareTarget_Method method) {
+  switch (method) {
+    case ShareTarget_Method_GET:
+      return apps::ShareTarget::Method::kGet;
+    case ShareTarget_Method_POST:
+      return apps::ShareTarget::Method::kPost;
+  }
+}
+
+ShareTarget_Enctype EnctypeToProto(apps::ShareTarget::Enctype enctype) {
+  switch (enctype) {
+    case apps::ShareTarget::Enctype::kFormUrlEncoded:
+      return ShareTarget_Enctype_FORM_URL_ENCODED;
+    case apps::ShareTarget::Enctype::kMultipartFormData:
+      return ShareTarget_Enctype_MULTIPART_FORM_DATA;
+  }
+}
+
+apps::ShareTarget::Enctype ProtoToEnctype(ShareTarget_Enctype enctype) {
+  switch (enctype) {
+    case ShareTarget_Enctype_FORM_URL_ENCODED:
+      return apps::ShareTarget::Enctype::kFormUrlEncoded;
+    case ShareTarget_Enctype_MULTIPART_FORM_DATA:
+      return apps::ShareTarget::Enctype::kMultipartFormData;
+  }
+}
+
+}  // anonymous namespace
 
 WebAppDatabase::WebAppDatabase(AbstractWebAppDatabaseFactory* database_factory,
                                ReportErrorCallback error_callback)
@@ -190,17 +231,18 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     const apps::ShareTarget& share_target = *web_app.share_target();
     auto* const mutable_share_target = local_data->mutable_share_target();
     mutable_share_target->set_action(share_target.action.spec());
-    mutable_share_target->set_method(
-        apps::ShareTarget::MethodToString(share_target.method));
-    mutable_share_target->set_enctype(
-        apps::ShareTarget::EnctypeToString(share_target.enctype));
+    mutable_share_target->set_method(MethodToProto(share_target.method));
+    mutable_share_target->set_enctype(EnctypeToProto(share_target.enctype));
 
     const apps::ShareTarget::Params& params = share_target.params;
     auto* const mutable_share_target_params =
         mutable_share_target->mutable_params();
-    mutable_share_target_params->set_title(params.title);
-    mutable_share_target_params->set_text(params.text);
-    mutable_share_target_params->set_url(params.url);
+    if (!params.title.empty())
+      mutable_share_target_params->set_title(params.title);
+    if (!params.text.empty())
+      mutable_share_target_params->set_text(params.text);
+    if (!params.url.empty())
+      mutable_share_target_params->set_url(params.url);
 
     for (const auto& files_entry : params.files) {
       ShareTargetParamsFile* mutable_share_target_files =
@@ -463,13 +505,15 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     }
 
     share_target.action = action;
-    share_target.method =
-        apps::ShareTarget::StringToMethod(local_share_target.method());
-    share_target.enctype =
-        apps::ShareTarget::StringToEnctype(local_share_target.enctype());
-    share_target.params.title = local_share_target_params.title();
-    share_target.params.text = local_share_target_params.text();
-    share_target.params.url = local_share_target_params.url();
+    share_target.method = ProtoToMethod(local_share_target.method());
+    share_target.enctype = ProtoToEnctype(local_share_target.enctype());
+
+    if (local_share_target_params.has_title())
+      share_target.params.title = local_share_target_params.title();
+    if (local_share_target_params.has_text())
+      share_target.params.text = local_share_target_params.text();
+    if (local_share_target_params.has_url())
+      share_target.params.url = local_share_target_params.url();
 
     for (const auto& share_target_params_file :
          local_share_target_params.files()) {

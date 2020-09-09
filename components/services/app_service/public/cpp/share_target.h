@@ -62,9 +62,7 @@ struct ShareTarget {
   ~ShareTarget();
 
   static const char* MethodToString(Method);
-  static Method StringToMethod(const base::StringPiece&);
   static const char* EnctypeToString(Enctype);
-  static Enctype StringToEnctype(const base::StringPiece&);
 
   GURL action;
 
