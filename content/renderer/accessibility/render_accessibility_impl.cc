@@ -583,24 +583,6 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   if (obj.IsDetached())
     return;
 
-  if (document.GetFrame()) {
-    gfx::Size scroll_offset = document.GetFrame()->GetScrollOffset();
-    if (scroll_offset != last_scroll_offset_) {
-      // Make sure the browser is always aware of the scroll position of
-      // the root document element by posting a generic notification that
-      // will update it.
-      // TODO(dmazzoni): remove this as soon as
-      // https://bugs.webkit.org/show_bug.cgi?id=73460 is fixed.
-      last_scroll_offset_ = scroll_offset;
-      auto root_object = WebAXObject::FromWebDocument(document);
-      if (!obj.Equals(root_object)) {
-        HandleAXEvent(ui::AXEvent(root_object.AxID(),
-                                  ax::mojom::Event::kLayoutComplete,
-                                  event.event_from));
-      }
-    }
-  }
-
 #if defined(OS_ANDROID)
   // Force the newly focused node to be re-serialized so we include its
   // inline text boxes.
