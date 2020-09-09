@@ -53,6 +53,11 @@ blink_modules_sources("webcodecs") {
     "//media/mojo:buildflags",
     "//media/mojo/clients",
     "//media/mojo/mojom",
+    "//third_party/libyuv:libyuv",
+  ]
+  public_deps = [
+    "//third_party/blink/renderer/modules/mediastream:mediastream",
+    "//third_party/blink/renderer/modules/webaudio:webaudio",
   ]
 }
 
@@ -78,10 +83,14 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//gpu/command_buffer/common",
     "//media:test_support",
+    "//media/mojo/services:services",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/libyuv",
   ]

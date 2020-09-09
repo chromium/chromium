@@ -256,7 +256,6 @@ no_check_targets = [
   "//third_party/blink/renderer/modules/manifest:*",  # 2 errors
   "//third_party/blink/renderer/modules/media_capabilities:*",  # 5 errors
   "//third_party/blink/renderer/modules/peerconnection:*",  # 43 errors
-  "//third_party/blink/renderer/modules/webcodecs:*",  # 13 errors
   "//third_party/blink/renderer/modules/webtransport:*",  # 16 errors
   "//third_party/blink/renderer/modules:*",  # 321 errors
   "//third_party/blink/renderer/platform/heap:*",  # 65 errors
