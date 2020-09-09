@@ -1147,6 +1147,17 @@ ci.chromiumos_builder(
 )
 
 ci.chromiumos_builder(
+    name = "chromeos-amd64-generic-lacros-dbg",
+    branch_selector = branches.STANDARD_RELEASES,
+    console_view_entry = ci.console_view_entry(
+        category = "lacros|x64",
+        short_name = "dbg",
+    ),
+    cq_mirrors_console_view = settings.cq_mirrors_console_name,
+    main_console_view = settings.main_console_name,
+)
+
+ci.chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.ALL_RELEASES,
     console_view_entry = ci.console_view_entry(

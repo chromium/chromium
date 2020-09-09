@@ -200702,6 +200702,11 @@
       "chromiumos_preflight"
     ]
   },
+  "chromeos-amd64-generic-lacros-dbg": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
   "chromeos-amd64-generic-lacros-rel": {
     "additional_compile_targets": [
       "chrome"
