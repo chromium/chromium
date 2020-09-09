@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -33,9 +34,11 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * Creates an instance of a {@link LayoutManagerChromePhone}.
      * @param host                     A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
+     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
-    public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer) {
-        super(host, contentContainer, false, null);
+    public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+        super(host, contentContainer, false, null, tabContentManagerSupplier);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(
                 host.getContext(), this, mHost.getLayoutRenderHost(), () -> mTitleCache);
@@ -83,14 +86,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     @Override
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            TabContentManager content, ControlContainer controlContainer,
+            ControlContainer controlContainer,
             ContextualSearchManagementDelegate contextualSearchDelegate,
             DynamicResourceLoader dynamicResourceLoader, ActivityTabProvider tabProvider) {
         if (mTabStripLayoutHelperManager != null) {
             mTabStripLayoutHelperManager.setTabModelSelector(selector, creator);
         }
 
-        super.init(selector, creator, content, controlContainer, contextualSearchDelegate,
+        super.init(selector, creator, controlContainer, contextualSearchDelegate,
                 dynamicResourceLoader, tabProvider);
 
         // Make sure any tabs already restored get loaded into the title cache.

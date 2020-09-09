@@ -110,24 +110,17 @@ public class StaticLayout extends Layout {
     public StaticLayout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
             LayoutManagerHost viewHost,
             CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
-            TabModelSelector tabModelSelector,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            TabModelSelector tabModelSelector, TabContentManager tabContentManager,
             ObservableSupplier<BrowserControlsStateProvider> browserControlsStateProviderSupplier) {
         super(context, updateHost, renderHost);
         mContext = context;
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
+        assert tabContentManager != null;
+        mTabContentManager = tabContentManager;
 
         assert tabModelSelector != null;
         setTabModelSelector(tabModelSelector);
-
-        tabContentManagerSupplier.addObserver(new Callback<TabContentManager>() {
-            @Override
-            public void onResult(TabContentManager tabContentManager) {
-                setTabContentManager(tabContentManager);
-                tabContentManagerSupplier.removeObserver(this);
-            }
-        });
 
         browserControlsStateProviderSupplier.addObserver(
                 new Callback<BrowserControlsStateProvider>() {
@@ -206,14 +199,6 @@ public class StaticLayout extends Layout {
         };
     }
 
-    private void setTabContentManager(TabContentManager tabContentManager) {
-        assert tabContentManager != null;
-        assert mTabContentManager == null : "The TabContentManager should set at most once";
-
-        mTabContentManager = tabContentManager;
-        mSceneLayer.setTabContentManager(tabContentManager);
-    }
-
     private void setBrowserControlsStateProvider(
             BrowserControlsStateProvider browserControlsStateProvider) {
         assert browserControlsStateProvider != null;
@@ -246,9 +231,9 @@ public class StaticLayout extends Layout {
         assert !mIsInitialized : "StaticLayoutMediator should initialize at most once";
 
         mIsInitialized = true;
-
         if (mSceneLayer == null) {
             mSceneLayer = new StaticTabSceneLayer();
+            mSceneLayer.setTabContentManager(mTabContentManager);
         }
 
         mMcp = CompositorModelChangeProcessor.create(

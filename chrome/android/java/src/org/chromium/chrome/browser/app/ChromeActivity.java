@@ -239,7 +239,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private TabCreator mRegularTabCreator;
     private TabCreator mIncognitoTabCreator;
+
+    private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier =
+            new ObservableSupplierImpl<>();
     private TabContentManager mTabContentManager;
+
     private UmaSessionStats mUmaSessionStats;
     private ContextReporter mContextReporter;
 
@@ -1233,6 +1237,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mTabContentManager = null;
         }
 
+        if (mTabContentManagerSupplier != null) {
+            mTabContentManagerSupplier = null;
+        }
+
         mManualFillingComponent.destroy();
 
         if (mActivityTabStartupMetricsTracker != null) {
@@ -1539,7 +1547,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * Gets the {@link TabContentManager} instance which holds snapshots of the tabs in this model.
      * @return The thumbnail cache, possibly null.
+     * @Deprecated in favor of getTabContentManagerSupplier().
      */
+    @Deprecated
     public TabContentManager getTabContentManager() {
         return mTabContentManager;
     }
@@ -1552,6 +1562,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mTabContentManager = tabContentManager;
         TabContentManagerHandler.create(
                 tabContentManager, getFullscreenManager(), getTabModelSelector());
+        mTabContentManagerSupplier.set(tabContentManager);
+    }
+
+    /**
+     * Gets the supplier of the {@link TabContentManager} instance.
+     */
+    public ObservableSupplier<TabContentManager> getTabContentManagerSupplier() {
+        return mTabContentManagerSupplier;
     }
 
     /**
@@ -1692,8 +1710,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mCompositorViewHolder.setBrowserControlsManager(getBrowserControlsManager());
         mCompositorViewHolder.setUrlBar(urlBar);
         mCompositorViewHolder.setInsetObserverView(getInsetObserverView());
-        mCompositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this,
-                getTabContentManager(), mContextualSearchManager, mActivityTabProvider);
+        mCompositorViewHolder.onFinishNativeInitialization(
+                getTabModelSelector(), this, mContextualSearchManager, mActivityTabProvider);
 
         if (controlContainer != null && DeviceClassManager.enableToolbarSwipe()
                 && getCompositorViewHolder().getLayoutManager().getToolbarSwipeHandler() != null) {

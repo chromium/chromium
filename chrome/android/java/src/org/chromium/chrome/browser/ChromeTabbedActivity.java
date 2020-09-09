@@ -559,8 +559,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mRootUiCoordinator.getBottomSheetController());
                 }
             }
-            mLayoutManager = new LayoutManagerChromePhone(
-                    compositorViewHolder, mContentContainer, mStartSurface);
+            mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
+                    mStartSurface, getTabContentManagerSupplier());
             mOverviewModeController = mLayoutManager;
             mOverviewModeBehaviorSupplier.set(mOverviewModeController);
         }
@@ -571,8 +571,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForTablet")) {
-            mLayoutManager =
-                    new LayoutManagerChromeTablet(getCompositorViewHolder(), mContentContainer);
+            mLayoutManager = new LayoutManagerChromeTablet(
+                    getCompositorViewHolder(), mContentContainer, getTabContentManagerSupplier());
             mOverviewModeController = mLayoutManager;
             mOverviewModeBehaviorSupplier.set(mOverviewModeController);
         }

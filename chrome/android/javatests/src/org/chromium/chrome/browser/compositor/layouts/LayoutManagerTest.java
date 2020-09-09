@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -163,10 +164,14 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         FrameLayout container = new FrameLayout(context);
         parentContainer.addView(container);
 
-        mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container, null);
+        ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
+                new ObservableSupplierImpl<>();
+        mManagerPhone = new LayoutManagerChromePhone(
+                layoutManagerHost, container, null, tabContentManagerSupplier);
+        tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;
         CompositorAnimationHandler.setTestingMode(true);
-        mManager.init(mTabModelSelector, null, tabContentManager, null, null, null, mTabSupplier);
+        mManager.init(mTabModelSelector, null, null, null, null, mTabSupplier);
         initializeMotionEvent();
     }
 

@@ -404,10 +404,21 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
      * @param manager       The {@link TabContentManager} to get tab display content.
      */
     public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
-        if (mTabContentManager != null) mTabContentManager.removeThumbnailChangeListener(this);
         mTabModelSelector = modelSelector;
+        setTabContentManager(manager);
+    }
+
+    /**
+     * Sets the manager needed for the layout to get thumbnails.
+     *
+     * @param manager The {@link TabContentManager} to get tab display content.
+     */
+    protected void setTabContentManager(TabContentManager manager) {
+        if (manager == null) return;
+
+        if (mTabContentManager != null) mTabContentManager.removeThumbnailChangeListener(this);
         mTabContentManager = manager;
-        if (mTabContentManager != null) mTabContentManager.addThumbnailChangeListener(this);
+        mTabContentManager.addThumbnailChangeListener(this);
     }
 
     /**

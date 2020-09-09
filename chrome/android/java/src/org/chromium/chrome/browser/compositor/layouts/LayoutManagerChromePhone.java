@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
@@ -36,15 +37,17 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
+     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
-    public LayoutManagerChromePhone(
-            LayoutManagerHost host, ViewGroup contentContainer, StartSurface startSurface) {
-        super(host, contentContainer, true, startSurface);
+    public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
+            StartSurface startSurface,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+        super(host, contentContainer, true, startSurface, tabContentManagerSupplier);
     }
 
     @Override
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            TabContentManager content, ControlContainer controlContainer,
+            ControlContainer controlContainer,
             ContextualSearchManagementDelegate contextualSearchDelegate,
             DynamicResourceLoader dynamicResourceLoader, ActivityTabProvider tabProvider) {
         Context context = mHost.getContext();
@@ -53,7 +56,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         // Build Layouts
         mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
 
-        super.init(selector, creator, content, controlContainer, contextualSearchDelegate,
+        super.init(selector, creator, controlContainer, contextualSearchDelegate,
                 dynamicResourceLoader, tabProvider);
 
         // Set up layout parameters
@@ -62,7 +65,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         mToolbarSwipeLayout.setMovesToolbar(true);
 
         // Initialize Layouts
-        mSimpleAnimationLayout.setTabModelSelector(selector, content);
+        TabContentManager tabContentManager = mTabContentManagerSupplier.get();
+        assert tabContentManager != null;
+        mSimpleAnimationLayout.setTabModelSelector(selector, tabContentManager);
     }
 
     @Override

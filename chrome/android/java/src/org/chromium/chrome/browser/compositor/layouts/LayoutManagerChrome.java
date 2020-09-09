@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -75,16 +76,20 @@ public class LayoutManagerChrome
     /** Whether to create an overview Layout when LayoutManagerChrome is created. */
     private boolean mCreateOverviewLayout;
 
+    protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+
     /**
      * Creates the {@link LayoutManagerChrome} instance.
      * @param host         A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
+     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
-            boolean createOverviewLayout, @Nullable StartSurface startSurface) {
-        super(host, contentContainer);
+            boolean createOverviewLayout, @Nullable StartSurface startSurface,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+        super(host, contentContainer, tabContentManagerSupplier);
         Context context = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
 
@@ -92,6 +97,17 @@ public class LayoutManagerChrome
 
         // Build Event Filter Handlers
         mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown = */ true);
+
+        mTabContentManagerSupplier = tabContentManagerSupplier;
+        mTabContentManagerSupplier.addObserver(new Callback<TabContentManager>() {
+            @Override
+            public void onResult(TabContentManager manager) {
+                if (mOverviewLayout != null) {
+                    mOverviewLayout.setTabContentManager(manager);
+                }
+                mTabContentManagerSupplier.removeObserver(this);
+            }
+        });
 
         if (createOverviewLayout) {
             if (startSurface != null) {
@@ -146,7 +162,7 @@ public class LayoutManagerChrome
 
     @Override
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            TabContentManager content, ControlContainer controlContainer,
+            ControlContainer controlContainer,
             ContextualSearchManagementDelegate contextualSearchDelegate,
             DynamicResourceLoader dynamicResourceLoader, ActivityTabProvider tabProvider) {
         Context context = mHost.getContext();
@@ -166,13 +182,14 @@ public class LayoutManagerChrome
                     (ObservableSupplier<BrowserControlsStateProvider>) browserControlsSupplier);
         }
 
-        super.init(selector, creator, content, controlContainer, contextualSearchDelegate,
+        super.init(selector, creator, controlContainer, contextualSearchDelegate,
                 dynamicResourceLoader, tabProvider);
 
         // TODO: TitleCache should be a part of the ResourceManager.
         mTitleCache = mHost.getTitleCache();
 
         // Initialize Layouts
+        TabContentManager content = mTabContentManagerSupplier.get();
         mToolbarSwipeLayout.setTabModelSelector(selector, content);
         mOverviewListLayout.setTabModelSelector(selector, content);
         if (mOverviewLayout != null) {
@@ -193,6 +210,10 @@ public class LayoutManagerChrome
     public void destroy() {
         super.destroy();
         mOverviewModeObservers.clear();
+
+        if (mTabContentManagerSupplier != null) {
+            mTabContentManagerSupplier = null;
+        }
 
         if (mOverviewLayout != null) {
             mOverviewLayout.destroy();
