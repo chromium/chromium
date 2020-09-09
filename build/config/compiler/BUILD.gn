@@ -147,6 +147,10 @@ declare_args() {
        (is_win && target_cpu == "x86") || (is_win && target_cpu == "x64") ||
        (is_android && target_cpu == "arm") ||
        (is_android && target_cpu == "arm64"))
+
+  # Turn off the --call-graph-profile-sort flag for lld by default. Enable
+  # selectively for targets where it's beneficial.
+  enable_call_graph_profile_sort = false
 }
 
 declare_args() {
@@ -701,7 +705,7 @@ config("compiler") {
   # present. On Android this increases binary size due to more thinks for long
   # jumps. Turn it off by default and enable selectively for targets where it's
   # beneficial.
-  if (use_lld) {
+  if (use_lld && !enable_call_graph_profile_sort) {
     if (is_win) {
       ldflags += [ "/call-graph-profile-sort:no" ]
     } else {
