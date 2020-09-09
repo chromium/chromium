@@ -18,8 +18,12 @@
 #endif
 
 namespace {
-// Leading and trailing margin for label and button.
-const CGFloat kHeaderHorizontalMargin = 20;
+// Leading margin for title label. Its used to align with the Card leading
+// margin.
+const CGFloat kTitleHorizontalMargin = 19;
+// Trailing margin for menu button. Its used to align with the Card trailing
+// margin.
+const CGFloat kMenuButtonHorizontalMargin = 14;
 // Font size for label text in header.
 const CGFloat kDiscoverFeedTitleFontSize = 16;
 // Insets for header menu button.
@@ -27,6 +31,9 @@ const CGFloat kHeaderMenuButtonInsetTopAndBottom = 2;
 const CGFloat kHeaderMenuButtonInsetSides = 2;
 // Duration for the header animation when Discover feed visibility changes.
 const CGFloat kHeaderChangeAnimationDuration = 0.3;
+// Max width for cards in iPhone, this is used to align the header to the card
+// margins. This is currently hard coded by Discover.
+const CGFloat kFeedCardIPhoneWidth = 375;
 }
 
 #pragma mark - ContentSuggestionsDiscoverHeaderItem
@@ -99,19 +106,49 @@ const CGFloat kHeaderChangeAnimationDuration = 0.3;
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides,
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
 
-    [self.contentView addSubview:_menuButton];
-    [self.contentView addSubview:_titleLabel];
+    UIView* container = [[UIView alloc] init];
+    container.translatesAutoresizingMaskIntoConstraints = NO;
+    [container addSubview:_menuButton];
+    [container addSubview:_titleLabel];
+    [self.contentView addSubview:container];
 
-    [NSLayoutConstraint activateConstraints:@[
+    NSMutableArray* constraintsArray = [[NSMutableArray alloc] init];
+    [constraintsArray addObjectsFromArray:@[
+      [container.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
+      [container.bottomAnchor
+          constraintEqualToAnchor:self.contentView.bottomAnchor],
       [_titleLabel.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kHeaderHorizontalMargin],
+          constraintEqualToAnchor:container.leadingAnchor
+                         constant:kTitleHorizontalMargin],
       [_titleLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:_menuButton.leadingAnchor],
       [_menuButton.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kHeaderHorizontalMargin],
+          constraintEqualToAnchor:container.trailingAnchor
+                         constant:-kMenuButtonHorizontalMargin],
+      [_titleLabel.centerYAnchor
+          constraintEqualToAnchor:container.centerYAnchor],
+      [_menuButton.centerYAnchor
+          constraintEqualToAnchor:container.centerYAnchor],
     ]];
+
+    // TODO(b/167703449): Once the card width and padding is exposed we should
+    // stop hardcodnig this for iPhone and use those values instead.
+    if (IsIPadIdiom()) {
+      [constraintsArray addObjectsFromArray:@[
+        [container.leadingAnchor
+            constraintEqualToAnchor:self.contentView.leadingAnchor],
+        [container.trailingAnchor
+            constraintEqualToAnchor:self.contentView.trailingAnchor],
+      ]];
+    } else {
+      [constraintsArray addObjectsFromArray:@[
+        [container.centerXAnchor
+            constraintEqualToAnchor:self.contentView.centerXAnchor],
+        [container.widthAnchor constraintEqualToConstant:kFeedCardIPhoneWidth],
+      ]];
+    }
+
+    [NSLayoutConstraint activateConstraints:constraintsArray];
   }
   return self;
 }
