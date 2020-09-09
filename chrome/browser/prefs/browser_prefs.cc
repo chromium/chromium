@@ -472,6 +472,10 @@ const char kObservedSessionTime[] = "profile.observed_session_time";
 // Deprecated 9/2020
 const char kBlockThirdPartyCookies[] = "profile.block_third_party_cookies";
 
+// Deprecated 9/2020
+const char kPluginsDeprecationInfobarLastShown[] =
+    "plugins.deprecation_infobar_last_shown";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -530,6 +534,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kObservedSessionTime);
 
   registry->RegisterBooleanPref(kBlockThirdPartyCookies, false);
+
+  registry->RegisterTimePref(kPluginsDeprecationInfobarLastShown, base::Time());
 }
 
 }  // namespace
@@ -1108,4 +1114,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 9/2020
   profile_prefs->ClearPref(kBlockThirdPartyCookies);
+
+  // Added 9/2020
+  profile_prefs->ClearPref(kPluginsDeprecationInfobarLastShown);
 }
