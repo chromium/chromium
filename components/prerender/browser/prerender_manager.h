@@ -172,11 +172,9 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   static void SetMode(PrerenderManagerMode mode) { mode_ = mode; }
 
   // Query the list of current prerender pages to see if the given web contents
-  // is prerendering a page. The optional parameter |origin| is an output
-  // parameter which, if a prerender is found, is set to the Origin of the
-  // prerender |web_contents|.
-  bool IsWebContentsPrerendering(const content::WebContents* web_contents,
-                                 Origin* origin) const;
+  // is prerendering a page.
+  bool IsWebContentsPrerendering(
+      const content::WebContents* web_contents) const;
 
   // Whether the PrerenderManager has an active prerender with the given url and
   // SessionStorageNamespace associated with the given WebContents.

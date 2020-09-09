@@ -682,7 +682,7 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
       const prerender::PrerenderManager* prerender_manager =
           prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
       if (prerender_manager &&
-          prerender_manager->IsWebContentsPrerendering(web_contents, NULL))
+          prerender_manager->IsWebContentsPrerendering(web_contents))
         action->mutable_other()->SetBoolean(constants::kActionPrerender, true);
       for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
         action->mutable_args()->AppendString(*it2);

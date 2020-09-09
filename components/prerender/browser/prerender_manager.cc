@@ -279,16 +279,9 @@ void PrerenderManager::MoveEntryToPendingDelete(PrerenderContents* entry,
 }
 
 bool PrerenderManager::IsWebContentsPrerendering(
-    const WebContents* web_contents,
-    Origin* origin) const {
+    const WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PrerenderContents* prerender_contents = GetPrerenderContents(web_contents);
-  if (!prerender_contents)
-    return false;
-
-  if (origin)
-    *origin = prerender_contents->origin();
-  return true;
+  return GetPrerenderContents(web_contents);
 }
 
 bool PrerenderManager::HasPrerenderedUrl(

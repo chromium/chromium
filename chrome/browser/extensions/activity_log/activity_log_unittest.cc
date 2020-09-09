@@ -258,7 +258,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
       prerender_manager->GetAllNoStatePrefetchingContentsForTesting();
   ASSERT_EQ(1U, contentses.size());
   content::WebContents *contents = contentses[0];
-  ASSERT_TRUE(prerender_manager->IsWebContentsPrerendering(contents, NULL));
+  ASSERT_TRUE(prerender_manager->IsWebContentsPrerendering(contents));
 
   activity_log->OnScriptsExecuted(contents, {{extension->id(), {"script"}}},
                                   url);

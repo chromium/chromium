@@ -31,7 +31,7 @@ void PrerenderTabHelper::DidFinishNavigation(
           web_contents()->GetBrowserContext());
   if (!prerender_manager)
     return;
-  if (prerender_manager->IsWebContentsPrerendering(web_contents(), nullptr))
+  if (prerender_manager->IsWebContentsPrerendering(web_contents()))
     return;
   prerender_manager->RecordNavigation(navigation_handle->GetURL());
 }

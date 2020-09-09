@@ -97,7 +97,7 @@ bool IsolatedPrerenderURLLoaderInterceptor::
   if (!prerender_manager)
     return false;
 
-  if (!prerender_manager->IsWebContentsPrerendering(web_contents, nullptr))
+  if (!prerender_manager->IsWebContentsPrerendering(web_contents))
     return false;
 
   IsolatedPrerenderService* service =

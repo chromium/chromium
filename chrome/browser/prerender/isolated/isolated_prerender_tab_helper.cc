@@ -264,7 +264,7 @@ void IsolatedPrerenderTabHelper::DidStartNavigation(
   prerender::PrerenderManager* prerender_manager =
       prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
   if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents(), nullptr)) {
+      prerender_manager->IsWebContentsPrerendering(web_contents())) {
     return;
   }
 
@@ -484,7 +484,7 @@ void IsolatedPrerenderTabHelper::DidFinishNavigation(
   prerender::PrerenderManager* prerender_manager =
       prerender::PrerenderManagerFactory::GetForBrowserContext(profile_);
   if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents(), nullptr)) {
+      prerender_manager->IsWebContentsPrerendering(web_contents())) {
     return;
   }
 

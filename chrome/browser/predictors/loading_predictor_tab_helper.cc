@@ -75,7 +75,7 @@ bool IsHandledNavigation(content::NavigationHandle* navigation_handle) {
       prerender::PrerenderManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents, nullptr)) {
+      prerender_manager->IsWebContentsPrerendering(web_contents)) {
     return false;
   }
 
