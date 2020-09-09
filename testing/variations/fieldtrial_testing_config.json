@@ -4830,6 +4830,24 @@
             ]
         }
     ],
+    "OptimizationHintsNoPersistentStore": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20200814",
+                    "params": {
+                        "persist_hints_to_disk": "false"
+                    },
+                    "enable_features": [
+                        "OptimizationHints"
+                    ]
+                }
+            ]
+        }
+    ],
     "OutOfBlinkCors": [
         {
             "platforms": [
@@ -5307,22 +5325,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PreloadMetadataLazyLoad"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PreviewsNoScript": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "NoScriptWithWhiteList2",
-                    "enable_features": [
-                        "NoScriptPreviews",
-                        "OptimizationHints"
                     ]
                 }
             ]
