@@ -140,6 +140,14 @@ DocumentStateVariables UpdateDocuments(DocumentToUpdate&& documents_to_update,
 }
 }  // namespace
 
+InvertedIndex::InvertedIndex() = default;
+InvertedIndex::~InvertedIndex() = default;
+
+void InvertedIndex::RegisterIndexBuiltCallback(
+    base::RepeatingCallback<void()> on_index_built) {
+  on_index_built_ = std::move(on_index_built);
+}
+
 PostingList InvertedIndex::FindTerm(const base::string16& term) const {
   if (dictionary_.find(term) != dictionary_.end())
     return dictionary_.at(term);
@@ -201,10 +209,11 @@ std::vector<Result> InvertedIndex::FindMatchingDocumentsApproximately(
   return sorted_matching_docs;
 }
 
-InvertedIndex::InvertedIndex() = default;
-InvertedIndex::~InvertedIndex() = default;
-
 void InvertedIndex::AddDocuments(const DocumentToUpdate& documents) {
+  if (documents.empty())
+    return;
+
+  is_index_built_ = false;
   documents_to_update_.insert(documents_to_update_.end(), documents.begin(),
                               documents.end());
   InvertedIndexController();
@@ -219,6 +228,11 @@ uint32_t InvertedIndex::RemoveDocuments(
     num_erase++;
     documents_to_update_.push_back({id, std::vector<Token>()});
   }
+
+  if (num_erase == 0)
+    return num_erase;
+
+  is_index_built_ = false;
   InvertedIndexController();
   return num_erase;
 }
@@ -255,6 +269,12 @@ void InvertedIndex::InvertedIndexController() {
                          tfidf_cache_),
           base::BindOnce(&InvertedIndex::OnBuildTfidfComplete,
                          weak_ptr_factory_.GetWeakPtr()));
+    } else if (terms_to_be_updated_.empty()) {
+      // If there's no more work to do and all changed terms have been used to
+      // update the index, then mark index is built and make the callback.
+      is_index_built_ = true;
+      if (!on_index_built_.is_null())
+        on_index_built_.Run();
     }
   } else {
     update_in_progress_ = true;
