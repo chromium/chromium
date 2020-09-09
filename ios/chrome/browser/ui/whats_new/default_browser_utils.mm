@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
 
+#include "base/ios/ios_util.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -87,5 +89,5 @@ bool IsLikelyInterestedDefaultBrowserUser() {
       [[[NSUserDefaults standardUserDefaults]
           arrayForKey:kLastSignificantUserEvent] mutableCopy];
   pastUserEvents = SanitizePastUserEvents(pastUserEvents);
-  return [pastUserEvents count] > 1;
+  return [pastUserEvents count] > 1 && base::ios::IsRunningOnIOS14OrLater();
 }

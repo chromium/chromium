@@ -54,13 +54,13 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
-#import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
+#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -298,23 +298,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   if (level == SceneActivationLevelForegroundActive) {
     if (![self presentSigninUpgradePromoIfPossible]) {
-      if (![self presentSignInAccountsViewControllerIfNecessary] &&
-          initializingUIInColdStart) {
-        // Show the Default Browser promo UI if the user's past behavior fits
-        // the categorization of potentially interested users or if the user is
-        // signed in. Do not show if it is determined that Chrome is already the
-        // default browser or if the user has already seen the promo UI.
-        BOOL isEligibleUser = IsLikelyInterestedDefaultBrowserUser() ||
-                              ios::GetChromeBrowserProvider()
-                                  ->GetChromeIdentityService()
-                                  ->HasIdentities();
-        if (!IsChromeLikelyDefaultBrowser() &&
-            !HasUserInteractedWithFullscreenPromoBefore() && isEligibleUser) {
-          [HandlerForProtocol(
-              self.currentInterface.browser->GetCommandDispatcher(),
-              WhatsNewCommands) showDefaultBrowserFullscreenPromo];
-        }
-      }
+      [self presentSignInAccountsViewControllerIfNecessary];
     }
     // Mitigation for crbug.com/1092326, where a nil browser state is passed
     // (presumably because mainInterface is nil as well).
@@ -548,6 +532,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Ensure the main browser is created. This also creates the BVC.
   [self.browserViewWrangler createMainBrowser];
 
+  // Add Scene Agent that requires CommandDispatcher.
+  [self.sceneState
+      addAgent:[[DefaultBrowserSceneAgent alloc]
+                   initWithCommandDispatcher:self.mainInterface.browser
+                                                 ->GetCommandDispatcher()]];
+
   if (IsSceneStartupSupported() &&
       base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
     if (@available(iOS 13, *)) {
@@ -662,6 +652,23 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [self showFirstRunUI];
     // Do not ever show the 'restore' infobar during first run.
     self.mainController.restoreHelper = nil;
+  }
+
+  // If skipping first run and not in Safe Mode, consider showing the default
+  // browser promo.
+  if (!firstRun && !self.sceneState.appState.isInSafeMode) {
+    // Show the Default Browser promo UI if the user's past behavior fits
+    // the categorization of potentially interested users or if the user is
+    // signed in. Do not show if it is determined that Chrome is already the
+    // default browser or if the user has already seen the promo UI.
+    BOOL isEligibleUser = IsLikelyInterestedDefaultBrowserUser() ||
+                          ios::GetChromeBrowserProvider()
+                              ->GetChromeIdentityService()
+                              ->HasIdentities();
+    if (!IsChromeLikelyDefaultBrowser() &&
+        !HasUserInteractedWithFullscreenPromoBefore() && isEligibleUser) {
+      self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
+    }
   }
 }
 
