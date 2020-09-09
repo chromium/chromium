@@ -4181,7 +4181,6 @@ ci.mac_builder(
 
 ci.mac_builder(
     name = "mac-arm64-rel",
-    branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "a64",
