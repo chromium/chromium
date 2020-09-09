@@ -272,7 +272,7 @@ defaults = args.defaults(
     coverage_exclude_sources = None,
     coverage_test_types = None,
     resultdb_bigquery_exports = [],
-    isolated_server = None,
+    isolated_server = "https://isolateserver.appspot.com",
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -414,7 +414,7 @@ def builder(
         do not export.
       * isolated_server - a string indicating the host of the isolated server.
         Will be incorporated into the '$recipe_engine/isolated' property. By
-        default, this is None.
+        default, this is "https://isolateserver.appspot.com".
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
     """
 
