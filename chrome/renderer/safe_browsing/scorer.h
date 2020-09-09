@@ -20,9 +20,12 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
+#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace safe_browsing {
@@ -42,10 +45,15 @@ class Scorer {
   // (range is inclusive on both ends).
   virtual double ComputeScore(const FeatureMap& features) const;
 
-  // This method matches the given |bitmap| against the visual model. It returns
-  // true if any visual target matches, and populates |request| appropriately.
-  virtual bool GetMatchingVisualTargets(const SkBitmap& bitmap,
-                                        ClientPhishingRequest* request) const;
+  // This method matches the given |bitmap| against the visual model. It
+  // modifies |request| appropriately, and returns the new request. This expects
+  // to be called on the renderer main thread, but will perform scoring
+  // asynchronously on a worker thread.
+  virtual void GetMatchingVisualTargets(
+      const SkBitmap& bitmap,
+      std::unique_ptr<ClientPhishingRequest> request,
+      base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
+      const;
 
   // Returns the version number of the loaded client model.
   int model_version() const;
@@ -94,6 +102,8 @@ class Scorer {
   ClientSideModel model_;
   std::unordered_set<std::string> page_terms_;
   std::unordered_set<uint32_t> page_words_;
+
+  base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Scorer);
 };

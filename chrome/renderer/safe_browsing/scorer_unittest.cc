@@ -12,9 +12,13 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "chrome/renderer/safe_browsing/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
+#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -189,10 +193,20 @@ TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchOne) {
   for (int x = 0; x < 164; x++)
     *bitmap_.getAddr32(x, 0) = 0xff000000;
 
-  ClientPhishingRequest request;
-  scorer->GetMatchingVisualTargets(bitmap_, &request);
-  ASSERT_EQ(request.vision_match_size(), 1);
-  EXPECT_EQ(request.vision_match(0).matched_target_digest(), "target1");
+  base::test::TaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  std::unique_ptr<ClientPhishingRequest> request =
+      std::make_unique<ClientPhishingRequest>();
+  scorer->GetMatchingVisualTargets(
+      bitmap_, std::move(request),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<ClientPhishingRequest> request) {
+            ASSERT_EQ(request->vision_match_size(), 1);
+            EXPECT_EQ(request->vision_match(0).matched_target_digest(),
+                      "target1");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchBoth) {
@@ -212,11 +226,22 @@ TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchBoth) {
   for (int x = 168; x < 248; x++)
     *bitmap_.getAddr32(x, 0) = 0xff000000;
 
-  ClientPhishingRequest request;
-  scorer->GetMatchingVisualTargets(bitmap_, &request);
-  ASSERT_EQ(request.vision_match_size(), 2);
-  EXPECT_EQ(request.vision_match(0).matched_target_digest(), "target1");
-  EXPECT_EQ(request.vision_match(1).matched_target_digest(), "target2");
+  base::test::TaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  std::unique_ptr<ClientPhishingRequest> request =
+      std::make_unique<ClientPhishingRequest>();
+  scorer->GetMatchingVisualTargets(
+      bitmap_, std::move(request),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<ClientPhishingRequest> request) {
+            ASSERT_EQ(request->vision_match_size(), 2);
+            EXPECT_EQ(request->vision_match(0).matched_target_digest(),
+                      "target1");
+            EXPECT_EQ(request->vision_match(1).matched_target_digest(),
+                      "target2");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 }  // namespace safe_browsing
