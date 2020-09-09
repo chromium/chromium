@@ -8,9 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
+
+class Profile;
 
 namespace aura {
 class Window;
@@ -33,6 +34,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
 
   // Returns the root window that newly created windows should be added to.
   static aura::Window* GetRootWindowForNewWindows();
+
+  // Returns the currently active profile.
+  Profile* GetProfile();
 
   // Shows holding space UI. This is a no-op if it's already showing.
   void Show();
@@ -63,7 +67,6 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   void SetUpOnMainThread() override;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
 };
 

@@ -43,6 +43,8 @@ source_set("test_support") {
     "//ash:test_support",
     "//ash/public/cpp",
     "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/chromeos",
     "//chrome/browser/extensions",
     "//chrome/test:test_support_ui",
     "//ui/views",

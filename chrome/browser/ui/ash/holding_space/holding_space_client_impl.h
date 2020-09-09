@@ -22,8 +22,11 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   ~HoldingSpaceClientImpl() override;
 
   // HoldingSpaceClient:
-  void OpenItem(const HoldingSpaceItem& item,
-                OpenItemCallback callback) override;
+  void CopyToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
+  void OpenItem(const HoldingSpaceItem&, SuccessCallback) override;
+  void OpenItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;
+  void PinItem(const HoldingSpaceItem& item) override;
+  void UnpinItem(const HoldingSpaceItem& item) override;
 
  private:
   Profile* const profile_;

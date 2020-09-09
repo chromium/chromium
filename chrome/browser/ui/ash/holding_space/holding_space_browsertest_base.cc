@@ -14,7 +14,10 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "base/bind_helpers.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
@@ -24,13 +27,22 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// Creates a file at `root_path` with the specified `extension`, returning the
-// path of the created file.
-base::FilePath CreateFile(const base::FilePath& root_path,
-                          const std::string& extension) {
-  const base::FilePath file_path = root_path.Append(base::StringPrintf(
-      "%s.%s", base::UnguessableToken::Create().ToString().c_str(),
-      extension.c_str()));
+// Returns the path of the downloads mount point for the given `profile`.
+base::FilePath GetDownloadsPath(Profile* profile) {
+  base::FilePath result;
+  EXPECT_TRUE(
+      storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
+          file_manager::util::GetDownloadsMountPointName(profile), &result));
+  return result;
+}
+
+// Creates a file at the root of the downloads mount point with the specified
+// `extension`, returning the path of the created file.
+base::FilePath CreateFile(Profile* profile, const std::string& extension) {
+  const base::FilePath file_path =
+      GetDownloadsPath(profile).Append(base::StringPrintf(
+          "%s.%s", base::UnguessableToken::Create().ToString().c_str(),
+          extension.c_str()));
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -47,14 +59,16 @@ base::FilePath CreateFile(const base::FilePath& root_path,
   return file_path;
 }
 
-// Creates a .txt file at `root_path` and returns the path of the created file.
-base::FilePath CreateTextFile(const base::FilePath& root_path) {
-  return CreateFile(root_path, "txt");
+// Creates a .txt file at the root of the downloads mount point and returns the
+// path of the created file.
+base::FilePath CreateTextFile(Profile* profile) {
+  return CreateFile(profile, "txt");
 }
 
-// Creates a .png file at `root_path` and returns the path of the created file.
-base::FilePath CreateImageFile(const base::FilePath& root_path) {
-  return CreateFile(root_path, "png");
+// Creates a .png file at the root of the downloads mount point and returns the
+// path of the created file.
+base::FilePath CreateImageFile(Profile* profile) {
+  return CreateFile(profile, "png");
 }
 
 }  // namespace
@@ -72,6 +86,10 @@ aura::Window* HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows() {
   return HoldingSpaceTestApi::GetRootWindowForNewWindows();
 }
 
+Profile* HoldingSpaceBrowserTestBase::GetProfile() {
+  return ProfileManager::GetActiveUserProfile();
+}
+
 void HoldingSpaceBrowserTestBase::Show() {
   test_api_->Show();
 }
@@ -87,7 +105,7 @@ bool HoldingSpaceBrowserTestBase::IsShowing() {
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddPinnedFile() {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kPinnedFile,
-      /*file_path=*/CreateTextFile(scoped_temp_dir_.GetPath()),
+      /*file_path=*/CreateTextFile(GetProfile()),
       /*file_system_url=*/GURL(),
       /*image=*/
       std::make_unique<HoldingSpaceImage>(
@@ -102,7 +120,7 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddPinnedFile() {
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddScreenshotFile() {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenshot,
-      /*file_path=*/CreateImageFile(scoped_temp_dir_.GetPath()),
+      /*file_path=*/CreateImageFile(GetProfile()),
       /*file_system_url=*/GURL(),
       /*image=*/
       std::make_unique<HoldingSpaceImage>(
@@ -129,7 +147,6 @@ void HoldingSpaceBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 
 void HoldingSpaceBrowserTestBase::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
-  ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   test_api_ = std::make_unique<HoldingSpaceTestApi>();
 }
 

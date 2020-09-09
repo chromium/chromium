@@ -15,11 +15,28 @@ class HoldingSpaceItem;
 // Interface for the holding space browser client.
 class ASH_PUBLIC_EXPORT HoldingSpaceClient {
  public:
-  // Attempts to open the specified holding space `item`. Success is returned
-  // via the supplied `callback`.
-  using OpenItemCallback = base::OnceCallback<void(bool)>;
+  using SuccessCallback = base::OnceCallback<void(bool)>;
+
+  // Attempts to copy the specified holding space `item` to the clipboard.
+  // Success is returned via the supplied `callback`.
+  virtual void CopyToClipboard(const HoldingSpaceItem& item,
+                               SuccessCallback callback) = 0;
+
+  // Attempts to open the specified holding space `item`.
+  // Success is returned via the supplied `callback`.
   virtual void OpenItem(const HoldingSpaceItem& item,
-                        OpenItemCallback callback) = 0;
+                        SuccessCallback callback) = 0;
+
+  // Attempts to open the specified holding space `item` in its folder.
+  // Success is returned via the supplied `callback`.
+  virtual void OpenItemInFolder(const HoldingSpaceItem& item,
+                                SuccessCallback callback) = 0;
+
+  // Pins the specified `item`.
+  virtual void PinItem(const HoldingSpaceItem& item) = 0;
+
+  // Unpins the specified `item`.
+  virtual void UnpinItem(const HoldingSpaceItem& item) = 0;
 
  protected:
   HoldingSpaceClient() = default;
