@@ -49,9 +49,40 @@ namespace {
 
 }  // namespace
 
+bool IsBrowserAccessibilityCocoa(const id node) {
+  return [node isKindOfClass:[BrowserAccessibilityCocoa class]];
+}
+
+bool IsAXUIElement(const id node) {
+  return CFGetTypeID(node) == AXUIElementGetTypeID();
+}
+
+NSArray* ChildrenOf(const id node) {
+  if (IsBrowserAccessibilityCocoa(node)) {
+    return [node children];
+  }
+
+  if (IsAXUIElement(node)) {
+    CFTypeRef children_ref;
+    if ((AXUIElementCopyAttributeValue(static_cast<AXUIElementRef>(node),
+                                       kAXChildrenAttribute, &children_ref)) ==
+        kAXErrorSuccess) {
+      return static_cast<NSArray*>(children_ref);
+    }
+    return nil;
+  }
+
+  NOTREACHED();
+  return nil;
+}
+
 // Line indexers
 
-LineIndexer::LineIndexer() {}
+LineIndexer::LineIndexer(const gfx::NativeViewAccessible node) {
+  int counter = 0;
+  Build(node, &counter);
+}
+
 LineIndexer::~LineIndexer() {}
 
 std::string LineIndexer::IndexBy(const gfx::NativeViewAccessible node) const {
@@ -76,34 +107,10 @@ void LineIndexer::Build(const gfx::NativeViewAccessible node, int* counter) {
   const std::string line_index =
       std::string(1, ':') + base::NumberToString(++(*counter));
   map.insert({node, line_index});
-  NSArray* children = Children(node);
+  NSArray* children = ChildrenOf(node);
   for (gfx::NativeViewAccessible child in children) {
     Build(child, counter);
   }
-}
-
-CocoaLineIndexer::CocoaLineIndexer(const BrowserAccessibilityCocoa* node) {
-  int counter = 0;
-  Build(node, &counter);
-}
-
-NSArray* CocoaLineIndexer::Children(gfx::NativeViewAccessible node) const {
-  return [node children];
-}
-
-AXLineIndexer::AXLineIndexer(const AXUIElementRef node) {
-  int counter = 0;
-  Build(static_cast<id>(node), &counter);
-}
-
-NSArray* AXLineIndexer::Children(gfx::NativeViewAccessible node) const {
-  CFTypeRef children_ref;
-  if ((AXUIElementCopyAttributeValue(static_cast<AXUIElementRef>(node),
-                                     kAXChildrenAttribute, &children_ref)) ==
-      kAXErrorSuccess) {
-    return static_cast<NSArray*>(children_ref);
-  }
-  return nil;
 }
 
 // AttributeInvoker

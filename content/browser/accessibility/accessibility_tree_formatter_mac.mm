@@ -25,8 +25,9 @@ using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
 using base::SysUTF16ToNSString;
 using content::a11y::AttributeInvoker;
-using content::a11y::AXLineIndexer;
-using content::a11y::CocoaLineIndexer;
+using content::a11y::ChildrenOf;
+using content::a11y::IsAXUIElement;
+using content::a11y::IsBrowserAccessibilityCocoa;
 using content::a11y::LineIndexer;
 using content::a11y::OptionalNSObject;
 using std::string;
@@ -150,7 +151,7 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTree(
     BrowserAccessibility* root) {
   DCHECK(root);
   BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(root);
-  CocoaLineIndexer line_indexer(cocoa_root);
+  LineIndexer line_indexer(cocoa_root);
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
   RecursiveBuildAccessibilityTree(cocoa_root, &line_indexer, dict.get());
   return dict;
@@ -160,7 +161,7 @@ std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
     gfx::AcceleratedWidget widget) {
   AXUIElementRef application = AXUIElementCreateApplication(widget);
-  AXLineIndexer line_indexer(application);
+  LineIndexer line_indexer(static_cast<id>(application));
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
   RecursiveBuildAccessibilityTree(static_cast<id>(application), &line_indexer,
                                   dict.get());
@@ -178,31 +179,22 @@ void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(
     const id node,
     const LineIndexer* line_indexer,
     base::DictionaryValue* dict) const {
-  NSArray* children = nil;
-  if (CFGetTypeID(node) == AXUIElementGetTypeID()) {
+  if (IsAXUIElement(node)) {
     AddProperties(static_cast<AXUIElementRef>(node), line_indexer, dict);
-    CFTypeRef children_ref;
-    if ((AXUIElementCopyAttributeValue(static_cast<AXUIElementRef>(node),
-                                       kAXChildrenAttribute, &children_ref)) ==
-        kAXErrorSuccess) {
-      children = static_cast<NSArray*>(children_ref);
-    }
-  } else if ([node isKindOfClass:[BrowserAccessibilityCocoa class]]) {
+  } else if (IsBrowserAccessibilityCocoa(node)) {
     AddProperties(static_cast<BrowserAccessibilityCocoa*>(node), line_indexer,
                   dict);
-    children = [node children];
   }
 
-  if (children) {
-    auto child_dict_list = std::make_unique<base::ListValue>();
-    for (id child in children) {
-      std::unique_ptr<base::DictionaryValue> child_dict(
-          new base::DictionaryValue);
-      RecursiveBuildAccessibilityTree(child, line_indexer, child_dict.get());
-      child_dict_list->Append(std::move(child_dict));
-    }
-    dict->Set(kChildrenDictAttr, std::move(child_dict_list));
+  NSArray* children = ChildrenOf(node);
+  auto child_dict_list = std::make_unique<base::ListValue>();
+  for (id child in children) {
+    std::unique_ptr<base::DictionaryValue> child_dict(
+        new base::DictionaryValue);
+    RecursiveBuildAccessibilityTree(child, line_indexer, child_dict.get());
+    child_dict_list->Append(std::move(child_dict));
   }
+  dict->Set(kChildrenDictAttr, std::move(child_dict_list));
 }
 
 void AccessibilityTreeFormatterMac::AddProperties(
