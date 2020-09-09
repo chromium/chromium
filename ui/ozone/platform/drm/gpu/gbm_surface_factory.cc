@@ -24,6 +24,7 @@
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_thread_proxy.h"
 #include "ui/ozone/platform/drm/gpu/drm_window_proxy.h"
@@ -185,16 +186,16 @@ std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
     if (!dev_path_file.IsValid())
       break;
 
+    // Skip the virtual graphics memory manager device.
+    ScopedDrmVersionPtr version(drmGetVersion(dev_path_file.GetPlatformFile()));
+    if (!version || base::LowerCaseEqualsASCII(version->name, "vgem")) {
+      continue;
+    }
+
     ScopedGbmDevice device(gbm_create_device(dev_path_file.GetPlatformFile()));
     if (!device) {
       LOG(ERROR) << "Couldn't create Gbm Device at " << dev_path.MaybeAsASCII();
       return supported_buffer_formats;
-    }
-
-    // Skip the virtual graphics memory manager device.
-    if (base::LowerCaseEqualsASCII(gbm_device_get_backend_name(device.get()),
-                                   "vgem")) {
-      continue;
     }
 
     for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
