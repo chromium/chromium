@@ -57,15 +57,11 @@ export const kaleidoscopeDescriptor = new ModuleDescriptor(
     /*id=*/ 'kaleidoscope',
     /*name=*/ loadTimeData.getString('modulesKaleidoscopeName'),
     /*heightPx=*/ 330,
-    () => {
+    async () => {
       // Load all the Kaleidoscope resources into the NTP and return the module
       // once the loading is complete.
-      return Promise.all(KALEIDOSCOPE_RESOURCES.map((r) => loadResource(r)))
-          .then(() => {
-            return {
-              element: document.createElement('ntp-kaleidoscope-module'),
-              title: loadTimeData.getString('modulesKaleidoscopeTitle'),
-            };
-          });
+      await Promise.all(KALEIDOSCOPE_RESOURCES.map((r) => loadResource(r)));
+
+      return window.loadKaleidoscopeModule();
     },
 );
