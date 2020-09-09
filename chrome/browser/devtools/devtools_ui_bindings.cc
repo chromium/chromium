@@ -677,6 +677,9 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       frontend_loaded_(false) {
   g_devtools_ui_bindings_instances.Get().push_back(this);
   frontend_contents_observer_.reset(new FrontendWebContentsObserver(this));
+  web_contents_->GetMutableRendererPrefs()->can_accept_load_drops = false;
+  web_contents_->GetMutableRendererPrefs()->accept_languages =
+      g_browser_process->GetApplicationLocale();
 
   file_helper_.reset(new DevToolsFileHelper(web_contents_, profile_, this));
   file_system_indexer_ = new DevToolsFileSystemIndexer();
