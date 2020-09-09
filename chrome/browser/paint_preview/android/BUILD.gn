@@ -25,12 +25,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewDemoServiceFactory.java",
     "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabService.java",
     "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabServiceNativeInitObserver.java",
   ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
