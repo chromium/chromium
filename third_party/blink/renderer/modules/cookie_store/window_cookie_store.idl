@@ -9,5 +9,5 @@
     ImplementedAs=GlobalCookieStore,
     SecureContext
 ] partial interface Window {
-    [Replaceable, SameObject] readonly attribute CookieStore cookieStore;
+    [SameObject] readonly attribute CookieStore cookieStore;
 };

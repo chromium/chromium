@@ -12031,7 +12031,6 @@ interface webkitURL
     method webkitRequestFileSystem
     method webkitResolveLocalFileSystemURL
     setter clientInformation
-    setter cookieStore
     setter defaultStatus
     setter defaultstatus
     setter devicePixelRatio

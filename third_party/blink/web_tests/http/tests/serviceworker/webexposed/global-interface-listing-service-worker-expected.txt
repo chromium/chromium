@@ -3925,7 +3925,6 @@ interface WritableStreamDefaultWriter
     getter serviceWorker
     method gc
     method skipWaiting
-    setter cookieStore
     setter onabortpayment
     setter onactivate
     setter onbackgroundfetchabort
