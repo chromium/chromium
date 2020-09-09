@@ -34,6 +34,8 @@ static_library("test_config") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "../power_monitor/test/fake_power_monitor_source.cc",
+    "../power_monitor/test/fake_power_monitor_source.h",
     "../task/sequence_manager/test/fake_task.cc",
     "../task/sequence_manager/test/fake_task.h",
     "../task/sequence_manager/test/mock_time_domain.cc",

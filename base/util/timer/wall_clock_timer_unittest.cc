@@ -7,8 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_source.h"
+#include "base/power_monitor/test/fake_power_monitor_source.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -17,32 +16,8 @@
 
 namespace util {
 
-namespace {
-
-class StubPowerMonitorSource : public base::PowerMonitorSource {
- public:
-  // Use this method to send a power resume event.
-  void Resume() { ProcessPowerEvent(RESUME_EVENT); }
-
-  // Use this method to send a power suspend event.
-  void Suspend() { ProcessPowerEvent(SUSPEND_EVENT); }
-
-  // base::PowerMonitorSource:
-  bool IsOnBatteryPowerImpl() override { return false; }
-};
-
-}  // namespace
-
 class WallClockTimerTest : public ::testing::Test {
  protected:
-  WallClockTimerTest() {
-    auto mock_power_monitor_source = std::make_unique<StubPowerMonitorSource>();
-    mock_power_monitor_source_ = mock_power_monitor_source.get();
-    base::PowerMonitor::Initialize(std::move(mock_power_monitor_source));
-  }
-
-  ~WallClockTimerTest() override { base::PowerMonitor::ShutdownForTesting(); }
-
   // Fast-forwards virtual time by |delta|. If |with_power| is true, both
   // |clock_| and |task_environment_| time will be fast-forwarded. Otherwise,
   // only |clock_| time will be changed to mimic the behavior when machine is
@@ -50,20 +25,19 @@ class WallClockTimerTest : public ::testing::Test {
   // Power event will be triggered if |with_power| is set to false.
   void FastForwardBy(base::TimeDelta delay, bool with_power = true) {
     if (!with_power)
-      mock_power_monitor_source_->Suspend();
+      fake_power_monitor_source_.Suspend();
 
     clock_.SetNow(clock_.Now() + delay);
 
     if (with_power) {
       task_environment_.FastForwardBy(delay);
     } else {
-      mock_power_monitor_source_->Resume();
+      fake_power_monitor_source_.Resume();
       task_environment_.RunUntilIdle();
     }
   }
 
-  // Owned by power_monitor_. Use this to simulate a power suspend and resume.
-  StubPowerMonitorSource* mock_power_monitor_source_ = nullptr;
+  base::test::ScopedFakePowerMonitorSource fake_power_monitor_source_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::SimpleTestClock clock_;
@@ -234,10 +208,10 @@ TEST_F(WallClockTimerTest, NonStopTickClock) {
   constexpr auto past_time = base::TimeDelta::FromSeconds(30);
 
   // Fastword with both clocks even the power is suspended.
-  mock_power_monitor_source_->Suspend();
+  fake_power_monitor_source_.Suspend();
   clock_.SetNow(clock_.Now() + past_time);
   task_environment_.FastForwardBy(past_time);
-  mock_power_monitor_source_->Resume();
+  fake_power_monitor_source_.Resume();
 
   // Ensure that the timer has not yet fired.
   ::testing::Mock::VerifyAndClearExpectations(&callback);
@@ -270,10 +244,10 @@ TEST_F(WallClockTimerTest, NonStopTickClockWithLongPause) {
   // Fastword with both clocks even the power is suspended. Timer fires at the
   // moment of power resume.
   EXPECT_CALL(callback, Run());
-  mock_power_monitor_source_->Suspend();
+  fake_power_monitor_source_.Suspend();
   clock_.SetNow(clock_.Now() + past_time);
   task_environment_.FastForwardBy(past_time);
-  mock_power_monitor_source_->Resume();
+  fake_power_monitor_source_.Resume();
 
   ::testing::Mock::VerifyAndClearExpectations(&callback);
   EXPECT_FALSE(wall_clock_timer.IsRunning());

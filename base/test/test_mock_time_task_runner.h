@@ -149,6 +149,12 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   // Fast-forwards virtual time by |delta| but not causing any task execution.
   void AdvanceMockTickClock(TimeDelta delta);
 
+  // Fast-forward virtual time, but not tick time. May be useful for testing
+  // timers when simulating suspend/resume or time adjustments. As it doesn't
+  // advance tick time, no tasks are automatically processed
+  // (ProcessAllTasksNoLaterThan is not called).
+  void AdvanceWallClock(TimeDelta delta);
+
   // Fast-forwards virtual time just until all tasks are executed.
   void FastForwardUntilNoTasksRemain();
 
