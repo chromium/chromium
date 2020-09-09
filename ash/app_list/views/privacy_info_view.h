@@ -30,6 +30,7 @@ class PrivacyInfoView : public SearchResultBaseView,
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -47,6 +48,7 @@ class PrivacyInfoView : public SearchResultBaseView,
   // SearchResultBaseView:
   void SelectInitialResultAction(bool reverse_tab_order) override;
   bool SelectNextResultAction(bool reverse_tab_order) override;
+  void NotifyA11yResultSelected() override;
 
  protected:
   PrivacyInfoView(int info_string_id, int link_string_id);

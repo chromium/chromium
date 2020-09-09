@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -46,6 +47,9 @@ PrivacyInfoView::PrivacyInfoView(const int info_string_id,
       info_string_id_(info_string_id),
       link_string_id_(link_string_id) {
   InitLayout();
+  // This view behaves like a container and should not hold focus, but instead
+  // pass focus to its children.
+  SetFocusBehavior(FocusBehavior::NEVER);
 }
 
 PrivacyInfoView::~PrivacyInfoView() = default;
@@ -76,6 +80,13 @@ void PrivacyInfoView::OnPaintBackground(gfx::Canvas* canvas) {
     canvas->DrawCircle(close_button_->bounds().CenterPoint(),
                        close_button_->width() / 2, flags);
   }
+}
+
+void PrivacyInfoView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // ChromeVox does not support nested buttons, so reassign this view's role to
+  // be a container. This allows ChromeVox to focus onto the text view and close
+  // button.
+  node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
 void PrivacyInfoView::OnMouseEvent(ui::MouseEvent* event) {
@@ -190,6 +201,12 @@ bool PrivacyInfoView::SelectNextResultAction(bool reverse_tab_order) {
   UpdateLinkStyle();
   SchedulePaint();
   return action_changed;
+}
+
+void PrivacyInfoView::NotifyA11yResultSelected() {
+  // Do not notify when this view is selected by default. Notifications for the
+  // child views are handled by SelectInitialResultAction and
+  // SelectNextResultAction.
 }
 
 void PrivacyInfoView::ButtonPressed(views::Button* sender,

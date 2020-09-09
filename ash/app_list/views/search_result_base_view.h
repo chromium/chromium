@@ -50,7 +50,7 @@ class APP_LIST_EXPORT SearchResultBaseView : public views::Button,
   // kSelection view accessibility event. For example, if a result action is
   // selected, the notification will be sent for the selected action button
   // view.
-  void NotifyA11yResultSelected();
+  virtual void NotifyA11yResultSelected();
 
   SearchResult* result() const { return result_; }
   void SetResult(SearchResult* result);
