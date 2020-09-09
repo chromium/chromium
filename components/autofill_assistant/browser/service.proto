@@ -1457,6 +1457,16 @@ message PromptProto {
   // TODO(marianfe): Consider introducing a BrowseAction instead.
   optional bool browse_mode = 7;
 
+  // EXPERIMENTAL.
+  // Only relevant if |browse_mode| is true. If set, the bottom sheet will
+  // completely disappear when the action starts, and re-appear when the action
+  // ends.
+  //
+  // Note: invisible prompts can't show chips to the user. This flag is intended
+  // to be used with prompts that exclusively use choices which are
+  // auto-selected based on DOM state, i.e., |auto_select_when|.
+  optional bool browse_mode_invisible = 10;
+
   // When set to true, end prompt on navigation events happening during a prompt
   // action. The result sent back to the server in
   // ProcessedActionProto.prompt_choice will have |navigation_ended| set to

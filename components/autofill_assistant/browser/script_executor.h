@@ -147,7 +147,8 @@ class ScriptExecutor : public ActionDelegate,
   void Prompt(std::unique_ptr<std::vector<UserAction>> user_actions,
               bool disable_force_expand_sheet,
               base::OnceCallback<void()> end_on_navigation_callback,
-              bool browse_mode) override;
+              bool browse_mode,
+              bool browse_mode_invisible) override;
   void CleanUpAfterPrompt() override;
   void SetBrowseDomainsWhitelist(std::vector<std::string> domains) override;
   void FillAddressForm(

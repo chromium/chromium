@@ -93,6 +93,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   void ClearGenericUi() override;
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
+  void SetBrowseModeInvisible(bool invisible) override;
 
   ClientSettings* GetMutableSettings() { return &client_settings_; }
 

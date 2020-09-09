@@ -130,7 +130,8 @@ class ActionDelegate {
       std::unique_ptr<std::vector<UserAction>> user_actions,
       bool disable_force_expand_sheet,
       base::OnceCallback<void()> end_on_navigation_callback = base::DoNothing(),
-      bool browse_mode = false) = 0;
+      bool browse_mode = false,
+      bool browse_mode_invisible = false) = 0;
 
   // Have the UI leave the prompt state and go back to its previous state.
   virtual void CleanUpAfterPrompt() = 0;

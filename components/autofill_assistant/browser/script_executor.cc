@@ -427,10 +427,12 @@ void ScriptExecutor::Prompt(
     std::unique_ptr<std::vector<UserAction>> user_actions,
     bool disable_force_expand_sheet,
     base::OnceCallback<void()> end_on_navigation_callback,
-    bool browse_mode) {
+    bool browse_mode,
+    bool browse_mode_invisible) {
   // First communicate to the delegate that prompt actions should or should not
   // expand the sheet intitially.
   delegate_->SetExpandSheetForPromptAction(!disable_force_expand_sheet);
+  delegate_->SetBrowseModeInvisible(browse_mode_invisible);
   if (browse_mode) {
     delegate_->EnterState(AutofillAssistantState::BROWSE);
   } else if (delegate_->EnterState(AutofillAssistantState::PROMPT)) {
@@ -471,6 +473,7 @@ void ScriptExecutor::CleanUpAfterPrompt() {
 
   delegate_->ClearTouchableElementArea();
   delegate_->SetExpandSheetForPromptAction(true);
+  delegate_->SetBrowseModeInvisible(false);
   delegate_->EnterState(AutofillAssistantState::RUNNING);
 }
 

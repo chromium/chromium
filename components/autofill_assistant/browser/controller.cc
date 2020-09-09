@@ -49,13 +49,13 @@ const char kProgressBarExperiment[] = "4400697";
 //
 // Note that the UI might be shown in RUNNING state, even if it doesn't require
 // it.
-bool StateNeedsUiInRegularScript(AutofillAssistantState state) {
+bool StateNeedsUiInRegularScript(AutofillAssistantState state,
+                                 bool browse_mode_invisible) {
   switch (state) {
     case AutofillAssistantState::PROMPT:
     case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
     case AutofillAssistantState::MODAL_DIALOG:
     case AutofillAssistantState::STARTING:
-    case AutofillAssistantState::BROWSE:
       return true;
 
     case AutofillAssistantState::INACTIVE:
@@ -63,11 +63,14 @@ bool StateNeedsUiInRegularScript(AutofillAssistantState state) {
     case AutofillAssistantState::STOPPED:
     case AutofillAssistantState::RUNNING:
       return false;
+
+    case AutofillAssistantState::BROWSE:
+      return browse_mode_invisible;
   }
 }
 
-// Same as |StateNeedsUiInRegularScript|, but does not show UI in STARTING or
-// BROWSE state.
+// Same as |StateNeedsUiInRegularScript|, but does not show UI in STARTING
+// state.
 bool StateNeedsUiInLiteScript(AutofillAssistantState state) {
   switch (state) {
     case AutofillAssistantState::PROMPT:
@@ -380,6 +383,10 @@ void Controller::ClearGenericUi() {
   for (ControllerObserver& observer : observers_) {
     observer.OnGenericUserInterfaceChanged(nullptr);
   }
+}
+
+void Controller::SetBrowseModeInvisible(bool invisible) {
+  browse_mode_invisible_ = invisible;
 }
 
 void Controller::AddNavigationListener(
@@ -718,6 +725,10 @@ bool Controller::EnterState(AutofillAssistantState state) {
   if (!needs_ui_ && StateNeedsUI(state)) {
     RequireUI();
   } else if (needs_ui_ && state == AutofillAssistantState::TRACKING) {
+    needs_ui_ = false;
+  } else if (browse_mode_invisible_ && needs_ui_ &&
+             state == AutofillAssistantState::BROWSE) {
+    client_->DestroyUI();
     needs_ui_ = false;
   }
 
@@ -1933,7 +1944,7 @@ void Controller::WriteUserData(
 
 bool Controller::StateNeedsUI(AutofillAssistantState state) {
   if (!trigger_context_ || !trigger_context_->is_lite_script()) {
-    return StateNeedsUiInRegularScript(state);
+    return StateNeedsUiInRegularScript(state, browse_mode_invisible_);
   }
   return StateNeedsUiInLiteScript(state);
 }

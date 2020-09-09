@@ -77,11 +77,12 @@ class MockActionDelegate : public ActionDelegate {
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD4(Prompt,
+  MOCK_METHOD5(Prompt,
                void(std::unique_ptr<std::vector<UserAction>> user_actions,
                     bool disable_force_expand_sheet,
                     base::OnceCallback<void()> end_on_navigation_callback,
-                    bool browse_mode));
+                    bool browse_mode,
+                    bool browse_mode_invisible));
   MOCK_METHOD0(CleanUpAfterPrompt, void());
   MOCK_METHOD1(SetBrowseDomainsWhitelist,
                void(std::vector<std::string> domains));

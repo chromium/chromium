@@ -162,7 +162,8 @@ void PromptAction::UpdateUserActions() {
   }
   delegate_->Prompt(
       std::move(user_actions), proto_.prompt().disable_force_expand_sheet(),
-      std::move(end_on_navigation_callback), proto_.prompt().browse_mode());
+      std::move(end_on_navigation_callback), proto_.prompt().browse_mode(),
+      proto_.prompt().browse_mode_invisible());
   precondition_changed_ = false;
 }
 

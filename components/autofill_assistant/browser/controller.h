@@ -145,6 +145,7 @@ class Controller : public ScriptExecutorDelegate,
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback) override;
   void ClearGenericUi() override;
+  void SetBrowseModeInvisible(bool invisible) override;
 
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.
@@ -507,6 +508,7 @@ class Controller : public ScriptExecutorDelegate,
 
   bool expand_sheet_for_prompt_action_ = true;
   std::vector<std::string> browse_domains_whitelist_;
+  bool browse_mode_invisible_ = false;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;

@@ -181,6 +181,10 @@ class ScriptExecutorDelegate {
   // Clears the generic UI.
   virtual void ClearGenericUi() = 0;
 
+  // Sets whether browse mode should be invisible or not. Must be set before
+  // calling |EnterState(BROWSE)| to take effect.
+  virtual void SetBrowseModeInvisible(bool invisible) = 0;
+
  protected:
   virtual ~ScriptExecutorDelegate() {}
 };
