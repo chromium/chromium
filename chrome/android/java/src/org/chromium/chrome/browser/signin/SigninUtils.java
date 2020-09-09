@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
@@ -78,15 +79,21 @@ public class SigninUtils {
         ThreadUtils.assertOnUiThread();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        if (signinManager.isSignInAllowed()) {
-            ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
-            AccountPickerBottomSheetCoordinator coordinator =
-                    new AccountPickerBottomSheetCoordinator(windowAndroid.getContext().get(),
-                            BottomSheetControllerProvider.from(windowAndroid),
-                            new AccountPickerDelegate(windowAndroid, activity.getActivityTab(),
-                                    activity.getTabCreator(/*incognito=*/true),
-                                    new WebSigninBridge.Factory(), continueUrl));
+        if (!signinManager.isSignInAllowed()) {
+            return;
         }
+        if (AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty()) {
+            // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
+            //  in the future. This disabling is only temporary.
+            // TODO(https://crbug.com/1120334): Records the action for suppressed sign-in promo
+            return;
+        }
+        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
+        AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
+                windowAndroid.getContext().get(), BottomSheetControllerProvider.from(windowAndroid),
+                new AccountPickerDelegate(windowAndroid, activity.getActivityTab(),
+                        activity.getTabCreator(/*incognito=*/true), new WebSigninBridge.Factory(),
+                        continueUrl));
     }
 
     /**
