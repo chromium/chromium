@@ -272,44 +272,6 @@
             ]
         }
     ],
-    "AutofillCacheServerCardInfo": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillCacheServerCardInfo"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillCreditCardAuthentication": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillCreditCardAuthentication"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCardNicknameManagementAndUpstream": [
         {
             "platforms": [
@@ -4797,6 +4759,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OneCopyRasterBufferPlaybackNormalThreadPriority"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OptOutZeroTimeoutTimersFromThrottling": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OptOutZeroTimeoutTimersFromThrottling"
                     ]
                 }
             ]
