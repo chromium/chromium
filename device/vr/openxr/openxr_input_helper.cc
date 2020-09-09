@@ -122,10 +122,11 @@ XrResult OpenXRInputHelper::Initialize(XrInstance instance) {
   // on availability.
   std::map<XrPath, std::vector<XrActionSuggestedBinding>> bindings;
 
+  OpenXrExtensionHelper extension_helper;
   for (size_t i = 0; i < controller_states_.size(); i++) {
     RETURN_IF_XR_FAILED(controller_states_[i].controller.Initialize(
         static_cast<OpenXrHandednessType>(i), instance, session_,
-        path_helper_.get(), &bindings));
+        path_helper_.get(), extension_helper, &bindings));
     controller_states_[i].primary_button_pressed = false;
   }
 

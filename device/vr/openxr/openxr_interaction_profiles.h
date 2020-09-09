@@ -7,6 +7,7 @@
 
 #include "base/stl_util.h"
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "device/vr/openxr/openxr_defs.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -25,7 +26,9 @@ enum class OpenXrInteractionProfileType {
   kOculusTouch = 2,
   kValveIndex = 3,
   kHTCVive = 4,
-  kCount = 5,
+  kSamsungOdyssey = 5,
+  kHPReverbG2 = 6,
+  kCount = 7,
 };
 
 enum class OpenXrButtonType {
@@ -71,6 +74,7 @@ struct OpenXrAxisPathMap {
 struct OpenXrControllerInteractionProfile {
   OpenXrInteractionProfileType type;
   const char* const path;
+  const char* const required_extension;
   GamepadMapping mapping;
   const char* const* const input_profiles;
   const size_t profile_size;
@@ -82,13 +86,14 @@ struct OpenXrControllerInteractionProfile {
   size_t axis_map_size;
 };
 
-// TODO(crbug.com/1017513)
 // Currently Supports:
 // Microsoft motion controller.
+// Samsung Odyssey controller
 // Khronos simple controller.
 // Oculus touch controller.
 // Valve index controller.
 // HTC vive controller
+// HP Reverb G2 controller
 // Declare OpenXR input profile bindings for other runtimes when they become
 // available.
 constexpr const char* kMicrosoftMotionInputProfiles[] = {
@@ -104,6 +109,13 @@ constexpr const char* kValveIndexInputProfiles[] = {
 
 constexpr const char* kHTCViveInputProfiles[] = {
     "htc-vive", "generic-trigger-squeeze-touchpad"};
+
+constexpr const char* kSamsungOdysseyInputProfiles[] = {
+    "samsung-odyssey", "windows-mixed-reality",
+    "generic-trigger-squeeze-touchpad-thumbstick"};
+
+constexpr const char* kHPReverbG2InputProfiles[] = {
+    "hp-mixed-reality", "oculus-touch", "generic-trigger-squeeze"};
 
 constexpr OpenXrButtonPathMap kMicrosoftMotionControllerButtonPathMaps[] = {
     {OpenXrButtonType::kTrigger,
@@ -205,7 +217,7 @@ constexpr OpenXrButtonPathMap kValveIndexControllerButtonPathMaps[] = {
      {{OpenXrButtonActionType::kPress, "/input/a/click"},
       {OpenXrButtonActionType::kTouch, "/input/a/touch"}},
      2},
-};  // namespace device
+};
 
 constexpr OpenXrButtonPathMap kHTCViveControllerButtonPathMaps[] = {
     {OpenXrButtonType::kTrigger,
@@ -221,6 +233,46 @@ constexpr OpenXrButtonPathMap kHTCViveControllerButtonPathMaps[] = {
      {{OpenXrButtonActionType::kPress, "/input/trackpad/click"},
       {OpenXrButtonActionType::kTouch, "/input/trackpad/touch"}},
      2}};
+
+constexpr OpenXrButtonPathMap kHPReverbG2LeftControllerButtonPathMaps[] = {
+    {OpenXrButtonType::kTrigger,
+     {{OpenXrButtonActionType::kPress, "/input/trigger/value"},
+      {OpenXrButtonActionType::kValue, "/input/trigger/value"}},
+     2},
+    {OpenXrButtonType::kSqueeze,
+     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
+      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
+     2},
+    {OpenXrButtonType::kThumbstick,
+     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"}},
+     1},
+    {OpenXrButtonType::kButton1,
+     {{OpenXrButtonActionType::kPress, "/input/x/click"}},
+     1},
+    {OpenXrButtonType::kButton2,
+     {{OpenXrButtonActionType::kPress, "/input/y/click"}},
+     1},
+};
+
+constexpr OpenXrButtonPathMap kHPReverbG2RightControllerButtonPathMaps[] = {
+    {OpenXrButtonType::kTrigger,
+     {{OpenXrButtonActionType::kPress, "/input/trigger/value"},
+      {OpenXrButtonActionType::kValue, "/input/trigger/value"}},
+     2},
+    {OpenXrButtonType::kSqueeze,
+     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
+      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
+     2},
+    {OpenXrButtonType::kThumbstick,
+     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"}},
+     1},
+    {OpenXrButtonType::kButton1,
+     {{OpenXrButtonActionType::kPress, "/input/a/click"}},
+     1},
+    {OpenXrButtonType::kButton2,
+     {{OpenXrButtonActionType::kPress, "/input/b/click"}},
+     1},
+};
 
 constexpr OpenXrAxisPathMap kMicrosoftMotionControllerAxisPathMaps[] = {
     {OpenXrAxisType::kTrackpad, "/input/trackpad"},
@@ -240,10 +292,15 @@ constexpr OpenXrAxisPathMap kHTCViveControllerAxisPathMaps[] = {
     {OpenXrAxisType::kTrackpad, "/input/trackpad"},
 };
 
+constexpr OpenXrAxisPathMap kHPReverbG2ControllerAxisPathMaps[] = {
+    {OpenXrAxisType::kThumbstick, "/input/thumbstick"},
+};
+
 constexpr OpenXrControllerInteractionProfile
     kMicrosoftMotionInteractionProfile = {
         OpenXrInteractionProfileType::kMicrosoftMotion,
         "/interaction_profiles/microsoft/motion_controller",
+        nullptr,
         GamepadMapping::kXrStandard,
         kMicrosoftMotionInputProfiles,
         base::size(kMicrosoftMotionInputProfiles),
@@ -257,6 +314,7 @@ constexpr OpenXrControllerInteractionProfile
 constexpr OpenXrControllerInteractionProfile kKHRSimpleInteractionProfile = {
     OpenXrInteractionProfileType::kKHRSimple,
     "/interaction_profiles/khr/simple_controller",
+    nullptr,
     GamepadMapping::kNone,
     kGenericButtonInputProfiles,
     base::size(kGenericButtonInputProfiles),
@@ -270,6 +328,7 @@ constexpr OpenXrControllerInteractionProfile kKHRSimpleInteractionProfile = {
 constexpr OpenXrControllerInteractionProfile kOculusTouchInteractionProfile = {
     OpenXrInteractionProfileType::kOculusTouch,
     "/interaction_profiles/oculus/touch_controller",
+    nullptr,
     GamepadMapping::kXrStandard,
     kOculusTouchInputProfiles,
     base::size(kOculusTouchInputProfiles),
@@ -283,6 +342,7 @@ constexpr OpenXrControllerInteractionProfile kOculusTouchInteractionProfile = {
 constexpr OpenXrControllerInteractionProfile kValveIndexInteractionProfile = {
     OpenXrInteractionProfileType::kValveIndex,
     "/interaction_profiles/valve/index_controller",
+    nullptr,
     GamepadMapping::kXrStandard,
     kValveIndexInputProfiles,
     base::size(kValveIndexInputProfiles),
@@ -296,6 +356,7 @@ constexpr OpenXrControllerInteractionProfile kValveIndexInteractionProfile = {
 constexpr OpenXrControllerInteractionProfile kHTCViveInteractionProfile = {
     OpenXrInteractionProfileType::kHTCVive,
     "/interaction_profiles/htc/vive_controller",
+    nullptr,
     GamepadMapping::kXrStandard,
     kHTCViveInputProfiles,
     base::size(kHTCViveInputProfiles),
@@ -306,11 +367,40 @@ constexpr OpenXrControllerInteractionProfile kHTCViveInteractionProfile = {
     kHTCViveControllerAxisPathMaps,
     base::size(kHTCViveControllerAxisPathMaps)};
 
+constexpr OpenXrControllerInteractionProfile kSamsungOdysseyInteractionProfile =
+    {OpenXrInteractionProfileType::kSamsungOdyssey,
+     "/interaction_profiles/samsung/odyssey_controller",
+     kExtSamsungOdysseyControllerExtensionName,
+     GamepadMapping::kXrStandard,
+     kSamsungOdysseyInputProfiles,
+     base::size(kSamsungOdysseyInputProfiles),
+     kMicrosoftMotionControllerButtonPathMaps,
+     base::size(kMicrosoftMotionControllerButtonPathMaps),
+     kMicrosoftMotionControllerButtonPathMaps,
+     base::size(kMicrosoftMotionControllerButtonPathMaps),
+     kMicrosoftMotionControllerAxisPathMaps,
+     base::size(kMicrosoftMotionControllerAxisPathMaps)};
+
+constexpr OpenXrControllerInteractionProfile kHPReverbG2InteractionProfile = {
+    OpenXrInteractionProfileType::kHPReverbG2,
+    "/interaction_profiles/hp/mixed_reality_controller",
+    kExtHPMixedRealityControllerExtensionName,
+    GamepadMapping::kXrStandard,
+    kHPReverbG2InputProfiles,
+    base::size(kHPReverbG2InputProfiles),
+    kHPReverbG2LeftControllerButtonPathMaps,
+    base::size(kHPReverbG2LeftControllerButtonPathMaps),
+    kHPReverbG2RightControllerButtonPathMaps,
+    base::size(kHPReverbG2RightControllerButtonPathMaps),
+    kHPReverbG2ControllerAxisPathMaps,
+    base::size(kHPReverbG2ControllerAxisPathMaps)};
+
 constexpr OpenXrControllerInteractionProfile
     kOpenXrControllerInteractionProfiles[] = {
         kMicrosoftMotionInteractionProfile, kKHRSimpleInteractionProfile,
-        kOculusTouchInteractionProfile, kValveIndexInteractionProfile,
-        kHTCViveInteractionProfile};
+        kOculusTouchInteractionProfile,     kValveIndexInteractionProfile,
+        kHTCViveInteractionProfile,         kSamsungOdysseyInteractionProfile,
+        kHPReverbG2InteractionProfile};
 
 }  // namespace device
 

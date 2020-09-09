@@ -34,6 +34,7 @@ class OpenXrController {
       XrInstance instance,
       XrSession session,
       const OpenXRPathHelper* path_helper,
+      const OpenXrExtensionHelper& extension_helper,
       std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings);
 
   XrActionSet action_set() const { return action_set_; }
@@ -61,6 +62,7 @@ class OpenXrController {
   XrResult InitializeControllerSpaces();
 
   XrResult SuggestBindings(
+      const OpenXrExtensionHelper& extension_helper,
       std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings) const;
 
   XrResult CreateActionsForButton(OpenXrButtonType button_type);

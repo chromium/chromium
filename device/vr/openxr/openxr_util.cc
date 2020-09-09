@@ -70,7 +70,8 @@ OpenXrExtensionHelper::OpenXrExtensionHelper() {
 
 OpenXrExtensionHelper::~OpenXrExtensionHelper() = default;
 
-bool OpenXrExtensionHelper::ExtensionSupported(const char* extension_name) {
+bool OpenXrExtensionHelper::ExtensionSupported(
+    const char* extension_name) const {
   return std::find_if(
              extension_properties_.begin(), extension_properties_.end(),
              [&extension_name](const XrExtensionProperties& properties) {
@@ -132,6 +133,22 @@ XrResult CreateInstance(XrInstance* instance) {
           XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
   if (unboundedSpaceExtensionSupported) {
     extensions.push_back(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
+  }
+
+  // Input extensions. These enable interaction profiles not defined in the core
+  // spec
+  const bool samsungInteractionProfileExtensionSupported =
+      extension_helper.ExtensionSupported(
+          kExtSamsungOdysseyControllerExtensionName);
+  if (samsungInteractionProfileExtensionSupported) {
+    extensions.push_back(kExtSamsungOdysseyControllerExtensionName);
+  }
+
+  const bool hpControllerExtensionSupported =
+      extension_helper.ExtensionSupported(
+          kExtHPMixedRealityControllerExtensionName);
+  if (hpControllerExtensionSupported) {
+    extensions.push_back(kExtHPMixedRealityControllerExtensionName);
   }
 
   instance_create_info.enabledExtensionCount =

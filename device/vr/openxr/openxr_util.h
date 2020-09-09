@@ -16,7 +16,7 @@ class OpenXrExtensionHelper {
   OpenXrExtensionHelper();
   ~OpenXrExtensionHelper();
 
-  bool ExtensionSupported(const char* extension_name);
+  bool ExtensionSupported(const char* extension_name) const;
 
  private:
   std::vector<XrExtensionProperties> extension_properties_;
