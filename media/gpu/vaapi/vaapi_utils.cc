@@ -226,15 +226,9 @@ bool FillVP8DataStructures(VaapiWrapper* vaapi_wrapper,
 #undef CLAMP_Q
   }
 
-  if (!vaapi_wrapper->SubmitBuffer(VAIQMatrixBufferType, &iq_matrix_buf))
-    return false;
-
   const Vp8EntropyHeader& entr_hdr = frame_header.entropy_hdr;
   VAProbabilityDataBufferVP8 prob_buf{};
   CheckedMemcpy(prob_buf.dct_coeff_probs, entr_hdr.coeff_probs);
-
-  if (!vaapi_wrapper->SubmitBuffer(VAProbabilityBufferType, &prob_buf))
-    return false;
 
   VAPictureParameterBufferVP8 pic_param{};
   pic_param.frame_width = frame_header.width;
@@ -335,9 +329,6 @@ bool FillVP8DataStructures(VaapiWrapper* vaapi_wrapper,
   pic_param.bool_coder_ctx.value = frame_header.bool_dec_value;
   pic_param.bool_coder_ctx.count = frame_header.bool_dec_count;
 
-  if (!vaapi_wrapper->SubmitBuffer(VAPictureParameterBufferType, &pic_param))
-    return false;
-
   VASliceParameterBufferVP8 slice_param{};
   slice_param.slice_data_size = frame_header.frame_size;
   slice_param.slice_data_offset = frame_header.first_part_offset;
@@ -355,10 +346,11 @@ bool FillVP8DataStructures(VaapiWrapper* vaapi_wrapper,
   for (size_t i = 0; i < frame_header.num_of_dct_partitions; ++i)
     slice_param.partition_size[i + 1] = frame_header.dct_partition_sizes[i];
 
-  if (!vaapi_wrapper->SubmitBuffer(VASliceParameterBufferType, &slice_param))
-    return false;
-
-  return vaapi_wrapper->SubmitBuffer(
-      VASliceDataBufferType, frame_header.frame_size, frame_header.data);
+  return vaapi_wrapper->SubmitBuffers(
+      {{VAIQMatrixBufferType, sizeof(iq_matrix_buf), &iq_matrix_buf},
+       {VAProbabilityBufferType, sizeof(prob_buf), &prob_buf},
+       {VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
+       {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
+       {VASliceDataBufferType, frame_header.frame_size, frame_header.data}});
 }
 }  // namespace media
