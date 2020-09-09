@@ -9,11 +9,12 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 
 namespace {
 
-void RecordContactChangeCheckResultMetrics(NearbyShareHttpResult result) {
+const char kDeviceIdPrefix[] = "users/me/devices/";
+
+void RecordGetDeviceStateResultMetrics(NearbyShareHttpResult result) {
   // TODO(https://crbug.com/1105579): Record a histogram value for each result.
 }
 
@@ -83,26 +84,31 @@ void NearbyShareContactDownloaderImpl::CheckIfContactsChanged() {
                   << ": Checking if contacts have changed since last upload.";
   timer_.Start(
       FROM_HERE, timeout_,
-      base::BindOnce(
-          &NearbyShareContactDownloaderImpl::OnContactChangeCheckTimeout,
-          base::Unretained(this)));
+      base::BindOnce(&NearbyShareContactDownloaderImpl::OnGetDeviceStateTimeout,
+                     base::Unretained(this)));
 
-  // TODO(nohle): Create and invoke HTTP client when the RPC to check if
-  // contacts changed is built. For now, simulate success.
-  OnContactChangeCheckSuccess();
+  nearbyshare::proto::GetDeviceStateRequest request;
+  request.set_parent(kDeviceIdPrefix + device_id());
+
+  client_ = client_factory_->CreateInstance();
+  client_->GetDeviceState(
+      request,
+      base::BindOnce(&NearbyShareContactDownloaderImpl::OnGetDeviceStateSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&NearbyShareContactDownloaderImpl::OnGetDeviceStateFailure,
+                     base::Unretained(this)));
 }
 
-void NearbyShareContactDownloaderImpl::OnContactChangeCheckSuccess() {
+void NearbyShareContactDownloaderImpl::OnGetDeviceStateSuccess(
+    const nearbyshare::proto::GetDeviceStateResponse& response) {
   timer_.Stop();
 
-  // TODO(nohle): Process actual response when contact-change check RPC is
-  // built.
-  did_contacts_change_since_last_upload_ = true;
+  did_contacts_change_since_last_upload_ = response.are_contacts_changed();
   NS_LOG(VERBOSE) << __func__ << ": Did contacts change since last upload? "
                   << (did_contacts_change_since_last_upload_ ? "Yes." : "No.");
 
   client_.reset();
-  RecordContactChangeCheckResultMetrics(NearbyShareHttpResult::kSuccess);
+  RecordGetDeviceStateResultMetrics(NearbyShareHttpResult::kSuccess);
 
   if (only_download_if_changed() && !did_contacts_change_since_last_upload_) {
     NS_LOG(VERBOSE) << __func__
@@ -114,22 +120,22 @@ void NearbyShareContactDownloaderImpl::OnContactChangeCheckSuccess() {
   CallListContactPeople(/*next_page_token=*/base::nullopt);
 }
 
-void NearbyShareContactDownloaderImpl::OnContactChangeCheckFailure(
+void NearbyShareContactDownloaderImpl::OnGetDeviceStateFailure(
     NearbyShareHttpError error) {
   timer_.Stop();
   client_.reset();
-  RecordContactChangeCheckResultMetrics(NearbyShareHttpErrorToResult(error));
+  RecordGetDeviceStateResultMetrics(NearbyShareHttpErrorToResult(error));
 
-  NS_LOG(ERROR) << __func__ << ": Contact-change check RPC failed with error "
+  NS_LOG(ERROR) << __func__ << ": GetDeviceState RPC failed with error "
                 << error;
   Fail();
 }
 
-void NearbyShareContactDownloaderImpl::OnContactChangeCheckTimeout() {
+void NearbyShareContactDownloaderImpl::OnGetDeviceStateTimeout() {
   client_.reset();
-  RecordContactChangeCheckResultMetrics(NearbyShareHttpResult::kTimeout);
+  RecordGetDeviceStateResultMetrics(NearbyShareHttpResult::kTimeout);
 
-  NS_LOG(ERROR) << __func__ << ": Contact-change check RPC timed out.";
+  NS_LOG(ERROR) << __func__ << ": GetDeviceState RPC timed out.";
   Fail();
 }
 

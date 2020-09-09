@@ -15,6 +15,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
+#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClient;
@@ -68,9 +69,10 @@ class NearbyShareContactDownloaderImpl : public NearbyShareContactDownloader {
   void OnRun() override;
 
   void CheckIfContactsChanged();
-  void OnContactChangeCheckSuccess();
-  void OnContactChangeCheckFailure(NearbyShareHttpError error);
-  void OnContactChangeCheckTimeout();
+  void OnGetDeviceStateSuccess(
+      const nearbyshare::proto::GetDeviceStateResponse& response);
+  void OnGetDeviceStateFailure(NearbyShareHttpError error);
+  void OnGetDeviceStateTimeout();
 
   void CallListContactPeople(
       const base::Optional<std::string>& next_page_token);
