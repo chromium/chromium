@@ -30,14 +30,6 @@ Polymer({
   },
 
   /**
-   * @return {boolean} Whether the iron-list layout is grid.
-   * @private
-   */
-  computeLayout_() {
-    return this.topicSource === AmbientModeTopicSource.GOOGLE_PHOTOS;
-  },
-
-  /**
    * @return {boolean}
    * @private
    */
