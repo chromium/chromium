@@ -2,8 +2,8 @@
 
 [AddressSanitizer](https://github.com/google/sanitizers) (ASan) is a fast memory
 error detector based on compiler instrumentation (LLVM). It is fully usable for
-Chrome on Linux and Mac. There's a mostly-functional Windows port in progress
-too. Additional info on the tool itself is available at
+Chrome on Android, Chrome OS, iOS simulator, Linux, Mac, and 64-bit Windows.
+Additional info on the tool itself is available at
 https://clang.llvm.org/docs/AddressSanitizer.html.
 
 For the memory leak detector built into ASan, see
@@ -14,20 +14,19 @@ instead.
 ## Buildbots and trybots
 
 The [Chromium Memory
-waterfall](https://ci.chromium.org/p/chromium/g/chromium.memory/console) (not to
-be confused with the Memory FYI waterfall) contains buildbots running Chromium
-tests under ASan on Linux (Linux ASan/LSan bots for the regular Linux build,
-Linux Chromium OS ASan for the chromeos=1 build running on Linux), OS X (both 32
-and 64 bits), Chromium OS (x86 and amd64 builds running inside VMs). Linux and
-Linux Chromium OS bots run with --no-sandbox, but there's an extra Linux bot
-that enables the sandbox (but disables LeakSanitizer).
+waterfall](https://ci.chromium.org/p/chromium/g/chromium.memory/console)
+contains buildbots running Chromium tests under ASan on Linux (Linux ASan/LSan
+bots for the regular Linux build, Linux Chromium OS ASan for the chromeos=1
+build running on Linux), macOS, Chromium OS. Linux and Linux Chromium OS bots
+run with --no-sandbox, but there's an extra Linux bot that enables the sandbox
+(but disables LeakSanitizer).
 
 The trybots running Chromium tests on Linux and macOS are:
-- linux_asan (everything except browser_tests and content_browsertests)
-- linux_browser_asan (browser_tests and content_browsertests),
-- mac_asan (many tests including browser_tests and content_browsertests)
-- linux_chromeos_asan (the chromeos=1 build running on a Linux machine, many
-tests including browser_tests and content_browsertests).
+- linux\_asan (everything except browser\_tests and content\_browsertests)
+- linux\_browser\_asan (browser\_tests and content\_browsertests),
+- mac\_asan (many tests including browser\_tests and content\_browsertests)
+- linux\_chromeos\_asan (the chromeos=1 build running on a Linux machine, many
+tests including browser\_tests and content\_browsertests).
 
 ## Pre-built Chrome binaries
 
@@ -36,14 +35,9 @@ You can grab fresh Chrome binaries built with ASan
 
 ## Build tests with ASan
 
-If you're on MacOS or linux64, building with ASan is easy. Start by compiling
-`base_unittests` to verify the build is working for you (see below). Then, you
-can compile `chrome`, `browser_tests`, etc.. Make sure to compile release
-builds.
-
-Make sure you've run `tools/clang/scripts/update.py` (see
-https://chromium.googlesource.com/chromium/src/+/master/docs/clang.md for
-details).
+Building with ASan is easy. Start by compiling `base_unittests` to verify the
+build is working for you (see below). Then, you can compile `chrome`,
+`browser_tests`, etc.. Make sure to compile release builds.
 
 ### Configuring the build
 
@@ -65,9 +59,8 @@ ninja -C out/asan base_unittests
 
 ### Goma build
 
-ASan builds should work seamlessly with Goma (except for Windows); just add
-`use_goma=1` to your `GYP_DEFINES` or `use_goma=true` in your "gn args" Don't
-forget to use ninja -j <jobs> to take advantage of goma.
+ASan builds should work seamlessly with Goma; just add `use_goma=true` in your
+"gn args" Don't forget to use `ninja -j <jobs>` to take advantage of goma.
 
 ### Build options
 
@@ -139,7 +132,7 @@ You may need to run with `--disable-gpu` on Linux with NVIDIA driver older than
 You will likely need to define environment variable
 [`G_SLICE=always-malloc`](https://developer.gnome.org/glib/unstable/glib-running.html)
 to avoid crashes inside gtk.
-NSS_DISABLE_ARENA_FREE_LIST=1 and NSS_DISABLE_UNLOAD=1 are required as well.
+`NSS_DISABLE_ARENA_FREE_LIST=1` and `NSS_DISABLE_UNLOAD=1` are required as well.
 
 When filing a bug found by AddressSanitizer, please add a label
 `Stability-AddressSanitizer`.
@@ -155,11 +148,11 @@ See `base/debug/sanitizer_options.cc` for more details.
 
 ## NaCl support under ASan
 
-On Linux (and soon on MacOS) you can build and run Chromium with NaCl under ASan.
+On Linux (and soon on macOS) you can build and run Chromium with NaCl under ASan.
 Untrusted code (nexe) itself is not instrumented with ASan in this mode, but
 everything else is.
 
-To do this, remove `disable_nacl=1` from `GYP_DEFINES`, and define
+To do this, remove `enable_nacl=false` from your `args.gn`, and define
 `NACL_DANGEROUS_SKIP_QUALIFICATION_TEST=1` in your environment at run time.
 
 Pipe chromium output (stderr) through ``tools/valgrind/asan/asan_symbolize.py
@@ -194,7 +187,6 @@ changes:
 
 ```python
 target_os="android"
-is_clang=true
 is_asan=true
 is_debug=false
 ```
@@ -229,7 +221,7 @@ Use `build/android/asan_symbolize.py` to symbolize stack from `adb logcat`. It
 needs the `--output-directory` argument and takes care of translating the device
 path to the unstripped binary in the output directory.
 
-## Building with v8_target_arch=arm
+## Building with v8\_target\_arch="arm"
 
 This is needed to detect addressability bugs in the ARM code emitted by V8 and
 running on an instrumented ARM emulator in a 32-bit x86 Linux Chromium. **You
