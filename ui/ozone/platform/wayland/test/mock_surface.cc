@@ -87,6 +87,8 @@ MockSurface::MockSurface(wl_resource* resource) : ServerObject(resource) {}
 MockSurface::~MockSurface() {
   if (xdg_surface_ && xdg_surface_->resource())
     wl_resource_destroy(xdg_surface_->resource());
+  if (sub_surface_ && sub_surface_->resource())
+    wl_resource_destroy(sub_surface_->resource());
 }
 
 MockSurface* MockSurface::FromResource(wl_resource* resource) {
