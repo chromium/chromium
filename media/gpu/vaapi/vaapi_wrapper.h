@@ -299,22 +299,27 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // between contexts.
   bool SyncSurface(VASurfaceID va_surface_id);
 
-  // Submit parameters or slice data of |va_buffer_type|, copying them from
-  // |buffer| of size |size|, into HW codec. The data in |buffer| is no
-  // longer needed and can be freed after this method returns.
-  // Data submitted via this method awaits in the HW codec until
-  // ExecuteAndDestroyPendingBuffers() is called to execute or
-  // DestroyPendingBuffers() is used to cancel a pending job.
-  bool SubmitBuffer(VABufferType va_buffer_type,
-                    size_t size,
-                    const void* buffer);
-
+  // Calls SubmitBuffer_Locked() to request libva to allocate a new VABufferID
+  // of |va_buffer_type| and |size|, and to copy the |data| into it. The
+  // allocated VABufferIDs stay alive until DestroyPendingBuffers_Locked(). Note
+  // that this method does not submit the buffers for execution, they are simply
+  // stored until ExecuteAndDestroyPendingBuffers()/Execute_Locked(). The
+  // ownership of |data| stays with the caller.
+  bool SubmitBuffer(VABufferType va_buffer_type, size_t size, const void* data);
   // Convenient templatized version of SubmitBuffer() where |size| is deduced to
-  // be the size of the type of |*buffer|.
+  // be the size of the type of |*data|.
   template <typename T>
-  bool SubmitBuffer(VABufferType va_buffer_type, const T* buffer) {
-    return SubmitBuffer(va_buffer_type, sizeof(T), buffer);
+  bool SubmitBuffer(VABufferType va_buffer_type, const T* data) {
+    return SubmitBuffer(va_buffer_type, sizeof(T), data);
   }
+  // Batch-version of SubmitBuffer(), where the lock for accessing libva is
+  // acquired only once.
+  struct VABufferDescriptor {
+    VABufferType type;
+    size_t size;
+    const void* data;
+  };
+  bool SubmitBuffers(const std::vector<VABufferDescriptor>& va_buffers);
 
   // Submit a VAEncMiscParameterBuffer of given |misc_param_type|, copying its
   // data from |buffer| of size |size|, into HW codec. The data in |buffer| is
@@ -440,6 +445,11 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   void DestroyPendingBuffers_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+
+  // Requests libva to allocate a new VABufferID of type |va_buffer.type|, maps
+  // it and copies |va_buffer.size| contents of |va_buffer.data| to it.
+  bool SubmitBuffer_Locked(const VABufferDescriptor& va_buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   const CodecMode mode_;
 

@@ -108,9 +108,6 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK((pic_param.profile == 0 && pic_param.bit_depth == 8) ||
          (pic_param.profile == 2 && pic_param.bit_depth == 10));
 
-  if (!vaapi_wrapper_->SubmitBuffer(VAPictureParameterBufferType, &pic_param))
-    return false;
-
   VASliceParameterBufferVP9 slice_param;
   memset(&slice_param, 0, sizeof(slice_param));
   slice_param.slice_data_size = frame_hdr->frame_size;
@@ -141,12 +138,14 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
     seg_param.chroma_ac_quant_scale = seg.uv_dequant[i][1];
   }
 
-  if (!vaapi_wrapper_->SubmitBuffer(VASliceParameterBufferType, &slice_param))
+  if (!vaapi_wrapper_->SubmitBuffers(
+          {{VAPictureParameterBufferType,
+            sizeof(VADecPictureParameterBufferVP9), &pic_param},
+           {VASliceParameterBufferType, sizeof(VASliceParameterBufferVP9),
+            &slice_param},
+           {VASliceDataBufferType, frame_hdr->frame_size, frame_hdr->data}})) {
     return false;
-
-  if (!vaapi_wrapper_->SubmitBuffer(VASliceDataBufferType,
-                                    frame_hdr->frame_size, frame_hdr->data))
-    return false;
+  }
 
   return vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       pic->AsVaapiVP9Picture()->va_surface()->id());

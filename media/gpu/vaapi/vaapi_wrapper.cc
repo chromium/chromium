@@ -1778,33 +1778,20 @@ bool VaapiWrapper::SyncSurface(VASurfaceID va_surface_id) {
 
 bool VaapiWrapper::SubmitBuffer(VABufferType va_buffer_type,
                                 size_t size,
-                                const void* buffer) {
-  DCHECK_LT(va_buffer_type, VABufferTypeMax);
-  DCHECK(buffer);
+                                const void* data) {
   TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffer");
   base::AutoLock auto_lock(*va_lock_);
-  TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBufferLocked");
+  return SubmitBuffer_Locked({va_buffer_type, size, data});
+}
 
-  VABufferID buffer_id;
-  {
-    TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffer_vaCreateBuffer");
-    const VAStatus va_res =
-        vaCreateBuffer(va_display_, va_context_id_, va_buffer_type, size, 1,
-                       nullptr, &buffer_id);
-    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
+bool VaapiWrapper::SubmitBuffers(
+    const std::vector<VABufferDescriptor>& va_buffers) {
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffers");
+  base::AutoLock auto_lock(*va_lock_);
+  for (const VABufferDescriptor& va_buffer : va_buffers) {
+    if (!SubmitBuffer_Locked(va_buffer))
+      return false;
   }
-
-  ScopedVABufferMapping mapping(
-      va_lock_, va_display_, buffer_id,
-      base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
-  if (!mapping.IsValid())
-    return false;
-
-  // TODO(selcott): Investigate potentially faster alternatives to memcpy here
-  // such as libyuv::CopyX and family.
-  memcpy(mapping.data(), buffer, size);
-
-  pending_va_buffers_.push_back(buffer_id);
   return true;
 }
 
@@ -2462,6 +2449,41 @@ bool VaapiWrapper::Execute_Locked(VASurfaceID va_surface_id) {
   UMA_HISTOGRAM_TIMES("Media.PlatformVideoDecoding.Decode",
                       base::TimeTicks::Now() - decode_start_time);
 
+  return true;
+}
+
+bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffer_Locked");
+  va_lock_->AssertAcquired();
+
+  DCHECK_LT(va_buffer.type, VABufferTypeMax);
+  DCHECK(va_buffer.data);
+
+  unsigned int va_buffer_size;
+  if (!base::CheckedNumeric<size_t>(va_buffer.size)
+           .AssignIfValid(&va_buffer_size)) {
+    return false;
+  }
+
+  VABufferID buffer_id;
+  {
+    TRACE_EVENT0("media,gpu",
+                 "VaapiWrapper::SubmitBuffer_Locked_vaCreateBuffer");
+    const VAStatus va_res =
+        vaCreateBuffer(va_display_, va_context_id_, va_buffer.type,
+                       va_buffer_size, 1, nullptr, &buffer_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
+  }
+
+  ScopedVABufferMapping mapping(
+      va_lock_, va_display_, buffer_id,
+      base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
+  if (!mapping.IsValid())
+    return false;
+
+  memcpy(mapping.data(), va_buffer.data, va_buffer.size);
+
+  pending_va_buffers_.push_back(buffer_id);
   return true;
 }
 
