@@ -199,6 +199,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   double playbackRate() const;
   void setPlaybackRate(double, ExceptionState& = ASSERT_NO_EXCEPTION);
   AnimationTimeline* timeline() { return timeline_; }
+  void setTimeline(AnimationTimeline* timeline);
   Document* GetDocument() const;
 
   base::Optional<double> startTime() const;
@@ -386,6 +387,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   base::Optional<double> hold_time_;
   base::Optional<TimelinePhase> hold_phase_;
   base::Optional<double> previous_current_time_;
+  bool reset_current_time_on_resume_ = false;
 
   unsigned sequence_number_;
 

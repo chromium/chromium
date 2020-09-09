@@ -40,8 +40,7 @@ enum ReplaceState { "active", "removed", "persisted" };
 ] interface Animation : EventTarget {
     [CallWith=ExecutionContext, RaisesException] constructor(optional AnimationEffect? effect = null, optional AnimationTimeline? timeline);
     [Measure] attribute AnimationEffect? effect;
-    // TODO(suzyh): Make timeline mutable.
-    [RuntimeEnabled=WebAnimationsAPI] readonly attribute AnimationTimeline? timeline;
+    [RuntimeEnabled=WebAnimationsAPI] attribute AnimationTimeline? timeline;
     [Measure, RaisesException=Setter] attribute double? startTime;
     [Measure, RaisesException=Setter] attribute double? currentTime;
     [Measure, RaisesException=Setter] attribute double playbackRate;

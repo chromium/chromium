@@ -349,6 +349,7 @@ void Animation::SetCurrentTimeInternal(double new_current_time) {
   } else {
     start_time_ = CalculateStartTime(new_current_time);
   }
+  reset_current_time_on_resume_ = false;
 
   // Preserve invariant that we can only set a start time or a hold time in the
   // absence of an active timeline.
@@ -727,6 +728,111 @@ bool Animation::Affects(const Element& element,
          effect->Affects(PropertyHandle(property));
 }
 
+void Animation::setTimeline(AnimationTimeline* timeline) {
+  // https://drafts.csswg.org/web-animations-1/#setting-the-timeline
+
+  // Steps refined to accommodate scroll timelines.
+  // TODO(crbug.com/827626): Update the web-animation-1 spec.
+  // https://github.com/w3c/csswg-drafts/pull/5423.
+
+  // Unfortunately cannot mark the setter only as being conditionally enabled
+  // via a feature flag. Conditionally making the feature a no-op is nearly
+  // equivalent.
+  if (!RuntimeEnabledFeatures::ScrollTimelineEnabled())
+    return;
+
+  // 1. Let the old timeline be the current timeline of the animation, if any.
+  AnimationTimeline* old_timeline = timeline_;
+
+  // 2. If the new timeline is the same object as the old timeline, abort this
+  //    procedure.
+  if (old_timeline == timeline)
+    return;
+
+  UpdateIfNecessary();
+  AnimationPlayState old_play_state = CalculateAnimationPlayState();
+  base::Optional<double> old_current_time = CurrentTimeInternal();
+
+  CancelAnimationOnCompositor();
+
+  // 3. Let the timeline of the animation be the new timeline.
+
+  // The Blink implementation requires additional steps to link the animation
+  // to the new timeline. Animations with a null timeline hang off of the
+  // document timeline in order to be properly included in the results for
+  // getAnimations calls.
+  if (old_timeline)
+    old_timeline->AnimationDetached(this);
+  else
+    document_->Timeline().AnimationDetached(this);
+  timeline_ = timeline;
+  if (timeline)
+    timeline->AnimationAttached(this);
+  else
+    document_->Timeline().AnimationAttached(this);
+  SetOutdated();
+
+  reset_current_time_on_resume_ = false;
+
+  if (timeline) {
+    if (!timeline->IsMonotonicallyIncreasing()) {
+      ApplyPendingPlaybackRate();
+      double boundary_time = (playback_rate_ > 0) ? 0 : EffectEnd();
+      switch (old_play_state) {
+        case kIdle:
+          break;
+
+        case kRunning:
+        case kFinished:
+          // A non-monotonic timeline has a fixed start time at the beginning or
+          // end of the timeline.
+          start_time_ = boundary_time;
+          break;
+
+        case kPaused:
+          if (old_current_time) {
+            reset_current_time_on_resume_ = true;
+            start_time_ = base::nullopt;
+            hold_time_ = old_current_time.value();
+          } else if (PendingInternal()) {
+            start_time_ = boundary_time;
+          }
+          break;
+
+        default:
+          NOTREACHED();
+      }
+    } else if (old_current_time && old_timeline &&
+               !old_timeline->IsMonotonicallyIncreasing()) {
+      SetCurrentTimeInternal(old_current_time.value());
+    }
+  }
+
+  // 4. If the start time of animation is resolved, make the animation’s hold
+  //    time unresolved. This step ensures that the finished play state of the
+  //    animation is not “sticky” but is re-evaluated based on its updated
+  //    current time.
+  if (start_time_)
+    ResetHoldTimeAndPhase();
+
+  // 5. Run the procedure to update an animation’s finished state for animation
+  //    with the did seek flag set to false, and the synchronously notify flag
+  //    set to false.
+  UpdateFinishedState(UpdateType::kContinuous, NotificationType::kAsync);
+
+  if (content_ && !timeline_) {
+    // Update the timing model to capture the phase change and cancel an active
+    // CSS animation or transition.
+    content_->Invalidate();
+    Update(kTimingUpdateOnDemand);
+  }
+
+  SetCompositorPending(false);
+
+  // Inform devtools of a potential change to the play state.
+  NotifyProbe();
+}
+
 base::Optional<double> Animation::CalculateStartTime(
     double current_time) const {
   base::Optional<double> start_time;
@@ -801,6 +907,7 @@ void Animation::setStartTime(base::Optional<double> start_time_ms,
     }
   }
   start_time_ = new_start_time;
+  reset_current_time_on_resume_ = false;
 
   // 6. Update animation’s hold time based on the first matching condition from
   //    the following,
@@ -1155,6 +1262,8 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   // 4. Let has finite timeline be true if animation has an associated timeline
   //    that is not monotonically increasing.
   bool aborted_pause = pending_pause_;
+  bool enable_seek =
+      auto_rewind == AutoRewind::kEnabled || reset_current_time_on_resume_;
   bool has_pending_ready_promise = false;
   base::Optional<double> seek_time;
   bool has_finite_timeline =
@@ -1186,12 +1295,16 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   double effective_playback_rate = EffectivePlaybackRate();
   base::Optional<double> current_time = CurrentTimeInternal();
 
-  if (effective_playback_rate > 0 && auto_rewind == AutoRewind::kEnabled &&
+  if (reset_current_time_on_resume_) {
+    current_time = base::nullopt;
+    reset_current_time_on_resume_ = false;
+  }
+
+  if (effective_playback_rate > 0 && enable_seek &&
       (!current_time || current_time < 0 || current_time >= EffectEnd())) {
     seek_time = 0;
 
-  } else if (effective_playback_rate < 0 &&
-             auto_rewind == AutoRewind::kEnabled &&
+  } else if (effective_playback_rate < 0 && enable_seek &&
              (!current_time || current_time <= 0 ||
               current_time > EffectEnd())) {
     if (EffectEnd() == std::numeric_limits<double>::infinity()) {
@@ -1731,14 +1844,14 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // reason to composite it. Additionally, mutating the timeline playback rate
   // is a debug feature available via devtools; we don't support this on the
   // compositor currently and there is no reason to do so.
-  if (timeline_->IsDocumentTimeline() &&
-      To<DocumentTimeline>(*timeline_).PlaybackRate() != 1)
+  if (!timeline_ || (timeline_->IsDocumentTimeline() &&
+                     To<DocumentTimeline>(*timeline_).PlaybackRate() != 1))
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
 
   // If the scroll source is not composited, fall back to main thread.
   // TODO(crbug.com/476553): Once all ScrollNodes including uncomposited ones
   // are in the compositor, the animation should be composited.
-  if (timeline_->IsScrollTimeline() &&
+  if (timeline_ && timeline_->IsScrollTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
           To<ScrollTimeline>(*timeline_).ResolvedScrollSource()))
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;
@@ -1801,12 +1914,6 @@ void Animation::StartAnimationOnCompositor(
 // composited and non-composited animations. The use of 'compositor' in the name
 // is confusing.
 void Animation::SetCompositorPending(bool effect_changed) {
-  // Cannot play an animation with a null timeline.
-  // TODO(crbug.com/827626) Revisit once timelines are mutable as there will be
-  // work to do if the timeline is reset.
-  if (!timeline_)
-    return;
-
   // FIXME: KeyframeEffect could notify this directly?
   if (!HasActiveAnimationsOnCompositor()) {
     DestroyCompositorAnimation();
@@ -1871,9 +1978,6 @@ bool Animation::Update(TimingUpdateReason reason) {
   // time of an animation also involves:
   //   * Running the update an animation’s finished state procedure.
   //   * Queueing animation events.
-  if (!timeline_)
-    return false;
-
   ClearOutdated();
   bool idle = CalculateAnimationPlayState() == kIdle;
   if (!idle)
@@ -1940,11 +2044,6 @@ void Animation::QueueFinishedEvent() {
 }
 
 void Animation::UpdateIfNecessary() {
-  // Update is a no-op if there is no timeline_, and will not reset the outdated
-  // state in this case.
-  if (!timeline_)
-    return;
-
   if (Outdated())
     Update(kTimingUpdateOnDemand);
   DCHECK(!Outdated());

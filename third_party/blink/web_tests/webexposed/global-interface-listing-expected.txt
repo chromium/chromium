@@ -197,6 +197,7 @@ interface Animation : EventTarget
     setter onremove
     setter playbackRate
     setter startTime
+    setter timeline
 interface AnimationEffect
     attribute @@toStringTag
     method constructor

@@ -9,8 +9,8 @@ PASS Removes an animation after updating the fill mode of another animation
 PASS Removes an animation after updating its fill mode
 PASS Removes an animation after updating another animation's effect to one with different timing
 PASS Removes an animation after updating its effect to one with different timing
-FAIL Removes an animation after updating another animation's timeline promise_test: Unhandled rejection with value: object "TypeError: Cannot set property timeline of #<Animation> which has only a getter"
-FAIL Removes an animation after updating its timeline promise_test: Unhandled rejection with value: object "TypeError: Cannot set property timeline of #<Animation> which has only a getter"
+FAIL Removes an animation after updating another animation's timeline assert_equals: expected "removed" but got "active"
+FAIL Removes an animation after updating its timeline assert_equals: expected "removed" but got "active"
 PASS Removes an animation after updating another animation's effect's properties
 PASS Removes an animation after updating its effect's properties
 PASS Removes an animation after updating another animation's effect to one with different properties
@@ -32,11 +32,11 @@ PASS Dispatches an event when removing
 PASS Does NOT dispatch a remove event twice
 PASS Does NOT remove an animation after making a redundant change to another animation's current time
 PASS Does NOT remove an animation after making a redundant change to its current time
-FAIL Does NOT remove an animation after making a redundant change to another animation's timeline promise_test: Unhandled rejection with value: object "TypeError: Cannot set property timeline of #<Animation> which has only a getter"
-FAIL Does NOT remove an animation after making a redundant change to its timeline promise_test: Unhandled rejection with value: object "TypeError: Cannot set property timeline of #<Animation> which has only a getter"
+PASS Does NOT remove an animation after making a redundant change to another animation's timeline
+PASS Does NOT remove an animation after making a redundant change to its timeline
 PASS Does NOT remove an animation after making a redundant change to another animation's effect's properties
 PASS Does NOT remove an animation after making a redundant change to its effect's properties
-FAIL Updates ALL timelines before checking for replacement promise_test: Unhandled rejection with value: object "TypeError: Cannot set property timeline of #<Animation> which has only a getter"
+FAIL Updates ALL timelines before checking for replacement assert_equals: expected "removed" but got "active"
 PASS Dispatches remove events after finish events
 PASS Fires remove event before requestAnimationFrame
 PASS Queues all remove events before running them
