@@ -26,45 +26,55 @@ constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
 constexpr char kAllowOptStr[] = "@ALLOW:";
 constexpr char kDenyOptStr[] = "@DENY:";
 
+std::unique_ptr<base::DictionaryValue> BuildTreeForPattern(
+    const base::StringPiece& pattern,
+    AccessibilityTreeFormatter* formatter) {
+  return formatter->BuildAccessibilityTreeForPattern(pattern);
+}
+
+std::unique_ptr<base::DictionaryValue> BuildTreeForWindow(
+    gfx::AcceleratedWidget widget,
+    AccessibilityTreeFormatter* formatter) {
+  return formatter->BuildAccessibilityTreeForWindow(widget);
+}
+
 AXTreeServer::AXTreeServer(const base::StringPiece& pattern,
                            const base::FilePath& filters_path,
                            bool use_json) {
-  std::unique_ptr<AccessibilityTreeFormatter> formatter(
-      AccessibilityTreeFormatter::Create());
-
-  // Get accessibility tree as nested dictionary.
-  base::string16 accessibility_contents_utf16;
-  std::unique_ptr<base::DictionaryValue> dict =
-      formatter->BuildAccessibilityTreeForPattern(pattern);
-
-  if (!dict) {
-    LOG(ERROR) << "Error: Failed to get accessibility tree";
-    return;
-  }
-
-  Format(*formatter, *dict, filters_path, use_json);
+  Run(base::BindOnce(&BuildTreeForPattern, pattern), filters_path, use_json);
 }
 
 AXTreeServer::AXTreeServer(gfx::AcceleratedWidget widget,
                            const base::FilePath& filters_path,
                            bool use_json) {
+  Run(base::BindOnce(&BuildTreeForWindow, widget), filters_path, use_json);
+}
+
+void AXTreeServer::Run(BuildTree build_tree,
+                       const base::FilePath& filters_path,
+                       bool use_json) {
   std::unique_ptr<AccessibilityTreeFormatter> formatter(
       AccessibilityTreeFormatter::Create());
 
-  // Get accessibility tree as nested dictionary.
-  std::unique_ptr<base::DictionaryValue> dict =
-      formatter->BuildAccessibilityTreeForWindow(widget);
+  // Set filters.
+  std::vector<AccessibilityTreeFormatter::PropertyFilter> filters =
+      GetPropertyFilters(filters_path);
+  formatter->SetPropertyFilters(filters);
 
+  // Get accessibility tree as a nested dictionary.
+  std::unique_ptr<base::DictionaryValue> dict =
+      std::move(build_tree).Run(formatter.get());
   if (!dict) {
     LOG(ERROR) << "Failed to get accessibility tree";
     return;
   }
 
-  Format(*formatter, *dict, filters_path, use_json);
+  // Format the tree.
+  Format(*formatter, *dict, use_json);
 }
 
-std::vector<AccessibilityTreeFormatter::PropertyFilter> GetPropertyFilters(
-    const base::FilePath& filters_path) {
+std::vector<AccessibilityTreeFormatter::PropertyFilter>
+AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
   std::vector<AccessibilityTreeFormatter::PropertyFilter> filters;
   if (!filters_path.empty()) {
     std::string raw_filters_text;
@@ -102,14 +112,7 @@ std::vector<AccessibilityTreeFormatter::PropertyFilter> GetPropertyFilters(
 
 void AXTreeServer::Format(AccessibilityTreeFormatter& formatter,
                           const base::DictionaryValue& dict,
-                          const base::FilePath& filters_path,
                           bool use_json) {
-  std::vector<AccessibilityTreeFormatter::PropertyFilter> filters =
-      GetPropertyFilters(filters_path);
-
-  // Set filters.
-  formatter.SetPropertyFilters(filters);
-
   std::string accessibility_contents;
 
   // Format accessibility tree as JSON or text.

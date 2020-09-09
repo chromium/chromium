@@ -25,6 +25,8 @@ using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
 using base::SysUTF16ToNSString;
 using content::a11y::AttributeInvoker;
+using content::a11y::AttributeNamesOf;
+using content::a11y::AttributeValueOf;
 using content::a11y::ChildrenOf;
 using content::a11y::IsAXUIElement;
 using content::a11y::IsBrowserAccessibilityCocoa;
@@ -79,10 +81,7 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   const std::string GetDenyNodeString() override;
   const std::string GetRunUntilEventString() override;
 
-  void AddProperties(const BrowserAccessibilityCocoa* node,
-                     const LineIndexer* line_indexer,
-                     base::Value* dict) const;
-  void AddProperties(const AXUIElementRef node,
+  void AddProperties(const id node,
                      const LineIndexer* line_indexer,
                      base::Value* dict) const;
 
@@ -179,12 +178,7 @@ void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(
     const id node,
     const LineIndexer* line_indexer,
     base::DictionaryValue* dict) const {
-  if (IsAXUIElement(node)) {
-    AddProperties(static_cast<AXUIElementRef>(node), line_indexer, dict);
-  } else if (IsBrowserAccessibilityCocoa(node)) {
-    AddProperties(static_cast<BrowserAccessibilityCocoa*>(node), line_indexer,
-                  dict);
-  }
+  AddProperties(node, line_indexer, dict);
 
   NSArray* children = ChildrenOf(node);
   auto child_dict_list = std::make_unique<base::ListValue>();
@@ -198,28 +192,39 @@ void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(
 }
 
 void AccessibilityTreeFormatterMac::AddProperties(
-    const BrowserAccessibilityCocoa* cocoa_node,
+    const id node,
     const LineIndexer* line_indexer,
     base::Value* dict) const {
-  // DOM element id
-  BrowserAccessibility* node = [cocoa_node owner];
-  dict->SetKey("id", base::Value(base::NumberToString16(node->GetId())));
+  // Chromium tree special processing
+  if (IsBrowserAccessibilityCocoa(node)) {
+    BrowserAccessibilityCocoa* cocoa_node =
+        static_cast<BrowserAccessibilityCocoa*>(node);
+
+    // DOM element id
+    BrowserAccessibility* owner_node = [cocoa_node owner];
+    dict->SetKey("id",
+                 base::Value(base::NumberToString16(owner_node->GetId())));
+
+    // Position and size
+    dict->SetPath(kPositionDictAttr, PopulatePosition(cocoa_node));
+    dict->SetPath(kSizeDictAttr, PopulateSize(cocoa_node));
+  }
 
   // Dump all attributes if match-all filter is specified.
   if (HasMatchAllPropertyFilter()) {
-    for (NSString* attribute : [cocoa_node accessibilityAttributeNames]) {
+    NSArray* attributes = AttributeNamesOf(node);
+    for (NSString* attribute : attributes) {
       dict->SetPath(
           SysNSStringToUTF8(attribute),
-          PopulateObject([cocoa_node accessibilityAttributeValue:attribute],
-                         line_indexer));
+          PopulateObject(AttributeValueOf(node, attribute), line_indexer));
     }
     return;
   }
 
   // Otherwise dump attributes matching allow filters only.
-  std::string line_index = line_indexer->IndexBy(cocoa_node);
+  std::string line_index = line_indexer->IndexBy(node);
   for (const PropertyNode& property_node : PropertyFilterNodesFor(line_index)) {
-    AttributeInvoker invoker(cocoa_node, line_indexer);
+    AttributeInvoker invoker(node, line_indexer);
     OptionalNSObject value = invoker.Invoke(property_node);
     if (value.IsNotApplicable()) {
       continue;
@@ -231,31 +236,6 @@ void AccessibilityTreeFormatterMac::AddProperties(
     }
     dict->SetPath(property_node.original_property,
                   PopulateObject(*value, line_indexer));
-  }
-
-  // Position and size
-  dict->SetPath(kPositionDictAttr, PopulatePosition(cocoa_node));
-  dict->SetPath(kSizeDictAttr, PopulateSize(cocoa_node));
-}
-
-void AccessibilityTreeFormatterMac::AddProperties(
-    const AXUIElementRef node,
-    const LineIndexer* line_indexer,
-    base::Value* dict) const {
-  NSArray* attributes = nil;
-  if (AXUIElementCopyAttributeNames(node, (CFArrayRef*)&attributes) ==
-      kAXErrorSuccess) {
-    for (uint32_t i = 0; i < [attributes count]; i++) {
-      NSString* attribute =
-          static_cast<NSString*>([attributes objectAtIndex:i]);
-      CFTypeRef value_ref;
-      if ((AXUIElementCopyAttributeValue(
-              node, static_cast<CFStringRef>(attribute), &value_ref)) ==
-          kAXErrorSuccess) {
-        dict->SetPath(SysNSStringToUTF8(attribute),
-                      PopulateObject(static_cast<id>(value_ref), line_indexer));
-      }
-    }
   }
 }
 
