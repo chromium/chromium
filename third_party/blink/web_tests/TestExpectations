@@ -149,6 +149,12 @@ virtual/composite-after-paint/scrollingcoordinator/* [ Pass ]
 
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
+crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
+crbug.com/1124352 media/picture-in-picture/picture-in-picture-interstitial.html [ Crash Pass ]
+crbug.com/1124352 external/wpt/picture-in-picture/css-selector.html [ Crash Pass ]
+crbug.com/1124352 external/wpt/picture-in-picture/exit-picture-in-picture.html [ Crash Pass ]
+crbug.com/1124352 external/wpt/picture-in-picture/picture-in-picture-element.html [ Crash Pass ]
+crbug.com/1124352 external/wpt/picture-in-picture/shadow-dom.html [ Crash Pass ]
 
 # These tests require portals, and some require cross-origin portals.
 # Keep this in sync with VirtualTestSuites.
