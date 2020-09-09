@@ -1052,9 +1052,9 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties() {
   return SynchronizeVisualProperties(false);
 }
 
-void RenderWidgetHostImpl::SynchronizeVisualPropertiesIgnoringPendingAck() {
+bool RenderWidgetHostImpl::SynchronizeVisualPropertiesIgnoringPendingAck() {
   visual_properties_ack_pending_ = false;
-  SynchronizeVisualProperties();
+  return SynchronizeVisualProperties();
 }
 
 bool RenderWidgetHostImpl::SynchronizeVisualProperties(

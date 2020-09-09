@@ -642,7 +642,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Similar to SynchronizeVisualProperties(), but performed even if
   // |visual_properties_ack_pending_| is set.  Used to guarantee that the
   // latest visual properties are sent to the renderer before another IPC.
-  void SynchronizeVisualPropertiesIgnoringPendingAck();
+  bool SynchronizeVisualPropertiesIgnoringPendingAck();
 
   // Called when we receive a notification indicating that the renderer process
   // is gone. This will reset our state so that our state will be consistent if

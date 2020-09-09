@@ -428,18 +428,10 @@ class DisplayModeControllingWebContentsDelegate : public WebContentsDelegate {
 // TODO(crbug.com/1060336): Unlike most VisualProperties, the DisplayMode does
 // not propagate down the tree of RenderWidgets, but is sent independently to
 // each RenderWidget.
-// Disable the test due to flaky, https://crbug.com/1126153
-#if defined(OS_MAC) || defined(OS_LINUX)
-#define MAYBE_VisualPropertiesPropagation_DisplayMode \
-  DISABLED_VisualPropertiesPropagation_DisplayMode
-#else
-#define MAYBE_VisualPropertiesPropagation_DisplayMode \
-  VisualPropertiesPropagation_DisplayMode
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       MAYBE_VisualPropertiesPropagation_DisplayMode) {
+                       VisualPropertiesPropagation_DisplayMode) {
   GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(a,b)"));
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -451,14 +443,15 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   FrameTreeNode* root = web_contents->GetFrameTree()->root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
-  // In-process frame.
-  FrameTreeNode* ipchild = root->child_at(0);
-  RenderWidgetHostImpl* ipchild_widget =
-      ipchild->current_frame_host()->GetRenderWidgetHost();
   // Out-of-process frame.
-  FrameTreeNode* oopchild = root->child_at(1);
+  FrameTreeNode* oopchild = root->child_at(0);
   RenderWidgetHostImpl* oopchild_widget =
       oopchild->current_frame_host()->GetRenderWidgetHost();
+  // In-process frame.
+  FrameTreeNode* ipchild = oopchild->child_at(0);
+  RenderWidgetHostImpl* ipchild_widget =
+      ipchild->current_frame_host()->GetRenderWidgetHost();
+  EXPECT_NE(root_widget, ipchild_widget);
 
   // Check all frames for the initial value.
   EXPECT_EQ(
@@ -466,10 +459,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       EvalJs(root, "window.matchMedia('(display-mode: browser)').matches"));
   EXPECT_EQ(
       true,
-      EvalJs(ipchild, "window.matchMedia('(display-mode: browser)').matches"));
+      EvalJs(oopchild, "window.matchMedia('(display-mode: browser)').matches"));
   EXPECT_EQ(
       true,
-      EvalJs(oopchild, "window.matchMedia('(display-mode: browser)').matches"));
+      EvalJs(ipchild, "window.matchMedia('(display-mode: browser)').matches"));
 
   // The display mode changes.
   display_mode_delegate.set_display_mode(
@@ -477,9 +470,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   // Each RenderWidgetHost would need to hear about that by having
   // SynchronizeVisualProperties() called. It's not clear what triggers that but
   // the place that changes the DisplayMode would be responsible.
-  root_widget->SynchronizeVisualProperties();
-  ipchild_widget->SynchronizeVisualProperties();
-  oopchild_widget->SynchronizeVisualProperties();
+  //
+  // We ignore the pending ack to ensure this IPC is sent immediately.
+  EXPECT_TRUE(root_widget->SynchronizeVisualPropertiesIgnoringPendingAck());
+  EXPECT_TRUE(oopchild_widget->SynchronizeVisualPropertiesIgnoringPendingAck());
+  EXPECT_TRUE(ipchild_widget->SynchronizeVisualPropertiesIgnoringPendingAck());
 
   // Check all frames for the changed value.
   EXPECT_EQ(
@@ -488,11 +483,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
           root, "", "window.matchMedia('(display-mode: standalone)').matches"));
   EXPECT_EQ(true,
             EvalJsAfterLifecycleUpdate(
-                ipchild, "",
+                oopchild, "",
                 "window.matchMedia('(display-mode: standalone)').matches"));
   EXPECT_EQ(true,
             EvalJsAfterLifecycleUpdate(
-                oopchild, "",
+                ipchild, "",
                 "window.matchMedia('(display-mode: standalone)').matches"));
 
   // Navigate a frame to b.com, which we already have a process for.
