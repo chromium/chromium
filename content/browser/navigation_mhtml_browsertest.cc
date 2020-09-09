@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/filename_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -45,6 +46,12 @@ class NavigationMhtmlBrowserTest : public ContentBrowserTest {
 
   RenderFrameHostImpl* main_frame_host() {
     return web_contents()->GetFrameTree()->root()->current_frame_host();
+  }
+
+ protected:
+  void SetUpOnMainThread() final {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 };
 
@@ -568,6 +575,42 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
 
   WaitForLoadStop(web_contents());
   EXPECT_EQ(mhtml_url_with_fragment, main_frame_host()->GetLastCommittedURL());
+}
+
+// Check RenderFrameHostImpl::is_mhtml_document() stays true after same-document
+// navigation in MHTML document.
+// Regression test for https://crbug.com/1126391
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
+                       SameDocumentNavigationPreservesMhtmlFlag) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(GURL("http://a.com/a"), "");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+  EXPECT_TRUE(main_frame_host()->is_mhtml_document());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL(main_frame_host()->GetLastCommittedURL().spec() + "#foo")));
+  // TODO(https://crbug.com/1126391): This should be true instead.
+  EXPECT_FALSE(main_frame_host()->is_mhtml_document());
+}
+
+// Check RenderFrameHostImpl::is_mhtml_document() is correctly set for history
+// navigation to MHTML document. It should continue to work when restored from
+// the BackForwardCache.
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
+                       BackNavigationPreservesMhtmlFlag) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(GURL("http://a.com/a"), "");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+  EXPECT_TRUE(main_frame_host()->is_mhtml_document());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  EXPECT_FALSE(main_frame_host()->is_mhtml_document());
+  web_contents()->GetController().GoBack();
+  WaitForLoadStop(web_contents());
+  EXPECT_TRUE(main_frame_host()->is_mhtml_document());
 }
 
 }  // namespace content
