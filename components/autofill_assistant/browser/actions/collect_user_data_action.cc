@@ -474,6 +474,10 @@ void CollectUserDataAction::EndAction(const ClientStatus& status) {
   delegate_->CleanUpAfterPrompt();
   action_successful_ = status.ok();
   UpdateProcessedAction(status);
+  if (action_successful_) {
+    delegate_->SetLastSuccessfulUserDataOptions(
+        std::move(collect_user_data_options_));
+  }
   std::move(callback_).Run(std::move(processed_action_proto_));
 }
 
@@ -1342,8 +1346,11 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
 }
 
 void CollectUserDataAction::OnPersonalDataChanged() {
-  personal_data_changed_ = true;
+  if (!callback_) {
+    return;
+  }
 
+  personal_data_changed_ = true;
   delegate_->WriteUserData(
       base::BindOnce(&CollectUserDataAction::UpdatePersonalDataManagerProfiles,
                      weak_ptr_factory_.GetWeakPtr()));

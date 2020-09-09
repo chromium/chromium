@@ -1908,6 +1908,16 @@ void Controller::SetCollectUserDataOptions(CollectUserDataOptions* options) {
   }
 }
 
+void Controller::SetLastSuccessfulUserDataOptions(
+    std::unique_ptr<CollectUserDataOptions> collect_user_data_options) {
+  last_collect_user_data_options_ = std::move(collect_user_data_options);
+}
+
+const CollectUserDataOptions* Controller::GetLastSuccessfulUserDataOptions()
+    const {
+  return last_collect_user_data_options_.get();
+}
+
 void Controller::WriteUserData(
     base::OnceCallback<void(UserData*, UserData::FieldChange*)>
         write_callback) {

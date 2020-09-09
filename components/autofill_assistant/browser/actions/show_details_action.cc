@@ -38,7 +38,8 @@ void ShowDetailsAction::InternalProcessAction(ProcessActionCallback callback) {
     case ShowDetailsProto::DataToShowCase::kContactDetails:
       details = std::make_unique<Details>();
       details_valid = Details::UpdateFromContactDetails(
-          proto_.show_details(), delegate_->GetUserData(), details.get());
+          proto_.show_details(), delegate_->GetUserData(),
+          delegate_->GetLastSuccessfulUserDataOptions(), details.get());
       break;
     case ShowDetailsProto::DataToShowCase::kShippingAddress:
       details = std::make_unique<Details>();

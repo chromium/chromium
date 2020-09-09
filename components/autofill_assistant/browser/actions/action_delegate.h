@@ -144,6 +144,15 @@ class ActionDelegate {
   virtual void CollectUserData(
       CollectUserDataOptions* collect_user_data_options) = 0;
 
+  // Updates the most recent successful user data options.
+  virtual void SetLastSuccessfulUserDataOptions(
+      std::unique_ptr<CollectUserDataOptions> collect_user_data_options) = 0;
+
+  // Provides read access to the most recent successful user data options.
+  // Returns nullptr if there is no such object.
+  virtual const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
+      const = 0;
+
   // Executes |write_callback| on the currently stored user_data and
   // user_data_options.
   virtual void WriteUserData(

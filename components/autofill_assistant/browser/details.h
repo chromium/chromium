@@ -36,10 +36,13 @@ class Details {
   static bool UpdateFromProto(const ShowDetailsProto& proto, Details* details);
 
   // Updates the details to show selected contact details. It shows only full
-  // name and email. Returns true if |details| were successfully updated.
-  static bool UpdateFromContactDetails(const ShowDetailsProto& proto,
-                                       const UserData* user_data,
-                                       Details* details);
+  // name and/or email, depending on |user_data_options|. Returns true if
+  // |details| were successfully updated.
+  static bool UpdateFromContactDetails(
+      const ShowDetailsProto& proto,
+      const UserData* user_data,
+      const CollectUserDataOptions* user_data_options,
+      Details* details);
 
   // Updates the details to show selected shipping details. It shows full name
   // and address. Returns true if |details| were successfully updated.

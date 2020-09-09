@@ -354,6 +354,17 @@ void ScriptExecutor::CollectUserData(
   delegate_->EnterState(AutofillAssistantState::PROMPT);
 }
 
+void ScriptExecutor::SetLastSuccessfulUserDataOptions(
+    std::unique_ptr<CollectUserDataOptions> collect_user_data_options) {
+  delegate_->SetLastSuccessfulUserDataOptions(
+      std::move(collect_user_data_options));
+}
+
+const CollectUserDataOptions* ScriptExecutor::GetLastSuccessfulUserDataOptions()
+    const {
+  return delegate_->GetLastSuccessfulUserDataOptions();
+}
+
 void ScriptExecutor::WriteUserData(
     base::OnceCallback<void(UserData*, UserData::FieldChange*)>
         write_callback) {

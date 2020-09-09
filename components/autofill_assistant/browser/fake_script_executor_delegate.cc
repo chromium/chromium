@@ -122,6 +122,16 @@ void FakeScriptExecutorDelegate::SetCollectUserDataOptions(
   payment_request_options_ = options;
 }
 
+void FakeScriptExecutorDelegate::SetLastSuccessfulUserDataOptions(
+    std::unique_ptr<CollectUserDataOptions> collect_user_data_options) {
+  last_payment_request_options_ = std::move(collect_user_data_options);
+}
+
+const CollectUserDataOptions*
+FakeScriptExecutorDelegate::GetLastSuccessfulUserDataOptions() const {
+  return last_payment_request_options_.get();
+}
+
 void FakeScriptExecutorDelegate::WriteUserData(
     base::OnceCallback<void(UserData*, UserData::FieldChange*)>
         write_callback) {

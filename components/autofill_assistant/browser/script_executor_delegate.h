@@ -85,6 +85,10 @@ class ScriptExecutorDelegate {
   virtual void ClearInfoBox() = 0;
   virtual void SetCollectUserDataOptions(
       CollectUserDataOptions* collect_user_data_options) = 0;
+  virtual void SetLastSuccessfulUserDataOptions(
+      std::unique_ptr<CollectUserDataOptions> collect_user_data_options) = 0;
+  virtual const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
+      const = 0;
   virtual void WriteUserData(
       base::OnceCallback<void(UserData*, UserData::FieldChange*)>
           write_callback) = 0;

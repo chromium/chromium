@@ -146,6 +146,14 @@ class MockActionDelegate : public ActionDelegate {
 
   MOCK_METHOD1(CollectUserData,
                void(CollectUserDataOptions* collect_user_data_options));
+
+  MOCK_METHOD1(
+      SetLastSuccessfulUserDataOptions,
+      void(std::unique_ptr<CollectUserDataOptions> collect_user_data_options));
+
+  MOCK_CONST_METHOD0(GetLastSuccessfulUserDataOptions,
+                     CollectUserDataOptions*());
+
   MOCK_METHOD1(
       WriteUserData,
       void(base::OnceCallback<void(UserData*, UserData::FieldChange*)>));

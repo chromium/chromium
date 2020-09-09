@@ -164,6 +164,10 @@ class Controller : public ScriptExecutorDelegate,
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void SetCollectUserDataOptions(CollectUserDataOptions* options) override;
+  void SetLastSuccessfulUserDataOptions(std::unique_ptr<CollectUserDataOptions>
+                                            collect_user_data_options) override;
+  const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
+      const override;
   void WriteUserData(
       base::OnceCallback<void(UserData*, UserData::FieldChange*)>) override;
   void OnScriptError(const std::string& error_message,
@@ -427,6 +431,9 @@ class Controller : public ScriptExecutorDelegate,
 
   std::unique_ptr<OverlayColors> overlay_colors_;
 
+  // A copy of the most recently set user data options. Can be used to determine
+  // which information was requested.
+  std::unique_ptr<CollectUserDataOptions> last_collect_user_data_options_;
   CollectUserDataOptions* collect_user_data_options_ = nullptr;
   std::unique_ptr<UserData> user_data_;
 

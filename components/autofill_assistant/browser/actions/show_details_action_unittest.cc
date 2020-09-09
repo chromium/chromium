@@ -31,6 +31,8 @@ class ShowDetailsActionTest : public testing::Test {
     ON_CALL(mock_action_delegate_, SetDetails(_)).WillByDefault(Return());
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
+    ON_CALL(mock_action_delegate_, GetLastSuccessfulUserDataOptions)
+        .WillByDefault(Return(&user_data_options_));
   }
 
  protected:
@@ -55,6 +57,7 @@ class ShowDetailsActionTest : public testing::Test {
   }
 
   UserData user_data_;
+  CollectUserDataOptions user_data_options_;
   MockActionDelegate mock_action_delegate_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   ShowDetailsProto proto_;
@@ -81,6 +84,7 @@ TEST_F(ShowDetailsActionTest, DetailsCase) {
 TEST_F(ShowDetailsActionTest, ContactDetailsCase) {
   proto_.set_contact_details("contact");
   user_data_.selected_addresses_["contact"] = MakeAutofillProfile();
+  user_data_options_.request_payer_name = true;
 
   EXPECT_CALL(mock_action_delegate_, SetDetails(_));
   EXPECT_CALL(
