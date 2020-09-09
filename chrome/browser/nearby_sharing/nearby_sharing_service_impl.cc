@@ -833,9 +833,9 @@ void NearbySharingServiceImpl::OnAllowedContactsChanged(
 }
 
 void NearbySharingServiceImpl::StartFastInitiationAdvertising() {
-  if (!IsBluetoothPresent() || !IsBluetoothPowered()) {
+  if (!IsBluetoothPowered()) {
     NS_LOG(INFO) << "Failed to advertise FastInitiation. Bluetooth is not "
-                    "present or powered.";
+                    "powered.";
     return;
   }
 
@@ -924,7 +924,7 @@ bool NearbySharingServiceImpl::HasAvailableConnectionMediums() {
   // have bluetooth, so wifi LAN is a platform-agnostic check.
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();
-  return IsBluetoothPresent() ||
+  return IsBluetoothPowered() ||
          (connection_type ==
               net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI ||
           connection_type ==

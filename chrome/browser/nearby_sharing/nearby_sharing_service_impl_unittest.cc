@@ -1060,6 +1060,30 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 }
 
+TEST_F(NearbySharingServiceImplTest, RegisterSendSurface_BluetoothNotPresent) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
+  is_bluetooth_present_ = false;
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+}
+
+TEST_F(NearbySharingServiceImplTest, RegisterSendSurface_BluetoothNotPowered) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
+  is_bluetooth_powered_ = false;
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+}
+
 TEST_F(NearbySharingServiceImplTest,
        ForegroundRegisterSendSurfaceStartsDiscovering) {
   ui::ScopedSetIdleState unlocked(ui::IDLE_STATE_IDLE);
