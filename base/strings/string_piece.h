@@ -198,7 +198,7 @@ template <typename STRING_TYPE> class BasicStringPiece {
   constexpr const value_type* data() const { return ptr_; }
   constexpr size_type size() const noexcept { return length_; }
   constexpr size_type length() const noexcept { return length_; }
-  bool empty() const { return length_ == 0; }
+  constexpr bool empty() const noexcept { return length_ == 0; }
 
   constexpr value_type operator[](size_type i) const {
     CHECK(i < length_);
@@ -249,12 +249,12 @@ template <typename STRING_TYPE> class BasicStringPiece {
     return STRING_TYPE(*this);
   }
 
-  const_iterator begin() const { return ptr_; }
-  const_iterator end() const { return ptr_ + length_; }
-  const_reverse_iterator rbegin() const {
+  constexpr const_iterator begin() const noexcept { return ptr_; }
+  constexpr const_iterator end() const noexcept { return ptr_ + length_; }
+  constexpr const_reverse_iterator rbegin() const noexcept {
     return const_reverse_iterator(ptr_ + length_);
   }
-  const_reverse_iterator rend() const {
+  constexpr const_reverse_iterator rend() const noexcept {
     return const_reverse_iterator(ptr_);
   }
 
