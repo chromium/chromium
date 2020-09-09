@@ -26,11 +26,12 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
   MOCK_METHOD2(LoadDataResourceBytes,
                base::RefCountedMemory*(int resource_id,
                                        ScaleFactor scale_factor));
-  MOCK_METHOD3(GetRawDataResource,
-               bool(int resource_id,
-                    ScaleFactor scale_factor,
-                    base::StringPiece* value));
-  MOCK_METHOD2(GetLocalizedString, bool(int message_id, base::string16* value));
+  MOCK_CONST_METHOD3(GetRawDataResource,
+                     bool(int resource_id,
+                          ScaleFactor scale_factor,
+                          base::StringPiece* value));
+  MOCK_CONST_METHOD2(GetLocalizedString,
+                     bool(int message_id, base::string16* value));
 };
 
 }  // namespace ui

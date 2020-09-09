@@ -109,11 +109,12 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     // false to attempt retrieval of the default resource.
     virtual bool GetRawDataResource(int resource_id,
                                     ScaleFactor scale_factor,
-                                    base::StringPiece* value) = 0;
+                                    base::StringPiece* value) const = 0;
 
     // Retrieve a localized string. Return true if a string was provided or
     // false to attempt retrieval of the default string.
-    virtual bool GetLocalizedString(int message_id, base::string16* value) = 0;
+    virtual bool GetLocalizedString(int message_id,
+                                    base::string16* value) const = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -277,7 +278,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Get a localized resource (for example, localized image logo) given a
   // resource id.
-  base::RefCountedMemory* LoadLocalizedResourceBytes(int resource_id);
+  base::RefCountedMemory* LoadLocalizedResourceBytes(int resource_id) const;
 
   // Returns a font list derived from the platform-specific "Base" font list.
   // The result is always cached and exists for the lifetime of the process.
@@ -457,19 +458,19 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // bright red bitmap.
   gfx::Image& GetEmptyImage();
 
-  const base::FilePath& GetOverriddenPakPath();
+  const base::FilePath& GetOverriddenPakPath() const;
 
   // If mangling of localized strings is enabled, mangles |str| to make it
   // longer and to add begin and end markers so that any truncation of it is
   // visible and returns the mangled string. If not, returns |str|.
-  base::string16 MaybeMangleLocalizedString(const base::string16& str);
+  base::string16 MaybeMangleLocalizedString(const base::string16& str) const;
 
   // An internal implementation of |GetLocalizedString()| without setting the
   // flag of whether overriding locale strings is supported to false. We don't
   // update this flag only in |InitDefaultFontList()| which is called earlier
   // than the overriding. This is okay, because the font list doesn't need to be
   // overridden by variations.
-  base::string16 GetLocalizedStringImpl(int resource_id);
+  base::string16 GetLocalizedStringImpl(int resource_id) const;
 
   // This pointer is guaranteed to outlive the ResourceBundle instance and may
   // be null.

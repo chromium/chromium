@@ -68,12 +68,12 @@ base::RefCountedStaticMemory* CastResourceDelegate::LoadDataResourceBytes(
 
 bool CastResourceDelegate::GetRawDataResource(int resource_id,
                                               ui::ScaleFactor scale_factor,
-                                              base::StringPiece* value) {
+                                              base::StringPiece* value) const {
   return false;
 }
 
 bool CastResourceDelegate::GetLocalizedString(int message_id,
-                                              base::string16* value) {
+                                              base::string16* value) const {
   ExtraLocaledStringMap::const_iterator it =
       extra_localized_strings_.find(message_id);
   if (it != extra_localized_strings_.end()) {

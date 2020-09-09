@@ -47,8 +47,8 @@ class CastResourceDelegate : public ui::ResourceBundle::Delegate {
       ui::ScaleFactor scale_factor) override;
   bool GetRawDataResource(int resource_id,
                           ui::ScaleFactor scale_factor,
-                          base::StringPiece* value) override;
-  bool GetLocalizedString(int message_id, base::string16* value) override;
+                          base::StringPiece* value) const override;
+  bool GetLocalizedString(int message_id, base::string16* value) const override;
 
   // Adds/removes/clears extra localized strings.
   void AddExtraLocalizedString(int resource_id,
