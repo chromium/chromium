@@ -59,16 +59,6 @@ bool SameDomainOrHost(const GURL& gurl, const url::Origin& origin) {
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-bool IsSignedInAndSyncingPasswordsNormally(Profile* profile) {
-  return password_manager_util::IsSyncingWithNormalEncryption(
-      ProfileSyncServiceFactory::GetForProfile(profile));
-}
-
-bool IsGooglePasswordManagerEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kGooglePasswordManager);
-}
-
 }  // namespace
 
 gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
@@ -222,14 +212,6 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
   return net::AppendQueryParameter(url, "utm_campaign", campaign);
 }
 
-bool ShouldManagePasswordsinGooglePasswordManager(Profile* profile) {
-  // To make sure that the experiment groups contain the same proportions of
-  // signed in and syncing users, we need to check the sync state before
-  // checking the feature flag.
-  return IsSignedInAndSyncingPasswordsNormally(profile) &&
-         IsGooglePasswordManagerEnabled();
-}
-
 // Navigation is handled differently on Android.
 #if !defined(OS_ANDROID)
 void NavigateToGooglePasswordManager(Profile* profile,
@@ -244,13 +226,10 @@ void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
                             referrer);
-  if (IsSignedInAndSyncingPasswordsNormally(browser->profile())) {
+  if (password_manager_util::IsSyncingWithNormalEncryption(
+          ProfileSyncServiceFactory::GetForProfile(browser->profile()))) {
     UMA_HISTOGRAM_ENUMERATION(
         "PasswordManager.ManagePasswordsReferrerSignedInAndSyncing", referrer);
-    if (IsGooglePasswordManagerEnabled()) {
-      NavigateToGooglePasswordManager(browser->profile(), referrer);
-      return;
-    }
   }
 
   chrome::ShowPasswordManager(browser);

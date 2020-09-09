@@ -42390,7 +42390,6 @@ from previous Chrome versions.
   <int value="-147283486" label="enable-network-portal-notification"/>
   <int value="-146552997" label="enable-affiliation-based-matching"/>
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>
-  <int value="-143819280" label="google-password-manager:disabled"/>
   <int value="-143394485" label="SplitSettingsSync:enabled"/>
   <int value="-143382681" label="InstantTethering:enabled"/>
   <int value="-143121333" label="WebXRIncubations:enabled"/>
@@ -43433,7 +43432,6 @@ from previous Chrome versions.
   <int value="975104092" label="show-taps"/>
   <int value="975463471" label="WebViewExtraHeadersSameOriginOnly:enabled"/>
   <int value="976079108" label="TouchpadOverscrollHistoryNavigation:disabled"/>
-  <int value="976278412" label="google-password-manager:enabled"/>
   <int value="977140835" label="OmniboxMostVisitedTiles:disabled"/>
   <int value="977968353" label="WebUITabStrip:disabled"/>
   <int value="978712907" label="PrintServerUi:disabled"/>

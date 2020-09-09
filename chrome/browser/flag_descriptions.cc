@@ -1210,10 +1210,6 @@ const char kGlobalMediaControlsOverlayControlsDescription[] =
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 
-const char kGooglePasswordManagerName[] = "Google Password Manager UI";
-const char kGooglePasswordManagerDescription[] =
-    "Enables access to the Google Password Manager UI from Chrome.";
-
 const char kH264DecoderBufferIsCompleteFrameName[] =
     "H.264 Decoder Buffer Is Complete Frame";
 const char kH264DecoderBufferIsCompleteFrameDescription[] =

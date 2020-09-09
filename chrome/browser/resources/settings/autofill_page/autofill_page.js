@@ -17,7 +17,6 @@ import '../settings_shared_css.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
 import {routes} from '../route.js';
 import {Router} from '../router.m.js';
@@ -89,16 +88,12 @@ Polymer({
   },
 
   /**
-   * Shows a page to manage passwords. This is either the passwords sub page or
-   * the Google Password Manager page.
+   * Shows a page to manage passwords.
    * @private
    */
   onPasswordsClick_() {
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
-    loadTimeData.getBoolean('navigateToGooglePasswordManager') ?
-        OpenWindowProxyImpl.getInstance().openURL(
-            loadTimeData.getString('googlePasswordManagerUrl')) :
-        Router.getInstance().navigateTo(routes.PASSWORDS);
+    Router.getInstance().navigateTo(routes.PASSWORDS);
   },
 
   /**

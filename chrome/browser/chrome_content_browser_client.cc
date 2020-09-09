@@ -469,7 +469,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/passwords/google_password_manager_navigation_throttle.h"
 #include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -4076,11 +4075,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
   MaybeAddThrottle(NewTabPageNavigationThrottle::MaybeCreateThrottleFor(handle),
                    &throttles);
-
-  MaybeAddThrottle(
-      GooglePasswordManagerNavigationThrottle::MaybeCreateThrottleFor(handle),
-      &throttles);
-
 #endif
 
   throttles.push_back(

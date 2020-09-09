@@ -4981,10 +4981,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSwapSideVolumeButtonsForOrientation)},
 #endif  // defined(OS_CHROMEOS)
-    {"google-password-manager", flag_descriptions::kGooglePasswordManagerName,
-     flag_descriptions::kGooglePasswordManagerDescription, kOsAll,
-     FEATURE_VALUE_TYPE(password_manager::features::kGooglePasswordManager)},
-
     {"enable-implicit-root-scroller",
      flag_descriptions::kEnableImplicitRootScrollerName,
      flag_descriptions::kEnableImplicitRootScrollerDescription, kOsAll,

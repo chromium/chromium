@@ -14,8 +14,11 @@ public interface GooglePasswordManagerUIProvider {
      *
      * @param activity The activity from which to launch the UI to manage passwords.
      * @return Whether showing the Google Password Manager UI was possible or not.
+     * TODO(crbug.com/903249): Remove once downstream implementation is removed.
      **/
-    boolean showGooglePasswordManager(Activity activity);
+    default boolean showGooglePasswordManager(Activity activity) {
+        return false;
+    }
 
     /**
      * Launches the Password Checkup if possible.

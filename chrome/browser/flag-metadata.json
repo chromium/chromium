@@ -2709,11 +2709,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "google-password-manager",
-    "owners": [ "ioanap", "jdoerrie" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "h264-decoder-is-buffer-complete-frame",
     "owners": [ "jkardatzke", "mcasas" ],
     "expiry_milestone": 89

@@ -57,10 +57,6 @@ const base::Feature kFillingPasswordsFromAnyOrigin{
 const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Integration with Google's Password Manager for signed-in and sync users.
-const base::Feature kGooglePasswordManager = {
-    "google-password-manager", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables password change flow from leaked password dialog.
 const base::Feature kPasswordChange = {"PasswordChange",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

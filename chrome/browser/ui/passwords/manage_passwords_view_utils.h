@@ -90,13 +90,6 @@ bool IsSyncingAutosignSetting(Profile* profile);
 GURL GetGooglePasswordManagerURL(
     password_manager::ManagePasswordsReferrer referrer);
 
-// Returns whether users should manage their passwords in the Google Password
-// Manager. This includes users that are syncing their passwords without a
-// custom passphrase and for which the Google Password Manager experiment is
-// activated. For these users links to the Chrome password settings will be
-// repaced with links to the Google Password Manager, i.e. passwords.google.com.
-bool ShouldManagePasswordsinGooglePasswordManager(Profile* profile);
-
 // Navigates to the Google Password Manager, i.e. passwords.google.com.
 void NavigateToGooglePasswordManager(
     Profile* profile,

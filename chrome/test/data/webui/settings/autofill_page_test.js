@@ -303,7 +303,6 @@ suite('PasswordsUITest', function() {
   suiteSetup(function() {
     // Forces navigation to Google Password Manager to be off by default.
     loadTimeData.overrideValues({
-      navigateToGooglePasswordManager: false,
       enablePasswordCheck: true,
     });
   });
@@ -322,33 +321,6 @@ suite('PasswordsUITest', function() {
 
   teardown(function() {
     autofillPage.remove();
-  });
-
-  test('Google Password Manager Off', function() {
-    assertTrue(!!autofillPage.$$('#passwordManagerButton'));
-    autofillPage.$$('#passwordManagerButton').click();
-    flush();
-
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.PASSWORDS);
-  });
-
-  test('Google Password Manager On', function() {
-    // Hardcode this value so that the test is independent of the production
-    // implementation that might include additional query parameters.
-    const googlePasswordManagerUrl = 'https://passwords.google.com';
-
-    loadTimeData.overrideValues({
-      navigateToGooglePasswordManager: true,
-      googlePasswordManagerUrl: googlePasswordManagerUrl,
-    });
-
-    assertTrue(!!autofillPage.$$('#passwordManagerButton'));
-    autofillPage.$$('#passwordManagerButton').click();
-    flush();
-
-    return openWindowProxy.whenCalled('openURL').then(url => {
-      assertEquals(googlePasswordManagerUrl, url);
-    });
   });
 
   test('Compromised Credential', async function() {
