@@ -1474,16 +1474,16 @@ template("libchrome_impl") {
 }
 
 if (enable_resource_allowlist_generation) {
-  libchrome_impl("libchrome_pak_whitelist_inputs") {
+  libchrome_impl("libchrome_pak_allowlist_inputs") {
     collect_inputs_only = true
   }
 }
 
 libchrome_impl("libchrome") {
   if (enable_resource_allowlist_generation) {
-    # Make sure whitelist_inputs is built first so when concurrent_links == 1
+    # Make sure allowlist_inputs is built first so when concurrent_links == 1
     # it comes before the actual (very slow) link step.
-    deps = [ ":libchrome_pak_whitelist_inputs" ]
+    deps = [ ":libchrome_pak_allowlist_inputs" ]
   }
 }
 
@@ -1571,19 +1571,19 @@ if (current_toolchain == default_toolchain) {
 
     if (enable_resource_allowlist_generation) {
       if (_is_trichrome || _is_monochrome) {
-        _lib = "libmonochrome_pak_whitelist_inputs"
+        _lib = "libmonochrome_pak_allowlist_inputs"
       } else {
-        _lib = "libchrome_pak_whitelist_inputs"
+        _lib = "libchrome_pak_allowlist_inputs"
       }
-      _resource_whitelist_target = "${_variant}_resource_whitelist"
-      _resource_whitelist_file =
-          "$target_gen_dir/${_variant}_resource_whitelist.txt"
+      _resource_allowlist_target = "${_variant}_resource_allowlist"
+      _resource_allowlist_file =
+          "$target_gen_dir/${_variant}_resource_allowlist.txt"
       _lib_path = "/lib.unstripped/" + _lib + shlib_extension
 
-      generate_resource_allowlist(_resource_whitelist_target) {
+      generate_resource_allowlist(_resource_allowlist_target) {
         _fat_lib_toolchain = ""
         if (_is_monochrome || _is_trichrome) {
-          # Always use the 32-bit library's whitelist since the 64-bit one is
+          # Always use the 32-bit library's allowlist since the 64-bit one is
           # webview-only.
           if (!android_64bit_target_cpu) {
             _fat_lib_toolchain = current_toolchain
@@ -1594,24 +1594,24 @@ if (current_toolchain == default_toolchain) {
         deps = [ ":${_lib}($_fat_lib_toolchain)" ]
 
         inputs = [ get_label_info(deps[0], "root_out_dir") + _lib_path ]
-        output = _resource_whitelist_file
+        output = _resource_allowlist_file
       }
 
       # Use custom resource ID list instead of android_webview's compiler
-      # resource whitelist because //android_webview:generate_webui_resources
+      # resource allowlist because //android_webview:generate_webui_resources
       # and //android_webview:generate_components_resources use hand-written
-      # resource whitelists.
+      # resource allowlists.
       if (_is_monochrome) {
-        _locale_whitelist_target = "${_variant}_locale_whitelist"
-        _locale_whitelist_file =
-            "$target_gen_dir/${_variant}_locale_whitelist.txt"
-        _system_webview_locale_whitelist_target =
-            "${_variant}_system_webview_locale_resource_whitelist"
-        _system_webview_locale_whitelist_file =
+        _locale_allowlist_target = "${_variant}_locale_allowlist"
+        _locale_allowlist_file =
+            "$target_gen_dir/${_variant}_locale_allowlist.txt"
+        _system_webview_locale_allowlist_target =
+            "${_variant}_system_webview_locale_resource_allowlist"
+        _system_webview_locale_allowlist_file =
             "$target_gen_dir/" +
             "${_variant}_system_webview_locale_resource_id_list.txt"
 
-        action(_system_webview_locale_whitelist_target) {
+        action(_system_webview_locale_allowlist_target) {
           script = "//tools/grit/pak_util.py"
 
           _system_webview_en_US_locale_pak =
@@ -1619,41 +1619,41 @@ if (current_toolchain == default_toolchain) {
 
           inputs = [ _system_webview_en_US_locale_pak ]
 
-          outputs = [ _system_webview_locale_whitelist_file ]
+          outputs = [ _system_webview_locale_allowlist_file ]
 
           deps = [ "//android_webview:repack_locales" ]
 
           args = [
             "list-id",
             "--output",
-            rebase_path(_system_webview_locale_whitelist_file, root_build_dir),
+            rebase_path(_system_webview_locale_allowlist_file, root_build_dir),
             rebase_path(_system_webview_en_US_locale_pak, root_build_dir),
           ]
         }
 
-        action(_locale_whitelist_target) {
-          script = "//tools/resources/filter_resource_whitelist.py"
+        action(_locale_allowlist_target) {
+          script = "//tools/resources/filter_resource_allowlist.py"
 
           inputs = [
-            _resource_whitelist_file,
-            _system_webview_locale_whitelist_file,
+            _resource_allowlist_file,
+            _system_webview_locale_allowlist_file,
           ]
 
-          outputs = [ _locale_whitelist_file ]
+          outputs = [ _locale_allowlist_file ]
 
           deps = [
-            ":$_resource_whitelist_target",
-            ":$_system_webview_locale_whitelist_target",
+            ":$_resource_allowlist_target",
+            ":$_system_webview_locale_allowlist_target",
             "//android_webview:system_webview_pak_allowlist",
           ]
 
           args = [
             "--input",
-            rebase_path(_resource_whitelist_file, root_build_dir),
+            rebase_path(_resource_allowlist_file, root_build_dir),
             "--filter",
-            rebase_path(_system_webview_locale_whitelist_file, root_build_dir),
+            rebase_path(_system_webview_locale_allowlist_file, root_build_dir),
             "--output",
-            rebase_path(_locale_whitelist_file, root_build_dir),
+            rebase_path(_locale_allowlist_file, root_build_dir),
           ]
         }
       }
@@ -1681,11 +1681,11 @@ if (current_toolchain == default_toolchain) {
       }
 
       if (enable_resource_allowlist_generation) {
-        repack_whitelist = _resource_whitelist_file
-        deps += [ ":${_resource_whitelist_target}" ]
+        repack_allowlist = _resource_allowlist_file
+        deps += [ ":${_resource_allowlist_target}" ]
         if (_is_monochrome) {
-          locale_whitelist = _locale_whitelist_file
-          deps += [ ":$_locale_whitelist_target" ]
+          locale_allowlist = _locale_allowlist_file
+          deps += [ ":$_locale_allowlist_target" ]
         }
       }
     }
@@ -1734,7 +1734,7 @@ if (current_toolchain == default_toolchain) {
   }
 
   # Resource packaging varies with Monochrome and bundles because the pak
-  # resource whitelist is derived from the native library.
+  # resource allowlist is derived from the native library.
   resource_packaging("chrome_apk_pak_assets") {
     is_monochrome = false
   }
@@ -1790,15 +1790,15 @@ if (!android_64bit_target_cpu ||
   if (enable_resource_allowlist_generation) {
     # Avoiding a real link for this step allows the actual libmonochrome to
     # run at the same time as R8.
-    libmonochrome_apk_or_bundle_tmpl("libmonochrome_pak_whitelist_inputs") {
+    libmonochrome_apk_or_bundle_tmpl("libmonochrome_pak_allowlist_inputs") {
       collect_inputs_only = true
     }
   }
   libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
     if (enable_resource_allowlist_generation) {
-      # Make sure whitelist_inputs is built first so when concurrent_links == 1
+      # Make sure allowlist_inputs is built first so when concurrent_links == 1
       # it comes before the actual (very slow) link step.
-      deps = [ ":libmonochrome_pak_whitelist_inputs" ]
+      deps = [ ":libmonochrome_pak_allowlist_inputs" ]
     }
   }
 

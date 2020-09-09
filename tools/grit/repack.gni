@@ -60,10 +60,10 @@ template("repack") {
     ]
 
     args = [ "repack" ]
-    if (defined(invoker.repack_whitelist)) {
-      inputs += [ invoker.repack_whitelist ]
-      _rebased_whitelist = rebase_path(invoker.repack_whitelist)
-      args += [ "--allowlist=$_rebased_whitelist" ]
+    if (defined(invoker.repack_allowlist)) {
+      inputs += [ invoker.repack_allowlist ]
+      _rebased_allowlist = rebase_path(invoker.repack_allowlist)
+      args += [ "--allowlist=$_rebased_allowlist" ]
       args += [ "--suppress-removed-key-output" ]
     }
     args += [ rebase_path(invoker.output, root_build_dir) ]
@@ -117,7 +117,7 @@ template("repack") {
 #   visibility  [optional]
 #   testonly  [optional]
 #   copy_data_to_bundle [optional]
-#   repack_whitelist [optional]
+#   repack_allowlist [optional]
 #       Normal meaning.
 template("repack_locales") {
   if (defined(invoker.output_dir)) {
@@ -152,7 +152,7 @@ template("repack_locales") {
                                "bundle_output",
                                "compress",
                                "deps",
-                               "repack_whitelist",
+                               "repack_allowlist",
                                "testonly",
                              ])
       visibility = [ ":${invoker.target_name}" ]

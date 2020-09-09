@@ -699,7 +699,7 @@ webview_repack_locales("repack_locales") {
   output_locales = locales
 
   if (enable_resource_allowlist_generation) {
-    repack_whitelist = system_webview_pak_allowlist
+    repack_allowlist = system_webview_pak_allowlist
     deps = [ ":system_webview_pak_allowlist" ]
   }
 }
@@ -738,7 +738,7 @@ repack("repack_pack") {
   output = "$target_gen_dir/resources.pak"
 
   if (enable_resource_allowlist_generation) {
-    repack_whitelist = system_webview_pak_allowlist
+    repack_allowlist = system_webview_pak_allowlist
     deps += [ ":system_webview_pak_allowlist" ]
   }
 
@@ -762,7 +762,7 @@ repack("repack_100_percent") {
   output = "$target_gen_dir/chrome_100_percent.pak"
 
   if (enable_resource_allowlist_generation) {
-    repack_whitelist = system_webview_pak_allowlist
+    repack_allowlist = system_webview_pak_allowlist
     deps += [ ":system_webview_pak_allowlist" ]
   }
   if (webview_includes_weblayer) {

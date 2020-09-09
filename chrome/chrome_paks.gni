@@ -25,7 +25,7 @@ template("chrome_repack_percent") {
     forward_variables_from(invoker,
                            [
                              "copy_data_to_bundle",
-                             "repack_whitelist",
+                             "repack_allowlist",
                              "visibility",
                            ])
 
@@ -84,7 +84,7 @@ template("chrome_extra_paks") {
     forward_variables_from(invoker,
                            [
                              "copy_data_to_bundle",
-                             "repack_whitelist",
+                             "repack_allowlist",
                              "visibility",
                            ])
     output = "${invoker.output_dir}/resources.pak"
@@ -271,12 +271,12 @@ template("chrome_extra_paks") {
 #   output_dir [required]: Directory to output .pak files. Locale .pak files
 #       will always be place in $output_dir/locales
 #   additional_extra_paks: List of extra .pak sources for resources.pak.
-#   locale_whitelist: if set, override repack_whitelist for locale .pak files.
+#   locale_allowlist: if set, override repack_allowlist for locale .pak files.
 #   copy_data_to_bundle:
 #   deps:
 #   output_dir:
 #   public_deps:
-#   repack_whitelist:
+#   repack_allowlist:
 #   visibility:
 #     Normal meanings.
 #
@@ -288,7 +288,7 @@ template("chrome_paks") {
                              "copy_data_to_bundle",
                              "deps",
                              "output_dir",
-                             "repack_whitelist",
+                             "repack_allowlist",
                              "visibility",
                            ])
   }
@@ -301,7 +301,7 @@ template("chrome_paks") {
                                "copy_data_to_bundle",
                                "deps",
                                "output_dir",
-                               "repack_whitelist",
+                               "repack_allowlist",
                                "visibility",
                              ])
     }
@@ -313,7 +313,7 @@ template("chrome_paks") {
                              "copy_data_to_bundle",
                              "deps",
                              "output_dir",
-                             "repack_whitelist",
+                             "repack_allowlist",
                              "visibility",
                            ])
     if (defined(invoker.additional_extra_paks)) {
@@ -328,10 +328,10 @@ template("chrome_paks") {
                              "deps",
                              "visibility",
                            ])
-    if (defined(invoker.locale_whitelist)) {
-      repack_whitelist = invoker.locale_whitelist
-    } else if (defined(invoker.repack_whitelist)) {
-      repack_whitelist = invoker.repack_whitelist
+    if (defined(invoker.locale_allowlist)) {
+      repack_allowlist = invoker.locale_allowlist
+    } else if (defined(invoker.repack_allowlist)) {
+      repack_allowlist = invoker.repack_allowlist
     }
 
     input_locales = locales

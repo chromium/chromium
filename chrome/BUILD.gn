@@ -1408,7 +1408,7 @@ if (!is_android) {
     }
 
     if (enable_resource_allowlist_generation) {
-      repack_whitelist = chrome_resource_whitelist
+      repack_allowlist = chrome_resource_whitelist
       deps = [ "//chrome:resource_whitelist" ]
     }
 
