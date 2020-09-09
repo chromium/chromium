@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -181,6 +182,9 @@ CreditCardCloudTokenData GetCreditCardCloudTokenData1();
 // Returns a credit card cloud token data full of dummy info, different from the
 // one above.
 CreditCardCloudTokenData GetCreditCardCloudTokenData2();
+
+// Returns an autofill card linked offer data full of dummy info.
+AutofillOfferData GetCardLinkedOfferData();
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetProfileInfo| provides a quick way to populate a profile with

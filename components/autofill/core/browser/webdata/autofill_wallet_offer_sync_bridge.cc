@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 
@@ -16,6 +18,17 @@ namespace {
 
 // Address to this variable used as the user data key.
 static int kAutofillWalletOfferSyncBridgeUserDataKey = 0;
+
+std::string GetClientTagFromSpecifics(
+    const sync_pb::AutofillOfferSpecifics& specifics) {
+  return base::NumberToString(specifics.id());
+}
+
+std::string GetStorageKeyFromSpecifics(
+    const sync_pb::AutofillOfferSpecifics& specifics) {
+  // Use client tag as the storage key.
+  return GetClientTagFromSpecifics(specifics);
+}
 
 }  // namespace
 
@@ -28,7 +41,8 @@ void AutofillWalletOfferSyncBridge::CreateForWebDataServiceAndBackend(
       std::make_unique<AutofillWalletOfferSyncBridge>(
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
               syncer::AUTOFILL_WALLET_OFFER,
-              /*dump_stack=*/base::RepeatingClosure())));
+              /*dump_stack=*/base::RepeatingClosure()),
+          web_data_backend));
 }
 
 // static
@@ -40,8 +54,11 @@ syncer::ModelTypeSyncBridge* AutofillWalletOfferSyncBridge::FromWebDataService(
 }
 
 AutofillWalletOfferSyncBridge::AutofillWalletOfferSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)) {}
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    AutofillWebDataBackend* web_data_backend)
+    : ModelTypeSyncBridge(std::move(change_processor)) {
+  DCHECK(web_data_backend);
+}
 
 AutofillWalletOfferSyncBridge::~AutofillWalletOfferSyncBridge() = default;
 
@@ -78,14 +95,16 @@ void AutofillWalletOfferSyncBridge::GetAllDataForDebugging(
 
 std::string AutofillWalletOfferSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(entity_data.specifics.has_autofill_offer());
+  return GetClientTagFromSpecifics(entity_data.specifics.autofill_offer());
 }
 
 std::string AutofillWalletOfferSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(entity_data.specifics.has_autofill_offer());
+  return GetStorageKeyFromSpecifics(entity_data.specifics.autofill_offer());
 }
 
 bool AutofillWalletOfferSyncBridge::SupportsIncrementalUpdates() const {

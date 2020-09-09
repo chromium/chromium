@@ -83,6 +83,8 @@ static_library("browser") {
     "data_model/autofill_data_model.h",
     "data_model/autofill_metadata.cc",
     "data_model/autofill_metadata.h",
+    "data_model/autofill_offer_data.cc",
+    "data_model/autofill_offer_data.h",
     "data_model/autofill_profile.cc",
     "data_model/autofill_profile.h",
     "data_model/autofill_profile_comparator.cc",
@@ -636,6 +638,7 @@ source_set("unit_tests") {
     "webdata/autofill_sync_bridge_util_unittest.cc",
     "webdata/autofill_table_unittest.cc",
     "webdata/autofill_wallet_metadata_sync_bridge_unittest.cc",
+    "webdata/autofill_wallet_offer_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_sync_bridge_unittest.cc",
     "webdata/web_data_service_unittest.cc",
   ]

@@ -3135,7 +3135,8 @@ bool AutofillTable::SupportsMetadataForModelType(
   return (model_type == syncer::AUTOFILL ||
           model_type == syncer::AUTOFILL_PROFILE ||
           model_type == syncer::AUTOFILL_WALLET_DATA ||
-          model_type == syncer::AUTOFILL_WALLET_METADATA);
+          model_type == syncer::AUTOFILL_WALLET_METADATA ||
+          model_type == syncer::AUTOFILL_WALLET_OFFER);
 }
 
 int AutofillTable::GetKeyValueForModelType(syncer::ModelType model_type) const {

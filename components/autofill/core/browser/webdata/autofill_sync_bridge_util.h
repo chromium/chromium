@@ -13,6 +13,7 @@
 
 namespace autofill {
 
+struct AutofillOfferData;
 class AutofillProfile;
 class AutofillTable;
 class CreditCard;
@@ -55,6 +56,11 @@ void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
     const CreditCardCloudTokenData& cloud_token_data,
     sync_pb::AutofillWalletSpecifics* wallet_specifics,
     bool enforce_utf8 = false);
+
+// Sets the fields of the |offer_specifics| based on the specified |offer_data|.
+void SetAutofillOfferSpecificsFromOfferData(
+    const AutofillOfferData& offer_data,
+    sync_pb::AutofillOfferSpecifics* offer_specifics);
 
 // Creates an AutofillProfile from the specified |address| specifics.
 AutofillProfile ProfileFromSpecifics(

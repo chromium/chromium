@@ -580,6 +580,20 @@ CreditCardCloudTokenData GetCreditCardCloudTokenData2() {
   return data;
 }
 
+AutofillOfferData GetCardLinkedOfferData() {
+  AutofillOfferData data;
+  data.offer_id = 111;
+  data.offer_reward_amount = "5%";
+  // Sets the expiry to be 45 days later.
+  data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(45);
+  data.offer_details_url = GURL("http://www.example.com");
+  data.merchant_domain = std::vector<GURL>();
+  data.merchant_domain.emplace_back(GURL("http://www.example.com"));
+  data.eligible_instrument_id = std::vector<int64_t>();
+  data.eligible_instrument_id.emplace_back(111111);
+  return data;
+}
+
 void SetProfileInfo(AutofillProfile* profile,
                     const char* first_name,
                     const char* middle_name,

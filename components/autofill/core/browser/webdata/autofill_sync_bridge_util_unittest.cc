@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -235,6 +237,37 @@ TEST_F(AutofillSyncBridgeUtilTest,
   // Make sure the use stats from disk were kept
   EXPECT_EQ(3U, wallet_cards.back().use_count());
   EXPECT_EQ(disk_time, wallet_cards.back().use_date());
+}
+
+// Test to ensure the an AutofillOfferData is correctly converted to an
+// AutofillOfferSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
+  sync_pb::AutofillOfferSpecifics offer_specifics;
+  AutofillOfferData offer_data = test::GetCardLinkedOfferData();
+  SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
+
+  EXPECT_EQ(offer_specifics.id(), offer_data.offer_id);
+  EXPECT_EQ(offer_specifics.offer_details_url(), offer_data.offer_details_url);
+  EXPECT_EQ(offer_specifics.offer_expiry_date(),
+            (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
+  EXPECT_TRUE(offer_specifics.percentage_reward().percentage() ==
+                  offer_data.offer_reward_amount ||
+              offer_specifics.fixed_amount_reward().amount() ==
+                  offer_data.offer_reward_amount);
+  EXPECT_EQ(offer_specifics.merchant_domain().size(),
+            (int)offer_data.merchant_domain.size());
+  for (int i = 0; i < offer_specifics.merchant_domain().size(); i++) {
+    EXPECT_EQ(offer_specifics.merchant_domain(i),
+              offer_data.merchant_domain[i].spec());
+  }
+  EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id().size(),
+            (int)offer_data.eligible_instrument_id.size());
+  for (int i = 0;
+       i < offer_specifics.card_linked_offer_data().instrument_id().size();
+       i++) {
+    EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id(i),
+              offer_data.eligible_instrument_id[i]);
+  }
 }
 
 }  // namespace

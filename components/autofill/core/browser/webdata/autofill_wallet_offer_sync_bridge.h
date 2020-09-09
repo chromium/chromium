@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -35,7 +36,8 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
       AutofillWebDataService* web_data_service);
 
   explicit AutofillWalletOfferSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      AutofillWebDataBackend* web_data_backend);
   ~AutofillWalletOfferSyncBridge() override;
 
   AutofillWalletOfferSyncBridge(const AutofillWalletOfferSyncBridge&) = delete;
@@ -58,6 +60,10 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
   bool SupportsIncrementalUpdates() const override;
   void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                 delete_metadata_change_list) override;
+
+ private:
+  // The bridge should be used on the same sequence where it is constructed.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace autofill

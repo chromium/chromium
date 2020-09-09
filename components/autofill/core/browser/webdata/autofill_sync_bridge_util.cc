@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -283,6 +284,29 @@ void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
   mutable_cloud_token_data->set_art_fife_url(cloud_token_data.card_art_url);
   mutable_cloud_token_data->set_instrument_token(
       cloud_token_data.instrument_token);
+}
+
+void SetAutofillOfferSpecificsFromOfferData(
+    const AutofillOfferData& offer_data,
+    sync_pb::AutofillOfferSpecifics* offer_specifics) {
+  offer_specifics->set_id(offer_data.offer_id);
+  offer_specifics->set_offer_details_url(offer_data.offer_details_url.spec());
+  for (const GURL& domain : offer_data.merchant_domain) {
+    offer_specifics->add_merchant_domain(domain.spec());
+  }
+  offer_specifics->set_offer_expiry_date(
+      (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
+  for (int64_t instrument_id : offer_data.eligible_instrument_id) {
+    offer_specifics->mutable_card_linked_offer_data()->add_instrument_id(
+        instrument_id);
+  }
+  if (offer_data.offer_reward_amount.find("%") != std::string::npos) {
+    offer_specifics->mutable_percentage_reward()->set_percentage(
+        offer_data.offer_reward_amount);
+  } else {
+    offer_specifics->mutable_fixed_amount_reward()->set_amount(
+        offer_data.offer_reward_amount);
+  }
 }
 
 AutofillProfile ProfileFromSpecifics(
