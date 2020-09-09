@@ -347,7 +347,7 @@ void WebRtcLogUploader::SetupMultipart(
   const char product[] = "Chrome";
 #elif defined(OS_MAC)
   const char product[] = "Chrome_Mac";
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif defined(OS_LINUX)
 #if !defined(ADDRESS_SANITIZER)
   const char product[] = "Chrome_Linux";
 #else

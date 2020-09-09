@@ -90,11 +90,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
 #if defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 // On linux debug bots, it's flaky as well.
-#elif ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(NDEBUG))
+#elif (defined(OS_LINUX) && !defined(NDEBUG))
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 // On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-       defined(ADDRESS_SANITIZER))
+#elif (defined(OS_LINUX) && defined(ADDRESS_SANITIZER))
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 #else
 #define MAYBE_GetDisplayMediaVideoAndAudio GetDisplayMediaVideoAndAudio

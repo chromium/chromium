@@ -50,7 +50,7 @@ class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
 // TODO(crbug.com/910216): De-flake this for ChromeOs.
 // TODO(crbug.com/984879): De-flake this for ASAN/MSAN Linux.
 #if defined(OS_CHROMEOS) ||                                        \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) &&                \
+    (defined(OS_LINUX) &&                                          \
      (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))) || \
     (defined(OS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_VerifyEncryption DISABLED_VerifyEncryption
