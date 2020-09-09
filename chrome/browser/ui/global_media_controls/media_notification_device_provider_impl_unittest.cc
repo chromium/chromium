@@ -154,3 +154,26 @@ TEST(MediaNotificationDeviceProviderTest, NoDefaultDevice) {
   auto result = DescriptionsFromProvider(std::move(descriptions));
   EXPECT_TRUE(DescriptionsAreEqual(result, original_descriptions));
 }
+
+TEST(MediaNotificationDeviceProviderTest,
+     MaybeRemoveDefaultDeviceMultipleTimes) {
+  media::AudioDeviceDescriptions descriptions;
+  descriptions.emplace_back("Speaker", "1", "");
+  descriptions.emplace_back("Headphones", "2", "");
+  descriptions.emplace_back("Monitor", "3", "");
+  descriptions.emplace_back(
+      media::AudioDeviceDescription::GetDefaultDeviceName() + " - Speaker",
+      media::AudioDeviceDescription::kDefaultDeviceId, "");
+
+  media::AudioDeviceDescriptions expected_descriptions;
+  expected_descriptions.emplace_back(
+      "Speaker", media::AudioDeviceDescription::kDefaultDeviceId, "");
+  expected_descriptions.emplace_back("Headphones", "2", "");
+  expected_descriptions.emplace_back("Monitor", "3", "");
+
+  auto result = DescriptionsFromProvider(descriptions);
+  EXPECT_TRUE(DescriptionsAreEqual(result, expected_descriptions));
+  // Subsequent calls should not modify the devices list any further.
+  result = DescriptionsFromProvider(std::move(descriptions));
+  EXPECT_TRUE(DescriptionsAreEqual(result, expected_descriptions));
+}

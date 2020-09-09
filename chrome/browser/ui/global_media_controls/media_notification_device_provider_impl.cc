@@ -44,10 +44,11 @@ void MaybeRemoveDefaultDevice(media::AudioDeviceDescriptions& descriptions) {
             default_device_name_prefix.size());
 
     // Find all the devices that have the name of the real default device.
-    std::vector<media::AudioDeviceDescription*> devices_with_real_default_name;
-    for (auto& description : descriptions) {
-      if (description.device_name == real_default_device_name) {
-        devices_with_real_default_name.push_back(&description);
+    std::vector<media::AudioDeviceDescriptions::iterator>
+        devices_with_real_default_name;
+    for (auto it = descriptions.begin(); it != descriptions.end(); ++it) {
+      if (it->device_name == real_default_device_name) {
+        devices_with_real_default_name.push_back(it);
       }
     }
 
@@ -56,9 +57,9 @@ void MaybeRemoveDefaultDevice(media::AudioDeviceDescriptions& descriptions) {
       // there is no ambiguity as to if this device is the real default device.
       // In this case, we should remove the "default" fallback device from the
       // list and mark the real device as "default".
-      descriptions.erase(default_device_it);
       devices_with_real_default_name.front()->unique_id =
           media::AudioDeviceDescription::kDefaultDeviceId;
+      descriptions.erase(default_device_it);
     }
   }
 }
@@ -127,7 +128,6 @@ void MediaNotificationDeviceProviderImpl::NotifySubscribers(
     media::AudioDeviceDescriptions descriptions) {
   is_querying_for_output_devices_ = false;
   audio_device_descriptions_ = std::move(descriptions);
-  MaybeRemoveDefaultDevice(audio_device_descriptions_);
   has_device_list_ = true;
   output_device_callback_list_.Notify(audio_device_descriptions_);
 }
