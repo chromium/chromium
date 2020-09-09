@@ -51,6 +51,7 @@ source_set("browser") {
     "//base/util/ranges:ranges",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//build:chromecast_buildflags",
     "//cc",
     "//cc/animation",
     "//cc/mojo_embedder",
