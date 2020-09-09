@@ -25,7 +25,8 @@ interface PrerenderHandleClient {
   OnPrerenderStop();
 };
 
-// A handle to a requested prerender. Dropping a connection to the handle is
+// The renderer sends messages to the browser process over this interface. A
+// handle to a requested prerender. Dropping a connection to the handle is
 // treated equivalently to calling the Abandon method.
 interface PrerenderHandle {
   // Notifies on removal of a <link rel=prerender> element from the document.
@@ -47,9 +48,10 @@ struct PrerenderAttributes {
   gfx.mojom.Size view_size;
 };
 
-// Used by a renderer that is loading a web page to process prerender /
-// prefetch requests, that are generally in the form of <link rel> tags that
-// the web page author provided as hints.
+// The renderer sends messages to the browser process over this interface. Used
+// by a renderer loading a web page to process prerender / prefetch requests,
+// that are generally in the form of <link rel> tags that the web page author
+// provided as hints.
 interface PrerenderProcessor {
   // Called to add a prerender request to the queue for processing. The
   // |prerender_handle_client| will be notified as the prerendering makes
