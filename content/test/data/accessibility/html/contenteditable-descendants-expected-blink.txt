@@ -26,6 +26,8 @@ rootWebArea
 ++++++++list editable richlyEditable
 ++++++++++listItem editable richlyEditable
 ++++++++++++listMarker editable richlyEditable name='1. '
+++++++++++++++staticText name='1. '
+++++++++++++++++inlineTextBox name='1. '
 ++++++++++++staticText editable richlyEditable name='Editable list item.'
 ++++++++++++++inlineTextBox name='Editable list item.'
 ++++++paragraph
