@@ -202,6 +202,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * Sets up the view for sign-in auth error.
      */
     void setUpSignInAuthErrorView() {
+        mLogoImage.setImageResource(R.drawable.ic_warning_red_24dp);
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_auth_error_subtitle);
         mAccountPickerSubtitle.setVisibility(View.VISIBLE);

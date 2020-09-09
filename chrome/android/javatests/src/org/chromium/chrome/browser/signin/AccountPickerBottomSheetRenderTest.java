@@ -205,6 +205,29 @@ public class AccountPickerBottomSheetRenderTest {
                 mCoordinator.getBottomSheetViewForTesting(), "signin_general_error_sheet");
     }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+        // Throws an authentication error during the sign-in action
+        doAnswer(invocation -> {
+            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
+            onSignInErrorCallback.onResult(
+                    new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS));
+            return null;
+        })
+                .when(mAccountPickerDelegateMock)
+                .signIn(eq(coreAccountInfo), any());
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorView();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(), "signin_auth_error_sheet");
+    }
+
     private void clickContinueButtonAndWaitForErrorView() {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
