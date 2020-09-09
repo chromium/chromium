@@ -1081,10 +1081,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
               surface_->SwapBuffers(base::DoNothing()));
   }
-
-  // Swap chain isn't recreated on resize.
-  ASSERT_TRUE(surface_->GetLayerSwapChainForTesting(0));
-  EXPECT_EQ(swap_chain.Get(), surface_->GetLayerSwapChainForTesting(0).Get());
+  swap_chain = surface_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
   EXPECT_EQ(desc.Width, 30u);
   EXPECT_EQ(desc.Height, 30u);

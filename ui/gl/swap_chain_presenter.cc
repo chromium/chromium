@@ -1132,20 +1132,6 @@ bool SwapChainPresenter::ReallocateSwapChain(
   DCHECK(!swap_chain_size.IsEmpty());
   swap_chain_size_ = swap_chain_size;
 
-  // ResizeBuffers can't change YUV flags so only attempt it when size changes.
-  if (swap_chain_ && (swap_chain_format_ == swap_chain_format) &&
-      (protected_video_type_ == protected_video_type)) {
-    output_view_.Reset();
-    DXGI_SWAP_CHAIN_DESC1 desc = {};
-    swap_chain_->GetDesc1(&desc);
-    HRESULT hr = swap_chain_->ResizeBuffers(
-        desc.BufferCount, swap_chain_size.width(), swap_chain_size.height(),
-        desc.Format, desc.Flags);
-    if (SUCCEEDED(hr))
-      return true;
-    DLOG(ERROR) << "ResizeBuffers failed with error 0x" << std::hex << hr;
-  }
-
   protected_video_type_ = protected_video_type;
 
   if (swap_chain_format_ != swap_chain_format) {
