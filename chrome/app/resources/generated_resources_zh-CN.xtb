@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">未知设备 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">在多帐号登录会话中，此所有者帐号必须是最先登录的帐号。</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
-<translation id="1504311855864906891">为您的媒体生成字幕</translation>
 <translation id="1504551620756424144">在 Windows 中，共享文件夹是位于 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1507170440449692343">已阻止此网页使用您的摄像头。</translation>
@@ -3262,7 +3261,6 @@
 <translation id="4921348630401250116">文字转语音</translation>
 <translation id="49226369361073053">{0,plural, =0{立即更新此设备}=1{请在 1 秒内更新此设备}other{请在 # 秒内更新此设备}}</translation>
 <translation id="492299503953721473">移除 Android 应用</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> 是不明文件。“高级保护”计划建议您将此文件发送给 Google 进行扫描。</translation>
 <translation id="492363500327720082">正在卸载 <ph name="APP_NAME" />…</translation>
 <translation id="4924352752174756392">12 倍</translation>
 <translation id="4925320384394644410">您的端口将会显示在此处</translation>
@@ -3486,7 +3484,6 @@
 <translation id="5225324770654022472">显示应用快捷方式</translation>
 <translation id="52254442782792731">当前尚未设置公开范围</translation>
 <translation id="5227679487546032910">默认的蓝绿色头像</translation>
-<translation id="5228088094491423618">实时字幕</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
 <translation id="5229189185761556138">管理输入法</translation>
 <translation id="5230516054153933099">窗口</translation>
@@ -6016,7 +6013,6 @@
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8283475148136688298">连接到“<ph name="DEVICE_NAME" />”时身份验证码遭拒。</translation>
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
-<translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登录</translation>
 <translation id="8286963743045814739">无痕式窗口可让您私密地浏览</translation>
 <translation id="8287902281644548111">按 API 调用/网址搜索</translation>
@@ -6298,7 +6294,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" />，等等</translation>
 <translation id="8650543407998814195">既然您已无法再访问自己的旧个人资料，不妨将其移除。</translation>
 <translation id="8651585100578802546">强制重新加载此页</translation>
-<translation id="8651940856056821914">Chrome 可使用实时字幕功能自动创建字幕（目前仅提供英文版）</translation>
 <translation id="8652400352452647993">打包扩展程序错误</translation>
 <translation id="8654151524613148204">很抱歉，文件过大，计算机无法处理。</translation>
 <translation id="8655295600908251630">版本</translation>

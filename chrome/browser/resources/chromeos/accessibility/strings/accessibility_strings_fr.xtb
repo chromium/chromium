@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Pourpre</translation>
 <translation id="3104705064753753826">boîte dialogue alerte</translation>
 <translation id="3109724472072898302">Réduit</translation>
+<translation id="311015743332597320">Balayer l'écran vers la droite avec quatre doigts</translation>
 <translation id="3112457281078985179">Pour activer ou désactiver ChromeVox, appuyez sur Ctrl+Alt+Z.</translation>
 <translation id="3131002934070407451">Lire les nombres comme :</translation>
 <translation id="3134461040845705080">lecture seule</translation>
@@ -901,6 +902,7 @@
 <translation id="812886159861361726">Le téléchargement du fichier <ph name="FILE_NAME" /> est arrêté</translation>
 <translation id="8129445297241948503">Aucune cellule au-dessus</translation>
 <translation id="8138880386467279117">Tactile</translation>
+<translation id="8173092779156526980">Balayer l'écran vers la gauche avec quatre doigts</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{trait de soulignement}one{# trait de soulignement}other{# traits de soulignement}}</translation>
 <translation id="8184828902145951186">ligne</translation>
 <translation id="8186185314313222077">activer/désactiver le mode plein écran</translation>

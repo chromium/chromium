@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Dispositivo desconocido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">El propietario de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="150411034776756821">Quitar <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Obtén subtítulos para tu contenido multimedia</translation>
 <translation id="1504551620756424144">Las carpetas compartidas están disponibles en Windows, en <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1507170440449692343">Esta página no tiene permiso para acceder a la cámara.</translation>
@@ -3264,7 +3263,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4921348630401250116">Texto a voz</translation>
 <translation id="49226369361073053">{0,plural, =0{Actualiza el dispositivo ahora}=1{Actualiza el dispositivo en el transcurso de 1 segundo}other{Actualiza el dispositivo en el transcurso de # segundos}}</translation>
 <translation id="492299503953721473">Quitar las apps de Android</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> es un archivo desconocido. La Protección avanzada recomienda enviarlo a Google para analizarlo.</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Aquí aparecerán tus puertos</translation>
@@ -3488,7 +3486,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5225324770654022472">Mostrar acceso directo a las aplicaciones</translation>
 <translation id="52254442782792731">Aún no se estableció la configuración de visibilidad actual</translation>
 <translation id="5227679487546032910">Avatar verde azulado predeterminado</translation>
-<translation id="5228088094491423618">Subtitulados instantáneos</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
 <translation id="5229189185761556138">Administrar métodos de entrada</translation>
 <translation id="5230516054153933099">Ventana</translation>
@@ -6021,7 +6018,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8283475148136688298">El código de autenticación se rechazó mientras se establecía la conexión con "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
 <translation id="8286963743045814739">Puedes navegar de forma privada con una ventana de incógnito</translation>
 <translation id="8287902281644548111">Busca por URL o llamada a la API</translation>
@@ -6303,7 +6299,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> desea hacer lo siguiente: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> y más</translation>
 <translation id="8650543407998814195">Si bien ya no puedes acceder a tu perfil anterior, aún puedes quitarlo.</translation>
 <translation id="8651585100578802546">Volver a cargar esta página</translation>
-<translation id="8651940856056821914">Chrome crea subtítulos automáticamente mediante Subtitulado instantáneo (disponible por el momento solo en inglés)</translation>
 <translation id="8652400352452647993">Error al empaquetar extensiones</translation>
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu equipo lo procese.</translation>
 <translation id="8655295600908251630">Canal</translation>

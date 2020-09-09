@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Непознат уред [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Оваа сметка на сопственик треба да биде првата пријавена сметка во сесија со повеќекратно пријавување.</translation>
 <translation id="150411034776756821">Отстрани <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Ставете титлови на вашите аудиовизуелни содржини</translation>
 <translation id="1504551620756424144">Споделените папки се достапни во Windows на <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
 <translation id="1507170440449692343">Страницата е блокирана да не пристапува до фотоапаратот.</translation>
@@ -3267,7 +3266,6 @@
 <translation id="4921348630401250116">Од текст во говор</translation>
 <translation id="49226369361073053">{0,plural, =0{Ажурирајте го уредот веднаш}=1{Ажурирајте го уредот во рок од 1 секунда}one{Ажурирајте го уредот во рок од # секунда}other{Ажурирајте го уредот во рок од # секунди}}</translation>
 <translation id="492299503953721473">Отстрани ги апликациите за Android</translation>
-<translation id="492320048412997552">Датотеката <ph name="FILE_NAME" /> е непозната. „Напредната заштита“ препорачува да ја испратите до Google за скенирање.</translation>
 <translation id="492363500327720082">Се деинсталира <ph name="APP_NAME" />…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Вашите порти ќе се појават тука</translation>
@@ -3491,7 +3489,6 @@
 <translation id="5225324770654022472">Покажи кратенка за апликации</translation>
 <translation id="52254442782792731">Не е избрана поставка за видливоста</translation>
 <translation id="5227679487546032910">Стандарден синозелен аватар</translation>
-<translation id="5228088094491423618">Автоматски титлови</translation>
 <translation id="5228579091201413441">Овозможи синхронизација</translation>
 <translation id="5229189185761556138">Управувајте со методите за внесување</translation>
 <translation id="5230516054153933099">Прозорец</translation>
@@ -6024,7 +6021,6 @@
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8283475148136688298">Отфрлен код за автентикацијата при поврзување со „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="8284279544186306258">сите локации на <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Титлови</translation>
 <translation id="8286036467436129157">Најави се</translation>
 <translation id="8286963743045814739">Може да прелистувате приватно со инкогнито прозорец</translation>
 <translation id="8287902281644548111">Пребарувајте по повик/URL на API</translation>
@@ -6306,7 +6302,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> сака да: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и друго</translation>
 <translation id="8650543407998814195">Иако веќе не може да пристапувате до стариот профил, сѐ уште може да го отстраните.</translation>
 <translation id="8651585100578802546">Принуди повторно вчитување на страницата</translation>
-<translation id="8651940856056821914">Chrome автоматски создава титлови со „Автоматски титлови“ (во моментов достапни само на англиски)</translation>
 <translation id="8652400352452647993">Грешка на екстензијата на пакетот</translation>
 <translation id="8654151524613148204">Датотеката е премногу голема за вашиот компјутер да се справи со неа. Се извинуваме.</translation>
 <translation id="8655295600908251630">Канал</translation>

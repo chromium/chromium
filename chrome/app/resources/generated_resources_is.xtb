@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Óþekkt tæki [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Þessi eigandareikningur verður að vera fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
 <translation id="150411034776756821">Fjarlægja <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Fá skjátexta fyrir efnið þitt</translation>
 <translation id="1504551620756424144">Samnýttar möppur eru aðgengilegar í Windows á <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Leitarvél</translation>
 <translation id="1507170440449692343">Þessari síðu var bannað að fá aðgang að myndavélinni þinni.</translation>
@@ -3267,7 +3266,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4921348630401250116">Upplestur</translation>
 <translation id="49226369361073053">{0,plural, =0{Uppfærðu tækið núna}=1{Uppfærðu tækið innan einnar sekúndu}one{Uppfærðu tækið innan # sekúndu}other{Uppfærðu tækið innan # sekúndna}}</translation>
 <translation id="492299503953721473">Fjarlægja Android forrit</translation>
-<translation id="492320048412997552">Skráin <ph name="FILE_NAME" /> þekkist ekki. Ítarleg vernd mælir með því að senda þessa skrá til Google og láta skanna hana.</translation>
 <translation id="492363500327720082">Fjarlægir <ph name="APP_NAME" />...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Gáttirnar þínar birtast hér</translation>
@@ -3491,7 +3489,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5225324770654022472">Sýna forritaflýtileið</translation>
 <translation id="52254442782792731">Sýnileiki hefur ekki verið stilltur</translation>
 <translation id="5227679487546032910">Sjálfgefin grænblá notandamynd</translation>
-<translation id="5228088094491423618">Skjátextar í rauntíma</translation>
 <translation id="5228579091201413441">Kveikja á samstillingu</translation>
 <translation id="5229189185761556138">Stjórna innsláttaraðferðum</translation>
 <translation id="5230516054153933099">Gluggi</translation>
@@ -6023,7 +6020,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8283475148136688298">Staðfestingarkóða hafnað þegar reynt var að tengjast „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="8284279544186306258">öllum vefsvæðum <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Skjátextar</translation>
 <translation id="8286036467436129157">Skrá inn</translation>
 <translation id="8286963743045814739">Þú getur vafrað í leyni með því að nota huliðsglugga</translation>
 <translation id="8287902281644548111">Leita eftir forritaskilakalli / vefslóð</translation>
@@ -6305,7 +6301,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vill: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> og fleira</translation>
 <translation id="8650543407998814195">Þótt þú hafir ekki lengur aðgang að gamla prófílnum þínum geturðu samt fjarlægt hann.</translation>
 <translation id="8651585100578802546">Þvinga fram endurnýjun síðu</translation>
-<translation id="8651940856056821914">Chrome býr sjálfkrafa til skjátexta með Skjátextum í rauntíma (aðeins í boði á ensku sem stendur)</translation>
 <translation id="8652400352452647993">Villa í pakkaviðbót</translation>
 <translation id="8654151524613148204">Skráin er of stór til að tölvan þín geti unnið með hana. Sorrí, Stína.</translation>
 <translation id="8655295600908251630">Rás</translation>

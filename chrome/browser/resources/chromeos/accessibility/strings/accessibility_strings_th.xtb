@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">สีแดงอมม่วงปานกลาง</translation>
 <translation id="3104705064753753826">ข้อความแจ้งเตือน</translation>
 <translation id="3109724472072898302">ยุบแล้ว</translation>
+<translation id="311015743332597320">เลื่อน 4 นิ้วไปทางขวา</translation>
 <translation id="3112457281078985179">หากต้องการเปิดหรือปิด ChromeVox ให้ใช้ Control+Alt+Z</translation>
 <translation id="3131002934070407451">อ่านหมายเลขเป็น</translation>
 <translation id="3134461040845705080">อ่านอย่างเดียว</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726">หยุดดาวน์โหลด <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="8129445297241948503">ไม่มีเซลล์ด้านบน</translation>
 <translation id="8138880386467279117">การแตะ</translation>
+<translation id="8173092779156526980">เลื่อน 4 นิ้วไปทางซ้าย</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{เครื่องหมายขีดล่าง}other{# เครื่องหมายขีดล่าง}}</translation>
 <translation id="8184828902145951186">แถว</translation>
 <translation id="8186185314313222077">เปลี่ยนเป็นเต็มหน้าจอ</translation>

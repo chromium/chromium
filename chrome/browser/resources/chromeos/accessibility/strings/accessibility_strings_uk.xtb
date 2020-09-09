@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Помірний фіолетово-червоний</translation>
 <translation id="3104705064753753826">вікно сповіщення</translation>
 <translation id="3109724472072898302">Згорнуто</translation>
+<translation id="311015743332597320">Проведіть чотирма пальцями праворуч</translation>
 <translation id="3112457281078985179">Щоб увімкнути чи вимкнути ChromeVox, натисніть комбінацію клавіш Control+Alt+Z.</translation>
 <translation id="3131002934070407451">Зачитувати числа як:</translation>
 <translation id="3134461040845705080">лише читання</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726">Завантаження файлу <ph name="FILE_NAME" /> припинено</translation>
 <translation id="8129445297241948503">Немає клітинки вище</translation>
 <translation id="8138880386467279117">Торкнутися</translation>
+<translation id="8173092779156526980">Проведіть чотирма пальцями ліворуч</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{підкреслення}one{# підкреслення}few{# підкреслення}many{# підкреслень}other{# underscores}}</translation>
 <translation id="8184828902145951186">рядок</translation>
 <translation id="8186185314313222077">увімкнути або вимкнути повноекранний режим</translation>

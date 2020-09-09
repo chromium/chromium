@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">অজ্ঞাত ডিভাইচ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">গৰাকীৰ এই একাউণ্টটো একাধিকবাৰ ছাইন ইন কৰা কোনো ছেশ্বনত প্ৰথমতে ছাইন ইন কৰা একাউণ্ট হ’ব লাগিব।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> আঁতৰাওক</translation>
-<translation id="1504311855864906891">আপোনাৰ মিডিয়াৰ বাবে কেপশ্বন লাভ কৰক</translation>
 <translation id="1504551620756424144">শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ Windowsৰ <ph name="BASE_DIR" />ত উপলব্ধ।</translation>
 <translation id="1506061864768559482">সন্ধান ইঞ্জিন</translation>
 <translation id="1507170440449692343">এই পৃষ্ঠাটোৰ আপোনাৰ কেমেৰাৰ এক্সেছ অৱৰোধ কৰি ৰখা হৈছিল।</translation>
@@ -3260,7 +3259,6 @@
 <translation id="4921348630401250116">পাঠৰ পৰা কথন</translation>
 <translation id="49226369361073053">{0,plural, =0{এতিয়াই ডিভাইচটো আপডে’ট কৰক}=1{১ ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="492299503953721473">Android এপ্‌বোৰ আঁতৰাওক</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> অজ্ঞাত। সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাটোৱে এই ফাইলটো স্কেন কৰাৰ বাবে Googleলৈ পঠিয়াবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> আনইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="4924352752174756392">১২x</translation>
 <translation id="4925320384394644410">আপোনাৰ প’র্টসমূহ ইয়াত দেখা যাব</translation>
@@ -3484,7 +3482,6 @@
 <translation id="5225324770654022472">এপ্‌সমূহৰ শ্বৰ্টকাট দেখুৱাওক</translation>
 <translation id="52254442782792731">বৰ্তমানৰ দৃশ্যমানতাৰ ছেটিংটো এতিয়ালৈকে ছেট কৰা হোৱা নাই</translation>
 <translation id="5227679487546032910">নীলা-সেউজীয়া ৰঙৰ অৱতাৰ</translation>
-<translation id="5228088094491423618">লাইভ কেপশ্বন</translation>
 <translation id="5228579091201413441">ছিংক সক্ষম কৰক</translation>
 <translation id="5229189185761556138">ইনপুট পদ্ধতি পৰিচালনা কৰক</translation>
 <translation id="5230516054153933099">ৱিণ্ড’</translation>
@@ -6006,7 +6003,6 @@
 <translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />"ৰ সৈতে সংযোগ কৰি থাকোঁতে বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ ক’ড অগ্ৰাহ্য কৰা হ’ল৷</translation>
 <translation id="8284279544186306258">সকলো <ph name="WEBSITE_1" /> ছাইট</translation>
-<translation id="8284326494547611709">কেপশ্বন</translation>
 <translation id="8286036467436129157">ছাইন ইন কৰক</translation>
 <translation id="8286963743045814739">আপুনি এখন ইনকগনিট‘ ৱিণ্ড‘ ব্যৱহাৰ কৰি ব্যক্তিগতভাৱে ব্ৰাউজ কৰিব পাৰে</translation>
 <translation id="8287902281644548111">API কল/URLৰ দ্বাৰা সন্ধান কৰক</translation>
@@ -6287,7 +6283,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" />এ এইবোৰ অনুমতি বিচাৰে: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> আৰু বহুতো</translation>
 <translation id="8650543407998814195">যদিও আপুনি নিজৰ পুৰণি প্ৰ’ফাইলটো এক্সেছ কৰিব নোৱাৰে, তথাপি সেইটো আঁতৰাব পাৰে।</translation>
 <translation id="8651585100578802546">এই পৃষ্ঠাটো ৰিল‘ড কৰক-ক বলেৰে চলাওক</translation>
-<translation id="8651940856056821914">Chromeএ লাইভ কেপশ্বন ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে কেপশ্বন সৃষ্টি কৰে (সম্প্ৰতি কেৱল ইংৰাজীত উপলব্ধ)</translation>
 <translation id="8652400352452647993">এক্সটেনশ্বনৰ আসোঁৱাহ পেক কৰক</translation>
 <translation id="8654151524613148204">ফাইলটো আপোনাৰ কম্পিউটাৰৰ বাবে অতি ডাঙৰ। দুঃখিত।</translation>
 <translation id="8655295600908251630">চেনেল</translation>

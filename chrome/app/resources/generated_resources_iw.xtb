@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">מכשיר לא ידוע [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">החשבון של בעלים זה צריך להיות החשבון הראשון שאליו נכנסים בעת כניסה לפעילות באתר מחשבונות מרובים.</translation>
 <translation id="150411034776756821">הסרה של <ph name="SITE" /></translation>
-<translation id="1504311855864906891">הצגת כתוביות עבור המדיה שלך</translation>
 <translation id="1504551620756424144">‏התיקיות המשותפות זמינות ב-Windows בספרייה <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
 <translation id="1507170440449692343">דף זה נחסם לגישה למצלמה שלך.</translation>
@@ -3265,7 +3264,6 @@
 <translation id="4921348630401250116">המרת טקסט לדיבור</translation>
 <translation id="49226369361073053">{0,plural, =0{יש לעדכן את המכשיר עכשיו}=1{יש לעדכן את המכשיר תוך שנייה אחת}two{יש לעדכן את המכשיר תוך # שניות}many{יש לעדכן את המכשיר תוך # שניות}other{יש לעדכן את המכשיר תוך # שניות}}</translation>
 <translation id="492299503953721473">‏הסר אפליקציות Android</translation>
-<translation id="492320048412997552">‏<ph name="FILE_NAME" /> אינו מזוהה. ההמלצה של 'הגנה מתקדמת' היא לשלוח את הקובץ הזה ל-Google לצורך סריקה.</translation>
 <translation id="492363500327720082">ההסרה של <ph name="APP_NAME" /> מתבצעת…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">היציאות שלך יופיעו כאן</translation>
@@ -3489,7 +3487,6 @@
 <translation id="5225324770654022472">הצג קיצורי יישומים</translation>
 <translation id="52254442782792731">הרשאות הגישה הנוכחיות עוד לא הוגדרו</translation>
 <translation id="5227679487546032910">דמות ברירת מחדל כחלחלה</translation>
-<translation id="5228088094491423618">כתוביות מיידיות</translation>
 <translation id="5228579091201413441">הפעל סנכרון</translation>
 <translation id="5229189185761556138">נהל שיטות קלט</translation>
 <translation id="5230516054153933099">חלון</translation>
@@ -6021,7 +6018,6 @@
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8283475148136688298">קוד האימות נדחה בעת ההתחברות ל-"<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">כל אתרי <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">כתוביות</translation>
 <translation id="8286036467436129157">כניסה</translation>
 <translation id="8286963743045814739">אפשר לגלוש בפרטיות בעזרת חלון גלישה בסתר</translation>
 <translation id="8287902281644548111">‏חיפוש לפי קריאה ל-API/כתובת URL</translation>
@@ -6303,7 +6299,6 @@
 <translation id="8648544143274677280">האתר <ph name="SITE_NAME" /> מבקש את ההרשאות הבאות: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ונוספות</translation>
 <translation id="8650543407998814195">למרות שכבר אין לך גישה לפרופיל הישן, אפשר עדיין להסיר אותו.</translation>
 <translation id="8651585100578802546">אלץ טעינה מחדש של דף זה</translation>
-<translation id="8651940856056821914">‏Chrome יוצר באופן אוטומטי כתוביות באמצעות התכונה 'כתוביות מיידיות' (זמינה רק באנגלית בשלב זה)</translation>
 <translation id="8652400352452647993">שגיאת 'ארוז תוסף'</translation>
 <translation id="8654151524613148204">הקובץ גדול מכדי שהמחשב שלך יוכל לטפל בו. מצטערים.</translation>
 <translation id="8655295600908251630">ערוץ</translation>

@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">جهاز غير معروف [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">يجب أن يكون حساب المالك هذا أول حساب يتم تسجيل الدخول إليه في جلسة تسجيل دخول متعدد.</translation>
 <translation id="150411034776756821">إزالة <ph name="SITE" /></translation>
-<translation id="1504311855864906891">الحصول على مقاطع شرح وترجمة للوسائط</translation>
 <translation id="1504551620756424144">‏تتوفّر المجلّدات المشترَكة في Windows على <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">محرك البحث</translation>
 <translation id="1507170440449692343">تم حظر دخول هذه الصفحة إلى الكاميرا التابعة لك.</translation>
@@ -3264,7 +3263,6 @@
 <translation id="4921348630401250116">تحويل النص إلى كلام</translation>
 <translation id="49226369361073053">{0,plural, =0{تحديث الجهاز الآن}=1{تحديث الجهاز خلال ثانية واحدة}two{تحديث الجهاز خلال ثانيتَين}few{تحديث الجهاز خلال # ثوانٍ}many{تحديث الجهاز خلال # ثانية}other{تحديث الجهاز خلال # ثانية}}</translation>
 <translation id="492299503953721473">‏إزالة تطبيقات Android</translation>
-<translation id="492320048412997552">‏الملف <ph name="FILE_NAME" /> غير معروف. ينصح برنامج "الحماية المتقدّمة" بإرسال هذا الملف إلى Google لفحصه.</translation>
 <translation id="492363500327720082">جارٍ إلغاء تثبيت <ph name="APP_NAME" />...</translation>
 <translation id="4924352752174756392">12 ضعفًا</translation>
 <translation id="4925320384394644410">ستظهر المنافذ هنا.</translation>
@@ -3488,7 +3486,6 @@
 <translation id="5225324770654022472">إظهار اختصار التطبيقات</translation>
 <translation id="52254442782792731">لم يتم ضبط الإعداد الحالي لمستوى ظهور الجهاز.</translation>
 <translation id="5227679487546032910">الصورة الرمزية التلقائية الزرقاء المخضرة</translation>
-<translation id="5228088094491423618">النُسخ النصية التلقائية</translation>
 <translation id="5228579091201413441">تفعيل المزامنة</translation>
 <translation id="5229189185761556138">إدارة طرق الإدخال</translation>
 <translation id="5230516054153933099">نافذة</translation>
@@ -6021,7 +6018,6 @@
 <translation id="8281886186245836920">التخطّي</translation>
 <translation id="8283475148136688298">تم رفض رمز المصادقة أثناء الاتصال بالجهاز "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">جميع مواقع <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">الترجمة والشرح</translation>
 <translation id="8286036467436129157">تسجيل الدخول</translation>
 <translation id="8286963743045814739">يمكنك التصفّح بخصوصية تامّة باستخدام نافذة للتصفُّح المتخفي</translation>
 <translation id="8287902281644548111">‏البحث حسب طلب بيانات من واجهة برمجة التطبيقات/عنوان URL</translation>
@@ -6303,7 +6299,6 @@
 <translation id="8648544143274677280">يحتاج <ph name="SITE_NAME" /> إلى الإذنَين: <ph name="FIRST_PERMISSION" /> و<ph name="SECOND_PERMISSION" /> وأذونات أخرى.</translation>
 <translation id="8650543407998814195">يمكنك إزالة ملفك الشخصي القديم حتى لو لم يعد بإمكانك الوصول إليه.</translation>
 <translation id="8651585100578802546">فرض إعادة تحميل هذه الصفحة</translation>
-<translation id="8651940856056821914">‏ينشئ Chrome تلقائيًا مقاطع الشرح والترجمة باستخدام ميزة "النسخ النصي التلقائي" (لا تتوفّر هذه الميزة سوى باللغة الإنجليزية حاليًا).</translation>
 <translation id="8652400352452647993">خطأ في حزمة الإضافة</translation>
 <translation id="8654151524613148204">عذرًا، الملف كبير جدًا حتى يتمكن الكمبيوتر من معالجته.</translation>
 <translation id="8655295600908251630">القناة</translation>

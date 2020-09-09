@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">不明なデバイス [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">この所有者アカウントは、マルチログイン セッションで最初にログインするアカウントである必要があります。</translation>
 <translation id="150411034776756821"><ph name="SITE" /> を削除</translation>
-<translation id="1504311855864906891">メディアの字幕を生成する</translation>
 <translation id="1504551620756424144">共有フォルダは Windows では <ph name="BASE_DIR" /> にあります。</translation>
 <translation id="1506061864768559482">検索エンジン</translation>
 <translation id="1507170440449692343">このページはカメラへのアクセスを禁止されています。</translation>
@@ -3261,7 +3260,6 @@
 <translation id="4921348630401250116">テキスト読み上げ</translation>
 <translation id="49226369361073053">{0,plural, =0{今すぐデバイスを更新してください}=1{1 秒以内にデバイスを更新してください}other{# 秒以内にデバイスを更新してください}}</translation>
 <translation id="492299503953721473">Android アプリを削除</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> は不明なファイルです。高度な保護機能では、このファイルを Google に送信してスキャンすることを推奨します。</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4924352752174756392">12 倍</translation>
 <translation id="4925320384394644410">ポートはここに表示されます</translation>
@@ -3485,7 +3483,6 @@
 <translation id="5225324770654022472">アプリのショートカットを表示</translation>
 <translation id="52254442782792731">公開設定はまだ設定されていません</translation>
 <translation id="5227679487546032910">デフォルトの青緑のアバター</translation>
-<translation id="5228088094491423618">自動字幕起こし</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
 <translation id="5229189185761556138">入力方法を管理</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
@@ -6014,7 +6011,6 @@
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8283475148136688298">「<ph name="DEVICE_NAME" />」への接続中に、認証コードが拒否されました。</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
-<translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">ログイン</translation>
 <translation id="8286963743045814739">シークレット ウィンドウを使って、シークレット モードで閲覧できます</translation>
 <translation id="8287902281644548111">API 呼び出しまたは URL で検索</translation>
@@ -6296,7 +6292,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" /> など</translation>
 <translation id="8650543407998814195">古いプロフィールにアクセスすることはできませんが、削除することはできます。</translation>
 <translation id="8651585100578802546">ページを再読み込み</translation>
-<translation id="8651940856056821914">Chrome で自動字幕起こしを使用して字幕を自動生成します（現在は英語のみ利用可能）</translation>
 <translation id="8652400352452647993">拡張機能のパッケージ化のエラー</translation>
 <translation id="8654151524613148204">ファイル サイズが大きすぎるため、お使いのパソコンでは処理できません。</translation>
 <translation id="8655295600908251630">チャンネル</translation>

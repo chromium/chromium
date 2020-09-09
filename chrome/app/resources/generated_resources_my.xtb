@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">အမည်မသိ စက်ပစ္စည်း [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ဒီပိုင်ရှင် အကောင့်မှာ အကြိမ်ကြိမ် လက်မှတ်ထိုးရမည့် အစီအစဉ် ထဲက ပထမဦးဆုံး လက်မှတ်ထိုး ဝင်သည့် အကောင့် ဖြစ်ပါသည်။</translation>
 <translation id="150411034776756821"><ph name="SITE" /> ကို ဖယ်ရှားပါ</translation>
-<translation id="1504311855864906891">သင်၏မီဒီယာအတွက် စာတန်းများရယူရန်</translation>
 <translation id="1504551620756424144">မျှဝေထားသော ဖိုင်တွဲများကို Windows ရှိ <ph name="BASE_DIR" /> တွင် ရရှိနိုင်ပါသည်။</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="1507170440449692343">ဒီစာမျက်နှာကို သင်၏ ကင်မရာကို ရယူသုံးမရအောင် ပိတ်ဆို့ထားသည်။</translation>
@@ -3267,7 +3266,6 @@
 <translation id="4921348630401250116">စာသားမှ စကားပြော</translation>
 <translation id="49226369361073053">{0,plural, =0{စက်ကို ယခုအပ်ဒိတ်လုပ်ပါ}=1{စက်ကို ၁ စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="492299503953721473">Android အက်ပ်များကို ဖယ်ရှားပါ</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> ကို မသိပါ။ ဤဖိုင်ကို Google သို့ပို့၍ စကင်ဖတ်ရန် 'အဆင့်မြင့်ကာကွယ်ရေး' က အကြံပြုပါသည်။</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> ကို ဖယ်ရှားနေသည်...</translation>
 <translation id="4924352752174756392">၁၂ ဆ</translation>
 <translation id="4925320384394644410">သင့်ပို့တ်များကို ဤနေရာတွင် မြင်ရပါမည်</translation>
@@ -3491,7 +3489,6 @@
 <translation id="5225324770654022472">အက်ပ်များ၏ ဖြတ်လမ်းကို ပြပေးရန်</translation>
 <translation id="52254442782792731">လက်ရှိမြင်နိုင်မှုဆက်တင်ကို မသတ်မှတ်ရသေးပါ</translation>
 <translation id="5227679487546032910">မူရင်းရေစစ္စလီငှက်ချန်နယ်ပုံ</translation>
-<translation id="5228088094491423618">တိုက်ရိုက်စာတန်း</translation>
 <translation id="5228579091201413441">စင့်က် ဖွင့်ထားရန်</translation>
 <translation id="5229189185761556138">စာရိုက်စနစ်များကို စီမံခန့်ခွဲရန်</translation>
 <translation id="5230516054153933099">ဝင်းဒိုး</translation>
@@ -6021,7 +6018,6 @@
 <translation id="8281886186245836920">ကျော်ရန်</translation>
 <translation id="8283475148136688298">Authentication code rejected while connecting to "<ph name="DEVICE_NAME" />" သို့ချိတ်ဆက်နေစဉ် စစ်မှန်ကြောင်း အတည်ပြုခြင်းကုဒ် ပယ်ချခဲ့ရ။</translation>
 <translation id="8284279544186306258">ဆိုက်များ <ph name="WEBSITE_1" />အားလုံး</translation>
-<translation id="8284326494547611709">စာတန်းများ</translation>
 <translation id="8286036467436129157">လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="8286963743045814739">ရုပ်ဖျက်ဝင်းဒိုးသုံးပြီး သီးသန့်ကြည့်ရှုနိုင်ပါသည်</translation>
 <translation id="8287902281644548111">API ခေါ်ဆိုမှု/URL တို့ဖြင့် ရှာရန်</translation>
@@ -6303,7 +6299,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> က အောက်ပါတို့ကို ပြုလုပ်လိုသည်- <ph name="FIRST_PERMISSION" />၊ <ph name="SECOND_PERMISSION" /> နှင့် အခြားအရာများ</translation>
 <translation id="8650543407998814195">သင်၏ ပရိုဖိုင်အဟောင်းကို အသုံးပြု၍ မရတော့သော်လည်း ဖယ်ရှားနိုင်ပါသေးသည်။</translation>
 <translation id="8651585100578802546">ဒီစာမျက်နှာကို အတင်းအကျပ် ပြန်တင်ရန်</translation>
-<translation id="8651940856056821914">Chrome သည် 'တိုက်ရိုက်စာတန်း' ကိုအသုံးပြုပြီး စာတန်းထိုးများကို အလိုအလျောက်ပြုလုပ်သည် (လက်ရှိတွင် အင်္ဂလိပ်ဘာသာဖြင့်သာ ရရှိနိုင်သည်)</translation>
 <translation id="8652400352452647993">နောက်ဆက်တွဲသိမ်းဆည်းမှု အမှားအယွင်း</translation>
 <translation id="8654151524613148204">သင့်ကွန်ပျူတာကိုင်တွယ်ရန် ဤဖိုင်သည် အလွန်ကြီးနေသည်။ ဝမ်းနည်းပါသည်။</translation>
 <translation id="8655295600908251630">လိုင်း</translation>

@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">中青紫红色</translation>
 <translation id="3104705064753753826">提醒对话框</translation>
 <translation id="3109724472072898302">已收起</translation>
+<translation id="311015743332597320">四根手指向右滑动</translation>
 <translation id="3112457281078985179">要开启或关闭 ChromeVox，请按 Ctrl+Alt+Z。</translation>
 <translation id="3131002934070407451">将数值读为：</translation>
 <translation id="3134461040845705080">只读</translation>
@@ -901,6 +902,7 @@
 <translation id="812886159861361726">“<ph name="FILE_NAME" />”已停止下载</translation>
 <translation id="8129445297241948503">上方没有单元格</translation>
 <translation id="8138880386467279117">触摸</translation>
+<translation id="8173092779156526980">四根手指向左滑动</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{1个下划线}other{#个下划线}}</translation>
 <translation id="8184828902145951186">行</translation>
 <translation id="8186185314313222077">切换全屏模式</translation>

@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Белгисиз түзмөк [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Бир нече профилге кирүү сеансында ушул негизги каттоо эсеби биринчи кириши керек.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> сайтын алып салуу</translation>
-<translation id="1504311855864906891">Медиа файлыңыздын коштомо жазууларын түзүңүз</translation>
 <translation id="1504551620756424144">Бөлүшүлгөн папкалар Windows'то <ph name="BASE_DIR" /> бөлүмүндө жеткиликтүү.</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
 <translation id="1507170440449692343">Бул беттин камераңызды пайдалануу мүмкүнчүлүгү бөгөттөлгөн.</translation>
@@ -3267,7 +3266,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4921348630401250116">Кеп синтезатору</translation>
 <translation id="49226369361073053">{0,plural, =0{Түзмөктү азыр жаңыртыңыз}=1{Түзмөктү 1 секунддун ичинде жаңыртыңыз}other{Түзмөктү # секунддун ичинде жаңыртыңыз}}</translation>
 <translation id="492299503953721473">Android колдонмолорун алып салуу</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> белгисиз. Өркүндөтүлгөн коргоо бул файлды Google'га текшерүү үчүн жөнөтүүнү сунуштайт.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> чыгарылууда…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Оюкчалар ушул жерде көрүнөт</translation>
@@ -3491,7 +3489,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5225324770654022472">Колдонмолордун кыска жолун көрсөтүү</translation>
 <translation id="52254442782792731">Учурдагы көрүнүү жөндөөсү коюла элек</translation>
 <translation id="5227679487546032910">Демейки көгүш жашыл аватар</translation>
-<translation id="5228088094491423618">Ыкчам коштомо жазуулар</translation>
 <translation id="5228579091201413441">Шайкештирүүнү иштетүү</translation>
 <translation id="5229189185761556138">Киргизүү ыкмаларын башкаруу</translation>
 <translation id="5230516054153933099">Терезе</translation>
@@ -6021,7 +6018,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" туташып жатканда аныктыкты текшерүү коду четке кагылды.</translation>
 <translation id="8284279544186306258">бардык <ph name="WEBSITE_1" /> сайттар</translation>
-<translation id="8284326494547611709">Коштомо жазуулар</translation>
 <translation id="8286036467436129157">Кириңиз</translation>
 <translation id="8286963743045814739">Жашыруун терезени ачып алып, купуя серептей аласыз</translation>
 <translation id="8287902281644548111">API чалуу/URL боюнча издөө</translation>
@@ -6303,7 +6299,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> төмөнкү аракеттерди аткарганы жатат: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> жана башкалар</translation>
 <translation id="8650543407998814195">Эски профилиңизге мындан ары кире албасаңыз да, аны өчүрүп салсаңыз болот.</translation>
 <translation id="8651585100578802546">Бул бетти күчтөп кайра жүктөө</translation>
-<translation id="8651940856056821914">Chrome Ыкчам коштомо жазуулардын жардамы менен коштомо жазууларды автоматтык түрдө түзөт (азырынча англис тилинде гана жеткиликтүү)</translation>
 <translation id="8652400352452647993">Топтом кеңейтүүсүндөгү ката</translation>
 <translation id="8654151524613148204">Файлдын көлөмү компьютериңиз үчүн өтө чоң болгондуктан, аны менен иштей албайсыз. Кечиресиз.</translation>
 <translation id="8655295600908251630">Канал</translation>

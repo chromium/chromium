@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">中紫紅色</translation>
 <translation id="3104705064753753826">通知對話方塊</translation>
 <translation id="3109724472072898302">已收合</translation>
+<translation id="311015743332597320">以四隻手指向右滑動</translation>
 <translation id="3112457281078985179">如要開啟或關閉 ChromeVox，請按 Control + Alt + Z 鍵。</translation>
 <translation id="3131002934070407451">朗讀數字方式：</translation>
 <translation id="3134461040845705080">唯讀</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726">「<ph name="FILE_NAME" />」停咗下載</translation>
 <translation id="8129445297241948503">上面冇儲存格</translation>
 <translation id="8138880386467279117">輕觸</translation>
+<translation id="8173092779156526980">以四隻手指向左滑動</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{1 個底線}other{# 個底線}}</translation>
 <translation id="8184828902145951186">列</translation>
 <translation id="8186185314313222077">切換全螢幕</translation>

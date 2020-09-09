@@ -428,7 +428,6 @@
 <translation id="1500297251995790841">ଅଜଣା ଡିଭାଇସ୍‌ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ଏହି ମାଲିକଙ୍କ ଆକାଉଣ୍ଟଟିକୁ ସର୍ବପ୍ରଥମେ ସାଇନ୍ ଇନ୍ କରିଥିବା ଆକାଉଣ୍ଟ ଭାବରେ ରଖିବା ଆବଶ୍ୟକ ଅଟେ৷</translation>
 <translation id="150411034776756821"><ph name="SITE" />କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
-<translation id="1504311855864906891">ଆପଣଙ୍କ ମିଡିଆ ପାଇଁ କ୍ୟାପସନଗୁଡ଼ିକ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1504551620756424144">ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡରଗୁଡ଼ିକ Windowsରେ <ph name="BASE_DIR" />ରେ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="1506061864768559482">ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
 <translation id="1507170440449692343">ଏହି ପୃଷ୍ଠାରୁ ଆପଣଙ୍କର କ୍ୟାମେରା ଆକ୍ସେସ୍ କରିବାକୁ ଅବରୋଧ କରାଯାଇଛି।</translation>
@@ -3253,7 +3252,6 @@
 <translation id="4921348630401250116">ଟେକ୍ସଟ୍-ଟୁ-ସ୍ପିଚ୍</translation>
 <translation id="49226369361073053">{0,plural, =0{ଡିଭାଇସ୍ ବର୍ତ୍ତମାନ ଅପଡେଟ୍ କରନ୍ତୁ}=1{1 ସେକେଣ୍ଡ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}other{# ସେକେଣ୍ଡ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="492299503953721473">Android ଆପ୍ସ କାଢ଼ନ୍ତୁ</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> ଅଜଣା ଅଟେ। ଆଡଭାନ୍ସଡ ପ୍ରୋଟେକସନ୍ ଏହି ଫାଇଲକୁ ସ୍କାନ୍ କରିବା ପାଇଁ Googleକୁ ପଠାଇବା ନିମନ୍ତେ ସୁପାରିଶ କରେ।</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" />କୁ ଅନଇନଷ୍ଟଲ୍ କରାଯାଉଛି...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">ଆପଣଙ୍କର ପୋର୍ଟଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
@@ -3477,7 +3475,6 @@
 <translation id="5225324770654022472">ଆପ୍ସ ସର୍ଟକଟ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="52254442782792731">ବର୍ତ୍ତମାନର ଭିଜିବିଲିଟୀ ସେଟିଂକୁ ଏପର୍ଯ୍ୟନ୍ତ ସେଟ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="5227679487546032910">ଡିଫଲ୍ଟ ଟିଲ୍‍ ଅବତାର</translation>
-<translation id="5228088094491423618">ଲାଇଭ୍ କ୍ୟାପସନଗୁଡ଼ିକ</translation>
 <translation id="5228579091201413441">ସିଙ୍କ୍‌ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5229189185761556138">ଇନ୍‌ପୁଟ୍ ପଦ୍ଧତି ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="5230516054153933099">ୱିଣ୍ଡୋ</translation>
@@ -6005,7 +6002,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8281886186245836920">ଛାଡ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />"କୁ ସଂଯୋଗ କରୁଥିବା ସମୟରେ ପ୍ରମାଣିକତା କୋଡ୍ ଅଗ୍ରାହ୍ୟ କରାଗଲା।</translation>
 <translation id="8284279544186306258">ସମସ୍ତ <ph name="WEBSITE_1" /> ସାଇଟ୍</translation>
-<translation id="8284326494547611709">କ୍ୟାପସନ୍</translation>
 <translation id="8286036467436129157">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="8286963743045814739">ଆପଣ ଏକ ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବ୍ୟବହାର କରି ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ</translation>
 <translation id="8287902281644548111">API କଲ୍/URL ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ</translation>
@@ -6287,7 +6283,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ଏହା ଚାହୁଁଛି: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ଏବଂ ଆହୁରି ଅନେକ ଅନୁମତି</translation>
 <translation id="8650543407998814195">ଯଦିଓ, ଆପଣ ଆପଣଙ୍କର ପୁରୁଣା ପ୍ରୋଫାଇଲ୍‌କୁ ଏବେ ଆଉ ଆକ୍ସେସ୍‌ କରିପାରୁନାହାନ୍ତି, ତଥାପି ଆପଣ ଏହାକୁ ଏବେ ମଧ୍ୟ କାଢିପାରିବେ।</translation>
 <translation id="8651585100578802546">ଏହି ପୃଷ୍ଠାକୁ ବାଧ୍ୟତାମୂଳକ ଭାବରେ ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
-<translation id="8651940856056821914">Chrome ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ବ୍ୟବହାର କରି ସ୍ୱଚାଳିତ ଭାବେ କ୍ୟାପ୍ସନଗୁଡ଼ିକୁ ତିଆରି କରେ (ବର୍ତ୍ତମାନ କେବଳ ଇଂରାଜୀରେ ଉପଲବ୍ଧ ଅଛି)</translation>
 <translation id="8652400352452647993">ପ୍ୟାକ୍ ଏକ୍ସଟେନ୍‌ସନ୍ ତ୍ରୁଟି</translation>
 <translation id="8654151524613148204">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ ପାଇଁ ଫାଇଲ୍‌ଟି ବହୁତ ବଡ ଅଟେ। କ୍ଷମା କରିବେ…</translation>
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>

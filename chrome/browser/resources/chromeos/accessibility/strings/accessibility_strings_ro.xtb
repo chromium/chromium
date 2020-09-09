@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Roșu violet mediu</translation>
 <translation id="3104705064753753826">casetă de dialog alertă</translation>
 <translation id="3109724472072898302">Restrâns</translation>
+<translation id="311015743332597320">Glisează cu patru degete la dreapta</translation>
 <translation id="3112457281078985179">Pentru a activa sau a dezactiva ChromeVox, folosește Ctrl + Alt + Z.</translation>
 <translation id="3131002934070407451">Citește numerele ca:</translation>
 <translation id="3134461040845705080">numai în citire</translation>
@@ -901,6 +902,7 @@
 <translation id="812886159861361726">Descărcarea fișierului <ph name="FILE_NAME" /> s-a oprit</translation>
 <translation id="8129445297241948503">Nu există celule mai sus</translation>
 <translation id="8138880386467279117">Tactil</translation>
+<translation id="8173092779156526980">Glisează cu patru degete la stânga</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{caracter de subliniere}few{# caractere de subliniere}other{# de caractere de subliniere}}</translation>
 <translation id="8184828902145951186">rând</translation>
 <translation id="8186185314313222077">activează/dezactivează ecranul complet</translation>

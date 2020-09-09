@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Умеренный фиолетово-красный</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Свернуто</translation>
+<translation id="311015743332597320">Проведите четырьмя пальцами вправо</translation>
 <translation id="3112457281078985179">Чтобы включить или отключить ChromeVox, нажмите CTRL + ALT + Z.</translation>
 <translation id="3131002934070407451">Озвучивать числа:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726">Скачивание файла <ph name="FILE_NAME" /> остановлено</translation>
 <translation id="8129445297241948503">Ячейки выше нет</translation>
 <translation id="8138880386467279117">Нажмите</translation>
+<translation id="8173092779156526980">Проведите четырьмя пальцами влево</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{символ подчеркивания}one{# символ подчеркивания}few{# символа подчеркивания}many{# символов подчеркивания}other{# underscores}}</translation>
 <translation id="8184828902145951186">стрк</translation>
 <translation id="8186185314313222077">включить полноэкранный режим</translation>

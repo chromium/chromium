@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">ឧបករណ៍មិនស្គាល់ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ម្ចាស់គណនីត្រូវចូលគណនីជាមុនសិននៅក្នុងវេនចូលច្រើន.</translation>
 <translation id="150411034776756821">លុប <ph name="SITE" /></translation>
-<translation id="1504311855864906891">ទទួលបានអក្សររត់​សម្រាប់មេឌៀរបស់អ្នក</translation>
 <translation id="1504551620756424144">មានថត​ដែលបាន​ចែករំលែក​នៅក្នុង Windows នៅ <ph name="BASE_DIR" />។</translation>
 <translation id="1506061864768559482">ម៉ាស៊ីនស្វែងរក</translation>
 <translation id="1507170440449692343">ទំព័រនេះត្រូវបានរារាំងពីការចូលប្រើកាមេរ៉ារបស់អ្នក។</translation>
@@ -3267,7 +3266,6 @@
 <translation id="4921348630401250116">ការបំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
 <translation id="49226369361073053">{0,plural, =0{ដំឡើងកំណែ​ឧបករណ៍​ឥឡូវនេះ}=1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល 1 វិនាទី​ទៀត}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # វិនាទី​ទៀត}}</translation>
 <translation id="492299503953721473">យកកម្មវិធី Android ចេញ</translation>
-<translation id="492320048412997552">មិនស្គាល់ <ph name="FILE_NAME" /> ទេ។ ការការពារ​កម្រិតខ្ពស់ណែនាំ​ឱ្យផ្ញើឯកសារនេះទៅ Google ដើម្បីស្កេន។</translation>
 <translation id="492363500327720082">កំពុងលុប <ph name="APP_NAME" />...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">ច្រករបស់អ្នកនឹងបង្ហាញនៅទីនេះ</translation>
@@ -3491,7 +3489,6 @@
 <translation id="5225324770654022472">បង្ហាញផ្លូវកាត់កម្មវិធី</translation>
 <translation id="52254442782792731">មិនទាន់បានកំណត់​ការកំណត់​លទ្ធភាពមើលឃើញ​បច្ចុប្បន្ននៅឡើយទេ</translation>
 <translation id="5227679487546032910">រូបតំណាងពណ៌ខៀវលាយបៃតងលំនាំដើម</translation>
-<translation id="5228088094491423618">អក្សររត់ក្នុងពេលជាក់ស្ដែង</translation>
 <translation id="5228579091201413441">បើកដំណើរការធ្វើសមកាលកម្ម</translation>
 <translation id="5229189185761556138">គ្រប់គ្រងវិធីសាស្ត្របញ្ចូល</translation>
 <translation id="5230516054153933099">វិនដូ</translation>
@@ -6024,7 +6021,6 @@
 <translation id="8281886186245836920">រំលង</translation>
 <translation id="8283475148136688298">លេខកូដសម្គាល់អត្តសញ្ញាណបានបដិសេធ ខណៈពេលកំពុងភ្ជាប់ទៅ "<ph name="DEVICE_NAME" />"។</translation>
 <translation id="8284279544186306258">គេហទំព័រ <ph name="WEBSITE_1" /> ទាំងអស់</translation>
-<translation id="8284326494547611709">អត្ថបទពិពណ៌នា</translation>
 <translation id="8286036467436129157">ចូល</translation>
 <translation id="8286963743045814739">អ្នកអាច​រុករក​ជាលក្ខណៈឯកជន ដោយប្រើ​វិនដូឯកជន</translation>
 <translation id="8287902281644548111">ស្វែងរក​តាមរយៈការហៅទូរសព្ទ​តាម API/URL</translation>
@@ -6306,7 +6302,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ចង់៖ <ph name="FIRST_PERMISSION" /> <ph name="SECOND_PERMISSION" /> និង​ធ្វើអ្វីៗ​ច្រើនទៀត</translation>
 <translation id="8650543407998814195">ទោះបីជា​អ្នក​មិន​អាច​ចូលប្រើ​កម្រង​ព័ត៌មាន​ចាស់​របស់អ្នក​បានទៀត​ក៏ដោយ ក៏អ្នក​នៅ​តែ​អាច​លុប​វាចេញបាន​ដែរ។</translation>
 <translation id="8651585100578802546">បង្ខំឲ្យទំព័រដំណើរការឡើងវិញ</translation>
-<translation id="8651940856056821914">Chrome បង្កើតអក្សររត់​ដោយស្វ័យប្រវត្តិ ដោយប្រើ​មុខងារអក្សររត់​ក្នុងពេលជាក់ស្ដែង (បច្ចុប្បន្នអាចប្រើភាសាអង់គ្លេសតែប៉ុណ្ណោះ)</translation>
 <translation id="8652400352452647993">បញ្ហា​ក្នុងការខ្ចប់​កម្មវិធី​បន្ថែម</translation>
 <translation id="8654151524613148204">ឯកសារនេះធំពេកសម្រាប់កុំព្យូទ័ររបស់ដើម្បីដំណើរការ។ សូមទោស។</translation>
 <translation id="8655295600908251630">បណ្តាញ</translation>

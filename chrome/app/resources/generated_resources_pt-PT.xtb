@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Esta conta de proprietário tem de ser a primeira conta com início de sessão integrado.</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Obter legendas para o seu conteúdo multimédia</translation>
 <translation id="1504551620756424144">As pastas partilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de pesquisa</translation>
 <translation id="1507170440449692343">Esta página foi impedida de aceder à sua câmara.</translation>
@@ -3267,7 +3266,6 @@ Pretende pará-lo?</translation>
 <translation id="4921348630401250116">Síntese de voz</translation>
 <translation id="49226369361073053">{0,plural, =0{Atualize o dispositivo agora}=1{Atualize o dispositivo dentro de 1 segundo}other{Atualize o dispositivo dentro de # segundos}}</translation>
 <translation id="492299503953721473">Remover aplicações para Android</translation>
-<translation id="492320048412997552">O ficheiro <ph name="FILE_NAME" /> é desconhecido. A Proteção avançada recomenda o envio deste ficheiro para a Google para análise.</translation>
 <translation id="492363500327720082">A desinstalar a app <ph name="APP_NAME" />…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">As suas portas irão aparecer aqui.</translation>
@@ -3491,7 +3489,6 @@ Pretende pará-lo?</translation>
 <translation id="5225324770654022472">Mostrar atalho das aplicações</translation>
 <translation id="52254442782792731">A definição de visibilidade atual ainda não está configurada.</translation>
 <translation id="5227679487546032910">Avatar azul esverdeado predefinido</translation>
-<translation id="5228088094491423618">Legendas instantâneas</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
 <translation id="5229189185761556138">Gerir métodos de introdução</translation>
 <translation id="5230516054153933099">Janela</translation>
@@ -6024,7 +6021,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8281886186245836920">Ignorar</translation>
 <translation id="8283475148136688298">O código de autenticação foi rejeitado ao ligar a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">todos os sites de <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Legendas</translation>
 <translation id="8286036467436129157">Iniciar Sessão</translation>
 <translation id="8286963743045814739">Pode navegar em privado com uma janela de navegação anónima</translation>
 <translation id="8287902281644548111">Pesquisar por chamada da API/URL</translation>
@@ -6306,7 +6302,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> pretende: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e mais</translation>
 <translation id="8650543407998814195">Embora já não possa aceder ao seu perfil antigo, pode removê-lo.</translation>
 <translation id="8651585100578802546">Forçar o recarregamento desta página</translation>
-<translation id="8651940856056821914">O Chrome cria legendas automaticamente através das Legendas instantâneas (atualmente, apenas disponível em inglês)</translation>
 <translation id="8652400352452647993">Erro de extensão do pacote</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o seu computador processar. Lamentamos.</translation>
 <translation id="8655295600908251630">Canal</translation>

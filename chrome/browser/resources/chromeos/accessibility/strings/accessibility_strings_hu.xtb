@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Közepes lilásvörös</translation>
 <translation id="3104705064753753826">riaszt pnl</translation>
 <translation id="3109724472072898302">Összecsukott</translation>
+<translation id="311015743332597320">Csúsztasson négy ujjal jobbra</translation>
 <translation id="3112457281078985179">A ChromeVox be- vagy kikapcsolásához használja a Control + Alt + Z billentyűparancsot.</translation>
 <translation id="3131002934070407451">Számok olvasása:</translation>
 <translation id="3134461040845705080">csak olv</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726">A következő letöltése leállítva: <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nincs több cella felfelé</translation>
 <translation id="8138880386467279117">Érintés</translation>
+<translation id="8173092779156526980">Csúsztasson négy ujjal balra</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{alulvonás}other{# alulvonás}}</translation>
 <translation id="8184828902145951186">sor</translation>
 <translation id="8186185314313222077">váltás teljes képernyős módra</translation>

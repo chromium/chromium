@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Dispositivo sconosciuto [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="150411034776756821">Rimuovi <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Crea sottotitoli per i tuoi contenuti multimediali</translation>
 <translation id="1504551620756424144">Le cartelle condivise sono disponibili su Windows al percorso <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
 <translation id="1507170440449692343">A questa pagina è stato impedito l'accesso alla webcam.</translation>
@@ -3266,7 +3265,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4921348630401250116">Sintesi vocale</translation>
 <translation id="49226369361073053">{0,plural, =0{Aggiorna ora il dispositivo}=1{Aggiorna il dispositivo entro 1 secondo}other{Aggiorna il dispositivo entro # secondi}}</translation>
 <translation id="492299503953721473">Rimuovi app Android</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> è sconosciuto. La protezione avanzata consiglia di inviare questo file a Google per analizzarlo.</translation>
 <translation id="492363500327720082">Disinstallazione di <ph name="APP_NAME" />…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Le tue porte verranno visualizzate qui</translation>
@@ -3490,7 +3488,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5225324770654022472">Mostra scorciatoia app</translation>
 <translation id="52254442782792731">L'attuale impostazione di visibilità non è ancora stata impostata</translation>
 <translation id="5227679487546032910">Avatar verde acqua predefinito</translation>
-<translation id="5228088094491423618">Sottotitoli in tempo reale</translation>
 <translation id="5228579091201413441">Abilita sincronizzazione</translation>
 <translation id="5229189185761556138">Gestisci metodi di immissione</translation>
 <translation id="5230516054153933099">Finestra</translation>
@@ -6022,7 +6019,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8283475148136688298">Codice di autenticazione respinto durante la connessione a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">tutti i siti <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Sottotitoli</translation>
 <translation id="8286036467436129157">Accedi</translation>
 <translation id="8286963743045814739">Puoi navigare in privato usando una finestra di navigazione in incognito</translation>
 <translation id="8287902281644548111">Cerca per chiamata API/URL</translation>
@@ -6304,7 +6300,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> richiede le autorizzazioni: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e altre</translation>
 <translation id="8650543407998814195">Anche se non puoi più accedere al tuo vecchio profilo, puoi comunque rimuoverlo.</translation>
 <translation id="8651585100578802546">Forza aggiornamento di questa pagina</translation>
-<translation id="8651940856056821914">Chrome crea automaticamente sottotitoli utilizzando la funzionalità Sottotitoli in tempo reale (al momento disponibile solo in inglese)</translation>
 <translation id="8652400352452647993">Errore nel pacchetto estensione</translation>
 <translation id="8654151524613148204">Il file è troppo grande. Il computer non è in grado di gestirlo. Spiacenti.</translation>
 <translation id="8655295600908251630">Canale</translation>

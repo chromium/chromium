@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Peranti tidak diketahui [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Akaun pemilik ini perlu menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="150411034776756821">Alih keluar <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Dapatkan sari kata untuk media anda</translation>
 <translation id="1504551620756424144">Folder kongsi tersedia dalam Windows di <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Enjin carian</translation>
 <translation id="1507170440449692343">Halaman ini telah disekat daripada mengakses kamera anda.</translation>
@@ -3267,7 +3266,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4921348630401250116">Teks kepada pertuturan</translation>
 <translation id="49226369361073053">{0,plural, =0{Kemas kini peranti sekarang}=1{Kemas kini peranti dalam masa 1 saat}other{Kemas kini peranti dalam masa # saat}}</translation>
 <translation id="492299503953721473">Alih keluar apl Android</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> tidak diketahui. Perlindungan Lanjutan mengesyorkan penghantaran fail ini kepada Google untuk pengimbasan.</translation>
 <translation id="492363500327720082">Menyahpasang <ph name="APP_NAME" />...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Port anda akan dipaparkan di sini</translation>
@@ -3491,7 +3489,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5225324770654022472">Paparkan pintasan apl</translation>
 <translation id="52254442782792731">Tetapan keterlihatan semasa masih belum ditetapkan</translation>
 <translation id="5227679487546032910">Avatar teal lalai</translation>
-<translation id="5228088094491423618">Sari Kata Langsung</translation>
 <translation id="5228579091201413441">Dayakan penyegerakan</translation>
 <translation id="5229189185761556138">Urus kaedah input</translation>
 <translation id="5230516054153933099">Tingkap</translation>
@@ -6022,7 +6019,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8283475148136688298">Kod pengesahan ditolak semasa menyambung ke "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">semua tapak <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Kapsyen</translation>
 <translation id="8286036467436129157">Log Masuk</translation>
 <translation id="8286963743045814739">Anda boleh menyemak imbas secara tertutup menggunakan tetingkap inkognito</translation>
 <translation id="8287902281644548111">Cari menggunakan panggilan API/URL</translation>
@@ -6305,7 +6301,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> dan pelbagai lagi</translation>
 <translation id="8650543407998814195">Walaupun anda tidak dapat mengakses profil lama anda lagi, anda masih boleh mengalih keluar profil tersebut.</translation>
 <translation id="8651585100578802546">Paksa Muatkan Semula Halaman Ini</translation>
-<translation id="8651940856056821914">Chrome membuat sari kata secara automatik menggunakan Sari Kata Langsung (kini tersedia dalam bahasa Inggeris sahaja)</translation>
 <translation id="8652400352452647993">Ralat sambungan pek</translation>
 <translation id="8654151524613148204">Fail terlalu besar untuk dikendalikan oleh komputer. Maaf.</translation>
 <translation id="8655295600908251630">Saluran</translation>

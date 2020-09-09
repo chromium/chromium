@@ -281,6 +281,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3103579948980282461">మధ్యస్థ ఊదా ఎరుపు</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">కుదించబడింది</translation>
+<translation id="311015743332597320">నాలుగు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
 <translation id="3112457281078985179">ChromeVoxని ఆన్ లేదా ఆఫ్ చేయడానికి, Control+Alt+Z ఉపయోగించండి.</translation>
 <translation id="3131002934070407451">సంఖ్యలను ఇలా చదవాలి:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -902,6 +903,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="812886159861361726"><ph name="FILE_NAME" /> డౌన్‌లోడ్ ఆపివేయబడింది</translation>
 <translation id="8129445297241948503">పైన సెల్ లేదు</translation>
 <translation id="8138880386467279117">స్పర్శ</translation>
+<translation id="8173092779156526980">నాలుగు వేళ్లతో ఎడమవైపునకు స్వైప్ చేయండి</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{అండర్‌స్కోర్ గుర్తు}other{# అండర్‌స్కోర్ గుర్తులు}}</translation>
 <translation id="8184828902145951186">అడ్డు</translation>
 <translation id="8186185314313222077">పూర్తి స్క్రీన్‌ను టోగుల్ చేస్తుంది</translation>

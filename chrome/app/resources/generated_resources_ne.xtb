@@ -427,7 +427,6 @@
 <translation id="1500297251995790841">अज्ञात यन्त्र [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">यो मालिक खाता मल्टिपल साइन-इन सत्रमा पहिलो पटक साइन-इन गरिएको खाता हुनुपर्दछ।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> हटाउनुहोस्</translation>
-<translation id="1504311855864906891">आफ्नो मिडियाका लागि क्याप्सन सिर्जना गर्नुहोस्</translation>
 <translation id="1504551620756424144">साझा फोल्डरहरू Windows को <ph name="BASE_DIR" /> मा उपलब्ध हुन्छन्।</translation>
 <translation id="1506061864768559482">खोज इन्जिन</translation>
 <translation id="1507170440449692343">यो पृष्ठलाई तपाईंको क्यामेरा पहुँच गर्नबाट ब्लक गरिएको छ।</translation>
@@ -3257,7 +3256,6 @@
 <translation id="4921348630401250116">टेक्स्ट-टू-स्पिच</translation>
 <translation id="49226369361073053">{0,plural, =0{अहिले नै यन्त्र अपडेट गर्नुहोस्}=1{१ सेकेन्डभित्र यन्त्र अपडेट गर्नुहोस्}other{# सेकेन्डभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="492299503953721473">Android अनुप्रयोगहरूलाई हटाउनुहोस्</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> अज्ञात छ। सुरक्षासम्बन्धी उन्नत सुविधाले यो फाइल स्क्यान गर्ने प्रयोजनका लागि यो फाइल Google मा पठाउन सिफारिस गर्दछ।</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> अनइन्स्टल गर्दै...</translation>
 <translation id="4924352752174756392">१२ गुणा</translation>
 <translation id="4925320384394644410">तपाईंका पोर्टहरू यहाँ देखा पर्ने छन्</translation>
@@ -3481,7 +3479,6 @@
 <translation id="5225324770654022472">एप्स शर्टकट देखाउनुहोस्</translation>
 <translation id="52254442782792731">हालको भिजिबिलिटी सेटिङ अझसम्म सेट गरिएको छैन</translation>
 <translation id="5227679487546032910">पूर्वनिर्धारित कलहॉंसको अवतार</translation>
-<translation id="5228088094491423618">लाइभ क्याप्सन</translation>
 <translation id="5228579091201413441">सिंकलाई सक्रिय गर्नुहोस्</translation>
 <translation id="5229189185761556138">इनपुट विधिहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5230516054153933099">विन्डो</translation>
@@ -6008,7 +6005,6 @@
 <translation id="8281886186245836920">त्याग्नुहोस्</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" मा जडान गर्दा प्रमाणीकरण कोड अस्वीकार गरियो।</translation>
 <translation id="8284279544186306258">सबै <ph name="WEBSITE_1" /> साइटहरू</translation>
-<translation id="8284326494547611709">क्याप्सन</translation>
 <translation id="8286036467436129157">साइन इन गर्नुहोस्</translation>
 <translation id="8286963743045814739">तपाईं कुनै इन्कोग्निटो विन्डो प्रयोग गरी निजी रूपमा ब्राउज गर्न सक्नुहुन्छ</translation>
 <translation id="8287902281644548111">API कल/URL का आधारमा खोज्नुहोस्</translation>
@@ -6290,7 +6286,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> निम्न कार्यहरू गर्न चाहन्छ: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> र अन्य</translation>
 <translation id="8650543407998814195">आफ्नो पुरानो प्रोफाइलमाथि अब उप्रान्त पहुँच राख्न नसके तापनि तपाईं अझै पनि यसलाई हटाउन भने सक्नुहुन्छ।</translation>
 <translation id="8651585100578802546">यो पेज रिलोड गर्न दबाब दिनुहोस्</translation>
-<translation id="8651940856056821914">Chrome ले लाइभ क्याप्सन सुविधा प्रयोग गरी स्वतः क्याप्सन सिर्जना गर्छ (हाल यो सेवा अङ्ग्रेजी भाषामा मात्र उपलब्ध छ)</translation>
 <translation id="8652400352452647993">प्याक विस्तारसम्बन्धी त्रुटि</translation>
 <translation id="8654151524613148204">यो फाइल तपाइँको कम्प्युटरलाई सञ्चालन गर्नको लागि अत्यन्त ठुलो छ। माफ गर्नुहोस्।</translation>
 <translation id="8655295600908251630">च्यानल</translation>

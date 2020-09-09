@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Onbekende toestel [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Hierdie eienaarrekening moet die eerste rekening wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="150411034776756821">Verwyder <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Kry onderskrifte vir jou media</translation>
 <translation id="1504551620756424144">Gedeelde vouers is in Windows beskikbaar by <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Soekenjin</translation>
 <translation id="1507170440449692343">Hierdie bladsy word gekeer om by jou kamera in te gaan.</translation>
@@ -3267,7 +3266,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4921348630401250116">Teks-na-spraak</translation>
 <translation id="49226369361073053">{0,plural, =0{Dateer toestel nou op}=1{Dateer toestel binne 1 sekonde op}other{Dateer toestel binne # sekondes op}}</translation>
 <translation id="492299503953721473">Verwyder Android-programme</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> is onbekend. Gevorderde Beskerming beveel aan dat jy hierdie lêer na Google toe stuur om geskandeer te word.</translation>
 <translation id="492363500327720082">Deïnstalleer tans <ph name="APP_NAME" /> …</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Jou poorte sal hier verskyn</translation>
@@ -3491,7 +3489,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5225324770654022472">Wys programkortpad</translation>
 <translation id="52254442782792731">Huidige sigbaarheidinstelling is nog nie gestel nie</translation>
 <translation id="5227679487546032910">Verstek- groenblou avatar</translation>
-<translation id="5228088094491423618">Intydse Onderskrifte</translation>
 <translation id="5228579091201413441">Aktiveer sinkronisering</translation>
 <translation id="5229189185761556138">Bestuur invoermetodes</translation>
 <translation id="5230516054153933099">Venster</translation>
@@ -6024,7 +6021,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8281886186245836920">Slaan oor</translation>
 <translation id="8283475148136688298">Stawingkode verwerp terwyl dit probeer het om aan "<ph name="DEVICE_NAME" />" te koppel.</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-werwe</translation>
-<translation id="8284326494547611709">Onderskrifte</translation>
 <translation id="8286036467436129157">Meld aan</translation>
 <translation id="8286963743045814739">Jy kan 'n incognitovenster gebruik om privaat te blaai</translation>
 <translation id="8287902281644548111">Soek volgens API-oproep/URL</translation>
@@ -6306,7 +6302,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wil: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> en meer</translation>
 <translation id="8650543407998814195">Hoewel jy nie meer by jou ou profiel kan ingaan nie, kan jy dit steeds verwyder.</translation>
 <translation id="8651585100578802546">Dwing hierdie bladsy om te herlaai</translation>
-<translation id="8651940856056821914">Chrome skep onderskrifte outomaties met Intydse Onderskrifte (tans net in Engels beskikbaar)</translation>
 <translation id="8652400352452647993">Pakketuitbreidingfout</translation>
 <translation id="8654151524613148204">Die lêer is te groot vir jou rekenaar om te hanteer. Jammer.</translation>
 <translation id="8655295600908251630">Kanaal</translation>

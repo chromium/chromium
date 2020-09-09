@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">പരിചിതമല്ലാത്ത ഉപകരണം [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട്, ഈ ഉടമ അക്കൗണ്ടായിരിക്കണം.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> നീക്കംചെയ്യുക</translation>
-<translation id="1504311855864906891">നിങ്ങളുടെ മീഡിയയ്‌ക്കായി അടിക്കുറിപ്പുകൾ നേടൂ</translation>
 <translation id="1504551620756424144">പങ്കിട്ട ഫോൾഡറുകൾ Windows-ലെ <ph name="BASE_DIR" /> എന്നതിൽ ലഭ്യമാണ്.</translation>
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
 <translation id="1507170440449692343">നിങ്ങളുടെ ക്യാമറ ആക്‌സസ്സുചെയ്യുന്നതിൽ നിന്ന് ഈ പേജിനെ തടഞ്ഞു.</translation>
@@ -3263,7 +3262,6 @@
 <translation id="4921348630401250116">ടെക്‌സ്‌റ്റ് ടു സ്‌പീച്ച്</translation>
 <translation id="49226369361073053">{0,plural, =0{ഉപകരണം ഇപ്പോൾ അപ്‌ഡേറ്റ് ചെയ്യുക}=1{ഒരു സെക്കൻഡിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# സെക്കൻഡിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="492299503953721473">Android ആപ്പുകൾ നീക്കംചെയ്യുക</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> അജ്ഞാതമാണ്. സ്‌കാൻ ചെയ്യാൻ ഈ ഫയൽ Google-ലേക്ക് അയയ്ക്കാൻ വിപുലമായ പരിരക്ഷ ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> അണ്‍‌ഇന്‍സ്‌റ്റാള്‍ ചെയ്യുന്നു...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">നിങ്ങളുടെ പോർട്ടുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -3487,7 +3485,6 @@
 <translation id="5225324770654022472">ആപ്പുകളുടെ കുറുക്കുവഴികൾ കാണിക്കുക</translation>
 <translation id="52254442782792731">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം ഇതുവരെ സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="5227679487546032910">ഡിഫോൾട്ടായ ടീൽ അവതാർ</translation>
-<translation id="5228088094491423618">തത്സമയ ക്യാപ്ഷനുകൾ</translation>
 <translation id="5228579091201413441">സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5229189185761556138">ഇൻപുട്ട് രീതികൾ മാനേജുചെയ്യുക</translation>
 <translation id="5230516054153933099">വിന്‍‌ഡോ</translation>
@@ -6022,7 +6019,6 @@
 <translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" എന്നതിലേക്ക് കണക്റ്റ് ചെയ്യുമ്പോൾ പരിശോധിച്ചുറപ്പിക്കൽ കോഡ് നിരസിച്ചു.</translation>
 <translation id="8284279544186306258">എല്ലാ <ph name="WEBSITE_1" /> സൈറ്റുകളും</translation>
-<translation id="8284326494547611709">അടിക്കുറിപ്പുകൾ</translation>
 <translation id="8286036467436129157">സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8286963743045814739">അദൃശ്യ വിൻഡോ ഉപയോഗിച്ച് നിങ്ങൾക്ക് സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാനാകും</translation>
 <translation id="8287902281644548111">API കോൾ/URL പ്രകാരം തിരയുക</translation>
@@ -6304,7 +6300,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ഇവ ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> എന്നിവയും മറ്റും</translation>
 <translation id="8650543407998814195">നിങ്ങളുടെ പഴയ പ്രൊഫൈൽ ഇനിയങ്ങോട്ട് ആക്സസ് ചെയ്യാനാകില്ലെങ്കിലും നിങ്ങൾക്കത് ഇല്ലാതാക്കാം.</translation>
 <translation id="8651585100578802546">ഈ പേജ് വീണ്ടും ലോഡ് ചെയ്യുന്നതിന് നിര്‍‌ബന്ധിക്കുക</translation>
-<translation id="8651940856056821914">തൽസമയ ക്യാപ്ഷൻ ഉപയോഗിച്ച് Chrome സ്വയമേവ അടിക്കുറിപ്പുകൾ സൃഷ്‌ടിക്കുന്നു (നിലവിൽ ഇംഗ്ലീഷിൽ മാത്രം ലഭ്യം)</translation>
 <translation id="8652400352452647993">പായ്‌ക്ക് വിപുലീകരണ പിശക്</translation>
 <translation id="8654151524613148204">ഫയലിന്റെ വലുപ്പം കമ്പ്യൂട്ടറിന് കൈകാര്യം ചെയ്യാനാവുന്നതിലും കൂടുതലാണ്. ക്ഷമിക്കണം.</translation>
 <translation id="8655295600908251630">ചാനല്‍</translation>

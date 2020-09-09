@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">ზომიერი მოიისფრო წითელი</translation>
 <translation id="3104705064753753826">გაფრთხილების დიალოგი</translation>
 <translation id="3109724472072898302">აკეცილი</translation>
+<translation id="311015743332597320">ოთხი თითით გადაფურცვლა მარჯვნივ</translation>
 <translation id="3112457281078985179">ChromeVox-ის ჩასართავად ან გამოსართავად, გამოიყენეთ კლავიშთა კომბინაცია: Control + Alt + Z.</translation>
 <translation id="3131002934070407451">რიცხვების წაკითხვა, როგორც:</translation>
 <translation id="3134461040845705080">მხოლოდ წაკითხვადი</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726">ჩამოტვირთვა შეწყდა <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">ზემოთ უჯრედი არ არის</translation>
 <translation id="8138880386467279117">შეხებითი</translation>
+<translation id="8173092779156526980">ოთხი თითით გადაფურცვლა მარცხნივ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ქვეტირე}other{# ქვეტირეები}}</translation>
 <translation id="8184828902145951186">მწკრივი</translation>
 <translation id="8186185314313222077">სრულ ეკრანზე გადართვა</translation>

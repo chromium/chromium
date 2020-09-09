@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Орташа қызыл күлгін</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Жиылған</translation>
+<translation id="311015743332597320">Төрт саусақпен оңға сырғыту</translation>
 <translation id="3112457281078985179">ChromeVox функциясын қосу не өшіру үшін Control+Alt+Z пернелер тіркесімін пайдаланыңыз.</translation>
 <translation id="3131002934070407451">Сандарды келесі ретінде оқу:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" /> файлын жүктеп алу тоқтатылды</translation>
 <translation id="8129445297241948503">Жоғарыда ұяшық жоқ.</translation>
 <translation id="8138880386467279117">Сенсорлық экранға арналған</translation>
+<translation id="8173092779156526980">Төрт саусақпен солға сырғыту</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{астыңғы сызық}other{# астыңғы сызық}}</translation>
 <translation id="8184828902145951186">жол</translation>
 <translation id="8186185314313222077">толық экранды ашу/жабу</translation>

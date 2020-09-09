@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Neznámé zařízení [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Účet tohoto vlastníka musí být v relaci multiprofilu přihlášen jako první.</translation>
 <translation id="150411034776756821">Odebrat web <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Generovat k médiím titulky</translation>
 <translation id="1504551620756424144">Sdílené složky jsou ve Windows k dispozici v adresáři <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1507170440449692343">Přístup této stránky k vaší kameře je zablokován.</translation>
@@ -3265,7 +3264,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4921348630401250116">Převod textu na řeč</translation>
 <translation id="49226369361073053">{0,plural, =0{Ihned zařízení aktualizujte}=1{Do jedné sekundy zařízení aktualizujte}few{Do # sekund zařízení aktualizujte}many{Do # sekundy zařízení aktualizujte}other{Do # sekund zařízení aktualizujte}}</translation>
 <translation id="492299503953721473">Odstranit aplikace Android</translation>
-<translation id="492320048412997552">Soubor <ph name="FILE_NAME" /> není znám. Pokročilá ochrana doporučuje odeslat tento soubor do Googlu ke kontrole.</translation>
 <translation id="492363500327720082">Odinstalace aplikace <ph name="APP_NAME" />...</translation>
 <translation id="4924352752174756392">12×</translation>
 <translation id="4925320384394644410">Zde se budou zobrazovat vaše porty</translation>
@@ -3489,7 +3487,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5225324770654022472">Zobrazit zástupce aplikací</translation>
 <translation id="52254442782792731">Aktuální nastavení viditelnosti ještě není zadáno</translation>
 <translation id="5227679487546032910">Výchozí šedozelený avatar</translation>
-<translation id="5228088094491423618">Živý přepis</translation>
 <translation id="5228579091201413441">Aktivace synchronizace</translation>
 <translation id="5229189185761556138">Spravovat metody zadávání</translation>
 <translation id="5230516054153933099">Okno</translation>
@@ -6019,7 +6016,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8283475148136688298">Při připojování k zařízení <ph name="DEVICE_NAME" /> byl zamítnut ověřovací kód.</translation>
 <translation id="8284279544186306258">všechny weby <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Titulky</translation>
 <translation id="8286036467436129157">Přihlásit se</translation>
 <translation id="8286963743045814739">V anonymním okně můžete web procházet v soukromí.</translation>
 <translation id="8287902281644548111">Vyhledat podle adresy URL / volání API</translation>
@@ -6301,7 +6297,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8648544143274677280">Web <ph name="SITE_NAME" /> žádá o tato oprávnění: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> a další</translation>
 <translation id="8650543407998814195">Ačkoliv svůj starý profil již nemůžete používat, můžete jej odstranit.</translation>
 <translation id="8651585100578802546">Vynutit opětovné načtení této stránky</translation>
-<translation id="8651940856056821914">Chrome pomocí živého přepisu automaticky vytváří titulky (momentálně k dispozici pouze v angličtině)</translation>
 <translation id="8652400352452647993">Chyba zabalení rozšíření</translation>
 <translation id="8654151524613148204">Litujeme, soubor je příliš velký na to, aby jej váš počítač dokázal zpracovat.</translation>
 <translation id="8655295600908251630">Kanál</translation>

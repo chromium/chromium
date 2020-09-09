@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">ಅಪರಿಚಿತ ಸಾಧನ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ಬಹು ಸೈನ್-ಇನ್ ಸೆಷನ್‌ನಲ್ಲಿ ಈ ಮಾಲೀಕರ ಖಾತೆಯೇ ಮೊದಲ ಸೈನ್-ಇನ್ ಮಾಡಿದ ಖಾತೆ ಆಗಿರಬೇಕು.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> ತೆಗೆದುಹಾಕಿ</translation>
-<translation id="1504311855864906891">ನಿಮ್ಮ ಮಾಧ್ಯಮಕ್ಕಾಗಿ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1504551620756424144">ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್‌ಗಳು Windows ನಲ್ಲಿ <ph name="BASE_DIR" /> ಆಯ್ಕೆಯ ಅಡಿಯಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ.</translation>
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="1507170440449692343">ನಿಮ್ಮ ಕ್ಯಾಮೆರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದರಿಂದ ಈ ಪುಟವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
@@ -3268,7 +3267,6 @@
 <translation id="4921348630401250116">ಪಠ್ಯದಿಂದ ಧ್ವನಿ</translation>
 <translation id="49226369361073053">{0,plural, =0{ಈಗಲೇ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}=1{1 ಸೆಕೆಂಡ್ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
 <translation id="492299503953721473">Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕು</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> ಅಪರಿಚಿತವಾಗಿದೆ. ಈ ಫೈಲ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದಕ್ಕಾಗಿ Google ಗೆ ಕಳುಹಿಸಲು ಸುಧಾರಿತ ರಕ್ಷಣೆಯು ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">ನಿಮ್ಮ ಪೋರ್ಟ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
@@ -3492,7 +3490,6 @@
 <translation id="5225324770654022472">ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್ ತೋರಿಸು</translation>
 <translation id="52254442782792731">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಇನ್ನೂ ಹೊಂದಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="5227679487546032910">ಡಿಫಾಲ್ಟ್ ಕೆನ್ನೀಲಿ ಅವತಾರ್</translation>
-<translation id="5228088094491423618">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್‌ಗಳು</translation>
 <translation id="5228579091201413441">ಸಿಂಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5229189185761556138">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸು</translation>
 <translation id="5230516054153933099">ವಿಂಡೋ</translation>
@@ -6023,7 +6020,6 @@
 <translation id="8281886186245836920">ಸ್ಕಿಪ್‌</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" ಗೆ ಸಂಪರ್ಕಪಡಿಸುವಾಗ ದೃಢೀಕರಣ ಕೋಡ್ ಅನ್ನು ತಿರಸ್ಕರಿಸಲಾಗಿದೆ.</translation>
 <translation id="8284279544186306258">ಎಲ್ಲಾ <ph name="WEBSITE_1" /> ಸೈಟ್‌ಗಳು</translation>
-<translation id="8284326494547611709">ಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="8286036467436129157">ಸೈನ್ ಇನ್</translation>
 <translation id="8286963743045814739">ಅದೃಶ್ಯ ವಿಂಡೋವನ್ನು ಬಳಸುವ ಮೂಲಕ ನೀವು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು</translation>
 <translation id="8287902281644548111">API ಕರೆ/URL ಪ್ರಕಾರವಾಗಿ ಹುಡುಕಿ</translation>
@@ -6305,7 +6301,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" />, ಇವುಗಳನ್ನು ಮಾಡಲು ಬಯಸುತ್ತಿದೆ: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ಮತ್ತು ಇತ್ಯಾದಿ</translation>
 <translation id="8650543407998814195">ನಿಮ್ಮ ಹಳೆಯ ಪ್ರೊಫೈಲ್‌ಗೆ ಪ್ರವೇಶಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗದಿದ್ದರೂ, ಅದನ್ನು ನೀವು ತೆಗೆದುಹಾಕಬಹುದು.</translation>
 <translation id="8651585100578802546">ಈ ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಲು ಒತ್ತಾಯಿಸಿ</translation>
-<translation id="8651940856056821914">Chrome, ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಬಳಸಿಕೊಂಡು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಶೀರ್ಷಿಕೆಗಳನ್ನು ರಚಿಸುತ್ತದೆ (ಪ್ರಸ್ತುತ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಮಾತ್ರ ಲಭ್ಯವಿದೆ)</translation>
 <translation id="8652400352452647993">ಪ್ಯಾಕ್ ವಿಸ್ತರಣೆ ದೋಷ</translation>
 <translation id="8654151524613148204">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ನಿಭಾಯಿಸಲಾಗದಷ್ಟು ದೊಡ್ಡದಾಗಿದೆ ನಿಮ್ಮ ಫೈಲ್‌. ಕ್ಷಮಿಸಿ.</translation>
 <translation id="8655295600908251630">ಚಾನಲ್</translation>

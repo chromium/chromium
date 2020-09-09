@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">알 수 없는 기기[<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">이 소유자 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되어야 합니다.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> 삭제</translation>
-<translation id="1504311855864906891">미디어 자막 가져오기</translation>
 <translation id="1504551620756424144"><ph name="BASE_DIR" />에서 Windows의 공유 폴더를 사용할 수 있습니다.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
 <translation id="1507170440449692343">카메라 액세스가 차단된 페이지입니다.</translation>
@@ -3265,7 +3264,6 @@
 <translation id="4921348630401250116">TTS(텍스트 음성 변환)</translation>
 <translation id="49226369361073053">{0,plural, =0{지금 기기 업데이트}=1{1초 내 기기 업데이트}other{#초 내 기기 업데이트}}</translation>
 <translation id="492299503953721473">Android 앱 삭제</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> 파일은 알 수 없는 파일입니다. 고급 보호 기능에서는 이 파일을 Google에 전송하여 검사할 것을 권장합니다.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> 제거 중…</translation>
 <translation id="4924352752174756392">12배</translation>
 <translation id="4925320384394644410">포트가 여기에 표시됩니다</translation>
@@ -3489,7 +3487,6 @@
 <translation id="5225324770654022472">앱 단축키 표시</translation>
 <translation id="52254442782792731">현재 공개 범위가 아직 설정되어 있지 않음</translation>
 <translation id="5227679487546032910">기본 청록색 아바타</translation>
-<translation id="5228088094491423618">실시간 자막</translation>
 <translation id="5228579091201413441">동기화 사용</translation>
 <translation id="5229189185761556138">입력 방법 관리</translation>
 <translation id="5230516054153933099">창</translation>
@@ -6020,7 +6017,6 @@
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8283475148136688298">'<ph name="DEVICE_NAME" />'에 연결하는 동안 인증 코드가 거부되었습니다.</translation>
 <translation id="8284279544186306258">모든 <ph name="WEBSITE_1" /> 사이트</translation>
-<translation id="8284326494547611709">자막</translation>
 <translation id="8286036467436129157">로그인</translation>
 <translation id="8286963743045814739">시크릿 창을 사용하면 비공개로 탐색할 수 있습니다.</translation>
 <translation id="8287902281644548111">API 호출/URL로 검색</translation>
@@ -6302,7 +6298,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" />의 권한 요청: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> 등</translation>
 <translation id="8650543407998814195">더 이상 기존 프로필에 액세스할 수 없지만 삭제할 수는 있습니다.</translation>
 <translation id="8651585100578802546">캐시를 무시하고 페이지 새로고침</translation>
-<translation id="8651940856056821914">Chrome에서 실시간 자막을 사용하여 자동으로 자막을 생성합니다. 현재는 영어로만 제공됩니다.</translation>
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>
 <translation id="8654151524613148204">파일이 너무 커서 컴퓨터에서 처리할 수 없습니다.</translation>
 <translation id="8655295600908251630">채널</translation>

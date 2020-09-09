@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Ukjent enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Denne eierkontoen må være den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="150411034776756821">Fjern <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Få teksting for medieinnholdet ditt</translation>
 <translation id="1504551620756424144">Delte mapper er tilgjengelige i Windows i <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1507170440449692343">Kameraet er blokkert for denne siden.</translation>
@@ -3262,7 +3261,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4921348630401250116">Tekst til tale</translation>
 <translation id="49226369361073053">{0,plural, =0{Oppdater enheten nå}=1{Oppdater enheten innen 1 sekund}other{Oppdater enheten innen # sekunder}}</translation>
 <translation id="492299503953721473">Fjern Android-appene</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> er ukjent. Avansert beskyttelse anbefaler at du sender denne filen til Google for skanning.</translation>
 <translation id="492363500327720082">Avinstallerer <ph name="APP_NAME" /> …</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Portene dine vises her</translation>
@@ -3486,7 +3484,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5225324770654022472">Vis appsnarveien</translation>
 <translation id="52254442782792731">Den gjeldende synlighetsinnstillingen er ikke angitt ennå</translation>
 <translation id="5227679487546032910">Blågrønt standardbrukerbilde</translation>
-<translation id="5228088094491423618">Direkteteksting</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>
 <translation id="5229189185761556138">Administrer inndatametoder</translation>
 <translation id="5230516054153933099">Vindu</translation>
@@ -6019,7 +6016,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8281886186245836920">Hopp over</translation>
 <translation id="8283475148136688298">Autentiseringskoden ble avvist under tilkobling til <ph name="DEVICE_NAME" />.</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-nettsteder</translation>
-<translation id="8284326494547611709">Teksting</translation>
 <translation id="8286036467436129157">Logg på</translation>
 <translation id="8286963743045814739">Med et inkognitovindu kan du besøke nettsteder anonymt</translation>
 <translation id="8287902281644548111">Søk etter API-kall/nettadresser</translation>
@@ -6301,7 +6297,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vil <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> med mer</translation>
 <translation id="8650543407998814195">Du kan fjerne den gamle profilen din selv om du ikke har tilgang til den lenger.</translation>
 <translation id="8651585100578802546">Tving ny innlasting av siden</translation>
-<translation id="8651940856056821914">Chrome lager automatisk teksting med Direkteteksting (for tiden kun tilgjengelig på engelsk)</translation>
 <translation id="8652400352452647993">Feil med pakkeutvidelse</translation>
 <translation id="8654151524613148204">Beklager, men filen er så stor at datamaskinen din ikke klarer å håndtere den.</translation>
 <translation id="8655295600908251630">Kanal</translation>

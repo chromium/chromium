@@ -427,7 +427,6 @@
 <translation id="1500297251995790841">Naməlum cihaz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Bu sahib hesabı çoxsaylı giriş sessiyasında ilk girilmiş hesab olmalıdır.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> saytını silin</translation>
-<translation id="1504311855864906891">Medianız üçün altyazılar əldə edin</translation>
 <translation id="1504551620756424144">Paylaşılmış qovluqlar <ph name="BASE_DIR" /> ünvanındakı Windows'da əlçatandır.</translation>
 <translation id="1506061864768559482">Axtarış mühərriki</translation>
 <translation id="1507170440449692343">Bu səhifə ilə kameranıza daxil olma bloklandı.</translation>
@@ -3260,7 +3259,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4921348630401250116">Mətndən nitqə</translation>
 <translation id="49226369361073053">{0,plural, =0{Cihazı indi güncəlləyin}=1{Cihazı 1 saniyə ərzində güncəlləyin}other{Cihazı # saniyə ərzində güncəlləyin}}</translation>
 <translation id="492299503953721473">Android tətbiqlərini silin</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> tanınmır. Qabaqcıl Qoruma yoxlamaq üçün bu faylı Google'a göndərməyi tövsiyə edir.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> tətbiqinin quraşdırılması ləğv edilir...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Portlarınız burada görünəcək</translation>
@@ -3484,7 +3482,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5225324770654022472">Tətbiqlərin qısayolunu göstərin</translation>
 <translation id="52254442782792731">Cari görünmə ayarı hələ ayarlanmayıb</translation>
 <translation id="5227679487546032910">Defolt firuzəyi avatar</translation>
-<translation id="5228088094491423618">Canlı Altyazı</translation>
 <translation id="5228579091201413441">Sinxronizasiyanı aktiv edin</translation>
 <translation id="5229189185761556138">Daxiletmə üsullarını idarə edin</translation>
 <translation id="5230516054153933099">Pəncərə</translation>
@@ -6011,7 +6008,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8281886186245836920">Keçin</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" cihazına qoşularkən doğrulama rədd edildi.</translation>
 <translation id="8284279544186306258">bütün <ph name="WEBSITE_1" /> saytları</translation>
-<translation id="8284326494547611709">Başlıqlar</translation>
 <translation id="8286036467436129157">Giriş</translation>
 <translation id="8286963743045814739">Gizli pəncərə ilə məxfi axtarış edə bilərsiniz</translation>
 <translation id="8287902281644548111">API zəngi/Link tərəfindən Axtarış</translation>
@@ -6293,7 +6289,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> bunu etmək istəyir: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> və daha çoxu</translation>
 <translation id="8650543407998814195">Köhnə profilinizə artıq girişinizin olmamasına baxmayaraq onu silə bilərsiniz.</translation>
 <translation id="8651585100578802546">Bu səhifəni yenidən yükləməyə məcbur edin</translation>
-<translation id="8651940856056821914">Chrome Canlı Altyazıdan istifadə edərək avtomatik olaraq altyazılar yaradır (hazırda yalnız İngiliscə əlçatandır)</translation>
 <translation id="8652400352452647993">Paket Artırma Xətası</translation>
 <translation id="8654151524613148204">Fayl kompüteriniz üçün çox böyükdür.</translation>
 <translation id="8655295600908251630">Kanal</translation>

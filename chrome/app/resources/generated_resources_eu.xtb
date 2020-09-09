@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Identifikatu ezin den gailua [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Saio anitzeko saioetan, jabeak hasi behar du kontua lehendabizi.</translation>
 <translation id="150411034776756821">Kendu <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Lortu azpitituluak multimedia-edukirako</translation>
 <translation id="1504551620756424144">Karpeta partekatuak Windows-eko direktorio honetan daude: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Bilatzailea</translation>
 <translation id="1507170440449692343">Orriari kamera atzitzeko aukera blokeatu zaio.</translation>
@@ -3267,7 +3266,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4921348630401250116">Testua ahots bihurtzeko eginbidea</translation>
 <translation id="49226369361073053">{0,plural, =0{Eguneratu gailua orain}=1{Eguneratu gailua segundo bateko epean}other{Eguneratu gailua # segundoko epean}}</translation>
 <translation id="492299503953721473">Kendu Android-erako aplikazioak</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> ezezaguna da. Babes aurreratua programak fitxategi hori Google-ri bidaltzea gomendatzen du, hura eskaneatzeko.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> desinstalatzen…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Zure atakak hemen agertuko dira</translation>
@@ -3491,7 +3489,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5225324770654022472">Erakutsi aplikazioen lasterbidea</translation>
 <translation id="52254442782792731">Ezarri gabe dago ikusgaitasun-ezarpena</translation>
 <translation id="5227679487546032910">Abatar anil lehenetsia</translation>
-<translation id="5228088094491423618">Istanteko azpitituluak</translation>
 <translation id="5228579091201413441">Gaitu sinkronizazioa</translation>
 <translation id="5229189185761556138">Kudeatu idazketa-metodoak</translation>
 <translation id="5230516054153933099">Leihoa</translation>
@@ -6023,7 +6020,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8281886186245836920">Saltatu</translation>
 <translation id="8283475148136688298">Autentifikazioa baztertu egin da "<ph name="DEVICE_NAME" />" gailura konektatzean.</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> webguneak</translation>
-<translation id="8284326494547611709">Azpitituluak</translation>
 <translation id="8286036467436129157">Hasi saioa</translation>
 <translation id="8286963743045814739">Sarea modu pribatuan araka dezakezu ezkutuko moduko leihoak erabilita</translation>
 <translation id="8287902281644548111">Bilatu API deiaren edo URLaren arabera</translation>
@@ -6305,7 +6301,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> webguneak hauetarako baimena nahi du: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, etab.</translation>
 <translation id="8650543407998814195">Ezin duzu atzitu jada profil zaharra, baina baduzu hura kentzeko aukera.</translation>
 <translation id="8651585100578802546">Behartu orria berriro kargatzera.</translation>
-<translation id="8651940856056821914">Chrome-k automatikoki sortzen ditu azpitituluak Istanteko azpitituluak erabilita (ingelesez bakarrik erabilgarri)</translation>
 <translation id="8652400352452647993">Paketearen luzapenaren errorea</translation>
 <translation id="8654151524613148204">Fitxategia handiegia da ordenagailuak kudeatu ahal izateko.</translation>
 <translation id="8655295600908251630">Kanala</translation>

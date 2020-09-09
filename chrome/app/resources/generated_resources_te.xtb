@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">తెలియని పరికరం [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ఈ యజమాని ఖాతానే బహుళ సైన్-ఇన్ సెషన్‌లో మొదటిగా సైన్-ఇన్ చేయాల్సిన ఖాతా.</translation>
 <translation id="150411034776756821"><ph name="SITE" />ని తీసివేయి</translation>
-<translation id="1504311855864906891">మీ మీడియా కోసం క్యాప్షన్‌లను పొందండి</translation>
 <translation id="1504551620756424144">Windowsలో <ph name="BASE_DIR" />లో షేర్ చేసిన ఫోల్డర్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1507170440449692343">ఈ పేజీ మీ కెమెరాను ప్రాప్యత చేయకుండా బ్లాక్ చేయబడింది.</translation>
@@ -3267,7 +3266,6 @@
 <translation id="4921348630401250116">టెక్స్ట్-టు-స్పీచ్</translation>
 <translation id="49226369361073053">{0,plural, =0{ఇప్పుడే పరికరాన్ని అప్‌డేట్ చేయండి}=1{1 సెకను లోపు పరికరాన్ని అప్‌డేట్ చేయండి}other{# సెకన్ల లోపు పరికరాన్ని అప్‌డేట్ చేయండి}}</translation>
 <translation id="492299503953721473">Android యాప్‌లను తీసివేయి</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> తెలియదు. స్కాన్ చేయడం కోసం ఈ ఫైల్‌ను Googleకి పంపించమని అధునాతన రక్షణ సిఫార్సు చేస్తోంది.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">మీ పోర్ట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
@@ -3491,7 +3489,6 @@
 <translation id="5225324770654022472">యాప్‌ల షార్ట్‌కట్‌ను చూపండి</translation>
 <translation id="52254442782792731">ప్రస్తుత విజిబిలిటీ సెట్టింగ్ ఇంకా సెట్ చేయబడలేదు</translation>
 <translation id="5227679487546032910">డిఫాల్ట్ నీలం ఆకుపచ్చ రంగు అవతార్</translation>
-<translation id="5228088094491423618">లైవ్ క్యాప్షన్‌లు</translation>
 <translation id="5228579091201413441">సమకాలీకరణను ప్రారంభించండి</translation>
 <translation id="5229189185761556138">ఇన్‌పుట్ పద్ధతులను నిర్వహించు</translation>
 <translation id="5230516054153933099">విండో</translation>
@@ -6020,7 +6017,6 @@
 <translation id="8281886186245836920">దాటవేయి</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />"కు కనెక్ట్ చేస్తున్నప్పుడు ప్రామాణీకరణ కోడ్ తిరస్కరించబడింది.</translation>
 <translation id="8284279544186306258">అన్ని <ph name="WEBSITE_1" /> వెబ్‌సైట్‌లు</translation>
-<translation id="8284326494547611709">క్యాప్షన్‌లు</translation>
 <translation id="8286036467436129157">సైన్ ఇన్ చేయండి</translation>
 <translation id="8286963743045814739">అజ్ఞాత విండోను ఉపయోగించి మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయవచ్చు</translation>
 <translation id="8287902281644548111">API కాల్/URL ద్వారా శోధించండి</translation>
@@ -6302,7 +6298,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> వీటిని చేయాలనుకుంటోంది: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, మరిన్ని</translation>
 <translation id="8650543407998814195">మీరు మీ పాత ప్రొఫైల్‌ను ఇప్పుడు యాక్సెస్ చేయలేకపోయినప్పటికీ, మీరు దాన్ని ఇప్పటికీ తీసివేయగలరు.</translation>
 <translation id="8651585100578802546">ఈ పేజీని బలవంతంగా మళ్లీ లోడ్ చేయి</translation>
-<translation id="8651940856056821914">లైవ్ క్యాప్షన్‌ను ఉపయోగించి Chrome ఆటోమేటిక్‌గా క్యాప్షన్‌లను క్రియేట్ చేస్తుంది (ప్రస్తుతం ఇంగ్లీష్‌లో మాత్రమే అందుబాటులో ఉంది)</translation>
 <translation id="8652400352452647993">ప్యాక్ ఎక్స్‌టెన్షన్ ఎర్రర్</translation>
 <translation id="8654151524613148204">మీ కంప్యూటర్ నిర్వహించడానికి ఫైల్ చాలా పెద్దదిగా ఉంది. క్షమించండి.</translation>
 <translation id="8655295600908251630">ఛానల్</translation>

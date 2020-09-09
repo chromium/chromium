@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Орто кызгылтым көгүш кызыл</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Жыйналды</translation>
+<translation id="311015743332597320">Төрт манжаңыз менен экранды оңго сүрүңүз</translation>
 <translation id="3112457281078985179">ChromeVox'ту күйгүзүп же өчүрүү үчүн, Control+Alt+Z баскычтарын басыңыз.</translation>
 <translation id="3131002934070407451">Сандарды төмөнкүдөй окуу:</translation>
 <translation id="3134461040845705080">окуу үчүн гана</translation>
@@ -901,6 +902,7 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" /> файлын жүктөп алуу токтотулду</translation>
 <translation id="8129445297241948503">Өйдө жакта уяча жок</translation>
 <translation id="8138880386467279117">Тийип коюу</translation>
+<translation id="8173092779156526980">Төрт манжаңыз менен экранды солго сүрүңүз</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{төмөнкү сызык}other{# төмөнкү сызык}}</translation>
 <translation id="8184828902145951186">сап</translation>
 <translation id="8186185314313222077">толук экранга которуу</translation>

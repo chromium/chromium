@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Невядомая прылада [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">У сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс уладальніка павінен быць першым.</translation>
 <translation id="150411034776756821">Выдаліць <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Ствараць субцітры для медыязмесціва</translation>
 <translation id="1504551620756424144">Абагуленыя папкі даступныя ў сістэме Windows у каталозе "<ph name="BASE_DIR" />".</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
 <translation id="1507170440449692343">Гэтай старонцы быў заблакіраваны доступ да вашай камеры.</translation>
@@ -3267,7 +3266,6 @@
 <translation id="4921348630401250116">Сінтэз маўлення</translation>
 <translation id="49226369361073053">{0,plural, =0{Перазапусціце прыладу зараз}=1{Перазапусціце прыладу на працягу 1 секунды}one{Перазапусціце прыладу на працягу # секунды}few{Перазапусціце прыладу на працягу # секунд}many{Перазапусціце прыладу на працягу # секунд}other{Перазапусціце прыладу на працягу # секунды}}</translation>
 <translation id="492299503953721473">Выдаліць праграмы Android</translation>
-<translation id="492320048412997552">Файл "<ph name="FILE_NAME" />" – невядомы. "Палепшаная абарона" рэкамендуе адправіць гэты файл у Google для праверкі.</translation>
 <translation id="492363500327720082">Ідзе выдаленне праграмы <ph name="APP_NAME" />...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Вашы парты з'явяцца тут</translation>
@@ -3491,7 +3489,6 @@
 <translation id="5225324770654022472">Паказваць ярлык праграм</translation>
 <translation id="52254442782792731">Бягучая налада бачнасці: яшчэ не зададзена</translation>
 <translation id="5227679487546032910">Стандартны сіне-зялёны аватар</translation>
-<translation id="5228088094491423618">Імгненныя субцітры</translation>
 <translation id="5228579091201413441">Уключыць сінхранізацыю</translation>
 <translation id="5229189185761556138">Кіраваць метадамі ўводу</translation>
 <translation id="5230516054153933099">Акно</translation>
@@ -6023,7 +6020,6 @@
 <translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8283475148136688298">Пры падключэнні да прылады "<ph name="DEVICE_NAME" />" код аўтэнтыфікацыі быў адхілены.</translation>
 <translation id="8284279544186306258">усе сайты <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Субцітры</translation>
 <translation id="8286036467436129157">Увайсці</translation>
 <translation id="8286963743045814739">Прыватны прагляд вэб-старонак магчымы ў акне ў рэжыме інкогніта</translation>
 <translation id="8287902281644548111">Пошук па URL-адрасе або выкліку API</translation>
@@ -6305,7 +6301,6 @@
 <translation id="8648544143274677280">Сайт <ph name="SITE_NAME" /> запытвае наступныя дазволы: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> і іншыя</translation>
 <translation id="8650543407998814195">У вас больш няма доступу да старога профілю, але вы можаце выдаліць яго.</translation>
 <translation id="8651585100578802546">Перазагрузіць гэту старонку прымусова</translation>
-<translation id="8651940856056821914">Chrome аўтаматычна стварае субцітры з дапамогай функцыі "Імгненныя субцітры" (яны пакуль што даступныя толькі на англійскай мове)</translation>
 <translation id="8652400352452647993">Не ўдалося ўпакаваць пашырэнне</translation>
 <translation id="8654151524613148204">Файл занадта вялікі для вашага камп'ютара. Прабачце.</translation>
 <translation id="8655295600908251630">Версія</translation>

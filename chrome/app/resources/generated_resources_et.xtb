@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Tundmatu seade [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">See omaniku konto peab olema esimene sisselogitud konto mitmele kontole sisselogimise seansil.</translation>
 <translation id="150411034776756821">Eemalda sait <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Hangi meediasisu jaoks subtiitrid</translation>
 <translation id="1504551620756424144">Windowsis on jagatud kaustad saadaval asukohas <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Otsingumootor</translation>
 <translation id="1507170440449692343">Sellel lehel on juurdepääs teie kaamerale blokeeritud.</translation>
@@ -3267,7 +3266,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4921348630401250116">Kõnesüntees</translation>
 <translation id="49226369361073053">{0,plural, =0{Värskendage seadet kohe}=1{Värskendage seadet 1 sekundi jooksul}other{Värskendage seadet # sekundi jooksul}}</translation>
 <translation id="492299503953721473">Eemalda Androidi rakendused</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> on tundmatu. Täiustatud kaitse soovitab selle faili kontrollimiseks Google'ile saata.</translation>
 <translation id="492363500327720082">Rakenduse <ph name="APP_NAME" />desinstallimine …</translation>
 <translation id="4924352752174756392">12-kordne</translation>
 <translation id="4925320384394644410">Teie pordid kuvatakse siin</translation>
@@ -3491,7 +3489,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5225324770654022472">Kuva rakenduste otsetee</translation>
 <translation id="52254442782792731">Praegust nähtavuse seadet pole veel määratud</translation>
 <translation id="5227679487546032910">Sinakasroheline vaikeavatar</translation>
-<translation id="5228088094491423618">Reaalajas subtiitrid</translation>
 <translation id="5228579091201413441">Sünkroonimise lubamine</translation>
 <translation id="5229189185761556138">Sisestusmeetodite haldamine</translation>
 <translation id="5230516054153933099">Aken</translation>
@@ -6024,7 +6021,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8283475148136688298">Autentimiskood lükati seadmega „<ph name="DEVICE_NAME" />” ühenduse loomisel tagasi.</translation>
 <translation id="8284279544186306258">kõik domeeni <ph name="WEBSITE_1" /> saidid</translation>
-<translation id="8284326494547611709">Subtiitrid</translation>
 <translation id="8286036467436129157">Logi sisse</translation>
 <translation id="8286963743045814739">Inkognito aknas saab privaatselt sirvida</translation>
 <translation id="8287902281644548111">API kutsungi/URL-i järgi otsimine</translation>
@@ -6306,7 +6302,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> soovib teha järgmist: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ja muud</translation>
 <translation id="8650543407998814195">Kuigi te ei pääse enam oma vanale profiilile juurde, on teil siiski võimalik see eemaldada.</translation>
 <translation id="8651585100578802546">Sundlaadi see leht uuesti</translation>
-<translation id="8651940856056821914">Chrome loob reaalajas subtiitrite funktsiooni abil automaatselt subtiitrid (praegu saadaval ainult inglise keeles)</translation>
 <translation id="8652400352452647993">Viga laienduse ettevalmistamisel</translation>
 <translation id="8654151524613148204">Kahjuks on fail teie arvuti jaoks liiga suur.</translation>
 <translation id="8655295600908251630">Kanal</translation>

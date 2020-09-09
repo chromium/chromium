@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">தெரியாத சாதனம் [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">பல உள்நுழைவு அமர்வில் இந்த உரிமையாளர் கணக்கு தான் முதலில் உள்நுழைந்த கணக்காக இருக்க வேண்டும்.</translation>
 <translation id="150411034776756821"><ph name="SITE" />ஐ அகற்று</translation>
-<translation id="1504311855864906891">எனது மீடியாவிற்கு வசனங்களைக் காட்டு</translation>
 <translation id="1504551620756424144">பகிர்ந்த கோப்புறைகளை Windowsஸில் <ph name="BASE_DIR" /> என்பதில் பார்க்கலாம்.</translation>
 <translation id="1506061864768559482">தேடல் இன்ஜின்</translation>
 <translation id="1507170440449692343">இந்தப் பக்கம் உங்கள் கேமராவை அணுகுவதிலிருந்து தடுக்கப்பட்டுள்ளது.</translation>
@@ -3267,7 +3266,6 @@
 <translation id="4921348630401250116">உரையிலிருந்து பேச்சு</translation>
 <translation id="49226369361073053">{0,plural, =0{இப்போதே சாதனத்தைப் புதுப்பிக்கவும்}=1{ஒரு வினாடிக்குள் சாதனத்தைப் புதுப்பிக்கவும்}other{# வினாடிகளுக்குள் சாதனத்தைப் புதுப்பிக்கவும்}}</translation>
 <translation id="492299503953721473">Android ஆப்ஸை அகற்று</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> கோப்பினை அடையாளம் காண முடியவில்லை. இதை Googleளுக்கு அனுப்பி ஸ்கேன் செய்யுமாறு 'மேம்பட்ட பாதுகாப்பு' பரிந்துரைக்கிறது.</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> ஆப்ஸை நிறுவல் நீக்குகிறது...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">உங்கள் போர்ட்கள் இங்கே காட்டப்படும்</translation>
@@ -3491,7 +3489,6 @@
 <translation id="5225324770654022472">ஆப்ஸின் ஷார்ட்கட்டைக் காட்டு</translation>
 <translation id="52254442782792731">தற்போதைய தெரிவுநிலை அமைப்பு இன்னும் அமைக்கப்படவில்லை</translation>
 <translation id="5227679487546032910">இயல்பு பசும்நீலநிற அவதார்</translation>
-<translation id="5228088094491423618">உடனடி வசனம்</translation>
 <translation id="5228579091201413441">ஒத்திசைவை இயக்கு</translation>
 <translation id="5229189185761556138">உள்ளீட்டு முறைகளை நிர்வகி</translation>
 <translation id="5230516054153933099">விண்டோ</translation>
@@ -6025,7 +6022,6 @@
 <translation id="8281886186245836920">தவிர்</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" உடன் இணைக்கும்போது அங்கீகரிப்புக் குறியீடு நிராகரிக்கப்பட்டது.</translation>
 <translation id="8284279544186306258">எல்லா <ph name="WEBSITE_1" /> தளங்களும்</translation>
-<translation id="8284326494547611709">வசனங்கள்</translation>
 <translation id="8286036467436129157">உள்நுழை</translation>
 <translation id="8286963743045814739">மறைநிலைச் சாளரத்தைப் பயன்படுத்தி, தனிப்பட்ட முறையில் உலாவலாம்</translation>
 <translation id="8287902281644548111">API அழைப்பு/URLபடி தேடு</translation>
@@ -6307,7 +6303,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> இந்த அனுமதிகளைக் கோருகிறது: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> &amp; மேலும் பல</translation>
 <translation id="8650543407998814195">உங்கள் பழைய கணக்கை இனி அணுக முடியாது என்றாலும் அதை அகற்ற முடியும்.</translation>
 <translation id="8651585100578802546">இந்தப் பக்கத்தை ஃபோர்ஸ் ரெஃப்ரெஷ் செய்</translation>
-<translation id="8651940856056821914">‘உடனடி வசனம்’ அம்சத்தைப் பயன்படுத்தி Chrome உலாவி தானாகவே வசனங்களை உருவாக்கும் (இந்த அம்சத்தைத் தற்போது ஆங்கில மொழியில் மட்டுமே பயன்படுத்த முடியும்)</translation>
 <translation id="8652400352452647993">தொகுப்பு நீட்டிப்புப் பிழை</translation>
 <translation id="8654151524613148204">இந்தக் கோப்பு உங்கள் கம்ப்யூட்டர் கையாளுவதற்கு மிகப்பெரியதாக உள்ளது.</translation>
 <translation id="8655295600908251630">சேனல்</translation>

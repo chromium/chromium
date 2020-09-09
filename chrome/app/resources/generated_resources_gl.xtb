@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Dispositivo descoñecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Esta conta de propietario debe ser a primeira en que se inicie sesión cando se realice un inicio de sesión múltiple.</translation>
 <translation id="150411034776756821">Eliminar <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Subtitular o teu contido multimedia</translation>
 <translation id="1504551620756424144">En Windows, os cartafoles compartidos están en <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1507170440449692343">Bloqueouse o acceso desta páxina á túa cámara.</translation>
@@ -3266,7 +3265,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4921348630401250116">Síntese de voz</translation>
 <translation id="49226369361073053">{0,plural, =0{Actualiza o dispositivo agora}=1{Actualiza o dispositivo en 1 segundo}other{Actualiza o dispositivo en # segundos}}</translation>
 <translation id="492299503953721473">Eliminar aplicacións de Android</translation>
-<translation id="492320048412997552">Descoñécese o ficheiro <ph name="FILE_NAME" />. A función Protección avanzada recomenda enviarllo a Google para que o analice.</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Os teus portos aparecerán aquí</translation>
@@ -3490,7 +3488,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5225324770654022472">Mostrar o atallo das aplicacións</translation>
 <translation id="52254442782792731">Configuración de visibilidade actual aínda sen definir</translation>
 <translation id="5227679487546032910">Avatar azul verdoso predeterminado</translation>
-<translation id="5228088094491423618">Subtítulos instantáneos</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
 <translation id="5229189185761556138">Xestionar métodos de entrada</translation>
 <translation id="5230516054153933099">Ventá</translation>
@@ -6022,7 +6019,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8283475148136688298">Código de autenticación rexeitado durante a conexión con "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">todos os sitios de <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
 <translation id="8286963743045814739">Podes navegar de forma privada usando unha ventá do modo de incógnito</translation>
 <translation id="8287902281644548111">Busca por URL ou chamada de API</translation>
@@ -6304,7 +6300,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> require permisos para: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> etc.</translation>
 <translation id="8650543407998814195">Aínda que non podes acceder ao teu perfil antigo, podes eliminalo.</translation>
 <translation id="8651585100578802546">Forzar recarga desta páxina</translation>
-<translation id="8651940856056821914">Chrome crea subtítulos automaticamente mediante a función Subtítulos instantáneos (actualmente só esta dispoñible en inglés)</translation>
 <translation id="8652400352452647993">Produciuse un erro na extensión do paquete</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o ordenador o poida manexar.</translation>
 <translation id="8655295600908251630">Canle</translation>

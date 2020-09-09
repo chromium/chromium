@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Dispozitiv necunoscut [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Acest cont de proprietar trebuie să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="150411034776756821">Elimină <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Afișează subtitrări pentru conținutul media</translation>
 <translation id="1504551620756424144">Dosarele comune sunt disponibile în Windows la <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de căutare</translation>
 <translation id="1507170440449692343">Accesul acestei pagini la camera dvs. a fost blocat.</translation>
@@ -3267,7 +3266,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4921348630401250116">Redarea vocală a textului</translation>
 <translation id="49226369361073053">{0,plural, =0{Actualizează dispozitivul acum}=1{Actualizează dispozitivul într-o secundă}few{Actualizează dispozitivul în # secunde}other{Actualizează dispozitivul în # de secunde}}</translation>
 <translation id="492299503953721473">Elimină aplicațiile Android</translation>
-<translation id="492320048412997552"><ph name="FILE_NAME" /> este necunoscut. Protecția avansată recomandă trimiterea fișierului la Google pentru verificare.</translation>
 <translation id="492363500327720082">Se dezinstalează <ph name="APP_NAME" />...</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Porturile vor apărea aici</translation>
@@ -3491,7 +3489,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5225324770654022472">Afișați comanda rapidă pentru aplicații</translation>
 <translation id="52254442782792731">Setarea actuală de vizibilitate nu este setată încă</translation>
 <translation id="5227679487546032910">Avatar turcoaz prestabilit</translation>
-<translation id="5228088094491423618">Subtitrări live</translation>
 <translation id="5228579091201413441">Activează sincronizarea</translation>
 <translation id="5229189185761556138">Gestionează metodele de introducere a textului</translation>
 <translation id="5230516054153933099">Fereastră</translation>
@@ -6022,7 +6019,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8283475148136688298">Codul de autentificare a fost respins în timpul conectării la „<ph name="DEVICE_NAME" />”.</translation>
 <translation id="8284279544186306258">toate site-urile <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Subtitrări</translation>
 <translation id="8286036467436129157">Conectați-vă</translation>
 <translation id="8286963743045814739">Poți naviga privat folosind o fereastră incognito</translation>
 <translation id="8287902281644548111">Caută după apelarea API-ului/adresa URL</translation>
@@ -6304,7 +6300,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> dorește să <ph name="FIRST_PERMISSION" />, să <ph name="SECOND_PERMISSION" /> și altele</translation>
 <translation id="8650543407998814195">Deși nu mai poți accesa profilul vechi, poți totuși să-l elimini.</translation>
 <translation id="8651585100578802546">Reîncarcă forțat această pagină</translation>
-<translation id="8651940856056821914">Chrome creează automat subtitrări folosind Subtitrări live (disponibile momentan numai în limba engleză)</translation>
 <translation id="8652400352452647993">Eroare privind pachetul pentru extensie</translation>
 <translation id="8654151524613148204">Din păcate, fișierul este prea mare pentru a putea fi gestionat de computerul dvs.</translation>
 <translation id="8655295600908251630">Canal</translation>

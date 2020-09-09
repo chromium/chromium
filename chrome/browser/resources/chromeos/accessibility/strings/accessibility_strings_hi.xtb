@@ -280,6 +280,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3103579948980282461">मध्यम बैंगनी लाल</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
+<translation id="311015743332597320">चार उंगलियों से दाईं ओर स्वाइप करें</translation>
 <translation id="3112457281078985179">ChromeVox को चालू या बंद करने के लिए, Control+Alt+Z का उपयोग करें.</translation>
 <translation id="3131002934070407451">नंबर इस तरह पढ़ें:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -900,6 +901,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="812886159861361726">डाउनलोड बंद हो गया <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">ऊपर कोई सेल नहीं है</translation>
 <translation id="8138880386467279117">स्पर्श करें</translation>
+<translation id="8173092779156526980">चार उंगलियों को बाईं ओर स्वाइप करें</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{अंडरस्कोर}one{# अंडरस्कोर}other{# अंडरस्कोर}}</translation>
 <translation id="8184828902145951186">पंक्ति</translation>
 <translation id="8186185314313222077">फ़ुल स्‍क्रीन टॉगल करें</translation>

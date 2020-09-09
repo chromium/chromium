@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Średni fioletowoczerwony</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Zwinięty</translation>
+<translation id="311015743332597320">Przesuń 4 palcami w prawo</translation>
 <translation id="3112457281078985179">Aby włączyć lub wyłączyć czytnik ChromeVox, naciśnij Ctrl + Alt + Z.</translation>
 <translation id="3131002934070407451">Odczytuj numery jako:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -900,6 +901,7 @@
 <translation id="812886159861361726">Zatrzymano pobieranie pliku <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nie ma komórki powyżej</translation>
 <translation id="8138880386467279117">Kliknij</translation>
+<translation id="8173092779156526980">Przesuń 4 palcami w lewo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podkreślenie}few{# znaki podkreślenia}many{# znaków podkreślenia}other{# underscores}}</translation>
 <translation id="8184828902145951186">wiersz</translation>
 <translation id="8186185314313222077">przełącz pełny ekran</translation>

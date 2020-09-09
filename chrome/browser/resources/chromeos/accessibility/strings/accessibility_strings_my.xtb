@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">ခရမ်းပြာနီ မနုမရင့်</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">ခေါက်ထား</translation>
+<translation id="311015743332597320">ညာဘက်သို့ လက်လေးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="3112457281078985179">ChromeVox ကို အဖွင့်အပိတ်ပြုလုပ်ရန် Control+Alt+Z ကို အသုံးပြုပါ။</translation>
 <translation id="3131002934070407451">အောက်ပါအဖြစ် နံပါတ်များကို ဖတ်ရန်-</translation>
 <translation id="3134461040845705080">ဖတ်ရန်သာ</translation>
@@ -901,6 +902,7 @@
 <translation id="812886159861361726"><ph name="FILE_NAME" /> ဒေါင်းလုဒ် ရပ်ထားသည်</translation>
 <translation id="8129445297241948503">အပေါ်တွင် ဆဲလ် မရှိပါ</translation>
 <translation id="8138880386467279117">ထိပါ</translation>
+<translation id="8173092779156526980">ဘယ်ဘက်သို့ လက်လေးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{မျဉ်းသားမှု}other{# မျဉ်းသားမှုများ}}</translation>
 <translation id="8184828902145951186">လိုင်း</translation>
 <translation id="8186185314313222077">မျက်နှာပြင်အပြည့် ကစားကြည့်ပါ</translation>

@@ -429,7 +429,6 @@
 <translation id="1500297251995790841">Неизвестное устройство [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">При одновременной работе в нескольких аккаунтах необходимо сначала зайти в аккаунт владельца.</translation>
 <translation id="150411034776756821">Удалить <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Автоматические субтитры</translation>
 <translation id="1504551620756424144">В Windows общие папки находятся здесь: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
 <translation id="1507170440449692343">Доступ к вашей камере для этой страницы заблокирован.</translation>
@@ -3265,7 +3264,6 @@
 <translation id="4921348630401250116">Озвучивание текста</translation>
 <translation id="49226369361073053">{0,plural, =0{Перезагрузите устройство прямо сейчас}=1{Перезагрузите устройство в течение 1 секунды}one{Перезагрузите устройство в течение # секунды}few{Перезагрузите устройство в течение # секунд}many{Перезагрузите устройство в течение # секунд}other{Перезагрузите устройство в течение # секунды}}</translation>
 <translation id="492299503953721473">Удалить приложения для Android</translation>
-<translation id="492320048412997552">Файл "<ph name="FILE_NAME" />" неизвестен. Рекомендуется отправить его на проверку в Google.</translation>
 <translation id="492363500327720082">Удаление <ph name="APP_NAME" />…</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Здесь появятся порты.</translation>
@@ -3489,7 +3487,6 @@
 <translation id="5225324770654022472">Показывать кнопку "Сервисы"</translation>
 <translation id="52254442782792731">Вы пока не указали, кому разрешено обнаруживать ваше устройство</translation>
 <translation id="5227679487546032910">Аватар по умолчанию (сине-зеленый)</translation>
-<translation id="5228088094491423618">Автоматические субтитры</translation>
 <translation id="5228579091201413441">Включить синхронизацию</translation>
 <translation id="5229189185761556138">Управление методами ввода</translation>
 <translation id="5230516054153933099">Окно</translation>
@@ -6019,7 +6016,6 @@
 <translation id="8281886186245836920">Пропустить</translation>
 <translation id="8283475148136688298">При подключении к "<ph name="DEVICE_NAME" />" код аутентификации был отклонен.</translation>
 <translation id="8284279544186306258">все сайты <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Титры</translation>
 <translation id="8286036467436129157">Вход</translation>
 <translation id="8286963743045814739">В режиме инкогнито можно просматривать сайты анонимно</translation>
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>
@@ -6301,7 +6297,6 @@
 <translation id="8648544143274677280">Сайт <ph name="SITE_NAME" /> запрашивает следующие разрешения: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и другие</translation>
 <translation id="8650543407998814195">У вас больше нет доступа к старому профилю, но вы можете его удалить.</translation>
 <translation id="8651585100578802546">Принудительно обновить страницу</translation>
-<translation id="8651940856056821914">Автоматически создавать субтитры на английском языке в Chrome (пока эта функция доступна только на английском языке)</translation>
 <translation id="8652400352452647993">Ошибка в упакованном расширении</translation>
 <translation id="8654151524613148204">Недостаточно места для обработки файла.</translation>
 <translation id="8655295600908251630">Канал</translation>

@@ -280,6 +280,7 @@
 <translation id="3103579948980282461">Keskitumma punavioletti</translation>
 <translation id="3104705064753753826">ilm.ikk.</translation>
 <translation id="3109724472072898302">Tiivistetty</translation>
+<translation id="311015743332597320">Pyyhkäise oikealle neljällä sormella</translation>
 <translation id="3112457281078985179">Käynnistä tai sulje ChromeVox painamalla Control + Alt + Z.</translation>
 <translation id="3131002934070407451">Numeroiden lukemismuoto:</translation>
 <translation id="3134461040845705080">vain luku</translation>
@@ -901,6 +902,7 @@
 <translation id="812886159861361726">Tiedoston <ph name="FILE_NAME" /> lataus loppui</translation>
 <translation id="8129445297241948503">Ei yläpuolella olevia soluja</translation>
 <translation id="8138880386467279117">Kosketus</translation>
+<translation id="8173092779156526980">Pyyhkäise vasemmalle neljällä sormella</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{alaviiva}other{# alaviivaa}}</translation>
 <translation id="8184828902145951186">rivi</translation>
 <translation id="8186185314313222077">Laita koko näytön tila päälle tai pois päältä.</translation>
