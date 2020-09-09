@@ -83682,7 +83682,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess"
     enum="BooleanSuccess" expires_after="2021-08-05">
   <owner>mcasas@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the creation of VaapiWrapper succeeded or not inside
     VaapiVideoDecoder.
@@ -83800,10 +83800,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VAVDA.VaapiWrapperCreationSuccess" enum="BooleanSuccess"
-    expires_after="M87">
+    expires_after="2021-08-05">
   <owner>mcasas@chromium.org</owner>
-  <owner>acourbot@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the creation of VaapiWrapper succeeded or not inside VaVDA.
   </summary>
