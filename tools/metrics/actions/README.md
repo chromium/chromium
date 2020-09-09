@@ -29,11 +29,10 @@ the user.
 
 ### Don't Use Same String in Multiple Places
 
-Generally a logged user action should correspond with a single, uh, action by
-the user. :-) As such, they should probably only appear in a single place in the
-code.  If the same user action needs to be logged in multiple places, consider
-whether you should be using different user action names for these separate call
-paths.
+Generally a logged user action should correspond with a single event.  As such,
+they should probably only appear in a single place in the code.  If the same
+user action needs to be logged in multiple places, consider whether you should
+be using different user action names for these separate call paths.
 
 That said, if you truly need to record the same user action in multiple places,
 that's okay.  Use a compile-time constant of appropriate scope that can be
@@ -52,37 +51,46 @@ appropriate times.  See advice below.)
 
 ### Emit Once Per Action
 
-A user action should be tied to an actual action taken by a user.  Each
-meaningful unit of action should cause one emit.
+A user action should be tied to a single event, such a user doing something or
+a user seeing something new.  Each meaningful unit should cause one emit.
+For example, showing the history page is a meaningful unit; querying the
+history database -- which might need to be queried multiple times to fill
+the page -- is probably not a meaningful unit for most use cases.
 
-### Do Not Emit Redundantly
+### Try To Avoid Emitting Redundantly
 
-Generally a meaningful user action should cause only one emit.  For example, if
-the browser already has a "Back" user action, it's poor practice to add a
-"BackViaKeyboardShortcut" user action.  This is mostly redundant.  (If you're
-trying to determine the breakdown of keyboard-shortcut backs versus all backs,
-use a histogram.)
+Generally a meaningful user action should cause only one emit.  This advice
+is mainly because user action sequences are easier to analyze without redudancy.
+
+For example, if the browser already has a "Back" user action, avoid add a
+"BackViaKeyboardShortcut" user action--it's mostly redundant--unless it's
+necessary because you care about how the different types of Back button work in
+sequences of user actions.  If you don't care about how BackViaKeyboardShortcut
+works in a sequence and only want to count them / determine the breakdown of
+keyboard-shortcut backs versus all backs, use a histogram.
 
 ### Do Not Emit Excessively
 
 Again, choose an appropriately-sized meaningful unit.  For example, emit
 "DragScrolled" for a whole scroll action.  Don't emit this action every time the
 user pauses scrolling if the user remains in the process of scrolling (mouse
-button still down).
+button still down).  That said, if you trying need to understand the sequence of
+partial scrolls, emitting this for each scroll pause is acceptable.
 
 As another example, you may want to emit "FocusOmnibox" (upon focus),
 "OmniboxEditInProgress" (upon first keystroke), and "OmniboxUse" (upon going
 somwhere) but forswear "OmniboxKeystroke".  That's probably more detailed than
 you need.
 
-### Generally, Do Not Emit Impressions
+### Emitting Impressions Is Okay
 
 It's okay to emit user actions such as "ShowTranslateInfobar" or
-"DisplayedImageLinkContextMenu".  However, more detailed impression information,
-especially those not caused by the user (as in the second example) and not as
-attention-grabbing (as in the first example), is often not useful for analyzing
-sequences of user actions.  For example, don't emit
-"ShowedSecureIconNextToOmnibox".
+"DisplayedImageLinkContextMenu".  Remember to mark them as
+[not_user_triggered](#not_user_triggered) and please try to make sure they're
+not excessive.  For example, don't emit "ShowedSecureIconNextToOmnibox" because
+that's likely to appear on most pages.  That said, if you need
+ShowedSecureIconNextToOmnibox logged in order to analyze a sequence of user
+actions that include it, go ahead.
 
 ## Testing
 
@@ -174,11 +182,13 @@ Notably, owners are asked to evaluate whether user actions have outlived their
 usefulness. The metrics team may file a bug in Monorail. It's important that
 somebody familiar with the user action notices and triages such bugs!
 
-### Beware `not_user_triggered="true"`
+### Set `not_user_triggered="true"` When Appropriate {#not_user_triggered}
 
-actions.xml allows you to annotate an action as `not_user_triggered="true"`.  This
-feature should be used rarely.  If you think you want to annotate your action
-thusly, please re-review the best practices above.
+actions.xml allows you to annotate an action as `not_user_triggered="true"`.
+Use it when appropriate.  For example, showing a notification is not user
+triggered.  However, please remember: before adding something marked as
+`not_user_triggered="true"`, consider when you need to analyze sequences of
+actions.  If not, please use a histogram to count these events instead.
 
 ## Cleaning Up User Action Entries
 
