@@ -32,11 +32,6 @@ const base::Feature kCompromisedPasswordsReengagement = {
 const base::Feature kEditPasswordsInDesktopSettings = {
     "EditPasswordsInDesktopSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Recovers lost passwords on Mac by deleting the ones that cannot be decrypted
-// with the present encryption key from the Keychain.
-const base::Feature kDeleteCorruptedPasswords = {
-    "DeleteCorruptedPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 const base::Feature kEnableOverwritingPlaceholderUsernames{

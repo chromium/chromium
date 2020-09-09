@@ -2395,12 +2395,6 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
-  // Disable feature for deleting corrupted passwords, so GetAutofillableLogins
-  // doesn't remove any passwords.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kDeleteCorruptedPasswords);
-
   auto form1 = AddDummyLogin("foo1", GURL("https://foo1.com/"), false);
   auto form2 = AddDummyLogin("foo2", GURL("https://foo2.com/"), true);
   auto form3 = AddDummyLogin("foo3", GURL("https://foo3.com/"), false);
@@ -2449,36 +2443,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
 }
 
 #if defined(OS_MAC)
-TEST_F(LoginDatabaseUndecryptableLoginsTest, PasswordRecoveryEnabledGetLogins) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kDeleteCorruptedPasswords);
-
-  auto form1 = AddDummyLogin("foo1", GURL("https://foo1.com/"), false);
-  auto form2 = AddDummyLogin("foo2", GURL("https://foo2.com/"), true);
-  auto form3 = AddDummyLogin("foo3", GURL("https://foo3.com/"), false);
-
-  LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init());
-
-  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
-                                                     base::Time());
-  db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
-      &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
-
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  EXPECT_TRUE(db.GetAutofillableLogins(&result));
-  EXPECT_THAT(result, UnorderedElementsAre(Pointee(form1), Pointee(form3)));
-
-  RunUntilIdle();
-  EXPECT_TRUE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
-}
-
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kDeleteCorruptedPasswords);
-
   AddDummyLogin("foo1", GURL("https://foo1.com/"), false);
   AddDummyLogin("foo2", GURL("https://foo2.com/"), true);
 
@@ -2496,39 +2462,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 
   RunUntilIdle();
   EXPECT_FALSE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
-}
-
-TEST_F(LoginDatabaseUndecryptableLoginsTest,
-       PasswordRecoveryEnabledKeychainLocked) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kDeleteCorruptedPasswords);
-
-  // This is a valid entry.
-  auto form = AddDummyLogin("foo", GURL("https://foo.com/"), false);
-
-  OSCryptMocker::SetBackendLocked(true);
-
-  LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init());
-
-  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
-                                                     base::Time());
-  db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
-      &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
-
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  EXPECT_FALSE(db.GetAutofillableLogins(&result));
-  EXPECT_TRUE(result.empty());
-
-  RunUntilIdle();
-  EXPECT_FALSE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
-
-  // Note: it's not possible that encryption suddenly becomes available. This is
-  // only used to check that the form is not removed from the database.
-  OSCryptMocker::SetBackendLocked(false);
-
-  EXPECT_TRUE(db.GetAutofillableLogins(&result));
-  EXPECT_THAT(result, UnorderedElementsAre(Pointee(form)));
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {

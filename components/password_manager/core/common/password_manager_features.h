@@ -21,7 +21,6 @@ extern const base::Feature kBiometricTouchToFill;
 extern const base::Feature kChangePasswordAffiliationInfo;
 extern const base::Feature kCompromisedPasswordsReengagement;
 extern const base::Feature kEditPasswordsInDesktopSettings;
-extern const base::Feature kDeleteCorruptedPasswords;
 extern const base::Feature kEnableOverwritingPlaceholderUsernames;
 extern const base::Feature kEnablePasswordsAccountStorage;
 extern const base::Feature KEnablePasswordGenerationForClearTextFields;

@@ -580,6 +580,7 @@ std::string GeneratePlaceholders(size_t count) {
   return result;
 }
 
+#if defined(OS_MAC)
 // Fills |form| with necessary data required to be removed from the database
 // and returns it.
 PasswordForm GetFormForRemoval(const sql::Statement& statement) {
@@ -591,6 +592,7 @@ PasswordForm GetFormForRemoval(const sql::Statement& statement) {
   form.signon_realm = statement.ColumnString(COLUMN_SIGNON_REALM);
   return form;
 }
+#endif
 
 }  // namespace
 
@@ -1971,8 +1973,6 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     if (result == ENCRYPTION_RESULT_SERVICE_FAILURE)
       return FormRetrievalResult::kEncrytionServiceFailure;
     if (result == ENCRYPTION_RESULT_ITEM_FAILURE) {
-      if (IsUsingCleanupMechanism())
-        forms_to_be_deleted.push_back(GetFormForRemoval(*statement));
       continue;
     }
     DCHECK_EQ(ENCRYPTION_RESULT_SUCCESS, result);
@@ -2078,14 +2078,6 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
   DCHECK(id_and_password_statement_.empty());
   id_and_password_statement_ = "SELECT id, password_value FROM logins WHERE " +
                                all_unique_key_column_names;
-}
-
-bool LoginDatabase::IsUsingCleanupMechanism() const {
-#if defined(OS_MAC)
-  return base::FeatureList::IsEnabled(features::kDeleteCorruptedPasswords);
-#else
-  return false;
-#endif
 }
 
 }  // namespace password_manager

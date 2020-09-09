@@ -329,10 +329,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // fragments based on |builder|.
   void InitializeStatementStrings(const SQLTableBuilder& builder);
 
-  // On Mac, returns true if the feature for recovering lost passwords is
-  // enabled, or false otherwise. On all other platforms it returns false.
-  bool IsUsingCleanupMechanism() const;
-
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
 

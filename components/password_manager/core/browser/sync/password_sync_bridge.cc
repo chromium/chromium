@@ -196,13 +196,9 @@ bool AreLocalAndRemotePasswordsEqual(
 // the local copy, to be replaced by the remote version coming from Sync during
 // merge.
 bool ShouldRecoverPasswordsDuringMerge() {
-  // Delete the local undecryptable copy under the following conditions:
-  // 1. This is MacOS only.
-  // 2. The more general feature kDeleteCorruptedPasswords is disabled.
-  //    kDeleteCorruptedPasswords takes cares of deleting undecryptable entities
-  //    for Sync and non-Sync users upon reading from the LoginDatabase.
+  // Delete the local undecryptable copy when this is MacOS only.
 #if defined(OS_MAC)
-  return !base::FeatureList::IsEnabled(features::kDeleteCorruptedPasswords);
+  return true;
 #else
   return false;
 #endif
