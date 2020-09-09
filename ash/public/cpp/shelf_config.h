@@ -196,11 +196,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Gets the shelf color when a window is maximized.
   SkColor GetMaximizedShelfColor() const;
 
-  // Calculates a themed color for shelf and system menu based on the wallpaper.
-  // Uses alpha value from the provided base_color, returns base_color unchanged
-  // if the wallpaper can not be used to generate a themed color.
-  SkColor GetThemedColorFromWallpaper(SkColor base_color) const;
-
   // Gets the base layer type for shelf color.
   AshColorProvider::BaseLayerType GetShelfBaseLayerType() const;
 

@@ -474,26 +474,6 @@ SkColor ShelfConfig::GetMaximizedShelfColor() const {
   return SkColorSetA(GetDefaultShelfColor(), 0xFF);  // 100% opacity
 }
 
-SkColor ShelfConfig::GetThemedColorFromWallpaper(SkColor base_color) const {
-  if (!Shell::Get()->wallpaper_controller())
-    return base_color;
-
-  SkColor dark_muted_color =
-      Shell::Get()->wallpaper_controller()->GetProminentColor(
-          color_utils::ColorProfile(color_utils::LumaRange::DARK,
-                                    color_utils::SaturationRange::MUTED));
-
-  if (dark_muted_color == kInvalidWallpaperColor)
-    return base_color;
-
-  int base_alpha = SkColorGetA(base_color);
-  // Combine SK_ColorBLACK at 50% opacity with |dark_muted_color|.
-  base_color = color_utils::GetResultingPaintColor(
-      SkColorSetA(SK_ColorBLACK, 127), dark_muted_color);
-
-  return SkColorSetA(base_color, base_alpha);
-}
-
 AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
   if (!chromeos::switches::ShouldShowShelfHotseat()) {
     return in_tablet_mode_ ? AshColorProvider::BaseLayerType::kTransparent60
@@ -513,16 +493,13 @@ AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
 
 SkColor ShelfConfig::GetDefaultShelfColor() const {
   if (!features::IsBackgroundBlurEnabled()) {
-    return GetThemedColorFromWallpaper(
-        AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent90));
+    return AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent90);
   }
 
   AshColorProvider::BaseLayerType layer_type = GetShelfBaseLayerType();
 
-  SkColor final_color = AshColorProvider::Get()->GetBaseLayerColor(layer_type);
-
-  return GetThemedColorFromWallpaper(final_color);
+  return AshColorProvider::Get()->GetBaseLayerColor(layer_type);
 }
 
 int ShelfConfig::GetShelfControlButtonBlurRadius() const {
