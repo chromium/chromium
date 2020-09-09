@@ -5525,6 +5525,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(media::kGlobalMediaControlsForCast)},
 
+    {"global-media-controls-modern-ui",
+     flag_descriptions::kGlobalMediaControlsModernUIName,
+     flag_descriptions::kGlobalMediaControlsModernUIDescription,
+     kOsWin | kOsMac | kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsModernUI)},
+
     {"global-media-controls-picture-in-picture",
      flag_descriptions::kGlobalMediaControlsPictureInPictureName,
      flag_descriptions::kGlobalMediaControlsPictureInPictureDescription,

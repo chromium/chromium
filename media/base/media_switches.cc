@@ -395,8 +395,12 @@ const base::Feature kGlobalMediaControlsPictureInPicture {
 };
 
 // Enable selection of audio output device in Global Media Controls.
-const base::Feature kGlobalMediaControlsSeamlessTransfer {
-  "GlobalMediaControlsSeamlessTransfer", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kGlobalMediaControlsSeamlessTransfer{
+    "GlobalMediaControlsSeamlessTransfer", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable an updated version of the Global Media Controls UI.
+const base::Feature kGlobalMediaControlsModernUI{
+    "GlobalMediaControlsModernUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // CanPlayThrough issued according to standard.
 const base::Feature kSpecCompliantCanPlayThrough{

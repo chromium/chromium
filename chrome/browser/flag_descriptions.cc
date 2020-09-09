@@ -1201,6 +1201,13 @@ const char kGlobalMediaControlsSeamlessTransferDescription[] =
     "the Global Media Controls UI. Requires #global-media-controls to "
     "also be enabled.";
 
+const char kGlobalMediaControlsModernUIName[] =
+    "Global Media Controls Modern UI";
+
+const char kGlobalMediaControlsModernUIDescription[] =
+    "Use a redesigned version of the Global Media Controls UI. Requires "
+    "#global-media-controls to also be enabled.";
+
 const char kGlobalMediaControlsOverlayControlsName[] =
     "Enable overlay controls for Global Media Controls";
 const char kGlobalMediaControlsOverlayControlsDescription[] =

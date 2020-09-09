@@ -698,6 +698,9 @@ extern const char kGlobalMediaControlsPictureInPictureDescription[];
 extern const char kGlobalMediaControlsSeamlessTransferName[];
 extern const char kGlobalMediaControlsSeamlessTransferDescription[];
 
+extern const char kGlobalMediaControlsModernUIName[];
+extern const char kGlobalMediaControlsModernUIDescription[];
+
 extern const char kGlobalMediaControlsOverlayControlsName[];
 extern const char kGlobalMediaControlsOverlayControlsDescription[];
 

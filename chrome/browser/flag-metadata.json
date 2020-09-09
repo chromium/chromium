@@ -2694,6 +2694,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "global-media-controls-modern-ui",
+    "owners": [ "noahrose@google.com", "steimel", "media-dev" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "global-media-controls-overlay-controls",
     "owners" : [ "jazzhsu", "steimel", "media-dev" ],
     "expiry_milestone": 93
