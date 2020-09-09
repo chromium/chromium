@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
@@ -74,7 +75,7 @@ class NearbyShareCertificateManagerImpl
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,
         NearbyShareClientFactory* client_factory,
-        base::Clock* clock = base::DefaultClock::GetInstance());
+        const base::Clock* clock = base::DefaultClock::GetInstance());
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -86,7 +87,7 @@ class NearbyShareCertificateManagerImpl
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,
         NearbyShareClientFactory* client_factory,
-        base::Clock* clock) = 0;
+        const base::Clock* clock) = 0;
 
    private:
     static Factory* test_factory_;
@@ -102,7 +103,7 @@ class NearbyShareCertificateManagerImpl
       leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
       const base::FilePath& profile_path,
       NearbyShareClientFactory* client_factory,
-      base::Clock* clock);
+      const base::Clock* clock);
 
   // NearbyShareCertificateManager:
   NearbySharePrivateCertificate GetValidPrivateCertificate(
@@ -176,6 +177,8 @@ class NearbyShareCertificateManagerImpl
   void OnListPublicCertificatesFailure(size_t page_number,
                                        size_t certificate_count,
                                        NearbyShareHttpError error);
+  void OnListPublicCertificatesTimeout(size_t page_number,
+                                       size_t certificate_count);
   void OnPublicCertificatesAddedToStorage(
       base::Optional<std::string> page_token,
       size_t page_number,
@@ -186,11 +189,12 @@ class NearbyShareCertificateManagerImpl
                                         size_t page_number,
                                         size_t certificate_count);
 
+  base::OneShotTimer timer_;
   NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
   NearbyShareContactManager* contact_manager_ = nullptr;
   PrefService* pref_service_ = nullptr;
   NearbyShareClientFactory* client_factory_ = nullptr;
-  base::Clock* clock_ = nullptr;
+  const base::Clock* clock_;
   std::unique_ptr<NearbyShareCertificateStorage> certificate_storage_;
   std::unique_ptr<NearbyShareScheduler>
       private_certificate_expiration_scheduler_;

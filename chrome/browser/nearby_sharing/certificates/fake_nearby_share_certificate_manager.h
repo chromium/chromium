@@ -44,7 +44,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,
         NearbyShareClientFactory* client_factory,
-        base::Clock* clock) override;
+        const base::Clock* clock) override;
 
     std::vector<FakeNearbyShareCertificateManager*> instances_;
   };

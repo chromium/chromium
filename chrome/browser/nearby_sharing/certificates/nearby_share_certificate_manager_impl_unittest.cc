@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/fake_nearby_share_certificate_storage.h"
@@ -27,6 +27,10 @@ namespace {
 const base::Time t0 =
     base::Time::UnixEpoch() + base::TimeDelta::FromDays(365 * 50);
 
+// Copied from nearby_share_certificate_manager_impl.cc.
+constexpr base::TimeDelta kListPublicCertificatesTimeout =
+    base::TimeDelta::FromSeconds(30);
+
 const char kPageTokenPrefix[] = "page_token_";
 const char kSecretIdPrefix[] = "secret_id_";
 const char kDeviceIdPrefix[] = "users/me/devices/";
@@ -47,6 +51,9 @@ class NearbyShareCertificateManagerImplTest
       public NearbyShareCertificateManager::Observer {
  public:
   NearbyShareCertificateManagerImplTest() {
+    // Set time to t0.
+    FastForward(t0 - base::Time::UnixEpoch());
+
     local_device_data_manager_ =
         std::make_unique<FakeNearbyShareLocalDeviceDataManager>();
     local_device_data_manager_->SetId(kDeviceId);
@@ -65,7 +72,7 @@ class NearbyShareCertificateManagerImplTest
         local_device_data_manager_.get(), contact_manager_.get(),
         pref_service_.get(),
         /*proto_database_provider=*/nullptr, base::FilePath(), &client_factory_,
-        &clock_);
+        task_environment_.GetMockClock());
     cert_manager_->AddObserver(this);
 
     cert_store_ = cert_store_factory_.instances().back();
@@ -126,6 +133,20 @@ class NearbyShareCertificateManagerImplTest
   }
 
  protected:
+  enum class DownloadPublicCertificatesResult {
+    kSuccess,
+    kTimeout,
+    kHttpError,
+    kStorageError
+  };
+
+  base::Time Now() const { return task_environment_.GetMockClock()->Now(); }
+
+  // Fast-forwards mock time by |delta| and fires relevant timers.
+  void FastForward(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
   void GetPublicCertificatesCallback(
       bool success,
       const std::vector<nearbyshare::proto::PublicCertificate>& certs) {
@@ -226,13 +247,10 @@ class NearbyShareCertificateManagerImplTest
   }
 
   // Test downloading public certificates with or without errors. The RPC is
-  // paginated, and |num_pages| will be simulated. If |rpc_fail| is not
-  // nullopt or store_fail is true, then those respective failures will be
-  // simulated on the last page.
-  void DownloadPublicCertificatesFlow(
-      size_t num_pages,
-      base::Optional<NearbyShareHttpError> rpc_fail,
-      bool store_fail) {
+  // paginated, and |num_pages| will be simulated. Any failures, as indicated by
+  // |result|, will be simulated on the last page.
+  void DownloadPublicCertificatesFlow(size_t num_pages,
+                                      DownloadPublicCertificatesResult result) {
     size_t prev_num_results = download_scheduler_->handled_results().size();
     cert_store_->SetPublicCertificateIds(kPublicCertificateIds);
 
@@ -254,10 +272,17 @@ class NearbyShareCertificateManagerImplTest
                           .back();
       CheckRpcRequest(request.request, page_token);
 
-      if (last_page && rpc_fail) {
-        std::move(request.error_callback).Run(*rpc_fail);
-        break;
+      if (last_page) {
+        if (result == DownloadPublicCertificatesResult::kTimeout) {
+          FastForward(kListPublicCertificatesTimeout);
+          break;
+        } else if (result == DownloadPublicCertificatesResult::kHttpError) {
+          std::move(request.error_callback)
+              .Run(NearbyShareHttpError::kResponseMalformed);
+          break;
+        }
       }
+
       page_token = last_page
                        ? std::string()
                        : kPageTokenPrefix + base::NumberToString(page_number);
@@ -268,12 +293,13 @@ class NearbyShareCertificateManagerImplTest
       CheckStorageAddCertificates(add_cert_call);
 
       std::move(add_cert_call.callback)
-          .Run(/*success=*/!(last_page && store_fail));
+          .Run(/*success=*/!last_page ||
+               result != DownloadPublicCertificatesResult::kStorageError);
     }
     ASSERT_EQ(download_scheduler_->handled_results().size(),
               prev_num_results + 1);
 
-    bool success = !rpc_fail && !store_fail;
+    bool success = result == DownloadPublicCertificatesResult::kSuccess;
     EXPECT_EQ(download_scheduler_->handled_results().back(), success);
     EXPECT_EQ(initial_num_notifications + (success ? 1u : 0u),
               num_public_certs_downloaded_notifications_);
@@ -363,10 +389,11 @@ class NearbyShareCertificateManagerImplTest
   std::vector<nearbyshare::proto::PublicCertificate> public_certificates_;
   std::vector<NearbyShareEncryptedMetadataKey> metadata_encryption_keys_;
 
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeNearbyShareClientFactory client_factory_;
   FakeNearbyShareSchedulerFactory scheduler_factory_;
   FakeNearbyShareCertificateStorage::Factory cert_store_factory_;
-  base::SimpleTestClock clock_;
   std::unique_ptr<FakeNearbyShareLocalDeviceDataManager>
       local_device_data_manager_;
   std::unique_ptr<FakeNearbyShareContactManager> contact_manager_;
@@ -376,13 +403,13 @@ class NearbyShareCertificateManagerImplTest
 
 TEST_F(NearbyShareCertificateManagerImplTest, GetValidPrivateCertificate) {
   cert_store_->SetPrivateCertificates(private_certificates_);
-  clock_.SetNow(t0 + kNearbyShareCertificateValidityPeriod * 1.5);
+  FastForward(kNearbyShareCertificateValidityPeriod * 1.5);
   auto cert = cert_manager_->GetValidPrivateCertificate(
       nearby_share::mojom::Visibility::kAllContacts);
 
   EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, cert.visibility());
-  EXPECT_LE(cert.not_before(), clock_.Now());
-  EXPECT_LT(clock_.Now(), cert.not_after());
+  EXPECT_LE(cert.not_before(), Now());
+  EXPECT_LT(Now(), cert.not_after());
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,
@@ -444,26 +471,30 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesSuccess) {
-  DownloadPublicCertificatesFlow(/*num_pages=*/2, /*rpc_fail=*/base::nullopt,
-                                 /*store_fail=*/false);
+  DownloadPublicCertificatesFlow(/*num_pages=*/2,
+                                 DownloadPublicCertificatesResult::kSuccess);
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
+       DownloadPublicCertificatesTimeout) {
+  DownloadPublicCertificatesFlow(/*num_pages=*/2,
+                                 DownloadPublicCertificatesResult::kTimeout);
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesRPCFailure) {
-  DownloadPublicCertificatesFlow(
-      /*num_pages=*/2, /*rpc_fail=*/NearbyShareHttpError::kResponseMalformed,
-      /*store_fail=*/false);
+  DownloadPublicCertificatesFlow(/*num_pages=*/2,
+                                 DownloadPublicCertificatesResult::kHttpError);
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesStoreFailure) {
-  DownloadPublicCertificatesFlow(/*num_pages=*/2, /*rpc_fail=*/base::nullopt,
-                                 /*store_fail=*/true);
+  DownloadPublicCertificatesFlow(
+      /*num_pages=*/2, DownloadPublicCertificatesResult::kStorageError);
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_ValidCertificates) {
-  clock_.SetNow(t0);
   cert_store_->SetPrivateCertificates(private_certificates_);
 
   local_device_data_manager_->SetDeviceName(
@@ -482,7 +513,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_NoCertificates_UploadSuccess) {
-  clock_.SetNow(t0);
   cert_store_->SetPrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -503,7 +533,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_NoCertificates_UploadFailure) {
-  clock_.SetNow(t0);
   cert_store_->SetPrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -568,7 +597,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_ExpiredCertificate) {
   // First certificates are expired;
-  clock_.SetNow(t0 + kNearbyShareCertificateValidityPeriod * 1.5);
+  FastForward(kNearbyShareCertificateValidityPeriod * 1.5);
   cert_store_->SetPrivateCertificates(private_certificates_);
 
   local_device_data_manager_->SetDeviceName(
@@ -588,7 +617,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_InvalidDeviceName) {
-  clock_.SetNow(t0);
   cert_store_->SetPrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -608,7 +636,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_InvalidBluetoothMacAddress) {
-  clock_.SetNow(t0);
   cert_store_->SetPrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -635,7 +662,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_MissingFullNameAndIconUrl) {
-  clock_.SetNow(t0);
   cert_store_->SetPrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -659,7 +685,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RemoveExpiredPublicCertificates_Success) {
-  clock_.SetNow(t0);
   cert_manager_->Start();
 
   // The public certificate expiration scheduler notifies the certificate
@@ -680,7 +705,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RemoveExpiredPublicCertificates_Failue) {
-  clock_.SetNow(t0);
   cert_manager_->Start();
 
   // The public certificate expiration scheduler notifies the certificate

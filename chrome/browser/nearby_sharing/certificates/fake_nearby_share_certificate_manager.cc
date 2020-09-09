@@ -19,7 +19,7 @@ FakeNearbyShareCertificateManager::Factory::CreateInstance(
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_path,
     NearbyShareClientFactory* client_factory,
-    base::Clock* clock) {
+    const base::Clock* clock) {
   auto instance = std::make_unique<FakeNearbyShareCertificateManager>();
   instances_.push_back(instance.get());
 

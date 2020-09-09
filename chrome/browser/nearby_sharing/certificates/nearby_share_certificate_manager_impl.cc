@@ -37,6 +37,9 @@ namespace {
 
 const char kDeviceIdPrefix[] = "users/me/devices/";
 
+constexpr base::TimeDelta kListPublicCertificatesTimeout =
+    base::TimeDelta::FromSeconds(30);
+
 constexpr std::array<nearby_share::mojom::Visibility, 2> kVisibilities = {
     nearby_share::mojom::Visibility::kAllContacts,
     nearby_share::mojom::Visibility::kSelectedContacts};
@@ -140,7 +143,7 @@ NearbyShareCertificateManagerImpl::Factory::Create(
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_path,
     NearbyShareClientFactory* client_factory,
-    base::Clock* clock) {
+    const base::Clock* clock) {
   DCHECK(clock);
 
   if (test_factory_) {
@@ -169,7 +172,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_path,
     NearbyShareClientFactory* client_factory,
-    base::Clock* clock)
+    const base::Clock* clock)
     : local_device_data_manager_(local_device_data_manager),
       contact_manager_(contact_manager),
       pref_service_(pref_service),
@@ -514,6 +517,13 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
   }
 
   NS_LOG(VERBOSE) << __func__ << ": Downloading public certificates.";
+
+  timer_.Start(
+      FROM_HERE, kListPublicCertificatesTimeout,
+      base::BindOnce(
+          &NearbyShareCertificateManagerImpl::OnListPublicCertificatesTimeout,
+          base::Unretained(this), page_number, certificate_count));
+
   // TODO(https://crbug.com/1116910): Enforce a timeout for each
   // ListPublicCertificates call.
   client_ = client_factory_->CreateInstance();
@@ -531,6 +541,8 @@ void NearbyShareCertificateManagerImpl::OnListPublicCertificatesSuccess(
     size_t page_number,
     size_t certificate_count,
     const nearbyshare::proto::ListPublicCertificatesResponse& response) {
+  timer_.Stop();
+
   std::vector<nearbyshare::proto::PublicCertificate> certs(
       response.public_certificates().begin(),
       response.public_certificates().end());
@@ -555,10 +567,21 @@ void NearbyShareCertificateManagerImpl::OnListPublicCertificatesFailure(
     size_t page_number,
     size_t certificate_count,
     NearbyShareHttpError error) {
+  timer_.Stop();
   client_.reset();
 
   FinishDownloadPublicCertificates(
       /*success=*/false, NearbyShareHttpErrorToResult(error), page_number,
+      certificate_count);
+}
+
+void NearbyShareCertificateManagerImpl::OnListPublicCertificatesTimeout(
+    size_t page_number,
+    size_t certificate_count) {
+  client_.reset();
+
+  FinishDownloadPublicCertificates(
+      /*success=*/false, NearbyShareHttpResult::kTimeout, page_number,
       certificate_count);
 }
 
