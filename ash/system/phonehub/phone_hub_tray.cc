@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -34,6 +35,38 @@ namespace {
 // Padding for tray icon (dp; the button that shows the phone_hub menu).
 constexpr int kTrayIconMainAxisInset = 8;
 constexpr int kTrayIconCrossAxisInset = 0;
+
+constexpr gfx::Insets kBubblePadding(4, 16);
+constexpr int kBubbleWidth = 400;
+constexpr int kPaddingBetweenTitleAndSeparator = 3;
+
+// A view of the Phone Hub panel, displaying phone status and utility actions
+// such as phone status, task continuation, etc.
+class PhoneHubView : public views ::View {
+ public:
+  explicit PhoneHubView(TrayBubbleView* bubble_view) {
+    auto setup_layered_view = [](views::View* view) {
+      view->SetPaintToLayer();
+      view->layer()->SetFillsBoundsOpaquely(false);
+    };
+
+    setup_layered_view(
+        bubble_view->AddChildView(std::make_unique<PhoneStatusView>()));
+
+    auto* separator =
+        bubble_view->AddChildView(std::make_unique<views::Separator>());
+    setup_layered_view(separator);
+    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kSeparatorColor));
+    separator->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets(kPaddingBetweenTitleAndSeparator, 0,
+                    kMenuSeparatorVerticalPadding, 0)));
+  }
+  ~PhoneHubView() override = default;
+
+  // views::View:
+  const char* GetClassName() const override { return "PhoneHubView"; }
+};
 
 }  // namespace
 
@@ -115,7 +148,7 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = GetBubbleAnchor();
   init_params.shelf_alignment = shelf()->alignment();
-  init_params.preferred_width = kTrayMenuWidth;
+  init_params.preferred_width = kBubbleWidth;
   init_params.close_on_deactivate = true;
   init_params.has_shadow = false;
   init_params.translucent = true;
@@ -125,9 +158,9 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   bubble_view->set_anchor_view_insets(GetBubbleAnchorInsets());
   bubble_view->set_margins(GetSecondaryBubbleInsets());
+  bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
-  // TODO(tengs): Implement the PhoneHub UI view.
-  bubble_view->AddChildView(std::make_unique<views::Label>());
+  bubble_view->AddChildView(std::make_unique<PhoneHubView>(bubble_view));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
                                                 false /* is_persistent */);
