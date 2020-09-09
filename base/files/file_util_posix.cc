@@ -1181,8 +1181,23 @@ PrefetchResult PreReadFile(const FilePath& file_path,
   return posix_fadvise(fd, /*offset=*/0, len, POSIX_FADV_WILLNEED) == 0
              ? PrefetchResult{PrefetchResultCode::kSuccess}
              : PrefetchResult{PrefetchResultCode::kFastFailed};
+#elif defined(OS_APPLE)
+  File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
+  if (!file.IsValid())
+    return PrefetchResult{PrefetchResultCode::kInvalidFile};
+
+  if (max_bytes == 0) {
+    // fcntl(F_RDADVISE) fails when given a zero length.
+    return PrefetchResult{PrefetchResultCode::kSuccess};
+  }
+
+  const PlatformFile fd = file.GetPlatformFile();
+  ::radvisory read_advise_data = {
+      .ra_offset = 0, .ra_count = base::saturated_cast<int>(max_bytes)};
+  return fcntl(fd, F_RDADVISE, &read_advise_data) != -1
+             ? PrefetchResult{PrefetchResultCode::kSuccess}
+             : PrefetchResult{PrefetchResultCode::kFastFailed};
 #else
-  // TODO(pwnall): Fall back to madvise() for macOS.
   return internal::PreReadFileSlow(file_path, max_bytes)
              ? PrefetchResult{PrefetchResultCode::kSlowSuccess}
              : PrefetchResult{PrefetchResultCode::kSlowFailed};
