@@ -69,13 +69,16 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   // |include_initial_user| determines whether the TestUserInfo should be passed
   // to the initial users list of the LoginManagerMixin. Excluding the initial
   // user causes the OOBE GAIA screen to show on start-up.
+  // |use_local_policy_server| determines if the LocalPolicyTestServerMixin
+  // should be passed into the UserPolicyMixin.
   LoggedInUserMixin(InProcessBrowserTestMixinHost* mixin_host,
                     LogInType type,
                     net::EmbeddedTestServer* embedded_test_server,
                     InProcessBrowserTest* test_base,
                     bool should_launch_browser = true,
                     base::Optional<AccountId> account_id = base::nullopt,
-                    bool include_initial_user = true);
+                    bool include_initial_user = true,
+                    bool use_local_policy_server = true);
   ~LoggedInUserMixin() override;
 
   // InProcessBrowserTestMixin:

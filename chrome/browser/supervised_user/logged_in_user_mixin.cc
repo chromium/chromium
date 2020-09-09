@@ -42,7 +42,8 @@ LoggedInUserMixin::LoggedInUserMixin(
     InProcessBrowserTest* test_base,
     bool should_launch_browser,
     base::Optional<AccountId> account_id,
-    bool include_initial_user)
+    bool include_initial_user,
+    bool use_local_policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       user_(account_id.value_or(
                 AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
@@ -50,7 +51,9 @@ LoggedInUserMixin::LoggedInUserMixin(
             ConvertUserType(type)),
       login_manager_(mixin_host, GetInitialUsers(user_, include_initial_user)),
       local_policy_server_(mixin_host),
-      user_policy_(mixin_host, user_.account_id, &local_policy_server_),
+      user_policy_(mixin_host,
+                   user_.account_id,
+                   use_local_policy_server ? &local_policy_server_ : nullptr),
       user_policy_helper_(user_.account_id.GetUserEmail(),
                           &local_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),

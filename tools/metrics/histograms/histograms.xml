@@ -27325,6 +27325,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.FamilyUser.LogSegment" enum="FamilyUserLogSegment"
+    expires_after="2021-07-23">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Categorizes the current user for the Family Experiences team's metrics. A
+    Supervised User has a supervised primary account and no secondary accounts.
+    A Supervised Student has a supervised primary account and one or more K-12
+    EDU secondary accounts, which is the only available option for a secondary
+    account in that scenario. A Student at Home has a K-12 EDU primary account
+    on an unmanaged ChromeOS device, regardless of the secondary account. Other
+    is for all other users that do not fall into any of the above categories.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.GAIA.AuthenticatorContentWindowNull" enum="Boolean"
     expires_after="M85">
   <owner>wjmaclean@chromium.org</owner>

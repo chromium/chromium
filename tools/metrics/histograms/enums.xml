@@ -25335,6 +25335,14 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Service error"/>
 </enum>
 
+<enum name="FamilyUserLogSegment">
+  <summary>Filters family user metrics into categories of interest.</summary>
+  <int value="0" label="Supervised User"/>
+  <int value="1" label="Supervised Student"/>
+  <int value="2" label="Student at Home"/>
+  <int value="3" label="Other"/>
+</enum>
+
 <enum name="FaultTolerantHeap">
   <int value="0" label="FTH_OFF">FTH is completely off.</int>
   <int value="1" label="FTH_HKLM">FTH is enabled in HKLM.</int>
