@@ -24,7 +24,13 @@
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #endif
 
+namespace {
 using safe_browsing::SafeBrowsingApiHandler;
+
+// Whether to use the process start time for startup metrics.
+const base::Feature kUseProcessStartTimeForMetrics{
+    "UseProcessStartTimeForMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+}  // namespace
 
 // ChromeMainDelegateAndroid is created when the library is loaded. It is always
 // done in the process' main Java thread. But for a non-browser process, e.g.
@@ -87,7 +93,8 @@ int ChromeMainDelegateAndroid::RunProcess(
   // start time of the application, and will be same for all requests.
   if (!browser_runner_) {
     startup_metric_utils::RecordApplicationStartTime(
-        chrome::android::GetApplicationStartTime());
+        chrome::android::GetApplicationStartTime(
+            base::FeatureList::IsEnabled(kUseProcessStartTimeForMetrics)));
     browser_runner_ = content::BrowserMainRunner::Create();
   }
 
