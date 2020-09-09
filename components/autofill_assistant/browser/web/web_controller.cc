@@ -1600,8 +1600,10 @@ void WebController::OnInternalWaitForDocumentToBecomeInteractive(
 
 WebController::ScopedAssistantActionStateRunning::
     ScopedAssistantActionStateRunning(
-        autofill::ContentAutofillDriver* content_autofill_driver)
-    : content_autofill_driver_(content_autofill_driver) {
+        content::WebContents* web_contents,
+        content::RenderFrameHost* render_frame_host)
+    : content::WebContentsObserver(web_contents),
+      render_frame_host_(render_frame_host) {
   SetAssistantActionState(/* running= */ true);
 }
 
@@ -1610,13 +1612,21 @@ WebController::ScopedAssistantActionStateRunning::
   SetAssistantActionState(/* running= */ false);
 }
 
+void WebController::ScopedAssistantActionStateRunning::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host_ == render_frame_host)
+    render_frame_host_ = nullptr;
+}
+
 void WebController::ScopedAssistantActionStateRunning::SetAssistantActionState(
     bool running) {
-  if (content_autofill_driver_) {
-    // TODO(b/153625351): We assume the |ContentAutofillDriver| is still valid
-    // at this point. This assumes the |RenderFrameHost| does not get destroyed
-    // during the execution of a web action (e.g. clicking an element).
-    content_autofill_driver_->GetAutofillAgent()->SetAssistantActionState(
+  if (render_frame_host_ == nullptr)
+    return;
+
+  ContentAutofillDriver* content_autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(render_frame_host_);
+  if (content_autofill_driver != nullptr) {
+    content_autofill_driver->GetAutofillAgent()->SetAssistantActionState(
         running);
   }
 }
@@ -1645,7 +1655,7 @@ WebController::GetAssistantActionRunningStateRetainingCallback(
 
   auto scoped_assistant_action_state_running =
       std::make_unique<ScopedAssistantActionStateRunning>(
-          content_autofill_driver);
+          web_contents_, element_result.container_frame_host);
 
   return base::BindOnce(
       &WebController::RetainAssistantActionRunningStateAndExecuteCallback,

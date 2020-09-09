@@ -27,13 +27,13 @@
 #include "components/autofill_assistant/browser/web/element_position_getter.h"
 #include "components/autofill_assistant/browser/web/element_rect_getter.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 #include "url/gurl.h"
 
 namespace autofill {
 class AutofillProfile;
 class CreditCard;
-class ContentAutofillDriver;
 struct FormData;
 struct FormFieldData;
 }  // namespace autofill
@@ -254,11 +254,13 @@ class WebController {
 
   // RAII object that sets the action state to "running" when the object is
   // allocated and to "not running" when it gets deallocated.
-  class ScopedAssistantActionStateRunning {
+  class ScopedAssistantActionStateRunning
+      : private content::WebContentsObserver {
    public:
     explicit ScopedAssistantActionStateRunning(
-        autofill::ContentAutofillDriver* content_autofill_driver);
-    ~ScopedAssistantActionStateRunning();
+        content::WebContents* web_contents,
+        content::RenderFrameHost* render_frame_host);
+    ~ScopedAssistantActionStateRunning() override;
 
     ScopedAssistantActionStateRunning(
         const ScopedAssistantActionStateRunning&) = delete;
@@ -268,7 +270,11 @@ class WebController {
    private:
     void SetAssistantActionState(bool running);
 
-    autofill::ContentAutofillDriver* content_autofill_driver_;
+    // Overrides content::WebContentsObserver:
+    void RenderFrameDeleted(
+        content::RenderFrameHost* render_frame_host) override;
+
+    content::RenderFrameHost* render_frame_host_;
   };
 
   void OnJavaScriptResult(
