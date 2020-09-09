@@ -11,15 +11,36 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":mojo_interface_provider",
+    ":scanner_select",
     ":scanning_app",
+    ":scanning_app_types",
+    ":scanning_app_util",
+  ]
+}
+
+js_library("scanner_select") {
+  deps = [
+    ":scanning_app_types",
+    ":scanning_app_util",
+    "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("scanning_app") {
   deps = [
     ":mojo_interface_provider",
+    ":scanner_select",
+    ":scanning_app_types",
+    ":scanning_app_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("scanning_app_types") {
+}
+
+js_library("scanning_app_util") {
 }
 
 js_library("mojo_interface_provider") {
@@ -30,5 +51,9 @@ js_library("mojo_interface_provider") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "scanning_app.js" ]
+  js_files = [
+    "scanner_select.js",
+    "scanning_app.js",
+    "throbber_css.js",
+  ]
 }

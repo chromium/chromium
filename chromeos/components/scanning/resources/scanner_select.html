@@ -1,0 +1,36 @@
+<style include="throbber">
+  #title {
+    padding-inline-end: 10px;
+    height: 32px;
+  }
+
+  #controls {
+    display: inline-block;
+    height: 32px;
+    width: 300px;
+  }
+</style>
+<!-- TODO(jschettler): Replace title and default option with i18n strings. -->
+<span id="title">Scanner</span>
+<div id="controls">
+  <div class="throbber-container" hidden$="[[loaded]]">
+    <div class="throbber"></div>
+  </div>
+  <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
+      should announce when a new option is focused). -->
+  <select class="md-select" on-change="onSelectedScannerChange_"
+      hidden$="[[!loaded]]" disabled="[[disabled_]]">
+    <!-- TODO(jschettler): Figure out why hiding/disabling the option doesn't
+        remove it from the dropdown. -->
+    <template is="dom-if" if="[[!scanners.length]]" restamp>
+      <option value="">
+        No available scanners
+      </option>
+    </template>
+    <template is="dom-repeat" items="[[scanners]]" as="scanner">
+      <option value="[[getTokenAsString_(scanner)]]">
+        [[getScannerDisplayName_(scanner)]]
+      </option>
+    </template>
+  </select>
+</div>
