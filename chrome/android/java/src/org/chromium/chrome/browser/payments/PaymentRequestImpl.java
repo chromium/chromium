@@ -224,33 +224,7 @@ public class PaymentRequestImpl
 
     private boolean mHasClosed;
 
-    /**
-     * The raw total amount being charged, as it was received from the website. This data is passed
-     * to the payment app.
-     */
-    private PaymentItem mRawTotal;
-
-    /**
-     * The raw items in the shopping cart, as they were received from the website. This data is
-     * passed to the payment app.
-     */
-    private List<PaymentItem> mRawLineItems;
-
-    /**
-     * The raw shipping options, as it was received from the website. This data is passed to the
-     * payment app when the app is responsible for handling shipping address.
-     */
-    private List<PaymentShippingOption> mRawShippingOptions;
-
-    /**
-     * A mapping from method names to modifiers, which include modified totals and additional line
-     * items. Used to display modified totals for each payment apps, modified total in order
-     * summary, and additional line items in order summary.
-     */
-    private Map<String, PaymentDetailsModifier> mModifiers = new ArrayMap<>();
-
     private PaymentRequestSpec mSpec;
-    private String mId;
     private Map<String, PaymentMethodData> mMethodData;
     private int mShippingType;
     private boolean mIsFinishedQueryingPaymentApps;
@@ -414,7 +388,8 @@ public class PaymentRequestImpl
         mSpec = new PaymentRequestSpec(mPaymentOptions, mMethodData.values());
         if (parseAndValidateDetails(details)
                 && parseAndValidateDetailsForSkipToGPayHelper(details)) {
-            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
+            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
+                    details, mSpec.getRawTotal(), mSpec.getRawLineItems());
         } else {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
@@ -422,12 +397,12 @@ public class PaymentRequestImpl
         }
         mSpec.createNative(details, LocaleUtils.getDefaultLocaleString());
 
-        if (mRawTotal == null) {
+        if (mSpec.getRawTotal() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.TOTAL_REQUIRED);
             return false;
         }
-        mId = details.id;
+        mSpec.setId(details.id);
 
         // The first time initializations and validation of all of the parameters of {@link
         // PaymentRequestParams} should be done before {@link
@@ -588,7 +563,8 @@ public class PaymentRequestImpl
             // Send AppListReady signal when all apps are created and request.show() is called.
             if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
                 ComponentPaymentRequestImpl.getNativeObserverForTest().onAppListReady(
-                        mPaymentUIsManager.getPaymentMethodsSection().getItems(), mRawTotal);
+                        mPaymentUIsManager.getPaymentMethodsSection().getItems(),
+                        mSpec.getRawTotal());
             }
             // Calculate skip ui and build ui only after all payment apps are ready and
             // request.show() is called.
@@ -641,12 +617,12 @@ public class PaymentRequestImpl
             dimBackgroundIfNotBottomSheetPaymentHandler(selectedApp);
             mDidRecordShowEvent = true;
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
-            assert mRawTotal != null;
+            assert mSpec.getRawTotal() != null;
             // The total amount in details should be finalized at this point. So it is safe to
             // record the triggered transaction amount.
             assert !mWaitForUpdatedDetails;
-            mJourneyLogger.recordTransactionAmount(
-                    mRawTotal.amount.currency, mRawTotal.amount.value, false /*completed*/);
+            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
+                    mSpec.getRawTotal().amount.value, false /*completed*/);
             onPayClicked(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);
         }
@@ -680,7 +656,8 @@ public class PaymentRequestImpl
         if (mMinimalUi.show(chromeActivity,
                     BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
                     (PaymentApp) mPaymentUIsManager.getPaymentMethodsSection().getSelectedItem(),
-                    mPaymentUIsManager.getCurrencyFormatterMap().get(mRawTotal.amount.currency),
+                    mPaymentUIsManager.getCurrencyFormatterMap().get(
+                            mSpec.getRawTotal().amount.currency),
                     mPaymentUIsManager.getUiShoppingCart().getTotal(), this::onMinimalUIReady,
                     this::onMinimalUiConfirmed, this::onMinimalUiDismissed)) {
             mDidRecordShowEvent = true;
@@ -698,8 +675,8 @@ public class PaymentRequestImpl
     }
 
     private void onMinimalUiConfirmed(PaymentApp app) {
-        mJourneyLogger.recordTransactionAmount(
-                mRawTotal.amount.currency, mRawTotal.amount.value, false /*completed*/);
+        mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
+                mSpec.getRawTotal().amount.value, false /*completed*/);
         app.disableShowingOwnUI();
         onPayClicked(null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
     }
@@ -773,12 +750,12 @@ public class PaymentRequestImpl
         if (TextUtils.isEmpty(shippingOptionId) || mComponentPaymentRequestImpl == null
                 || mInvokedPaymentApp == null
                 || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping
-                || mRawShippingOptions == null) {
+                || mSpec.getRawShippingOptions() == null) {
             return false;
         }
 
         boolean isValidId = false;
-        for (PaymentShippingOption option : mRawShippingOptions) {
+        for (PaymentShippingOption option : mSpec.getRawShippingOptions()) {
             if (shippingOptionId.equals(option.id)) {
                 isValidId = true;
                 break;
@@ -951,7 +928,8 @@ public class PaymentRequestImpl
 
         if (parseAndValidateDetails(details)
                 && parseAndValidateDetailsForSkipToGPayHelper(details)) {
-            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
+            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
+                    details, mSpec.getRawTotal(), mSpec.getRawLineItems());
         } else {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
@@ -997,7 +975,8 @@ public class PaymentRequestImpl
 
         if (parseAndValidateDetails(details)
                 && parseAndValidateDetailsForSkipToGPayHelper(details)) {
-            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
+            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
+                    details, mSpec.getRawTotal(), mSpec.getRawLineItems());
         } else {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
@@ -1025,9 +1004,9 @@ public class PaymentRequestImpl
         // condition is already met. Otherwise it will get recorded when triggered condition becomes
         // true.
         if (mDidRecordShowEvent) {
-            assert mRawTotal != null;
-            mJourneyLogger.recordTransactionAmount(
-                    mRawTotal.amount.currency, mRawTotal.amount.value, false /*completed*/);
+            assert mSpec.getRawTotal() != null;
+            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
+                    mSpec.getRawTotal().amount.value, false /*completed*/);
         }
 
         triggerPaymentAppUiSkipIfApplicable(chromeActivity);
@@ -1101,34 +1080,34 @@ public class PaymentRequestImpl
         if (!PaymentValidator.validatePaymentDetails(details)) return false;
 
         if (details.total != null) {
-            mRawTotal = details.total;
+            mSpec.setRawTotal(details.total);
         }
 
-        if (mRawLineItems == null || details.displayItems != null) {
-            mRawLineItems = Collections.unmodifiableList(details.displayItems != null
+        if (mSpec.getRawLineItems() == null || details.displayItems != null) {
+            mSpec.setRawLineItems(Collections.unmodifiableList(details.displayItems != null
                             ? Arrays.asList(details.displayItems)
-                            : new ArrayList<>());
+                            : new ArrayList<>()));
         }
 
         if (details.modifiers != null) {
-            if (details.modifiers.length == 0) mModifiers.clear();
+            if (details.modifiers.length == 0) mSpec.getModifiers().clear();
 
             for (int i = 0; i < details.modifiers.length; i++) {
                 PaymentDetailsModifier modifier = details.modifiers[i];
                 String method = modifier.methodData.supportedMethod;
-                mModifiers.put(method, modifier);
+                mSpec.getModifiers().put(method, modifier);
             }
         }
 
         if (details.shippingOptions != null) {
-            mRawShippingOptions =
-                    Collections.unmodifiableList(Arrays.asList(details.shippingOptions));
-        } else if (mRawShippingOptions == null) {
-            mRawShippingOptions = Collections.unmodifiableList(new ArrayList<>());
+            mSpec.setRawShippingOptions(
+                    Collections.unmodifiableList(Arrays.asList(details.shippingOptions)));
+        } else if (mSpec.getRawShippingOptions() == null) {
+            mSpec.setRawShippingOptions(Collections.unmodifiableList(new ArrayList<>()));
         }
 
-        assert mRawTotal != null;
-        assert mRawLineItems != null;
+        assert mSpec.getRawTotal() != null;
+        assert mSpec.getRawLineItems() != null;
 
         return true;
     }
@@ -1165,9 +1144,9 @@ public class PaymentRequestImpl
         // finalized (i.e. mWaitForUpdatedDetails == false). Otherwise it will get recorded when
         // the updated details become available.
         if (!mWaitForUpdatedDetails) {
-            assert mRawTotal != null;
-            mJourneyLogger.recordTransactionAmount(
-                    mRawTotal.amount.currency, mRawTotal.amount.value, false /*completed*/);
+            assert mSpec.getRawTotal() != null;
+            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
+                    mSpec.getRawTotal().amount.value, false /*completed*/);
         }
     }
 
@@ -1316,8 +1295,8 @@ public class PaymentRequestImpl
             if (mMethodData.containsKey(paymentMethodName)) {
                 methodData.put(paymentMethodName, mMethodData.get(paymentMethodName));
             }
-            if (mModifiers.containsKey(paymentMethodName)) {
-                modifiers.put(paymentMethodName, mModifiers.get(paymentMethodName));
+            if (mSpec.getModifiers().containsKey(paymentMethodName)) {
+                modifiers.put(paymentMethodName, mSpec.getModifiers().get(paymentMethodName));
             }
             if (paymentMethodName.equals(MethodStrings.ANDROID_PAY)
                     || paymentMethodName.equals(MethodStrings.GOOGLE_PAY)) {
@@ -1351,12 +1330,13 @@ public class PaymentRequestImpl
         // Redact shipping options if the selected app cannot handle shipping.
         List<PaymentShippingOption> redactedShippingOptions =
                 mInvokedPaymentApp.handlesShippingAddress()
-                ? mRawShippingOptions
+                ? mSpec.getRawShippingOptions()
                 : Collections.unmodifiableList(new ArrayList<>());
-        mInvokedPaymentApp.invokePaymentApp(mId, mMerchantName, mTopLevelOrigin,
+        mInvokedPaymentApp.invokePaymentApp(mSpec.getId(), mMerchantName, mTopLevelOrigin,
                 mPaymentRequestOrigin, mCertificateChain, Collections.unmodifiableMap(methodData),
-                mRawTotal, mRawLineItems, Collections.unmodifiableMap(modifiers), paymentOptions,
-                redactedShippingOptions, this);
+                mSpec.getRawTotal(), mSpec.getRawLineItems(),
+                Collections.unmodifiableMap(modifiers), paymentOptions, redactedShippingOptions,
+                this);
 
         mJourneyLogger.setEventOccurred(Event.PAY_CLICKED);
         boolean isAutofillCard = mInvokedPaymentApp.isAutofillInstrument();
@@ -1451,9 +1431,9 @@ public class PaymentRequestImpl
             if (!PaymentPreferencesUtil.isPaymentCompleteOnce()) {
                 PaymentPreferencesUtil.setPaymentCompleteOnce();
             }
-            assert mRawTotal != null;
-            mJourneyLogger.recordTransactionAmount(
-                    mRawTotal.amount.currency, mRawTotal.amount.value, true /*completed*/);
+            assert mSpec.getRawTotal() != null;
+            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
+                    mSpec.getRawTotal().amount.value, true /*completed*/);
         }
 
         /** Update records of the used payment app for sorting payment apps next time. */
@@ -1644,7 +1624,7 @@ public class PaymentRequestImpl
     // PaymentAppFactoryParams implementation.
     @Override
     public String getId() {
-        return mId;
+        return mSpec.getId();
     }
 
     // PaymentAppFactoryParams implementation.
@@ -1675,13 +1655,13 @@ public class PaymentRequestImpl
     // PaymentAppFactoryParams implementation.
     @Override
     public Map<String, PaymentDetailsModifier> getUnmodifiableModifiers() {
-        return Collections.unmodifiableMap(mModifiers);
+        return Collections.unmodifiableMap(mSpec.getModifiers());
     }
 
     // PaymentAppFactoryParams implementation.
     @Override
     public PaymentItem getRawTotal() {
-        return mRawTotal;
+        return mSpec.getRawTotal();
     }
 
     // PaymentAppFactoryParams implementation.
@@ -1869,7 +1849,8 @@ public class PaymentRequestImpl
             // Send AppListReady signal when all apps are created and request.show() is called.
             if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
                 ComponentPaymentRequestImpl.getNativeObserverForTest().onAppListReady(
-                        mPaymentUIsManager.getPaymentMethodsSection().getItems(), mRawTotal);
+                        mPaymentUIsManager.getPaymentMethodsSection().getItems(),
+                        mSpec.getRawTotal());
             }
             // Calculate skip ui and build ui only after all payment apps are ready and
             // request.show() is called, since only then whether or not should skip payment sheet UI

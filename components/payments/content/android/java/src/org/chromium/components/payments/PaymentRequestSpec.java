@@ -5,17 +5,23 @@
 package org.chromium.components.payments;
 
 import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.payments.mojom.PaymentDetails;
+import org.chromium.payments.mojom.PaymentDetailsModifier;
+import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
+import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Container for information received from the renderer that invoked the Payment Request API. Owns
@@ -24,6 +30,13 @@ import java.util.Collection;
  */
 @JNINamespace("payments::android")
 public class PaymentRequestSpec {
+    // TODO(crbug.com/1124917): these parameters duplicate with those in payment_request_spec from
+    // the blink side. We need to de-dup them.
+    private Map<String, PaymentDetailsModifier> mModifiers = new ArrayMap<>();
+    private String mId;
+    private List<PaymentShippingOption> mRawShippingOptions;
+    private List<PaymentItem> mRawLineItems;
+    private PaymentItem mRawTotal;
     private final PaymentOptions mOptions;
     private final Collection<PaymentMethodData> mMethodData;
     private long mNativePointer;
@@ -49,6 +62,64 @@ public class PaymentRequestSpec {
     public void createNative(PaymentDetails details, String appLocale) {
         mNativePointer = PaymentRequestSpecJni.get().create(mOptions.serialize(),
                 details.serialize(), MojoStructCollection.serialize(mMethodData), appLocale);
+    }
+
+    /**
+     * A mapping from method names to modifiers, which include modified totals and additional line
+     * items. Used to display modified totals for each payment apps, modified total in order
+     * summary, and additional line items in order summary.
+     */
+    public Map<String, PaymentDetailsModifier> getModifiers() {
+        return mModifiers;
+    }
+
+    /** @return The id of the request, found in PaymentDetails. */
+    public String getId() {
+        return mId;
+    }
+
+    /** Set the id found from PaymentDetails. */
+    public void setId(String id) {
+        mId = id;
+    }
+
+    /**
+     * The raw shipping options, as it was received from the website. This data is passed to the
+     * payment app when the app is responsible for handling shipping address.
+     */
+    public List<PaymentShippingOption> getRawShippingOptions() {
+        return mRawShippingOptions;
+    }
+
+    /** Set the raw shipping options found from PaymentDetails. */
+    public void setRawShippingOptions(List<PaymentShippingOption> rawShippingOptions) {
+        mRawShippingOptions = rawShippingOptions;
+    }
+
+    /**
+     * The raw items in the shopping cart, as they were received from the website. This data is
+     * passed to the payment app.
+     */
+    public List<PaymentItem> getRawLineItems() {
+        return mRawLineItems;
+    }
+
+    /** Set the raw payment items found in PaymentDetails. */
+    public void setRawLineItems(List<PaymentItem> rawLineItems) {
+        mRawLineItems = rawLineItems;
+    }
+
+    /**
+     * The raw total amount being charged, as it was received from the website. This data is passed
+     * to the payment app.
+     */
+    public PaymentItem getRawTotal() {
+        return mRawTotal;
+    }
+
+    /** Set the total property found from PaymentDetails. */
+    public void setRawTotal(PaymentItem rawTotal) {
+        mRawTotal = rawTotal;
     }
 
     /**
