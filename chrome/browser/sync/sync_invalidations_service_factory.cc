@@ -13,10 +13,6 @@
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 
-// TODO(crbug.com/1082115): change to real sync sender id: 8181035976.
-constexpr char kDefaultSenderId[] = "361488507004";
-constexpr char kDefaultApplicationId[] = "com.google.chrome.sync.invalidations";
-
 syncer::SyncInvalidationsService*
 SyncInvalidationsServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<syncer::SyncInvalidationsService*>(
@@ -52,6 +48,6 @@ KeyedService* SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
   instance_id::InstanceIDDriver* instance_id_driver =
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver();
-  return new syncer::SyncInvalidationsServiceImpl(
-      gcm_driver, instance_id_driver, kDefaultSenderId, kDefaultApplicationId);
+  return new syncer::SyncInvalidationsServiceImpl(gcm_driver,
+                                                  instance_id_driver);
 }

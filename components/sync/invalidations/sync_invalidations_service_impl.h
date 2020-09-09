@@ -28,9 +28,7 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
  public:
   SyncInvalidationsServiceImpl(
       gcm::GCMDriver* gcm_driver,
-      instance_id::InstanceIDDriver* instance_id_driver,
-      const std::string& sender_id,
-      const std::string& app_id);
+      instance_id::InstanceIDDriver* instance_id_driver);
   ~SyncInvalidationsServiceImpl() override;
 
   // SyncInvalidationsService implementation.

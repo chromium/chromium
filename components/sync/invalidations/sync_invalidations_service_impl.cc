@@ -8,13 +8,19 @@
 
 namespace syncer {
 
+namespace {
+
+// TODO(crbug.com/1082115): change to real sync sender id: 8181035976.
+constexpr char kSenderId[] = "361488507004";
+constexpr char kApplicationId[] = "com.google.chrome.sync.invalidations";
+
+}  // namespace
+
 SyncInvalidationsServiceImpl::SyncInvalidationsServiceImpl(
     gcm::GCMDriver* gcm_driver,
-    instance_id::InstanceIDDriver* instance_id_driver,
-    const std::string& sender_id,
-    const std::string& app_id) {
+    instance_id::InstanceIDDriver* instance_id_driver) {
   fcm_handler_ = std::make_unique<FCMHandler>(gcm_driver, instance_id_driver,
-                                              sender_id, app_id);
+                                              kSenderId, kApplicationId);
   fcm_handler_->StartListening();
 }
 
