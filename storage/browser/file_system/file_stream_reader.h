@@ -60,6 +60,7 @@ class FileStreamReader {
   // ERR_UPLOAD_FILE_CHANGED error.
   COMPONENT_EXPORT(STORAGE_BROWSER)
   static std::unique_ptr<FileStreamReader> CreateForMemoryFile(
+      scoped_refptr<base::TaskRunner> task_runner,
       base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
       const base::FilePath& file_path,
       int64_t initial_offset,

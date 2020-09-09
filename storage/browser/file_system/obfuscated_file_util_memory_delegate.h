@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   // bytes are returned. Otherwise a net::Error value is returned.
   int ReadFile(const base::FilePath& path,
                int64_t offset,
-               net::IOBuffer* buf,
+               scoped_refptr<net::IOBuffer> buf,
                int buf_len);
 
   // Writes |buf_len| bytes to the file at |path|, starting from |offset|.
@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   // net::Error value is returned.
   int WriteFile(const base::FilePath& path,
                 int64_t offset,
-                net::IOBuffer* buf,
+                scoped_refptr<net::IOBuffer> buf,
                 int buf_len);
 
   base::File::Error CreateFileForTesting(const base::FilePath& path,
@@ -125,6 +125,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   bool CopyOrMoveFileInternal(const DecomposedPath& src_dp,
                               const DecomposedPath& dest_dp,
                               bool move);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The root of the directory tree.
   std::unique_ptr<Entry> root_;
