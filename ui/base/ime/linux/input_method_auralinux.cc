@@ -134,6 +134,13 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
         ui::KeyEvent ch_event(*event);
         ch_event.set_character(ch);
         client->InsertChar(ch_event);
+        // If the client changes we assume that the original target has been
+        // destroyed.
+        if (client != GetTextInputClient()) {
+          details.target_destroyed = true;
+          event->StopPropagation();
+          return details;
+        }
       }
     } else {
       // If |filtered| is false, that means the IME wants to commit some text
@@ -143,6 +150,13 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
       // In such case, don't do InsertChar because a key should only trigger the
       // keydown event once.
       client->InsertText(result_text_);
+      // If the client changes we assume that the original target has been
+      // destroyed.
+      if (client != GetTextInputClient()) {
+        details.target_destroyed = true;
+        event->StopPropagation();
+        return details;
+      }
     }
     should_stop_propagation = true;
   }
