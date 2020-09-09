@@ -114,6 +114,25 @@ void CastAudioInputStream::SetOutputDeviceForAec(
   // Not supported. Do nothing.
 }
 
+bool CastAudioInputStream::OnInitialStreamInfo(
+    const capture_service::StreamInfo& stream_info) {
+  const bool is_params_match =
+      stream_info.stream_type ==
+          capture_service::StreamType::kSoftwareEchoCancelled &&
+      stream_info.audio_codec == capture_service::AudioCodec::kPcm &&
+      stream_info.num_channels == audio_params_.channels() &&
+      stream_info.sample_rate == audio_params_.sample_rate() &&
+      stream_info.frames_per_buffer == audio_params_.frames_per_buffer();
+  LOG_IF(ERROR, !is_params_match)
+      << "Got different parameters from sender, sample_rate: "
+      << audio_params_.sample_rate() << " Hz -> " << stream_info.sample_rate
+      << " Hz, num_channels: " << audio_params_.channels() << " -> "
+      << stream_info.num_channels
+      << ", frames_per_buffer: " << audio_params_.frames_per_buffer() << " -> "
+      << stream_info.frames_per_buffer << ".";
+  return is_params_match;
+}
+
 bool CastAudioInputStream::OnCaptureData(const char* data, size_t size) {
   capture_service::PacketInfo info;
   if (!capture_service::ReadPcmAudioMessage(data, size, &info,

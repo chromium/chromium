@@ -26,8 +26,8 @@ constexpr StreamInfo kStreamInfo =
                SampleFormat::PLANAR_FLOAT,
                16000,
                kFrames};
-constexpr PacketInfo kRequestPacketInfo = {MessageType::kRequest, kStreamInfo,
-                                           0};
+constexpr PacketInfo kHandshakePacketInfo = {MessageType::kHandshake,
+                                             kStreamInfo, 0};
 constexpr PacketInfo kPcmAudioPacketInfo = {MessageType::kPcmAudio, kStreamInfo,
                                             0};
 
@@ -120,7 +120,7 @@ TEST(MessageParsingUtilsTest, InvalidType) {
   size_t data_size = kTotalHeaderBytes / sizeof(float);
   std::vector<float> data(data_size, 1.0f);
   // Request packet
-  PacketInfo request_packet_info = kRequestPacketInfo;
+  PacketInfo request_packet_info = kHandshakePacketInfo;
   PopulateHeader(reinterpret_cast<char*>(data.data()),
                  data.size() * sizeof(float), request_packet_info);
   *(reinterpret_cast<uint8_t*>(data.data()) +
@@ -147,7 +147,7 @@ TEST(MessageParsingUtilsTest, InvalidType) {
 TEST(MessageParsingUtilsTest, InvalidCodec) {
   size_t data_size = kTotalHeaderBytes / sizeof(float);
   std::vector<float> data(data_size, 1.0f);
-  PacketInfo packet_info = kRequestPacketInfo;
+  PacketInfo packet_info = kHandshakePacketInfo;
   PopulateHeader(reinterpret_cast<char*>(data.data()),
                  data.size() * sizeof(float), packet_info);
   *(reinterpret_cast<uint8_t*>(data.data()) +
@@ -179,7 +179,7 @@ TEST(MessageParsingUtilsTest, InvalidFormat) {
 TEST(MessageParsingUtilsTest, RequestMessage) {
   size_t data_size = kTotalHeaderBytes / sizeof(float);
   std::vector<float> data(data_size, 1.0f);
-  PacketInfo packet_info = kRequestPacketInfo;
+  PacketInfo packet_info = kHandshakePacketInfo;
   PopulateHeader(reinterpret_cast<char*>(data.data()),
                  data.size() * sizeof(float), packet_info);
 
@@ -188,7 +188,7 @@ TEST(MessageParsingUtilsTest, RequestMessage) {
       ReadHeader(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
                  data_size * sizeof(float) - sizeof(uint16_t), &info);
   EXPECT_TRUE(success);
-  EXPECT_EQ(info.message_type, kRequestPacketInfo.message_type);
+  EXPECT_EQ(info.message_type, kHandshakePacketInfo.message_type);
   EXPECT_EQ(info.stream_info.stream_type, kStreamInfo.stream_type);
   EXPECT_EQ(info.stream_info.audio_codec, kStreamInfo.audio_codec);
   EXPECT_EQ(info.stream_info.num_channels, kStreamInfo.num_channels);

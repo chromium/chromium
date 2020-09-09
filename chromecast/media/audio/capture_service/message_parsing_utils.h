@@ -20,16 +20,15 @@ namespace capture_service {
 // The header of the message consists of <uint8_t message_type>
 // <uint8_t stream_type> <uint8_t audio_codec|sample_format> <uint8_t channels>
 // <uint16_t sample_rate> <uint64_t frames_per_buffer|timestamp_us>.
-// If |message_type| is kRequest, it is a request message that has |audio_codec|
-// and |frames_per_buffer|, otherwise if |message_type| is kPcmAudio, it's a PCM
-// audio data message that has |sample_format| and |timestamp_us|.
-// Note it cannot be used to read kOpusAudio or kMetadata messages, which don't
-// have header besides |message_type| bits.
-// Note |packet_info| will be untouched if fails to read header.
-// Note unsigned |timestamp_us| will be converted to signed |timestamp| if
-// valid.
-// Note |data| here has been parsed firstly by SmallMessageSocket, and
-// thus doesn't have <uint16_t size> bits.
+// If |message_type| is kHandshake, it is a handshake message that has
+// |audio_codec| and |frames_per_buffer|, otherwise if |message_type| is
+// kPcmAudio, it's a PCM audio data message that has |sample_format| and
+// |timestamp_us|. Note it cannot be used to read kOpusAudio or kMetadata
+// messages, which don't have header besides |message_type| bits. Note
+// |packet_info| will be untouched if fails to read header. Note unsigned
+// |timestamp_us| will be converted to signed |timestamp| if valid. Note |data|
+// here has been parsed firstly by SmallMessageSocket, and thus doesn't have
+// <uint16_t size> bits.
 bool ReadHeader(const char* data, size_t size, PacketInfo* packet_info);
 
 // Make a IO buffer for stream message. It will populate the header with

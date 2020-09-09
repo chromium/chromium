@@ -16,7 +16,7 @@ namespace capture_service {
 // packet header structure, however, the |size| bits are in big-endian order,
 // and thus is only for padding purpose in this struct, when all bytes after it
 // represent a message header.
-struct PacketHeader {
+struct __attribute__((__packed__)) PacketHeader {
   uint16_t size;
   uint8_t message_type;
   uint8_t stream_type;

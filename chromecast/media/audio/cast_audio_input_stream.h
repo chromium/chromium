@@ -48,6 +48,8 @@ class CastAudioInputStream : public ::media::AudioInputStream,
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
   // CaptureServiceReceiver::Delegate implementation:
+  bool OnInitialStreamInfo(
+      const capture_service::StreamInfo& stream_info) override;
   bool OnCaptureData(const char* data, size_t size) override;
   void OnCaptureError() override;
 

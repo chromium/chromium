@@ -12,6 +12,7 @@
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chromecast/media/audio/capture_service/constants.h"
 #include "chromecast/media/audio/capture_service/packet_header.h"
 #include "media/base/limits.h"
 
@@ -20,9 +21,8 @@ namespace media {
 namespace capture_service {
 namespace {
 
-// Size in bytes of the total/message header.
-constexpr size_t kTotalHeaderBytes = 16;
-constexpr size_t kMessageHeaderBytes = kTotalHeaderBytes - sizeof(uint16_t);
+// Size in bytes of the total message header.
+constexpr size_t kTotalHeaderBytes = kMessageHeaderBytes + sizeof(uint16_t);
 
 static_assert(sizeof(PacketHeader) == kTotalHeaderBytes,
               "Invalid packet header size.");
@@ -146,7 +146,7 @@ bool HasPacketHeader(MessageType type) {
   // other message type such as kOpusAudio and kMetadata, the packet does not
   // contain the packet header and only contains the message type and serialized
   // data.
-  return type == MessageType::kRequest || type == MessageType::kPcmAudio;
+  return type == MessageType::kHandshake || type == MessageType::kPcmAudio;
 }
 
 }  // namespace
@@ -159,10 +159,10 @@ char* PopulateHeader(char* data, size_t size, const PacketInfo& packet_info) {
   header.stream_type = static_cast<uint8_t>(stream_info.stream_type);
   header.num_channels = stream_info.num_channels;
   header.sample_rate = stream_info.sample_rate;
-  // In request message, the header contains a codec field and a
+  // In request/ack message, the header contains a codec field and a
   // frames_per_buffer field, while in PCM audio message, it instead contains a
   // sample format field and a timestamp field.
-  if (packet_info.message_type == MessageType::kRequest) {
+  if (packet_info.message_type == MessageType::kHandshake) {
     header.codec_or_sample_format =
         static_cast<uint8_t>(stream_info.audio_codec);
     header.timestamp_or_frames = stream_info.frames_per_buffer;
@@ -176,10 +176,7 @@ char* PopulateHeader(char* data, size_t size, const PacketInfo& packet_info) {
   base::WriteBigEndian(  // Deduct the size of |size| itself.
       data, static_cast<uint16_t>(size - sizeof(uint16_t)));
   DCHECK_EQ(sizeof(header), kTotalHeaderBytes);
-  memcpy(data + sizeof(uint16_t),
-         reinterpret_cast<const char*>(&header) +
-             offsetof(struct PacketHeader, message_type),
-         kMessageHeaderBytes);
+  memcpy(data + sizeof(uint16_t), &header.message_type, kMessageHeaderBytes);
   return data + kTotalHeaderBytes;
 }
 
@@ -190,12 +187,10 @@ bool ReadHeader(const char* data, size_t size, PacketInfo* packet_info) {
     return false;
   }
   PacketHeader header;
-  memcpy(reinterpret_cast<char*>(&header) +
-             offsetof(struct PacketHeader, message_type),
-         data, kMessageHeaderBytes);
+  memcpy(&header.message_type, data, kMessageHeaderBytes);
   MessageType message_type = static_cast<MessageType>(header.message_type);
   uint8_t last_codec_or_sample_format =
-      (message_type == MessageType::kRequest)
+      (message_type == MessageType::kHandshake)
           ? static_cast<uint8_t>(AudioCodec::kLastCodec)
           : static_cast<uint8_t>(SampleFormat::LAST_FORMAT);
   if (!HasPacketHeader(message_type) ||
@@ -213,7 +208,7 @@ bool ReadHeader(const char* data, size_t size, PacketInfo* packet_info) {
       static_cast<StreamType>(header.stream_type);
   packet_info->stream_info.num_channels = header.num_channels;
   packet_info->stream_info.sample_rate = header.sample_rate;
-  if (message_type == MessageType::kRequest) {
+  if (message_type == MessageType::kHandshake) {
     packet_info->stream_info.audio_codec =
         static_cast<AudioCodec>(header.codec_or_sample_format);
     packet_info->stream_info.frames_per_buffer = header.timestamp_or_frames;
@@ -231,8 +226,9 @@ scoped_refptr<net::IOBufferWithSize> MakeMessage(const PacketInfo& packet_info,
                                                  const char* data,
                                                  size_t data_size) {
   if (!HasPacketHeader(packet_info.message_type)) {
-    LOG(ERROR) << "Only kRequest and kPcmAudio message have packet header, use "
-                  "MakeSerializedMessage otherwise.";
+    LOG(ERROR)
+        << "Only kHandshake and kPcmAudio message have packet header, use "
+           "MakeSerializedMessage otherwise.";
     return nullptr;
   }
   const size_t total_size = kTotalHeaderBytes + data_size;

@@ -32,6 +32,9 @@ class CaptureServiceReceiver {
    public:
     virtual ~Delegate() = default;
 
+    virtual bool OnInitialStreamInfo(
+        const capture_service::StreamInfo& stream_info) = 0;
+
     // Called when more data are received from socket. Return |true| to continue
     // reading messages after OnCaptureData() returns.
     virtual bool OnCaptureData(const char* data, size_t size) = 0;
@@ -75,6 +78,7 @@ class CaptureServiceReceiver {
 
   const capture_service::StreamInfo request_stream_info_;
   Delegate* const delegate_;
+
   // Socket requires IO thread, and low latency input stream requires high
   // thread priority. Therefore, a private thread instead of the IO thread from
   // browser thread pool is necessary so as to make sure input stream won't be

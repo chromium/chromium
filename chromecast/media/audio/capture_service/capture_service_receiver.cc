@@ -4,6 +4,8 @@
 
 #include "chromecast/media/audio/capture_service/capture_service_receiver.h"
 
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -42,6 +44,13 @@ class CaptureServiceReceiver::Socket : public SmallMessageSocket::Delegate {
   ~Socket() override;
 
  private:
+  enum class State {
+    kInit,
+    kWaitForAck,
+    kStreaming,
+    kShutdown,
+  };
+
   // SmallMessageSocket::Delegate implementation:
   void OnSendUnblocked() override;
   void OnError(int error) override;
@@ -50,13 +59,17 @@ class CaptureServiceReceiver::Socket : public SmallMessageSocket::Delegate {
 
   bool SendRequest();
   void OnInactivityTimeout();
-  bool HandleAudio(int64_t timestamp);
+  void OnInitialStreamInfo(const capture_service::StreamInfo& stream_info);
+  bool HandleAck(char* data, size_t size);
+  bool HandleAudio(char* data, size_t size);
   void ReportErrorAndStop();
 
   SmallMessageSocket socket_;
+
   const capture_service::StreamInfo request_stream_info_;
   CaptureServiceReceiver::Delegate* const delegate_;
-  bool error_reported_ = false;
+
+  State state_ = State::kInit;
 };
 
 CaptureServiceReceiver::Socket::Socket(
@@ -77,8 +90,9 @@ CaptureServiceReceiver::Socket::Socket(
 CaptureServiceReceiver::Socket::~Socket() = default;
 
 bool CaptureServiceReceiver::Socket::SendRequest() {
+  DCHECK_EQ(state_, State::kInit);
   auto request_buffer = capture_service::MakeMessage(
-      capture_service::PacketInfo{capture_service::MessageType::kRequest,
+      capture_service::PacketInfo{capture_service::MessageType::kHandshake,
                                   request_stream_info_, 0 /* timestamp_us */},
       nullptr /* data */, 0 /* data_size */);
   if (!request_buffer) {
@@ -89,6 +103,7 @@ bool CaptureServiceReceiver::Socket::SendRequest() {
                     "first buffer sent.";
     return false;
   }
+  state_ = State::kWaitForAck;
   return true;
 }
 
@@ -99,9 +114,9 @@ void CaptureServiceReceiver::Socket::OnSendUnblocked() {
 }
 
 void CaptureServiceReceiver::Socket::ReportErrorAndStop() {
-  DCHECK(!error_reported_) << "Error should not be reported more than once.";
+  DCHECK_NE(state_, State::kShutdown);
   delegate_->OnCaptureError();
-  error_reported_ = true;
+  state_ = State::kShutdown;
 }
 
 void CaptureServiceReceiver::Socket::OnError(int error) {
@@ -115,6 +130,45 @@ void CaptureServiceReceiver::Socket::OnEndOfStream() {
 }
 
 bool CaptureServiceReceiver::Socket::OnMessage(char* data, size_t size) {
+  uint8_t type = 0;
+  if (size < sizeof(type)) {
+    LOG(ERROR) << "Invalid message size: " << size << ".";
+    return false;
+  }
+  memcpy(&type, data, sizeof(type));
+  capture_service::MessageType message_type =
+      static_cast<capture_service::MessageType>(type);
+
+  if (state_ == State::kWaitForAck &&
+      message_type == capture_service::MessageType::kHandshake) {
+    return HandleAck(data, size);
+  }
+
+  if (state_ == State::kStreaming &&
+      (message_type == capture_service::MessageType::kPcmAudio ||
+       message_type == capture_service::MessageType::kOpusAudio)) {
+    return HandleAudio(data, size);
+  }
+
+  LOG(WARNING) << "Receive message with type " << type << " at state "
+               << static_cast<int>(state_) << ", ignored.";
+  return true;
+}
+
+bool CaptureServiceReceiver::Socket::HandleAck(char* data, size_t size) {
+  DCHECK_EQ(state_, State::kWaitForAck);
+  capture_service::PacketInfo info;
+  if (!capture_service::ReadHeader(data, size, &info) ||
+      !delegate_->OnInitialStreamInfo(info.stream_info)) {
+    ReportErrorAndStop();
+    return false;
+  }
+  state_ = State::kStreaming;
+  return true;
+}
+
+bool CaptureServiceReceiver::Socket::HandleAudio(char* data, size_t size) {
+  DCHECK_EQ(state_, State::kStreaming);
   if (!delegate_->OnCaptureData(data, size)) {
     ReportErrorAndStop();
     return false;
