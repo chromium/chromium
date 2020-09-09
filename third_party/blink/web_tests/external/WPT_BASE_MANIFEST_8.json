@@ -82547,6 +82547,45 @@
        {}
       ]
      ],
+     "marker-text-decoration-skip-ink.html": [
+      "153e9221a39bbba6f4401ca39b45505468c666ce",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-text-decoration-skip-ink-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-text-emphasis.html": [
+      "db9fb3d5257b2467c7178e7ab245598f80a6f54b",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-text-emphasis-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-text-shadow.html": [
+      "3f8ae566f164f80f0487601b6292c283a8076e93",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-text-shadow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "marker-text-transform-default.html": [
       "922c5b0de27b3f4bd58765242e9027390d4eba77",
       [
@@ -167831,7 +167870,7 @@
       []
      ],
      "event-dispatch.tentative-expected.txt": [
-      "018e8365be3f8374e1311f627786b009193c120b",
+      "91828e7f4cc77304f8cf0b8e94e48468850dae32",
       []
      ],
      "event-order.tentative-expected.txt": [
@@ -183954,6 +183993,18 @@
       "2ad96e37bb145b4bae9aae37db8b23df7ddfdc3b",
       []
      ],
+     "marker-text-decoration-skip-ink-ref.html": [
+      "9bf2cf2f50be8309229127df0ad321d00e5fdac7",
+      []
+     ],
+     "marker-text-emphasis-ref.html": [
+      "aad3614c693381312a3636bb7a5cbcc40edb4785",
+      []
+     ],
+     "marker-text-shadow-ref.html": [
+      "62627d64b7be67874c2f903f4465b47b16a59e63",
+      []
+     ],
      "marker-text-transform-default-ref.html": [
       "ceec36dd365556e86cdbaa09efc30f7cffb64fc3",
       []
@@ -183976,11 +184027,11 @@
      ],
      "parsing": {
       "marker-supported-properties-expected.txt": [
-       "3430211bf92369cf5bcba5b59e30dc9f2ff67491",
+       "0eaddccead41084b7c4f512c4b5d9e00f8fe3eb2",
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
-       "bb3a3ce20dd582aacd42ec083ca217835b5bc0e7",
+       "9b19d9f118822df7ab446a6fe2764ecadfad623c",
        []
       ]
      },
@@ -190943,7 +190994,7 @@
       []
      ],
      "event-dispatch.tentative-expected.txt": [
-      "294ff2555a187ba81afc27ffa35ca46c9e9050ea",
+      "7640204a073e6fdea7f0434f273aee6bfea5709d",
       []
      ],
      "no-transition-from-ua-to-blocking-stylesheet-ref.html": [
@@ -231572,7 +231623,7 @@
        []
       ],
       "github_checks_output.py": [
-       "16d399002984e0b9daf8a0239b49bedbea50914b",
+       "b34e33dd9e817a80ac60a022fbfb6f0cb9c13766",
        []
       ],
       "sink_task.py": [
@@ -231585,7 +231636,7 @@
       ],
       "tasks": {
        "test.yml": [
-        "b1534c9d230d0b443ba2ecf83aacc58598221ae8",
+        "4c6cc324bff265656558efaadfa16844c9bcdc8c",
         []
        ]
       },
@@ -231695,7 +231746,7 @@
       []
      ],
      "lint.py": [
-      "7bec438b773da96e30986aa974b66043248bc079",
+      "8965c1a0a12926213eb74f7f880c198004cf46fc",
       []
      ],
      "rules.py": [
@@ -237936,7 +237987,7 @@
        []
       ],
       "stability.py": [
-       "d6befa802fda2835f9f5de38a281b239906326cb",
+       "88d1c232bfb52d4c2e16fed9103ca8d62ae86632",
        []
       ],
       "testdriver-extra.js": [
@@ -238010,7 +238061,7 @@
        []
       ],
       "wptcommandline.py": [
-       "ea586825616132b410127124ad2152ae88554cde",
+       "532c795cd3c5f5bc1e2f8b43bfca38152b79d4ab",
        []
       ],
       "wptlogging.py": [
@@ -239515,10 +239566,6 @@
       ]
      }
     },
-    "idlharness.window-expected.txt": [
-     "3725def5ec3bf4ac804ff5236f48ae18d44c208d",
-     []
-    ],
     "interfaces": {
      "Animatable": {
       "animate-expected.txt": [
@@ -239526,17 +239573,13 @@
        []
       ],
       "animate-no-browsing-context-expected.txt": [
-       "91238a475503e550d5c625007db878116069158a",
+       "9ce71d316b6e280fbe4e4bcdeb4d0406292b8d77",
        []
       ]
      },
      "Animation": {
       "commitStyles-expected.txt": [
        "aed99e6773281b0b630569d8f840cba85ece01c3",
-       []
-      ],
-      "style-change-events-expected.txt": [
-       "a618fd79eb71323d65202f9ecc6fca7c4614ff40",
        []
       ]
      },
@@ -239607,10 +239650,6 @@
        "7bf5b03c1e1a3c3870ee1c94dccb5ff2eab46f54",
        []
       ],
-      "setting-the-timeline-of-an-animation-expected.txt": [
-       "305bfa278215a6e0aafa5062ebac6cb03f6913ca",
-       []
-      ],
       "sync-start-times-ref.html": [
        "fc843a132f2f3741ce27ed796d1182488deb336b",
        []
@@ -239626,7 +239665,7 @@
      },
      "timelines": {
       "update-and-send-events-replacement-expected.txt": [
-       "56358f91b29c41d38fb01bb9d1d130e67d1b66fa",
+       "10522b9a820f5144416999721408851ed9b0dbd6",
        []
       ]
      }
@@ -281397,14 +281436,14 @@
      ],
      "parsing": {
       "marker-supported-properties-in-animation.html": [
-       "c93f6cad16f926cc8b829f610b3eb0f78bdc4984",
+       "5f7dab7a8bfb908d900230cfbf06dacd53a9d693",
        [
         null,
         {}
        ]
       ],
       "marker-supported-properties.html": [
-       "a2fc0bfff84fece13f573eb373dbeca6b7f80894",
+       "15a4e894ff3a46c632d91de8c27834a5269149eb",
        [
         null,
         {}
@@ -359603,6 +359642,13 @@
         {}
        ]
       ],
+      "integration-point-5.html": [
+       "dc10b46b9488cb2bc2c1bde80125dcc26ec83e8c",
+       [
+        null,
+        {}
+       ]
+      ],
       "math-global-event-handlers.tentative.html": [
        "e464c8300e47e75fc89722b5191cae813b0e7bda",
        [
@@ -382262,6 +382308,13 @@
       {}
      ]
     ],
+    "setting-timeline.tentative.html": [
+     "3fd0c0cd6769674439eb4500699ea7b54dbf3846",
+     [
+      null,
+      {}
+     ]
+    ],
     "update-playback-rate.html": [
      "82cf69999f6860604aae540ffda91f4d809498ed",
      [
@@ -401838,7 +401891,7 @@
        ]
       ],
       "setting-the-timeline-of-an-animation.html": [
-       "7e98ef4260f778c4257203f92db39a6bdaa92871",
+       "d4f802152c57b0f0c43a649472c48d19541f4d97",
        [
         null,
         {}

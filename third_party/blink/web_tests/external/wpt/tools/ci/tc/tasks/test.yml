@@ -386,7 +386,7 @@ tasks:
         - trigger-pr
       description: >-
         Lint for wpt-specific requirements
-      command: "./wpt lint --all"
+      command: "./wpt lint --all --github-checks-text-file=/home/test/artifacts/checkrun.md"
 
   - update-built:
       use:
