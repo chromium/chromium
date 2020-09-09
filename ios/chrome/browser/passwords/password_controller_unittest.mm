@@ -1948,8 +1948,8 @@ TEST_F(PasswordControllerTest, FindDynamicallyAddedForm2) {
 
   auto& form_managers = passwordController_.passwordManager->form_managers();
   ASSERT_EQ(1u, form_managers.size());
-  auto& password_form = form_managers[0]->observed_form();
-  EXPECT_EQ(ASCIIToUTF16("dynamic_form"), password_form.name);
+  auto* password_form = form_managers[0]->observed_form();
+  EXPECT_EQ(ASCIIToUTF16("dynamic_form"), password_form->name);
 }
 
 // Tests that submission is detected on removal of the form that had user input.

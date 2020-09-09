@@ -2061,7 +2061,7 @@ TEST_P(PasswordFormManagerTest, iOSUpdateStateWithoutPresaving) {
       observed_form_.unique_renderer_id, password_field, new_field_value));
 
   EXPECT_EQ(new_field_value,
-            form_manager_->observed_form().fields[kPasswordFieldIndex].value);
+            form_manager_->observed_form()->fields[kPasswordFieldIndex].value);
 }
 
 TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
@@ -2079,14 +2079,14 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
   form_manager_->UpdateObservedFormDataWithFieldDataManagerInfo(
       field_data_manager.get());
 
-  EXPECT_EQ(form_manager_->observed_form().fields[1].typed_value,
+  EXPECT_EQ(form_manager_->observed_form()->fields[1].typed_value,
             base::UTF8ToUTF16("typed_username"));
-  EXPECT_EQ(form_manager_->observed_form().fields[1].properties_mask,
+  EXPECT_EQ(form_manager_->observed_form()->fields[1].properties_mask,
             FieldPropertiesFlags::kUserTyped);
 
-  EXPECT_EQ(form_manager_->observed_form().fields[2].value,
+  EXPECT_EQ(form_manager_->observed_form()->fields[2].value,
             base::UTF8ToUTF16("autofilled_pw"));
-  EXPECT_EQ(form_manager_->observed_form().fields[2].properties_mask,
+  EXPECT_EQ(form_manager_->observed_form()->fields[2].properties_mask,
             FieldPropertiesFlags::kAutofilledOnPageLoad);
 }
 

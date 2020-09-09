@@ -146,6 +146,10 @@ bool PasswordStore::FormDigest::operator==(const FormDigest& other) const {
          url == other.url;
 }
 
+bool PasswordStore::FormDigest::operator!=(const FormDigest& other) const {
+  return !(*this == other);
+}
+
 PasswordStore::PasswordStore()
     : observers_(new base::ObserverListThreadSafe<Observer>()) {}
 

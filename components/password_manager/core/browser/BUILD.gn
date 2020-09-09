@@ -309,6 +309,7 @@ static_library("browser") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//sql",
+    "//third_party/abseil-cpp:absl",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//ui/base",

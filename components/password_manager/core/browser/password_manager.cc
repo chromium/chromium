@@ -722,10 +722,10 @@ void PasswordManager::UpdateStateOnUserInput(
     const base::string16& field_value) {
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
     if (manager->UpdateStateOnUserInput(form_id, field_id, field_value)) {
-      ProvisionallySaveForm(manager->observed_form(), driver, true);
+      ProvisionallySaveForm(*manager->observed_form(), driver, true);
       if (manager->is_submitted() && !manager->HasGeneratedPassword()) {
         ShowManualFallbackForSavingImpl(manager.get(),
-                                        manager->observed_form());
+                                        *manager->observed_form());
       } else {
         HideManualFallbackForSaving();
       }
@@ -761,7 +761,7 @@ void PasswordManager::OnIframeDetach(
     const FieldDataManager* field_data_manager) {
   for (auto& manager : form_managers_) {
     // Find a form with corresponding frame id.
-    if (manager->observed_form().frame_id == frame_id) {
+    if (manager->observed_form()->frame_id == frame_id) {
       CheckForPotentialSubmission(manager.get(), field_data_manager, driver);
     }
   }
@@ -1257,7 +1257,7 @@ void PasswordManager::CheckForPotentialSubmission(
         field_data_manager);
     // Provisionally save form and set the manager to be submitted if valid
     // data was recovered.
-    form_manager->ProvisionallySave(form_manager->observed_form(), driver,
+    form_manager->ProvisionallySave(*form_manager->observed_form(), driver,
                                     nullptr);
   }
   if (form_manager->is_submitted())

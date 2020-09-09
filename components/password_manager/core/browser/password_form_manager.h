@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
 
@@ -49,7 +50,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   PasswordFormManager(
       PasswordManagerClient* client,
       const base::WeakPtr<PasswordManagerDriver>& driver,
-      const autofill::FormData& observed_form,
+      const autofill::FormData& observed_form_data,
       FormFetcher* form_fetcher,
       std::unique_ptr<PasswordSaveManager> password_save_manager,
       scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder);
@@ -67,7 +68,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // form.
   static constexpr int kMaxTimesAutofill = 5;
 
-  // Compares |observed_form_| with |form| and returns true if they are the
+  // Compares |observed_form()| with |form| and returns true if they are the
   // same and if |driver| is the same as |driver_|.
   bool DoesManage(const autofill::FormData& form,
                   const PasswordManagerDriver* driver) const;
@@ -118,7 +119,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   autofill::PasswordForm::Scheme GetScheme() const;
 
   // Selects from |predictions| predictions that corresponds to
-  // |observed_form_|, initiates filling and stores predictions in
+  // |observed_form()|, initiates filling and stores predictions in
   // |predictions_|.
   void ProcessServerPredictions(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
@@ -126,8 +127,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Sends fill data to the renderer.
   void Fill();
 
-  // Sends fill data to the renderer to fill |observed_form|.
-  void FillForm(const autofill::FormData& observed_form);
+  // Sends fill data to the renderer to fill |observed_form_data|.
+  void FillForm(const autofill::FormData& observed_form_data);
 
   void UpdateSubmissionIndicatorEvent(
       autofill::mojom::SubmissionIndicatorEvent event);
@@ -198,8 +199,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
                                 autofill::FieldRendererId generation_element);
 
   // Return false and do nothing if |form_identifier| does not correspond to
-  // |observed_form_|. Otherwise set a value of the field with
-  // |field_identifier| of |observed_form_| to |field_value|. In case if there
+  // |observed_form()|. Otherwise set a value of the field with
+  // |field_identifier| of |observed_form()| to |field_value|. In case if there
   // is a presaved credential this function updates the presaved credential.
   bool UpdateStateOnUserInput(autofill::FormRendererId form_id,
                               autofill::FieldRendererId field_id,
@@ -207,7 +208,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   void SetDriver(const base::WeakPtr<PasswordManagerDriver>& driver);
 
-  // Copies all known field data from FieldDataManager to |observed_form_|.
+  // Copies all known field data from FieldDataManager to |observed_form()|.
   void UpdateObservedFormDataWithFieldDataManagerInfo(
       const autofill::FieldDataManager* field_data_manager);
 #endif  // defined(OS_IOS)
@@ -225,7 +226,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     wait_for_server_predictions_for_filling_ = false;
   }
 
-  const autofill::FormData& observed_form() { return observed_form_; }
+  // Returns a pointer to the observed form if possible or nullptr otherwise.
+  const autofill::FormData* observed_form() const {
+    return absl::get_if<autofill::FormData>(&observed_form_or_digest_);
+  }
 
 #if defined(UNIT_TEST)
   static void set_wait_for_server_predictions_for_filling(bool value) {
@@ -254,14 +258,16 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void CreatePendingCredentials();
 
  private:
+  using FormOrDigest =
+      absl::variant<autofill::FormData, PasswordStore::FormDigest>;
+
   // Delegating constructor.
   PasswordFormManager(
       PasswordManagerClient* client,
+      FormOrDigest observed_form_or_digest,
       FormFetcher* form_fetcher,
       std::unique_ptr<PasswordSaveManager> password_save_manager,
-      scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder,
-      PasswordStore::FormDigest form_digest);
-
+      scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder);
   // Records the status of readonly fields during parsing, combined with the
   // overall success of the parsing. It reports through two different metrics,
   // depending on whether |mode| indicates parsing for saving or filling.
@@ -287,6 +293,17 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const autofill::FormData& form,
       const base::string16& generated_password);
 
+  // Returns a mutable pointer to the observed form if possible or nullptr
+  // otherwise.
+  autofill::FormData* mutable_observed_form() {
+    return absl::get_if<autofill::FormData>(&observed_form_or_digest_);
+  }
+
+  // Returns a pointer to the observed digest if possible or nullptr otherwise.
+  const PasswordStore::FormDigest* observed_digest() const {
+    return absl::get_if<PasswordStore::FormDigest>(&observed_form_or_digest_);
+  }
+
   // Calculates FillingAssistance metric for |submitted_form|. The metric is
   // recorded in case when the successful submission is detected.
   void CalculateFillingAssistanceMetric(
@@ -295,7 +312,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Save/update |pending_credentials_| to the password store.
   void SavePendingToStore(bool update);
 
-  PasswordStore::FormDigest ConstructObservedFormDigest();
+  PasswordStore::FormDigest ConstructObservedFormDigest() const;
 
   // Returns whether |possible_username| should be used for offering the
   // username to save on username first flow. The decision is based on server
@@ -312,13 +329,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // close.
   int driver_id_ = 0;
 
-  // TODO(https://crbug.com/943045): use std::variant for keeping
-  // |observed_form_| and |observed_not_web_form_digest_|.
-  autofill::FormData observed_form_;
-
-  // Used for retrieving credentials in case http authentication or Credentials
-  // API.
-  base::Optional<PasswordStore::FormDigest> observed_not_web_form_digest_;
+  // The observed form or digest. These are mutually exclusive, hence the usage
+  // of a variant.
+  FormOrDigest observed_form_or_digest_;
 
   // If the observed form gets blacklisted through |this|, we keep the
   // information in this boolean flag until data is potentially refreshed by
