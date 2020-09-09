@@ -83,14 +83,9 @@ TEST_F(ReachedCodeDataSourceTest, ProfilerDisabled) {
   EXPECT_EQ(producer()->GetFinalizedPacketCount(), 0u);
 }
 
-// This test crashes on the android-asan bot.
-// TODO(https://crbug.com/1100216): Enable this again on the bot.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ProfilerOutput DISABLED_ProfilerOutput
-#else
-#define MAYBE_ProfilerOutput ProfilerOutput
-#endif
-TEST_F(ReachedCodeDataSourceTest, MAYBE_ProfilerOutput) {
+// TODO(https://crbug.com/1100216): Test crashes on android-asan.
+// TODO(https://crbug.com/1122186): Test is flaky on android.
+TEST_F(ReachedCodeDataSourceTest, DISABLED_ProfilerOutput) {
   if (!base::android::IsReachedCodeProfilerSupported())
     return;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
