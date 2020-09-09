@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_LargePage) {
 #else
 #define MAYBE_FindLongString FindLongString
 #endif
-IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindLongString) {
+IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_FindLongString) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ui_test_utils::NavigateToURL(browser(), GetURL("largepage.html"));
