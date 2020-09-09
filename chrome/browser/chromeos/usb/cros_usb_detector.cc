@@ -11,7 +11,6 @@
 #include "base/bind_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
@@ -295,7 +294,7 @@ CrosUsbDeviceInfo::VmSharingInfo::VmSharingInfo(const VmSharingInfo&) = default;
 CrosUsbDeviceInfo::VmSharingInfo::~VmSharingInfo() = default;
 
 std::string CrosUsbDetector::MakeNotificationId(const std::string& guid) {
-  return "cros:" + base::HexEncode(guid.data(), guid.size());
+  return "cros:" + guid;
 }
 
 // static
@@ -569,18 +568,21 @@ void CrosUsbDetector::AttachUsbDeviceToVm(
   }
 
   const auto& device_info = it->second;
-  // Close any associated notifications (the user isn't using them).
-  SystemNotificationHelper::GetInstance()->Close(
-      CrosUsbDetector::MakeNotificationId(guid));
 
-  VLOG(1) << "Opening " << base::HexEncode(guid.data(), guid.size())
-          << " with mask " << std::hex << allowed_interfaces_mask;
+  VLOG(1) << "Opening " << guid << " with mask " << std::hex
+          << allowed_interfaces_mask;
   // Open a file descriptor to pass to CrostiniManager & Concierge.
   device_manager_->OpenFileDescriptor(
       guid, allowed_interfaces_mask,
       base::BindOnce(&CrosUsbDetector::OnAttachUsbDeviceOpened,
                      weak_ptr_factory_.GetWeakPtr(), vm_name,
                      device_info.Clone(), std::move(callback)));
+
+  // Close any associated notifications (the user isn't using them). This
+  // destroys the CrosUsbNotificationDelegate and vm_name and guid args may be
+  // invalid after Close.
+  SystemNotificationHelper::GetInstance()->Close(
+      CrosUsbDetector::MakeNotificationId(guid));
 }
 
 void CrosUsbDetector::DetachUsbDeviceFromVm(
@@ -658,7 +660,6 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
     }
   }
 
-  const std::string guid = device_info->guid;
   vm_tools::concierge::AttachUsbDeviceRequest request;
   request.set_vm_name(vm_name);
   request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
@@ -670,7 +671,7 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
   chromeos::DBusThreadManager::Get()->GetConciergeClient()->AttachUsbDevice(
       std::move(fd), std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceAttachFinished,
-                     weak_ptr_factory_.GetWeakPtr(), vm_name, guid,
+                     weak_ptr_factory_.GetWeakPtr(), vm_name, device_info->guid,
                      std::move(callback)));
 }
 
