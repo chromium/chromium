@@ -163,7 +163,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBox.setDelegate(this);
         mSearchBox.setToolbarDataProvider(mSearchBoxDataProvider);
         mSearchBox.initializeControls(
-                new WindowDelegate(getWindow()), getWindowAndroid(), null, null, null, null, null);
+                new WindowDelegate(getWindow()), getWindowAndroid(), null, null, null, null);
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();

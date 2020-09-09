@@ -27,11 +27,11 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -147,9 +146,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private WindowAndroid mWindowAndroid;
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
     private ActivityTabTabObserver mTabObserver;
-
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-
     private final DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
     private final DropdownItemViewInfoListManager mDropdownViewInfoListManager;
 
@@ -356,15 +352,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         }
         mDeferredNativeRunnables.clear();
         mDropdownViewInfoListBuilder.onNativeInitialized();
-    }
-
-    /**
-     * @param tabModelSelectorSupplier Supplies the activity TabModelSelector, which is used to
-     *        access the Tab/TabModel.
-     */
-    void setTabModelSelectorSupplier(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
     /**
@@ -592,8 +579,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Override
     public void onSwitchToTab(OmniboxSuggestion suggestion, int position) {
         Tab tab = mAutocomplete.findMatchingTabWithUrl(suggestion.getUrl());
-        if (tab == null || mTabModelSelectorSupplier == null
-                || mTabModelSelectorSupplier.get() == null) {
+        if (tab == null) {
             onSelection(suggestion, position);
             return;
         }
@@ -603,9 +589,14 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         // animation since Android will show the animation for switching apps.
         if (tab.getWindowAndroid().getActivityState() != ActivityState.STOPPED
                 && tab.getWindowAndroid().getActivityState() != ActivityState.DESTROYED) {
+            // TODO(1097292):  Do not use Activity to get TabModelSelector.
+            assert tab.getWindowAndroid().getActivity().get() instanceof ChromeActivity;
+
+            ChromeActivity chromeActivity =
+                    (ChromeActivity) tab.getWindowAndroid().getActivity().get();
             int tabIndex = TabModelUtils.getTabIndexById(
-                    mTabModelSelectorSupplier.get().getModel(tab.isIncognito()), tab.getId());
-            mTabModelSelectorSupplier.get()
+                    chromeActivity.getTabModelSelector().getModel(tab.isIncognito()), tab.getId());
+            chromeActivity.getTabModelSelector()
                     .getModel(tab.isIncognito())
                     .setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
         } else {

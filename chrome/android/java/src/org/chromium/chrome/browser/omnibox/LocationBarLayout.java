@@ -34,7 +34,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -63,7 +62,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -303,7 +301,6 @@ public class LocationBarLayout extends FrameLayout
     @Override
     public void initializeControls(WindowDelegate windowDelegate, WindowAndroid windowAndroid,
             ActivityTabProvider activityTabProvider,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider) {
@@ -313,7 +310,6 @@ public class LocationBarLayout extends FrameLayout
         mUrlCoordinator.setWindowDelegate(windowDelegate);
         mAutocompleteCoordinator.setWindowAndroid(windowAndroid);
         mAutocompleteCoordinator.setActivityTabProvider(activityTabProvider);
-        mAutocompleteCoordinator.setTabModelSelectorSupplier(tabModelSelectorSupplier);
         mAutocompleteCoordinator.setShareDelegateSupplier(shareDelegateSupplier);
         mStatusCoordinator.setIncognitoStateProvider(incognitoStateProvider);
         mStatusCoordinator.setModalDialogManagerSupplier(modalDialogManagerSupplier);

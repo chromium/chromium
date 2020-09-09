@@ -1438,8 +1438,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
                 mIntentWithEffectSupplier, getShareDelegateSupplier(), getActivityTabProvider(),
                 mEphemeralTabCoordinatorSupplier, mTabModelProfileSupplier, mBookmarkBridgeSupplier,
-                getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
-                mTabModelSelectorSupplier);
+                getOverviewModeBehaviorSupplier(), this::getContextualSearchManager);
     }
 
     @Override

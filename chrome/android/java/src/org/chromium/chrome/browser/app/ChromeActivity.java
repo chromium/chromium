@@ -381,8 +381,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // a recommended pattern.
         return new RootUiCoordinator(this, null, getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
-                getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
-                mTabModelSelectorSupplier);
+                getOverviewModeBehaviorSupplier(), this::getContextualSearchManager);
     }
 
     private C createComponent() {
