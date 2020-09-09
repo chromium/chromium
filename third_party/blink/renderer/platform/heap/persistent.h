@@ -267,7 +267,8 @@ class PersistentBase {
       // node (if present) from |other|.
       persistent_node_.Uninitialize();
     }
-    raw_ = other.raw_;
+    // Explicit cast enabling downcasting.
+    raw_ = static_cast<T*>(other.raw_);
     other.raw_ = nullptr;
     // Efficiently move by just rewiring the node pointer.
     persistent_node_ = std::move(other.persistent_node_);
@@ -444,6 +445,11 @@ class PersistentBase {
 #if DCHECK_IS_ON()
   const ThreadState* creation_thread_state_;
 #endif
+
+  template <typename F,
+            WeaknessPersistentConfiguration,
+            CrossThreadnessPersistentConfiguration>
+  friend class PersistentBase;
 };
 
 // Persistent is a way to create a strong pointer from an off-heap object
@@ -765,9 +771,8 @@ class CrossThreadWeakPersistent
   // the state of CTP manually before invoking any calls.
   T* operator->() const = delete;
   T& operator*() const = delete;
-  // TODO(mlippautz): Also hide the following calls:
-  // - Parent::Get;
-  // - Parent::operator T*;
+  operator T*() const = delete;
+  T* Get() const = delete;
 
  private:
   template <typename U>
@@ -779,7 +784,7 @@ template <typename U>
 CrossThreadPersistent<T>& CrossThreadPersistent<T>::operator=(
     const CrossThreadWeakPersistent<U>& other) {
   MutexLocker locker(ProcessHeap::CrossThreadPersistentMutex());
-  this->AssignUnsafe(other.Get());
+  this->AssignUnsafe(other.Parent::Get());
   return *this;
 }
 

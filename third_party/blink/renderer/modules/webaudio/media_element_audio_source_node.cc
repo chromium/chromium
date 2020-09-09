@@ -90,8 +90,9 @@ MediaElementAudioSourceHandler::~MediaElementAudioSourceHandler() {
   Uninitialize();
 }
 
-HTMLMediaElement* MediaElementAudioSourceHandler::MediaElement() const {
-  return media_element_.Get();
+CrossThreadPersistent<HTMLMediaElement>
+MediaElementAudioSourceHandler::MediaElement() const {
+  return media_element_.Lock();
 }
 
 void MediaElementAudioSourceHandler::Dispose() {

@@ -49,7 +49,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
       HTMLMediaElement&);
   ~MediaElementAudioSourceHandler() override;
 
-  HTMLMediaElement* MediaElement() const;
+  CrossThreadPersistent<HTMLMediaElement> MediaElement() const;
 
   // AudioHandler
   void Dispose() override;

@@ -133,7 +133,8 @@ class PannerHandler final : public AudioHandler {
                 AudioParamHandler& orientation_z);
 
   // BaseAudioContext's listener
-  AudioListener* Listener();
+  // AudioListener* Listener();
+  CrossThreadPersistent<AudioListener> Listener() const;
 
   bool SetPanningModel(Panner::PanningModel);  // Returns true on success.
   bool SetDistanceModel(unsigned);  // Returns true on success.

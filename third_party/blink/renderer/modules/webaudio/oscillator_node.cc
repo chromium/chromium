@@ -781,7 +781,7 @@ void OscillatorHandler::SetPeriodicWave(PeriodicWave* periodic_wave) {
 }
 
 bool OscillatorHandler::PropagatesSilence() const {
-  return !IsPlayingOrScheduled() || HasFinished() || !periodic_wave_.Get();
+  return !IsPlayingOrScheduled() || HasFinished() || !periodic_wave_;
 }
 
 void OscillatorHandler::HandleStoppableSourceNode() {
