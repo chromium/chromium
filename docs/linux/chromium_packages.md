@@ -40,12 +40,14 @@ Packages in this section are not part of the distro's official repositories.
 ## Updating the list
 
 Are you packaging Chromium for a Linux distro? Is the information above out of
-date? Please contact `thestig@chromium.org` with updates.
+date? Please contact the folks in
+[//build/linux/OWNERS](../../build/linux/OWNERS) with updates or
+[contribute](../contributing.md) an update.
 
-Before emailing, please note:
+Before contacting, please note:
 
-*   This is not a support email address
-*   If you ask about a Linux distro that is not listed above, the answer will be
-    "I don't know"
+*   This is not the channel for technical support
+*   The answer to questions about Linux distros not listed above is
+    "We don't know"
 *   Linux distros supported by Google Chrome are listed here:
     https://support.google.com/chrome/answer/95411
