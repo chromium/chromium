@@ -46,6 +46,7 @@ blink_platform_sources("instrumentation") {
     "//components/performance_manager/public/mojom:mojom_blink",
     "//services/service_manager/public/cpp",
   ]
+  public_deps = [ "//third_party/blink/renderer/platform/heap:heap" ]
 }
 
 source_set("unit_tests") {
@@ -62,6 +63,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/renderer/platform:platform",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]

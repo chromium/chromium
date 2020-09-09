@@ -1561,6 +1561,7 @@ component("platform") {
 
   allow_circular_includes_from = [
     "//third_party/blink/renderer/platform/blob",
+    "//third_party/blink/renderer/platform/instrumentation",
     "//third_party/blink/renderer/platform/scheduler",
   ]
 
