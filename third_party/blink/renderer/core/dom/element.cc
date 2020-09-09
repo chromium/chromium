@@ -324,6 +324,12 @@ bool DefinitelyNewFormattingContext(const Node& node,
                element->IsFrameOwnerElement()) {
       return true;
     }
+
+    // foreignObject is absolutely-positioned for the purposes of CSS layout and
+    // so always establishes a new formatting context.
+    // https://svgwg.org/svg2-draft/embedded.html#Placement
+    if (IsA<SVGForeignObjectElement>(element))
+      return true;
   }
   if (const Node* parent = LayoutTreeBuilderTraversal::LayoutParent(node))
     return parent->ComputedStyleRef().IsDisplayFlexibleOrGridBox();
