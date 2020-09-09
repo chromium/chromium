@@ -14,7 +14,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_worker.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -165,7 +164,12 @@ CertificateProvisioningUiHandler::CertificateProvisioningUiHandler(
     : scheduler_for_user_(scheduler_for_user),
       scheduler_for_device_(ShouldUseDeviceWideProcesses(user_profile)
                                 ? scheduler_for_device
-                                : nullptr) {}
+                                : nullptr) {
+  if (scheduler_for_user_)
+    observed_schedulers_.Add(scheduler_for_user_);
+  if (scheduler_for_device_)
+    observed_schedulers_.Add(scheduler_for_device_);
+}
 
 CertificateProvisioningUiHandler::~CertificateProvisioningUiHandler() = default;
 
@@ -183,6 +187,34 @@ void CertificateProvisioningUiHandler::RegisterMessages() {
       base::BindRepeating(&CertificateProvisioningUiHandler::
                               HandleTriggerCertificateProvisioningProcessUpdate,
                           base::Unretained(this)));
+}
+
+void CertificateProvisioningUiHandler::OnVisibleStateChanged() {
+  // If Javascript is not allowed yet, we don't need to cache the update,
+  // because the UI will request a refresh during its first message to the
+  // handler.
+  if (!IsJavascriptAllowed())
+    return;
+  if (hold_back_updates_timer_.IsRunning()) {
+    update_after_hold_back_ = true;
+    return;
+  }
+  constexpr base::TimeDelta kTimeToHoldBackUpdates =
+      base::TimeDelta::FromMilliseconds(300);
+  hold_back_updates_timer_.Start(
+      FROM_HERE, kTimeToHoldBackUpdates,
+      base::BindOnce(
+          &CertificateProvisioningUiHandler::OnHoldBackUpdatesTimerExpired,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  RefreshCertificateProvisioningProcesses();
+}
+
+unsigned int
+CertificateProvisioningUiHandler::ReadAndResetUiRefreshCountForTesting() {
+  unsigned int value = ui_refresh_count_for_testing_;
+  ui_refresh_count_for_testing_ = 0;
+  return value;
 }
 
 void CertificateProvisioningUiHandler::
@@ -214,21 +246,6 @@ void CertificateProvisioningUiHandler::
     return;
 
   scheduler->UpdateOneCert(cert_profile_id.GetString());
-
-  // Send an update to the UI immediately to reflect a possible status change.
-  RefreshCertificateProvisioningProcesses();
-
-  // Trigger a refresh in a few seconds, in case the state has triggered a
-  // refresh with the server.
-  // TODO(https://crbug.com/1045895): Use a real observer instead.
-  constexpr base::TimeDelta kTimeToWaitBeforeRefresh =
-      base::TimeDelta::FromSeconds(10);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CertificateProvisioningUiHandler::
-                         RefreshCertificateProvisioningProcesses,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kTimeToWaitBeforeRefresh);
 }
 
 void CertificateProvisioningUiHandler::
@@ -244,8 +261,16 @@ void CertificateProvisioningUiHandler::
                                  /*is_device_wide=*/true);
   }
 
+  ++ui_refresh_count_for_testing_;
   FireWebUIListener("certificate-provisioning-processes-changed",
                     std::move(all_processes));
+}
+
+void CertificateProvisioningUiHandler::OnHoldBackUpdatesTimerExpired() {
+  if (update_after_hold_back_) {
+    update_after_hold_back_ = false;
+    RefreshCertificateProvisioningProcesses();
+  }
 }
 
 // static

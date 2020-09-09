@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observer.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -16,9 +19,9 @@ class Profile;
 namespace chromeos {
 namespace cert_provisioning {
 
-class CertProvisioningScheduler;
-
-class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
+class CertificateProvisioningUiHandler
+    : public content::WebUIMessageHandler,
+      public CertProvisioningSchedulerObserver {
  public:
   // Creates a CertificateProvisioningUiHandler for |user_profile|, which uses:
   // (*) The CertProvisioningScheduler associated with |user_profile|, if any.
@@ -51,6 +54,13 @@ class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler.
   void RegisterMessages() override;
 
+  // CertProvisioningSchedulerObserver:
+  void OnVisibleStateChanged() override;
+
+  // For testing: Reads the count of UI refreshes sent to the WebUI (since
+  // instantiation or the last call to this function) and resets it to 0.
+  unsigned int ReadAndResetUiRefreshCountForTesting();
+
  private:
   // Send the list of certificate provisioning processes to the UI, triggered by
   // the UI when it loads.
@@ -70,6 +80,9 @@ class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
   // Send the list of certificate provisioning processes to the UI.
   void RefreshCertificateProvisioningProcesses();
 
+  // Called when the |hold_back_updates_timer_| expires.
+  void OnHoldBackUpdatesTimerExpired();
+
   // Returns true if device-wide certificate provisioning processes should be
   // displayed, i.e. if the |user_profile| is affiliated.
   static bool ShouldUseDeviceWideProcesses(Profile* user_profile);
@@ -81,6 +94,23 @@ class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
   // The device-wide CertProvisioningScheduler. Can be nullptr.
   // Unowned.
   CertProvisioningScheduler* const scheduler_for_device_;
+
+  // When this timer is running, updates provided by the schedulers should not
+  // be forwarded to the UI until it fires. Used to prevent spamming the UI if
+  // many events come in in rapid succession.
+  base::OneShotTimer hold_back_updates_timer_;
+
+  // When this is true, an update should be sent to the UI when
+  // |hold_back_updates_timer_| fires.
+  bool update_after_hold_back_ = false;
+
+  // Keeps track of the count of UI refreshes sent to the WebUI.
+  unsigned int ui_refresh_count_for_testing_ = 0;
+
+  // Keeps track of the CertProvisioningSchedulers that this UI handler
+  // observes.
+  ScopedObserver<CertProvisioningScheduler, CertProvisioningSchedulerObserver>
+      observed_schedulers_{this};
 
   base::WeakPtrFactory<CertificateProvisioningUiHandler> weak_ptr_factory_{
       this};
