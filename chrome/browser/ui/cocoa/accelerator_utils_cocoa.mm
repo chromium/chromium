@@ -8,6 +8,7 @@
 
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"
 #import "ui/base/accelerators/platform_accelerator_cocoa.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
@@ -49,6 +50,10 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
                                      keyCode:mac_keycode];
 
   return CommandForKeyEvent(event).found();
+}
+
+ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser) {
+  return BrowserView::GetBrowserViewForBrowser(browser);
 }
 
 }  // namespace chrome
