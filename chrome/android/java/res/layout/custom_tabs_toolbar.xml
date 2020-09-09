@@ -96,14 +96,26 @@
         android:layout_gravity="center_vertical|end"
         android:gravity="center_vertical"
         android:orientation="horizontal" />
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/menu_button"
-        style="@style/ToolbarButton"
+
+
+    <org.chromium.chrome.browser.toolbar.menu_button.MenuButton
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:layout_width="42dp"
         android:paddingEnd="4dp"
-        android:src="@drawable/ic_more_vert_24dp"
+        android:clickable="true"
+        android:focusable="true"
         android:contentDescription="@string/accessibility_toolbar_btn_menu"
-        android:background="@null"
-        app:tint="@color/default_icon_color_tint_list" />
+        android:id="@+id/menu_button_wrapper">
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/menu_button"
+            style="@style/ToolbarButton"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:background="@null"
+            app:tint="@color/default_icon_color_tint_list" />
+
+    </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
 </org.chromium.chrome.browser.toolbar.top.CustomTabToolbar>

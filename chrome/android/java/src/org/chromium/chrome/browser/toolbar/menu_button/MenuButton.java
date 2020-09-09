@@ -79,14 +79,6 @@ public class MenuButton extends FrameLayout implements TintObserver {
         mMenuImageButton.setAccessibilityDelegate(mAppMenuButtonHelper.getAccessibilityDelegate());
     }
 
-    public AppMenuButtonHelper getAppMenuButtonHelper() {
-        return mAppMenuButtonHelper;
-    }
-
-    public View getMenuBadge() {
-        return mUpdateBadgeView;
-    }
-
     public ImageButton getImageButton() {
         return mMenuImageButton;
     }
@@ -99,6 +91,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
      * TODO(crbug.com/865801): Clean this up when MenuButton and UpdateMenuItemHelper is MVCed.
      */
     private void setUpdateBadgeVisibility(boolean visible) {
+        if (mUpdateBadgeView == null) return;
         mUpdateBadgeView.setVisibility(visible ? View.VISIBLE : View.GONE);
         if (visible) updateImageResources();
         updateContentDescription(visible);
@@ -130,7 +123,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
         // As an optimization, don't re-calculate drawable state for the update badge unless we
         // intend to actually show it.
         MenuButtonState buttonState = UpdateMenuItemHelper.getInstance().getUiState().buttonState;
-        if (buttonState == null) return;
+        if (buttonState == null || mUpdateBadgeView == null) return;
         @DrawableRes
         int drawable = mUseLightDrawables ? buttonState.lightBadgeIcon : buttonState.darkBadgeIcon;
         mUpdateBadgeView.setImageDrawable(
@@ -248,7 +241,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
      * @return Whether the update badge is showing.
      */
     public boolean isShowingAppMenuUpdateBadge() {
-        return mUpdateBadgeView.getVisibility() == View.VISIBLE;
+        return mUpdateBadgeView != null && mUpdateBadgeView.getVisibility() == View.VISIBLE;
     }
 
     private static boolean isBadgeAvailable() {
