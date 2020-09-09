@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/plugins/navigator_plugins.h"
 
-#include <initializer_list>
-
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
@@ -63,16 +61,16 @@ void RecordPlugins(LocalFrame* frame, DOMPluginArray* plugins) {
     IdentifiableTokenBuilder builder;
     for (unsigned i = 0; i < plugins->length(); i++) {
       DOMPlugin* plugin = plugins->item(i);
-      for (const String& token :
-           {plugin->name(), plugin->description(), plugin->filename()}) {
-        builder.AddToken(IdentifiabilityBenignStringToken(token));
-      }
+      builder.AddToken(IdentifiabilityBenignStringToken(plugin->name()));
+      builder.AddToken(IdentifiabilityBenignStringToken(plugin->description()));
+      builder.AddToken(IdentifiabilityBenignStringToken(plugin->filename()));
       for (unsigned j = 0; j < plugin->length(); j++) {
         DOMMimeType* mimeType = plugin->item(j);
-        for (const String& token : {mimeType->type(), mimeType->description(),
-                                    mimeType->suffixes()}) {
-          builder.AddToken(IdentifiabilityBenignStringToken(token));
-        }
+        builder.AddToken(IdentifiabilityBenignStringToken(mimeType->type()));
+        builder.AddToken(
+            IdentifiabilityBenignStringToken(mimeType->description()));
+        builder.AddToken(
+            IdentifiabilityBenignStringToken(mimeType->suffixes()));
       }
     }
     IdentifiabilityMetricBuilder(document->UkmSourceID())
