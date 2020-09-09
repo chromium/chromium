@@ -13,6 +13,9 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
@@ -42,6 +45,13 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "ui/aura/window.h"
+#endif
+
+#if defined(OS_WIN)
+#include "chrome/browser/shell_integration_win.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/win/shell.h"
 #endif
 
 namespace {
@@ -207,6 +217,27 @@ std::unique_ptr<content::OverlayWindow> OverlayWindowViews::Create(
 
   overlay_window->Init(std::move(params));
   overlay_window->OnRootViewReady();
+
+#if defined(OS_WIN)
+  base::string16 app_user_model_id;
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(controller->GetWebContents());
+  if (browser) {
+    const base::FilePath& profile_path = browser->profile()->GetPath();
+    // Set the window app id to GetAppUserModelIdForApp if the original window
+    // is an app window, GetAppUserModelIdForBrowser if it's a browser window.
+    app_user_model_id =
+        browser->is_type_app()
+            ? shell_integration::win::GetAppUserModelIdForApp(
+                  base::UTF8ToWide(browser->app_name()), profile_path)
+            : shell_integration::win::GetAppUserModelIdForBrowser(profile_path);
+    if (!app_user_model_id.empty()) {
+      ui::win::SetAppIdForWindow(
+          app_user_model_id,
+          overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+    }
+  }
+#endif  // defined(OS_WIN)
 
   return overlay_window;
 }
