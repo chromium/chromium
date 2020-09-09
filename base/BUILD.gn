@@ -1321,14 +1321,8 @@ component("base") {
       sources += [ "allocator/allocator_shim_default_dispatch_to_glibc.cc" ]
     } else if ((is_linux || is_chromeos || is_android) &&
                use_allocator == "partition") {
-      # Cannot use the same dispatching for host-side binaries.
-      if (is_a_target_toolchain) {
-        sources += [
-          "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc",
-        ]
-      } else {
-        sources += [ "allocator/allocator_shim_default_dispatch_to_glibc.cc" ]
-      }
+      sources +=
+          [ "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc" ]
     } else if (is_android) {
       sources +=
           [ "allocator/allocator_shim_override_linker_wrapped_symbols.h" ]
