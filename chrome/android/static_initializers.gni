@@ -12,16 +12,10 @@ import("//build/config/sanitizers/sanitizers.gni")
 if (current_toolchain == default_toolchain &&
     (!is_debug && !using_sanitizer && proprietary_codecs)) {
   # Define expectations only for target_cpu covered by trybots.
-  if (current_cpu == "arm") {
-    # Currently static_initializers come from:
-    # * iostream.cpp std::__1::ios_base::Init::Init()
-    # * token.cc: (empty initializer list)
-    # * base_logging.cc: (empty initializer list)  (//v8/src/base/logging.cc)
-    expected_static_initializer_count = 3
-  } else if (current_cpu == "arm64") {
-    # Currently static_initializers come from:
-    # * iostream.cpp std::__1::ios_base::Init::Init()
-    # * token.cc: (empty initializer list)
+  # Currently static_initializers come from:
+  # * iostream.cpp
+  # * token.cc
+  if (target_cpu == "arm" || target_cpu == "arm64") {
     expected_static_initializer_count = 2
   }
 }
