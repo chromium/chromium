@@ -35,6 +35,8 @@ EVENTS_EXPORT bool DispatchEventFromNativeUiEvent(
     const PlatformEvent& native_event,
     base::OnceCallback<void(ui::Event*)> callback);
 
+EVENTS_EXPORT void DisableNativeUiEventDispatchForTest();
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVENTS_OZONE_H_

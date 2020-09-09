@@ -7,10 +7,17 @@
 #include "ui/events/event.h"
 
 namespace ui {
+namespace {
+bool dispatch_disabled = false;
+}
 
 bool DispatchEventFromNativeUiEvent(
     const PlatformEvent& event,
     base::OnceCallback<void(ui::Event*)> callback) {
+  // If it's disabled for test, just return as if it's handled.
+  if (dispatch_disabled)
+    return true;
+
   // NB: ui::Events are constructed here using the overload that takes a
   // const PlatformEvent& (here ui::Event* const&) rather than the copy
   // constructor. This has side effects and cannot be changed to use the
@@ -46,6 +53,10 @@ bool DispatchEventFromNativeUiEvent(
   }
 
   return handled;
+}
+
+EVENTS_EXPORT void DisableNativeUiEventDispatchForTest() {
+  dispatch_disabled = true;
 }
 
 }  // namespace ui

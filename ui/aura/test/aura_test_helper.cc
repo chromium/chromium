@@ -42,6 +42,10 @@
 #include "ui/base/x/x11_util.h"  // nogncheck
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/events/ozone/events_ozone.h"
+#endif
+
 namespace aura {
 namespace test {
 namespace {
@@ -57,6 +61,10 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory,
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   ui::test::EnableTestConfigForPlatformWindows();
+#endif
+
+#if defined(USE_OZONE)
+  ui::DisableNativeUiEventDispatchForTest();
 #endif
 
   ui::InitializeInputMethodForTesting();
