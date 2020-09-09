@@ -142,6 +142,15 @@ WTF::TextStream& FEImage::ExternalRepresentation(WTF::TextStream& ts,
   return ts;
 }
 
+static FloatRect IntersectWithFilterRegion(const Filter* filter,
+                                           const FloatRect& rect) {
+  FloatRect filter_region = filter->FilterRegion();
+  // Workaround for crbug.com/512453.
+  if (filter_region.IsEmpty())
+    return rect;
+  return Intersection(rect, filter->MapLocalRectToAbsoluteRect(filter_region));
+}
+
 sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     const LayoutObject& layout_object) {
   FloatRect dst_rect =
@@ -157,8 +166,11 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     transform.Translate(dst_rect.X(), dst_rect.Y());
   }
 
+  // Clip the filter primitive rect by the filter region and use that as the
+  // cull rect for the paint record.
+  FloatRect crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
   PaintRecorder paint_recorder;
-  cc::PaintCanvas* canvas = paint_recorder.beginRecording(dst_rect);
+  cc::PaintCanvas* canvas = paint_recorder.beginRecording(crop_rect);
   canvas->concat(AffineTransformToSkMatrix(transform));
   {
     PaintRecordBuilder builder;
@@ -166,10 +178,13 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     builder.EndRecording(*canvas);
   }
   return sk_make_sp<RecordPaintFilter>(
-      paint_recorder.finishRecordingAsPicture(), dst_rect);
+      paint_recorder.finishRecordingAsPicture(), crop_rect);
 }
 
 sk_sp<PaintFilter> FEImage::CreateImageFilter() {
+  // The current implementation assumes this primitive is always set to clip to
+  // the filter bounds.
+  DCHECK(ClipsToBounds());
   if (const auto* layout_object = ReferencedLayoutObject())
     return CreateImageFilterForLayoutObject(*layout_object);
 
@@ -179,7 +194,12 @@ sk_sp<PaintFilter> FEImage::CreateImageFilter() {
     FloatRect dst_rect =
         GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
     preserve_aspect_ratio_->TransformRect(dst_rect, src_rect);
-    return sk_make_sp<ImagePaintFilter>(std::move(image), src_rect, dst_rect,
+    // Clip the filter primitive rect by the filter region and adjust the source
+    // rectangle if needed.
+    FloatRect crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
+    if (crop_rect != dst_rect)
+      src_rect = blink::MapRect(crop_rect, dst_rect, src_rect);
+    return sk_make_sp<ImagePaintFilter>(std::move(image), src_rect, crop_rect,
                                         kHigh_SkFilterQuality);
   }
   // "A href reference that is an empty image (zero width or zero height),
