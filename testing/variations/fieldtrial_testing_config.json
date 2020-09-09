@@ -829,18 +829,6 @@
             ]
         }
     ],
-    "BrowserBlacklist": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "BrowserJankinessProfiling": [
         {
             "platforms": [
@@ -8025,6 +8013,27 @@
                     "name": "SameDomainOnly",
                     "enable_features": [
                         "WebViewExtraHeadersSameDomainOnly"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WellKnownChangePassword": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WellKnownChangePassword"
                     ]
                 }
             ]
