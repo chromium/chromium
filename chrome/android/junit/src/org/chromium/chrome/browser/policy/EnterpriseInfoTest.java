@@ -8,25 +8,46 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Tests EnterpriseInfo.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
 public class EnterpriseInfoTest {
+    @Mock
+    public EnterpriseInfo.Natives mNatives;
+
     @Before
     public void setUp() {
         EnterpriseInfo.reset();
         // Skip the AsyncTask, we don't actually want to query the device, just enqueue callbacks.
         EnterpriseInfo.getInstance().setSkipAsyncCheckForTesting(true);
+
+        MockitoAnnotations.initMocks(this);
+        EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(mNatives);
+    }
+
+    @After
+    public void tearDown() {
+        EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(null);
     }
 
     /**
@@ -206,5 +227,31 @@ public class EnterpriseInfoTest {
         Assert.assertNotEquals("Wrong value check failed.", trueTrue, trueFalse);
         Assert.assertNotEquals("Wrong value check failed.", trueTrue, falseTrue);
         Assert.assertEquals("Correct value check failed.", trueTrue, trueTrue2);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetManagedStateForNative() {
+        EnterpriseInfo.getManagedStateForNative();
+        Mockito.verifyZeroInteractions(mNatives);
+
+        EnterpriseInfo.getInstance().setCacheResult(new EnterpriseInfo.OwnedState(true, false));
+        EnterpriseInfo.getInstance().onEnterpriseInfoResultAvailable();
+        Mockito.verify(mNatives, Mockito.times(1)).updateNativeOwnedState(true, false);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetManagedStateForNativeNullOwnedState() {
+        EnterpriseInfo.getInstance().setSkipAsyncCheckForTesting(false);
+        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
+            @Override
+            public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+                throw new RejectedExecutionException();
+            }
+        });
+
+        EnterpriseInfo.getManagedStateForNative();
+        Mockito.verify(mNatives, Mockito.times(1)).updateNativeOwnedState(false, false);
     }
 }

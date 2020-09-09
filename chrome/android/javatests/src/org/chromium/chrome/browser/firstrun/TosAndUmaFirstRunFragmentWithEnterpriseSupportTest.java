@@ -281,6 +281,20 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                         "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
     }
 
+    @Test
+    @SmallTest
+    public void testNullOwnedState() {
+        setAppRestrictiosnMockInitialized(true);
+        setPolicyServiceMockInitializedWithDialogEnabled(false);
+        launchFirstRunThroughCustomTab();
+        assertUIState(FragmentState.LOADING);
+
+        // Null means loading checking if the device is owned failed. This should be treated the
+        // same as not being owned, and no skipping should occur.
+        setEnterpriseInfoInitializedWithOwnedState(null);
+        assertUIState(FragmentState.NO_POLICY);
+    }
+
     /**
      * Launch chrome through custom tab and trigger first run.
      */
@@ -407,7 +421,11 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     }
 
     private void setEnterpriseInfoInitializedWithDeviceOwner(boolean hasDeviceOwner) {
-        EnterpriseInfo.OwnedState ownedState = new EnterpriseInfo.OwnedState(hasDeviceOwner, false);
+        setEnterpriseInfoInitializedWithOwnedState(
+                new EnterpriseInfo.OwnedState(hasDeviceOwner, false));
+    }
+
+    private void setEnterpriseInfoInitializedWithOwnedState(EnterpriseInfo.OwnedState ownedState) {
         Mockito.doAnswer(invocation -> {
                    Callback<EnterpriseInfo.OwnedState> callback = invocation.getArgument(0);
                    callback.onResult(ownedState);

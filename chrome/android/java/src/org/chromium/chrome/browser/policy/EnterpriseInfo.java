@@ -237,10 +237,10 @@ public class EnterpriseInfo {
             if (result == null) {
                 // Unable to determine the owned state, assume it's not owned.
                 EnterpriseInfoJni.get().updateNativeOwnedState(false, false);
+            } else {
+                EnterpriseInfoJni.get().updateNativeOwnedState(
+                        result.mDeviceOwned, result.mProfileOwned);
             }
-
-            EnterpriseInfoJni.get().updateNativeOwnedState(
-                    result.mDeviceOwned, result.mProfileOwned);
         };
 
         EnterpriseInfo.getInstance().getDeviceEnterpriseInfo(callback);
