@@ -3015,3 +3015,22 @@ TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight4ByContainers', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <p id="live" aria-live="polite"</p>
+    <script>
+    document.body.addEventListener('keydown', (evt) => {
+      document.getElementById('live').textContent = evt.key;
+    });
+    </script>
+  `,
+      function(root) {
+        mockFeedback.call(doGesture('swipeRight2')).expectSpeech('Enter');
+        mockFeedback.call(doGesture('swipeLeft2'))
+            .expectSpeech('Escape')
+            .replay();
+      });
+});

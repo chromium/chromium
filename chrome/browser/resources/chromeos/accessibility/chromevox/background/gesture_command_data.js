@@ -10,15 +10,13 @@ goog.require('KeyCode');
 /**
  * Map from gesture names (ax::mojom::Gesture defined in
  *     ui/accessibility/ax_enums.mojom.)  to commands.
- * @type {!Object<string,
- *     {
- *     msgId: string,
- *     command: (string|undefined),
+ * @type {!Object<string, {msgId: string, command: (string|undefined),
  *     acceleratorAction:
- *      (chrome.accessibilityPrivate.AcceleratorAction|undefined),
- *     menuKeyOverride:
- *      ({keyCode: KeyCode, modifiers: ({ctrl: boolean}|undefined)}|undefined)
- *    }>}
+ *     (chrome.accessibilityPrivate.AcceleratorAction|undefined),
+ *     globalKey: ({keyCode: KeyCode, modifiers:
+ *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined),
+ *     menuKeyOverride: ({keyCode: KeyCode, modifiers:
+ *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined)}>}
  * @const
  */
 GestureCommandData.GESTURE_COMMAND_MAP = {
@@ -45,8 +43,10 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
   },
   'swipeUp2': {msgId: 'swipeup2_gesture', command: 'jumpToTop'},
   'swipeDown2': {msgId: 'swipedown2_gesture', command: 'readFromHere'},
-  'swipeLeft2': {msgId: 'swipeleft2_gesture', command: 'previousWord'},
-  'swipeRight2': {msgId: 'swiperight2_gesture', command: 'nextWord'},
+  'swipeLeft2':
+      {msgId: 'swipeleft2_gesture', globalKey: {keyCode: KeyCode.ESCAPE}},
+  'swipeRight2':
+      {msgId: 'swiperight2_gesture', globalKey: {keyCode: KeyCode.RETURN}},
   'swipeUp3': {msgId: 'swipeup3_gesture', command: 'nextPage'},
   'swipeDown3': {msgId: 'swipedown3_gesture', command: 'previousPage'},
   'swipeLeft3': {msgId: 'swipeleft3_gesture', command: 'previousGranularity'},
