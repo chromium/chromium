@@ -246,6 +246,10 @@ void SessionControllerClientImpl::RequestSignOut() {
   chrome::AttemptUserExit();
 }
 
+void SessionControllerClientImpl::AttemptRestartChrome() {
+  chrome::AttemptRestart();
+}
+
 void SessionControllerClientImpl::SwitchActiveUser(
     const AccountId& account_id) {
   DoSwitchActiveUser(account_id);

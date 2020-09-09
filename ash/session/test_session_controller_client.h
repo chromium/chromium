@@ -110,6 +110,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   // ash::SessionControllerClient:
   void RequestLockScreen() override;
   void RequestSignOut() override;
+  void AttemptRestartChrome() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void CycleActiveUser(CycleUserDirection direction) override;
   void ShowMultiProfileLogin() override;

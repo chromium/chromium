@@ -138,6 +138,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // should use LockStateController::RequestSignOut() instead.
   void RequestSignOut();
 
+  // Attempts to restart the chrome browser.
+  void AttemptRestartChrome();
+
   // Switches to another active user with |account_id| (if that user has
   // already signed in).
   void SwitchActiveUser(const AccountId& account_id);

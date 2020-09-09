@@ -217,6 +217,8 @@ void TestSessionControllerClient::RequestSignOut() {
   ++request_sign_out_count_;
 }
 
+void TestSessionControllerClient::AttemptRestartChrome() {}
+
 void TestSessionControllerClient::SwitchActiveUser(
     const AccountId& account_id) {
   controller_->CanSwitchActiveUser(

@@ -217,6 +217,11 @@ void SessionControllerImpl::RequestSignOut() {
     client_->RequestSignOut();
 }
 
+void SessionControllerImpl::AttemptRestartChrome() {
+  if (client_)
+    client_->AttemptRestartChrome();
+}
+
 void SessionControllerImpl::SwitchActiveUser(const AccountId& account_id) {
   if (client_)
     client_->SwitchActiveUser(account_id);
