@@ -19,7 +19,6 @@ import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -38,17 +37,17 @@ public class PaymentRequestSpec {
     private List<PaymentItem> mRawLineItems;
     private PaymentItem mRawTotal;
     private final PaymentOptions mOptions;
-    private final Collection<PaymentMethodData> mMethodData;
+    private final Map<String, PaymentMethodData> mMethodData;
     private long mNativePointer;
 
     /**
      * Creates an instance to store the information received from the renderer that invoked the
      * Payment Request API.
      * @param options The payment options, e.g., whether shipping is requested.
-     * @param methodData The list of supported payment method identifiers and corresponding payment
+     * @param methodData The map of supported payment method identifiers and corresponding payment
      * method specific data.
      */
-    public PaymentRequestSpec(PaymentOptions options, Collection<PaymentMethodData> methodData) {
+    public PaymentRequestSpec(PaymentOptions options, Map<String, PaymentMethodData> methodData) {
         mOptions = options;
         mMethodData = methodData;
     }
@@ -60,20 +59,38 @@ public class PaymentRequestSpec {
      * @param appLocale The current application locale.
      */
     public void createNative(PaymentDetails details, String appLocale) {
-        mNativePointer = PaymentRequestSpecJni.get().create(mOptions.serialize(),
-                details.serialize(), MojoStructCollection.serialize(mMethodData), appLocale);
+        mNativePointer =
+                PaymentRequestSpecJni.get().create(mOptions.serialize(), details.serialize(),
+                        MojoStructCollection.serialize(mMethodData.values()), appLocale);
+    }
+
+    /** @return Whether destroy() has been called. */
+    public boolean isDestroyed() {
+        return mNativePointer == 0;
+    }
+
+    /**
+     * @return The map of supported payment method identifiers and corresponding payment
+     * method specific data. This value is still available after the instance is destroyed.
+     */
+    public Map<String, PaymentMethodData> getMethodData() {
+        return mMethodData;
     }
 
     /**
      * A mapping from method names to modifiers, which include modified totals and additional line
      * items. Used to display modified totals for each payment apps, modified total in order
-     * summary, and additional line items in order summary.
+     * summary, and additional line items in order summary. This value is still available after the
+     * instance is destroyed.
      */
     public Map<String, PaymentDetailsModifier> getModifiers() {
         return mModifiers;
     }
 
-    /** @return The id of the request, found in PaymentDetails. */
+    /**
+     * @return The id of the request, found in PaymentDetails. This value is still available after
+     *         the instance is destroyed.
+     */
     public String getId() {
         return mId;
     }
@@ -85,7 +102,8 @@ public class PaymentRequestSpec {
 
     /**
      * The raw shipping options, as it was received from the website. This data is passed to the
-     * payment app when the app is responsible for handling shipping address.
+     * payment app when the app is responsible for handling shipping address. This value is still
+     * available after the instance is destroyed.
      */
     public List<PaymentShippingOption> getRawShippingOptions() {
         return mRawShippingOptions;
@@ -98,7 +116,7 @@ public class PaymentRequestSpec {
 
     /**
      * The raw items in the shopping cart, as they were received from the website. This data is
-     * passed to the payment app.
+     * passed to the payment app. This value is still available after the instance is destroyed.
      */
     public List<PaymentItem> getRawLineItems() {
         return mRawLineItems;
@@ -111,7 +129,7 @@ public class PaymentRequestSpec {
 
     /**
      * The raw total amount being charged, as it was received from the website. This data is passed
-     * to the payment app.
+     * to the payment app. This value is still available after the instance is destroyed.
      */
     public PaymentItem getRawTotal() {
         return mRawTotal;
@@ -124,7 +142,7 @@ public class PaymentRequestSpec {
 
     /**
      * Called when the renderer updates the payment details in response to, e.g., new shipping
-     * address.
+     * address. This cannot be used after the instance is destroyed.
      * @param details The updated payment details, e.g., the updated total amount.
      */
     public void updateWith(PaymentDetails details) {
@@ -132,7 +150,8 @@ public class PaymentRequestSpec {
     }
 
     /**
-     * Called when merchant retries a failed payment.
+     * Called when merchant retries a failed payment. This cannot be used after the instance is
+     * destroyed.
      * @param validationErrors The information about the fields that failed the validation.
      */
     public void retry(PaymentValidationErrors validationErrors) {
@@ -140,14 +159,15 @@ public class PaymentRequestSpec {
     }
 
     /**
-     * Recomputes spec based on details.
+     * Recomputes spec based on details. This cannot be used after the instance is destroyed.
      */
     public void recomputeSpecForDetails() {
         PaymentRequestSpecJni.get().recomputeSpecForDetails(mNativePointer);
     }
 
     /**
-     * Returns the selected shipping option error.
+     * Returns the selected shipping option error. This cannot be used after the instance is
+     * destroyed.
      */
     @Nullable
     public String selectedShippingOptionError() {

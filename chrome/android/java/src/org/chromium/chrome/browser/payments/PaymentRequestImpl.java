@@ -225,7 +225,6 @@ public class PaymentRequestImpl
     private boolean mHasClosed;
 
     private PaymentRequestSpec mSpec;
-    private Map<String, PaymentMethodData> mMethodData;
     private int mShippingType;
     private boolean mIsFinishedQueryingPaymentApps;
     private List<PaymentApp> mPendingApps = new ArrayList<>();
@@ -324,10 +323,9 @@ public class PaymentRequestImpl
 
     // Implement BrowserPaymentRequest:
     @Override
-    public boolean initAndValidate(PaymentMethodData[] methodData, PaymentDetails details,
+    public boolean initAndValidate(PaymentMethodData[] rawMethodData, PaymentDetails details,
             @Nullable PaymentOptions options, boolean googlePayBridgeEligible) {
         assert mComponentPaymentRequestImpl != null;
-        mMethodData = new HashMap<>();
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.INITIATED);
 
         mPaymentOptions = options;
@@ -360,22 +358,23 @@ public class PaymentRequestImpl
         }
 
         boolean googlePayBridgeActivated = googlePayBridgeEligible
-                && SkipToGPayHelper.canActivateExperiment(mWebContents, methodData);
+                && SkipToGPayHelper.canActivateExperiment(mWebContents, rawMethodData);
 
-        mMethodData = getValidatedMethodData(
-                methodData, googlePayBridgeActivated, mPaymentUIsManager.getCardEditor());
-        if (mMethodData == null) {
+        Map<String, PaymentMethodData> methodData = getValidatedMethodData(
+                rawMethodData, googlePayBridgeActivated, mPaymentUIsManager.getCardEditor());
+
+        if (methodData == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA);
             return false;
         }
 
         if (googlePayBridgeActivated) {
-            PaymentMethodData data = mMethodData.get(MethodStrings.GOOGLE_PAY);
+            PaymentMethodData data = methodData.get(MethodStrings.GOOGLE_PAY);
             mSkipToGPayHelper = new SkipToGPayHelper(options, data.gpayBridgeData);
         }
 
-        mQueryForQuota = new HashMap<>(mMethodData);
+        mQueryForQuota = new HashMap<>(methodData);
         if (mQueryForQuota.containsKey(MethodStrings.BASIC_CARD)
                 && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
@@ -385,7 +384,7 @@ public class PaymentRequestImpl
             mQueryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
 
-        mSpec = new PaymentRequestSpec(mPaymentOptions, mMethodData.values());
+        mSpec = new PaymentRequestSpec(mPaymentOptions, methodData);
         if (parseAndValidateDetails(details)
                 && parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
@@ -420,7 +419,7 @@ public class PaymentRequestImpl
         // better captures this group of interest than requestedMethodBasicCard.
         boolean requestedMethodOther = false;
         mURLPaymentMethodIdentifiersSupported = false;
-        for (String methodName : mMethodData.keySet()) {
+        for (String methodName : mSpec.getMethodData().keySet()) {
             switch (methodName) {
                 case MethodStrings.ANDROID_PAY:
                 case MethodStrings.GOOGLE_PAY:
@@ -906,6 +905,8 @@ public class PaymentRequestImpl
     @Override
     public void updateWith(PaymentDetails details) {
         if (mComponentPaymentRequestImpl == null) return;
+        // mSpec.updateWith() can be used only when mSpec has not been destroyed.
+        assert !mSpec.isDestroyed();
 
         if (mWaitForUpdatedDetails) {
             initializeWithUpdatedDetails(details);
@@ -965,6 +966,8 @@ public class PaymentRequestImpl
 
     private void initializeWithUpdatedDetails(PaymentDetails details) {
         assert mWaitForUpdatedDetails;
+        // mSpec.updateWith() can be used only when mSpec has not been destroyed.
+        assert !mSpec.isDestroyed();
 
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (chromeActivity == null) {
@@ -1027,6 +1030,9 @@ public class PaymentRequestImpl
     @Override
     public void onPaymentDetailsNotUpdated() {
         if (mComponentPaymentRequestImpl == null) return;
+        // mSpec.recomputeSpecForDetails(), mSpec.selectedShippingOptionError() can be used only
+        // when mSpec has not been destroyed.
+        assert !mSpec.isDestroyed();
 
         if (mPaymentUIsManager.getPaymentRequestUI() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -1292,8 +1298,8 @@ public class PaymentRequestImpl
         Map<String, PaymentDetailsModifier> modifiers = new HashMap<>();
         boolean isGooglePaymentApp = false;
         for (String paymentMethodName : mInvokedPaymentApp.getInstrumentMethodNames()) {
-            if (mMethodData.containsKey(paymentMethodName)) {
-                methodData.put(paymentMethodName, mMethodData.get(paymentMethodName));
+            if (mSpec.getMethodData().containsKey(paymentMethodName)) {
+                methodData.put(paymentMethodName, mSpec.getMethodData().get(paymentMethodName));
             }
             if (mSpec.getModifiers().containsKey(paymentMethodName)) {
                 modifiers.put(paymentMethodName, mSpec.getModifiers().get(paymentMethodName));
@@ -1464,6 +1470,8 @@ public class PaymentRequestImpl
     @Override
     public void retry(PaymentValidationErrors errors) {
         if (mComponentPaymentRequestImpl == null) return;
+        // mSpec.retry() can be used only when mSpec has not been destroyed.
+        assert !mSpec.isDestroyed();
 
         if (!PaymentValidator.validatePaymentValidationErrors(errors)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -1618,7 +1626,7 @@ public class PaymentRequestImpl
     // PaymentAppFactoryParams implementation.
     @Override
     public Map<String, PaymentMethodData> getMethodData() {
-        return mMethodData;
+        return mSpec.getMethodData();
     }
 
     // PaymentAppFactoryParams implementation.
@@ -1899,11 +1907,11 @@ public class PaymentRequestImpl
                 }
 
                 if (TextUtils.isEmpty(mRejectShowErrorMessage) && !isInTwa()
-                        && mMethodData.get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
+                        && mSpec.getMethodData().get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
                     mRejectShowErrorMessage = ErrorStrings.APP_STORE_METHOD_ONLY_SUPPORTED_IN_TWA;
                 }
                 disconnectFromClientWithDebugMessage(
-                        ErrorMessageUtil.getNotSupportedErrorMessage(mMethodData.keySet())
+                        ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet())
                                 + (TextUtils.isEmpty(mRejectShowErrorMessage)
                                                 ? ""
                                                 : " " + mRejectShowErrorMessage),
@@ -1928,7 +1936,7 @@ public class PaymentRequestImpl
      * @return Whether client has been disconnected.
      */
     private boolean disconnectForStrictShow() {
-        if (!mIsUserGestureShow || !mMethodData.containsKey(MethodStrings.BASIC_CARD)
+        if (!mIsUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
                 || mHasEnrolledInstrument || mHasNonAutofillApp
                 || !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
@@ -1940,7 +1948,7 @@ public class PaymentRequestImpl
         }
         mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
         disconnectFromClientWithDebugMessage(
-                ErrorMessageUtil.getNotSupportedErrorMessage(mMethodData.keySet()) + " "
+                ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet()) + " "
                         + mRejectShowErrorMessage,
                 PaymentErrorReason.NOT_SUPPORTED);
 
@@ -2133,7 +2141,6 @@ public class PaymentRequestImpl
 
         if (mSpec != null) {
             mSpec.destroy();
-            mSpec = null;
         }
         PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
