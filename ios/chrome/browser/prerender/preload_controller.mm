@@ -465,6 +465,10 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   [self schedulePrerenderCancel];
 }
 
+- (void)onShowConsistencyPromo {
+  [self schedulePrerenderCancel];
+}
+
 - (void)onAddAccount {
   [self schedulePrerenderCancel];
 }

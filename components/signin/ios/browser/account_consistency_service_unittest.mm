@@ -440,6 +440,61 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsDefault) {
   EXPECT_OCMOCK_VERIFY(delegate);
 }
 
+// Tests that the ManageAccountsDelegate is notified when a navigation on Gaia
+// signon realm returns with a X-Chrome-Manage-Accounts header with show
+// consistency promo and ADDSESSION action.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsShowConsistencyPromo) {
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  [[delegate expect] onShowConsistencyPromo];
+
+  NSDictionary* headers = [NSDictionary
+      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
+                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
+      .Times(1);
+  EXPECT_FALSE(
+      web_state_.ShouldAllowResponse(response, /* for_main_frame = */ true));
+  web_state_.WebStateDestroyed();
+
+  EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Tests that the ManageAccountsDelegate is notified when a navigation on Gaia
+// signon realm returns with a X-Chrome-Manage-Accounts header with ADDSESSION
+// action.
+TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsShowAddAccount) {
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  [[delegate expect] onAddAccount];
+
+  NSDictionary* headers =
+      [NSDictionary dictionaryWithObject:@"action=ADDSESSION"
+                                  forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
+      .Times(1);
+  EXPECT_FALSE(
+      web_state_.ShouldAllowResponse(response, /* for_main_frame = */ true));
+  web_state_.WebStateDestroyed();
+
+  EXPECT_OCMOCK_VERIFY(delegate);
+}
+
 // Tests that domains with cookie are correctly loaded from the prefs on service
 // startup.
 TEST_F(AccountConsistencyServiceTest, DomainsWithCookieLoadedFromPrefs) {

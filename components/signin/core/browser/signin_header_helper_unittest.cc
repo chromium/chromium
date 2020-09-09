@@ -160,10 +160,11 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
                            "consistency_enabled_by_default=false");
 }
 #else  // !defined(OS_CHROMEOS)
-#if defined(OS_ANDROID)
-// Tests that Mirror request is returned on Android for Public Sessions (no
-// account id), when the Mobile Identity Consistency feature is enabled.
-TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdAndroid) {
+#if defined(OS_ANDROID) || defined(OS_IOS)
+// Tests that Mirror request is returned on mobile (Android, iOS) for Public
+// Sessions (no account id), when the Mobile Identity Consistency feature is
+// enabled.
+TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdMobile) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
 
@@ -176,7 +177,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdAndroid) {
 
 // Tests that the full Mirror request is returned when the
 // force_account_consistency param is true.
-TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyAndroid) {
+TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
 
@@ -187,7 +188,7 @@ TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyAndroid) {
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
 }
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
 // Tests that no Mirror request is returned when the user is not signed in (no
 // account id), for non Chrome OS platforms.
@@ -592,6 +593,7 @@ TEST_F(SigninHeaderHelperTest, TestInvalidManageAccountsParams) {
   EXPECT_EQ(GAIA_SERVICE_TYPE_NONE, params.service_type);
 }
 
+// Tests that managed accounts' header is parsed correctly from string input.
 TEST_F(SigninHeaderHelperTest, TestBuildManageAccountsParams) {
   const char kContinueURL[] = "https://www.example.com/continue";
   const char kEmail[] = "foo@example.com";
@@ -600,7 +602,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildManageAccountsParams) {
       "action=ADDSESSION,email=%s,is_saml=true,"
       "is_same_tab=true,continue_url=%s",
       kEmail, kContinueURL);
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS)
   header += ",show_consistency_promo=true";
 #endif
 
@@ -610,7 +612,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildManageAccountsParams) {
   EXPECT_EQ(true, params.is_saml);
   EXPECT_EQ(true, params.is_same_tab);
   EXPECT_EQ(GURL(kContinueURL), params.continue_url);
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_EQ(true, params.show_consistency_promo);
 #endif
 }

@@ -115,7 +115,8 @@ void AccountConsistencyHandler::ShouldAllowResponse(
     return;
   }
   NSString* manage_accounts_header = [[http_response allHeaderFields]
-      objectForKey:@"X-Chrome-Manage-Accounts"];
+      objectForKey:
+          [NSString stringWithUTF8String:signin::kChromeManageAccountsHeader]];
   if (!manage_accounts_header) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
@@ -135,7 +136,11 @@ void AccountConsistencyHandler::ShouldAllowResponse(
     }
     case signin::GAIA_SERVICE_TYPE_SIGNUP:
     case signin::GAIA_SERVICE_TYPE_ADDSESSION:
-      [delegate_ onAddAccount];
+      if (params.show_consistency_promo) {
+        [delegate_ onShowConsistencyPromo];
+      } else {
+        [delegate_ onAddAccount];
+      }
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
     case signin::GAIA_SERVICE_TYPE_DEFAULT:

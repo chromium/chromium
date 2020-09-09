@@ -994,6 +994,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
+- (void)showConsistencyPromoFromViewController:
+    (UIViewController*)baseViewController {
+  DCHECK(!self.signinCoordinator);
+  // TODO(crbug.com/1125631): Add new consistency promo UI to enable sign-in.
+}
+
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
   _incognitoContentVisible = incognitoContentVisible;
 }

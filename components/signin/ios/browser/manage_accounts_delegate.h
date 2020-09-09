@@ -16,6 +16,10 @@ class GURL;
 // Called when the user taps on an add account button in a Google web property.
 - (void)onAddAccount;
 
+// Called when the user taps a sign-in or add account button in a Google web
+// property with signin::kMobileIdentityConsistency enabled.
+- (void)onShowConsistencyPromo;
+
 // Called when the user taps on go incognito button in a Google web property.
 // |url| is the continuation URL received from the server. If it is valid,
 // then this delegate should open an incognito tab and navigate to |url|.
