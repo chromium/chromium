@@ -335,7 +335,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M84',
-          'revision': 'version:84.0.4147.89',
+          'revision': 'version:dup-84.0.4147.89',
         }
       ],
     },
@@ -404,7 +404,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M84',
-          'revision': 'version:84.0.4147.89',
+          'revision': 'version:dup-84.0.4147.89',
         }
       ],
     },
