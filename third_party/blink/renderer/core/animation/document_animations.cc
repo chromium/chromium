@@ -73,14 +73,22 @@ void DocumentAnimations::AddTimeline(AnimationTimeline& timeline) {
 }
 
 void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
+  // https://drafts.csswg.org/web-animations-1/#timelines.
+
+  // 1. Update the current time of all timelines associated with doc passing now
+  //    as the timestamp.
   UpdateAnimationTiming(*document_, timelines_, kTimingUpdateForAnimationFrame);
 
-  // Perform a microtask checkpoint per step 3 of
-  // https://drafts.csswg.org/web-animations-1/#timelines. This is to
-  // ensure that any microtasks queued up as a result of resolving or
-  // rejecting Promise objects as part of updating timelines run their
-  // callbacks prior to dispatching animation events and generating
-  // the next main frame.
+  // 2. Remove replaced animations for doc.
+  ReplaceableAnimationsMap replaceable_animations_map;
+  for (auto& timeline : timelines_)
+    timeline->getReplaceableAnimations(&replaceable_animations_map);
+  RemoveReplacedAnimations(&replaceable_animations_map);
+
+  // 3. Perform a microtask checkpoint
+  // This is to ensure that any microtasks queued up as a result of resolving or
+  // rejecting Promise objects as part of updating timelines run their callbacks
+  // prior to dispatching animation events and generating the next main frame.
   Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
 }
 
@@ -181,4 +189,56 @@ void DocumentAnimations::GetAnimationsTargetingTreeScope(
     }
   }
 }
+
+void DocumentAnimations::RemoveReplacedAnimations(
+    DocumentAnimations::ReplaceableAnimationsMap* replaceable_animations_map) {
+  HeapVector<Member<Animation>> animations_to_remove;
+  for (auto& elem_it : *replaceable_animations_map) {
+    HeapVector<Member<Animation>>* animations = elem_it.value;
+
+    // Only elements with multiple animations in the replaceable state need to
+    // be checked.
+    if (animations->size() == 1)
+      continue;
+
+    // By processing in decreasing order by priority, we can perform a single
+    // pass for discovery of replaced properties.
+    std::sort(animations->begin(), animations->end(), CompareAnimations);
+    PropertyHandleSet replaced_properties;
+    for (auto anim_it = animations->rbegin(); anim_it != animations->rend();
+         anim_it++) {
+      // Remaining conditions for removal:
+      // * has a replace state of active,  and
+      // * for which there exists for each target property of every animation
+      //   effect associated with animation, an animation effect associated with
+      //   a replaceable animation with a higher composite order than animation
+      //   that includes the same target property.
+
+      // Only active animations can be removed. We still need to go through
+      // the process of iterating over properties if not removable to update
+      // the set of properties being replaced.
+      bool replace = (*anim_it)->ReplaceStateActive();
+      PropertyHandleSet animation_properties =
+          To<KeyframeEffect>((*anim_it)->effect())->Model()->Properties();
+      for (const auto& property : animation_properties) {
+        auto inserted = replaced_properties.insert(property);
+        if (inserted.is_new_entry) {
+          // Top-most compositor order animation affecting this property.
+          replace = false;
+        }
+      }
+      if (replace)
+        animations_to_remove.push_back(*anim_it);
+    }
+  }
+
+  // The list of animations for removal is constructed in reverse composite
+  // ordering for efficiency. Flip the ordering to ensure that events are
+  // dispatched in composite order.
+  for (auto it = animations_to_remove.rbegin();
+       it != animations_to_remove.rend(); it++) {
+    (*it)->RemoveReplacedAnimation();
+  }
+}
+
 }  // namespace blink

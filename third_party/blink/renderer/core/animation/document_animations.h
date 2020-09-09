@@ -75,6 +75,11 @@ class CORE_EXPORT DocumentAnimations final
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
 
+ protected:
+  using ReplaceableAnimationsMap =
+      HeapHashMap<Member<Element>, Member<HeapVector<Member<Animation>>>>;
+  void RemoveReplacedAnimations(ReplaceableAnimationsMap*);
+
  private:
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
