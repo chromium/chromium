@@ -7,17 +7,36 @@ Splits nodes according to the first camelcase part of their name attribute.
 Intended to be used to split up the large histograms.xml or enums.xml file.
 """
 
-import logging
 import os
-import sys
 from xml.dom import minidom
 
 import histogram_configuration_model
 import histogram_paths
+import merge_xml
+import path_util
 
+# The top level comment templates that will be formatted and added to each split
+# histograms xml.
+FIRST_TOP_LEVEL_COMMENT_TEMPLATE = """
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+"""
+SECOND_TOP_LEVEL_COMMENT_TEMPLATE = """
+This file is used to generate a comprehensive list of %s along
+with a detailed description for each histogram.
 
-# The default name of the histograms XML file.
-HISTOGRAMS_XML = 'histograms.xml'
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+For brief details on how to modify this file to add your description, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/one-pager.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+"""
 # Number of times that splitting of histograms will be carried out.
 TARGET_DEPTH = 1
 # The number of histograms below which they will be aggregated into
@@ -25,41 +44,18 @@ TARGET_DEPTH = 1
 AGGREGATE_THRESHOLD = 20
 
 
-def _ParseHistogramsXMLFile(base_dir):
-  """Parses the |HISTOGRAMS_XML| in |base_dir|.
-
-  Args:
-    base_dir: The directory that contains the histograms.xml to be split.
-
-  Returns:
-    comments: A list of top-level comment nodes.
-    histogram_nodes: A DOM NodeList object containing <histogram> nodes
-    histogram_suffixes_nodes: A DOM NodeList object containing
-        <histogram_suffixes> nodes.
-
-  Raises:
-    FileNotFoundError if histograms.xml not found in |base_dir|.
-  """
-  if HISTOGRAMS_XML not in os.listdir(base_dir):
-    raise ValueError(HISTOGRAMS_XML + 'is not in %s' % base_dir)
-
-  dom = minidom.parse(os.path.join(base_dir, HISTOGRAMS_XML))
-  comments = []
-
-  # Get top-level comments. It is assumed that all comments are placed before
-  # tags. Therefore the loop will stop if it encounters a non-comment node.
-  for node in dom.childNodes:
-    if node.nodeType == minidom.Node.COMMENT_NODE:
-      comments.append(node)
-    else:
-      break
-
-  histogram_nodes = dom.getElementsByTagName('histogram')
-  histogram_suffixes_nodes = dom.getElementsByTagName('histogram_suffixes')
-  return comments, histogram_nodes, histogram_suffixes_nodes
+def _ParseMergedXML():
+  """Parses merged xml into different types of nodes"""
+  merged_histograms = merge_xml.MergeFiles(histogram_paths.HISTOGRAMS_XMLS +
+                                           [histogram_paths.OBSOLETE_XML])
+  histogram_nodes = merged_histograms.getElementsByTagName('histogram')
+  variants_nodes = merged_histograms.getElementsByTagName('variants')
+  histogram_suffixes_nodes = merged_histograms.getElementsByTagName(
+      'histogram_suffixes')
+  return histogram_nodes, variants_nodes, histogram_suffixes_nodes
 
 
-def _CreateXMLFile(comments, parent_node_string, nodes, output_dir, filename):
+def _CreateXMLFile(comment, parent_node_string, nodes, output_dir, filename):
   """Creates XML file for given type of XML nodes.
 
   This function also creates a |parent_node_string| tag as the parent node, e.g.
@@ -67,7 +63,8 @@ def _CreateXMLFile(comments, parent_node_string, nodes, output_dir, filename):
   output XML.
 
   Args:
-    comments: Top level comment nodes from the original histograms.xml file.
+    comment: The string to be formatted in the |TOP_LEVEL_COMMENT_TEMPLATE|
+        which will then be added on top of each split xml.
     parent_node_string: The name of the the second-level parent node, e.g.
         <histograms> or <histogram_suffixes_list>.
     nodes: A DOM NodeList object or a list containing <histogram> or
@@ -77,9 +74,9 @@ def _CreateXMLFile(comments, parent_node_string, nodes, output_dir, filename):
   """
   doc = minidom.Document()
 
-  # Attach top-level comments.
-  for comment_node in comments:
-    doc.appendChild(comment_node)
+  doc.appendChild(doc.createComment(FIRST_TOP_LEVEL_COMMENT_TEMPLATE))
+  doc.appendChild(doc.createComment(SECOND_TOP_LEVEL_COMMENT_TEMPLATE %
+                                    comment))
 
   # Create the <histogram-configuration> node for the new histograms.xml file.
   histogram_config_element = doc.createElement('histogram-configuration')
@@ -91,45 +88,49 @@ def _CreateXMLFile(comments, parent_node_string, nodes, output_dir, filename):
   for node in nodes:
     parent_element.appendChild(node)
 
+  output_path = os.path.join(output_dir, filename)
+  if os.path.exists(output_path):
+    os.remove(output_path)
+
   # Use the model to get pretty-printed XML string and write into file.
-  with open(os.path.join(output_dir, filename), 'w') as output_file:
+  with open(output_path, 'w') as output_file:
     pretty_xml_string = histogram_configuration_model.PrettifyTree(doc)
     output_file.write(pretty_xml_string)
 
 
-def _GetCamelName(histogram_node, depth=0):
-  """Returns the first camelcase name part of the histogram node.
+def _GetCamelName(node, depth=0):
+  """Returns the first camelcase name part of the given |node|.
 
   Args:
-    histogram_node: The histogram node.
+    node: The node to get name from.
     depth: The depth that specifies which name part will be returned.
-        e.g. For a histogram of name
+        e.g. For a node of name
         'CustomTabs.DynamicModule.CreatePackageContextTime'
-        The returned camelname for depth 0 is 'Custom';
-        The returned camelname for depth 1 is 'Dynamic';
-        The returned camelname for depth 2 is 'Create'.
+        The returned camel name for depth 0 is 'Custom';
+        The returned camel name for depth 1 is 'Dynamic';
+        The returned camel name for depth 2 is 'Create'.
 
         Default depth is set to 0 as this function is imported and
         used in other files, where depth used is 0.
 
   Returns:
-    The camelcase namepart at specified depth.
-    If the number of name parts is less than the depth, return 'others'.
+    The camelcase name part at specified depth. If the number of name parts is
+    less than the depth, return 'others'.
   """
-  histogram_name = histogram_node.getAttribute('name')
-  split_string_list = histogram_name.split('.')
+  name = node.getAttribute('name')
+  split_string_list = name.split('.')
   if len(split_string_list) <= depth:
     return 'others'
   else:
     name_part = split_string_list[depth]
     start_index = 0
     # |all_upper| is used to identify the case where the name is ABCDelta, in
-    # which case the camelname of depth 0 should be ABC, instead of A.
+    # which case the camel name of depth 0 should be ABC, instead of A.
     all_upper = True
     for index, letter in enumerate(name_part):
       if letter.islower() or letter.isnumeric():
         all_upper = False
-      if letter.isupper() and all_upper == False:
+      if letter.isupper() and not all_upper:
         start_index = index
         break
 
@@ -149,98 +150,91 @@ def GetDirForNode(node):
   return 'others'
 
 
-def _AddHistogramsToDict(histogram_nodes, depth):
-  """Adds histogram nodes to the corresponding keys of a dictionary.
-
-  Args:
-    histogram_nodes: A NodeList object containing <histogram> nodes.
-    depth: The depth at which to get the histogram key by.
-
-  Returns:
-    document_dict: A dictionary where the key is the prefix and the value is a
-        list of histogram nodes.
-  """
-  document_dict = {}
-  for histogram in histogram_nodes:
-    name_part = _GetCamelName(histogram, depth)
-    if name_part not in document_dict:
-      document_dict[name_part] = []
-    document_dict[name_part].append(histogram)
-
-  return document_dict
-
-
-def _OutputToFolderAndXML(histogram_node_list, output_dir, key, comments):
+def _OutputToFolderAndXML(nodes, output_dir, key):
   """Creates new folder and XML file for separated histograms.
 
   Args:
-    histogram_node_list: A of histograms of a prefix.
+    nodes: A list of histogram/variants nodes of a prefix.
     output_dir: The output directory.
     key: The prefix of the histograms, also the name of the new folder.
-    comments: The omments from the initial histograms.xml that should be added
-        to the resulting histograms.xml files.
   """
-  new_folder = os.path.join(output_dir, key)
-  if not os.path.exists(new_folder):
-    os.mkdir(new_folder)
-  _CreateXMLFile(comments, 'histograms', histogram_node_list, new_folder,
-                 HISTOGRAMS_XML)
+  output_dir = os.path.join(output_dir, key)
+  if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+  _CreateXMLFile(key + ' histograms', 'histograms', nodes, output_dir,
+                 'histograms.xml')
 
 
-def _AggregateAndOutput(document_dict, output_dir, comments):
-  """Aggregates groups of histograms below threshold number into 'others'.
+def _WriteDocumentDict(document_dict, output_dir):
+  """Recursively writes |document_dict| to xmls in |output_dir|.
 
   Args:
     document_dict: A dictionary where the key is the prefix of the histogram and
-        value is a list of histogram nodes.
+        value is a list of nodes or another dict.
     output_dir: The output directory of the resulting folders.
-    comments: The comments from the initial histograms.xml that should be added
-        to the resulting histograms.xml files.
   """
-  if 'others' not in document_dict:
-    document_dict['others'] = []
+  for key, val in document_dict:
+    if isinstance(val, list):
+      _OutputToFolderAndXML(val, output_dir, key)
+    else:
+      _WriteDocumentDict(val, os.path.join(output_dir, key))
 
-  for key in document_dict.keys():
-    # As histograms might still be added to 'others', only create XML for
-    # 'others' key at the end.
-    if key == 'others':
-      continue
 
+def _AggregateMinorNodes(node_dict):
+  """Aggregates groups of nodes below threshold number into 'others'.
+
+  Args:
+    node_dict: A dictionary where the key is the prefix of the histogram/variant
+        and value is a list of histogram/variant nodes.
+  """
+  others = node_dict.pop('others', [])
+
+  for key, nodes in node_dict.items():
     # For a prefix, if the number of histograms is fewer than threshold,
     # aggregate into others.
-    if len(document_dict[key]) < AGGREGATE_THRESHOLD:
-      document_dict['others'] += document_dict[key]
+    if len(nodes) < AGGREGATE_THRESHOLD:
+      others.extend(nodes)
+      del node_dict[key]
+
+  if others:
+    node_dict['others'] = others
+
+
+def _BuildDocumentDict(nodes, depth):
+  """Recursively builds a document dict which will be written later.
+
+  This function recursively builds a document dict which the key of the dict is
+  the first word of the node's name at the given |depth| and the value of the
+  dict is either a list of nodes that correspond to the key or another dict if
+  it doesn't reach to |TARGET_DEPTH|.
+
+  Args:
+    nodes: A list of histogram nodes or variants node.
+    depth: The current depth, starting from 0.
+
+  Returns:
+    The document dict.
+  """
+  if depth == TARGET_DEPTH:
+    return nodes
+
+  temp_dict = document_dict = {}
+  for node in nodes:
+    name_part = _GetCamelName(node, depth)
+    if name_part not in temp_dict:
+      temp_dict[name_part] = []
+    temp_dict[name_part].append(node)
+
+  # Aggregate keys with less than |AGGREGATE_THRESHOLD| values to 'others'.
+  _AggregateMinorNodes(temp_dict)
+
+  for key, nodes in temp_dict.items():
+    if key == 'others':
+      document_dict[key] = nodes
     else:
-      _OutputToFolderAndXML(document_dict[key], output_dir, key, comments)
+      document_dict[key] = _BuildDocumentDict(nodes, depth + 1)
 
-  _OutputToFolderAndXML(document_dict['others'], output_dir, 'others', comments)
-
-
-def _SplitHistograms(output_dir, depth):
-  """Splits the histograms node at given depth, aggregates and outputs."""
-  comments, histogram_nodes, _ = _ParseHistogramsXMLFile(output_dir)
-  document_dict = _AddHistogramsToDict(histogram_nodes, depth)
-  _AggregateAndOutput(document_dict, output_dir, comments)
-
-
-def _SplitHistogramsRecursive(output_base_dir, current_depth):
-  """Calls itself recursively on newly output directories until target depth."""
-  _SplitHistograms(output_base_dir, current_depth)
-  histogram_file = os.path.join(output_base_dir, HISTOGRAMS_XML)
-
-  # Remove original histograms.xml file after splitting.
-  if os.path.exists(histogram_file):
-    os.remove(histogram_file)
-
-  current_depth += 1
-  if current_depth < TARGET_DEPTH:
-    # For each subfolder, split the histograms.xml file inside.
-    for subfolder in [
-        os.path.join(output_base_dir, subdir)
-        for subdir in os.listdir(output_base_dir)
-        if os.path.isdir(os.path.join(output_base_dir, subdir))
-    ]:
-      _SplitHistogramsRecursive(subfolder, current_depth)
+  return document_dict
 
 
 def _SeparateObsoleteHistogram(histogram_nodes):
@@ -264,49 +258,33 @@ def _SeparateObsoleteHistogram(histogram_nodes):
   return obsolete_nodes, non_obsolete_nodes
 
 
-def SplitIntoMultipleHistogramXMLs(base_dir, output_base_dir):
+def SplitIntoMultipleHistogramXMLs(output_base_dir):
   """Splits a large histograms.xml and writes out the split xmls.
 
   Args:
-    base_dir: The directory that contains the histograms.xml to be split.
     output_base_dir: The output base directory.
   """
   if not os.path.exists(output_base_dir):
     os.mkdir(output_base_dir)
 
+  histogram_nodes, variants_nodes, histogram_suffixes_nodes = _ParseMergedXML()
 
-  comments, histogram_nodes, histogram_suffixes_nodes = _ParseHistogramsXMLFile(
-      base_dir)
   # Create separate XML file for histogram suffixes.
-  _CreateXMLFile(comments,
-                 'histogram_suffixes_list',
-                 histogram_suffixes_nodes,
-                 output_base_dir,
-                 filename='histogram_suffixes.xml')
+  _CreateXMLFile('histogram suffixes', 'histogram_suffixes_list',
+                 histogram_suffixes_nodes, output_base_dir,
+                 'histogram_suffixes_list.xml')
 
   obsolete_nodes, non_obsolete_nodes = _SeparateObsoleteHistogram(
       histogram_nodes)
   # Create separate XML file for obsolete histograms.
-  _CreateXMLFile(comments,
-                 'histograms',
-                 obsolete_nodes,
-                 output_base_dir,
-                 filename='obsolete_histograms.xml')
+  _CreateXMLFile('obsolete histograms', 'histograms', obsolete_nodes,
+                 output_base_dir, 'obsolete_histograms.xml')
 
-  # Create separate XML file for non-obsolete histograms, which will be then be
-  # recursively split up.
-  # TODO: crbug/1112879 Improve design by not writing and reading XML files
-  # every level, but rather pass nodes on in a nested dictionary.
-  _CreateXMLFile(comments,
-                 'histograms',
-                 non_obsolete_nodes,
-                 output_base_dir,
-                 filename=HISTOGRAMS_XML)
+  document_dict = _BuildDocumentDict(non_obsolete_nodes + variants_nodes, 0)
 
-  # Recursively splits the histograms.xml file found in the |output_base_dir|.
-  _SplitHistogramsRecursive(output_base_dir, 0)
+  _WriteDocumentDict(document_dict, output_base_dir)
 
 
 if __name__ == '__main__':
-  SplitIntoMultipleHistogramXMLs(base_dir='.',
-                                 output_base_dir='./histograms_xml/')
+  SplitIntoMultipleHistogramXMLs(
+      path_util.GetInputFile('tools/metrics/histograms/histograms_xml'))

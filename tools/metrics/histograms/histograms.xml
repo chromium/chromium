@@ -14,10 +14,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 For brief details on how to modify this file to add your description, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/one-pager.md
 
-Please pretty-print and validate your edits by running the pretty_print.py
-and validate_format.py scripts in the same directory as this file before
-uploading your change for review.
-
 Please send CLs to chromium-metrics-reviews@google.com rather than to specific
 individuals. These CLs will be automatically reassigned to a reviewer within
 about 5 minutes. This approach helps the metrics team to load-balance incoming
@@ -30,16 +26,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<variants name="InflationSpeedComparison">
-  <variant name=".FasterThanInflation"/>
-  <variant name=".SlowerThanInflation"/>
-</variants>
-
 <variants name="LocalStorageSizes">
   <variant name="" summary=""/>
   <variant name="1MBTo5MB" summary="DB size between 1MB and 5MB."/>
   <variant name="100KBTo1MB" summary="DB size between 100KB and 1MB."/>
   <variant name="Under100KB" summary="DB size under 100KB."/>
+</variants>
+
+<variants name="MobileFreInflationSpeedComparison">
+  <variant name=".FasterThanInflation"/>
+  <variant name=".SlowerThanInflation"/>
 </variants>
 
 <histogram name="Accessibility.Android.AnimationsEnabled" enum="BooleanEnabled"
@@ -90493,7 +90489,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="MobileFre.CctTos.EnterprisePolicyCheckSpeed{InflationSpeedComparison}"
+    name="MobileFre.CctTos.EnterprisePolicyCheckSpeed{MobileFreInflationSpeedComparison}"
     units="ms" expires_after="2021-07-31">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -90503,11 +90499,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     result becomes irrelevant. Histogram has suffixes depending if the timing
     was faster or slower than inflation.
   </summary>
-  <token key="InflationSpeedComparison" variants="InflationSpeedComparison"/>
+  <token key="MobileFreInflationSpeedComparison"
+      variants="MobileFreInflationSpeedComparison"/>
 </histogram>
 
 <histogram
-    name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed{InflationSpeedComparison}"
+    name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed{MobileFreInflationSpeedComparison}"
     units="ms" expires_after="2021-07-31">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -90516,7 +90513,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     ownership check completing. Histogram has suffixes depending if the timing
     was faster or slower than inflation.
   </summary>
-  <token key="InflationSpeedComparison" variants="InflationSpeedComparison"/>
+  <token key="MobileFreInflationSpeedComparison"
+      variants="MobileFreInflationSpeedComparison"/>
 </histogram>
 
 <histogram name="MobileFre.CctTos.LoadingDuration" units="ms"
