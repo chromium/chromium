@@ -144,6 +144,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       deletable(match.deletable),
       fill_into_edit(match.fill_into_edit),
       fill_into_edit_additional_text(match.fill_into_edit_additional_text),
+      swapped_fill_into_edit(match.swapped_fill_into_edit),
       inline_autocompletion(match.inline_autocompletion),
       prefix_autocompletion(match.prefix_autocompletion),
       allowed_to_be_default_match(match.allowed_to_be_default_match),
@@ -202,6 +203,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   deletable = match.deletable;
   fill_into_edit = match.fill_into_edit;
   fill_into_edit_additional_text = match.fill_into_edit_additional_text;
+  swapped_fill_into_edit = match.swapped_fill_into_edit;
   inline_autocompletion = match.inline_autocompletion;
   prefix_autocompletion = match.prefix_autocompletion;
   allowed_to_be_default_match = match.allowed_to_be_default_match;
@@ -1227,6 +1229,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
                        base::CompareCase::SENSITIVE)) {
     fill_into_edit = secondary_text;
     fill_into_edit_additional_text = primary_text;
+    swapped_fill_into_edit = true;
     inline_autocompletion = secondary_text.substr(input_text_lower.length());
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "secondary & prefix");
@@ -1266,6 +1269,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (can_autocomplete_titles && secondary_find_index != base::string16::npos) {
     fill_into_edit = secondary_text;
     fill_into_edit_additional_text = primary_text;
+    swapped_fill_into_edit = true;
     inline_autocompletion =
         secondary_text.substr(secondary_find_index + input_text_lower.length());
     prefix_autocompletion = secondary_text.substr(0, secondary_find_index);

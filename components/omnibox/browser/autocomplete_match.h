@@ -459,9 +459,6 @@ struct AutocompleteMatch {
   // returned by various providers. This is used to rank matches among all
   // responding providers, so different providers must be carefully tuned to
   // supply matches with appropriate relevance.
-  //
-  // TODO(pkasting): http://b/1111299 This should be calculated algorithmically,
-  // rather than being a fairly fixed value defined by the table above.
   int relevance = 0;
 
   // How many times this result was typed in / selected from the omnibox.
@@ -482,6 +479,15 @@ struct AutocompleteMatch {
   // |fill_into_edit|. Always empty if kRichAutocompletionShowTitlesParam is
   // disabled.
   base::string16 fill_into_edit_additional_text;
+  // When rich autocompleting titles, |fill_into_edit| &
+  // |fill_into_edit_additional_text| are swapped (i.e. the former contains the
+  // title, and the latter contains the URL). This is consistent with how the
+  // suggestion should be displayed. But the shortcut DB must persist the
+  // original (i.e. URL) |fill_into_edit|; otherwise the shortcut provider may
+  // autocomplete the title even when title autocompletion is inappropriate
+  // (e.g. because the input is too short). Therefore, |swapped_fill_into_edit|
+  // is set to true when rich autocompleting titles.
+  bool swapped_fill_into_edit = false;
 
   // The inline autocompletion to display after the user's input in the
   // omnibox, if this match becomes the default match.  It may be empty.
