@@ -130,6 +130,14 @@ class LoginShelfViewTest : public LoginTestBase {
     return visible_buttons == ids.size();
   }
 
+  // Check if the former button is shown before the latter button
+  bool AreButtonsInOrder(LoginShelfView::ButtonId former, LoginShelfView::ButtonId latter){
+    auto* former_button_view = login_shelf_view_->GetViewByID(former);
+    auto* latter_button_view = login_shelf_view_->GetViewByID(latter);
+    EXPECT_TRUE(former_button_view->GetVisible() && latter_button_view->GetVisible());
+    return login_shelf_view_->GetIndexOf(former_button_view) < login_shelf_view_->GetIndexOf(latter_button_view);
+  }
+
   // Check whether the button is enabled.
   bool IsButtonEnabled(LoginShelfView::ButtonId id) {
     return login_shelf_view_->GetViewByID(id)->GetEnabled();
@@ -205,10 +213,14 @@ TEST_F(LoginShelfViewTest,
   NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kRestart, LoginShelfView::kSignOut}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kRestart, LoginShelfView::kSignOut));
 
   NotifyShutdownPolicyChanged(false /*reboot_on_shutdown*/);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kSignOut));
 }
 
 // Checks shutdown policy change during another session state (e.g. ACTIVE)
@@ -223,6 +235,30 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kRestart, LoginShelfView::kSignOut}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kRestart, LoginShelfView::kSignOut));
+}
+
+// Checks that the shutdown or restart buttons shown before the Apps button when
+// kiosk mode is enabled at GAIA_SIGNIN state
+TEST_F(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps){
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  std::vector<KioskAppMenuEntry> kiosk_apps(1);
+  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
+
+  // |reboot_on_shutdown| is initially off
+  EXPECT_TRUE(
+      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kApps}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
+
+  NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
+  EXPECT_TRUE(
+      ShowsShelfButtons({LoginShelfView::kRestart, LoginShelfView::kApps}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kRestart, LoginShelfView::kApps));
 }
 
 // Checks the login shelf updates UI after lock screen note state changes.
@@ -283,6 +319,8 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterKioskAppsLoaded) {
   EXPECT_TRUE(ShowsShelfButtons(
       {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest,
        LoginShelfView::kAddUser, LoginShelfView::kApps}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
 
   login_shelf_view_->SetKioskApps({}, {}, {});
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
@@ -363,16 +401,22 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kApps}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
 
   login_shelf_view_->SetLoginDialogState(
       OobeDialogState::SAML_PASSWORD_CONFIRM);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kApps}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
 
   login_shelf_view_->SetLoginDialogState(OobeDialogState::HIDDEN);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kAddUser,
                          LoginShelfView::kApps}));
+  EXPECT_TRUE(
+      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
 
   // Kiosk app button is hidden when no app exists.
   login_shelf_view_->SetKioskApps({}, {}, {});
