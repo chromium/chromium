@@ -181,24 +181,6 @@ SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
   }
 }
 
-SystemWebAppManagerWebAppInfoBrowserTest::
-    SystemWebAppManagerWebAppInfoBrowserTest(bool install_mock)
-    : SystemWebAppManagerBrowserTestBase(install_mock) {
-  if (provider_type() == ProviderType::kWebApps) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsWithoutExtensions);
-  } else if (provider_type() == ProviderType::kBookmarkApps) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDesktopPWAsWithoutExtensions);
-  }
-
-  if (install_mock) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
-            install_from_web_app_info());
-  }
-}
-
 // Test that System Apps install correctly with a manifest.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest, Install) {
   WaitForTestSystemAppInstall();

@@ -122,24 +122,7 @@ class SystemWebAppManagerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// A class for testing installation directly from a WebApplicationInfo. We can't
-// inherit from BrowserTestBase because we're templating on a different type.
-class SystemWebAppManagerWebAppInfoBrowserTest
-    : public SystemWebAppManagerBrowserTestBase,
-      public ::testing::WithParamInterface<ProviderTypeAndInstallationType> {
- public:
-  explicit SystemWebAppManagerWebAppInfoBrowserTest(bool install_mock = true);
-  ~SystemWebAppManagerWebAppInfoBrowserTest() override = default;
-  web_app::ProviderType provider_type() const {
-    return std::get<0>(GetParam());
-  }
-  bool install_from_web_app_info() const {
-    return std::get<1>(GetParam()) == InstallationType::kWebAppInfoInstall;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SystemWebAppManagerWebAppInfoBrowserTest = SystemWebAppManagerBrowserTest;
 
 std::string ProviderAndInstallationTypeToString(
     const ::testing::TestParamInfo<ProviderTypeAndInstallationType>&
