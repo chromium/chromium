@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
@@ -1691,23 +1692,40 @@ PhysicalOffset LayoutText::FirstLineBoxTopLeft() const {
   return PhysicalOffset();
 }
 
-LogicalOffset LayoutText::LogicalStartingPoint() const {
+void LayoutText::LogicalStartingPointAndHeight(
+    LogicalOffset& logical_starting_point,
+    LayoutUnit& logical_height) const {
   if (IsInLayoutNGInlineFormattingContext()) {
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
     if (!cursor)
-      return LogicalOffset();
+      return;
     PhysicalOffset physical_offset = cursor.Current().OffsetInContainerBlock();
-    if (StyleRef().GetWritingDirection().IsHorizontalLtr())
-      return {physical_offset.left, physical_offset.top};
-    return physical_offset.ConvertToLogical(
-        StyleRef().GetWritingDirection(),
-        PhysicalSizeToBeNoop(ContainingBlock()->Size()),
-        cursor.Current().Size());
+    if (StyleRef().GetWritingDirection().IsHorizontalLtr()) {
+      cursor.MoveToLastForSameLayoutObject();
+      logical_height = cursor.Current().RectInContainerBlock().Bottom() -
+                       physical_offset.top;
+      logical_starting_point = {physical_offset.left, physical_offset.top};
+      return;
+    }
+    PhysicalSize outer_size = PhysicalSizeToBeNoop(ContainingBlock()->Size());
+    logical_starting_point = physical_offset.ConvertToLogical(
+        StyleRef().GetWritingDirection(), outer_size, cursor.Current().Size());
+    cursor.MoveToLastForSameLayoutObject();
+    PhysicalRect last_physical_rect = cursor.Current().RectInContainerBlock();
+    LogicalOffset logical_ending_point =
+        WritingModeConverter(StyleRef().GetWritingDirection(), outer_size)
+            .ToLogical(last_physical_rect)
+            .EndOffset();
+    logical_height =
+        logical_ending_point.block_offset - logical_starting_point.block_offset;
+    return;
   }
-  if (const auto* text_box = FirstTextBox())
-    return {text_box->LogicalLeft(), text_box->LogicalTop()};
-  return LogicalOffset();
+
+  if (const auto* text_box = FirstTextBox()) {
+    logical_starting_point = {text_box->LogicalLeft(), text_box->LogicalTop()};
+    logical_height = LastTextBox()->LogicalBottom() - text_box->LogicalTop();
+  }
 }
 
 bool LayoutText::CanOptimizeSetText() const {

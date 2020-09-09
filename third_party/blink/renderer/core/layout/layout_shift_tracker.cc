@@ -65,14 +65,19 @@ FloatPoint StartingPoint(const PhysicalOffset& paint_offset,
 // Returns the part a rect logically below a starting point.
 PhysicalRect RectBelowStartingPoint(const PhysicalRect& rect,
                                     const PhysicalOffset& starting_point,
+                                    LayoutUnit logical_height,
                                     WritingDirectionMode writing_direction) {
   PhysicalRect result = rect;
-  if (writing_direction.IsHorizontal())
+  if (writing_direction.IsHorizontal()) {
     result.ShiftTopEdgeTo(starting_point.top);
-  else if (writing_direction.IsFlippedBlocks())
-    result.ShiftRightEdgeTo(starting_point.left);
-  else
-    result.ShiftLeftEdgeTo(starting_point.left);
+    result.SetHeight(logical_height);
+  } else {
+    result.SetWidth(logical_height);
+    if (writing_direction.IsFlippedBlocks())
+      result.ShiftRightEdgeTo(starting_point.left);
+    else
+      result.ShiftLeftEdgeTo(starting_point.left);
+  }
   return result;
 }
 
@@ -155,7 +160,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
     return false;
 
   if (object.IsText())
-    return ContainingBlockScope::top_;
+    return !object.IsBR() && ContainingBlockScope::top_;
 
   if (!object.IsBox())
     return false;
@@ -350,19 +355,12 @@ void LayoutShiftTracker::NotifyTextPrePaint(
     const LogicalOffset& old_starting_point,
     const LogicalOffset& new_starting_point,
     const PhysicalOffset& old_paint_offset,
-    const PhysicalOffset& new_paint_offset) {
+    const PhysicalOffset& new_paint_offset,
+    LayoutUnit logical_height) {
   DCHECK(NeedsToTrack(text));
   auto* block = ContainingBlockScope::top_;
   DCHECK(block);
-  LayoutUnit distance = std::max(
-      (new_starting_point.inline_offset - old_starting_point.inline_offset)
-          .Abs(),
-      (new_starting_point.block_offset - old_starting_point.block_offset)
-          .Abs());
-  if (distance <= block->max_text_shift_distance_)
-    return;
 
-  block->max_text_shift_distance_ = distance;
   auto writing_direction = text.StyleRef().GetWritingDirection();
   PhysicalOffset old_physical_starting_point =
       old_paint_offset + old_starting_point.ConvertToPhysical(writing_direction,
@@ -373,12 +371,14 @@ void LayoutShiftTracker::NotifyTextPrePaint(
                                                               block->new_size_,
                                                               PhysicalSize());
 
-  PhysicalRect old_rect = RectBelowStartingPoint(
-      block->old_rect_, old_physical_starting_point, writing_direction);
+  PhysicalRect old_rect =
+      RectBelowStartingPoint(block->old_rect_, old_physical_starting_point,
+                             logical_height, writing_direction);
   if (old_rect.IsEmpty())
     return;
-  PhysicalRect new_rect = RectBelowStartingPoint(
-      block->new_rect_, new_physical_starting_point, writing_direction);
+  PhysicalRect new_rect =
+      RectBelowStartingPoint(block->new_rect_, new_physical_starting_point,
+                             logical_height, writing_direction);
   if (new_rect.IsEmpty())
     return;
 
