@@ -345,10 +345,6 @@ bool WaylandToplevelWindow::OnInitialize(
   return true;
 }
 
-bool WaylandToplevelWindow::IsActive() const {
-  return is_active_;
-}
-
 bool WaylandToplevelWindow::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   DCHECK(connection()->window_drag_controller());
   return connection()->window_drag_controller()->Drag(this, drag_offset);

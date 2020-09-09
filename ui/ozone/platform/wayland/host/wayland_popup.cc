@@ -128,8 +128,15 @@ void WaylandPopup::OnCloseRequest() {
 }
 
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
-  DCHECK(wl::IsMenuType(type()));
-  DCHECK(parent_window());
+  if (!wl::IsMenuType(type()))
+    return false;
+
+  set_parent_window(GetParentWindow(properties.parent_widget));
+  if (!parent_window()) {
+    LOG(ERROR) << "Failed to get a parent window for this popup";
+    return false;
+  }
+  // If parent window is known in advanced, we may set the scale early.
   root_surface()->SetBufferScale(parent_window()->buffer_scale(), false);
   set_ui_scale(parent_window()->ui_scale());
   return true;
