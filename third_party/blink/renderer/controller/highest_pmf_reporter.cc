@@ -7,7 +7,6 @@
 #include <limits>
 #include "base/metrics/histogram_functions.h"
 #include "base/task_runner.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -59,7 +58,7 @@ HighestPmfReporter::HighestPmfReporter()
 }
 
 HighestPmfReporter::HighestPmfReporter(
-    scoped_refptr<base::TestMockTimeTaskRunner> task_runner_for_testing,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing,
     const base::TickClock* clock_for_testing)
     : task_runner_(task_runner_for_testing), clock_(clock_for_testing) {
   MemoryUsageMonitor::Instance().AddObserver(this);

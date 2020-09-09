@@ -67,6 +67,7 @@ component("controller") {
       "oom_intervention_impl.cc",
       "oom_intervention_impl.h",
     ]
+    public_deps = [ "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings_blink" ]
   }
   if (is_win) {
     sources += [
@@ -153,7 +154,9 @@ source_set("blink_perf_tests_sources") {
   deps = [
     ":controller",
     "//base",
+    "//base/test:test_support",
     "//content/test:test_support",
+    "//third_party/blink/renderer/core:core",
     "//third_party/blink/renderer/core:perf_tests",
   ]
 
@@ -203,7 +206,10 @@ source_set("blink_unittests_sources") {
     "//gpu:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/core:unit_tests",
+    "//third_party/blink/renderer/modules:modules",
     "//third_party/blink/renderer/modules:unit_tests",
     "//third_party/blink/renderer/modules/exported:test_support",
     "//third_party/blink/renderer/platform",
