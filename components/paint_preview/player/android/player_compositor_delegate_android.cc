@@ -98,10 +98,12 @@ void PlayerCompositorDelegateAndroid::OnCompositorReady(
   base::UmaHistogramBoolean(
       "Browser.PaintPreview.Player.CompositorProcessStartedCorrectly",
       compositor_started);
-  if (!compositor_started && compositor_error_) {
-    LOG(ERROR) << "Compositor process failed to begin with code: "
-               << static_cast<int>(compositor_status);
-    std::move(compositor_error_).Run(static_cast<int>(compositor_status));
+  if (!compositor_started) {
+    DLOG(ERROR) << "Compositor process failed to begin with code: "
+                << static_cast<int>(compositor_status);
+    if (compositor_error_)
+      std::move(compositor_error_).Run(static_cast<int>(compositor_status));
+
     return;
   }
   auto delta = base::TimeTicks::Now() - startup_timestamp_;

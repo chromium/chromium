@@ -280,12 +280,24 @@ void PaintPreviewClient::CapturePaintPreview(
                             mojom::PaintPreviewStatus::kGuidCollision, {});
     return;
   }
+  if (!render_frame_host) {
+    std::move(callback).Run(params.inner.document_guid,
+                            mojom::PaintPreviewStatus::kFailed, {});
+    return;
+  }
+  const GURL& url = render_frame_host->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    std::move(callback).Run(params.inner.document_guid,
+                            mojom::PaintPreviewStatus::kFailed, {});
+    return;
+  }
+
   InProgressDocumentCaptureState document_data;
   document_data.should_clean_up_files = true;
   document_data.persistence = params.persistence;
   document_data.root_dir = params.root_dir;
   auto* metadata = document_data.proto.mutable_metadata();
-  metadata->set_url(render_frame_host->GetLastCommittedURL().spec());
+  metadata->set_url(url.spec());
   metadata->set_version(kPaintPreviewVersion);
   document_data.callback = std::move(callback);
   document_data.source_id =

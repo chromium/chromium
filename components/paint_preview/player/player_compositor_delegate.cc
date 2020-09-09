@@ -168,10 +168,11 @@ void PlayerCompositorDelegate::OnCompositorReadyStatusAdapter(
 }
 
 void PlayerCompositorDelegate::OnCompositorServiceDisconnected() {
-  LOG(ERROR) << "Compositor service disconnected.";
-  if (compositor_error_)
+  DLOG(ERROR) << "Compositor service disconnected.";
+  if (compositor_error_) {
     std::move(compositor_error_)
         .Run(static_cast<int>(CompositorStatus::COMPOSITOR_SERVICE_DISCONNECT));
+  }
 }
 
 void PlayerCompositorDelegate::OnCompositorClientCreated(
@@ -263,10 +264,11 @@ void PlayerCompositorDelegate::SendCompositeRequest(
 }
 
 void PlayerCompositorDelegate::OnCompositorClientDisconnected() {
-  LOG(ERROR) << "Compositor client disconnected.";
-  if (compositor_error_)
+  DLOG(ERROR) << "Compositor client disconnected.";
+  if (compositor_error_) {
     std::move(compositor_error_)
         .Run(static_cast<int>(CompositorStatus::COMPOSITOR_CLIENT_DISCONNECT));
+  }
 }
 
 void PlayerCompositorDelegate::RequestBitmap(
