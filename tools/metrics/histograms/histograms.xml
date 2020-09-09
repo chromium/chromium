@@ -63315,7 +63315,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.MountCrostiniContainer" units="ms"
     expires_after="2019-05-30">
-  <owner>joelhockey@google.com</owner>
+  <obsolete>
+    Removed 2020-09.
+  </obsolete>
+  <owner>joelhockey@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>

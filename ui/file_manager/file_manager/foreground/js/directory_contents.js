@@ -343,7 +343,6 @@ class CrostiniMounter extends ContentScanner {
    * @override
    */
   scan(entriesCallback, successCallback, errorCallback) {
-    metrics.startInterval('MountCrostiniContainer');
     chrome.fileManagerPrivate.mountCrostini(() => {
       if (chrome.runtime.lastError) {
         console.error(
@@ -353,7 +352,6 @@ class CrostiniMounter extends ContentScanner {
             chrome.runtime.lastError.message));
         return;
       }
-      metrics.recordInterval('MountCrostiniContainer');
       successCallback();
     });
   }
