@@ -258,6 +258,8 @@ void ArcSessionRunner::SetRestartDelayForTesting(
   restart_delay_ = restart_delay;
 }
 
+// TODO(b/164816080) add a test to ensure OnSessionStopped is not called
+// when starting ARC session after failed attempt
 void ArcSessionRunner::StartArcSession() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!restart_timer_.IsRunning());
