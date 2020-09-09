@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
 
 @protocol PopupMenuLongPressDelegate;
+@protocol TabStripContaining;
 @protocol TabStripPresentation;
 @class ViewRevealingVerticalPanHandler;
 class Browser;
@@ -21,7 +22,7 @@ class Browser;
 @interface TabStripController : NSObject
 
 @property(nonatomic, assign) BOOL highlightsSelectedTab;
-@property(nonatomic, readonly, retain) UIView* view;
+@property(nonatomic, readonly, strong) UIView<TabStripContaining>* view;
 
 // Delegate for the long press gesture recognizer triggering popup menu.
 @property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;

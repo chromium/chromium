@@ -12,6 +12,8 @@
 #error "This file requires ARC support."
 #endif
 
+@protocol TabStripContaining;
+
 @interface TabStripLegacyCoordinator ()
 @property(nonatomic, assign) BOOL started;
 @property(nonatomic, strong) TabStripController* tabStripController;
@@ -29,7 +31,7 @@
   self.tabStripController.longPressDelegate = longPressDelegate;
 }
 
-- (UIView*)view {
+- (UIView<TabStripContaining>*)view {
   DCHECK(self.started);
   return [self.tabStripController view];
 }

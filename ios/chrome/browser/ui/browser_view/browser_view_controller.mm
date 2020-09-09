@@ -117,6 +117,7 @@
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_containing.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
@@ -506,7 +507,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, strong)
     InfobarContainerCoordinator* infobarContainerCoordinator;
 // A weak reference to the view of the tab strip on tablet.
-@property(nonatomic, weak) UIView* tabStripView;
+@property(nonatomic, weak) UIView<TabStripContaining>* tabStripView;
+// A snapshot of the tab strip used on the thumb strip reveal/hide animation.
+@property(nonatomic, strong) UIView* tabStripSnapshot;
 // Helper for saving images.
 @property(nonatomic, strong) ImageSaver* imageSaver;
 // Helper for copying images.
@@ -2730,8 +2733,31 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - ViewRevealingAnimatee
 
+- (void)willAnimateViewReveal:(BOOL)viewRevealed {
+  // Hide the tab strip and take a snapshot of it. If a snapshot of a hidden
+  // view is taken, the snapshot will be a blank view. However, if the view's
+  // parent is hidden but the view itself is not, the snapshot will not be a
+  // blank view.
+  self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
+  self.tabStripSnapshot.transform =
+      !viewRevealed ? CGAffineTransformIdentity
+                    : CGAffineTransformMakeTranslation(
+                          0, self.tabStripView.frame.size.height);
+  self.tabStripView.hidden = YES;
+  [self.contentArea addSubview:self.tabStripSnapshot];
+}
+
 - (void)animateViewReveal:(BOOL)viewRevealed {
-  [self slideTabStripDown:!viewRevealed];
+  // Move a snapshot of the tab strip instead of moving the actual tab strip.
+  self.tabStripSnapshot.transform =
+      viewRevealed ? CGAffineTransformIdentity
+                   : CGAffineTransformMakeTranslation(
+                         0, self.tabStripView.frame.size.height);
+}
+
+- (void)didAnimateViewReveal:(BOOL)viewRevealed {
+  self.tabStripView.hidden = viewRevealed;
+  [self.tabStripSnapshot removeFromSuperview];
 }
 
 #pragma mark - BubblePresenterDelegate
@@ -4638,7 +4664,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return ([self currentHeaderOffset] == 0.0f);
 }
 
-- (void)showTabStripView:(UIView*)tabStripView {
+- (void)showTabStripView:(UIView<TabStripContaining>*)tabStripView {
   DCHECK([self isViewLoaded]);
   DCHECK(tabStripView);
   self.tabStripView = tabStripView;
@@ -4654,13 +4680,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // toolbar during the transition to the thumb strip.
   [self.view insertSubview:tabStripView
               belowSubview:self.primaryToolbarCoordinator.viewController.view];
-}
-
-- (void)slideTabStripDown:(BOOL)slide {
-  self.tabStripView.transform =
-      slide ? CGAffineTransformMakeTranslation(
-                  0, self.tabStripView.frame.size.height)
-            : CGAffineTransformIdentity;
 }
 
 #pragma mark - FindBarPresentationDelegate

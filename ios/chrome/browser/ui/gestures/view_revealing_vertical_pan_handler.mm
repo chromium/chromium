@@ -66,10 +66,24 @@ const CGFloat kAnimationDuration = 0.25f;
 
 #pragma mark - Private Methods: Animating
 
+// Called right before an animation block to warn all animatees.
+- (void)willAnimateViewReveal:(BOOL)viewRevealed {
+  for (id<ViewRevealingAnimatee> animatee in self.animatees) {
+    [animatee willAnimateViewReveal:viewRevealed];
+  }
+}
+
 // Called inside an animation block to animate all animatees.
 - (void)animateViewReveal:(BOOL)viewRevealed {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
     [animatee animateViewReveal:viewRevealed];
+  }
+}
+
+// Called after an animation block.
+- (void)didAnimateViewReveal:(BOOL)viewRevealed {
+  for (id<ViewRevealingAnimatee> animatee in self.animatees) {
+    [animatee didAnimateViewReveal:viewRevealed];
   }
 }
 
@@ -100,6 +114,7 @@ const CGFloat kAnimationDuration = 0.25f;
     return;
   }
 
+  [self willAnimateViewReveal:self.viewRevealed];
   // Create the transition to reveal the view.
   auto animationBlock = ^() {
     [self animateViewReveal:self.isViewRevealed];
@@ -108,6 +123,7 @@ const CGFloat kAnimationDuration = 0.25f;
     if (!self.animator.reversed) {
       self.isViewRevealed = !self.isViewRevealed;
     }
+    [self didAnimateViewReveal:self.isViewRevealed];
   };
 
   self.animator =

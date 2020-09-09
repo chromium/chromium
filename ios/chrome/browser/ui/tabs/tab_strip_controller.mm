@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_container_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
 #include "ios/chrome/browser/ui/tabs/target_frame_cache.h"
@@ -182,7 +183,7 @@ UIColor* BackgroundColor() {
                                   URLDropDelegate> {
   Browser* _browser;
   WebStateList* _webStateList;
-  UIView* _view;
+  TabStripContainerView* _view;
   TabStripView* _tabStripView;
   UIButton* _buttonNewTab;
   UIButton* _tabSwitcherButton;
@@ -458,7 +459,7 @@ UIColor* BackgroundColor() {
     _useTabStacking = [self shouldUseTabStacking];
     CGRect tabStripFrame = [UIApplication sharedApplication].keyWindow.bounds;
     tabStripFrame.size.height = kTabStripHeight;
-    _view = [[UIView alloc] initWithFrame:tabStripFrame];
+    _view = [[TabStripContainerView alloc] initWithFrame:tabStripFrame];
     _view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                               UIViewAutoresizingFlexibleBottomMargin);
     _view.backgroundColor = BackgroundColor();
@@ -474,6 +475,7 @@ UIColor* BackgroundColor() {
     _tabStripView.accessibilityIdentifier =
         style == INCOGNITO ? @"Incognito Tab Strip" : @"Tab Strip";
     [_view addSubview:_tabStripView];
+    _view.tabStripView = _tabStripView;
 
     // |self.buttonNewTab| setup.
     CGRect buttonNewTabFrame = tabStripFrame;

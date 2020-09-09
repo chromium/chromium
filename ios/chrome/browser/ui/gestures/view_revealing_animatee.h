@@ -9,9 +9,17 @@
 // pan gesture handler.
 @protocol ViewRevealingAnimatee <NSObject>
 
+// Called before a view reveal animation. Takes as argument whether the view is
+// currently revealed or not.
+- (void)willAnimateViewReveal:(BOOL)viewRevealed;
+
 // Called inside an animation block to animate the revealing of the view. Takes
 // as argument whether the view is currently revealed or not.
 - (void)animateViewReveal:(BOOL)viewRevealed;
+
+// Called inside the completion block of a view reveal animation. Takes as
+// argument whether the view is currently revealed or not.
+- (void)didAnimateViewReveal:(BOOL)viewRevealed;
 
 @end
 
