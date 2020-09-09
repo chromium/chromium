@@ -74,6 +74,12 @@ base::Optional<double> NumberPropertyFunctions::GetNumber(
       return value / 100;
     }
 
+    case CSSPropertyID::kTabSize: {
+      if (!style.GetTabSize().IsSpaces())
+        return base::nullopt;
+      return style.GetTabSize().float_value_;
+    }
+
     default:
       return base::Optional<double>();
   }
@@ -99,6 +105,7 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
     case CSSPropertyID::kFlexShrink:
     case CSSPropertyID::kFontSizeAdjust:
     case CSSPropertyID::kLineHeight:
+    case CSSPropertyID::kTabSize:
     case CSSPropertyID::kTextSizeAdjust:
       return clampTo<float>(value, 0);
 
@@ -138,6 +145,9 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       return true;
     case CSSPropertyID::kLineHeight:
       style.SetLineHeight(Length::Percent(value * 100));
+      return true;
+    case CSSPropertyID::kTabSize:
+      style.SetTabSize(TabSize(value));
       return true;
     case CSSPropertyID::kOpacity:
       style.SetOpacity(value);

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 76 tests; 68 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 76 tests; 70 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Animation of font in ::marker
 PASS Animation of font-family in ::marker
 PASS Animation of font-feature-settings in ::marker
@@ -26,7 +26,7 @@ PASS Animation of hyphens in ::marker
 PASS Animation of letter-spacing in ::marker
 PASS Animation of line-break in ::marker
 PASS Animation of overflow-wrap in ::marker
-FAIL Animation of tab-size in ::marker assert_equals: expected "10px" but got "20px"
+PASS Animation of tab-size in ::marker
 PASS Animation of text-transform in ::marker
 PASS Animation of word-break in ::marker
 PASS Animation of word-spacing in ::marker
@@ -64,7 +64,7 @@ PASS Transition of hyphens in ::marker
 PASS Transition of letter-spacing in ::marker
 PASS Transition of line-break in ::marker
 PASS Transition of overflow-wrap in ::marker
-FAIL Transition of tab-size in ::marker assert_equals: expected "10px" but got "20px"
+PASS Transition of tab-size in ::marker
 PASS Transition of text-transform in ::marker
 PASS Transition of word-break in ::marker
 PASS Transition of word-spacing in ::marker

@@ -199,6 +199,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
             std::make_unique<CSSNumberInterpolationType>(used_property));
         break;
       case CSSPropertyID::kLineHeight:
+      case CSSPropertyID::kTabSize:
         applicable_types->push_back(
             std::make_unique<CSSLengthInterpolationType>(used_property));
         applicable_types->push_back(
