@@ -12,5 +12,7 @@
 	<true/>
 	<key>com.apple.security.device.usb</key>
 	<true/>
+	<key>com.apple.security.personal-information.location</key>
+	<true/>
 </dict>
 </plist>
