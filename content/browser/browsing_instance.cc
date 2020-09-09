@@ -99,14 +99,14 @@ SiteInfo BrowsingInstance::GetSiteInfoForURL(const GURL& url,
   if (site_instance)
     return site_instance->GetSiteInfo();
 
-  return SiteInstanceImpl::ComputeSiteInfo(isolation_context_, url);
+  return ComputeSiteInfoForURL(url);
 }
 
 bool BrowsingInstance::TrySettingDefaultSiteInstance(
     SiteInstanceImpl* site_instance,
     const GURL& url) {
   DCHECK(!site_instance->HasSite());
-  const SiteInfo site_info = GetSiteInfoForURL(url);
+  const SiteInfo site_info = ComputeSiteInfoForURL(url);
   if (default_site_instance_ ||
       !SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
           isolation_context_, url, site_info.site_url())) {
@@ -124,7 +124,7 @@ bool BrowsingInstance::TrySettingDefaultSiteInstance(
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
     const GURL& url,
     bool allow_default_instance) {
-  const SiteInfo site_info = GetSiteInfoForURL(url);
+  const SiteInfo site_info = ComputeSiteInfoForURL(url);
   auto i = site_instance_map_.find(site_info);
   if (i != site_instance_map_.end())
     return i->second;
@@ -222,7 +222,7 @@ BrowsingInstance::~BrowsingInstance() {
   policy->RemoveOptInIsolatedOriginsForBrowsingInstance(isolation_context_);
 }
 
-SiteInfo BrowsingInstance::GetSiteInfoForURL(const GURL& url) const {
+SiteInfo BrowsingInstance::ComputeSiteInfoForURL(const GURL& url) const {
   return SiteInstanceImpl::ComputeSiteInfo(isolation_context_, url);
 }
 

@@ -130,6 +130,10 @@ class CONTENT_EXPORT BrowsingInstance final
   // GetSiteInstanceForURL() with the same |url| and |allow_default_instance|.
   // This method is used when we need this information, but do not want to
   // create a SiteInstance yet.
+  //
+  // Note: Unlike ComputeSiteInfoForURL() this method can return a SiteInfo for
+  // a default SiteInstance, if |url| can be placed in the default SiteInstance
+  // and |allow_default_instance| is true.
   SiteInfo GetSiteInfoForURL(const GURL& url, bool allow_default_instance);
 
   // Helper function used by GetSiteInstanceForURL() and GetSiteInfoForURL()
@@ -188,9 +192,12 @@ class CONTENT_EXPORT BrowsingInstance final
                                      const GURL& url);
 
   // Helper function used by other methods in this class to ensure consistent
-  // mapping between |url| and SiteInfo.
+  // mapping between |url| and SiteInfo. This method will never return a
+  // SiteInfo for the default SiteInstance. It will always return something
+  // specific to |url|.
+  //
   // Note: This should not be used by code outside this class.
-  SiteInfo GetSiteInfoForURL(const GURL& url) const;
+  SiteInfo ComputeSiteInfoForURL(const GURL& url) const;
 
   // Map of SiteInfo to SiteInstance, to ensure we only have one SiteInstance
   // per SiteInfo. See https://crbug.com/1085275#c2 for the rationale behind
