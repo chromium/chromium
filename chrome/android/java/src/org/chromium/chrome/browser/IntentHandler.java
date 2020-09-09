@@ -353,6 +353,8 @@ public class IntentHandler {
      * @return ExternalAppId representing the app.
      */
     public static @ExternalAppId int determineExternalIntentSource(Intent intent) {
+        if (wasIntentSenderChrome(intent)) return ExternalAppId.CHROME;
+
         String appId = IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID);
         @ExternalAppId
         int externalId = ExternalAppId.OTHER;
@@ -420,6 +422,9 @@ public class IntentHandler {
     private void recordExternalIntentSourceUMA(Intent intent) {
         @ExternalAppId
         int externalId = determineExternalIntentSource(intent);
+
+        // Don't record external app page loads for intents we sent.
+        if (externalId == ExternalAppId.CHROME) return;
         RecordHistogram.recordEnumeratedHistogram(
                 "MobileIntent.PageLoadDueToExternalApp", externalId, ExternalAppId.NUM_ENTRIES);
     }
