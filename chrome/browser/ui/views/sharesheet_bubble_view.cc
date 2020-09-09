@@ -8,14 +8,15 @@
 #include <utility>
 
 #include "base/strings/string16.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -54,7 +55,6 @@ constexpr int kShortSpacing = 20;
 constexpr int kSpacing = 24;
 constexpr int kTitleLineHeight = 24;
 
-constexpr char kTitle[] = "Share";
 constexpr char kTitleFont[] = "GoogleSans, Medium, 16px";
 constexpr char kButtonLabelFont[] = "Roboto, Medium, 14px";
 constexpr char kButtonSecondaryLabelFont[] = "Roboto, Regular, 13px";
@@ -109,6 +109,10 @@ class ShareSheetTargetButton : public views::Button {
       secondary_label->SetFontList(gfx::FontList(kButtonSecondaryLabelFont));
       secondary_label->SetEnabledColor(kShareTargetSecondaryTitleColor);
       SetLabelProperties(secondary_label);
+    } else {
+      // If there is no secondary label, let the initial label stretch across
+      // multiple lines.
+      label->SetMultiLine(true);
     }
 
     AddChildView(std::move(label_view));
@@ -184,7 +188,7 @@ void SharesheetBubbleView::ShowBubble(std::vector<TargetInfo> targets,
   main_layout->StartRow(views::GridLayout::kFixedSize, COLUMN_SET_ID_TITLE,
                         kTitleLineHeight);
   auto* title = main_layout->AddView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(base::StringPiece(kTitle))));
+      l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL)));
   title->SetFontList(gfx::FontList(kTitleFont));
   title->SetLineHeight(kTitleLineHeight);
   title->SetEnabledColor(kShareTitleColor);
