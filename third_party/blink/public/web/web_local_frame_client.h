@@ -318,15 +318,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // datasource will become the provisional datasource for the frame.
   virtual void DidCreateDocumentLoader(WebDocumentLoader*) {}
 
-  // Used to inform the embedder that `WebNavigationControl::CommitNavigation`
-  // call will fail to commit a new document.
-  //
-  // TODO(https://crbug.com/1117282): Remove the need for these exceptions.
-  enum class CommitFailureReason {
-    kNoPluginForMimeType,
-  };
-  virtual void WillFailCommitNavigation(CommitFailureReason) {}
-
   // The navigation has been committed, as a result of
   // WebNavigationControl::CommitNavigation call. The newly created document
   // is committed to the frame, the encoding of the response body is known,

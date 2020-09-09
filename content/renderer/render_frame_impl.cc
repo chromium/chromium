@@ -4319,11 +4319,6 @@ void RenderFrameImpl::DidCreateDocumentLoader(
   }
 }
 
-void RenderFrameImpl::WillFailCommitNavigation(CommitFailureReason) {
-  CHECK_EQ(NavigationCommitState::kWillCommit, navigation_commit_state_);
-  navigation_commit_state_ = NavigationCommitState::kDidCommit;
-}
-
 void RenderFrameImpl::DidCommitNavigation(
     const blink::WebHistoryItem& item,
     blink::WebHistoryCommitType commit_type,

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
@@ -1216,6 +1217,35 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, CrossSiteRedirectionToPDF) {
                          ->tab_strip_model()
                          ->GetActiveWebContents()
                          ->GetLastCommittedURL());
+}
+
+using ChromeNavigationBrowserTestWithMobileEmulation = DevToolsProtocolTestBase;
+
+// Tests the behavior of navigating to a PDF when mobile emulation is enabled.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
+                       NavigateToPDFWithMobileEmulation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  Attach();
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetIntKey("width", 400);
+  params.SetIntKey("height", 800);
+  params.SetDoubleKey("deviceScaleFactor", 1.0);
+  params.SetBoolKey("mobile", true);
+  SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
+
+  GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ui_test_utils::NavigateToURL(browser(), pdf_url);
+
+  EXPECT_EQ(pdf_url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(
+      "<head></head>"
+      "<body><!-- no enabled plugin supports this MIME type --></body>",
+      content::EvalJs(web_contents(), "document.documentElement.innerHTML")
+          .ExtractString());
 }
 
 // Check that clicking on a link doesn't carry the transient user activation

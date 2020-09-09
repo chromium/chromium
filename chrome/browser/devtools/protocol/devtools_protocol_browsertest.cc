@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
 
 #include "base/base64.h"
-#include "base/callback.h"
-#include "base/containers/span.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
+#include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -25,161 +20,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
-namespace {
-
-const char kIdParam[] = "id";
-const char kMethodParam[] = "method";
-const char kParamsParam[] = "params";
-
-}  // namespace
-
-class DevToolsProtocolTest : public InProcessBrowserTest,
-                             public content::DevToolsAgentHostClient {
- public:
-  DevToolsProtocolTest() = default;
-
- protected:
-  typedef base::RepeatingCallback<bool(const base::Value&)> NotificationMatcher;
-
-  // InProcessBrowserTest  interface
-  void TearDownOnMainThread() override { Detach(); }
-
-  // DevToolsAgentHostClient interface
-  void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
-                               base::span<const uint8_t> message) override {
-    base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
-                                  message.size());
-    auto parsed_message = base::JSONReader::Read(message_str);
-    if (auto id = parsed_message->FindIntPath("id")) {
-      base::Value* result;
-      ASSERT_TRUE(result = parsed_message->FindDictPath("result"));
-      result_ = result->Clone();
-      in_dispatch_ = false;
-      if (*id && *id == waiting_for_command_result_id_) {
-        waiting_for_command_result_id_ = 0;
-        std::move(run_loop_quit_closure_).Run();
-      }
-    } else {
-      std::string* notification = parsed_message->FindStringPath("method");
-      EXPECT_TRUE(notification);
-      notifications_.push_back(*notification);
-      base::Value* params = parsed_message->FindPath("params");
-      notification_params_.push_back(params ? params->Clone() : base::Value());
-      if (waiting_for_notification_ == *notification &&
-          (waiting_for_notification_matcher_.is_null() ||
-           waiting_for_notification_matcher_.Run(
-               notification_params_.back()))) {
-        waiting_for_notification_ = std::string();
-        waiting_for_notification_matcher_ = NotificationMatcher();
-        waiting_for_notification_params_ = notification_params_.back().Clone();
-        std::move(run_loop_quit_closure_).Run();
-      }
-    }
-  }
-
-  void SendCommand(const std::string& method) {
-    SendCommand(method, base::Value(), false);
-  }
-
-  void SendCommandSync(const std::string& method) {
-    SendCommandSync(method, base::Value());
-  }
-
-  void SendCommandSync(const std::string& method, base::Value&& params) {
-    SendCommand(method, std::move(params), true);
-  }
-
-  void SendCommand(const std::string& method,
-                   base::Value&& params,
-                   bool synchronous) {
-    in_dispatch_ = true;
-    base::Value command(base::Value::Type::DICTIONARY);
-    command.SetKey(kIdParam, base::Value(++last_sent_id_));
-    command.SetKey(kMethodParam, base::Value(method));
-    if (!params.is_none())
-      command.SetPath(kParamsParam, std::move(params));
-    std::string json_command;
-    base::JSONWriter::Write(command, &json_command);
-    agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(json_command)));
-    // Some messages are dispatched synchronously.
-    // Only run loop if we are not finished yet.
-    if (in_dispatch_ && synchronous)
-      WaitForResponse();
-    in_dispatch_ = false;
-  }
-
-  void WaitForResponse() {
-    waiting_for_command_result_id_ = last_sent_id_;
-    RunLoopUpdatingQuitClosure();
-  }
-
-  void RunLoopUpdatingQuitClosure() {
-    base::RunLoop run_loop;
-    CHECK(!run_loop_quit_closure_);
-    run_loop_quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  void AttachToBrowser() {
-    agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
-        nullptr, content::DevToolsAgentHost::CreateServerSocketCallback());
-    agent_host_->AttachClient(this);
-  }
-
-  void Attach() {
-    agent_host_ = content::DevToolsAgentHost::GetOrCreateFor(web_contents());
-    agent_host_->AttachClient(this);
-  }
-
-  void Detach() {
-    if (agent_host_) {
-      agent_host_->DetachClient(this);
-      agent_host_ = nullptr;
-    }
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
-
-  base::Value WaitForNotification(const std::string& notification) {
-    auto always_match = base::Bind([](const base::Value&) { return true; });
-    return WaitForMatchingNotification(notification, always_match);
-  }
-
-  base::Value WaitForMatchingNotification(const std::string& notification,
-                                          const NotificationMatcher& matcher) {
-    for (size_t i = 0; i < notifications_.size(); ++i) {
-      if (notifications_[i] == notification &&
-          matcher.Run(notification_params_[i])) {
-        base::Value result = std::move(notification_params_[i]);
-        notifications_.erase(notifications_.begin() + i);
-        notification_params_.erase(notification_params_.begin() + i);
-        return result;
-      }
-    }
-    waiting_for_notification_ = notification;
-    waiting_for_notification_matcher_ = matcher;
-    RunLoopUpdatingQuitClosure();
-    return std::move(waiting_for_notification_params_);
-  }
-
-  // DevToolsAgentHostClient interface
-  void AgentHostClosed(content::DevToolsAgentHost* agent_host) override {}
-
-  scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  int last_sent_id_ = 0;
-  base::OnceClosure run_loop_quit_closure_;
-  bool in_dispatch_ = false;
-  int waiting_for_command_result_id_ = 0;
-  base::Value result_;
-  std::vector<std::string> notifications_;
-  std::vector<base::Value> notification_params_;
-  std::string waiting_for_notification_;
-  NotificationMatcher waiting_for_notification_matcher_;
-  base::Value waiting_for_notification_params_;
-};
+using DevToolsProtocolTest = DevToolsProtocolTestBase;
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        VisibleSecurityStateChangedNeutralState) {
@@ -300,8 +141,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
                "visibleSecurityState.certificateSecurityState.certificate") !=
            nullptr;
   };
-  base::Value params = WaitForMatchingNotification(
-      "Security.visibleSecurityStateChanged", base::Bind(has_certificate));
+  base::Value params =
+      WaitForMatchingNotification("Security.visibleSecurityStateChanged",
+                                  base::BindRepeating(has_certificate));
 
   // Verify that the visibleSecurityState payload matches the SSL status data.
   std::string* security_state =

@@ -858,6 +858,7 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
                                        LocalFrame* frame) {
   if (params->is_static_data)
     return;
+
   const KURL& url = params->url;
   // See WebNavigationParams for special case explanations.
   if (url.IsAboutSrcdocURL()) {
@@ -905,16 +906,61 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
       // synthesize an empty document so that something commits still.
       // TODO(https://crbug.com/1112965): remove these special cases by adding
       // an URLLoaderFactory implementation for MHTML archives.
-      WebNavigationParams::FillStaticResponse(params, "text/html", "UTF-8", "");
+      WebNavigationParams::FillStaticResponse(
+          params, "text/html", "UTF-8",
+          "<html><body>"
+          "<!-- failed to find resource in MHTML archive -->"
+          "</body></html>");
     }
   }
+
+  // Checking whether a URL would load as empty (e.g. about:blank) must be done
+  // after checking for content with the corresponding URL in the MHTML archive,
+  // since MHTML archives can define custom content to load for about:blank...
+  //
+  // Note that no static response needs to be filled here; instead, this is
+  // synthesised later by `DocumentLoader::InitializeEmptyResponse()`.
+  if (DocumentLoader::WillLoadUrlAsEmpty(params->url))
+    return;
+
+  const String& mime_type = params->response.MimeType();
+  if (MIMETypeRegistry::IsSupportedMIMEType(mime_type))
+    return;
+
+  PluginData* plugin_data = frame->GetPluginData();
+  if (!mime_type.IsEmpty() && plugin_data &&
+      plugin_data->SupportsMimeType(mime_type)) {
+    return;
+  }
+
+  // Typically, PlzNavigate checks that the MIME type can be handled on the
+  // browser side before sending it to the renderer. However, there are rare
+  // scenarios where it's possible for the renderer to send a commit request
+  // with a MIME type the renderer cannot handle:
+  //
+  // - (hypothetical) some sort of race between enabling/disabling plugins
+  //   and when it's checked by the navigation URL loader / handled in the
+  //   renderer.
+  // - mobile emulation disables plugins on the renderer side, but the browser
+  //   navigation code is not aware of this.
+  //
+  // Similar to the missing archive resource case above, synthesise a resource
+  // to commit.
+  WebNavigationParams::FillStaticResponse(
+      params, "text/html", "UTF-8",
+      "<html><body>"
+      "<!-- no enabled plugin supports this MIME type -->"
+      "</body></html>");
 }
 
-static bool ShouldNavigate(WebNavigationParams* params, LocalFrame* frame) {
+// The browser navigation code should never send a `CommitNavigation()` request
+// that fails this check.
+static void AssertCanNavigate(WebNavigationParams* params, LocalFrame* frame) {
   if (params->is_static_data)
-    return true;
+    return;
+
   if (DocumentLoader::WillLoadUrlAsEmpty(params->url))
-    return true;
+    return;
 
   int status_code = params->response.HttpStatusCode();
   // If the server sends 204 or 205, this means the server does not want to
@@ -931,20 +977,6 @@ static bool ShouldNavigate(WebNavigationParams* params, LocalFrame* frame) {
           params->response.HttpHeaderField(http_names::kContentDisposition))) {
     CHECK(false);
   }
-
-  const String& mime_type = params->response.MimeType();
-  if (MIMETypeRegistry::IsSupportedMIMEType(mime_type))
-    return true;
-  PluginData* plugin_data = frame->GetPluginData();
-  bool can_load_with_plugin = !mime_type.IsEmpty() && plugin_data &&
-                              plugin_data->SupportsMimeType(mime_type);
-  // TODO(dcheng): Ideally, this should commit a failed navigation or something,
-  // instead of silently ignoring the commit request.
-  if (!can_load_with_plugin) {
-    WebLocalFrameImpl::FromFrame(frame)->Client()->WillFailCommitNavigation(
-        WebLocalFrameClient::CommitFailureReason::kNoPluginForMimeType);
-  }
-  return can_load_with_plugin;
 }
 
 void FrameLoader::CommitNavigation(
@@ -994,10 +1026,7 @@ void FrameLoader::CommitNavigation(
     return;
 
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
-  if (!ShouldNavigate(navigation_params.get(), frame_)) {
-    DidFinishNavigation(FrameLoader::NavigationFinishState::kSuccess);
-    return;
-  }
+  AssertCanNavigate(navigation_params.get(), frame_);
 
   // Keep track of the current Document HistoryItem as the new DocumentLoader
   // might need to copy state from it. Note that the current DocumentLoader
