@@ -44,7 +44,6 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             LayoutManager layoutManager, ControlContainer controlContainer,
             ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<Integer> viewportModeSupplier,
             ObservableSupplier<Boolean> androidViewShownSupplier,
             Supplier<ResourceManager> resourceManagerSupplier) {
         mModel = new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
@@ -60,8 +59,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                 mModel, mSceneLayer, TopToolbarSceneLayer::bind, frameRequestSupplier, true);
 
         mMediator = new TopToolbarOverlayMediator(mModel, context, layoutManager, controlContainer,
-                tabSupplier, browserControlsStateProvider, viewportModeSupplier,
-                androidViewShownSupplier);
+                tabSupplier, browserControlsStateProvider, androidViewShownSupplier);
     }
 
     /** Clean up this component. */

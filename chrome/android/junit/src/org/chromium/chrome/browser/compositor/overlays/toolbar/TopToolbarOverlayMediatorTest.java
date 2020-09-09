@@ -20,12 +20,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -50,9 +48,6 @@ public class TopToolbarOverlayMediatorTest {
 
     @Mock
     private BrowserControlsStateProvider mBrowserControlsProvider;
-
-    @Mock
-    private ObservableSupplier<Integer> mViewportModeSupplier;
 
     @Mock
     private TabImpl mTab;
@@ -81,8 +76,6 @@ public class TopToolbarOverlayMediatorTest {
         mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
         mAndroidViewShownSupplier.set(true);
 
-        when(mViewportModeSupplier.get()).thenReturn(ViewportMode.DYNAMIC_BROWSER_CONTROLS);
-
         TopToolbarOverlayMediator.setToolbarBackgroundColorForTesting(Color.RED);
         TopToolbarOverlayMediator.setUrlBarColorForTesting(Color.BLUE);
         TopToolbarOverlayMediator.setIsTabletForTesting(false);
@@ -98,9 +91,9 @@ public class TopToolbarOverlayMediatorTest {
                          .with(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null)
                          .build();
 
-        mMediator = new TopToolbarOverlayMediator(mModel, mContext, mLayoutManager,
-                mControlContainer, mTabSupplier, mBrowserControlsProvider, mViewportModeSupplier,
-                mAndroidViewShownSupplier);
+        mMediator =
+                new TopToolbarOverlayMediator(mModel, mContext, mLayoutManager, mControlContainer,
+                        mTabSupplier, mBrowserControlsProvider, mAndroidViewShownSupplier);
 
         // Ensure the observer is added to the initial tab.
         verify(mTabSupplier).addObserverAndTrigger(mActivityTabObserverCaptor.capture());

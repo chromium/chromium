@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -416,13 +415,9 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         // If fullscreen is disabled, don't bother creating this overlay; only the android view will
         // ever be shown.
         if (DeviceClassManager.enableFullscreen()) {
-            Supplier<Integer> viewportModeSupplier = ()
-                    -> getActiveLayout() != null ? getActiveLayout().getViewportMode()
-                                                 : Layout.ViewportMode.ALWAYS_FULLSCREEN;
             mToolbarOverlay = new TopToolbarOverlayCoordinator(mContext, mFrameRequestSupplier,
                     this, controlContainer, tabProvider, getBrowserControlsManager(),
-                    viewportModeSupplier, mAndroidViewShownSupplier,
-                    () -> renderHost.getResourceManager());
+                    mAndroidViewShownSupplier, () -> renderHost.getResourceManager());
         }
 
         // Initialize Layouts
