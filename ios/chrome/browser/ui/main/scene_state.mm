@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
 #import "base/ios/crb_protocol_observers.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
@@ -128,8 +131,31 @@
   [self.observers sceneState:self receivedUserActivity:pendingUserActivity];
 }
 
+#pragma mark - UIBlockerTarget
+
 - (id<UIBlockerManager>)uiBlockerManager {
   return _appState;
+}
+
+- (void)bringBlockerToFront:(UIScene*)requestingScene API_AVAILABLE(ios(13)) {
+  if (!IsMultipleScenesSupported()) {
+    return;
+  }
+  if (@available(iOS 13, *)) {
+    UISceneActivationRequestOptions* options =
+        [[UISceneActivationRequestOptions alloc] init];
+    options.requestingScene = requestingScene;
+
+    [[UIApplication sharedApplication]
+        requestSceneSessionActivation:self.scene.session
+                         userActivity:nil
+                              options:options
+                         errorHandler:^(NSError* error) {
+                           LOG(ERROR) << base::SysNSStringToUTF8(
+                               error.localizedDescription);
+                           NOTREACHED();
+                         }];
+  }
 }
 
 #pragma mark - debug

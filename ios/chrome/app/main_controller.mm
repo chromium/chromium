@@ -1239,24 +1239,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)activateBlockingScene:(UIScene*)requestingScene
     API_AVAILABLE(ios(13.0)) {
-  if (@available(iOS 13, *)) {
-    UISceneActivationRequestOptions* options =
-        [[UISceneActivationRequestOptions alloc] init];
-    options.requestingScene = requestingScene;
-    UIScene* blockingScene = self.appState.sceneShowingBlockingUI.scene;
-    if (!blockingScene) {
-      return;
-    }
-    [[UIApplication sharedApplication]
-        requestSceneSessionActivation:blockingScene.session
-                         userActivity:nil
-                              options:options
-                         errorHandler:^(NSError* error) {
-                           LOG(ERROR) << base::SysNSStringToUTF8(
-                               error.localizedDescription);
-                           NOTREACHED();
-                         }];
+  id<UIBlockerTarget> uiBlocker = self.appState.currentUIBlocker;
+  if (!uiBlocker) {
+    return;
   }
+
+  [uiBlocker bringBlockerToFront:requestingScene];
 }
 
 @end

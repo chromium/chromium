@@ -769,7 +769,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
   }
   // Don't show the promo if there is a blocking task in process.
-  if (self.sceneState.appState.sceneShowingBlockingUI)
+  if (self.sceneState.appState.currentUIBlocker)
     return NO;
   // Don't show the promo in Incognito mode.
   if (self.currentInterface == self.incognitoInterface)

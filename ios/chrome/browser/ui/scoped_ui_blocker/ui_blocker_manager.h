@@ -12,6 +12,9 @@
 // Manager in charge to block and unblock all UI.
 @protocol UIBlockerManager <NSObject>
 
+// The current UI blocker, if any.
+- (id<UIBlockerTarget>)currentUIBlocker;
+
 // Call this when showing a new blocking UI in |target|.
 // It is an error to call this for target A when target B is already showing one
 // or more blocking UI.
