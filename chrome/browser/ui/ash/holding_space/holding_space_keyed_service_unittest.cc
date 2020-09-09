@@ -350,7 +350,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
-           item_1_full_path)
+           HoldingSpaceItem::Type::kScreenshot, item_1_full_path)
            ->image_skia()
            .bitmap(),
       *item_1->image().image_skia().bitmap()));
@@ -366,7 +366,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
-           item_2_full_path)
+           HoldingSpaceItem::Type::kScreenshot, item_2_full_path)
            ->image_skia()
            .bitmap(),
       *item_2->image().image_skia().bitmap()));
@@ -426,7 +426,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         type, file_path, file_system_url,
         holding_space_util::ResolveImage(
-            primary_holding_space_service->thumbnail_loader_for_testing(),
+            primary_holding_space_service->thumbnail_loader_for_testing(), type,
             file_path));
 
     // We do not persist `kDownload` type items.
@@ -492,7 +492,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
                   holding_space_util::ResolveImage(
                       primary_holding_space_service
                           ->thumbnail_loader_for_testing(),
-                      file));
+                      type, file));
 
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());

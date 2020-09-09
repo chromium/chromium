@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/recent_files_container.h"
 
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -56,6 +57,7 @@ RecentFilesContainer::RecentFilesContainer() {
 
   recent_downloads_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
+
   // TODO(crbug.com/1125254): Populate containers if and when holding space
   // model is attached, below is a temporary solution.
   for (const auto& item : HoldingSpaceController::Get()->model()->items()) {

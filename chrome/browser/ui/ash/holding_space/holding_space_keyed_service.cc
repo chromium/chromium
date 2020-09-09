@@ -61,6 +61,7 @@ void HoldingSpaceKeyedService::AddPinnedFile(
       HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
       file_system_url.ToGURL(),
       holding_space_util::ResolveImage(&thumbnail_loader_,
+                                       HoldingSpaceItem::Type::kPinnedFile,
                                        file_system_url.path())));
 }
 
@@ -94,7 +95,9 @@ void HoldingSpaceKeyedService::AddScreenshot(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenshot, screenshot_file, file_system_url,
-      holding_space_util::ResolveImage(&thumbnail_loader_, screenshot_file)));
+      holding_space_util::ResolveImage(&thumbnail_loader_,
+                                       HoldingSpaceItem::Type::kScreenshot,
+                                       screenshot_file)));
 }
 
 void HoldingSpaceKeyedService::AddDownload(
@@ -106,7 +109,9 @@ void HoldingSpaceKeyedService::AddDownload(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, download_file, file_system_url,
-      holding_space_util::ResolveImage(&thumbnail_loader_, download_file)));
+      holding_space_util::ResolveImage(&thumbnail_loader_,
+                                       HoldingSpaceItem::Type::kDownload,
+                                       download_file)));
 }
 
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {

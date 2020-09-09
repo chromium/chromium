@@ -29,7 +29,10 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -236,6 +239,12 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
   base::UnguessableToken request_id = base::UnguessableToken::Create();
   requests_[request_id] = std::move(callback);
 
+  // Unfortunately the image loader only supports cropping to square dimensions
+  // but a request for a non-cropped, non-square image would result in image
+  // distortion. To work around this we always request square images and then
+  // crop to requested dimensions on our end if necessary after bitmap decoding.
+  const int size = std::max(request.size.width(), request.size.height());
+
   // Generate an image loader request. The request type is defined in
   // ui/file_manager/image_loader/load_image_request.js.
   base::Value request_value(base::Value::Type::DICTIONARY);
@@ -245,8 +254,8 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
   request_value.SetBoolKey("cache", true);
   request_value.SetBoolKey("crop", true);
   request_value.SetKey("priority", base::Value(1));
-  request_value.SetKey("width", base::Value(request.size.width()));
-  request_value.SetKey("height", base::Value(request.size.height()));
+  request_value.SetKey("width", base::Value(size));
+  request_value.SetKey("height", base::Value(size));
 
   std::string request_message;
   base::JSONWriter::Write(request_value, &request_message);
@@ -256,7 +265,7 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
   auto native_message_host = std::make_unique<ThumbnailLoaderNativeMessageHost>(
       request_id.ToString(), request_message,
       base::BindOnce(&HoldingSpaceThumbnailLoader::OnThumbnailLoaded,
-                     weak_factory_.GetWeakPtr(), request_id));
+                     weak_factory_.GetWeakPtr(), request_id, request.size));
   const extensions::PortId port_id(base::UnguessableToken::Create(),
                                    1 /* port_number */, true /* is_opener */);
   extensions::MessageService* const message_service =
@@ -273,12 +282,13 @@ void HoldingSpaceThumbnailLoader::LoadForFileWithMetadata(
 
 void HoldingSpaceThumbnailLoader::OnThumbnailLoaded(
     const base::UnguessableToken& request_id,
+    const gfx::Size& requested_size,
     const std::string& data) {
   if (!requests_.count(request_id))
     return;
 
   if (data.empty()) {
-    RespondToRequest(request_id, nullptr);
+    RespondToRequest(request_id, requested_size, nullptr);
     return;
   }
 
@@ -286,21 +296,36 @@ void HoldingSpaceThumbnailLoader::OnThumbnailLoaded(
   ThumbnailDecoder* thumbnail_decoder_ptr = thumbnail_decoder.get();
   thumbnail_decoders_.emplace(request_id, std::move(thumbnail_decoder));
   thumbnail_decoder_ptr->Start(
-      data, base::BindOnce(&HoldingSpaceThumbnailLoader::RespondToRequest,
-                           weak_factory_.GetWeakPtr(), request_id));
+      data,
+      base::BindOnce(&HoldingSpaceThumbnailLoader::RespondToRequest,
+                     weak_factory_.GetWeakPtr(), request_id, requested_size));
 }
 
 void HoldingSpaceThumbnailLoader::RespondToRequest(
     const base::UnguessableToken& request_id,
+    const gfx::Size& requested_size,
     const SkBitmap* bitmap) {
   thumbnail_decoders_.erase(request_id);
   auto request_it = requests_.find(request_id);
   if (request_it == requests_.end())
     return;
 
+  // To work around cropping limitations of the image loader, we requested a
+  // square image. If requested dimensions were non-square, we need to perform
+  // additional cropping on our end.
+  SkBitmap cropped_bitmap;
+  if (bitmap) {
+    gfx::Rect cropped_rect(0, 0, bitmap->width(), bitmap->height());
+    if (cropped_rect.size() != requested_size) {
+      cropped_bitmap = *bitmap;
+      cropped_rect.ClampToCenteredSize(requested_size);
+      bitmap->extractSubset(&cropped_bitmap, gfx::RectToSkIRect(cropped_rect));
+    }
+  }
+
   ImageCallback callback = std::move(request_it->second);
   requests_.erase(request_it);
-  std::move(callback).Run(bitmap);
+  std::move(callback).Run(cropped_bitmap.isNull() ? bitmap : &cropped_bitmap);
 }
 
 }  // namespace ash

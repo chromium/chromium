@@ -49,7 +49,8 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
       base::BindLambdaForTesting(
           [&](const base::FilePath& file_path) { return file_system_url; }),
       /*image_resolver=*/
-      base::BindLambdaForTesting([&](const base::FilePath& file_path) {
+      base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
+                                     const base::FilePath& file_path) {
         return std::make_unique<HoldingSpaceImage>(
             placeholder, /*async_bitmap_resolver=*/base::DoNothing());
       }));

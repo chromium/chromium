@@ -7,18 +7,49 @@
 #include <map>
 
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
-#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace holding_space_util {
+
+namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+gfx::ImageSkia GetPlaceholderImage(HoldingSpaceItem::Type type,
+                                   const base::FilePath& file_path) {
+  gfx::Size size;
+  switch (type) {
+    case HoldingSpaceItem::Type::kDownload:
+    case HoldingSpaceItem::Type::kPinnedFile:
+      size = gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
+      break;
+    case HoldingSpaceItem::Type::kScreenshot:
+      size = kHoldingSpaceScreenshotSize;
+      break;
+  }
+
+  // NOTE: We superimpose the file type icon for `file_path` over a transparent
+  // bitmap in order to center it within the placeholder image at a fixed size.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size.width(), size.height());
+  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap), GetIconForPath(file_path));
+}
+
+}  // namespace
+
+// Utilities -------------------------------------------------------------------
 
 void ItemExists(Profile* profile,
                 const HoldingSpaceItem* item,
@@ -124,12 +155,12 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
   return file_system_url;
 }
 
-// TODO(dmblack): Handle different sizes for different holding space item types.
 std::unique_ptr<HoldingSpaceImage> ResolveImage(
     HoldingSpaceThumbnailLoader* thumbnail_loader,
+    HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      /*placeholder=*/GetIconForPath(file_path),
+      GetPlaceholderImage(type, file_path),
       base::BindRepeating(
           [](const base::WeakPtr<HoldingSpaceThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,

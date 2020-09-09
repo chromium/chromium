@@ -135,6 +135,7 @@ component("cpp") {
     "frame_utils.h",
     "gesture_action_type.h",
     "holding_space/holding_space_client.h",
+    "holding_space/holding_space_constants.h",
     "holding_space/holding_space_controller.cc",
     "holding_space/holding_space_controller.h",
     "holding_space/holding_space_controller_observer.h",

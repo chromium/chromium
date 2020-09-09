@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/pinned_files_container.h"
 
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"

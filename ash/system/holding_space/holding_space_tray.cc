@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"

@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_screenshot_view.h"
 
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/system/tray/tray_constants.h"

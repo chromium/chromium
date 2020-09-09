@@ -69,14 +69,18 @@ class HoldingSpaceThumbnailLoader {
 
   // Callback to the image loader request.
   // `request_id` identifies the thumbnail request.
-  // `data` - Image data returned by the image loader. Expected to be in a data
+  // `requested_size` - size of the thumbnail that was requested.
+  // `data` - image data returned by the image loader. Expected to be in a data
   // URL form. It will attempt to decode the received data.
   void OnThumbnailLoaded(const base::UnguessableToken& request_id,
+                         const gfx::Size& requested_size,
                          const std::string& data);
 
   // Finalizes the thumbnail request identified by `request_id`. It invokes the
-  // request callback with `bitmap`.
+  // request callback with `bitmap`. If `bitmap` size is larger than the
+  // originally `requested_size`, the bitmap will be cropped.
   void RespondToRequest(const base::UnguessableToken& request_id,
+                        const gfx::Size& requested_size,
                         const SkBitmap* bitmap);
 
   Profile* const profile_;

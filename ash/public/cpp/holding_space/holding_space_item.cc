@@ -77,8 +77,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   const base::Optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
-  const base::Optional<int> type = dict.FindIntPath(kTypePath);
-  DCHECK(type.has_value());
+  const Type type = static_cast<Type>(dict.FindIntPath(kTypePath).value());
 
   const base::Optional<base::FilePath> file_path =
       util::ValueToFilePath(dict.FindPath(kFilePathPath));
@@ -86,10 +85,10 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
 
   // NOTE: `std::make_unique` does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
-      static_cast<Type>(type.value()), DeserializeId(dict), file_path.value(),
+      type, DeserializeId(dict), file_path.value(),
       std::move(file_system_url_resolver).Run(file_path.value()),
       file_path->BaseName().LossyDisplayName(),
-      std::move(image_resolver).Run(file_path.value())));
+      std::move(image_resolver).Run(type, file_path.value())));
 }
 
 // static

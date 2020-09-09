@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/callback_forward.h"
 
 class GURL;
@@ -20,7 +21,6 @@ class FilePath;
 namespace ash {
 
 class HoldingSpaceImage;
-class HoldingSpaceItem;
 class HoldingSpaceThumbnailLoader;
 
 using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
@@ -50,6 +50,7 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);
 // Resolves the image associated with the specified `file_path`.
 std::unique_ptr<HoldingSpaceImage> ResolveImage(
     HoldingSpaceThumbnailLoader* thumbnail_loader,
+    HoldingSpaceItem::Type type,
     const base::FilePath& file_path);
 
 }  // namespace holding_space_util

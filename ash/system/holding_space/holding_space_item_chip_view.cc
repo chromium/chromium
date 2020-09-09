@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -122,7 +123,9 @@ void HoldingSpaceItemChipView::AddPinButton() {
 }
 
 void HoldingSpaceItemChipView::Update() {
-  image_->SetImage(item_->image().image_skia(), {kTrayItemSize, kTrayItemSize});
+  image_->SetImage(
+      item_->image().image_skia(),
+      gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize));
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, views::InkDropHostView)

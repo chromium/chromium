@@ -57,9 +57,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Returns a file system URL for a given file path.
   using FileSystemUrlResolver = base::OnceCallback<GURL(const base::FilePath&)>;
 
-  // Returns an image for a given file path.
-  using ImageResolver = base::OnceCallback<std::unique_ptr<HoldingSpaceImage>(
-      const base::FilePath&)>;
+  // Returns an image for a given type and file path.
+  using ImageResolver = base::OnceCallback<
+      std::unique_ptr<HoldingSpaceImage>(Type, const base::FilePath&)>;
 
   // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
   static std::unique_ptr<HoldingSpaceItem> Deserialize(
