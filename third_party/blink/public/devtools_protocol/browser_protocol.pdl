@@ -7970,7 +7970,7 @@ experimental domain WebAudio
       # Context sample rate.
       number sampleRate
 
-# Protocol object for AudioListner
+# Protocol object for AudioListener
   type AudioListener extends object
     properties
       GraphObjectId listenerId
