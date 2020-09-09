@@ -64,7 +64,7 @@ class FeatureStatusProviderImpl
                              bool powered) override;
 
   // ConnectionManager::Observer:
-  void OnStatusChanged() override;
+  void OnConnectionStatusChanged() override;
 
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;

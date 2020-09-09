@@ -32,7 +32,7 @@ class ConnectionManager {
     ~Observer() override = default;
 
     // Called the status has changed; use GetStatus() to get the new status.
-    virtual void OnStatusChanged() {}
+    virtual void OnConnectionStatusChanged() {}
 
     // Called when a payload message has been received.
     virtual void OnMessageReceived(const std::string& payload) {}

@@ -21,7 +21,7 @@ void FeatureStatusProvider::RemoveObserver(Observer* observer) {
 
 void FeatureStatusProvider::NotifyStatusChanged() {
   for (auto& observer : observer_list_)
-    observer.OnStatusChanged();
+    observer.OnFeatureStatusChanged();
 }
 
 }  // namespace phonehub

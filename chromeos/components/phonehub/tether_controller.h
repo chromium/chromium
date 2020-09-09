@@ -46,7 +46,7 @@ class TetherController {
     ~Observer() override = default;
 
     // Called the status has changed; use GetStatus() to get the new status.
-    virtual void OnStatusChanged() = 0;
+    virtual void OnTetherStatusChanged() = 0;
   };
 
   TetherController(const TetherController&) = delete;

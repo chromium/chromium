@@ -21,7 +21,7 @@ class FakeObserver : public TetherController::Observer {
   size_t num_calls() const { return num_calls_; }
 
   // TetherController::Observer:
-  void OnStatusChanged() override { ++num_calls_; }
+  void OnTetherStatusChanged() override { ++num_calls_; }
 
  private:
   size_t num_calls_ = 0;

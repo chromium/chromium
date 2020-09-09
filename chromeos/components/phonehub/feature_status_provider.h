@@ -21,7 +21,7 @@ class FeatureStatusProvider {
     ~Observer() override = default;
 
     // Called when the status has changed; use GetStatus() for the new status.
-    virtual void OnStatusChanged() = 0;
+    virtual void OnFeatureStatusChanged() = 0;
   };
 
   FeatureStatusProvider(const FeatureStatusProvider&) = delete;

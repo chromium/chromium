@@ -72,7 +72,7 @@ class FakeObserver : public FeatureStatusProvider::Observer {
   size_t num_calls() const { return num_calls_; }
 
   // FeatureStatusProvider::Observer:
-  void OnStatusChanged() override { ++num_calls_; }
+  void OnFeatureStatusChanged() override { ++num_calls_; }
 
  private:
   size_t num_calls_ = 0;

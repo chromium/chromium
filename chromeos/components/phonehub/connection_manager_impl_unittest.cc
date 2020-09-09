@@ -32,7 +32,7 @@ class FakeObserver : public ConnectionManager::Observer {
   const std::string& last_message() const { return last_message_; }
 
   // ConnectionManager::Observer:
-  void OnStatusChanged() override { ++status_changed_num_calls_; }
+  void OnConnectionStatusChanged() override { ++status_changed_num_calls_; }
   void OnMessageReceived(const std::string& payload) override {
     last_message_ = payload;
     ++message_received_num_calls_;

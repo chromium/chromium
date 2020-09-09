@@ -21,7 +21,7 @@ void TetherController::RemoveObserver(Observer* observer) {
 
 void TetherController::NotifyStatusChanged() {
   for (auto& observer : observer_list_)
-    observer.OnStatusChanged();
+    observer.OnTetherStatusChanged();
 }
 
 std::ostream& operator<<(std::ostream& stream,

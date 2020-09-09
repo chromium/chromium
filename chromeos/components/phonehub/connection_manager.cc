@@ -20,7 +20,7 @@ void ConnectionManager::RemoveObserver(Observer* observer) {
 
 void ConnectionManager::NotifyStatusChanged() {
   for (auto& observer : observer_list_)
-    observer.OnStatusChanged();
+    observer.OnConnectionStatusChanged();
 }
 
 void ConnectionManager::NotifyMessageReceived(const std::string& payload) {

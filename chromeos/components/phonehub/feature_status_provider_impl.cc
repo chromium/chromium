@@ -184,7 +184,7 @@ void FeatureStatusProviderImpl::OnBluetoothAdapterReceived(
     UpdateStatus();
 }
 
-void FeatureStatusProviderImpl::OnStatusChanged() {
+void FeatureStatusProviderImpl::OnConnectionStatusChanged() {
   UpdateStatus();
 }
 
