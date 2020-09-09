@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
@@ -48,6 +50,12 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     private CallbackController mCallbackController;
     private PolicyService.Observer mPolicyServiceObserver;
 
+    /** The {@link SystemClock} timestamp when this object was created. */
+    private long mObjectCreatedTimeMs;
+
+    /** The {@link SystemClock} timestamp when onViewCreated is called. */
+    private long mViewCreatedTimeMs;
+
     /**
      * Whether app restriction is found on the device. This can be null when this information is not
      * ready yet.
@@ -65,6 +73,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     private @Nullable Boolean mIsDeviceOwned;
 
     private TosAndUmaFirstRunFragmentWithEnterpriseSupport() {
+        mObjectCreatedTimeMs = SystemClock.elapsedRealtime();
         mCallbackController = new CallbackController();
     }
 
@@ -102,6 +111,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
 
         mLoadingSpinner = view.findViewById(R.id.progress_spinner_large);
         mViewCreated = true;
+        mViewCreatedTimeMs = SystemClock.elapsedRealtime();
 
         if (shouldWaitForPolicyLoading()) {
             mLoadingSpinner.addObserver(this);
@@ -129,6 +139,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
 
     @Override
     public void onHideLoadingUIComplete() {
+        RecordHistogram.recordTimesHistogram("MobileFre.CctTos.LoadingDuration",
+                SystemClock.elapsedRealtime() - mViewCreatedTimeMs);
         if (confirmedCctTosDialogDisabled() && confirmedOwnedDevice()) {
             // TODO(crbug.com/1108564): Show the different UI that has the enterprise disclosure.
             exitCctFirstRun();
@@ -201,11 +213,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         }
 
         mHasRestriction = hasAppRestriction;
-
-        if (!shouldWaitForPolicyLoading() && mViewCreated) {
-            // TODO(https://crbug.com/1119449): Cleanup various policy callbacks.
-            mLoadingSpinner.hideLoadingUI();
-        }
+        maybeHideSpinner();
     }
 
     private void checkEnterprisePolicies() {
@@ -224,10 +232,12 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
 
     private void updateCctTosPolicy() {
         mPolicyCctTosDialogEnabled = FirstRunUtils.isCctTosDialogEnabled();
-        if (!shouldWaitForPolicyLoading() && mViewCreated) {
-            // TODO(https://crbug.com/1119449): Cleanup various policy callbacks.
-            mLoadingSpinner.hideLoadingUI();
-        }
+        maybeHideSpinner();
+
+        RecordHistogram.recordTimesHistogram(mViewCreated
+                        ? "MobileFre.CctTos.EnterprisePolicyCheckSpeed.SlowerThanInflation"
+                        : "MobileFre.CctTos.EnterprisePolicyCheckSpeed.FasterThanInflation",
+                SystemClock.elapsedRealtime() - mObjectCreatedTimeMs);
     }
 
     private void checkIsDeviceOwned() {
@@ -237,6 +247,15 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
 
     private void onIsDeviceOwnedDetected(EnterpriseInfo.OwnedState ownedState) {
         mIsDeviceOwned = ownedState.mDeviceOwned;
+        maybeHideSpinner();
+
+        RecordHistogram.recordTimesHistogram(mViewCreated
+                        ? "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"
+                        : "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.FasterThanInflation",
+                SystemClock.elapsedRealtime() - mObjectCreatedTimeMs);
+    }
+
+    private void maybeHideSpinner() {
         if (!shouldWaitForPolicyLoading() && mViewCreated) {
             // TODO(https://crbug.com/1119449): Cleanup various policy callbacks.
             mLoadingSpinner.hideLoadingUI();

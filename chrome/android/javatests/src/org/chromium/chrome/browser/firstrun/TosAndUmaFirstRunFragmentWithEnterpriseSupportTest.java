@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -145,10 +146,16 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         setAppRestrictiosnMockInitialized(false);
         assertUIState(FragmentState.NO_POLICY);
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.LoadingDuration"));
     }
 
     @Test
     @SmallTest
+    // TODO(crbug.com/1120859): Test the policy check when native initializes before inflation.
+    // This will be possible when FragmentScenario is available.
     public void testDialogEnabled() {
         setAppRestrictiosnMockInitialized(true);
         launchFirstRunThroughCustomTab();
@@ -156,6 +163,12 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         setPolicyServiceMockInitializedWithDialogEnabled(true);
         assertUIState(FragmentState.NO_POLICY);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.LoadingDuration"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.EnterprisePolicyCheckSpeed.SlowerThanInflation"));
     }
 
     @Test
@@ -167,6 +180,29 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         setEnterpriseInfoInitializedWithDeviceOwner(false);
         assertUIState(FragmentState.NO_POLICY);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.LoadingDuration"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
+    }
+
+    @Test
+    @SmallTest
+    public void testNotOwnedDevice_beforeInflation() {
+        setAppRestrictiosnMockInitialized(true);
+        setEnterpriseInfoInitializedWithDeviceOwner(false);
+
+        launchFirstRunThroughCustomTab();
+        assertUIState(FragmentState.NO_POLICY);
+
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.LoadingDuration"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.FasterThanInflation"));
     }
 
     @Test
@@ -181,6 +217,16 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         setPolicyServiceMockInitializedWithDialogEnabled(false);
         assertUIState(FragmentState.HAS_POLICY);
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.LoadingDuration"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
     }
 
     @Test
@@ -195,6 +241,16 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         setEnterpriseInfoInitializedWithDeviceOwner(true);
         assertUIState(FragmentState.HAS_POLICY);
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.LoadingDuration"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
     }
 
     @Test
@@ -213,6 +269,16 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         // assertUIState will verify that exit was not called a second time.
         setAppRestrictiosnMockInitialized(true);
         assertUIState(FragmentState.HAS_POLICY);
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.LoadingDuration"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation"));
     }
 
     /**
