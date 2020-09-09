@@ -157831,7 +157831,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveReceived" enum="Boolean"
-    expires_after="M87">
+    expires_after="M89">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -157842,7 +157842,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveRequested"
-    enum="ContextualSearchGestureIsTap" expires_after="M88">
+    enum="ContextualSearchGestureIsTap" expires_after="M89">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -157888,7 +157888,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationNeeded"
-    enum="ContextualSearchGestureIsTap" expires_after="M88">
+    enum="ContextualSearchGestureIsTap" expires_after="M89">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
