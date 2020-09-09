@@ -650,9 +650,6 @@ void SurfaceAggregator::EmitSurfaceContent(
     dest_pass_list_->push_back(std::move(copy_pass));
   }
 
-  gfx::Transform surface_transform = scaled_quad_to_target_transform;
-  surface_transform.ConcatTransform(target_transform);
-
   const auto& last_pass = *render_pass_list.back();
   // This will check if all the surface_quads (including child surfaces) has
   // damage because HandleSurfaceQuad is a recursive call by calling
@@ -679,7 +676,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 
     CopyQuadsToPass(quads, last_pass.shared_quad_state_list,
                     surface->GetActiveFrame().device_scale_factor(),
-                    child_to_parent_map, surface_transform, quads_clip,
+                    child_to_parent_map, combined_transform, quads_clip,
                     dest_pass, surface_id, rounded_corner_info,
                     occluding_damage_rect, quad_with_occluding_damage_rect);
   } else {
