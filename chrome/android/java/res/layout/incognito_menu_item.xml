@@ -19,8 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="@string/menu_new_incognito_tab"
-        android:drawableTint="@color/default_icon_color_secondary"
         android:drawablePadding="12dp"
+        app:chromeDrawableTint="@color/default_icon_color_secondary"
         app:drawableWidth="24dp"
         app:drawableHeight="24dp"/>
 

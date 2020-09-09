@@ -28,8 +28,8 @@
         android:layout_weight="1"
         android:background="?attr/listChoiceBackgroundIndicator"
         android:paddingStart="16dp"
-        android:drawableTint="@color/default_icon_color_secondary"
         android:drawablePadding="12dp"
+        app:chromeDrawableTint="@color/default_icon_color_secondary"
         app:drawableWidth="24dp"
         app:drawableHeight="24dp" />
 
