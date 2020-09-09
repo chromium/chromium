@@ -187,7 +187,10 @@ void RenderWidgetHostViewChildFrame::SetBounds(const gfx::Rect& rect) {
   }
 }
 
-void RenderWidgetHostViewChildFrame::Focus() {}
+void RenderWidgetHostViewChildFrame::Focus() {
+  if (frame_connector_ && !frame_connector_->HasFocus())
+    return frame_connector_->FocusRootView();
+}
 
 bool RenderWidgetHostViewChildFrame::HasFocus() {
   if (frame_connector_)
@@ -644,10 +647,8 @@ bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableFor(
 
 void RenderWidgetHostViewChildFrame::PreProcessTouchEvent(
     const blink::WebTouchEvent& event) {
-  if (event.GetType() == blink::WebInputEvent::Type::kTouchStart &&
-      frame_connector_ && !frame_connector_->HasFocus()) {
-    frame_connector_->FocusRootView();
-  }
+  if (event.GetType() == blink::WebInputEvent::Type::kTouchStart)
+    Focus();
 }
 
 viz::FrameSinkId RenderWidgetHostViewChildFrame::GetRootFrameSinkId() {
