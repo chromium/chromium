@@ -484,15 +484,6 @@ class PrerenderManager : public content::RenderProcessHostObserver,
                                                Origin origin,
                                                FinalStatus final_status) const;
 
-  // Swaps a prerender |prerender_data| for |url| into the tab, replacing
-  // |web_contents|.  Returns the new WebContents that was swapped in, or NULL
-  // if a swap-in was not possible.  If |should_replace_current_entry| is true,
-  // the current history entry in |web_contents| is replaced.
-  content::WebContents* SwapInternal(const GURL& url,
-                                     content::WebContents* web_contents,
-                                     PrerenderData* prerender_data,
-                                     bool should_replace_current_entry);
-
   // May initiate a preconnect to |url_arg| based on |origin|.
   void MaybePreconnect(Origin origin, const GURL& url_arg) const;
 
