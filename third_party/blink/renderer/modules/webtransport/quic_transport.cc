@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
@@ -347,6 +348,7 @@ QuicTransport* QuicTransport::Create(ScriptState* script_state,
                                      ExceptionState& exception_state) {
   DVLOG(1) << "QuicTransport::Create() url=" << url;
   DCHECK(options);
+  ExecutionContext::From(script_state)->CountUse(WebFeature::kQuicTransport);
   auto* transport =
       MakeGarbageCollected<QuicTransport>(PassKey(), script_state, url);
   transport->Init(url, *options, exception_state);
@@ -372,6 +374,7 @@ ScriptPromise QuicTransport::createSendStream(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   DVLOG(1) << "QuicTransport::createSendStream() this=" << this;
 
+  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
   if (!quic_transport_.is_bound()) {
     // TODO(ricea): Should we wait if we're still connecting?
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
@@ -398,11 +401,17 @@ ScriptPromise QuicTransport::createSendStream(ScriptState* script_state,
   return resolver->Promise();
 }
 
+ReadableStream* QuicTransport::receiveStreams() {
+  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  return received_streams_;
+}
+
 ScriptPromise QuicTransport::createBidirectionalStream(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DVLOG(1) << "QuicTransport::createBidirectionalStream() this=" << this;
 
+  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
   if (!quic_transport_.is_bound()) {
     // TODO(ricea): We should wait if we are still connecting.
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
@@ -440,6 +449,21 @@ ScriptPromise QuicTransport::createBidirectionalStream(
                 std::move(outgoing_producer), std::move(incoming_consumer)));
 
   return resolver->Promise();
+}
+
+ReadableStream* QuicTransport::receiveBidirectionalStreams() {
+  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  return received_bidirectional_streams_;
+}
+
+WritableStream* QuicTransport::sendDatagrams() {
+  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  return outgoing_datagrams_;
+}
+
+ReadableStream* QuicTransport::receiveDatagrams() {
+  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  return received_datagrams_;
 }
 
 void QuicTransport::close(const WebTransportCloseInfo* close_info) {

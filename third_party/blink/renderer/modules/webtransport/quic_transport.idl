@@ -8,27 +8,27 @@
     Exposed=(Window,Worker),
     RuntimeEnabled=QuicTransport
 ] interface QuicTransport {
-  [CallWith=ScriptState, RaisesException, MeasureAs=QuicTransport] constructor(USVString url, optional QuicTransportOptions options = {});
+  [CallWith=ScriptState, RaisesException] constructor(USVString url, optional QuicTransportOptions options = {});
   // QuicTransport is the first, and at this moment only, transport which is
   // implemented. In the (draft) spec there are many mix-in interfaces which
   // QuicTransport includes, but we define all their methods/attributes here
   // for simplicity.
 
   // From UnidirectionalStreamsTransport
-  [CallWith=ScriptState, RaisesException, MeasureAs=QuicTransportStreamApis] Promise<SendStream>
+  [CallWith=ScriptState, RaisesException] Promise<SendStream>
       createSendStream();
   // TODO(ricea): This should probably be changed to an attribute in the
   // standard.
-  [MeasureAs=QuicTransportStreamApis] ReadableStream receiveStreams();
+  ReadableStream receiveStreams();
 
   // From BidirectionalStreamsTransport
-  [CallWith=ScriptState, RaisesException, MeasureAs=QuicTransportStreamApis] Promise<BidirectionalStream>
+  [CallWith=ScriptState, RaisesException] Promise<BidirectionalStream>
       createBidirectionalStream();
-  [MeasureAs=QuicTransportStreamApis] ReadableStream receiveBidirectionalStreams();
+  ReadableStream receiveBidirectionalStreams();
 
   // From DatagramTransport mixin
-  [MeasureAs=QuicTransportDatagramApis] WritableStream sendDatagrams();
-  [MeasureAs=QuicTransportDatagramApis] ReadableStream receiveDatagrams();
+  WritableStream sendDatagrams();
+  ReadableStream receiveDatagrams();
 
   // From WebTransport mixin
   void close(optional WebTransportCloseInfo closeInfo = {});

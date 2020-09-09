@@ -60,15 +60,13 @@ class MODULES_EXPORT QuicTransport final
 
   // QuicTransport IDL implementation.
   ScriptPromise createSendStream(ScriptState*, ExceptionState&);
-  ReadableStream* receiveStreams() { return received_streams_; }
+  ReadableStream* receiveStreams();
 
   ScriptPromise createBidirectionalStream(ScriptState*, ExceptionState&);
-  ReadableStream* receiveBidirectionalStreams() {
-    return received_bidirectional_streams_;
-  }
+  ReadableStream* receiveBidirectionalStreams();
 
-  WritableStream* sendDatagrams() { return outgoing_datagrams_; }
-  ReadableStream* receiveDatagrams() { return received_datagrams_; }
+  WritableStream* sendDatagrams();
+  ReadableStream* receiveDatagrams();
   void close(const WebTransportCloseInfo*);
   ScriptPromise ready() { return ready_; }
   ScriptPromise closed() { return closed_; }
