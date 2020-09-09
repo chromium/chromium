@@ -461,9 +461,18 @@ TEST_F(AppListControllerImplTest, CheckAppListViewBoundsWhenDismissVKeyboard) {
             GetAppListViewNativeWindow()->bounds());
 }
 
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_CloseNotificationWithAppListShown \
+  DISABLED_CloseNotificationWithAppListShown
+#else
+#define MAYBE_CloseNotificationWithAppListShown \
+  CloseNotificationWithAppListShown
+#endif
+
 // Verifies that closing notification by gesture should not dismiss the AppList.
 // (see https://crbug.com/948344)
-TEST_F(AppListControllerImplTest, CloseNotificationWithAppListShown) {
+// TODO(crbug.com/1120501): Test is flaky on ASAN builds.
+TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
   ShowAppListNow();
 
   // Add one notification.
