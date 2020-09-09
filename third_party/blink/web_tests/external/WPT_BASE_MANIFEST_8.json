@@ -38019,7 +38019,7 @@
        ]
       ],
       "mix-blend-mode-svg-rectangle.html": [
-       "e74181e2c35bd0ba1b78eadb84640d321dfa6577",
+       "543586f0983b7d93a472964fd18822425d6034b2",
        [
         null,
         [
@@ -147988,19 +147988,6 @@
      },
      "forms": {
       "the-input-element": {
-       "defaultValue-clobbering.html": [
-        "c65f6ff88c7424de4c44670a85ec9d4204aabb99",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-input-element/defaultValue-clobbering-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "image01.html": [
         "e9028dceec736da67b8c8814cb103cfecbc518a0",
         [
@@ -161413,14 +161400,6 @@
      "b8a1d0a6098492b615dfae8a1e5e44ade8a2f3db",
      []
     ],
-    "idlharness.tentative.https.any-expected.txt": [
-     "f7ef7cb56457331ee50a04d87a2b150ee9e93cd7",
-     []
-    ],
-    "idlharness.tentative.https.any.serviceworker-expected.txt": [
-     "3856a9dceafd38837095fa6f6158a41a5ca5193b",
-     []
-    ],
     "idlharness.tentative.https.any.sharedworker-expected.txt": [
      "ad18929256152fa1478c17ef8acb9acfbdaf8096",
      []
@@ -167549,7 +167528,7 @@
         []
        ],
        "mix-blend-mode-svg-rectangle-ref.html": [
-        "6d74ee05211bedabbd0957d431dce86f27f14f33",
+        "94e73b57c9797d2aa270fb4b82ab8035510b8824",
         []
        ]
       },
@@ -183992,7 +183971,7 @@
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
-       "039be5c3af8f47e68cf9b51b600ec79d46169c9c",
+       "bb3a3ce20dd582aacd42ec083ca217835b5bc0e7",
        []
       ]
      },
@@ -215876,10 +215855,6 @@
       "the-input-element": {
        "datetime-local-expected.txt": [
         "a30d85bc64a3cf68ba5f3d0d5ef111cd8ef8c966",
-        []
-       ],
-       "defaultValue-clobbering-ref.html": [
-        "5a396d3c52a9d80f76d2b35555410c787c083f4a",
         []
        ],
        "hidden-charset-case-sensitive-child.html": [
@@ -284841,6 +284816,13 @@
         {}
        ]
       ],
+      "tab-size-interpolation.html": [
+       "3cf63782f59adb481c77539e4ab062a3de57df47",
+       [
+        null,
+        {}
+       ]
+      ],
       "text-indent-composition.html": [
        "57c528ca271646a284048bb49e11025ac25469da",
        [
@@ -347592,6 +347574,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "defaultValue-clobbering.html": [
+        "41ff967c190616c7312c967c24541382aa20c20e",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "email.html": [
