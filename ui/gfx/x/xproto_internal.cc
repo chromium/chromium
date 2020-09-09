@@ -10,30 +10,6 @@
 
 #include "ui/gfx/x/x11.h"
 
-// XCB used to send requests with FDs by sending each FD individually with
-// xcb_send_fd(), then the request with xcb_send_request().  However, there's a
-// race condition -- FDs can get mixed up if multiple threads are sending them
-// at the same time.  xcb_send_request_with_fds() was introduced to atomically
-// handle this case, however it's only available on newer systems.  In
-// particular it's not available on Ubuntu Xenial (which has LTS until April
-// 2024).  We want to use the bug-free version when it's available, and fallback
-// to the buggy version otherwise.
-
-// Declare the function in case this is a packager build on an older distro with
-// use_sysroot=false.
-unsigned int xcb_send_request_with_fds(xcb_connection_t* c,
-                                       int flags,
-                                       struct iovec* vector,
-                                       const xcb_protocol_request_t* request,
-                                       unsigned int num_fds,
-                                       int* fds);
-
-// Add the weak attribute to the symbol.  This prevents the dynamic linker from
-// erroring out.  Instead, if the function is not found, then it's address is
-// nullptr, so we can do a runtime check to test availability.
-extern "C" __attribute__((weak)) decltype(
-    xcb_send_request_with_fds) xcb_send_request_with_fds;
-
 namespace x11 {
 
 MallocedRefCountedMemory::MallocedRefCountedMemory(void* data)
@@ -143,19 +119,11 @@ base::Optional<unsigned int> SendRequestImpl(x11::Connection* connection,
   auto flags = XCB_REQUEST_CHECKED | XCB_REQUEST_RAW;
   if (reply_has_fds)
     flags |= XCB_REQUEST_REPLY_FDS;
-  base::Optional<unsigned int> sequence;
-  if (xcb_send_request_with_fds) {
-    // Atomically send the request with its FDs if we can.
-    sequence = xcb_send_request_with_fds(conn, flags, &io[2], &xpr,
-                                         buf->fds().size(), buf->fds().data());
-  } else {
-    // Otherwise manually lock and send the fds, then the request.
-    XLockDisplay(connection->display());
-    for (int fd : buf->fds())
-      xcb_send_fd(conn, fd);
-    sequence = xcb_send_request(conn, flags, &io[2], &xpr);
-    XUnlockDisplay(connection->display());
-  }
+
+  for (int fd : buf->fds())
+    xcb_send_fd(conn, fd);
+  unsigned int sequence = xcb_send_request(conn, flags, &io[2], &xpr);
+
   if (xcb_connection_has_error(conn))
     return base::nullopt;
   if (connection->synchronous())
