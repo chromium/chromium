@@ -11,7 +11,6 @@ blink_modules_sources("mediastream") {
     "apply_constraints_request.cc",
     "apply_constraints_request.h",
     "dom_window_media_stream.h",
-    "encoded_frame.h",
     "input_device_info.cc",
     "input_device_info.h",
     "local_media_stream_audio_source.cc",
@@ -97,7 +96,13 @@ blink_modules_sources("mediastream") {
     "//build:chromecast_buildflags",
     "//media/capture/mojom:image_capture_blink",
     "//media/webrtc",
+    "//services/viz/public/cpp/gpu:gpu",
+    "//third_party/blink/renderer/modules/imagecapture:imagecapture",
+    "//third_party/blink/renderer/modules/peerconnection:peerconnection",
+    "//third_party/libyuv:libyuv",
   ]
+
+  public_deps = [ "//media/capture:capture_lib" ]
 }
 
 source_set("test_support") {
@@ -124,8 +129,11 @@ source_set("test_support") {
     "//testing/gmock",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/mojom:mojom_platform_blink_headers",
+    "//third_party/blink/renderer/modules:modules",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  public_deps = [ "//third_party/blink/renderer/platform:test_support" ]
 
   configs += [ "//third_party/blink/renderer:inside_blink" ]
 }
