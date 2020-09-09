@@ -349,45 +349,27 @@ bool VaapiJpegDecoder::SubmitBuffers(const JpegParseResult& parse_result) {
   // Set picture parameters.
   VAPictureParameterBufferJPEGBaseline pic_param{};
   FillPictureParameters(parse_result.frame_header, &pic_param);
-  if (!vaapi_wrapper_->SubmitBuffer(VAPictureParameterBufferType, &pic_param)) {
-    VLOGF(1) << "Could not submit VAPictureParameterBufferType";
-    return false;
-  }
 
   // Set quantization table.
   VAIQMatrixBufferJPEGBaseline iq_matrix{};
   FillIQMatrix(parse_result.q_table, &iq_matrix);
-  if (!vaapi_wrapper_->SubmitBuffer(VAIQMatrixBufferType, &iq_matrix)) {
-    VLOGF(1) << "Could not submit VAIQMatrixBufferType";
-    return false;
-  }
 
   // Set huffman table.
   VAHuffmanTableBufferJPEGBaseline huffman_table{};
   FillHuffmanTable(parse_result.dc_table, parse_result.ac_table,
                    &huffman_table);
-  if (!vaapi_wrapper_->SubmitBuffer(VAHuffmanTableBufferType, &huffman_table)) {
-    VLOGF(1) << "Could not submit VAHuffmanTableBufferType";
-    return false;
-  }
 
   // Set slice parameters.
   VASliceParameterBufferJPEGBaseline slice_param{};
   FillSliceParameters(parse_result, &slice_param);
-  if (!vaapi_wrapper_->SubmitBuffer(VASliceParameterBufferType, &slice_param)) {
-    VLOGF(1) << "Could not submit VASliceParameterBufferType";
-    return false;
-  }
 
-  // Set scan data.
-  if (!vaapi_wrapper_->SubmitBuffer(VASliceDataBufferType,
-                                    parse_result.data_size,
-                                    const_cast<char*>(parse_result.data))) {
-    VLOGF(1) << "Could not submit VASliceDataBufferType";
-    return false;
-  }
-
-  return true;
+  return vaapi_wrapper_->SubmitBuffers(
+      {{VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
+       {VAIQMatrixBufferType, sizeof(iq_matrix), &iq_matrix},
+       {VAHuffmanTableBufferType, sizeof(huffman_table), &huffman_table},
+       {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
+       {VASliceDataBufferType, parse_result.data_size,
+        const_cast<char*>(parse_result.data)}});
 }
 
 }  // namespace media
