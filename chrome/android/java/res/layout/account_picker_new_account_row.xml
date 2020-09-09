@@ -5,6 +5,7 @@
 
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:drawablePadding="22dp"
@@ -14,4 +15,5 @@
     android:paddingBottom="8dp"
     android:gravity="center_vertical"
     android:text="@string/signin_add_account_to_device"
-    android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+    app:drawableStartCompat="@drawable/ic_person_add_24dp" />
