@@ -1163,9 +1163,10 @@ bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
   DCHECK(!needs_descendant_dependent_flags_update_);
   if (has_non_isolated_descendant_with_blend_mode_)
     return true;
-  if (GetLayoutObject().IsSVGRoot())
+  if (GetLayoutObject().IsSVGRoot()) {
     return ToLayoutSVGRoot(GetLayoutObject())
         .HasNonIsolatedBlendingDescendants();
+  }
   return false;
 }
 

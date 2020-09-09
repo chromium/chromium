@@ -567,11 +567,12 @@ void LayoutSVGRoot::NotifyDescendantCompositingReasonsChanged() {
 
 PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
   auto layer_type_required = LayoutReplaced::LayerTypeRequired();
-  if (layer_type_required == kNoPaintLayer &&
-      RuntimeEnabledFeatures::CompositeSVGEnabled() &&
-      !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Force a paint layer so a GraphicsLayer can be created if there are
+  if (layer_type_required == kNoPaintLayer) {
+    // Force a paint layer so,
+    // 1) In CompositeSVG mode, a GraphicsLayer can be created if there are
     // directly-composited descendants.
+    // 2) The parent layer will know if there are non-isolated descendants with
+    // blend mode.
     layer_type_required = kForcedPaintLayer;
   }
   return layer_type_required;

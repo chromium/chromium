@@ -545,6 +545,11 @@ bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
 }
 
 bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {
+  if (SVGResources* resources =
+          SVGResourcesCache::CachedResourcesForLayoutObject(*object)) {
+    if (resources->Masker())
+      return true;
+  }
   return WillIsolateBlendingDescendantsForObject(object) &&
          object->HasNonIsolatedBlendingDescendants();
 }

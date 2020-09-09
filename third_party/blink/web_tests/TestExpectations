@@ -181,9 +181,6 @@ crbug.com/784956 fast/history/frameset-repeated-name.html [ Pass Failure ]
 
 crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
 
-# CompositeSVG subpixel differences
-crbug.com/1120920 external/wpt/css/compositing/svg/mix-blend-mode-svg-rectangle.html [ Failure ]
-
 ########## Genuinely flaky ##########
 crbug.com/624233 virtual/gpu-rasterization/images/color-profile-background-clip-text.html [ Pass Failure ]
 
@@ -271,9 +268,6 @@ crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-013
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-014.tentative.html [ Failure ]
 
 crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
-
-# Incorrect blending with foreignObject and svg descendants.
-crbug.com/1102803 external/wpt/svg/extensibility/foreignObject/isolation-with-svg.html [ Failure ]
 
 crbug.com/849459 fragmentation/repeating-thead-under-repeating-thead.html [ Failure ]
 

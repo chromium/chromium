@@ -148,25 +148,19 @@ TEST_P(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
 
   const LayoutSVGRoot& root =
       *ToLayoutSVGRoot(GetLayoutObjectByElementId("root"));
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(root.Layer());
-  else
-    EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
+  ASSERT_TRUE(root.Layer());
+  EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 
   GetDocument().getElementById("rect")->setAttribute("style",
                                                      "will-change: transform");
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(root.Layer());
-  else
-    EXPECT_TRUE(root.Layer()->IsSelfPaintingLayer());
+  ASSERT_TRUE(root.Layer());
+  EXPECT_TRUE(root.Layer()->IsSelfPaintingLayer());
 
   GetDocument().getElementById("rect")->removeAttribute("style");
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(root.Layer());
-  else
-    EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
+  ASSERT_TRUE(root.Layer());
+  EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 }
 
 TEST_P(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
