@@ -392,6 +392,20 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runCpuCacheRoutine(
         request.duration);
   };
+
+  /**
+   * Runs cpu stress routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunCpuStressRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunCpuStressRoutineRequest} */ (
+            message);
+    this.assertNumberIsPositive(request.duration);
+    return await getOrCreateDiagnosticsService().runCpuStressRoutine(
+        request.duration);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -699,6 +713,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunCpuCacheRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunCpuStressRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

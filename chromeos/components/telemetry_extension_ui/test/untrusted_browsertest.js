@@ -205,6 +205,27 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunCpuCacheRoutine', async () => {
   assertDeepEquals(response, {id: 123456789, status: 'ready'});
 });
 
+// Tests that runCpuStressRoutine throws the correct error when invalid number
+// is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunCpuStressRoutineInvalidInput', async () => {
+      let caughtError;
+      try {
+        await chromeos.diagnostics.runCpuStressRoutine(0);
+      } catch (error) {
+        caughtError = error;
+      }
+
+      assertEquals(caughtError.name, 'RangeError');
+      assertEquals(caughtError.message, `Parameter must be positive.`);
+    });
+
+// Tests that runCpuStressRoutine returns the correct Object.
+UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunCpuStressRoutine', async () => {
+  const response = await chromeos.diagnostics.runCpuStressRoutine(5);
+  assertDeepEquals(response, {id: 123456789, status: 'ready'});
+});
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {

@@ -182,6 +182,26 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests cpu stress routine to be run for duration seconds.
+     * @param { !number } duration
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runCpuStressRoutine(duration) {
+      const message =
+          /** @type {!dpsl_internal.DiagnosticsRunCpuStressRoutineRequest} */ (
+              {duration: duration});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

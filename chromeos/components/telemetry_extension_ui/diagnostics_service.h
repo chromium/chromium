@@ -46,6 +46,8 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
                          RunAcPowerRoutineCallback callback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
                           RunCpuCacheRoutineCallback callback) override;
+  void RunCpuStressRoutine(uint32_t length_seconds,
+                           RunCpuStressRoutineCallback callback) override;
 
   // Ensures that |service_| created and connected to the
   // CrosHealthdProbeService.
