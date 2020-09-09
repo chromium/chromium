@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 tests; 49 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 tests; 51 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
 PASS Property font-family value 'Ahem' in ::marker
 PASS Property font-feature-settings value '"smcp"' in ::marker
@@ -44,6 +44,12 @@ PASS Property tab-size value '10px' in ::marker
 PASS Property text-transform value 'uppercase' in ::marker
 PASS Property word-break value 'break-word' in ::marker
 PASS Property word-spacing value '10px' in ::marker
+PASS Property text-decoration-skip-ink value 'none' in ::marker
+FAIL Property text-emphasis value 'dot rgb(0, 255, 0)' in ::marker assert_true: text-emphasis doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-color value 'rgb(0, 255, 0)' in ::marker assert_true: text-emphasis-color doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-position value 'under left' in ::marker assert_true: text-emphasis-position doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-style value 'dot' in ::marker assert_true: text-emphasis-style doesn't seem to be supported in the computed style expected true got false
+PASS Property text-shadow value 'rgb(0, 255, 0) 1px 2px 3px' in ::marker
 PASS Property display value 'none' in ::marker
 PASS Property position value 'absolute' in ::marker
 PASS Property float value 'right' in ::marker

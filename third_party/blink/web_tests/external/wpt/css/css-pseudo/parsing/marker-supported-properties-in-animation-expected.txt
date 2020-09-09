@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 76 tests; 70 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 88 tests; 74 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Animation of font in ::marker
 PASS Animation of font-family in ::marker
 PASS Animation of font-feature-settings in ::marker
@@ -30,6 +30,12 @@ PASS Animation of tab-size in ::marker
 PASS Animation of text-transform in ::marker
 PASS Animation of word-break in ::marker
 PASS Animation of word-spacing in ::marker
+PASS Animation of text-decoration-skip-ink in ::marker
+FAIL Animation of text-emphasis in ::marker assert_true: text-emphasis doesn't seem to be supported in the computed style expected true got false
+FAIL Animation of text-emphasis-color in ::marker assert_true: text-emphasis-color doesn't seem to be supported in the computed style expected true got false
+FAIL Animation of text-emphasis-position in ::marker assert_true: text-emphasis-position doesn't seem to be supported in the computed style expected true got false
+FAIL Animation of text-emphasis-style in ::marker assert_true: text-emphasis-style doesn't seem to be supported in the computed style expected true got false
+PASS Animation of text-shadow in ::marker
 PASS Animation of display in ::marker
 PASS Animation of position in ::marker
 PASS Animation of float in ::marker
@@ -68,6 +74,12 @@ PASS Transition of tab-size in ::marker
 PASS Transition of text-transform in ::marker
 PASS Transition of word-break in ::marker
 PASS Transition of word-spacing in ::marker
+PASS Transition of text-decoration-skip-ink in ::marker
+FAIL Transition of text-emphasis in ::marker assert_true: text-emphasis doesn't seem to be supported in the computed style expected true got false
+FAIL Transition of text-emphasis-color in ::marker assert_true: text-emphasis-color doesn't seem to be supported in the computed style expected true got false
+FAIL Transition of text-emphasis-position in ::marker assert_true: text-emphasis-position doesn't seem to be supported in the computed style expected true got false
+FAIL Transition of text-emphasis-style in ::marker assert_true: text-emphasis-style doesn't seem to be supported in the computed style expected true got false
+PASS Transition of text-shadow in ::marker
 PASS Transition of display in ::marker
 PASS Transition of position in ::marker
 PASS Transition of float in ::marker

@@ -158,7 +158,7 @@ const interpolationTests = [
     midPoint: "\"bar\"",
   },
 
-// ::marker supports text properties.
+  // ::marker supports text properties.
   {
     property: "hyphens",
     from: "manual",
@@ -206,6 +206,44 @@ const interpolationTests = [
     from: "0px",
     to: "20px",
     midPoint: "10px",
+  },
+
+  // ::marker supports inherited text decoration properties.
+  {
+    property: "text-decoration-skip-ink",
+    from: "auto",
+    to: "none",
+    midPoint: "none",
+  },
+  {
+    property: "text-emphasis",
+    from: "dot rgb(0, 200, 0)",
+    to: "triangle rgb(100, 0, 200)",
+    midPoint: "triangle rgb(50, 100, 100)",
+  },
+  {
+    property: "text-emphasis-color",
+    from: "rgb(0, 200, 0)",
+    to: "rgb(100, 0, 200)",
+    midPoint: "rgb(50, 100, 100)",
+  },
+  {
+    property: "text-emphasis-position",
+    from: "over right",
+    to: "under left",
+    midPoint: "under left",
+  },
+  {
+    property: "text-emphasis-style",
+    from: "dot",
+    to: "triangle",
+    midPoint: "triangle",
+  },
+  {
+    property: "text-shadow",
+    from: "rgb(0, 200, 0) 1px 2px 3px",
+    to: "rgb(100, 0, 200) 3px 2px 1px",
+    midPoint: "rgb(50, 100, 100) 2px 2px 2px",
   },
 
   // ::marker does NOT support layout properties

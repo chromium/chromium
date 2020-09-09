@@ -3618,6 +3618,7 @@
       default_value: "auto",
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_marker: true,
       computed_value_comparable: true,
     },
     {
@@ -3700,6 +3701,7 @@
       affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_marker: true,
     },
     {
       name: "text-size-adjust",
@@ -4416,6 +4418,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       affected_by_forced_colors: true,
+      valid_for_marker: true,
     },
     {
       name: "-webkit-text-emphasis-position",
@@ -4427,12 +4430,14 @@
       default_value: "TextEmphasisPosition::kOverRight",
       type_name: "TextEmphasisPosition",
       converter: "ConvertTextTextEmphasisPosition",
+      valid_for_marker: true,
     },
     {
       name: "-webkit-text-emphasis-style",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       style_builder_custom_functions: ["initial", "inherit", "value"],
+      valid_for_marker: true,
     },
     {
       name: "-webkit-text-fill-color",
