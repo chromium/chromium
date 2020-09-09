@@ -127,7 +127,7 @@ void ProxyMain::BeginMainFrame(
 
   benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
       benchmark_instrumentation::kDoBeginFrame,
-      begin_main_frame_state->begin_frame_id);
+      begin_main_frame_state->begin_frame_args.frame_id.sequence_number);
 
   // This needs to run unconditionally, so do it before any early-returns.
   if (layer_tree_host_->scheduling_client())

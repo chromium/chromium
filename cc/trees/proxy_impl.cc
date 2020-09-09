@@ -41,8 +41,6 @@ namespace {
 // Measured in seconds.
 const double kSmoothnessTakesPriorityExpirationDelay = 0.25;
 
-unsigned int nextBeginFrameId = 0;
-
 }  // namespace
 
 // Ensures that a CompletionEvent is always signaled.
@@ -576,12 +574,11 @@ void ProxyImpl::WillNotReceiveBeginFrame() {
 void ProxyImpl::ScheduledActionSendBeginMainFrame(
     const viz::BeginFrameArgs& args) {
   DCHECK(IsImplThread());
-  unsigned int begin_frame_id = nextBeginFrameId++;
   benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
-      benchmark_instrumentation::kSendBeginFrame, begin_frame_id);
+      benchmark_instrumentation::kSendBeginFrame,
+      args.frame_id.sequence_number);
   std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state(
       new BeginMainFrameAndCommitState);
-  begin_main_frame_state->begin_frame_id = begin_frame_id;
   begin_main_frame_state->begin_frame_args = args;
   begin_main_frame_state->commit_data = host_impl_->ProcessCompositorDeltas();
   begin_main_frame_state->completed_image_decode_requests =

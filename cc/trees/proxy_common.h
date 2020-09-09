@@ -24,7 +24,6 @@ struct CC_EXPORT BeginMainFrameAndCommitState {
   BeginMainFrameAndCommitState();
   ~BeginMainFrameAndCommitState();
 
-  unsigned int begin_frame_id = 0;
   viz::BeginFrameArgs begin_frame_args;
   std::unique_ptr<CompositorCommitData> commit_data;
   size_t memory_allocation_limit_bytes = 0;
