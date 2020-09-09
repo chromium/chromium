@@ -30,10 +30,13 @@ import org.chromium.ui.R;
  * - An optional start icon that can be rounded as well.
  * - An optional secondary text view that is shown to the right of the primary text view.
  * - An optional remove icon at the end, intended for use with input chips.
+ * - An optional boolean (solidColorChip) to remove the default chip border.
+ * - An optional boolean (allowMultipleLines) to avoid longer text strings to wrap to a second line.
  */
 public class ChipView extends LinearLayout {
     /** An id to use for {@link #setIcon(int, boolean)} when there is no icon on the chip. */
     public static final int INVALID_ICON_ID = -1;
+    private static final int MAX_LINES = 2;
 
     private final RippleBackgroundHelper mRippleBackgroundHelper;
     private final TextView mPrimaryText;
@@ -71,6 +74,9 @@ public class ChipView extends LinearLayout {
 
         TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.ChipView, R.attr.chipStyle, 0);
+        boolean solidColorChip = a.getBoolean(R.styleable.ChipView_solidColorChip, false);
+        int chipBorderWidthId =
+                solidColorChip ? R.dimen.chip_solid_border_width : R.dimen.chip_border_width;
         int chipColorId =
                 a.getResourceId(R.styleable.ChipView_chipColor, R.color.chip_background_color);
         int rippleColorId =
@@ -93,6 +99,7 @@ public class ChipView extends LinearLayout {
                 R.styleable.ChipView_secondaryTextAppearance, R.style.TextAppearance_ChipText);
         int verticalInset = a.getDimensionPixelSize(R.styleable.ChipView_verticalInset,
                 getResources().getDimensionPixelSize(R.dimen.chip_bg_vertical_inset));
+        boolean allowMultipleLines = a.getBoolean(R.styleable.ChipView_allowMultipleLines, false);
         a.recycle();
 
         mStartIcon = new ChromeImageView(getContext());
@@ -110,11 +117,17 @@ public class ChipView extends LinearLayout {
 
         mPrimaryText = new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
         ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
+
+        // If false fall back to single line defined in XML styles.
+        // TODO(benwgold): Fix issue where long text strings cover the close button.
+        if (allowMultipleLines) {
+            mPrimaryText.setMaxLines(MAX_LINES);
+        }
         addView(mPrimaryText);
 
         // Reset icon and background:
         mRippleBackgroundHelper = new RippleBackgroundHelper(this, chipColorId, rippleColorId,
-                cornerRadius, R.color.chip_stroke_color, R.dimen.chip_border_width, verticalInset);
+                cornerRadius, R.color.chip_stroke_color, chipBorderWidthId, verticalInset);
         setIcon(INVALID_ICON_ID, false);
     }
 

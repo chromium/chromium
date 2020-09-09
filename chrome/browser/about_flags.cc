@@ -5687,6 +5687,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     "QuietNotificationPrompts")},
 
 #if defined(OS_ANDROID)
+    {"context-menu-google-lens-chip",
+     flag_descriptions::kContextMenuGoogleLensChipName,
+     flag_descriptions::kContextMenuGoogleLensChipDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kContextMenuGoogleLensChip)},
+
     {"context-menu-search-with-google-lens",
      flag_descriptions::kContextMenuSearchWithGoogleLensName,
      flag_descriptions::kContextMenuSearchWithGoogleLensDescription, kOsAndroid,

@@ -35,11 +35,23 @@ public class LensController {
 
     /**
      * Classify an image and once complete trigger a callback with a boolean on whether that image
-     * relates to the shopping use case. May be extended to other categories in the future.
+     * supports a lens action.
      * @param imageUri The URI of the image to classify.
      * @param classifyCallback A callback to trigger once classification is complete.
      */
     public void classifyImage(Uri imageUri, Callback<Boolean> classifyCallback) {}
+
+    /**
+     * Classify an image and once complete trigger a callback with a boolean on whether that image
+     * supports a lens action.
+     * @param imageUri The URI of the image to classify.
+     * @param classifyCallback A callback to trigger once classification is complete.
+     * @param pageUrl Url of the top level page domain.
+     * @param titleOrAltText Title or alt text of the selected image tag.
+     *
+     */
+    public void classifyImage(Uri imageUri, String pageUrl, String titleOrAltText,
+            Callback<Boolean> classifyCallback) {}
 
     /*
      * If an image classification request is pending but no longer needed, explicitly terminate

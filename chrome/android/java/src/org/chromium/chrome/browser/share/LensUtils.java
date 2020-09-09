@@ -20,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -370,7 +371,15 @@ public class LensUtils {
         String variation = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS,
                 LENS_SHOPPING_FEATURE_FLAG_VARIANT_NAME);
-        return variation.equals("ShopImageWithGoogleLensShoppyImage");
+        return LensController.getInstance().isSdkAvailable()
+                && variation.equals("ShopImageWithGoogleLensShoppyImage");
+    }
+
+    /**
+     * Whether to display the lens shop image with google lens chip.
+     */
+    public static boolean enableImageChip() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP);
     }
 
     /**

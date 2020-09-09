@@ -117,6 +117,8 @@ android_library("java") {
 android_resources("java_resources") {
   create_srcjar = false
   sources = [
+    "java/res/anim/chip_in.xml",
+    "java/res/anim/chip_out.xml",
     "java/res/anim/image_grid_enter.xml",
     "java/res/anim/image_tile_enter.xml",
     "java/res/anim/menu_enter.xml",

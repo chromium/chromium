@@ -349,6 +349,12 @@ const char kBypassAppBannerEngagementChecksDescription[] =
     "eligibility requirements for showing app banners, such as having a "
     "manifest, are met.";
 
+const char kContextMenuGoogleLensChipName[] =
+    "Google Lens powered image search for surfaced as a chip below the context "
+    "menu.";
+const char kContextMenuGoogleLensChipDescription[] =
+    "Enable a chip for a Shopping intent into Google Lens when supported. ";
+
 const char kContextMenuSearchWithGoogleLensName[] =
     "Google Lens powered image search in the context menu.";
 const char kContextMenuSearchWithGoogleLensDescription[] =

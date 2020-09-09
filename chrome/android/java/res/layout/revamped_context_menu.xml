@@ -35,4 +35,13 @@
             android:listSelector="@android:color/transparent"
             android:clipToPadding="false" />
     </FrameLayout>
+
+    <!-- Anchor point for AnchoredPopupWindow displaying optional chip. -->
+    <View
+        android:id="@+id/context_menu_chip_anchor_point"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:layout_marginTop="@dimen/context_menu_chip_vertical_margin"
+        android:layout_marginBottom="@dimen/context_menu_chip_vertical_margin"
+        android:layout_gravity="bottom|center_horizontal"/>
 </FrameLayout>

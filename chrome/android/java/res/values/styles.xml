@@ -643,6 +643,15 @@
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>
 
+    <style name="ContextMenuChip" parent="Chip">
+        <item name="primaryTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="iconWidth">@dimen/context_menu_chip_icon_size</item>
+        <item name="iconHeight">@dimen/context_menu_chip_icon_size</item>
+        <item name="solidColorChip">true</item>
+        <item name="allowMultipleLines">true</item>
+        <item name="verticalInset">@dimen/context_menu_chip_vertical_inset</item>
+    </style>
+
     <!-- Scrolling -->
     <style name="DarkModeCompatibleVerticalScrolling">
         <item name="android:scrollbarThumbVertical">@color/default_scroll_thumb</item>

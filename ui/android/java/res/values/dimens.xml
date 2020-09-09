@@ -37,6 +37,7 @@
     <item name="chip_background_selected_alpha_light" format="float" type="dimen">0.06</item>
     <item name="chip_background_selected_alpha_dark" format="float" type="dimen">1</item>
 
+    <dimen name="chip_solid_border_width">0dp</dimen>
     <dimen name="chip_border_width">1dp</dimen>
     <dimen name="chip_corner_radius">8dp</dimen>
     <dimen name="chip_default_height">32dp</dimen>

@@ -567,6 +567,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "context-menu-google-lens-chip",
+    "owners": [ "yusuyoutube", "benwgold", "lens-chrome" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "context-menu-performance-info-and-remote-hints-fetching",
     "owners": [ "jds" ],
     "expiry_milestone": 90

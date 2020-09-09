@@ -121,8 +121,7 @@ public class ContextMenuHelper implements OnCreateContextMenuListener {
         mOnMenuClosed = (notAbandoned) -> {
             recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss || notAbandoned);
             mPopulator.onMenuClosed();
-            if (LensUtils.enableShoppyImageMenuItem()
-                    && LensController.getInstance().isSdkAvailable()) {
+            if (LensUtils.enableShoppyImageMenuItem() || LensUtils.enableImageChip()) {
                 // If the image was being classified terminate the classification
                 // Has no effect if the classification already succeeded.
                 LensController.getInstance().terminateClassification();
@@ -150,7 +149,7 @@ public class ContextMenuHelper implements OnCreateContextMenuListener {
                         });
             } else {
                 displayRevampedContextMenu(
-                        renderFrameHost, topContentOffsetPx, /* isShoppyImage*/ false);
+                        renderFrameHost, topContentOffsetPx, /* addShoppyMenuItem */ false);
             }
             return;
         }
@@ -182,9 +181,9 @@ public class ContextMenuHelper implements OnCreateContextMenuListener {
     }
 
     private void displayRevampedContextMenu(
-            RenderFrameHost renderFrameHost, float topContentOffsetPx, boolean isShoppyImage) {
+            RenderFrameHost renderFrameHost, float topContentOffsetPx, boolean addShoppyMenuItem) {
         List<Pair<Integer, List<ContextMenuItem>>> items = mPopulator.buildContextMenu(
-                null, mActivity, mCurrentContextMenuParams, isShoppyImage);
+                null, mActivity, mCurrentContextMenuParams, addShoppyMenuItem);
         if (items.isEmpty()) {
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed.bind(false));
             return;
@@ -192,8 +191,18 @@ public class ContextMenuHelper implements OnCreateContextMenuListener {
 
         final RevampedContextMenuCoordinator menuCoordinator = new RevampedContextMenuCoordinator(
                 topContentOffsetPx, () -> shareImageWithLastShareComponent(renderFrameHost));
-        menuCoordinator.displayMenu(mWindow, mWebContents, mCurrentContextMenuParams, items,
-                mCallback, mOnMenuShown, mOnMenuClosed);
+
+        if (LensUtils.enableImageChip()) {
+            LensAsyncManager lensAsyncManager =
+                    new LensAsyncManager(mCurrentContextMenuParams, mPopulator, renderFrameHost);
+            menuCoordinator.displayMenuWithLensChip(mWindow, mWebContents,
+                    mCurrentContextMenuParams, items, mCallback, mOnMenuShown, mOnMenuClosed,
+                    lensAsyncManager);
+        } else {
+            menuCoordinator.displayMenu(mWindow, mWebContents, mCurrentContextMenuParams, items,
+                    mCallback, mOnMenuShown, mOnMenuClosed);
+        }
+
         if (sRevampedContextMenuShownCallback != null) {
             sRevampedContextMenuShownCallback.onResult(menuCoordinator);
         }

@@ -255,6 +255,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST =
             "ContextMenuEnableLensShoppingAllowlist";
     public static final String CONTEXT_MENU_COPY_IMAGE = "ContextMenuCopyImage";
+    public static final String CONTEXT_MENU_GOOGLE_LENS_CHIP = "ContextMenuGoogleLensChip";
     public static final String CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS =
             "ContextMenuSearchWithGoogleLens";
     public static final String CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS = "ContextMenuShopWithGoogleLens";

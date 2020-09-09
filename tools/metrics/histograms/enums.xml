@@ -40899,6 +40899,7 @@ from previous Chrome versions.
       label="OptimizeLoadingIPCForSmallResources:disabled"/>
   <int value="-1669486359" label="ImportantSitesInCBD:enabled"/>
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
+  <int value="-1667822423" label="ContextMenuGoogleLensChip:disabled"/>
   <int value="-1665720309"
       label="ArcNativeBridge64BitSupportExperiment:disabled"/>
   <int value="-1664795930" label="StorageAccessAPI:disabled"/>
@@ -42577,6 +42578,7 @@ from previous Chrome versions.
   <int value="37024318" label="disable-affiliation-based-matching"/>
   <int value="38213894" label="PrivacySettingsRedesign:enabled"/>
   <int value="38904620" label="TabSwitcherLongpressMenu:enabled"/>
+  <int value="41990393" label="ContextMenuGoogleLensChip:enabled"/>
   <int value="42098736" label="TranslateAndroidManualTrigger:disabled"/>
   <int value="42844603" label="AndroidSurfaceControl:disabled"/>
   <int value="43951968" label="DesktopPWAsCustomTabUI:enabled"/>

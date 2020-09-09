@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="@color/default_icon_color_secondary"
+        android:pathData="M16.2726 5.69695C17.606 5.69695 18.6969 6.78786 18.6969 8.12119V10.0606H21.1211V8.12119C21.1211 5.4424 18.9514 3.27271 16.2726 3.27271H14.3333V5.69695H16.2726Z" />
+    <path
+        android:fillColor="@color/default_icon_color_secondary"
+        android:pathData="M6.09087 8.12119C6.09087 6.78786 7.18178 5.69695 8.51511 5.69695H10.4545V3.27271H8.51511C5.83632 3.27271 3.66663 5.4424 3.66663 8.12119V10.0606H6.09087V8.12119Z" />
+    <path
+        android:fillColor="@color/default_icon_color_secondary"
+        android:pathData="M8.51511 18.3031C7.18178 18.3031 6.09087 17.2122 6.09087 15.8788V13.9395H3.66663V15.8788C3.66663 18.5576 5.83632 20.7273 8.51511 20.7273H10.4545V18.3031H8.51511Z" />
+    <path
+        android:fillColor="@color/default_icon_color_secondary"
+        android:pathData="M12.3939 15.3938C14.2684 15.3938 15.7879 13.8743 15.7879 11.9999C15.7879 10.1255 14.2684 8.60596 12.3939 8.60596C10.5195 8.60596 9 10.1255 9 11.9999C9 13.8743 10.5195 15.3938 12.3939 15.3938Z" />
+    <path
+        android:fillColor="@color/default_icon_color_secondary"
+        android:pathData="M18.2121 19.7575C19.2832 19.7575 20.1515 18.8892 20.1515 17.8181C20.1515 16.747 19.2832 15.8787 18.2121 15.8787C17.141 15.8787 16.2727 16.747 16.2727 17.8181C16.2727 18.8892 17.141 19.7575 18.2121 19.7575Z" />
+</vector>

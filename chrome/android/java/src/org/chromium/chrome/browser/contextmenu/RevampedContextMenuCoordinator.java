@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
@@ -54,6 +55,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     private static final int INVALID_ITEM_ID = -1;
 
     private WebContents mWebContents;
+    private RevampedContextMenuChipController mChipController;
     private RevampedContextMenuHeaderCoordinator mHeaderCoordinator;
 
     private RevampedContextMenuListView mListView;
@@ -78,15 +80,42 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             ContextMenuParams params, List<Pair<Integer, List<ContextMenuItem>>> items,
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Callback<Boolean> onMenuClosed) {
+        displayMenuWithLensChip(window, webContents, params, items, onItemClicked, onMenuShown,
+                onMenuClosed, /* lensAsyncManager=*/null);
+    }
+
+    // Shows the Context Menu in Chrome with the lens chip (if supported).
+    void displayMenuWithLensChip(final WindowAndroid window, WebContents webContents,
+            ContextMenuParams params, List<Pair<Integer, List<ContextMenuItem>>> items,
+            Callback<Integer> onItemClicked, final Runnable onMenuShown,
+            final Callback<Boolean> onMenuClosed, @Nullable LensAsyncManager lensAsyncManager) {
         mOnMenuClosed = onMenuClosed;
+        final boolean lensShoppingFeatureEnabled = lensAsyncManager != null;
         Activity activity = window.getActivity().get();
         final float density = activity.getResources().getDisplayMetrics().density;
         final float touchPointXPx = params.getTriggeringTouchXDp() * density;
         final float touchPointYPx = params.getTriggeringTouchYDp() * density;
-
+        int dialogTopMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
+        int dialogBottomMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
         final View view =
                 LayoutInflater.from(activity).inflate(R.layout.revamped_context_menu, null);
-        mDialog = createContextMenuDialog(activity, view, touchPointXPx, touchPointYPx);
+
+        // Only display a chip if an image was selected.
+        if (params.isImage() && lensShoppingFeatureEnabled) {
+            View chipAnchorView = view.findViewById(R.id.context_menu_chip_anchor_point);
+            mChipController = new RevampedContextMenuChipController(
+                    activity, chipAnchorView, lensAsyncManager, () -> {
+                        // A chip selection should trigger the lens shopping action.
+                        clickItem((int) R.id.contextmenu_shop_image_with_google_lens, activity,
+                                onItemClicked);
+                    });
+            dialogBottomMarginPx = mChipController.getVerticalPxNeededForChip();
+            // Allow dialog to get close to the top of the screen.
+            dialogTopMarginPx = dialogBottomMarginPx / 2;
+        }
+
+        mDialog = createContextMenuDialog(activity, view, touchPointXPx, touchPointYPx,
+                dialogTopMarginPx, dialogBottomMarginPx);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.onResult(false));
 
@@ -150,14 +179,24 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         mListView.setOnItemClickListener((p, v, pos, id) -> {
             assert id != INVALID_ITEM_ID;
 
-            // Do not start any action when the activity is on the way to destruction.
-            // See https://crbug.com/990987
-            if (activity.isFinishing() || activity.isDestroyed()) return;
-            onItemClicked.onResult((int) id);
-            mDialog.dismiss();
+            clickItem((int) id, activity, onItemClicked);
         });
 
         mDialog.show();
+    }
+
+    /**
+     * Execute an action for the selected item and close the menu.
+     * @param id The id of the item.
+     * @param activity The current activity.
+     * @param onItemClicked The callback to take action with the given id.
+     */
+    private void clickItem(int id, Activity activity, Callback<Integer> onItemClicked) {
+        // Do not start any action when the activity is on the way to destruction.
+        // See https://crbug.com/990987
+        if (activity.isFinishing() || activity.isDestroyed()) return;
+        onItemClicked.onResult((int) id);
+        dismissDialog();
     }
 
     /**
@@ -167,16 +206,20 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
      * @param view The inflated view, including the scrim, that contains the list view.
      * @param touchPointYPx The x-coordinate of the touch that triggered the context menu.
      * @param touchPointXPx The y-coordinate of the touch that triggered the context menu.
+     * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
+     *                    defined in XML.
+     * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
+     *                       defined in XML.
      * @return Returns a final dialog that does not have a background can be displayed using
      *         {@link AlertDialog#show()}.
      */
-    private ContextMenuDialog createContextMenuDialog(
-            Activity activity, View view, float touchPointXPx, float touchPointYPx) {
+    private ContextMenuDialog createContextMenuDialog(Activity activity, View view,
+            float touchPointXPx, float touchPointYPx, int topMarginPx, int bottomMarginPx) {
         View frame = view.findViewById(R.id.context_menu_frame);
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
         final ContextMenuDialog dialog =
                 new ContextMenuDialog(activity, R.style.Theme_Chromium_AlertDialog, touchPointXPx,
-                        touchPointYPx, mTopContentOffsetPx, frame);
+                        touchPointYPx, mTopContentOffsetPx, topMarginPx, bottomMarginPx, frame);
         dialog.setContentView(view);
 
         return dialog;
@@ -240,7 +283,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                             ? ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_LINK
                             : ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
             mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.onResult(true));
-            mDialog.dismiss();
+            dismissDialog();
             if (item.isShareLink()) {
                 final ShareParams shareParams =
                         new ShareParams.Builder(window, params.getUrl(), params.getUrl()).build();
@@ -249,6 +292,13 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 mOnShareImageDirectly.run();
             }
         };
+    }
+
+    private void dismissDialog() {
+        if (mChipController != null) {
+            mChipController.dismissLensChipIfShowing();
+        }
+        mDialog.dismiss();
     }
 
     Callback<Bitmap> getOnImageThumbnailRetrievedReference() {

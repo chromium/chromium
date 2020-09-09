@@ -497,6 +497,14 @@
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
 
     <!-- Revamped Context Menu Dimensions -->
+    <!-- Prevent the chip from reaching the edges of the screen for long translations. -->
+    <dimen name="context_menu_chip_max_width">300dp</dimen>
+    <dimen name="context_menu_chip_vertical_margin">24dp</dimen>
+    <!-- The chip touch target is 48dp. This reduces the chip size by 8dp to get to the desired
+         40dp height (24dp for content + 4dp of padding at the top and bottom. -->
+    <dimen name="context_menu_chip_vertical_inset">4dp</dimen>
+    <dimen name="context_menu_chip_icon_size">24dp</dimen>
+
     <dimen name="context_menu_max_width">500dp</dimen>
     <dimen name="revamped_context_menu_lateral_margin">40dp</dimen>
     <dimen name="revamped_context_menu_vertical_margin">20dp</dimen>

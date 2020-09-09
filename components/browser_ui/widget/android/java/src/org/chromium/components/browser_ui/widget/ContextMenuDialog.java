@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -27,10 +28,11 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
  * animation is played upon calling {@link #show()} and {@link #dismiss()}.
  */
 public class ContextMenuDialog extends AlwaysDismissedDialog {
+    public static final int NO_CUSTOM_MARGIN = -1;
+
     private static final long ENTER_ANIMATION_DURATION_MS = 250;
     // Exit animation duration should be set to 60% of the enter animation duration.
     private static final long EXIT_ANIMATION_DURATION_MS = 150;
-
     private final Activity mActivity;
     private final View mContentView;
     private final float mTouchPointXPx;
@@ -41,6 +43,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private float mContextMenuSourceYPx;
     private int mContextMenuFirstLocationYPx;
 
+    private int mTopMarginPx;
+    private int mBottomMarginPx;
+
     /**
      * Creates an instance of the ContextMenuDialog.
      * @param ownerActivity The activity in which the dialog should run
@@ -49,16 +54,23 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param touchPointXPx The x-coordinate of the touch that triggered the context menu.
      * @param touchPointYPx The y-coordinate of the touch that triggered the context menu.
      * @param topContentOffsetPx The offset of the content from the top.
+     * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
+     *                    defined in XML.
+     * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
+     *                       defined in XML.
      * @param contentView The context menu view to display on the dialog.
      */
     public ContextMenuDialog(Activity ownerActivity, int theme, float touchPointXPx,
-            float touchPointYPx, float topContentOffsetPx, View contentView) {
+            float touchPointYPx, float topContentOffsetPx, int topMarginPx, int bottomMarginPx,
+            View contentView) {
         super(ownerActivity, theme);
         mActivity = ownerActivity;
         mTouchPointXPx = touchPointXPx;
         mTouchPointYPx = touchPointYPx;
         mTopContentOffsetPx = topContentOffsetPx;
         mContentView = contentView;
+        mTopMarginPx = topMarginPx;
+        mBottomMarginPx = bottomMarginPx;
     }
 
     @Override
@@ -66,6 +78,17 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         Window dialogWindow = getWindow();
         dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+        // Both bottom margin and top margin must be set together to ensure default
+        // values are not relied upon for custom behavior.
+        if (mTopMarginPx != NO_CUSTOM_MARGIN && mBottomMarginPx != NO_CUSTOM_MARGIN) {
+            // TODO(benwgold): Update to relative layout to avoid have to set fixed margin.
+            FrameLayout.LayoutParams layoutParams =
+                    (FrameLayout.LayoutParams) mContentView.getLayoutParams();
+            if (layoutParams == null) return;
+            layoutParams.bottomMargin = mBottomMarginPx;
+            layoutParams.topMargin = mTopMarginPx;
+        }
 
         mContentView.setVisibility(View.INVISIBLE);
         mContentView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
