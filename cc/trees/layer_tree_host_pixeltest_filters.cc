@@ -383,19 +383,9 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
   }
 };
 
-// TODO(sgilhuly): Enable these tests for Skia Dawn, and switch over to using
-// kRendererTypesGpu.
-viz::RendererType const kRendererTypesGpuNonDawn[] = {
-    viz::RendererType::kGL,
-    viz::RendererType::kSkiaGL,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-};
-
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostBlurFiltersPixelTestGPULayerList,
-                         ::testing::ValuesIn(kRendererTypesGpuNonDawn),
+                         ::testing::ValuesIn(kRendererTypesGpu),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
@@ -405,6 +395,9 @@ TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
   // Windows has 116 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3f;  // 116px / (200*200), rounded up
   int large_error_allowed = 2;
+  // Windows on SkiaRenderer Dawn has 447 pixels off by at most 2.
+  if (use_d3d12())
+    percentage_pixels_large_error = 1.12f;  // 447px / (200*200), rounded up
 #else
   float percentage_pixels_large_error = 0.25f;  // 96px / (200*200), rounded up
   int large_error_allowed = 1;
@@ -420,7 +413,7 @@ TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
       large_error_allowed,
       small_error_allowed));
 #else
-  if (use_skia_vulkan())
+  if (use_skia_vulkan() || renderer_type_ == viz::RendererType::kSkiaDawn)
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
 #endif
 
@@ -756,25 +749,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
-// TODO(sgilhuly): Enable these tests for Skia Dawn, and switch over to using
-// kRendererTypes.
-using LayerTreeHostFiltersPixelTestNonDawn = LayerTreeHostFiltersPixelTest;
-
-viz::RendererType const kRendererTypesNonDawn[] = {
-    viz::RendererType::kGL,
-    viz::RendererType::kSkiaGL,
-    viz::RendererType::kSoftware,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         LayerTreeHostFiltersPixelTestNonDawn,
-                         ::testing::ValuesIn(kRendererTypesNonDawn),
-                         ::testing::PrintToStringParamName());
-
-TEST_P(LayerTreeHostFiltersPixelTestNonDawn, ZoomFilter) {
+TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
   scoped_refptr<SolidColorLayer> root =
       CreateSolidColorLayer(gfx::Rect(300, 300), SK_ColorWHITE);
 

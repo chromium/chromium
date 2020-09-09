@@ -267,6 +267,9 @@ std::vector<RasterTestConfig> const kTestCases = {
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kOop},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    {viz::RendererType::kSkiaDawn, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
 INSTANTIATE_TEST_SUITE_P(
