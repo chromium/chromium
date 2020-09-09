@@ -810,6 +810,17 @@
         'use_swarming': True,
         'os_type': 'android',
       },
+      'android-pie-arm64-wpt-rel-non-cq': {
+        'mixins': [
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'weblayer_shell_wpt',
+        },
+        'use_swarming': True,
+        'os_type': 'android',
+      },
       'android-pie-x86-rel': {
         'mixins': [
           'pie-x86-emulator',

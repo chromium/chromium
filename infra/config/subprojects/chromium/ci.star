@@ -861,6 +861,14 @@ ci.android_builder(
 )
 
 ci.android_builder(
+    name = "android-pie-arm64-wpt-rel-non-cq",
+    console_view_entry = ci.console_view_entry(
+        category = "builder_tester|arm64",
+        short_name = "P-WPT",
+    ),
+)
+
+ci.android_builder(
     name = "android-pie-x86-rel",
     console_view_entry = ci.console_view_entry(
         category = "builder_tester|x86",

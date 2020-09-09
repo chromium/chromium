@@ -1824,6 +1824,18 @@
     "label": "//weblayer/test:weblayer_browsertests",
     "type": "windowed_test_launcher",
   },
+  "weblayer_shell_wpt": {
+    "label": "//weblayer/shell/android:weblayer_shell_wpt",
+    "type": "script",
+    "script": "//testing/scripts/run_android_wpt.py",
+    "args": [
+      "--product=android_weblayer",
+      "--weblayer-shell=apks/WebLayerShell.apk",
+      "--weblayer-support=apks/WebLayerSupport.apk",
+      "--webdriver-binary=clang_x64/chromedriver",
+      "-v",
+    ],
+  },
   "weblayer_unittests": {
     "label": "//weblayer/test:weblayer_unittests",
     "type": "windowed_test_launcher",
