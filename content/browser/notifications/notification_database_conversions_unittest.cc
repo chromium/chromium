@@ -6,8 +6,8 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -95,8 +95,7 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
     notification_action.action = base::NumberToString(i);
     notification_action.title = base::NumberToString16(i);
     notification_action.icon = GURL(kNotificationActionIconUrl);
-    notification_action.placeholder =
-        base::NullableString16(base::NumberToString16(i), false);
+    notification_action.placeholder = base::NumberToString16(i);
     notification_data.actions.push_back(notification_action);
   }
 
@@ -189,7 +188,7 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
               copied_notification_data.actions[i].icon);
     EXPECT_EQ(notification_data.actions[i].placeholder,
               copied_notification_data.actions[i].placeholder);
-    EXPECT_FALSE(copied_notification_data.actions[i].placeholder.is_null());
+    EXPECT_TRUE(copied_notification_data.actions[i].placeholder);
   }
 }
 
@@ -300,7 +299,7 @@ TEST(NotificationDatabaseConversionsTest,
      SerializeAndDeserializeNullPlaceholder) {
   blink::PlatformNotificationAction action;
   action.type = kNotificationActionType;
-  action.placeholder = base::NullableString16();  // null string.
+  action.placeholder = base::nullopt;  // null string.
 
   blink::PlatformNotificationData notification_data;
   notification_data.actions.push_back(action);
@@ -316,7 +315,7 @@ TEST(NotificationDatabaseConversionsTest,
   ASSERT_TRUE(
       DeserializeNotificationDatabaseData(serialized_data, &copied_data));
 
-  EXPECT_TRUE(copied_data.notification_data.actions[0].placeholder.is_null());
+  EXPECT_FALSE(copied_data.notification_data.actions[0].placeholder);
 }
 
 TEST(NotificationDatabaseConversionsTest,

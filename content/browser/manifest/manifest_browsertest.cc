@@ -10,8 +10,8 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string16.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UseCredentialsSendCookies) {
 
   // The custom embedded test server will fill the name field with the cookie
   // content.
-  EXPECT_TRUE(base::EqualsASCII(manifest().name.string(), "foobar"));
+  EXPECT_EQ(base::ASCIIToUTF16("foobar"), manifest().name);
 }
 
 namespace {
@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, NoUseCredentialsNoCookies) {
 
   // The custom embedded test server will fill set the name to 'no cookies' if
   // it did not find cookies.
-  EXPECT_TRUE(base::EqualsASCII(manifest().name.string(), "no cookies"));
+  EXPECT_EQ(base::ASCIIToUTF16("no cookies"), manifest().name);
 }
 
 // This tests that fetching a Manifest from a unique origin always fails,

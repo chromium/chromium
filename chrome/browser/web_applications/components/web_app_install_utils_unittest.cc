@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -90,8 +91,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   blink::Manifest manifest;
   manifest.start_url = AppUrl();
   manifest.scope = AppUrl().GetWithoutFilename();
-  manifest.short_name =
-      base::NullableString16(base::UTF8ToUTF16(kAppShortName), false);
+  manifest.short_name = base::ASCIIToUTF16(kAppShortName);
 
   {
     blink::Manifest::FileHandler handler;
@@ -123,7 +123,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
-  manifest.name = base::NullableString16(base::UTF8ToUTF16(kAppTitle), false);
+  manifest.name = base::ASCIIToUTF16(kAppTitle);
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
@@ -169,10 +169,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
   WebApplicationInfo web_app_info;
 
   blink::Manifest manifest;
-  manifest.name =
-      base::NullableString16(base::ASCIIToUTF16(""), /*is_null=*/false);
-  manifest.short_name = base::NullableString16(
-      base::ASCIIToUTF16(kAppShortName), /*is_null=*/false);
+  manifest.name = base::string16();
+  manifest.short_name = base::ASCIIToUTF16(kAppShortName);
 
   UpdateWebAppInfoFromManifest(manifest, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
@@ -232,8 +230,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   blink::Manifest manifest;
   manifest.start_url = AppUrl();
   manifest.scope = AppUrl().GetWithoutFilename();
-  manifest.short_name =
-      base::NullableString16(base::UTF8ToUTF16(kAppShortName), false);
+  manifest.short_name = base::ASCIIToUTF16(kAppShortName);
 
   {
     blink::Manifest::FileHandler handler;
@@ -270,7 +267,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
-  manifest.name = base::NullableString16(base::UTF8ToUTF16(kAppTitle), false);
+  manifest.name = base::ASCIIToUTF16(kAppTitle);
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;

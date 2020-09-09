@@ -101,8 +101,7 @@ void TestDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
   manifest->start_url = url;
   manifest->scope = scope;
   manifest->display = DisplayMode::kStandalone;
-  manifest->short_name =
-      base::NullableString16(base::ASCIIToUTF16("Manifest Name"), false);
+  manifest->short_name = base::ASCIIToUTF16("Manifest Name");
 
   SetManifest(std::move(manifest), /*is_installable=*/true);
 

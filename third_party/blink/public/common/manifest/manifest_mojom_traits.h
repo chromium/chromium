@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/optional.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -23,12 +24,12 @@ inline base::StringPiece16 TruncateString16(const base::string16& string) {
   return base::StringPiece16(string).substr(0, 4 * 1024);
 }
 
-inline base::Optional<base::StringPiece16> TruncateNullableString16(
-    const base::NullableString16& string) {
-  if (string.is_null())
+inline base::Optional<base::StringPiece16> TruncateOptionalString16(
+    const base::Optional<base::string16>& string) {
+  if (!string)
     return base::nullopt;
 
-  return TruncateString16(string.string());
+  return TruncateString16(*string);
 }
 
 }  // namespace internal
@@ -46,17 +47,17 @@ struct BLINK_COMMON_EXPORT
 
   static base::Optional<base::StringPiece16> name(
       const ::blink::Manifest& manifest) {
-    return internal::TruncateNullableString16(manifest.name);
+    return internal::TruncateOptionalString16(manifest.name);
   }
 
   static base::Optional<base::StringPiece16> short_name(
       const ::blink::Manifest& manifest) {
-    return internal::TruncateNullableString16(manifest.short_name);
+    return internal::TruncateOptionalString16(manifest.short_name);
   }
 
   static base::Optional<base::StringPiece16> gcm_sender_id(
       const ::blink::Manifest& manifest) {
-    return internal::TruncateNullableString16(manifest.gcm_sender_id);
+    return internal::TruncateOptionalString16(manifest.gcm_sender_id);
   }
 
   static const GURL& start_url(const ::blink::Manifest& manifest) {
@@ -171,12 +172,12 @@ struct BLINK_COMMON_EXPORT
 
   static base::Optional<base::StringPiece16> short_name(
       const ::blink::Manifest::ShortcutItem& shortcut) {
-    return internal::TruncateNullableString16(shortcut.short_name);
+    return internal::TruncateOptionalString16(shortcut.short_name);
   }
 
   static base::Optional<base::StringPiece16> description(
       const ::blink::Manifest::ShortcutItem& shortcut) {
-    return internal::TruncateNullableString16(shortcut.description);
+    return internal::TruncateOptionalString16(shortcut.description);
   }
 
   static const GURL& url(const ::blink::Manifest::ShortcutItem& shortcut) {
@@ -198,7 +199,7 @@ struct BLINK_COMMON_EXPORT
                  ::blink::Manifest::RelatedApplication> {
   static base::Optional<base::StringPiece16> platform(
       const ::blink::Manifest::RelatedApplication& related_application) {
-    return internal::TruncateNullableString16(related_application.platform);
+    return internal::TruncateOptionalString16(related_application.platform);
   }
 
   static const GURL& url(
@@ -208,7 +209,7 @@ struct BLINK_COMMON_EXPORT
 
   static base::Optional<base::StringPiece16> id(
       const ::blink::Manifest::RelatedApplication& related_application) {
-    return internal::TruncateNullableString16(related_application.id);
+    return internal::TruncateOptionalString16(related_application.id);
   }
 
   static bool Read(blink::mojom::ManifestRelatedApplicationDataView data,
@@ -244,15 +245,15 @@ struct BLINK_COMMON_EXPORT
                  ::blink::Manifest::ShareTargetParams> {
   static const base::Optional<base::StringPiece16> text(
       const ::blink::Manifest::ShareTargetParams& share_target_params) {
-    return internal::TruncateNullableString16(share_target_params.text);
+    return internal::TruncateOptionalString16(share_target_params.text);
   }
   static const base::Optional<base::StringPiece16> title(
       const ::blink::Manifest::ShareTargetParams& share_target_params) {
-    return internal::TruncateNullableString16(share_target_params.title);
+    return internal::TruncateOptionalString16(share_target_params.title);
   }
   static const base::Optional<base::StringPiece16> url(
       const ::blink::Manifest::ShareTargetParams& share_target_params) {
-    return internal::TruncateNullableString16(share_target_params.url);
+    return internal::TruncateOptionalString16(share_target_params.url);
   }
   static const std::vector<blink::Manifest::FileFilter>& files(
       const ::blink::Manifest::ShareTargetParams& share_target_params) {

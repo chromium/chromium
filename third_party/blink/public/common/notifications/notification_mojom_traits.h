@@ -55,7 +55,7 @@ struct BLINK_COMMON_EXPORT
 
   static const base::Optional<base::string16>& placeholder(
       const blink::PlatformNotificationAction& action) {
-    return action.placeholder.as_optional_string16();
+    return action.placeholder;
   }
 
   static bool Read(

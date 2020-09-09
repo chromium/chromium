@@ -175,7 +175,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     DCHECK_EQ(shortcut_data.size(), 6u);
     blink::Manifest::ShortcutItem shortcut_item;
     shortcut_item.name = shortcut_data[0];
-    shortcut_item.short_name = base::NullableString16(shortcut_data[1]);
+    shortcut_item.short_name = shortcut_data[1];
     shortcut_item.url = GURL(base::UTF16ToUTF8(shortcut_data[2]));
 
     blink::Manifest::ImageResource icon;

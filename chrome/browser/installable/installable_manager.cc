@@ -657,8 +657,8 @@ bool InstallableManager::IsManifestValidForWebApp(
     is_valid = false;
   }
 
-  if ((manifest.name.is_null() || manifest.name.string().empty()) &&
-      (manifest.short_name.is_null() || manifest.short_name.string().empty())) {
+  if ((!manifest.name || manifest.name->empty()) &&
+      (!manifest.short_name || manifest.short_name->empty())) {
     valid_manifest_->errors.push_back(MANIFEST_MISSING_NAME_OR_SHORT_NAME);
     is_valid = false;
   }

@@ -8,6 +8,8 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/AppBannerManager_jni.h"
@@ -350,7 +352,8 @@ bool AppBannerManagerAndroid::ShouldPerformInstallableNativeAppCheck() {
   // Ensure there is at least one related app specified that is supported on
   // the current platform.
   for (const auto& application : manifest_.related_applications) {
-    if (base::EqualsASCII(application.platform.string(), kPlatformPlay))
+    if (base::EqualsASCII(application.platform.value_or(base::string16()),
+                          kPlatformPlay))
       return true;
   }
   return false;
@@ -360,8 +363,10 @@ void AppBannerManagerAndroid::PerformInstallableNativeAppCheck() {
   DCHECK(ShouldPerformInstallableNativeAppCheck());
   InstallableStatusCode code = NO_ERROR_DETECTED;
   for (const auto& application : manifest_.related_applications) {
-    std::string id = base::UTF16ToUTF8(application.id.string());
-    code = QueryNativeApp(application.platform.string(), application.url, id);
+    std::string id =
+        base::UTF16ToUTF8(application.id.value_or(base::string16()));
+    code = QueryNativeApp(application.platform.value_or(base::string16()),
+                          application.url, id);
     if (code == NO_ERROR_DETECTED)
       return;
   }
@@ -444,9 +449,9 @@ base::string16 AppBannerManagerAndroid::GetAppName() const {
   if (native_app_data_.is_null()) {
     // Prefer the short name if it's available. It's guaranteed that at least
     // one of these is non-empty.
-    return manifest_.short_name.string().empty()
-               ? manifest_.name.string()
-               : manifest_.short_name.string();
+    base::string16 short_name = manifest_.short_name.value_or(base::string16());
+    return short_name.empty() ? manifest_.name.value_or(base::string16())
+                              : short_name;
   }
 
   return native_app_title_;

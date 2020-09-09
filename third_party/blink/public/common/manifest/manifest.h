@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string16.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -68,8 +67,8 @@ struct BLINK_COMMON_EXPORT Manifest {
     ~ShortcutItem();
 
     base::string16 name;
-    base::NullableString16 short_name;
-    base::NullableString16 description;
+    base::Optional<base::string16> short_name;
+    base::Optional<base::string16> description;
     GURL url;
     std::vector<ImageResource> icons;
   };
@@ -84,9 +83,9 @@ struct BLINK_COMMON_EXPORT Manifest {
     ShareTargetParams();
     ~ShareTargetParams();
 
-    base::NullableString16 title;
-    base::NullableString16 text;
-    base::NullableString16 url;
+    base::Optional<base::string16> title;
+    base::Optional<base::string16> text;
+    base::Optional<base::string16> url;
     std::vector<FileFilter> files;
   };
 
@@ -140,7 +139,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // The platform on which the application can be found. This can be any
     // string, and is interpreted by the consumer of the object. Empty if the
     // parsing failed.
-    base::NullableString16 platform;
+    base::Optional<base::string16> platform;
 
     // URL at which the application can be found. One of |url| and |id| must be
     // present. Empty if the parsing failed or the field was not present.
@@ -149,7 +148,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // An id which is used to represent the application on the platform. One of
     // |url| and |id| must be present. Empty if the parsing failed or the field
     // was not present.
-    base::NullableString16 id;
+    base::Optional<base::string16> id;
   };
 
   Manifest();
@@ -161,10 +160,10 @@ struct BLINK_COMMON_EXPORT Manifest {
   bool IsEmpty() const;
 
   // Null if the parsing failed or the field was not present.
-  base::NullableString16 name;
+  base::Optional<base::string16> name;
 
   // Null if the parsing failed or the field was not present.
-  base::NullableString16 short_name;
+  base::Optional<base::string16> short_name;
 
   // Empty if the parsing failed or the field was not present.
   GURL start_url;
@@ -225,7 +224,7 @@ struct BLINK_COMMON_EXPORT Manifest {
   // This is a proprietary extension of the web Manifest, double-check that it
   // is okay to use this entry.
   // Null if parsing failed or the field was not present.
-  base::NullableString16 gcm_sender_id;
+  base::Optional<base::string16> gcm_sender_id;
 
   // Empty if the parsing failed. Otherwise defaults to the start URL (or
   // document URL if start URL isn't present) with filename, query, and fragment

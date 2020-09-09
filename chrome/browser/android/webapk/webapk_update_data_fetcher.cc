@@ -12,6 +12,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
@@ -268,7 +270,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       chosen_icon_data = std::move(it->second.unsafe_data);
     }
 
-    shortcuts.push_back({shortcut.name, shortcut.short_name.string(),
+    shortcuts.push_back({shortcut.name,
+                         shortcut.short_name.value_or(base::string16()),
                          base::UTF8ToUTF16(shortcut.url.spec()),
                          base::UTF8ToUTF16(chosen_icon_url.spec()),
                          base::UTF8ToUTF16(chosen_icon_hash),

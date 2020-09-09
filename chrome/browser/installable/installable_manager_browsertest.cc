@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1589,9 +1591,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     EXPECT_FALSE(tester->manifest().IsEmpty());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
-    EXPECT_EQ(base::ASCIIToUTF16("Manifest test app"),
-              tester->manifest().name.string());
-    EXPECT_EQ(base::string16(), tester->manifest().short_name.string());
+    EXPECT_EQ(base::ASCIIToUTF16("Manifest test app"), tester->manifest().name);
+    EXPECT_EQ(base::string16(),
+              tester->manifest().short_name.value_or(base::string16()));
   }
 
   {
@@ -1621,9 +1623,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     run_loop.Run();
 
     EXPECT_FALSE(tester->manifest().IsEmpty());
-    EXPECT_EQ(base::string16(), tester->manifest().name.string());
-    EXPECT_EQ(base::ASCIIToUTF16("Manifest"),
-              tester->manifest().short_name.string());
+    EXPECT_EQ(base::string16(),
+              tester->manifest().name.value_or(base::string16()));
+    EXPECT_EQ(base::ASCIIToUTF16("Manifest"), tester->manifest().short_name);
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 }

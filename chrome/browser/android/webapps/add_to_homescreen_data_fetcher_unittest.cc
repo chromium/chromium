@@ -13,8 +13,9 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/strings/nullable_string16.h"
+#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -99,16 +100,11 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   DISALLOW_COPY_AND_ASSIGN(ObserverWaiter);
 };
 
-// Builds non-null base::NullableString16 from a UTF8 string.
-base::NullableString16 NullableStringFromUTF8(const std::string& value) {
-  return base::NullableString16(base::UTF8ToUTF16(value), false);
-}
-
 // Builds WebAPK compatible blink::Manifest.
 blink::Manifest BuildDefaultManifest() {
   blink::Manifest manifest;
-  manifest.name = NullableStringFromUTF8(kDefaultManifestName);
-  manifest.short_name = NullableStringFromUTF8(kDefaultManifestShortName);
+  manifest.name = base::ASCIIToUTF16(kDefaultManifestName);
+  manifest.short_name = base::ASCIIToUTF16(kDefaultManifestShortName);
   manifest.start_url = GURL(kDefaultStartUrl);
   manifest.display = kDefaultManifestDisplayMode;
 
@@ -476,7 +472,7 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNameClobbersWebApplicationName) {
     // Check the case where we have no icons.
     blink::Manifest manifest = BuildDefaultManifest();
     manifest.icons.clear();
-    manifest.short_name = base::NullableString16();
+    manifest.short_name = base::nullopt;
     SetManifest(manifest);
 
     ObserverWaiter waiter;
@@ -490,7 +486,7 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNameClobbersWebApplicationName) {
   }
 
   blink::Manifest manifest(BuildDefaultManifest());
-  manifest.short_name = base::NullableString16();
+  manifest.short_name = base::nullopt;
   SetManifest(manifest);
 
   {
@@ -547,8 +543,8 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
   //  - WebApplicationInfo::title is used as the "name".
   //  - We still use the icons from the manifest.
   blink::Manifest manifest(BuildDefaultManifest());
-  manifest.name = base::NullableString16();
-  manifest.short_name = base::NullableString16();
+  manifest.name = base::nullopt;
+  manifest.short_name = base::nullopt;
 
   // Check the case where we don't time out waiting for the service worker.
   SetManifest(manifest);

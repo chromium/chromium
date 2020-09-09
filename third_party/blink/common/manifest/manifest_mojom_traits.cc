@@ -49,15 +49,15 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
   TruncatedString16 string;
   if (!data.ReadName(&string))
     return false;
-  out->name = base::NullableString16(std::move(string.string));
+  out->name = std::move(string.string);
 
   if (!data.ReadShortName(&string))
     return false;
-  out->short_name = base::NullableString16(std::move(string.string));
+  out->short_name = std::move(string.string);
 
   if (!data.ReadGcmSenderId(&string))
     return false;
-  out->gcm_sender_id = base::NullableString16(std::move(string.string));
+  out->gcm_sender_id = std::move(string.string);
 
   if (!data.ReadStartUrl(&out->start_url))
     return false;
@@ -138,11 +138,11 @@ bool StructTraits<blink::mojom::ManifestShortcutItemDataView,
   TruncatedString16 string;
   if (!data.ReadShortName(&string))
     return false;
-  out->short_name = base::NullableString16(std::move(string.string));
+  out->short_name = std::move(string.string);
 
   if (!data.ReadDescription(&string))
     return false;
-  out->description = base::NullableString16(std::move(string.string));
+  out->description = std::move(string.string);
 
   if (!data.ReadUrl(&out->url))
     return false;
@@ -160,16 +160,16 @@ bool StructTraits<blink::mojom::ManifestRelatedApplicationDataView,
   TruncatedString16 string;
   if (!data.ReadPlatform(&string))
     return false;
-  out->platform = base::NullableString16(std::move(string.string));
+  out->platform = std::move(string.string);
 
   if (!data.ReadUrl(&out->url))
     return false;
 
   if (!data.ReadId(&string))
     return false;
-  out->id = base::NullableString16(std::move(string.string));
+  out->id = std::move(string.string);
 
-  return !(out->url.is_empty() && out->id.is_null());
+  return !out->url.is_empty() || out->id;
 }
 
 bool StructTraits<blink::mojom::ManifestFileFilterDataView,
@@ -198,15 +198,15 @@ bool StructTraits<blink::mojom::ManifestShareTargetParamsDataView,
   TruncatedString16 string;
   if (!data.ReadText(&string))
     return false;
-  out->text = base::NullableString16(std::move(string.string));
+  out->text = std::move(string.string);
 
   if (!data.ReadTitle(&string))
     return false;
-  out->title = base::NullableString16(std::move(string.string));
+  out->title = std::move(string.string);
 
   if (!data.ReadUrl(&string))
     return false;
-  out->url = base::NullableString16(std::move(string.string));
+  out->url = std::move(string.string);
 
   if (!data.ReadFiles(&out->files))
     return false;

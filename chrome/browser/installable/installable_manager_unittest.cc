@@ -4,6 +4,7 @@
 
 #include "chrome/browser/installable/installable_manager.h"
 
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -19,14 +20,10 @@ class InstallableManagerUnitTest : public testing::Test {
       : manager_(std::make_unique<InstallableManager>(nullptr)) {}
 
  protected:
-  static base::NullableString16 ToNullableUTF16(const std::string& str) {
-    return base::NullableString16(base::UTF8ToUTF16(str), false);
-  }
-
   static blink::Manifest GetValidManifest() {
     blink::Manifest manifest;
-    manifest.name = ToNullableUTF16("foo");
-    manifest.short_name = ToNullableUTF16("bar");
+    manifest.name = base::ASCIIToUTF16("foo");
+    manifest.short_name = base::ASCIIToUTF16("bar");
     manifest.start_url = GURL("http://example.com");
     manifest.display = blink::mojom::DisplayMode::kStandalone;
 
@@ -73,16 +70,16 @@ TEST_F(InstallableManagerUnitTest, CheckMinimalValidManifest) {
 TEST_F(InstallableManagerUnitTest, ManifestRequiresNameOrShortName) {
   blink::Manifest manifest = GetValidManifest();
 
-  manifest.name = base::NullableString16();
+  manifest.name = base::nullopt;
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = ToNullableUTF16("foo");
-  manifest.short_name = base::NullableString16();
+  manifest.name = base::ASCIIToUTF16("foo");
+  manifest.short_name = base::nullopt;
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = base::NullableString16();
+  manifest.name = base::nullopt;
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
 }
@@ -90,16 +87,16 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresNameOrShortName) {
 TEST_F(InstallableManagerUnitTest, ManifestRequiresNonEmptyNameORShortName) {
   blink::Manifest manifest = GetValidManifest();
 
-  manifest.name = ToNullableUTF16("");
+  manifest.name = base::string16();
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = ToNullableUTF16("foo");
-  manifest.short_name = ToNullableUTF16("");
+  manifest.name = base::ASCIIToUTF16("foo");
+  manifest.short_name = base::string16();
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = ToNullableUTF16("");
+  manifest.name = base::string16();
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
 }

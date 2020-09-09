@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -126,12 +128,12 @@ UpdateShortcutsMenuItemInfosFromManifest(
 
 void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
                                   WebApplicationInfo* web_app_info) {
-  if (!manifest.short_name.is_null())
-    web_app_info->title = manifest.short_name.string();
-
   // Give the full length name priority if it's not empty.
-  if (!manifest.name.is_null() && !manifest.name.string().empty())
-    web_app_info->title = manifest.name.string();
+  base::string16 name = manifest.name.value_or(base::string16());
+  if (!name.empty())
+    web_app_info->title = name;
+  else if (manifest.short_name)
+    web_app_info->title = *manifest.short_name;
 
   // Set the url based on the manifest value, if any.
   if (manifest.start_url.is_valid())

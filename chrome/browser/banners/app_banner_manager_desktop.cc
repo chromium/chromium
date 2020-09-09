@@ -8,6 +8,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
@@ -120,11 +122,13 @@ bool AppBannerManagerDesktop::IsSupportedAppPlatform(
 
 bool AppBannerManagerDesktop::IsRelatedAppInstalled(
     const blink::Manifest::RelatedApplication& related_app) const {
-  std::string id = base::UTF16ToUTF8(related_app.id.string());
-  if (id.empty())
+  if (!related_app.id || related_app.id->empty() || !related_app.platform ||
+      related_app.platform->empty()) {
     return false;
+  }
 
-  const base::string16& platform = related_app.platform.string();
+  const std::string id = base::UTF16ToUTF8(*related_app.id);
+  const base::string16& platform = *related_app.platform;
 
   if (base::EqualsASCII(platform, kPlatformChromeWebStore)) {
     return extension_registry_->GetExtensionById(

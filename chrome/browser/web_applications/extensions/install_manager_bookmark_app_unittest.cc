@@ -6,6 +6,7 @@
 #include <queue>
 #include <utility>
 
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -236,8 +237,7 @@ class InstallManagerBookmarkAppTest : public ExtensionServiceTestBase {
 
     auto manifest = std::make_unique<blink::Manifest>();
     manifest->start_url = app_url;
-    manifest->name =
-        base::NullableString16(base::UTF8ToUTF16(kAppTitle), false);
+    manifest->name = base::ASCIIToUTF16(kAppTitle);
     manifest->scope = GURL(AppScope());
     data_retriever->SetManifest(std::move(manifest), is_installable);
 
@@ -389,7 +389,7 @@ TEST_P(InstallManagerBookmarkAppInstallableSiteTest,
        CreateBookmarkAppWithManifest) {
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->start_url = AppUrl();
-  manifest->name = base::NullableString16(base::UTF8ToUTF16(kAppTitle), false);
+  manifest->name = base::ASCIIToUTF16(kAppTitle);
   manifest->scope = GURL(AppScope());
   manifest->theme_color = SK_ColorBLUE;
 
@@ -415,7 +415,7 @@ TEST_P(InstallManagerBookmarkAppInstallableSiteTest,
        CreateBookmarkAppWithManifestIcons) {
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->start_url = AppUrl();
-  manifest->name = base::NullableString16(base::UTF8ToUTF16(kAppTitle), false);
+  manifest->name = base::ASCIIToUTF16(kAppTitle);
   manifest->scope = GURL(AppScope());
 
   blink::Manifest::ImageResource icon;
@@ -467,7 +467,7 @@ TEST_P(InstallManagerBookmarkAppInstallableSiteTest,
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->start_url = AppUrl();
   manifest->scope = GURL(kAppDefaultScope);
-  manifest->name = base::NullableString16(base::UTF8ToUTF16(kAppTitle), false);
+  manifest->name = base::ASCIIToUTF16(kAppTitle);
 
   const bool is_installable = GetParam() == web_app::ForInstallableSite::kYes;
   AddDataRetrieverWithManifest(std::move(manifest), is_installable);

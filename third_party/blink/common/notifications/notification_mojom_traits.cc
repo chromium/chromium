@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 
@@ -86,7 +88,7 @@ bool StructTraits<blink::mojom::NotificationActionDataView,
       !notification_action.ReadPlaceholder(&placeholder)) {
     return false;
   }
-  out->placeholder = base::NullableString16(placeholder);
+  out->placeholder = std::move(placeholder);
   return true;
 }
 

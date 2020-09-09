@@ -10,6 +10,8 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/installable/installable_metrics.h"
@@ -521,8 +523,9 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
       for_installable_site == ForInstallableSite::kYes &&
       !background_installation_ && manifest) {
     for (const auto& application : manifest->related_applications) {
-      std::string id = base::UTF16ToUTF8(application.id.string());
-      if (!base::EqualsASCII(application.platform.string(),
+      std::string id =
+          base::UTF16ToUTF8(application.id.value_or(base::string16()));
+      if (!base::EqualsASCII(application.platform.value_or(base::string16()),
                              kChromeOsPlayPlatform)) {
         continue;
       }

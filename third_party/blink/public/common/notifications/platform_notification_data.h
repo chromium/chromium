@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -45,7 +44,7 @@ struct BLINK_COMMON_EXPORT PlatformNotificationAction {
 
   // Optional text to use as placeholder for text inputs. May be null if it was
   // not specified.
-  base::NullableString16 placeholder;
+  base::Optional<base::string16> placeholder;
 };
 
 // Structure representing the information associated with a Web Notification.

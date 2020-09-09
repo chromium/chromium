@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/manifest/manifest_type_converters.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
@@ -102,8 +103,7 @@ TEST_F(ManifestTypeConvertersTest, BasicShortcutIsCorrectlyConverted) {
 
   ASSERT_EQ(manifest.shortcuts.size(), 1u);
   EXPECT_TRUE(base::EqualsASCII(manifest.shortcuts[0].name, "name"));
-  EXPECT_TRUE(base::EqualsASCII(manifest.shortcuts[0].short_name.string(),
-                                "short_name"));
+  EXPECT_EQ(manifest.shortcuts[0].short_name, base::ASCIIToUTF16("short_name"));
   EXPECT_EQ(manifest.shortcuts[0].url.spec(), "http://example.com/url");
 
   ASSERT_EQ(manifest.shortcuts[0].icons.size(), 1u);

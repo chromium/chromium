@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
@@ -452,7 +453,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
     button.icon =
         gfx::Image::CreateFrom1xBitmap(notification_resources.action_icons[i]);
     if (action.type == blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT) {
-      button.placeholder = action.placeholder.as_optional_string16().value_or(
+      button.placeholder = action.placeholder.value_or(
           l10n_util::GetStringUTF16(IDS_NOTIFICATION_REPLY_PLACEHOLDER));
     }
     buttons.push_back(button);

@@ -12,7 +12,9 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
@@ -255,7 +257,8 @@ bool AppBannerManager::CheckIfShouldShowBanner() {
 bool AppBannerManager::ShouldDeferToRelatedApplication() const {
   for (const auto& related_app : manifest_.related_applications) {
     if (manifest_.prefer_related_applications &&
-        IsSupportedAppPlatform(related_app.platform.string())) {
+        IsSupportedAppPlatform(
+            related_app.platform.value_or(base::string16()))) {
       return true;
     }
     if (IsRelatedAppInstalled(related_app))
@@ -270,7 +273,7 @@ std::string AppBannerManager::GetAppIdentifier() {
 }
 
 base::string16 AppBannerManager::GetAppName() const {
-  return manifest_.name.string();
+  return manifest_.name.value_or(base::string16());
 }
 
 std::string AppBannerManager::GetBannerType() {

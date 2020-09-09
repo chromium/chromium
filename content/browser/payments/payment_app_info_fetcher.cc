@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
@@ -208,35 +209,33 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
   for (const auto& related_application : manifest.related_applications) {
     fetched_payment_app_info_->related_applications.emplace_back(
         StoredRelatedApplication());
-    if (!related_application.platform.is_null()) {
+    if (related_application.platform) {
       base::UTF16ToUTF8(
-          related_application.platform.string().c_str(),
-          related_application.platform.string().length(),
+          related_application.platform->c_str(),
+          related_application.platform->length(),
           &(fetched_payment_app_info_->related_applications.back().platform));
     }
-    if (!related_application.id.is_null()) {
+    if (related_application.id) {
       base::UTF16ToUTF8(
-          related_application.id.string().c_str(),
-          related_application.id.string().length(),
+          related_application.id->c_str(), related_application.id->length(),
           &(fetched_payment_app_info_->related_applications.back().id));
     }
   }
 
-  if (manifest.name.is_null()) {
+  if (!manifest.name) {
     WarnIfPossible("The payment handler's web app manifest \"" +
                    manifest_url_.spec() +
                    "\" does not contain a \"name\" field. User may not "
                    "recognize this payment handler in UI, because it will be "
                    "labeled only by its origin.");
-  } else if (manifest.name.string().empty()) {
+  } else if (manifest.name->empty()) {
     WarnIfPossible(
         "The \"name\" field in the payment handler's web app manifest \"" +
         manifest_url_.spec() +
         "\" is empty. User may not recognize this payment handler in UI, "
         "because it will be labeled only by its origin.");
   } else {
-    base::UTF16ToUTF8(manifest.name.string().c_str(),
-                      manifest.name.string().length(),
+    base::UTF16ToUTF8(manifest.name->c_str(), manifest.name->length(),
                       &(fetched_payment_app_info_->name));
   }
 

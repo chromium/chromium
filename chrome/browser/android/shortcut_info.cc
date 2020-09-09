@@ -5,6 +5,8 @@
 #include "chrome/browser/android/shortcut_info.h"
 
 #include "base/feature_list.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
@@ -48,10 +50,11 @@ ShortcutInfo::~ShortcutInfo() {
 }
 
 void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
-  if (!manifest.short_name.string().empty() ||
-      !manifest.name.string().empty()) {
-    short_name = manifest.short_name.string();
-    name = manifest.name.string();
+  base::string16 s_name = manifest.short_name.value_or(base::string16());
+  base::string16 f_name = manifest.name.value_or(base::string16());
+  if (!s_name.empty() || !f_name.empty()) {
+    short_name = s_name;
+    name = f_name;
     if (short_name.empty())
       short_name = name;
     else if (name.empty())
@@ -101,12 +104,12 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
     share_target->action = manifest.share_target->action;
     share_target->method = manifest.share_target->method;
     share_target->enctype = manifest.share_target->enctype;
-    if (!manifest.share_target->params.text.is_null())
-      share_target->params.text = manifest.share_target->params.text.string();
-    if (!manifest.share_target->params.title.is_null())
-      share_target->params.title = manifest.share_target->params.title.string();
-    if (!manifest.share_target->params.url.is_null())
-      share_target->params.url = manifest.share_target->params.url.string();
+    if (manifest.share_target->params.text)
+      share_target->params.text = *manifest.share_target->params.text;
+    if (manifest.share_target->params.title)
+      share_target->params.title = *manifest.share_target->params.title;
+    if (manifest.share_target->params.url)
+      share_target->params.url = *manifest.share_target->params.url;
 
     for (blink::Manifest::FileFilter manifest_share_target_file :
          manifest.share_target->params.files) {
@@ -122,10 +125,8 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
     shortcut_items.resize(kMaxShortcuts);
 
   for (auto& shortcut_item : shortcut_items) {
-    if (shortcut_item.short_name.string().empty()) {
-      shortcut_item.short_name =
-          base::NullableString16(shortcut_item.name, /* is_null= */ false);
-    }
+    if (!shortcut_item.short_name || shortcut_item.short_name->empty())
+      shortcut_item.short_name = shortcut_item.name;
   }
 
   int ideal_shortcut_icons_size_px =

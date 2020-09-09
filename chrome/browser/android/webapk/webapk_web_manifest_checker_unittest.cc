@@ -12,14 +12,10 @@
 
 namespace {
 
-base::NullableString16 ToNullableUTF16(const std::string& str) {
-  return base::NullableString16(base::UTF8ToUTF16(str), false);
-}
-
 blink::Manifest GetValidManifest() {
   blink::Manifest manifest;
-  manifest.name = ToNullableUTF16("foo");
-  manifest.short_name = ToNullableUTF16("bar");
+  manifest.name = base::ASCIIToUTF16("foo");
+  manifest.short_name = base::ASCIIToUTF16("bar");
   manifest.start_url = GURL("http://example.com");
   manifest.display = blink::mojom::DisplayMode::kStandalone;
 

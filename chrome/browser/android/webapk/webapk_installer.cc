@@ -18,6 +18,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -286,8 +288,8 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   for (const auto& manifest_shortcut_item : shortcut_info.shortcut_items) {
     auto* shortcut_item = web_app_manifest->add_shortcuts();
     shortcut_item->set_name(base::UTF16ToUTF8(manifest_shortcut_item.name));
-    shortcut_item->set_short_name(
-        base::UTF16ToUTF8(manifest_shortcut_item.short_name.string()));
+    shortcut_item->set_short_name(base::UTF16ToUTF8(
+        manifest_shortcut_item.short_name.value_or(base::string16())));
     shortcut_item->set_url(manifest_shortcut_item.url.spec());
 
     for (const auto& manifest_icon : manifest_shortcut_item.icons) {

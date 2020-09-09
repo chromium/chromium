@@ -8,7 +8,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/string16.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -133,9 +135,10 @@ class AppBannerManagerTest : public AppBannerManager {
   bool IsRelatedAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override {
     // Corresponds to the id listed in manifest_listing_related_chrome_app.json.
-    return base::EqualsASCII(related_app.platform.string(),
+    return base::EqualsASCII(related_app.platform.value_or(base::string16()),
                              "chrome_web_store") &&
-           base::EqualsASCII(related_app.id.string(), "installed-extension-id");
+           base::EqualsASCII(related_app.id.value_or(base::string16()),
+                             "installed-extension-id");
   }
 
  private:

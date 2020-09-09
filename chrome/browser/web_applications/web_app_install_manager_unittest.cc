@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
@@ -55,10 +54,6 @@ GURL IconUrl() {
   return GURL("https://example.com/app.ico");
 }
 
-base::NullableString16 ToNullableUTF16(const std::string& str) {
-  return base::NullableString16(base::UTF8ToUTF16(str), false);
-}
-
 std::unique_ptr<WebApplicationInfo> ConvertWebAppToRendererWebApplicationInfo(
     const WebApp& app) {
   auto web_application_info = std::make_unique<WebApplicationInfo>();
@@ -92,8 +87,8 @@ std::unique_ptr<blink::Manifest> ConvertWebAppToManifest(const WebApp& app) {
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->start_url = app.start_url();
   manifest->scope = app.start_url();
-  manifest->short_name = ToNullableUTF16("Short Name to be overriden.");
-  manifest->name = ToNullableUTF16(app.name());
+  manifest->short_name = base::ASCIIToUTF16("Short Name to be overriden.");
+  manifest->name = base::UTF8ToUTF16(app.name());
   manifest->theme_color = app.theme_color();
   manifest->display = app.display_mode();
   manifest->icons = ConvertWebAppIconsToImageResources(app);

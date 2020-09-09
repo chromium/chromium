@@ -111,8 +111,7 @@ class TestDataRetrieverFactory {
     auto manifest = std::make_unique<blink::Manifest>();
     manifest->start_url = GetSystemAppDataForTask(task_index).url;
     manifest->scope = GetSystemAppDataForTask(task_index).url;
-    manifest->short_name =
-        base::NullableString16(base::ASCIIToUTF16("Manifest SWA Name"), false);
+    manifest->short_name = base::ASCIIToUTF16("Manifest SWA Name");
 
     blink::Manifest::ImageResource icon;
     icon.src = GetSystemAppDataForTask(task_index).icon_url;

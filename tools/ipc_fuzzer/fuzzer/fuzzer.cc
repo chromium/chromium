@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "base/strings/nullable_string16.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "base/util/type_safety/id_type.h"
