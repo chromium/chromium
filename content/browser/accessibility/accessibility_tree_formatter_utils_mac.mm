@@ -49,6 +49,8 @@ namespace {
 
 }  // namespace
 
+// Line indexers
+
 LineIndexer::LineIndexer() {}
 LineIndexer::~LineIndexer() {}
 
@@ -87,6 +89,21 @@ CocoaLineIndexer::CocoaLineIndexer(const BrowserAccessibilityCocoa* node) {
 
 NSArray* CocoaLineIndexer::Children(gfx::NativeViewAccessible node) const {
   return [node children];
+}
+
+AXLineIndexer::AXLineIndexer(const AXUIElementRef node) {
+  int counter = 0;
+  Build(static_cast<id>(node), &counter);
+}
+
+NSArray* AXLineIndexer::Children(gfx::NativeViewAccessible node) const {
+  CFTypeRef children_ref;
+  if ((AXUIElementCopyAttributeValue(static_cast<AXUIElementRef>(node),
+                                     kAXChildrenAttribute, &children_ref)) ==
+      kAXErrorSuccess) {
+    return static_cast<NSArray*>(children_ref);
+  }
+  return nil;
 }
 
 // AttributeInvoker

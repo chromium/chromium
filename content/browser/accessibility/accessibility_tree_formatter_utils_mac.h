@@ -42,6 +42,17 @@ class CocoaLineIndexer final : public LineIndexer {
   NSArray* Children(const gfx::NativeViewAccessible node) const override;
 };
 
+/**
+ * Line indexer for external AXUIElement trees.
+ */
+class AXLineIndexer final : public LineIndexer {
+ public:
+  AXLineIndexer(const AXUIElementRef node);
+
+ protected:
+  NSArray* Children(const gfx::NativeViewAccessible node) const override;
+};
+
 // Implements stateful id values. Can be either id or be in
 // error or not applciable state. Similar to base::Optional, but tri-state
 // allowing nullable values.
