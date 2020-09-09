@@ -417,27 +417,21 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       const IsolationContext& isolation_context,
       const GURL& url);
 
-  // Returns true if a process for a site |site_url| should be locked to just
-  // that site. Returning true here also implies that |site_url| requires a
-  // dedicated process. However, the converse does not hold: this might still
+  // Returns true if a process for a |site_info| should be locked. Returning
+  // true here also implies that |site_info| requires a dedicated process.
+  // However, the converse does not hold: this might still
   // return false for certain special cases where an origin lock can't be
-  // applied even when |site_url| requires a dedicated process (e.g., with
+  // applied even when |site_info| requires a dedicated process (e.g., with
   // --site-per-process). Examples of those cases include <webview> guests,
   // single-process mode, or extensions where a process is currently allowed to
   // be reused for different extensions.  Most of these special cases should
   // eventually be removed, and this function should become equivalent to
   // DoesSiteRequireDedicatedProcess().
   //
-  // Note that this function currently requires passing in a site URL (which
-  // may use effective URLs), and not a lock URL to which the process may
-  // eventually be locked via SetProcessLock().  See comments on SiteInfo's
-  // process_lock_url() for more info. |is_guest| should be set to true if the
-  // call is being made for a <webview> guest SiteInstance(i.e.
-  // SiteInstance::IsGuest() returns true).
-  // TODO(alexmos):  See if this can take a lock URL instead.
-  // TODO(wjmaclean): Or see if this can take a SiteInfo or ProcessLock instead.
+  // |is_guest| should be set to true if the call is being made for a <webview>
+  // guest SiteInstance(i.e. SiteInstance::IsGuest() returns true).
   static bool ShouldLockProcess(const IsolationContext& isolation_context,
-                                const GURL& site_url,
+                                const SiteInfo& site_info,
                                 const bool is_guest);
 
   // Return an ID of the next BrowsingInstance to be created.  This ID is

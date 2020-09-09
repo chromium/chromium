@@ -1593,16 +1593,13 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
           return true;
       }
 
-      // TODO(alexmos, lukasza): https://crbug.com/764958: Consider making
-      // ShouldLockProcess work with |expected_process_lock| instead of
-      // |site_url|.
-      GURL site_url =
-          SiteInstanceImpl::ComputeSiteInfo(isolation_context, url).site_url();
+      SiteInfo site_info =
+          SiteInstanceImpl::ComputeSiteInfo(isolation_context, url);
 
       // A process with no lock can only access data from origins that do not
       // require a locked process.
       bool should_lock_target =
-          SiteInstanceImpl::ShouldLockProcess(isolation_context, site_url,
+          SiteInstanceImpl::ShouldLockProcess(isolation_context, site_info,
                                               /* is_guest= */ false);
       if (!should_lock_target)
         return true;

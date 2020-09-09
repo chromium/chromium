@@ -135,8 +135,10 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
 
   // Embedders might disable locking for WebUI URLs, which is bad idea, however
   // this method should take this into account.
+  SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfo(
+      render_frame_host->GetSiteInstance()->GetIsolationContext(), url);
   bool should_lock_process = SiteInstanceImpl::ShouldLockProcess(
-      render_frame_host->GetSiteInstance()->GetIsolationContext(), url,
+      render_frame_host->GetSiteInstance()->GetIsolationContext(), site_info,
       render_frame_host->GetSiteInstance()->IsGuest());
 
   // If the |render_frame_host| has any WebUI bindings, disallow URLs that are

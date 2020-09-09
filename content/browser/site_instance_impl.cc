@@ -1259,12 +1259,14 @@ bool SiteInstanceImpl::DoesSiteURLRequireDedicatedProcess(
 // static
 bool SiteInstanceImpl::ShouldLockProcess(
     const IsolationContext& isolation_context,
-    const GURL& site_url,
+    const SiteInfo& site_info,
     const bool is_guest) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserContext* browser_context =
       isolation_context.browser_or_resource_context().ToBrowserContext();
   DCHECK(browser_context);
+
+  const GURL& site_url = site_info.site_url();
 
   // Don't lock to origin in --single-process mode, since this mode puts
   // cross-site pages into the same process.  Note that this also covers the
@@ -1335,8 +1337,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   ProcessLock process_lock = policy->GetProcessLock(process_->GetID());
-  if (ShouldLockProcess(GetIsolationContext(), site_info_.site_url(),
-                        IsGuest())) {
+  if (ShouldLockProcess(GetIsolationContext(), site_info_, IsGuest())) {
     // Sanity check that this won't try to assign an origin lock to a <webview>
     // process, which can't be locked.
     CHECK(!process_->IsForGuestsOnly());
