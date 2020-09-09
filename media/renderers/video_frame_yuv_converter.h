@@ -37,6 +37,18 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       viz::RasterContextProvider* raster_context_provider,
       const gpu::MailboxHolder& dest_mailbox_holder);
 
+  // TODO(crbug.com/1108154): Will merge this uploading path
+  // with ConvertYUVVideoFrameYUVWithGrContext after solving
+  // issue 1120911, 1120912
+  static bool ConvertYUVVideoFrameWithSkSurfaceNoCaching(
+      const VideoFrame* video_frame,
+      viz::RasterContextProvider* raster_context_provider,
+      const gpu::MailboxHolder& dest_mailbox_holder,
+      unsigned int internal_format,
+      unsigned int type,
+      bool flip_y,
+      bool use_visible_rect);
+
   VideoFrameYUVConverter();
   ~VideoFrameYUVConverter();
 
@@ -55,6 +67,14 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       viz::RasterContextProvider* raster_context_provider,
       unsigned int texture_target,
       unsigned int texture_id);
+  bool ConvertYUVVideoFrameWithSkSurface(
+      const VideoFrame* video_frame,
+      viz::RasterContextProvider* raster_context_provider,
+      const gpu::MailboxHolder& dest_mailbox_holder,
+      unsigned int internal_format,
+      unsigned int type,
+      bool flip_y,
+      bool use_visible_rect);
 
   class VideoFrameYUVMailboxesHolder;
   std::unique_ptr<VideoFrameYUVMailboxesHolder> holder_;
