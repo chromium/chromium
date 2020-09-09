@@ -48,6 +48,7 @@ public class PageInfoCookiesController
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = isVisible;
         rowParams.title = mTitle;
+        rowParams.iconResId = R.drawable.permission_cookie;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
     }

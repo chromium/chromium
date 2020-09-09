@@ -71,6 +71,7 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = true;
         rowParams.title = mTitle;
+        rowParams.iconResId = R.drawable.ic_tune_24dp;
         // TODO(crbug.com/1077766): Create a permissions subtitle string that represents
         // the state, using the PageInfoView.PermissionParams and potentially R.plurals.
         rowParams.clickCallback = this::launchSubpage;

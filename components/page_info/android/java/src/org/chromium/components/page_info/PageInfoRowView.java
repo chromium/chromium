@@ -47,6 +47,7 @@ public class PageInfoRowView extends RelativeLayout implements OnClickListener {
         setVisibility(params.visible ? View.VISIBLE : View.GONE);
         mIcon.setImageResource(params.iconResId);
         mTitle.setText(params.title);
+        mTitle.setVisibility(params.title != null ? View.VISIBLE : View.GONE);
         updateSubtitle(params.subtitle);
         mClickCallback = params.clickCallback;
         setOnClickListener(this);

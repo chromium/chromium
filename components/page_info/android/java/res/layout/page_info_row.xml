@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:ignore="ContentDescription"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="32dp"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
             app:tint="@color/default_icon_color" />
