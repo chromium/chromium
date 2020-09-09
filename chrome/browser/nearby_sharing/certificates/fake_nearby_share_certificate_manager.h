@@ -39,6 +39,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
     // NearbyShareCertificateManagerImpl::Factory:
     std::unique_ptr<NearbyShareCertificateManager> CreateInstance(
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
+        NearbyShareContactManager* contact_manager,
         PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,

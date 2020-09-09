@@ -220,6 +220,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           local_device_data_manager_.get())),
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
           local_device_data_manager_.get(),
+          contact_manager_.get(),
           prefs,
           content::BrowserContext::GetDefaultStoragePartition(profile)
               ->GetProtoDatabaseProvider(),

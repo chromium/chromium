@@ -134,6 +134,7 @@ NearbyShareCertificateManagerImpl::Factory*
 std::unique_ptr<NearbyShareCertificateManager>
 NearbyShareCertificateManagerImpl::Factory::Create(
     NearbyShareLocalDeviceDataManager* local_device_data_manager,
+    NearbyShareContactManager* contact_manager,
     PrefService* pref_service,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_path,
@@ -142,14 +143,14 @@ NearbyShareCertificateManagerImpl::Factory::Create(
   DCHECK(clock);
 
   if (test_factory_) {
-    return test_factory_->CreateInstance(local_device_data_manager,
-                                         pref_service, proto_database_provider,
-                                         profile_path, client_factory, clock);
+    return test_factory_->CreateInstance(
+        local_device_data_manager, contact_manager, pref_service,
+        proto_database_provider, profile_path, client_factory, clock);
   }
 
   return base::WrapUnique(new NearbyShareCertificateManagerImpl(
-      local_device_data_manager, pref_service, proto_database_provider,
-      profile_path, client_factory, clock));
+      local_device_data_manager, contact_manager, pref_service,
+      proto_database_provider, profile_path, client_factory, clock));
 }
 
 // static
@@ -162,12 +163,14 @@ NearbyShareCertificateManagerImpl::Factory::~Factory() = default;
 
 NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
     NearbyShareLocalDeviceDataManager* local_device_data_manager,
+    NearbyShareContactManager* contact_manager,
     PrefService* pref_service,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_path,
     NearbyShareClientFactory* client_factory,
     base::Clock* clock)
     : local_device_data_manager_(local_device_data_manager),
+      contact_manager_(contact_manager),
       pref_service_(pref_service),
       client_factory_(client_factory),
       clock_(clock),
@@ -226,10 +229,13 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   /*page_token=*/base::nullopt,
                                   /*page_number=*/1,
                                   /*certificate_count=*/0),
-              clock_)) {}
+              clock_)) {
+  contact_manager_->AddObserver(this);
+}
 
-NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() =
-    default;
+NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() {
+  contact_manager_->RemoveObserver(this);
+}
 
 NearbySharePrivateCertificate
 NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
@@ -284,6 +290,29 @@ void NearbyShareCertificateManagerImpl::OnStop() {
   public_certificate_expiration_scheduler_->Stop();
   upload_local_device_certificates_scheduler_->Stop();
   download_public_certificates_scheduler_->Stop();
+}
+
+void NearbyShareCertificateManagerImpl::OnAllowlistChanged(
+    bool were_contacts_added_to_allowlist,
+    bool were_contacts_removed_from_allowlist) {
+  if (!were_contacts_removed_from_allowlist)
+    return;
+
+  certificate_storage_->ClearPrivateCertificates();
+  private_certificate_expiration_scheduler_->Reschedule();
+}
+
+void NearbyShareCertificateManagerImpl::OnContactsDownloaded(
+    const std::set<std::string>& allowed_contact_ids,
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {}
+
+void NearbyShareCertificateManagerImpl::OnContactsUploaded(
+    bool did_contacts_change_since_last_upload) {
+  if (!did_contacts_change_since_last_upload)
+    return;
+
+  certificate_storage_->ClearPrivateCertificates();
+  private_certificate_expiration_scheduler_->Reschedule();
 }
 
 base::Optional<base::Time>
