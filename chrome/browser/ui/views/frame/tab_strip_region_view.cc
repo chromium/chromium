@@ -28,12 +28,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     views::ScrollView* tab_strip_scroll_container =
         AddChildView(std::make_unique<views::ScrollView>());
     tab_strip_scroll_container->SetBackgroundColor(base::nullopt);
-
-    // Temporary fix due to ScrollBar visibility coupling with scrolling.
-    // See https://crbug.com/1122214.
-    tab_strip_scroll_container->horizontal_scroll_bar()->SetPreferredSize(
-        gfx::Size());
-
+    tab_strip_scroll_container->SetHideHorizontalScrollBar(true);
     tab_strip_container_ = tab_strip_scroll_container;
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
   } else {
