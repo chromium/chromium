@@ -13,6 +13,8 @@ blink_modules_sources("worklet") {
     "//third_party/blink/renderer/modules/animationworklet",
     "//third_party/blink/renderer/modules/csspaint",
   ]
-  allow_circular_includes_from =
-      [ "//third_party/blink/renderer/modules/csspaint:csspaint" ]
+  allow_circular_includes_from = [
+    "//third_party/blink/renderer/modules/animationworklet",
+    "//third_party/blink/renderer/modules/csspaint:csspaint",
+  ]
 }
