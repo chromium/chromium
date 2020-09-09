@@ -70,6 +70,5 @@ blink_modules_sources("payments") {
     "//components/payments/mojom:mojom_blink",
     "//third_party/blink/renderer/modules/credentialmanager",
     "//third_party/blink/renderer/modules/permissions",
-    "//third_party/blink/renderer/modules/service_worker",
   ]
 }

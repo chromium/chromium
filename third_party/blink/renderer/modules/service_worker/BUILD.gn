@@ -64,5 +64,17 @@ blink_modules_sources("service_worker") {
 
   public_deps = [ "//third_party/blink/renderer/platform" ]
 
-  deps = [ "//base" ]
+  deps_in_modules = [
+    "//third_party/blink/renderer/modules/background_fetch:background_fetch",
+    "//third_party/blink/renderer/modules/background_sync:background_sync",
+    "//third_party/blink/renderer/modules/cache_storage:cache_storage",
+    "//third_party/blink/renderer/modules/content_index:content_index",
+    "//third_party/blink/renderer/modules/cookie_store:cookie_store",
+    "//third_party/blink/renderer/modules/notifications:notifications",
+    "//third_party/blink/renderer/modules/exported:exported",
+    "//third_party/blink/renderer/modules/payments:payments",
+    "//third_party/blink/renderer/modules/push_messaging:push_messaging",
+  ]
+  deps = [ "//base" ] + deps_in_modules
+  allow_circular_includes_from = deps_in_modules
 }

@@ -18,5 +18,4 @@ blink_modules_sources("background_sync") {
     "sync_manager.cc",
     "sync_manager.h",
   ]
-  deps = [ "//third_party/blink/renderer/modules/service_worker" ]
 }

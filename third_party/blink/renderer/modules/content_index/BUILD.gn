@@ -18,5 +18,4 @@ blink_modules_sources("content_index") {
     "service_worker_registration_content_index.cc",
     "service_worker_registration_content_index.h",
   ]
-  deps = [ "//third_party/blink/renderer/modules/service_worker" ]
 }

@@ -25,7 +25,6 @@ blink_modules_sources("notifications") {
   deps = [
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
     "//third_party/blink/renderer/modules/permissions",
-    "//third_party/blink/renderer/modules/service_worker",
     "//third_party/blink/renderer/modules/vibration",
   ]
 }

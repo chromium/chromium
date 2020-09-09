@@ -22,8 +22,5 @@ blink_modules_sources("cookie_store") {
     "service_worker_registration_cookies.h",
   ]
 
-  deps = [
-    "//third_party/blink/renderer/modules/service_worker",
-    "//third_party/blink/renderer/platform",
-  ]
+  deps = [ "//third_party/blink/renderer/platform" ]
 }
