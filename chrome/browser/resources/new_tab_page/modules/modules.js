@@ -14,10 +14,13 @@ import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 
 /** @type {!Array<!ModuleDescriptor>} */
-const descriptors = [dummyDescriptor, dummyDescriptor2];
+const descriptors = [];
 
 if (loadTimeData.getBoolean('kaleidoscopeModuleEnabled')) {
   descriptors.push(kaleidoscopeDescriptor);
 }
+
+descriptors.push(dummyDescriptor);
+descriptors.push(dummyDescriptor2);
 
 ModuleRegistry.getInstance().registerModules(descriptors);
