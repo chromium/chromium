@@ -22,12 +22,15 @@ namespace base {
 template<typename T>
 inline void ReadBigEndian(const char buf[], T* out) {
   static_assert(std::is_integral<T>::value, "T has to be an integral type.");
-  *out = buf[0];
+  // Make an unsigned version of the output type to make shift possible
+  // without UB.
+  typename std::make_unsigned<T>::type unsigned_result = uint8_t{buf[0]};
   for (size_t i = 1; i < sizeof(T); ++i) {
-    *out <<= 8;
+    unsigned_result <<= 8;
     // Must cast to uint8_t to avoid clobbering by sign extension.
-    *out |= static_cast<uint8_t>(buf[i]);
+    unsigned_result |= static_cast<uint8_t>(buf[i]);
   }
+  *out = unsigned_result;
 }
 
 // Write an integer (signed or unsigned) |val| to |buf| in Big Endian order.
@@ -35,9 +38,10 @@ inline void ReadBigEndian(const char buf[], T* out) {
 template<typename T>
 inline void WriteBigEndian(char buf[], T val) {
   static_assert(std::is_integral<T>::value, "T has to be an integral type.");
+  auto unsigned_val = static_cast<typename std::make_unsigned<T>::type>(val);
   for (size_t i = 0; i < sizeof(T); ++i) {
-    buf[sizeof(T)-i-1] = static_cast<char>(val & 0xFF);
-    val >>= 8;
+    buf[sizeof(T) - i - 1] = static_cast<char>(unsigned_val & 0xFF);
+    unsigned_val >>= 8;
   }
 }
 
@@ -49,6 +53,16 @@ inline void ReadBigEndian<uint8_t>(const char buf[], uint8_t* out) {
 
 template <>
 inline void WriteBigEndian<uint8_t>(char buf[], uint8_t val) {
+  buf[0] = static_cast<char>(val);
+}
+
+template <>
+inline void ReadBigEndian<int8_t>(const char buf[], int8_t* out) {
+  *out = buf[0];
+}
+
+template <>
+inline void WriteBigEndian<int8_t>(char buf[], int8_t val) {
   buf[0] = static_cast<char>(val);
 }
 

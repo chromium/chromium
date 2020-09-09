@@ -13,6 +13,67 @@
 
 namespace base {
 
+TEST(ReadBigEndianTest, ReadSignedPositive) {
+  char data[] = {0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x1A, 0X2A};
+  int8_t s8 = 0;
+  int16_t s16 = 0;
+  int32_t s32 = 0;
+  int64_t s64 = 0;
+  ReadBigEndian(data, &s8);
+  ReadBigEndian(data, &s16);
+  ReadBigEndian(data, &s32);
+  ReadBigEndian(data, &s64);
+  EXPECT_EQ(0x0A, s8);
+  EXPECT_EQ(0x0A0B, s16);
+  EXPECT_EQ(int32_t{0x0A0B0C0D}, s32);
+  EXPECT_EQ(int64_t{0x0A0B0C0D0E0F1A2All}, s64);
+}
+
+TEST(ReadBigEndianTest, ReadSignedNegative) {
+  char data[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0XFF};
+  int8_t s8 = 0;
+  int16_t s16 = 0;
+  int32_t s32 = 0;
+  int64_t s64 = 0;
+  ReadBigEndian(data, &s8);
+  ReadBigEndian(data, &s16);
+  ReadBigEndian(data, &s32);
+  ReadBigEndian(data, &s64);
+  EXPECT_EQ(-1, s8);
+  EXPECT_EQ(-1, s16);
+  EXPECT_EQ(-1, s32);
+  EXPECT_EQ(-1, s64);
+}
+
+TEST(ReadBigEndianTest, ReadUnsignedSigned) {
+  char data[] = {0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0, 0xA1, 0XA2};
+  uint8_t u8 = 0;
+  uint16_t u16 = 0;
+  uint32_t u32 = 0;
+  uint64_t u64 = 0;
+  ReadBigEndian(data, &u8);
+  ReadBigEndian(data, &u16);
+  ReadBigEndian(data, &u32);
+  ReadBigEndian(data, &u64);
+  EXPECT_EQ(0xA0, u8);
+  EXPECT_EQ(0xA0B0, u16);
+  EXPECT_EQ(0xA0B0C0D0, u32);
+  EXPECT_EQ(0xA0B0C0D0E0F0A1A2ull, u64);
+}
+
+TEST(ReadBigEndianTest, TryAll16BitValues) {
+  using signed_type = int16_t;
+  char data[sizeof(signed_type)];
+  for (int i = std::numeric_limits<signed_type>::min();
+       i <= std::numeric_limits<signed_type>::max(); i++) {
+    signed_type expected = i;
+    signed_type actual = 0;
+    WriteBigEndian(data, expected);
+    ReadBigEndian(data, &actual);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
 TEST(BigEndianReaderTest, ReadsValues) {
   char data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF,
                   0x1A, 0x2B, 0x3C, 0x4D, 0x5E };
