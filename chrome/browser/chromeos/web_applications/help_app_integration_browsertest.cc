@@ -26,6 +26,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -36,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -358,6 +360,42 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenGestures) {
   // src/chrome/browser/apps/app_service/app_service_metrics.cc
   histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromOtherApp", 18,
                                       1);
+}
+
+// Test that the Help App opens from keyboard shortcut.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenKeyboardShortcut) {
+  WaitForTestSystemAppInstall();
+  base::HistogramTester histogram_tester;
+
+  // The /? key is OEM_2 on a US standard keyboard.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_OEM_2, /*control=*/true,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
+
+#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Default browser tab and Help app are open.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ("chrome://help-app/", chrome::FindLastActive()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetVisibleURL());
+  // The HELP app is 18, see DefaultAppName in
+  // src/chrome/browser/apps/app_service/app_service_metrics.cc
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard", 18,
+                                      1);
+#else
+  // We just have the one browser. Navigates chrome.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
+            chrome::FindLastActive()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL());
+  // The HELP app is 18, see DefaultAppName in
+  // src/chrome/browser/apps/app_service/app_service_metrics.cc
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard", 18,
+                                      0);
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(
