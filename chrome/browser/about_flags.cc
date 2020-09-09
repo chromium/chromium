@@ -569,13 +569,14 @@ const FeatureEntry::FeatureVariation
          kDelayCompetingLowPriorityRequestsRelaxedAlways,
          base::size(kDelayCompetingLowPriorityRequestsRelaxedAlways), nullptr}};
 
-const FeatureEntry::FeatureParam kIntensiveWakeUpThrottlingImmediate[] = {
-    {blink::features::kIntensiveWakeUpThrottling_GracePeriodSeconds_Name, "0"}};
+const FeatureEntry::FeatureParam kIntensiveWakeUpThrottlingAfter10Seconds[] = {
+    {blink::features::kIntensiveWakeUpThrottling_GracePeriodSeconds_Name,
+     "10"}};
 
 const FeatureEntry::FeatureVariation kIntensiveWakeUpThrottlingVariations[] = {
-    {"immediately when a tab is hidden (facilitates testing)",
-     kIntensiveWakeUpThrottlingImmediate,
-     base::size(kIntensiveWakeUpThrottlingImmediate), nullptr},
+    {"10 seconds after a tab is hidden (facilitates testing)",
+     kIntensiveWakeUpThrottlingAfter10Seconds,
+     base::size(kIntensiveWakeUpThrottlingAfter10Seconds), nullptr},
 };
 
 #if defined(OS_ANDROID)
