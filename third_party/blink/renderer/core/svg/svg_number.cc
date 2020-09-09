@@ -86,9 +86,13 @@ void SVGNumber::CalculateAnimatedValue(
   auto* to_number = To<SVGNumber>(to);
   auto* to_at_end_of_duration_number = To<SVGNumber>(to_at_end_of_duration);
 
-  AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                        from_number->Value(), to_number->Value(),
-                        to_at_end_of_duration_number->Value(), value_);
+  float result = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                       from_number->Value(), to_number->Value(),
+                                       to_at_end_of_duration_number->Value());
+  if (parameters.is_additive)
+    result += value_;
+
+  value_ = result;
 }
 
 float SVGNumber::CalculateDistance(const SVGPropertyBase* other,

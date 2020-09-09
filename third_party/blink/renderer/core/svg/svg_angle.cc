@@ -378,13 +378,14 @@ void SVGAngle::CalculateAnimatedValue(
     return;
   }
 
-  float animated_value = Value();
-  AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                        from_angle->Value(), to_angle->Value(),
-                        To<SVGAngle>(to_at_end_of_duration)->Value(),
-                        animated_value);
+  float result = ComputeAnimatedNumber(
+      parameters, percentage, repeat_count, from_angle->Value(),
+      to_angle->Value(), To<SVGAngle>(to_at_end_of_duration)->Value());
+  if (parameters.is_additive)
+    result += Value();
+
   OrientType()->SetEnumValue(kSVGMarkerOrientAngle);
-  SetValue(animated_value);
+  SetValue(result);
 }
 
 float SVGAngle::CalculateDistance(const SVGPropertyBase* other,

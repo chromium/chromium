@@ -74,11 +74,13 @@ void SVGInteger::CalculateAnimatedValue(
   auto* to_integer = To<SVGInteger>(to);
   auto* to_at_end_of_duration_integer = To<SVGInteger>(to_at_end_of_duration);
 
-  float animated_float = value_;
-  AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                        from_integer->Value(), to_integer->Value(),
-                        to_at_end_of_duration_integer->Value(), animated_float);
-  value_ = clampTo<int>(roundf(animated_float));
+  float result = ComputeAnimatedNumber(
+      parameters, percentage, repeat_count, from_integer->Value(),
+      to_integer->Value(), to_at_end_of_duration_integer->Value());
+  if (parameters.is_additive)
+    result += value_;
+
+  value_ = clampTo<int>(roundf(result));
 }
 
 float SVGInteger::CalculateDistance(const SVGPropertyBase* other,

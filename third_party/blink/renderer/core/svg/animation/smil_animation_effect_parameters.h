@@ -16,15 +16,15 @@ struct SMILAnimationEffectParameters {
   bool is_cumulative = false;
 };
 
-// Compute the animated number value based on effect parameters and timing data.
-inline void AnimateAdditiveNumber(
+// Compute the animated number value, excluding additive behavior, based on
+// effect parameters and timing data.
+inline float ComputeAnimatedNumber(
     const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     float from_number,
     float to_number,
-    float to_at_end_of_duration_number,
-    float& animated_number) {
+    float to_at_end_of_duration_number) {
   float number;
   if (parameters.is_discrete)
     number = percentage < 0.5 ? from_number : to_number;
@@ -32,9 +32,7 @@ inline void AnimateAdditiveNumber(
     number = (to_number - from_number) * percentage + from_number;
   if (repeat_count && parameters.is_cumulative)
     number += to_at_end_of_duration_number * repeat_count;
-  if (parameters.is_additive)
-    number += animated_number;
-  animated_number = number;
+  return number;
 }
 
 }  // namespace blink

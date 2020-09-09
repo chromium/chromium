@@ -333,28 +333,31 @@ void SVGLength::CalculateAnimatedValue(
       To<SVGLength>(to_at_end_of_duration_value);
 
   SVGLengthContext length_context(context_element);
-  float animated_number = Value(length_context);
-  AnimateAdditiveNumber(
+  float result = ComputeAnimatedNumber(
       parameters, percentage, repeat_count, from_length->Value(length_context),
       to_length->Value(length_context),
-      to_at_end_of_duration_length->Value(length_context), animated_number);
+      to_at_end_of_duration_length->Value(length_context));
 
   // TODO(shanmuga.m): Construct a calc() expression if the units fall in
   // different categories.
-  CSSPrimitiveValue::UnitType new_unit =
+  CSSPrimitiveValue::UnitType result_unit =
       CSSPrimitiveValue::UnitType::kUserUnits;
   if (percentage < 0.5) {
     if (!from_length->IsCalculated()) {
-      new_unit = from_length->NumericLiteralType();
+      result_unit = from_length->NumericLiteralType();
     }
   } else {
     if (!to_length->IsCalculated()) {
-      new_unit = to_length->NumericLiteralType();
+      result_unit = to_length->NumericLiteralType();
     }
   }
-  animated_number = length_context.ConvertValueFromUserUnits(
-      animated_number, UnitMode(), new_unit);
-  value_ = CSSNumericLiteralValue::Create(animated_number, new_unit);
+
+  if (parameters.is_additive)
+    result += Value(length_context);
+
+  value_ = CSSNumericLiteralValue::Create(
+      length_context.ConvertValueFromUserUnits(result, UnitMode(), result_unit),
+      result_unit);
 }
 
 float SVGLength::CalculateDistance(const SVGPropertyBase* to_value,

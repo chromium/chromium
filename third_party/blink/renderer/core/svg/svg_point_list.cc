@@ -94,6 +94,10 @@ void SVGPointList::CalculateAnimatedValue(
     const SVGElement* context_element) {
   auto* from_list = To<SVGPointList>(from_value);
   auto* to_list = To<SVGPointList>(to_value);
+
+  if (!AdjustFromToListValues(from_list, to_list, percentage))
+    return;
+
   auto* to_at_end_of_duration_list =
       To<SVGPointList>(to_at_end_of_duration_value);
 
@@ -102,13 +106,7 @@ void SVGPointList::CalculateAnimatedValue(
   uint32_t to_at_end_of_duration_list_size =
       to_at_end_of_duration_list->length();
 
-  if (!AdjustFromToListValues(from_list, to_list, percentage))
-    return;
-
   for (uint32_t i = 0; i < to_point_list_size; ++i) {
-    float animated_x = at(i)->X();
-    float animated_y = at(i)->Y();
-
     FloatPoint effective_from;
     if (from_point_list_size)
       effective_from = from_list->at(i)->Value();
@@ -117,13 +115,17 @@ void SVGPointList::CalculateAnimatedValue(
     if (i < to_at_end_of_duration_list_size)
       effective_to_at_end = to_at_end_of_duration_list->at(i)->Value();
 
-    AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                          effective_from.X(), effective_to.X(),
-                          effective_to_at_end.X(), animated_x);
-    AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                          effective_from.Y(), effective_to.Y(),
-                          effective_to_at_end.Y(), animated_y);
-    at(i)->SetValue(FloatPoint(animated_x, animated_y));
+    FloatPoint result(
+        ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                              effective_from.X(), effective_to.X(),
+                              effective_to_at_end.X()),
+        ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                              effective_from.Y(), effective_to.Y(),
+                              effective_to_at_end.Y()));
+    if (parameters.is_additive)
+      result += at(i)->Value();
+
+    at(i)->SetValue(result);
   }
 }
 

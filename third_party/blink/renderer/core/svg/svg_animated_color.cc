@@ -97,27 +97,27 @@ void SVGColorProperty::CalculateAnimatedValue(
   Color to_color = to_style_color.Resolve(fallback_color, color_scheme);
   Color to_at_end_of_duration_color =
       to_at_end_of_duration_style_color.Resolve(fallback_color, color_scheme);
-  Color animated_color = style_color_.Resolve(fallback_color, color_scheme);
 
-  float animated_red = animated_color.Red();
-  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_color.Red(),
-                        to_color.Red(), to_at_end_of_duration_color.Red(),
-                        animated_red);
+  float animated_red = ComputeAnimatedNumber(
+      parameters, percentage, repeat_count, from_color.Red(), to_color.Red(),
+      to_at_end_of_duration_color.Red());
+  float animated_green = ComputeAnimatedNumber(
+      parameters, percentage, repeat_count, from_color.Green(),
+      to_color.Green(), to_at_end_of_duration_color.Green());
+  float animated_blue = ComputeAnimatedNumber(
+      parameters, percentage, repeat_count, from_color.Blue(), to_color.Blue(),
+      to_at_end_of_duration_color.Blue());
+  float animated_alpha = ComputeAnimatedNumber(
+      parameters, percentage, repeat_count, from_color.Alpha(),
+      to_color.Alpha(), to_at_end_of_duration_color.Alpha());
 
-  float animated_green = animated_color.Green();
-  AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                        from_color.Green(), to_color.Green(),
-                        to_at_end_of_duration_color.Green(), animated_green);
-
-  float animated_blue = animated_color.Blue();
-  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_color.Blue(),
-                        to_color.Blue(), to_at_end_of_duration_color.Blue(),
-                        animated_blue);
-
-  float animated_alpha = animated_color.Alpha();
-  AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                        from_color.Alpha(), to_color.Alpha(),
-                        to_at_end_of_duration_color.Alpha(), animated_alpha);
+  if (parameters.is_additive) {
+    Color animated_color = style_color_.Resolve(fallback_color, color_scheme);
+    animated_red += animated_color.Red();
+    animated_green += animated_color.Green();
+    animated_blue += animated_color.Blue();
+    animated_alpha += animated_color.Alpha();
+  }
 
   style_color_ =
       StyleColor(MakeRGBA(roundf(animated_red), roundf(animated_green),

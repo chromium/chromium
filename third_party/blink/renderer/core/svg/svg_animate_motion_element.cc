@@ -217,16 +217,12 @@ void SVGAnimateMotionElement::CalculateAnimatedValue(float percentage,
     transform->MakeIdentity();
 
   if (GetAnimationMode() != kPathAnimation) {
-    float animated_x = 0;
-    AnimateAdditiveNumber(parameters, percentage, repeat_count, from_point_.X(),
-                          to_point_.X(), to_point_at_end_of_duration_.X(),
-                          animated_x);
-
-    float animated_y = 0;
-    AnimateAdditiveNumber(parameters, percentage, repeat_count, from_point_.Y(),
-                          to_point_.Y(), to_point_at_end_of_duration_.Y(),
-                          animated_y);
-
+    float animated_x = ComputeAnimatedNumber(
+        parameters, percentage, repeat_count, from_point_.X(), to_point_.X(),
+        to_point_at_end_of_duration_.X());
+    float animated_y = ComputeAnimatedNumber(
+        parameters, percentage, repeat_count, from_point_.Y(), to_point_.Y(),
+        to_point_at_end_of_duration_.Y());
     transform->Translate(animated_x, animated_y);
     return;
   }

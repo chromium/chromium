@@ -102,24 +102,22 @@ void SVGRect::CalculateAnimatedValue(
   auto* to_rect = To<SVGRect>(to_value);
   auto* to_at_end_of_duration_rect = To<SVGRect>(to_at_end_of_duration_value);
 
-  float animated_x = X();
-  float animated_y = Y();
-  float animated_width = Width();
-  float animated_height = Height();
-  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_rect->X(),
-                        to_rect->X(), to_at_end_of_duration_rect->X(),
-                        animated_x);
-  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_rect->Y(),
-                        to_rect->Y(), to_at_end_of_duration_rect->Y(),
-                        animated_y);
-  AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                        from_rect->Width(), to_rect->Width(),
-                        to_at_end_of_duration_rect->Width(), animated_width);
-  AnimateAdditiveNumber(parameters, percentage, repeat_count,
-                        from_rect->Height(), to_rect->Height(),
-                        to_at_end_of_duration_rect->Height(), animated_height);
+  FloatRect result(ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                         from_rect->X(), to_rect->X(),
+                                         to_at_end_of_duration_rect->X()),
+                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                         from_rect->Y(), to_rect->Y(),
+                                         to_at_end_of_duration_rect->Y()),
+                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                         from_rect->Width(), to_rect->Width(),
+                                         to_at_end_of_duration_rect->Width()),
+                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                         from_rect->Height(), to_rect->Height(),
+                                         to_at_end_of_duration_rect->Height()));
+  if (parameters.is_additive)
+    result += value_;
 
-  value_ = FloatRect(animated_x, animated_y, animated_width, animated_height);
+  value_ = result;
 }
 
 float SVGRect::CalculateDistance(const SVGPropertyBase* to,
