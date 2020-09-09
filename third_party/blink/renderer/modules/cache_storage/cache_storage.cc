@@ -76,7 +76,10 @@ bool IsCacheStorageAllowed(ScriptState* script_state) {
     settings_client = To<WorkerGlobalScope>(context)->ContentSettingsClient();
 
   // This triggers a sync IPC.
-  return settings_client ? settings_client->AllowCacheStorage() : true;
+  return settings_client
+             ? settings_client->AllowStorageAccessSync(
+                   WebContentSettingsClient::StorageType::kCacheStorage)
+             : true;
 }
 
 }  // namespace

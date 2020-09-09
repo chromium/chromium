@@ -15,15 +15,19 @@ ServiceWorkerContentSettingsProxy::ServiceWorkerContentSettingsProxy(
 ServiceWorkerContentSettingsProxy::~ServiceWorkerContentSettingsProxy() =
     default;
 
-bool ServiceWorkerContentSettingsProxy::RequestFileSystemAccessSync() {
-  NOTREACHED();
-  return false;
-}
-
-bool ServiceWorkerContentSettingsProxy::AllowIndexedDB() {
+bool ServiceWorkerContentSettingsProxy::AllowStorageAccessSync(
+    StorageType storage_type) {
   bool result = false;
-  GetService()->AllowIndexedDB(&result);
-  return result;
+  if (storage_type == StorageType::kIndexedDB) {
+    GetService()->AllowIndexedDB(&result);
+    return result;
+  } else if (storage_type == StorageType::kFileSystem) {
+    NOTREACHED();
+    return false;
+  } else {
+    // TODO(shuagga@microsoft.com): Revisit this default in the future.
+    return true;
+  }
 }
 
 // Use ThreadSpecific to ensure that |content_settings_instance_host| is

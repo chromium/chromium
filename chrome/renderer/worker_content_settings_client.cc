@@ -59,24 +59,20 @@ WorkerContentSettingsClient::Clone() {
   return base::WrapUnique(new WorkerContentSettingsClient(*this));
 }
 
-bool WorkerContentSettingsClient::RequestFileSystemAccessSync() {
-  return AllowStorageAccess(content_settings::mojom::ContentSettingsManager::
-                                StorageType::FILE_SYSTEM);
-}
+bool WorkerContentSettingsClient::AllowStorageAccessSync(
+    StorageType storage_type) {
+  if (is_unique_origin_)
+    return false;
 
-bool WorkerContentSettingsClient::AllowIndexedDB() {
-  return AllowStorageAccess(
-      content_settings::mojom::ContentSettingsManager::StorageType::INDEXED_DB);
-}
+  EnsureContentSettingsManager();
 
-bool WorkerContentSettingsClient::AllowCacheStorage() {
-  return AllowStorageAccess(
-      content_settings::mojom::ContentSettingsManager::StorageType::CACHE);
-}
-
-bool WorkerContentSettingsClient::AllowWebLocks() {
-  return AllowStorageAccess(
-      content_settings::mojom::ContentSettingsManager::StorageType::WEB_LOCKS);
+  bool result = false;
+  content_settings_manager_->AllowStorageAccess(
+      render_frame_id_,
+      content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
+          storage_type),
+      document_origin_, site_for_cookies_, top_frame_origin_, &result);
+  return result;
 }
 
 bool WorkerContentSettingsClient::AllowRunningInsecureContent(
@@ -126,20 +122,6 @@ bool WorkerContentSettingsClient::ShouldAutoupgradeMixedContent() {
     }
   }
   return false;
-}
-
-bool WorkerContentSettingsClient::AllowStorageAccess(
-    content_settings::mojom::ContentSettingsManager::StorageType storage_type) {
-  if (is_unique_origin_)
-    return false;
-
-  EnsureContentSettingsManager();
-
-  bool result = false;
-  content_settings_manager_->AllowStorageAccess(
-      render_frame_id_, storage_type, document_origin_, site_for_cookies_,
-      top_frame_origin_, &result);
-  return result;
 }
 
 void WorkerContentSettingsClient::EnsureContentSettingsManager() const {

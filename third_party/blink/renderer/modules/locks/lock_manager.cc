@@ -448,7 +448,8 @@ bool LockManager::AllowLocks(ScriptState* script_state) {
         cached_allowed_ = false;
       } else if (auto* settings_client = frame->GetContentSettingsClient()) {
         // This triggers a sync IPC.
-        cached_allowed_ = settings_client->AllowWebLocks();
+        cached_allowed_ = settings_client->AllowStorageAccessSync(
+            WebContentSettingsClient::StorageType::kWebLocks);
       } else {
         cached_allowed_ = true;
       }
@@ -459,7 +460,8 @@ bool LockManager::AllowLocks(ScriptState* script_state) {
         cached_allowed_ = true;
       } else {
         // This triggers a sync IPC.
-        cached_allowed_ = content_settings_client->AllowWebLocks();
+        cached_allowed_ = content_settings_client->AllowStorageAccessSync(
+            WebContentSettingsClient::StorageType::kWebLocks);
       }
     }
   }

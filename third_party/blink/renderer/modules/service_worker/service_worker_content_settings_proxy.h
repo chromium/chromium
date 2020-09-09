@@ -29,8 +29,7 @@ class ServiceWorkerContentSettingsProxy final
   // WebContentSettingsClient overrides.
   // Asks the browser process about the settings.
   // Blocks until the response arrives.
-  bool RequestFileSystemAccessSync() override;
-  bool AllowIndexedDB() override;
+  bool AllowStorageAccessSync(StorageType storage_type) override;
 
  private:
   // To ensure the returned pointer is destructed on the same thread

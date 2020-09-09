@@ -491,7 +491,8 @@ bool IDBFactory::AllowIndexedDB(ScriptState* script_state) {
       return false;
     if (auto* settings_client = frame->GetContentSettingsClient()) {
       // This triggers a sync IPC.
-      return settings_client->AllowIndexedDB();
+      return settings_client->AllowStorageAccessSync(
+          WebContentSettingsClient::StorageType::kIndexedDB);
     }
     return true;
   }
@@ -501,7 +502,8 @@ bool IDBFactory::AllowIndexedDB(ScriptState* script_state) {
   if (!content_settings_client)
     return true;
   // This triggers a sync IPC.
-  return content_settings_client->AllowIndexedDB();
+  return content_settings_client->AllowStorageAccessSync(
+      WebContentSettingsClient::StorageType::kIndexedDB);
 }
 
 bool IDBFactory::CachedAllowIndexedDB(ScriptState* script_state) {

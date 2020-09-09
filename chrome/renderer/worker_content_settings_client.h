@@ -29,10 +29,7 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
 
   // WebContentSettingsClient overrides.
   std::unique_ptr<blink::WebContentSettingsClient> Clone() override;
-  bool RequestFileSystemAccessSync() override;
-  bool AllowIndexedDB() override;
-  bool AllowCacheStorage() override;
-  bool AllowWebLocks() override;
+  bool AllowStorageAccessSync(StorageType storage_type) override;
   bool AllowRunningInsecureContent(bool allowed_per_settings,
                                    const blink::WebURL& url) override;
   bool AllowScriptFromSource(bool enabled_per_settings,
@@ -42,9 +39,6 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
  private:
   explicit WorkerContentSettingsClient(
       const WorkerContentSettingsClient& other);
-  bool AllowStorageAccess(
-      content_settings::mojom::ContentSettingsManager::StorageType
-          storage_type);
   void EnsureContentSettingsManager() const;
 
   // Loading document context for this worker.

@@ -24,31 +24,29 @@ class WebContentSettingsClient {
   // this WebContentSettingsClient so it can be used by another worker thread.
   virtual std::unique_ptr<WebContentSettingsClient> Clone() { return nullptr; }
 
-  // Controls whether access to Web Databases is allowed for this frame.
-  virtual bool AllowDatabase() { return true; }
+  enum class StorageType {
+    kDatabase,
+    kCacheStorage,
+    kIndexedDB,
+    kFileSystem,
+    kWebLocks
+  };
 
-  // Controls whether access to File System is allowed for this frame.
-  virtual bool RequestFileSystemAccessSync() { return true; }
-
-  // Controls whether access to File System is allowed for this frame.
-  virtual void RequestFileSystemAccessAsync(
-      base::OnceCallback<void(bool)> callback) {
+  // Controls whether access to the given StorageType is allowed for this frame.
+  // Runs asynchronously.
+  virtual void AllowStorageAccess(StorageType storage_type,
+                                  base::OnceCallback<void(bool)> callback) {
     std::move(callback).Run(true);
   }
+
+  // Controls whether access to the given StorageType is allowed for this frame.
+  // Blocks until done.
+  virtual bool AllowStorageAccessSync(StorageType storage_type) { return true; }
 
   // Controls whether images are allowed for this frame.
   virtual bool AllowImage(bool enabled_per_settings, const WebURL& image_url) {
     return enabled_per_settings;
   }
-
-  // Controls whether access to Indexed DB are allowed for this frame.
-  virtual bool AllowIndexedDB() { return true; }
-
-  // Controls whether access to CacheStorage is allowed for this frame.
-  virtual bool AllowCacheStorage() { return true; }
-
-  // Controls whether access to Web Locks is allowed for this frame.
-  virtual bool AllowWebLocks() { return true; }
 
   // Controls whether scripts are allowed to execute for this frame.
   virtual bool AllowScript(bool enabled_per_settings) {

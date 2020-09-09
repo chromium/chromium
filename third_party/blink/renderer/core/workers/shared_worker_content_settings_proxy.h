@@ -24,10 +24,7 @@ class SharedWorkerContentSettingsProxy : public WebContentSettingsClient {
   ~SharedWorkerContentSettingsProxy() override;
 
   // WebContentSettingsClient overrides.
-  bool AllowIndexedDB() override;
-  bool AllowCacheStorage() override;
-  bool AllowWebLocks() override;
-  bool RequestFileSystemAccessSync() override;
+  bool AllowStorageAccessSync(StorageType storage_type) override;
 
  private:
   // To ensure the returned pointer is destructed on the same thread

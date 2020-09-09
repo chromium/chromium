@@ -60,8 +60,10 @@ const char DatabaseClient::kSupplementName[] = "DatabaseClient";
 bool DatabaseClient::AllowDatabase(ExecutionContext* context) {
   DCHECK(context->IsContextThread());
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
-  if (auto* client = window->GetFrame()->GetContentSettingsClient())
-    return client->AllowDatabase();
+  if (auto* client = window->GetFrame()->GetContentSettingsClient()) {
+    return client->AllowStorageAccessSync(
+        WebContentSettingsClient::StorageType::kDatabase);
+  }
   return true;
 }
 

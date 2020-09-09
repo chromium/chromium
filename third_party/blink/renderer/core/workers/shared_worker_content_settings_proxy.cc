@@ -15,27 +15,32 @@ SharedWorkerContentSettingsProxy::SharedWorkerContentSettingsProxy(
     : host_info_(std::move(host_info)) {}
 SharedWorkerContentSettingsProxy::~SharedWorkerContentSettingsProxy() = default;
 
-bool SharedWorkerContentSettingsProxy::AllowIndexedDB() {
+bool SharedWorkerContentSettingsProxy::AllowStorageAccessSync(
+    StorageType storage_type) {
   bool result = false;
-  GetService()->AllowIndexedDB(&result);
-  return result;
-}
+  switch (storage_type) {
+    case StorageType::kIndexedDB: {
+      GetService()->AllowIndexedDB(&result);
+      break;
+    }
+    case StorageType::kCacheStorage: {
+      GetService()->AllowCacheStorage(&result);
+      break;
+    }
+    case StorageType::kWebLocks: {
+      GetService()->AllowWebLocks(&result);
+      break;
+    }
+    case StorageType::kFileSystem: {
+      GetService()->RequestFileSystemAccessSync(&result);
+      break;
+    }
+    case StorageType::kDatabase: {
+      // TODO(shuagga@microsoft.com): Revisit this default in the future.
+      return true;
+    }
+  }
 
-bool SharedWorkerContentSettingsProxy::AllowCacheStorage() {
-  bool result = false;
-  GetService()->AllowCacheStorage(&result);
-  return result;
-}
-
-bool SharedWorkerContentSettingsProxy::AllowWebLocks() {
-  bool result = false;
-  GetService()->AllowWebLocks(&result);
-  return result;
-}
-
-bool SharedWorkerContentSettingsProxy::RequestFileSystemAccessSync() {
-  bool result = false;
-  GetService()->RequestFileSystemAccessSync(&result);
   return result;
 }
 

@@ -260,12 +260,29 @@ void ContentSettingsAgentImpl::OnContentSettingsAgentRequest(
   receivers_.Add(this, std::move(receiver));
 }
 
-bool ContentSettingsAgentImpl::AllowDatabase() {
-  return AllowStorageAccess(
-      mojom::ContentSettingsManager::StorageType::DATABASE);
+mojom::ContentSettingsManager::StorageType
+ContentSettingsAgentImpl::ConvertToMojoStorageType(StorageType storage_type) {
+  switch (storage_type) {
+    case StorageType::kDatabase: {
+      return mojom::ContentSettingsManager::StorageType::DATABASE;
+    }
+    case StorageType::kIndexedDB: {
+      return mojom::ContentSettingsManager::StorageType::INDEXED_DB;
+    }
+    case StorageType::kCacheStorage: {
+      return mojom::ContentSettingsManager::StorageType::CACHE;
+    }
+    case StorageType::kWebLocks: {
+      return mojom::ContentSettingsManager::StorageType::WEB_LOCKS;
+    }
+    case StorageType::kFileSystem: {
+      return mojom::ContentSettingsManager::StorageType::FILE_SYSTEM;
+    }
+  }
 }
 
-void ContentSettingsAgentImpl::RequestFileSystemAccessAsync(
+void ContentSettingsAgentImpl::AllowStorageAccess(
+    StorageType storage_type,
     base::OnceCallback<void(bool)> callback) {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   if (IsFrameWithOpaqueOrigin(frame)) {
@@ -274,10 +291,25 @@ void ContentSettingsAgentImpl::RequestFileSystemAccessAsync(
   }
 
   GetContentSettingsManager().AllowStorageAccess(
-      routing_id(), mojom::ContentSettingsManager::StorageType::FILE_SYSTEM,
+      routing_id(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(),
       frame->GetDocument().SiteForCookies().RepresentativeUrl(),
       frame->GetDocument().TopFrameOrigin(), std::move(callback));
+}
+
+bool ContentSettingsAgentImpl::AllowStorageAccessSync(
+    StorageType storage_type) {
+  WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (IsFrameWithOpaqueOrigin(frame))
+    return false;
+
+  bool result = false;
+  GetContentSettingsManager().AllowStorageAccess(
+      routing_id(), ConvertToMojoStorageType(storage_type),
+      frame->GetSecurityOrigin(),
+      frame->GetDocument().SiteForCookies().RepresentativeUrl(),
+      frame->GetDocument().TopFrameOrigin(), &result);
+  return result;
 }
 
 bool ContentSettingsAgentImpl::AllowImage(bool enabled_per_settings,
@@ -299,20 +331,6 @@ bool ContentSettingsAgentImpl::AllowImage(bool enabled_per_settings,
   if (!allow)
     DidBlockContentType(ContentSettingsType::IMAGES);
   return allow;
-}
-
-bool ContentSettingsAgentImpl::AllowIndexedDB() {
-  return AllowStorageAccess(
-      mojom::ContentSettingsManager::StorageType::INDEXED_DB);
-}
-
-bool ContentSettingsAgentImpl::AllowCacheStorage() {
-  return AllowStorageAccess(mojom::ContentSettingsManager::StorageType::CACHE);
-}
-
-bool ContentSettingsAgentImpl::AllowWebLocks() {
-  return AllowStorageAccess(
-      mojom::ContentSettingsManager::StorageType::WEB_LOCKS);
 }
 
 bool ContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {
@@ -492,20 +510,6 @@ bool ContentSettingsAgentImpl::IsWhitelistedForContentSettings() const {
     return GURL(document_url).ExtractFileName().empty();
   }
   return false;
-}
-
-bool ContentSettingsAgentImpl::AllowStorageAccess(
-    mojom::ContentSettingsManager::StorageType storage_type) {
-  WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (IsFrameWithOpaqueOrigin(frame))
-    return false;
-
-  bool result = false;
-  GetContentSettingsManager().AllowStorageAccess(
-      routing_id(), storage_type, frame->GetSecurityOrigin(),
-      frame->GetDocument().SiteForCookies().RepresentativeUrl(),
-      frame->GetDocument().TopFrameOrigin(), &result);
-  return result;
 }
 
 }  // namespace content_settings
