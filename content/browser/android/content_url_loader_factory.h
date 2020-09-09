@@ -20,14 +20,21 @@ namespace content {
 class CONTENT_EXPORT ContentURLLoaderFactory
     : public network::mojom::URLLoaderFactory {
  public:
-  // SequencedTaskRunner must be allowed to block and should have background
-  // priority since it will be used to schedule synchronous file I/O tasks.
-  explicit ContentURLLoaderFactory(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
-  ~ContentURLLoaderFactory() override;
+  // Returns mojo::PendingRemote to a newly constructed ContentURLLoadedFactory.
+  // The factory is self-owned - it will delete itself once there are no more
+  // receivers (including the receiver associated with the returned
+  // mojo::PendingRemote and the receivers bound by the Clone method).
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
  private:
+  // SequencedTaskRunner must be allowed to block and should have background
+  // priority since it will be used to schedule synchronous file I/O tasks.
+  ContentURLLoaderFactory(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
   // network::mojom::URLLoaderFactory:
+  ~ContentURLLoaderFactory() override;
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       int32_t routing_id,
@@ -39,6 +46,8 @@ class CONTENT_EXPORT ContentURLLoaderFactory
       override;
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) override;
+
+  void OnDisconnect();
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;

@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
@@ -1227,12 +1226,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                             file_factory_priority));
 
 #if defined(OS_ANDROID)
-  non_network_uniquely_owned_factories_.emplace(
-      url::kContentScheme,
-      std::make_unique<ContentURLLoaderFactory>(
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})));
+  non_network_url_loader_factories_.emplace(url::kContentScheme,
+                                            ContentURLLoaderFactory::Create());
 #endif
 
   for (auto& iter : non_network_uniquely_owned_factories_)

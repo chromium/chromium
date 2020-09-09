@@ -32,7 +32,6 @@
 #include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_conversion_helper.h"
@@ -6225,12 +6224,8 @@ void RenderFrameHostImpl::CommitNavigation(
 #if defined(OS_ANDROID)
     if (common_params->url.SchemeIs(url::kContentScheme)) {
       // Only content:// URLs can load content:// subresources
-      auto content_factory = std::make_unique<ContentURLLoaderFactory>(
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-      non_network_uniquely_owned_factories_.emplace(url::kContentScheme,
-                                                    std::move(content_factory));
+      non_network_factories.emplace(url::kContentScheme,
+                                    ContentURLLoaderFactory::Create());
     }
 #endif
 
