@@ -475,6 +475,15 @@
       ]
      ]
     },
+    "cssom-view": {
+     "client-props-root-display-none-crash.html": [
+      "654e321e420b3ccb6a0a986e4b9b5aa1fbbf4c8d",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "filter-effects": {
      "crashtests": {
       "multiple-references-id-crash-001.html": [
@@ -160098,7 +160107,7 @@
     ],
     "resources": {
      "helpers.js": [
-      "88b2f1656ee7203a6f88ba2c747e2ba192a8335e",
+      "c67d684652884c99dce7c29c6121952941743641",
       []
      ],
      "non-main-frame-select.html": [
@@ -203610,6 +203619,10 @@
         ]
        }
       },
+      "response-body-read-task-handling-expected.txt": [
+       "dd87020795c104f545ac4526d75d9a5830c68529",
+       []
+      ],
       "response-clone-expected.txt": [
        "72eff51edc5431857d9bdc41b087b3874cc20780",
        []
@@ -263868,11 +263881,15 @@
    },
    "contacts": {
     "contacts-select.https.window.js": [
-     "c93d711ed5205fffb96298423d853bf4171ff8d3",
+     "850217aadfa7e6cab4d5551ae2b892286080ab34",
      [
       "contacts/contacts-select.https.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
         [
          "script",
          "/resources/testdriver.js"
@@ -314305,6 +314322,17 @@
         {}
        ]
       ],
+      "request-headers-nonascii.any.js": [
+       "0d822fb24f3e0c091acc3792339c975c9a129e53",
+       [
+        "fetch/api/basic/request-headers-nonascii.any.html",
+        {}
+       ],
+       [
+        "fetch/api/basic/request-headers-nonascii.any.worker.html",
+        {}
+       ]
+      ],
       "request-headers.any.js": [
        "4ba70f7c496b7c406e5ed1aef35ba5efb3dc46ef",
        [
@@ -316277,6 +316305,13 @@
         ]
        ]
       },
+      "response-body-read-task-handling.html": [
+       "c2c90eaa8bd951cf7d5168e7796dd1cb8dcf9cde",
+       [
+        null,
+        {}
+       ]
+      ],
       "response-cancel-stream.html": [
        "fcaed04d83e31a437695b55b50beb7425a5a3fb8",
        [
@@ -369866,8 +369901,15 @@
     }
    },
    "preload": {
+    "avoid-delaying-onload-link-preload-style.html": [
+     "299713834094fb9661c2ea46aa7022c1af2cdc22",
+     [
+      null,
+      {}
+     ]
+    ],
     "avoid-delaying-onload-link-preload.html": [
-     "a1b19c81c6783477f8914bf94d8e58d8644e06f3",
+     "6b9b577b89c3b98583a49d4235da362f741e9732",
      [
       null,
       {}
