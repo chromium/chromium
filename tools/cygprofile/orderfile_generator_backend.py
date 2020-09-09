@@ -10,13 +10,13 @@ sections are placed consecutively in the order specified. This allows us
 to page in less code during start-up.
 
 Example usage:
-  tools/cygprofile/orderfile_generator_backend.py -l 20 -j 1000 --use-goma \
-    --target-arch=arm
+  tools/cygprofile/orderfile_generator_backend.py --use-goma --target-arch=arm
 """
 
 from __future__ import print_function
 
 import argparse
+import csv
 import hashlib
 import json
 import glob
