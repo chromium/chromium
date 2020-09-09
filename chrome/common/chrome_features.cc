@@ -653,7 +653,7 @@ const base::Feature kSafetyCheckAndroid{"SafetyCheckAndroid",
 
 #if defined(OS_WIN)
 const base::Feature kSafetyCheckChromeCleanerChild{
-    "SafetyCheckChromeCleanerChild", base::FEATURE_ENABLED_BY_DEFAULT};
+    "SafetyCheckChromeCleanerChild", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_CHROMEOS)

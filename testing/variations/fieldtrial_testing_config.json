@@ -2788,26 +2788,6 @@
             ]
         }
     ],
-    "FriendlySettingsHats": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Launched_20200616",
-                    "enable_features": [
-                        "PrivacySettingsRedesign",
-                        "SafeBrowsingEnhancedProtection",
-                        "SyncSetupFriendlySettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "FullscreenBrowserScope": [
         {
             "platforms": [
@@ -6224,6 +6204,24 @@
                 },
                 {
                     "name": "Default"
+                }
+            ]
+        }
+    ],
+    "SafetyCheckChromeCleanerChild": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafetyCheckChromeCleanerChild"
+                    ]
                 }
             ]
         }
