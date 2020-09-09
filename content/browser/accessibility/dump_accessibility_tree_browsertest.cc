@@ -2123,25 +2123,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityProgress) {
   RunHtmlTest(FILE_PATH_LITERAL("progress.html"));
 }
 
-// https://crbug.com/1120210
-#if defined(OS_ANDROID)
-#define MAYBE_AccessibilityPortal DISABLED_AccessibilityPortal
-#else
-#define MAYBE_AccessibilityPortal AccessibilityPortal
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityPortal) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPortal) {
   RunHtmlTest(FILE_PATH_LITERAL("portal.html"));
 }
 
-// https://crbug.com/1120210
-#if defined(OS_ANDROID)
-#define MAYBE_AccessibilityPortalNameFromText \
-  DISABLED_AccessibilityPortalNameFromText
-#else
-#define MAYBE_AccessibilityPortalNameFromText AccessibilityPortalNameFromText
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityPortalNameFromText) {
+                       AccessibilityPortalNameFromText) {
   RunHtmlTest(FILE_PATH_LITERAL("portal-name-from-text.html"));
 }
 
@@ -2151,16 +2138,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("portal-with-widget-inside.html"));
 }
 
-// https://crbug.com/1120210
-#if defined(OS_ANDROID)
-#define MAYBE_AccessibilityPortalNameFromVisibleText \
-  DISABLED_AccessibilityPortalNameFromVisibleText
-#else
-#define MAYBE_AccessibilityPortalNameFromVisibleText \
-  AccessibilityPortalNameFromVisibleText
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityPortalNameFromVisibleText) {
+                       AccessibilityPortalNameFromVisibleText) {
   RunHtmlTest(FILE_PATH_LITERAL("portal-name-from-visible-text.html"));
 }
 

@@ -1,5 +1,4 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View name='Before portal'
 ++android.view.View role_description='button' clickable focusable name='portal'
-++++android.view.View scrollable name='Text in iframe'
 ++android.view.View name='After portal'
