@@ -40,6 +40,9 @@ class AuthDialogContentsView : public views::View,
   AuthDialogContentsView& operator=(const AuthDialogContentsView&) = delete;
   ~AuthDialogContentsView() override;
 
+  // views::Views:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
@@ -109,9 +112,6 @@ class AuthDialogContentsView : public views::View,
 
   // Flags of auth methods that should be visible.
   uint32_t auth_methods_ = 0u;
-
-  // Show other authentication mechanisms if more than one.
-  views::LabelButton* more_options_button_ = nullptr;
 
   // Cancel all operations and close th dialog.
   views::LabelButton* cancel_button_ = nullptr;

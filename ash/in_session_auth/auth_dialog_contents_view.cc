@@ -34,25 +34,22 @@ namespace ash {
 namespace {
 
 enum class ButtonId {
-  kMoreOptions,
   kCancel,
 };
 
 // TODO(b/164195709): Move these strings to a grd file.
 const char kTitle[] = "Verify it's you";
-// If fingerprint option is available, password input field will be hidden
-// until the user taps the MoreOptions button.
-const char kMoreOptionsButtonText[] = "More options";
 const char kCancelButtonText[] = "Cancel";
 
 const int kContainerPreferredWidth = 512;
-const int kTopVerticalSpacing = 24;
-const int kVerticalSpacingBetweenTitleAndPrompt = 16;
-const int kVerticalSpacingBetweenPasswordAndPINKeyboard = 16;
-const int kBottomVerticalSpacing = 20;
-const int kButtonSpacing = 8;
+const int kSpacingAfterTitle = 16;
 
-const int kTitleFontSize = 14;
+const int kBorderTopDp = 24;
+const int kBorderLeftDp = 24;
+const int kBorderBottomDp = 20;
+const int kBorderRightDp = 24;
+
+const int kTitleFontSizeDeltaDp = 4;
 
 constexpr int kFingerprintIconSizeDp = 28;
 constexpr int kFingerprintIconTopSpacingDp = 20;
@@ -69,6 +66,8 @@ constexpr base::TimeDelta kFingerprintFailedAnimationDuration =
 // 38% opacity.
 constexpr SkColor kDisabledFingerprintIconColor =
     SkColorSetA(SK_ColorDKGRAY, 97);
+
+constexpr int kSpacingBeforeButtons = 32;
 
 }  // namespace
 
@@ -113,6 +112,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     label_->SetAutoColorReadabilityEnabled(false);
     label_->SetEnabledColor(SK_ColorDKGRAY);
     label_->SetMultiLine(true);
+    label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     DisplayCurrentState();
   }
@@ -196,8 +196,16 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   void DisplayCurrentState() {
     SetVisible(state_ != FingerprintState::UNAVAILABLE);
     SetIcon(state_);
-    if (state_ != FingerprintState::UNAVAILABLE)
-      label_->SetText(l10n_util::GetStringUTF16(GetTextIdFromState()));
+    if (state_ != FingerprintState::UNAVAILABLE) {
+      base::string16 fingerprint_text =
+          l10n_util::GetStringUTF16(GetTextIdFromState());
+      label_->SetText(fingerprint_text);
+      label_->SetAccessibleName(
+          state_ == FingerprintState::DISABLED_FROM_ATTEMPTS
+              ? l10n_util::GetStringUTF16(
+                    IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS)
+              : fingerprint_text);
+    }
   }
 
   void SetIcon(FingerprintState state) {
@@ -258,6 +266,8 @@ AuthDialogContentsView::AuthDialogContentsView(uint32_t auth_methods)
   SetLayoutManager(std::make_unique<views::FillLayout>());
   container_ = AddChildView(std::make_unique<NonAccessibleView>());
   container_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  container_->SetBorder(views::CreateEmptyBorder(
+      kBorderTopDp, kBorderLeftDp, kBorderBottomDp, kBorderRightDp));
 
   main_layout_ =
       container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -267,13 +277,10 @@ AuthDialogContentsView::AuthDialogContentsView(uint32_t auth_methods)
   main_layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddVerticalSpacing(kTopVerticalSpacing);
   AddTitleView();
-  AddVerticalSpacing(kVerticalSpacingBetweenTitleAndPrompt);
-  // TODO(b/156258540): Add proper spacing once all elements are determined.
+  AddVerticalSpacing(kSpacingAfterTitle);
   AddPasswordView();
   AddPinView();
-  AddVerticalSpacing(kVerticalSpacingBetweenPasswordAndPINKeyboard);
 
   if (auth_methods_ & kAuthFingerprint) {
     fingerprint_view_ =
@@ -281,12 +288,14 @@ AuthDialogContentsView::AuthDialogContentsView(uint32_t auth_methods)
     fingerprint_view_->SetCanUsePin(auth_methods_ & kAuthPin);
   }
 
+  AddVerticalSpacing(kSpacingBeforeButtons);
   AddActionButtonsView();
-  AddVerticalSpacing(kBottomVerticalSpacing);
 
   // Deferred because it needs the pin_view_ pointer.
   InitPasswordView();
 }
+
+AuthDialogContentsView::~AuthDialogContentsView() = default;
 
 void AuthDialogContentsView::AddedToWidget() {
   if (auth_methods_ & kAuthFingerprint) {
@@ -298,21 +307,25 @@ void AuthDialogContentsView::AddedToWidget() {
   }
 }
 
-AuthDialogContentsView::~AuthDialogContentsView() = default;
-
 void AuthDialogContentsView::AddTitleView() {
   title_ = container_->AddChildView(std::make_unique<views::Label>());
   title_->SetEnabledColor(SK_ColorBLACK);
   title_->SetSubpixelRenderingEnabled(false);
   title_->SetAutoColorReadabilityEnabled(false);
+  title_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
 
-  title_->SetFontList(base_font_list.Derive(
-      kTitleFontSize, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+  title_->SetFontList(base_font_list.Derive(kTitleFontSizeDeltaDp,
+                                            gfx::Font::FontStyle::NORMAL,
+                                            gfx::Font::Weight::NORMAL));
   title_->SetText(base::UTF8ToUTF16(kTitle));
   title_->SetMaximumWidth(kContainerPreferredWidth);
   title_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
+
+  title_->SetPreferredSize(
+      gfx::Size(kContainerPreferredWidth, title_->height()));
+  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
 void AuthDialogContentsView::AddPasswordView() {
@@ -367,14 +380,15 @@ void AuthDialogContentsView::AddActionButtonsView() {
   auto* buttons_layout = action_view_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
-  buttons_layout->set_between_child_spacing(kButtonSpacing);
+  buttons_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
 
-  more_options_button_ = AddButton(kMoreOptionsButtonText,
-                                   static_cast<int>(ButtonId::kMoreOptions),
-                                   action_view_container_);
   cancel_button_ =
       AddButton(kCancelButtonText, static_cast<int>(ButtonId::kCancel),
                 action_view_container_);
+
+  action_view_container_->SetPreferredSize(
+      gfx::Size(kContainerPreferredWidth, cancel_button_->height()));
 }
 
 void AuthDialogContentsView::ButtonPressed(views::Button* sender,
@@ -383,9 +397,6 @@ void AuthDialogContentsView::ButtonPressed(views::Button* sender,
     // Cancel() deletes |this|.
     InSessionAuthDialogController::Get()->Cancel();
   }
-
-  // TODO(b/156258540): Enable more options button when we have both fingerprint
-  // view and password input view.
 }
 
 views::LabelButton* AuthDialogContentsView::AddButton(const std::string& text,
@@ -424,6 +435,12 @@ void AuthDialogContentsView::OnFingerprintAuthComplete(
                        weak_factory_.GetWeakPtr()));
   }
   fingerprint_view_->NotifyFingerprintAuthResult(success);
+}
+
+void AuthDialogContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  views::View::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kDialog;
+  node_data->SetName(base::UTF8ToUTF16(kTitle));
 }
 
 }  // namespace ash
