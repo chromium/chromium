@@ -61,6 +61,7 @@ class CORE_EXPORT StyleColor {
   bool IsCurrentColor() const {
     return color_keyword_ == CSSValueID::kCurrentcolor;
   }
+  bool IsSystemColor() const { return IsSystemColor(color_keyword_); }
   Color GetColor() const {
     DCHECK(IsNumeric());
     return color_;

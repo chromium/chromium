@@ -550,32 +550,49 @@ void StyleCascade::ForceColors() {
 
   int bg_color_alpha =
       style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).Alpha();
+  const SVGComputedStyle& svg_style = style->SvgStyle();
 
-  MaybeForceColor(GetCSSPropertyColor());
-  MaybeForceColor(GetCSSPropertyBackgroundColor());
-  MaybeForceColor(GetCSSPropertyBorderBottomColor());
-  MaybeForceColor(GetCSSPropertyBorderLeftColor());
-  MaybeForceColor(GetCSSPropertyBorderRightColor());
-  MaybeForceColor(GetCSSPropertyBorderTopColor());
-  MaybeForceColor(GetCSSPropertyFill());
-  MaybeForceColor(GetCSSPropertyOutlineColor());
-  MaybeForceColor(GetCSSPropertyStroke());
-  MaybeForceColor(GetCSSPropertyTextDecorationColor());
-  MaybeForceColor(GetCSSPropertyColumnRuleColor());
-  MaybeForceColor(GetCSSPropertyWebkitTapHighlightColor());
-  MaybeForceColor(GetCSSPropertyWebkitTextEmphasisColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBackgroundColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderBottomColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderLeftColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderRightColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedBorderTopColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedFill());
-  MaybeForceColor(GetCSSPropertyInternalVisitedOutlineColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedStroke());
-  MaybeForceColor(GetCSSPropertyInternalVisitedTextDecorationColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedColumnRuleColor());
-  MaybeForceColor(GetCSSPropertyInternalVisitedTextEmphasisColor());
+  MaybeForceColor(GetCSSPropertyColor(), style->GetColor());
+  MaybeForceColor(GetCSSPropertyBackgroundColor(), style->BackgroundColor());
+  MaybeForceColor(GetCSSPropertyBorderBottomColor(),
+                  style->BorderBottomColor());
+  MaybeForceColor(GetCSSPropertyBorderLeftColor(), style->BorderLeftColor());
+  MaybeForceColor(GetCSSPropertyBorderRightColor(), style->BorderRightColor());
+  MaybeForceColor(GetCSSPropertyBorderTopColor(), style->BorderTopColor());
+  MaybeForceColor(GetCSSPropertyFill(), svg_style.FillPaint().GetColor());
+  MaybeForceColor(GetCSSPropertyOutlineColor(), style->OutlineColor());
+  MaybeForceColor(GetCSSPropertyStroke(), svg_style.StrokePaint().GetColor());
+  MaybeForceColor(GetCSSPropertyTextDecorationColor(),
+                  style->TextDecorationColor());
+  MaybeForceColor(GetCSSPropertyColumnRuleColor(), style->ColumnRuleColor());
+  MaybeForceColor(GetCSSPropertyWebkitTapHighlightColor(),
+                  style->TapHighlightColor());
+  MaybeForceColor(GetCSSPropertyWebkitTextEmphasisColor(),
+                  style->TextEmphasisColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedColor(),
+                  style->InternalVisitedColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBackgroundColor(),
+                  style->InternalVisitedBackgroundColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderBottomColor(),
+                  style->InternalVisitedBorderBottomColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderLeftColor(),
+                  style->InternalVisitedBorderLeftColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderRightColor(),
+                  style->InternalVisitedBorderRightColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedBorderTopColor(),
+                  style->InternalVisitedBorderTopColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedFill(),
+                  svg_style.InternalVisitedFillPaint().GetColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedOutlineColor(),
+                  style->InternalVisitedOutlineColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedStroke(),
+                  svg_style.InternalVisitedStrokePaint().GetColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedTextDecorationColor(),
+                  style->InternalVisitedTextDecorationColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedColumnRuleColor(),
+                  style->InternalVisitedColumnRuleColor());
+  MaybeForceColor(GetCSSPropertyInternalVisitedTextEmphasisColor(),
+                  style->InternalVisitedTextEmphasisColor());
 
   auto* none = CSSIdentifierValue::Create(CSSValueID::kNone);
   StyleBuilder::ApplyProperty(GetCSSPropertyTextShadow(), state_, *none);
@@ -589,12 +606,15 @@ void StyleCascade::ForceColors() {
           style->GetCurrentColor(), WebColorScheme::kLight, bg_color_alpha)));
 }
 
-void StyleCascade::MaybeForceColor(const CSSProperty& property) {
+void StyleCascade::MaybeForceColor(const CSSProperty& property,
+                                   const StyleColor& color) {
   DCHECK(GetDocument().InForcedColorsMode() &&
          state_.Style()->ForcedColorAdjust() != EForcedColorAdjust::kNone);
 
-  // TODO(almaher): Return early if the current computed color is already a
-  // system color.
+  // Preserve the author/user color if it computes to a system color.
+  if (color.IsSystemColor())
+    return;
+
   StyleBuilder::ApplyProperty(
       property, state_, *GetForcedColorValue(property.GetCSSPropertyName()));
 }

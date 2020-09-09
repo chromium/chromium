@@ -36,6 +36,7 @@ class CSSVariableData;
 class CSSVariableReferenceValue;
 class CustomProperty;
 class MatchResult;
+class StyleColor;
 class StyleResolverState;
 
 namespace cssvalue {
@@ -209,7 +210,7 @@ class CORE_EXPORT StyleCascade {
   // Update the ComputedStyle to use the colors specified in Forced Colors Mode.
   // https://www.w3.org/TR/css-color-adjust-1/#forced
   void ForceColors();
-  void MaybeForceColor(const CSSProperty& property);
+  void MaybeForceColor(const CSSProperty& property, const StyleColor& color);
   const CSSValue* GetForcedColorValue(CSSPropertyName name);
 
   // Whether or not we are calculating the style for the root element.
