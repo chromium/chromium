@@ -50,9 +50,8 @@ void RoundedLabelButton::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::RectF rect(GetContentsBounds());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      kUnifiedMenuButtonColor));
+  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawRoundRect(rect, kTrayItemCornerRadius, flags);
 

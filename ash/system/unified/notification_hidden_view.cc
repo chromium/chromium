@@ -49,10 +49,9 @@ NotificationHiddenView::NotificationHiddenView() {
   auto* container = new views::View;
   container->SetBackground(views::CreateBackgroundFromPainter(
       views::Painter::CreateSolidRoundRectPainter(
-          AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
+          AshColorProvider::Get()->GetControlsLayerColor(
               AshColorProvider::ControlsLayerType::
-                  kControlBackgroundColorInactive,
-              kUnifiedMenuButtonColor),
+                  kControlBackgroundColorInactive),
           kUnifiedTrayCornerRadius)));
 
   auto* layout = container->SetLayoutManager(std::make_unique<views::BoxLayout>(
