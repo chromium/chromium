@@ -1067,6 +1067,8 @@ source_set("browser") {
     "loader/navigation_url_loader_factory.h",
     "loader/navigation_url_loader_impl.cc",
     "loader/navigation_url_loader_impl.h",
+    "loader/non_network_url_loader_factory_base.cc",
+    "loader/non_network_url_loader_factory_base.h",
     "loader/prefetch_url_loader.cc",
     "loader/prefetch_url_loader.h",
     "loader/prefetch_url_loader_service.cc",

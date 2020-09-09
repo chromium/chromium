@@ -299,11 +299,8 @@ class ContentURLLoader : public network::mojom::URLLoader {
 ContentURLLoaderFactory::ContentURLLoaderFactory(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-    : task_runner_(std::move(task_runner)) {
-  receivers_.set_disconnect_handler(base::BindRepeating(
-      &ContentURLLoaderFactory::OnDisconnect, base::Unretained(this)));
-  receivers_.Add(this, std::move(factory_receiver));
-}
+    : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      task_runner_(std::move(task_runner)) {}
 
 ContentURLLoaderFactory::~ContentURLLoaderFactory() = default;
 
@@ -320,23 +317,13 @@ void ContentURLLoaderFactory::CreateLoaderAndStart(
                                 std::move(loader), std::move(client)));
 }
 
-void ContentURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) {
-  receivers_.Add(this, std::move(loader));
-}
-
-void ContentURLLoaderFactory::OnDisconnect() {
-  if (receivers_.empty())
-    delete this;
-}
-
 // static
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ContentURLLoaderFactory::Create() {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
   // The ContentURLLoaderFactory will delete itself when there are no more
-  // receivers - see the ContentURLLoaderFactory::OnDisconnect method.
+  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
   new ContentURLLoaderFactory(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,

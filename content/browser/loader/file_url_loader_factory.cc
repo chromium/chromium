@@ -790,16 +790,13 @@ FileURLLoaderFactory::FileURLLoaderFactory(
     scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list,
     base::TaskPriority task_priority,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-    : profile_path_(profile_path),
+    : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      profile_path_(profile_path),
       shared_cors_origin_access_list_(
           std::move(shared_cors_origin_access_list)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), task_priority,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  receivers_.set_disconnect_handler(base::BindRepeating(
-      &FileURLLoaderFactory::OnDisconnect, base::Unretained(this)));
-  receivers_.Add(this, std::move(factory_receiver));
-}
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
 FileURLLoaderFactory::~FileURLLoaderFactory() = default;
 
@@ -897,18 +894,6 @@ void FileURLLoaderFactory::CreateLoaderAndStartInternal(
   }
 }
 
-void FileURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  receivers_.Add(this, std::move(loader));
-}
-
-void FileURLLoaderFactory::OnDisconnect() {
-  if (receivers_.empty())
-    delete this;
-}
-
 // static
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 FileURLLoaderFactory::Create(
@@ -918,7 +903,7 @@ FileURLLoaderFactory::Create(
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
   // The FileURLLoaderFactory will delete itself when there are no more
-  // receivers - see the FileURLLoaderFactory::OnDisconnect method.
+  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
   new FileURLLoaderFactory(
       profile_path, std::move(shared_cors_origin_access_list), task_priority,
       pending_remote.InitWithNewPipeAndPassReceiver());
