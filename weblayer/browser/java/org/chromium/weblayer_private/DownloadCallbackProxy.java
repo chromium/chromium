@@ -65,7 +65,7 @@ public final class DownloadCallbackProxy {
 
         String[] requestPermissions = new String[] {permission.WRITE_EXTERNAL_STORAGE};
         window.requestPermissions(requestPermissions, (permissions, grantResults) -> {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            if (grantResults.length == 0 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 DownloadCallbackProxyJni.get().allowDownload(callbackId, false);
                 return;
             }
