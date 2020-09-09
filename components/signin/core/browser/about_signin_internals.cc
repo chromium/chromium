@@ -526,7 +526,7 @@ AboutSigninInternals::TokenInfo::ToValue() const {
 
   std::string scopes_str;
   for (auto it = scopes.begin(); it != scopes.end(); ++it) {
-    scopes_str += *it + "<br/>";
+    scopes_str += *it + "\n";
   }
   token_info->SetString("scopes", scopes_str);
   token_info->SetString("request_time", base::TimeToISO8601(request_time));
