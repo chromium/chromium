@@ -116284,6 +116284,19 @@
        {}
       ]
      ],
+     "webkit-appearance-auto-input-non-widget-001.html": [
+      "5f5ddde393f48c43cb054a63450891e5ab43d026",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/appearance-auto-input-non-widget-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "webkit-appearance-button-001.html": [
       "cf36b42384a7168d85a0475bded03aaadf26d52c",
       [
@@ -116382,6 +116395,19 @@
        [
         [
          "/css/css-ui/appearance-auto-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "webkit-appearance-progress-bar-002.html": [
+      "5394836b756d18d0c2e5ff89e595d25d447f4679",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/appearance-progress-bar-002-ref.html",
          "=="
         ]
        ],
@@ -274542,6 +274568,13 @@
        null,
        {}
       ]
+     ],
+     "table-with-percent-intrinsic-width.html": [
+      "e0cd66dd8402105636ba41f70736fbc84a81b0f2",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-font-loading": {
@@ -280322,6 +280355,41 @@
      },
      "scroll-overflow-padding-block-001.html": [
       "13df853ab3462dff7db84d6558d4b941bf83995d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-gutter-001.html": [
+      "b8c157a1ecd1b4f806e64060cbbd2a993499cbf4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-gutter-002.html": [
+      "5cfc45c358c540d4ca81d79aa199d2dcb0bfe494",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-gutter-003.html": [
+      "17f724fb37c7a98241e12aad47b3365f9dccb33d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-gutter-004.html": [
+      "2f9ac9b7f330de181560d8aac5c3780682bc9780",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-gutter-005.html": [
+      "5f1e8413f3b93c0fe44f0e55b02f83cb37f192f2",
       [
        null,
        {}
