@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -184,9 +185,8 @@ DeviceCommandRunRoutineJobTest::DeviceCommandRunRoutineJobTest() {
 DeviceCommandRunRoutineJobTest::~DeviceCommandRunRoutineJobTest() {
   chromeos::CrosHealthdClient::Shutdown();
 
-  // Wait for DeviceCommandRunRoutineJobTest to observe the
-  // destruction of the client.
-  base::RunLoop().RunUntilIdle();
+  // Wait for ServiceConnection to observe the destruction of the client.
+  chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
 }
 
 void DeviceCommandRunRoutineJobTest::InitializeJob(
