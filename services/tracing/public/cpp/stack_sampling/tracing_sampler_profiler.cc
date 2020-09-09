@@ -7,8 +7,10 @@
 #include <limits>
 #include <set>
 
+#include "base/android/library_loader/anchor_functions.h"
 #include "base/bind_helpers.h"
 #include "base/debug/leak_annotations.h"
+#include "base/debug/stack_trace.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -31,17 +33,21 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.pbzero.h"
 
-#if defined(OS_ANDROID)
-#include "base/android/reached_code_profiler.h"
-#endif
-
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
+#if ANDROID_STACK_UNWINDING_SUPPORTED
 #include <dlfcn.h>
 
+#include "base/android/reached_code_profiler.h"
+
+#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#include "services/tracing/public/cpp/stack_sampling/stack_unwinder_arm64_android.h"
+
+#elif BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
 #include "base/trace_event/cfi_backtrace_android.h"
 #include "services/tracing/public/cpp/stack_sampling/stack_sampler_android.h"
+
 #endif
+
+#endif  // ANDROID_STACK_UNWINDING_SUPPORTED
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
@@ -53,6 +59,25 @@ using StreamingProfilePacketHandle =
 namespace tracing {
 
 namespace {
+
+#if ANDROID_STACK_UNWINDING_SUPPORTED
+extern "C" {
+
+// The address of |__executable_start| gives the start address of the
+// executable or shared library. This value is used to find the offset address
+// of the instruction in binary from PC.
+extern char __executable_start;
+
+}  // extern "C"
+
+bool is_chrome_address(uintptr_t pc) {
+  return pc >= base::android::kStartOfText && pc < base::android::kEndOfText;
+}
+
+uintptr_t executable_start_addr() {
+  return reinterpret_cast<uintptr_t>(&__executable_start);
+}
+#endif  // ANDROID_STACK_UNWINDING_SUPPORTED
 
 // Pointer to the main thread instance, if any.
 TracingSamplerProfiler* g_main_thread_instance = nullptr;
@@ -360,18 +385,15 @@ TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
     std::string module_id;
     uintptr_t rel_pc = 0;
 
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
+#if ANDROID_STACK_UNWINDING_SUPPORTED
     Dl_info info = {};
     // For chrome address we do not have symbols on the binary. So, just write
     // the offset address. For addresses on framework libraries, symbolize
     // and write the function name.
     if (frame.instruction_pointer == 0) {
       frame_name = "Scanned";
-    } else if (base::trace_event::CFIBacktraceAndroid::is_chrome_address(
-                   frame.instruction_pointer)) {
-      rel_pc = frame.instruction_pointer -
-               base::trace_event::CFIBacktraceAndroid::executable_start_addr();
+    } else if (is_chrome_address(frame.instruction_pointer)) {
+      rel_pc = frame.instruction_pointer - executable_start_addr();
     } else if (dladdr(reinterpret_cast<void*>(frame.instruction_pointer),
                       &info) != 0) {
       // TODO(ssid): Add offset and module debug id if symbol was not resolved
@@ -390,13 +412,11 @@ TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
 
     // If no module is available, then name it unknown. Adding PC would be
     // useless anyway.
-    if (module_name.empty()) {
-      DCHECK(!base::trace_event::CFIBacktraceAndroid::is_chrome_address(
-          frame.instruction_pointer));
+    if (module_name.empty() && !is_chrome_address(frame.instruction_pointer)) {
       frame_name = "Unknown";
       rel_pc = 0;
     }
-#else
+#else   // ANDROID_STACK_UNWINDING_SUPPORTED
     if (frame.module) {
       module_name = frame.module->GetDebugBasename().MaybeAsASCII();
       module_id = frame.module->GetId();
@@ -405,7 +425,7 @@ TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
       module_name = module_id = "";
       frame_name = "Unknown";
     }
-#endif
+#endif  // !ANDROID_STACK_UNWINDING_SUPPORTED
 
     MangleModuleIDIfNeeded(&module_id);
 
@@ -654,15 +674,19 @@ void TracingSamplerProfiler::StartTracing(
     return;
   }
 
-#if defined(OS_ANDROID)
+#if ANDROID_STACK_UNWINDING_SUPPORTED
   // The sampler profiler would conflict with the reached code profiler if they
   // run at the same time because they use the same signal to suspend threads.
   if (base::android::IsReachedCodeProfilerEnabled())
     return;
-#endif
+#else   // ANDROID_STACK_UNWINDING_SUPPORTED
 
+  // On Android the sampling profiler is implemented by tracing service and is
+  // not yet supported by base::StackSamplingProfiler. So, only check this if
+  // service does not support unwinding in current platform.
   if (!base::StackSamplingProfiler::IsSupported())
     return;
+#endif  // !ANDROID_STACK_UNWINDING_SUPPORTED
 
   base::StackSamplingProfiler::SamplingParams params;
   params.samples_per_profile = std::numeric_limits<int>::max();
@@ -679,14 +703,22 @@ void TracingSamplerProfiler::StartTracing(
   profile_builder_ = profile_builder.get();
   // Create and start the stack sampling profiler.
 #if defined(OS_ANDROID)
-#if BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
+#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+  std::vector<std::unique_ptr<base::Unwinder>> unwinder;
+  unwinder.push_back(std::make_unique<UnwinderArm64>());
+  profiler_ = std::make_unique<base::StackSamplingProfiler>(
+      sampled_thread_token_, params, std::move(profile_builder),
+      std::move(unwinder));
+  profiler_->Start();
+
+#elif BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
   auto* module_cache = profile_builder->GetModuleCache();
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       params, std::move(profile_builder),
       std::make_unique<StackSamplerAndroid>(sampled_thread_token_,
                                             module_cache));
   profiler_->Start();
-#endif  // BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
+#endif
 #else   // defined(OS_ANDROID)
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder));

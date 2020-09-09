@@ -119,6 +119,13 @@ target(tracing_lib_type, "cpp") {
       "tracing_features.h",
     ]
 
+    if (is_android && current_cpu == "arm64") {
+      sources += [
+        "stack_sampling/stack_unwinder_arm64_android.cc",
+        "stack_sampling/stack_unwinder_arm64_android.h",
+      ]
+    }
+
     if (enable_loader_lock_sampling) {
       sources += [
         "stack_sampling/loader_lock_sampler_win.cc",

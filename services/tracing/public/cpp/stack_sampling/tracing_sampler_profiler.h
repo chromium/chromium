@@ -25,6 +25,14 @@
 #include "services/tracing/public/cpp/perfetto/interning_index.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 
+#if defined(OS_ANDROID) &&                        \
+    (BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS) || \
+     (BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)))
+#define ANDROID_STACK_UNWINDING_SUPPORTED 1
+#else
+#define ANDROID_STACK_UNWINDING_SUPPORTED 0
+#endif
+
 namespace tracing {
 
 class PerfettoProducer;
@@ -167,9 +175,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   // Returns whether of not the sampler profiling is able to unwind the stack
   // on this platform.
   constexpr static bool IsStackUnwindingSupported() {
-#if defined(OS_MAC) || defined(OS_WIN) && defined(_WIN64) ||      \
-    (defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-     defined(OFFICIAL_BUILD))
+#if defined(OS_MAC) || defined(OS_WIN) && defined(_WIN64) || \
+    ANDROID_STACK_UNWINDING_SUPPORTED
     return true;
 #else
     return false;
