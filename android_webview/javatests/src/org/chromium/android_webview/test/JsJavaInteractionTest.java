@@ -5,15 +5,14 @@
 package org.chromium.android_webview.test;
 
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
 import android.webkit.JavascriptInterface;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,11 +23,13 @@ import org.chromium.android_webview.ScriptReference;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -37,9 +38,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Test suite for JavaScript Java interaction.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class JsJavaInteractionTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @ClassRule
+    public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     private static final String RESOURCE_PATH = "/android_webview/test/data";
     private static final String POST_MESSAGE_SIMPLE_HTML =
@@ -108,13 +112,7 @@ public class JsJavaInteractionTest {
         mAwContents = testContainerView.getAwContents();
         mListener = new TestWebMessageListener();
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getContext());
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        mTestServer = sTestServerRule.getServer();
     }
 
     @Test
