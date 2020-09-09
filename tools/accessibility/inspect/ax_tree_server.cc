@@ -59,6 +59,10 @@ void AXTreeServer::Run(BuildTree build_tree,
   // Set filters.
   std::vector<AccessibilityTreeFormatter::PropertyFilter> filters =
       GetPropertyFilters(filters_path);
+  if (filters.empty()) {
+    LOG(ERROR) << "Failed to parse filters";
+    return;
+  }
   formatter->SetPropertyFilters(filters);
 
   // Get accessibility tree as a nested dictionary.
@@ -75,38 +79,42 @@ void AXTreeServer::Run(BuildTree build_tree,
 
 std::vector<AccessibilityTreeFormatter::PropertyFilter>
 AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
-  std::vector<AccessibilityTreeFormatter::PropertyFilter> filters;
-  if (!filters_path.empty()) {
-    std::string raw_filters_text;
-    base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
-    if (base::ReadFileToString(filters_path, &raw_filters_text)) {
-      for (const std::string& line :
-           base::SplitString(raw_filters_text, "\n", base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_ALL)) {
-        if (base::StartsWith(line, kAllowOptEmptyStr,
-                             base::CompareCase::SENSITIVE)) {
-          filters.emplace_back(
-              line.substr(strlen(kAllowOptEmptyStr)),
-              AccessibilityTreeFormatter::PropertyFilter::ALLOW_EMPTY);
-        } else if (base::StartsWith(line, kAllowOptStr,
-                                    base::CompareCase::SENSITIVE)) {
-          filters.emplace_back(
-              line.substr(strlen(kAllowOptStr)),
-              AccessibilityTreeFormatter::PropertyFilter::ALLOW);
-        } else if (base::StartsWith(line, kDenyOptStr,
-                                    base::CompareCase::SENSITIVE)) {
-          filters.emplace_back(
-              line.substr(strlen(kDenyOptStr)),
-              AccessibilityTreeFormatter::PropertyFilter::DENY);
-        }
-      }
-    }
-  }
-  if (filters.empty()) {
-    filters = {AccessibilityTreeFormatter::PropertyFilter(
+  if (filters_path.empty()) {
+    return {AccessibilityTreeFormatter::PropertyFilter(
         "*", AccessibilityTreeFormatter::PropertyFilter::ALLOW)};
   }
 
+  std::string raw_filters_text;
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  if (!base::ReadFileToString(filters_path, &raw_filters_text)) {
+    LOG(ERROR) << "Failed to open filters file " << filters_path
+               << ". Note: path traversal components ('..') are not allowed "
+                  "for security reasons";
+    return {};
+  }
+
+  std::vector<AccessibilityTreeFormatter::PropertyFilter> filters;
+  for (const std::string& line :
+       base::SplitString(raw_filters_text, "\n", base::TRIM_WHITESPACE,
+                         base::SPLIT_WANT_ALL)) {
+    if (base::StartsWith(line, kAllowOptEmptyStr,
+                         base::CompareCase::SENSITIVE)) {
+      filters.emplace_back(
+          line.substr(strlen(kAllowOptEmptyStr)),
+          AccessibilityTreeFormatter::PropertyFilter::ALLOW_EMPTY);
+    } else if (base::StartsWith(line, kAllowOptStr,
+                                base::CompareCase::SENSITIVE)) {
+      filters.emplace_back(line.substr(strlen(kAllowOptStr)),
+                           AccessibilityTreeFormatter::PropertyFilter::ALLOW);
+    } else if (base::StartsWith(line, kDenyOptStr,
+                                base::CompareCase::SENSITIVE)) {
+      filters.emplace_back(line.substr(strlen(kDenyOptStr)),
+                           AccessibilityTreeFormatter::PropertyFilter::DENY);
+    } else if (!line.empty()) {
+      LOG(ERROR) << "Unrecognized filter instruction at line: " << line;
+      return {};
+    }
+  }
   return filters;
 }
 
