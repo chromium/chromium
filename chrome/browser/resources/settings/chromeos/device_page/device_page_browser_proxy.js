@@ -97,6 +97,9 @@ cr.define('settings', function() {
     /** Initializes the keyboard WebUI handler. */
     initializeKeyboard() {}
 
+    /** Initializes the keyboard update watcher. */
+    initializeKeyboardWatcher() {}
+
     /** Shows the Ash keyboard shortcut viewer. */
     showKeyboardShortcutViewer() {}
 
@@ -214,6 +217,11 @@ cr.define('settings', function() {
     /** @override */
     showKeyboardShortcutViewer() {
       chrome.send('showKeyboardShortcutViewer');
+    }
+
+    /** @override */
+    initializeKeyboardWatcher() {
+      chrome.send('initializeKeyboardWatcher');
     }
 
     /** @override */

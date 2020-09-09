@@ -239,17 +239,26 @@ Polymer({
   /** settings.RouteOriginBehavior override */
   route_: settings.routes.MANAGE_ACCESSIBILITY,
 
+  /** @private {?settings.DevicePageBrowserProxy} */
+  deviceBrowserProxy_: null,
+
+  /** @override */
+  created() {
+    this.deviceBrowserProxy_ =
+        settings.DevicePageBrowserProxyImpl.getInstance();
+  },
+
   /** @override */
   attached() {
     this.addWebUIListener(
         'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
     this.addWebUIListener(
         'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
-    settings.DevicePageBrowserProxyImpl.getInstance().initializePointers();
+    this.deviceBrowserProxy_.initializePointers();
 
     this.addWebUIListener(
         'has-hardware-keyboard', this.set.bind(this, 'hasKeyboard_'));
-    chrome.send('initializeKeyboardWatcher');
+    this.deviceBrowserProxy_.initializeKeyboardWatcher();
   },
 
   /** @override */
