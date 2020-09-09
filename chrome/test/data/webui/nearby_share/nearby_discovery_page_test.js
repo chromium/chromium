@@ -124,8 +124,13 @@ suite('DiscoveryPageTest', function() {
     discoveryPageElement.remove();
   });
 
-  test('renders component', function() {
+  test('renders component', async function() {
     assertEquals('NEARBY-DISCOVERY-PAGE', discoveryPageElement.tagName);
+    discoveryPageElement.fire('view-enter-start');
+    await discoveryManager.whenCalled('getSendPreview');
+    assertEquals(
+        discoveryManager.shareDescription,
+        discoveryPageElement.$$('nearby-preview').title);
   });
 
   test('selects share target with success', async function() {

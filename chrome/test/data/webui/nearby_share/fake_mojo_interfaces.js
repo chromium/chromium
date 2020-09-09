@@ -42,6 +42,7 @@ export class FakeConfirmationManagerRemote extends TestBrowserProxy {
 export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
   constructor() {
     super([
+      'getSendPreview',
       'selectShareTarget',
       'startDiscovery',
     ]);
@@ -50,6 +51,21 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
       result: nearbyShare.mojom.SelectShareTargetResult.kOk,
       transferUpdateListener: null,
       confirmationManager: null,
+    };
+    this.shareDescription = 'Test is a test share';
+  }
+
+  /**
+   * @return {!Promise<{sendPreview: !nearbyShare.mojom.SendPreview}>}
+   */
+  async getSendPreview() {
+    this.methodCalled('getSendPreview');
+    return {
+      sendPreview: /** @type {!nearbyShare.mojom.SendPreview} */ ({
+        description: this.shareDescription,
+        fileCount: 0,
+        shareType: 0,
+      }),
     };
   }
 

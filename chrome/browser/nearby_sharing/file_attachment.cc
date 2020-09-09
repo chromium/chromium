@@ -67,3 +67,7 @@ FileAttachment::~FileAttachment() = default;
 void FileAttachment::MoveToShareTarget(ShareTarget& share_target) {
   share_target.file_attachments.push_back(std::move(*this));
 }
+
+const std::string& FileAttachment::GetDescription() const {
+  return file_name_;
+}

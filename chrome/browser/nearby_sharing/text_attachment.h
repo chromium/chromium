@@ -30,6 +30,7 @@ class TextAttachment : public Attachment {
 
   // Attachment:
   void MoveToShareTarget(ShareTarget& share_target) override;
+  const std::string& GetDescription() const override;
 
   void set_text_body(std::string text_body);
 

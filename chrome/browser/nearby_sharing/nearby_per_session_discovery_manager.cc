@@ -9,8 +9,10 @@
 #include "base/bind_helpers.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_confirmation_manager.h"
+#include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -135,6 +137,53 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
   transfer_update_listener_.reset();
   std::move(callback).Run(nearby_share::mojom::SelectShareTargetResult::kError,
                           mojo::NullReceiver(), mojo::NullRemote());
+}
+
+void NearbyPerSessionDiscoveryManager::GetSendPreview(
+    GetSendPreviewCallback callback) {
+  nearby_share::mojom::SendPreviewPtr send_preview =
+      nearby_share::mojom::SendPreview::New();
+  send_preview->file_count = 0;
+  send_preview->share_type = nearby_share::mojom::ShareType::kText;
+  if (attachments_.empty()) {
+    // Return with an empty text attachment.
+    std::move(callback).Run(std::move(send_preview));
+    return;
+  }
+
+  // We have at least 1 attachment, use that one for the default description.
+  auto& attachment = attachments_[0];
+  send_preview->description = attachment->GetDescription();
+
+  // For text we are all done, but for files we have to handle the two cases of
+  // sharing a single file or sharing multiple files.
+  if (attachment->family() == Attachment::Family::kFile) {
+    send_preview->file_count = attachments_.size();
+    if (attachments_.size() > 1) {
+      // For multiple files we don't capture the types.
+      send_preview->share_type = nearby_share::mojom::ShareType::kMultipleFiles;
+    } else {
+      FileAttachment* file_attachment =
+          static_cast<FileAttachment*>(attachment.get());
+      switch (file_attachment->type()) {
+        case FileAttachment::Type::kImage:
+          send_preview->share_type = nearby_share::mojom::ShareType::kImageFile;
+          break;
+        case FileAttachment::Type::kVideo:
+          send_preview->share_type = nearby_share::mojom::ShareType::kVideoFile;
+          break;
+        case FileAttachment::Type::kAudio:
+          send_preview->share_type = nearby_share::mojom::ShareType::kAudioFile;
+          break;
+        default:
+          send_preview->share_type =
+              nearby_share::mojom::ShareType::kUnknownFile;
+          break;
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(send_preview));
 }
 
 void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {

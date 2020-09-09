@@ -46,6 +46,7 @@ class NearbyPerSessionDiscoveryManager
       StartDiscoveryCallback callback) override;
   void SelectShareTarget(const base::UnguessableToken& share_target_id,
                          SelectShareTargetCallback callback) override;
+  void GetSendPreview(GetSendPreviewCallback callback) override;
 
  private:
   // Unregisters this class from the NearbySharingService.

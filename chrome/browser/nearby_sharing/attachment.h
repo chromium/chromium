@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_ATTACHMENT_H_
 
 #include <stdint.h>
+#include <string>
 
 struct ShareTarget;
 
@@ -29,6 +30,7 @@ class Attachment {
   void set_size(int64_t size) { size_ = size; }
 
   virtual void MoveToShareTarget(ShareTarget& share_target) = 0;
+  virtual const std::string& GetDescription() const = 0;
 
  private:
   int64_t id_;

@@ -50,6 +50,15 @@ Polymer({
 
   properties: {
     /**
+     * The description of the attachments
+     * @type {?string}
+     */
+    attachmentsDescription: {
+      type: String,
+      value: null,
+    },
+
+    /**
      * ConfirmationManager interface for the currently selected share target.
      * @type {?nearbyShare.mojom.ConfirmationManagerInterface}
      */
@@ -164,6 +173,11 @@ Polymer({
       this.mojoEventTarget_.onShareTargetLost.addListener(
           this.onShareTargetLost_.bind(this)),
     ];
+
+    getDiscoveryManager().getSendPreview().then(result => {
+      this.attachmentsDescription = result.sendPreview.description;
+      // TODO (vecore): Setup icon and handle case of more than one attachment.
+    });
 
     getDiscoveryManager()
         .startDiscovery(this.mojoEventTarget_.$.bindNewPipeAndPassRemote())
@@ -285,14 +299,5 @@ Polymer({
   /** @private */
   onCancelTap_() {
     this.fire('close');
-  },
-
-  /**
-   * @return {!string} The title of the attachment to be shared.
-   * @private
-   */
-  attachmentTitle_() {
-    // TODO(crbug.com/1123942): Pass attachments to UI.
-    return 'Unknown file';
   },
 });
