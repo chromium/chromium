@@ -71,8 +71,10 @@ constexpr SkColor kNoItemsIndicatorTextColor = SK_ColorWHITE;
 constexpr int kKeyboardPressScrollingDp = 75;
 constexpr int kKeyboardHoldScrollingDp = 15;
 
-void EndOverview() {
-  Shell::Get()->overview_controller()->EndOverview();
+// Tries to end overview. Returns true if overview is successfully ended, or
+// just was not active in the first place.
+bool EndOverview() {
+  return Shell::Get()->overview_controller()->EndOverview();
 }
 
 }  // namespace
@@ -924,6 +926,9 @@ bool OverviewSession::CanProcessEvent(OverviewItem* sender,
 }
 
 void OverviewSession::OnDisplayAdded(const display::Display& display) {
+  if (EndOverview())
+    return;
+  SplitViewController::Get(Shell::GetPrimaryRootWindow())->EndSplitView();
   EndOverview();
 }
 

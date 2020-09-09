@@ -5992,6 +5992,18 @@ TEST_P(SplitViewOverviewSessionTest,
   EXPECT_EQ(minimized_window.get(), window_util::GetActiveWindow());
 }
 
+// Verify no crash (or DCHECK failure) if you exit and re-enter mirror mode
+// while in tablet split view with empty overview.
+TEST_P(SplitViewOverviewSessionTest,
+       ExitAndReenterMirrorModeWithEmptyOverview) {
+  UpdateDisplay("800x600,800x600");
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  ToggleOverview();
+  split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+}
+
 // Test the split view and overview functionalities in clamshell mode. Split
 // view is only active when overview is active in clamshell mode.
 class SplitViewOverviewSessionInClamshellTest
