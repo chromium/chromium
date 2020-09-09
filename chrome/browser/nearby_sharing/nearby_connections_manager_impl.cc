@@ -468,7 +468,7 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
           [](const std::string& endpoint_id, ConnectionsStatus status) {
             NS_LOG(VERBOSE)
                 << __func__ << ": Accept connection attempted to endpoint "
-                << endpoint_id << "over Nearby Connections with result: "
+                << endpoint_id << " over Nearby Connections with result: "
                 << ConnectionsStatusToString(status);
           },
           endpoint_id));

@@ -362,12 +362,12 @@ void NearbyConnections::SendPayload(
     const std::vector<std::string>& endpoint_ids,
     mojom::PayloadPtr payload,
     SendPayloadCallback callback) {
-  std::unique_ptr<Payload> core_payload;
+  Payload core_payload;
   switch (payload->content->which()) {
     case mojom::PayloadContent::Tag::BYTES:
-      core_payload = std::make_unique<Payload>(
-          payload->id,
-          ByteArrayFromMojom(payload->content->get_bytes()->bytes));
+      core_payload =
+          Payload(payload->id,
+                  ByteArrayFromMojom(payload->content->get_bytes()->bytes));
       break;
     case mojom::PayloadContent::Tag::FILE:
       int64_t file_size = payload->content->get_file()->file.GetLength();
@@ -376,12 +376,11 @@ void NearbyConnections::SendPayload(
         input_file_map_.insert_or_assign(
             payload->id, std::move(payload->content->get_file()->file));
       }
-      core_payload = std::make_unique<Payload>(
-          payload->id, InputFile(payload->id, file_size));
+      core_payload = Payload(payload->id, InputFile(payload->id, file_size));
       break;
   }
 
-  core_->SendPayload(absl::MakeSpan(endpoint_ids), std::move(*core_payload),
+  core_->SendPayload(absl::MakeSpan(endpoint_ids), std::move(core_payload),
                      ResultCallbackFromMojom(std::move(callback)));
 }
 
