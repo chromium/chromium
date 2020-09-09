@@ -1095,6 +1095,8 @@ component("ash") {
     "system/phonehub/phone_hub_tray.h",
     "system/phonehub/phone_status_view.cc",
     "system/phonehub/phone_status_view.h",
+    "system/phonehub/quick_actions_view.cc",
+    "system/phonehub/quick_actions_view.h",
     "system/power/backlights_forced_off_setter.cc",
     "system/power/backlights_forced_off_setter.h",
     "system/power/battery_notification.cc",

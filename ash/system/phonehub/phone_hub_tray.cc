@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_status_view.h"
+#include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -61,6 +62,9 @@ class PhoneHubView : public views ::View {
     separator->SetBorder(views::CreateEmptyBorder(
         gfx::Insets(kPaddingBetweenTitleAndSeparator, 0,
                     kMenuSeparatorVerticalPadding, 0)));
+
+    setup_layered_view(
+        bubble_view->AddChildView(std::make_unique<QuickActionsView>()));
   }
   ~PhoneHubView() override = default;
 

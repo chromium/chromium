@@ -947,8 +947,33 @@ This file contains the strings for ash.
         Screenshots
       </message>
 
+      <!-- Phone Hub tray-->
       <message name="IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME" desc="The accessible name of the Phone Hub tray bubble for screen readers.">
         Phone Hub
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_TITLE" desc="Title of the enable hotspot toggle in the phone hub bubble.">
+        Enable Hotspot
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE" desc="Title of the silence phone toggle in the phone hub bubble.">
+        Silence
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE" desc="Title of the locate phone toggle in the phone hub bubble.">
+        Locate Phone
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in phone hube bubble to toggle quick actions feature on or off.">
+        Toggle <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph>. <ph name="STATE_TEXT">$2<ex>Silence is on.</ex></ph>
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ENABLED_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is on.">
+        <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph> is on.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is off.">
+        <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph> is off.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE" desc="Quick actions state in phone hub bubble." meaning="Quick actions feature is off.">
+        Off
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ON_STATE" desc="Quick actions state in phone hub bubble." meaning="Quick actions feature is on.">
+        On
       </message>
 
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
