@@ -10,8 +10,6 @@ static_library("android") {
     "certificate_viewer_android.cc",
     "connection_info_view_android.cc",
     "connection_info_view_android.h",
-    "features.cc",
-    "features.h",
     "page_info_client.cc",
     "page_info_client.h",
     "page_info_controller_android.cc",

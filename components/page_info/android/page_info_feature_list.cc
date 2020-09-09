@@ -6,8 +6,8 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
-#include "components/page_info/android/features.h"
 #include "components/page_info/android/jni_headers/PageInfoFeatureList_jni.h"
+#include "components/page_info/features.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;

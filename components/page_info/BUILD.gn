@@ -4,6 +4,8 @@ if (is_android) {
 
 static_library("page_info") {
   sources = [
+    "features.cc",
+    "features.h",
     "page_info.cc",
     "page_info.h",
     "page_info_delegate.h",
