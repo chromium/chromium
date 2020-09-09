@@ -43,7 +43,7 @@
       base::OnceClosure callback = base::OnceClosure(){##}
     {% endif %});
     {# If the command has no return value, generate a convenience method that #}
-    {# accepts a base::Closure together with the parameters object. #}
+    {# accepts a base::OnceClosure together with the parameters object. #}
     {% if not command.get("returns", []) %}
   void {{method_name}}(std::unique_ptr<{{method_name}}Params> params, const std::string& optional_node_frame_id, base::OnceClosure callback);
     {% endif %}

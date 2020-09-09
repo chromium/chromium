@@ -23,7 +23,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database_backend.h"
 
-using base::Bind;
 using base::Time;
 
 namespace autofill {
@@ -78,7 +77,7 @@ WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
 }
 
 void AutofillWebDataBackendImpl::CommitChanges() {
-  web_database_backend_->ExecuteWriteTask(Bind(&DoNothingAndCommit));
+  web_database_backend_->ExecuteWriteTask(base::BindOnce(&DoNothingAndCommit));
 }
 
 std::unique_ptr<WDTypedResult>

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/check.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
@@ -57,13 +58,12 @@ AutofillWebDataService::AutofillWebDataService(
     : WebDataServiceBase(nullptr, ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
       db_task_runner_(std::move(db_task_runner)),
-      autofill_backend_(new AutofillWebDataBackendImpl(
-          nullptr,
-          ui_task_runner_,
-          db_task_runner_,
-          base::Closure(),
-          base::Closure(),
-          base::Callback<void(syncer::ModelType)>())) {}
+      autofill_backend_(new AutofillWebDataBackendImpl(nullptr,
+                                                       ui_task_runner_,
+                                                       db_task_runner_,
+                                                       base::NullCallback(),
+                                                       base::NullCallback(),
+                                                       base::NullCallback())) {}
 
 void AutofillWebDataService::ShutdownOnUISequence() {
   weak_ptr_factory_.InvalidateWeakPtrs();
