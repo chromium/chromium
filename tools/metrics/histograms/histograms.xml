@@ -192285,7 +192285,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRateRatio" units="units"
-    expires_after="2020-10-18">
+    expires_after="2021-04-18">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
