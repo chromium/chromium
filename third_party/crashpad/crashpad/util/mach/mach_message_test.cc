@@ -158,7 +158,7 @@ TEST(MachMessage, MachMessageDestroyReceivedPort) {
   EXPECT_TRUE(MachMessageDestroyReceivedPort(port, MACH_MSG_TYPE_PORT_SEND));
 }
 
-#if defined(OS_MAC)
+#if !defined(OS_IOS)
 
 TEST(MachMessage, AuditPIDFromMachMessageTrailer) {
   base::mac::ScopedMachReceiveRight port(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
@@ -200,7 +200,7 @@ TEST(MachMessage, AuditPIDFromMachMessageTrailer) {
   EXPECT_EQ(AuditPIDFromMachMessageTrailer(&receive.trailer), getpid());
 }
 
-#endif  // OS_MAC
+#endif  // !OS_IOS
 
 }  // namespace
 }  // namespace test

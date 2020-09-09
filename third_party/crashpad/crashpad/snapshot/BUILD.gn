@@ -232,8 +232,7 @@ static_library("snapshot") {
     ]
   }
 
-  if (current_cpu == "x86" || current_cpu == "x64" ||
-      (crashpad_is_mac && current_cpu == "mac_universal")) {
+  if (current_cpu == "x86" || current_cpu == "x64") {
     sources += [
       "x86/cpuid_reader.cc",
       "x86/cpuid_reader.h",
@@ -262,10 +261,6 @@ static_library("snapshot") {
   }
 
   configs += [ "..:disable_ubsan" ]
-
-  if (crashpad_is_in_fuchsia) {
-    configs += [ "//build/config:Wno-conversion" ]
-  }
 }
 
 # :context is the only part of snapshot that minidump may depend on.
@@ -285,10 +280,6 @@ static_library("context") {
 
   if (crashpad_is_win) {
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
-  }
-
-  if (crashpad_is_in_fuchsia) {
-    configs += [ "//build/config:Wno-conversion" ]
   }
 }
 

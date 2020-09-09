@@ -19,10 +19,6 @@
 
 #include <string>
 
-#include "build/build_config.h"
-
-#if defined(ARCH_CPU_X86_FAMILY)
-
 namespace crashpad {
 namespace internal {
 
@@ -68,7 +64,5 @@ class CpuidReader {
 
 }  // namespace internal
 }  // namespace crashpad
-
-#endif  // ARCH_CPU_X86_FAMILY
 
 #endif  // CRASHPAD_SNAPSHOT_X86_CPUID_READER_H_

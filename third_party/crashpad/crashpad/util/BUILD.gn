@@ -131,15 +131,6 @@ if (crashpad_is_mac || crashpad_is_ios) {
         "--arch",
         "arm64",
       ]
-    } else if (crashpad_is_mac && current_cpu == "mac_universal") {
-      args += [
-        "--arch",
-        "x86_64",
-        "--arch",
-        "arm64",
-      ]
-    } else {
-      assert(false, "Unsupported architecture")
     }
   }
 
@@ -348,8 +339,6 @@ static_library("util") {
       "mac/mac_util.h",
       "mac/service_management.cc",
       "mac/service_management.h",
-      "mac/sysctl.cc",
-      "mac/sysctl.h",
       "mach/bootstrap.cc",
       "mach/bootstrap.h",
       "mach/child_port_handshake.cc",
@@ -623,10 +612,6 @@ static_library("util") {
   }
 
   configs += [ "..:disable_ubsan" ]
-
-  if (crashpad_is_in_fuchsia) {
-    configs += [ "//build/config:Wno-conversion" ]
-  }
 }
 
 if (!crashpad_is_android && !crashpad_is_ios) {
@@ -757,7 +742,6 @@ source_set("util_test") {
       "mac/launchd_test.mm",
       "mac/mac_util_test.mm",
       "mac/service_management_test.mm",
-      "mac/sysctl_test.cc",
       "mach/bootstrap_test.cc",
       "mach/child_port_handshake_test.cc",
       "mach/child_port_server_test.cc",

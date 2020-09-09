@@ -26,7 +26,7 @@
 #include "util/misc/scoped_forbid_return.h"
 #include "util/posix/close_multiple.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX)
 #include <stdio_ext.h>
 #endif
 
@@ -90,7 +90,7 @@ void MultiprocessExec::MultiprocessChild() {
 
   int rv;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX)
   __fpurge(stdin);
 #else
   rv = fpurge(stdin);

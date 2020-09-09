@@ -112,7 +112,9 @@ class TestMachOImageAnnotationsReader final
         break;
 
       case kCrashModuleInitialization:
-        SetExpectedChildTerminationBuiltinTrap();
+        // This crash is triggered by __builtin_trap(), which shows up as
+        // SIGILL.
+        SetExpectedChildTermination(kTerminationSignal, SIGILL);
         break;
 
       case kCrashDyld:
@@ -122,8 +124,7 @@ class TestMachOImageAnnotationsReader final
         // _dyld_fatal_error. This changed in 10.12 to use
         // abort_with_payload(), which appears as SIGABRT to a waiting parent.
         SetExpectedChildTermination(
-            kTerminationSignal,
-            MacOSVersionNumber() < 10'12'00 ? SIGTRAP : SIGABRT);
+            kTerminationSignal, MacOSXMinorVersion() < 12 ? SIGTRAP : SIGABRT);
         break;
     }
   }
@@ -185,8 +186,8 @@ class TestMachOImageAnnotationsReader final
       // Mac OS X 10.6 doesn’t have support for CrashReporter annotations
       // (CrashReporterClient.h), so don’t look for any special annotations in
       // that version.
-      const int macos_version_number = MacOSVersionNumber();
-      if (macos_version_number > 10'07'00) {
+      int mac_os_x_minor_version = MacOSXMinorVersion();
+      if (mac_os_x_minor_version > 7) {
         EXPECT_GE(all_annotations_vector.size(), 1u);
 
         std::string expected_annotation;
@@ -203,7 +204,7 @@ class TestMachOImageAnnotationsReader final
             // exec() occurred. See 10.9.5 Libc-997.90.3/sys/_libc_fork_child.c
             // _libc_fork_child().
             expected_annotation =
-                macos_version_number <= 10'08'00
+                mac_os_x_minor_version <= 8
                     ? "abort() called"
                     : "crashed on child side of fork pre-exec";
             break;

@@ -219,7 +219,7 @@ inline void Assign<UInt64Array4, UInt32Array4>(UInt64Array4* destination,
                                           size_t count,                        \
                                           struct_name<Traits>* specific) {     \
     return process_reader->Memory()->Read(                                     \
-        address, count * sizeof(struct_name<Traits>), specific);               \
+        address, sizeof(struct_name<Traits>[count]), specific);                \
   }                                                                            \
                                                                                \
   } /* namespace internal */                                                   \

@@ -22,7 +22,6 @@
 #include <limits>
 #include <type_traits>
 
-#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/stl_util.h"
@@ -143,10 +142,9 @@ size_t dyld_all_image_infos<Traits>::ExpectedSizeForVersion(
       offsetof(dyld_all_image_infos<Traits>, sharedCacheSlide),  // 11
       offsetof(dyld_all_image_infos<Traits>, sharedCacheUUID),  // 12
       offsetof(dyld_all_image_infos<Traits>, infoArrayChangeTimestamp),  // 13
-      offsetof(dyld_all_image_infos<Traits>, end_v14),  // 14
+      offsetof(dyld_all_image_infos<Traits>, end_14),  // 14
       std::numeric_limits<size_t>::max(),  // 15, see below
-      offsetof(dyld_all_image_infos<Traits>, end_v16),  // 16
-      sizeof(dyld_all_image_infos<Traits>),  // 17
+      sizeof(dyld_all_image_infos<Traits>),  // 16
   };
 
   if (version >= base::size(kSizeForVersion)) {
@@ -162,13 +160,13 @@ size_t dyld_all_image_infos<Traits>::ExpectedSizeForVersion(
     // The revised one in macOS 10.13 grew. It’s safe to assume that the
     // dyld_all_image_infos structure came from the same system that’s now
     // interpreting it, so use an OS version check.
-    const int macos_version_number = MacOSVersionNumber();
-    if (macos_version_number / 1'00 == 10'12) {
-      return offsetof(dyld_all_image_infos<Traits>, end_v14);
+    int mac_os_x_minor_version = MacOSXMinorVersion();
+    if (mac_os_x_minor_version == 12) {
+      return offsetof(dyld_all_image_infos<Traits>, end_14);
     }
 
-    DCHECK_GE(macos_version_number, 10'13'00);
-    DCHECK_LT(macos_version_number, 10'15'00);
+    DCHECK_GE(mac_os_x_minor_version, 13);
+    DCHECK_LE(mac_os_x_minor_version, 14);
     return offsetof(dyld_all_image_infos<Traits>, platform);
   }
 

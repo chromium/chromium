@@ -31,9 +31,9 @@
 #include "util/mach/mach_message.h"
 #include "util/misc/implicit_cast.h"
 
-#if defined(OS_MAC)
+#if !defined(OS_IOS)
 #include "test/mac/mach_multiprocess.h"
-#endif  // OS_MAC
+#endif  // !OS_IOS
 
 namespace crashpad {
 namespace test {
@@ -961,7 +961,7 @@ TEST(ExcServerVariants, MachMessageServerRequestIDs) {
             expect_request_ids);
 }
 
-#if defined(OS_MAC)
+#if !defined(OS_IOS)
 
 class TestExcServerVariants : public MachMultiprocess,
                               public UniversalMachExcServer::Interface {
@@ -975,7 +975,8 @@ class TestExcServerVariants : public MachMultiprocess,
         flavor_(flavor),
         state_count_(state_count),
         handled_(false) {
-    SetExpectedChildTerminationBuiltinTrap();
+    // This is how the __builtin_trap() in MachMultiprocessChild() appears.
+    SetExpectedChildTermination(kTerminationSignal, SIGILL);
   }
 
   // UniversalMachExcServer::Interface:
@@ -1201,7 +1202,7 @@ TEST(ExcServerVariants, ThreadStates) {
   }
 }
 
-#endif  // OS_MAC
+#endif  // !OS_IOS
 
 TEST(ExcServerVariants, ExcServerSuccessfulReturnValue) {
 #if defined(OS_IOS)
@@ -1209,7 +1210,7 @@ TEST(ExcServerVariants, ExcServerSuccessfulReturnValue) {
   const kern_return_t prefer_not_set_thread_state = KERN_SUCCESS;
 #else
   const kern_return_t prefer_not_set_thread_state =
-      MacOSVersionNumber() < 10'11'00 ? MACH_RCV_PORT_DIED : KERN_SUCCESS;
+      MacOSXMinorVersion() < 11 ? MACH_RCV_PORT_DIED : KERN_SUCCESS;
 #endif
 
   const struct {

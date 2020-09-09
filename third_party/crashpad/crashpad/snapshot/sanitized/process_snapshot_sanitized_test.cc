@@ -14,11 +14,8 @@
 
 #include "snapshot/sanitized/process_snapshot_sanitized.h"
 
-#include <string.h>
-
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"
@@ -26,7 +23,7 @@
 #include "util/misc/address_sanitizer.h"
 #include "util/numeric/safe_assignment.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_ANDROID)
 #include <sys/syscall.h>
 
 #include "snapshot/linux/process_snapshot_linux.h"
@@ -101,7 +98,7 @@ void ChildTestFunction() {
   static StringAnnotation<32> non_allowed_annotation(kNonAllowedAnnotationName);
   non_allowed_annotation.Set(kNonAllowedAnnotationValue);
 
-  char string_data[base::size(kSensitiveStackData)];
+  char string_data[strlen(kSensitiveStackData) + 1];
   strcpy(string_data, kSensitiveStackData);
 
   void (*code_pointer)(void) = ChildTestFunction;

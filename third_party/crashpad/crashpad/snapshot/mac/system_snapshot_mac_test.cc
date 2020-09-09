@@ -117,10 +117,8 @@ TEST_F(SystemSnapshotMacTest, OSVersion) {
   std::string build;
   system_snapshot().OSVersion(&major, &minor, &bugfix, &build);
 
-  const int macos_version_number = MacOSVersionNumber();
-  EXPECT_EQ(major * 1'00'00 + minor * 1'00 +
-                (macos_version_number >= 10'12'00 ? bugfix : 0),
-            macos_version_number);
+  EXPECT_EQ(major, 10);
+  EXPECT_EQ(minor, MacOSXMinorVersion());
   EXPECT_FALSE(build.empty());
 }
 
