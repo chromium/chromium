@@ -727,9 +727,12 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the
   // description, it is returned as is.
+  // |is_speculative| indicates whether we are computing a SiteInstance for a
+  // speculative RenderFrameHost or if have already received a response.
   scoped_refptr<SiteInstance> ConvertToSiteInstance(
       const SiteInstanceDescriptor& descriptor,
-      SiteInstanceImpl* candidate_instance);
+      SiteInstanceImpl* candidate_instance,
+      bool is_speculative);
 
   // Returns true if |candidate| is currently on the same web site as
   // |dest_url|. This method is a special case for handling hosted apps in

@@ -1558,8 +1558,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       is_failure, dest_is_restore, dest_is_view_source_mode, should_swap,
       was_server_redirect, is_coop_coep_cross_origin_isolated, is_speculative);
 
-  scoped_refptr<SiteInstance> new_instance =
-      ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
+  scoped_refptr<SiteInstance> new_instance = ConvertToSiteInstance(
+      new_instance_descriptor, candidate_instance, is_speculative);
   SiteInstanceImpl* new_instance_impl =
       static_cast<SiteInstanceImpl*>(new_instance.get());
   DCHECK(IsSiteInstanceCompatibleWithCoopCoepCrossOriginIsolation(
@@ -2000,7 +2000,8 @@ bool RenderFrameHostManager::IsBrowsingInstanceSwapAllowedForPageTransition(
 
 scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
     const SiteInstanceDescriptor& descriptor,
-    SiteInstanceImpl* candidate_instance) {
+    SiteInstanceImpl* candidate_instance,
+    bool is_speculative) {
   SiteInstanceImpl* current_instance = render_frame_host_->GetSiteInstance();
 
   // If we are asked to return a related SiteInstance but the BrowsingInstance
@@ -2030,8 +2031,10 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
   // At this point we know an unrelated site instance must be returned. First
   // check if the candidate matches.
   if (candidate_instance &&
-      candidate_instance->IsCoopCoepCrossOriginIsolated() ==
-          descriptor.is_coop_coep_cross_origin_isolated &&
+      IsSiteInstanceCompatibleWithCoopCoepCrossOriginIsolation(
+          candidate_instance, frame_tree_node_->IsMainFrame(),
+          descriptor.dest_url, descriptor.is_coop_coep_cross_origin_isolated,
+          is_speculative) &&
       !current_instance->IsRelatedSiteInstance(candidate_instance) &&
       candidate_instance->DoesSiteInfoForURLMatch(descriptor.dest_url)) {
     return candidate_instance;

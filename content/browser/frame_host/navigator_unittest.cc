@@ -64,7 +64,8 @@ class NavigatorTest : public RenderViewHostImplTestHarness {
       const SiteInstanceDescriptor& descriptor,
       SiteInstance* candidate_instance) {
     return rfhm->ConvertToSiteInstance(
-        descriptor, static_cast<SiteInstanceImpl*>(candidate_instance));
+        descriptor, static_cast<SiteInstanceImpl*>(candidate_instance),
+        false /* is_speculative */);
   }
 };
 
