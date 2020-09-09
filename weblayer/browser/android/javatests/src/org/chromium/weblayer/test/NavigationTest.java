@@ -838,7 +838,7 @@ public class NavigationTest {
     // This is a regression test for https://crbug.com/1121388.
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
+    @MinWebLayerVersion(85)
     public void testDestroyTabWithModalDialog() throws Exception {
         // Load a page with a form.
         InstrumentationActivity activity =
@@ -891,7 +891,7 @@ public class NavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
+    @MinWebLayerVersion(86)
     public void testDestroyTabInNavigationFailed() throws Throwable {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
         CallbackHelper callbackHelper = new CallbackHelper();
