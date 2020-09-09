@@ -100,13 +100,17 @@
         class$="layout vertical left flex [[computeClass_(topicSource)]]">
       <div id="imageContainer" class$="[[computeClass_(topicSource)]]"
           aria-hidden="true">
-        <img id="image" class$="[[computeClass_(topicSource)]]" actionable
-            src="[[album.url]]" on-click="onImageClick_">
-        </img>
-        <iron-icon icon="os-settings:ic-checked-filled"
-            class$="check [[computeClass_(topicSource)]]"
-            hidden="[[!album.checked]]">
-        </iron-icon>
+        <!-- Only shows the image and icon when the URL is successfully
+             fetched -->
+        <template is="dom-if" if="[[album.url]]">
+          <img id="image" class$="[[computeClass_(topicSource)]]" actionable
+              src="[[album.url]]" on-click="onImageClick_">
+          </img>
+          <iron-icon icon="os-settings:ic-checked-filled"
+              class$="check [[computeClass_(topicSource)]]"
+              hidden="[[!album.checked]]">
+          </iron-icon>
+        </template>
       </div>
 
       <div id="albumInfo" class$="[[computeClass_(topicSource)]]"

@@ -84,7 +84,6 @@ Polymer({
     event.stopPropagation();
   },
 
-
   /**
    * @param {!MouseEvent} event
    * @private
