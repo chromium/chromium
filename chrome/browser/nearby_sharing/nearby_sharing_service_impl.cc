@@ -935,6 +935,8 @@ bool NearbySharingServiceImpl::HasAvailableConnectionMediums() {
 void NearbySharingServiceImpl::AdapterPresentChanged(
     device::BluetoothAdapter* adapter,
     bool present) {
+  NS_LOG(VERBOSE) << "Bluetooth present changed: " << present;
+  InvalidateSurfaceState();
   if (!present)
     StopFastInitiationAdvertising();
 }
@@ -942,6 +944,8 @@ void NearbySharingServiceImpl::AdapterPresentChanged(
 void NearbySharingServiceImpl::AdapterPoweredChanged(
     device::BluetoothAdapter* adapter,
     bool powered) {
+  NS_LOG(VERBOSE) << "Bluetooth powered changed: " << powered;
+  InvalidateSurfaceState();
   if (!powered)
     StopFastInitiationAdvertising();
 }

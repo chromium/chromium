@@ -424,6 +424,18 @@ class NearbySharingServiceImplTest : public testing::Test {
   bool IsBluetoothPresent() { return is_bluetooth_present_; }
   bool IsBluetoothPowered() { return is_bluetooth_powered_; }
 
+  void SetBluetoothIsPresent(bool present) {
+    is_bluetooth_present_ = present;
+    adapter_observer_->AdapterPresentChanged(mock_bluetooth_adapter_.get(),
+                                             present);
+  }
+
+  void SetBluetoothIsPowered(bool powered) {
+    is_bluetooth_powered_ = powered;
+    adapter_observer_->AdapterPoweredChanged(mock_bluetooth_adapter_.get(),
+                                             powered);
+  }
+
   void AddAdapterObserver(device::BluetoothAdapter::Observer* observer) {
     DCHECK(!adapter_observer_);
     adapter_observer_ = observer;
@@ -1113,6 +1125,40 @@ TEST_F(NearbySharingServiceImplTest,
       NearbySharingService::StatusCodes::kError,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       BluetoothBecomesNotPresentStopDiscovering) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+
+  SetBluetoothIsPresent(false);
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  SetBluetoothIsPresent(true);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       BluetoothBecomesNotPoweredStopDiscovering) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+
+  SetBluetoothIsPowered(false);
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  SetBluetoothIsPowered(true);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
 }
 
