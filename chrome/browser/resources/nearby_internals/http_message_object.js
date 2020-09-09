@@ -47,14 +47,17 @@ Polymer({
    */
   rpcToString_(rpc) {
     switch (rpc) {
-      case Rpc.DEVICE:
-        return 'UpdateDevice RPC';
+      case Rpc.CERTIFICATE:
+        return 'ListPublicCertificates RPC';
         break;
       case Rpc.CONTACT:
         return 'ListContactPeople RPC';
         break;
-      case Rpc.CERTIFICATE:
-        return 'ListPublicCertificates RPC';
+      case Rpc.DEVICE:
+        return 'UpdateDevice RPC';
+        break;
+      case Rpc.DEVICE_STATE:
+        return 'GetDeviceState RPC';
         break;
       default:
         break;

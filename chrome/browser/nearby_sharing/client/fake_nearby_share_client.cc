@@ -19,6 +19,20 @@ FakeNearbyShareClient::UpdateDeviceRequest::UpdateDeviceRequest(
 
 FakeNearbyShareClient::UpdateDeviceRequest::~UpdateDeviceRequest() = default;
 
+FakeNearbyShareClient::GetDeviceStateRequest::GetDeviceStateRequest(
+    const nearbyshare::proto::GetDeviceStateRequest& request,
+    GetDeviceStateCallback&& callback,
+    ErrorCallback&& error_callback)
+    : request(request),
+      callback(std::move(callback)),
+      error_callback(std::move(error_callback)) {}
+
+FakeNearbyShareClient::GetDeviceStateRequest::GetDeviceStateRequest(
+    FakeNearbyShareClient::GetDeviceStateRequest&& request) = default;
+
+FakeNearbyShareClient::GetDeviceStateRequest::~GetDeviceStateRequest() =
+    default;
+
 FakeNearbyShareClient::CheckContactsReachabilityRequest::
     CheckContactsReachabilityRequest(
         const nearbyshare::proto::CheckContactsReachabilityRequest& request,
@@ -81,6 +95,14 @@ void FakeNearbyShareClient::UpdateDevice(
     ErrorCallback&& error_callback) {
   update_device_requests_.emplace_back(request, std::move(callback),
                                        std::move(error_callback));
+}
+
+void FakeNearbyShareClient::GetDeviceState(
+    const nearbyshare::proto::GetDeviceStateRequest& request,
+    GetDeviceStateCallback&& callback,
+    ErrorCallback&& error_callback) {
+  get_device_state_requests_.emplace_back(request, std::move(callback),
+                                          std::move(error_callback));
 }
 
 void FakeNearbyShareClient::CheckContactsReachability(

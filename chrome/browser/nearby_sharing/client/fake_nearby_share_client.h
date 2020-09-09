@@ -28,6 +28,17 @@ class FakeNearbyShareClient : public NearbyShareClient {
     UpdateDeviceCallback callback;
     ErrorCallback error_callback;
   };
+  struct GetDeviceStateRequest {
+    GetDeviceStateRequest(
+        const nearbyshare::proto::GetDeviceStateRequest& request,
+        GetDeviceStateCallback&& callback,
+        ErrorCallback&& error_callback);
+    GetDeviceStateRequest(GetDeviceStateRequest&& request);
+    ~GetDeviceStateRequest();
+    nearbyshare::proto::GetDeviceStateRequest request;
+    GetDeviceStateCallback callback;
+    ErrorCallback error_callback;
+  };
   struct CheckContactsReachabilityRequest {
     CheckContactsReachabilityRequest(
         const nearbyshare::proto::CheckContactsReachabilityRequest& request,
@@ -69,6 +80,9 @@ class FakeNearbyShareClient : public NearbyShareClient {
   std::vector<UpdateDeviceRequest>& update_device_requests() {
     return update_device_requests_;
   }
+  std::vector<GetDeviceStateRequest>& get_device_state_requests() {
+    return get_device_state_requests_;
+  }
   std::vector<CheckContactsReachabilityRequest>&
   check_contacts_reachabilty_requests() {
     return check_contacts_reachabilty_requests_;
@@ -88,6 +102,9 @@ class FakeNearbyShareClient : public NearbyShareClient {
   void UpdateDevice(const nearbyshare::proto::UpdateDeviceRequest& request,
                     UpdateDeviceCallback&& callback,
                     ErrorCallback&& error_callback) override;
+  void GetDeviceState(const nearbyshare::proto::GetDeviceStateRequest& request,
+                      GetDeviceStateCallback&& callback,
+                      ErrorCallback&& error_callback) override;
   void CheckContactsReachability(
       const nearbyshare::proto::CheckContactsReachabilityRequest& request,
       CheckContactsReachabilityCallback&& callback,
@@ -103,6 +120,7 @@ class FakeNearbyShareClient : public NearbyShareClient {
   std::string GetAccessTokenUsed() override;
 
   std::vector<UpdateDeviceRequest> update_device_requests_;
+  std::vector<GetDeviceStateRequest> get_device_state_requests_;
   std::vector<CheckContactsReachabilityRequest>
       check_contacts_reachabilty_requests_;
   std::vector<ListContactPeopleRequest> list_contact_people_requests_;

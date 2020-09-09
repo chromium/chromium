@@ -53,5 +53,9 @@ base::Value UpdateDeviceResponseToReadableDictionary(
     const nearbyshare::proto::UpdateDeviceResponse& response);
 base::Value EncryptedMetadataToReadableDictionary(
     const nearbyshare::proto::EncryptedMetadata& data);
+base::Value GetDeviceStateRequestToReadableDictionary(
+    const nearbyshare::proto::GetDeviceStateRequest& request);
+base::Value GetDeviceStateResponseToReadableDictionary(
+    const nearbyshare::proto::GetDeviceStateResponse& response);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOGGING_PROTO_TO_DICTIONARY_CONVERSION_H_

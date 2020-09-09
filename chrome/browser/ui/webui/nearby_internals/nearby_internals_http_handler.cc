@@ -24,15 +24,13 @@ namespace {
 enum class Rpc {
   kCertificate = 0,
   kContact = 1,
-  kDevice = 2
+  kDevice = 2,
+  kDeviceState = 3
 };
 
 // This enum class needs to stay in sync with the Direction definition in
 // chrome/browser/resources/nearby_internals/types.js.
-enum class Direction {
-  kRequest = 0,
-  kResponse = 1
-};
+enum class Direction { kRequest = 0, kResponse = 1 };
 
 std::string FormatAsJSON(const base::Value& value) {
   std::string json;
@@ -160,6 +158,22 @@ void NearbyInternalsHttpHandler::OnUpdateDeviceResponse(
                     HttpMessageToDictionary(
                         UpdateDeviceResponseToReadableDictionary(response),
                         Direction::kResponse, Rpc::kDevice));
+}
+
+void NearbyInternalsHttpHandler::OnGetDeviceStateRequest(
+    const nearbyshare::proto::GetDeviceStateRequest& request) {
+  FireWebUIListener(kHttpMessageAdded,
+                    HttpMessageToDictionary(
+                        GetDeviceStateRequestToReadableDictionary(request),
+                        Direction::kRequest, Rpc::kDeviceState));
+}
+
+void NearbyInternalsHttpHandler::OnGetDeviceStateResponse(
+    const nearbyshare::proto::GetDeviceStateResponse& response) {
+  FireWebUIListener(kHttpMessageAdded,
+                    HttpMessageToDictionary(
+                        GetDeviceStateResponseToReadableDictionary(response),
+                        Direction::kResponse, Rpc::kDeviceState));
 }
 
 void NearbyInternalsHttpHandler::OnListContactPeopleRequest(

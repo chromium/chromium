@@ -29,6 +29,18 @@ void NearbyShareHttpNotifier::NotifyOfResponse(
 }
 
 void NearbyShareHttpNotifier::NotifyOfRequest(
+    const nearbyshare::proto::GetDeviceStateRequest& request) {
+  for (auto& observer : observers_)
+    observer.OnGetDeviceStateRequest(request);
+}
+
+void NearbyShareHttpNotifier::NotifyOfResponse(
+    const nearbyshare::proto::GetDeviceStateResponse& response) {
+  for (auto& observer : observers_)
+    observer.OnGetDeviceStateResponse(response);
+}
+
+void NearbyShareHttpNotifier::NotifyOfRequest(
     const nearbyshare::proto::ListContactPeopleRequest& request) {
   for (auto& observer : observers_)
     observer.OnListContactPeopleRequest(request);

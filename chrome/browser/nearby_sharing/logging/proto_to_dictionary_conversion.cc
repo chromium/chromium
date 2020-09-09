@@ -255,3 +255,17 @@ base::Value EncryptedMetadataToReadableDictionary(
   dict.SetStringKey("obfuscated_gaia_id", data.obfuscated_gaia_id());
   return dict;
 }
+
+base::Value GetDeviceStateRequestToReadableDictionary(
+    const nearbyshare::proto::GetDeviceStateRequest& request) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("parent", request.parent());
+  return dict;
+}
+
+base::Value GetDeviceStateResponseToReadableDictionary(
+    const nearbyshare::proto::GetDeviceStateResponse& response) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey("are_contacts_changed", response.are_contacts_changed());
+  return dict;
+}

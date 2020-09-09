@@ -35,7 +35,8 @@ export let LogMessage;
 export const Rpc = {
   CERTIFICATE: 0,
   CONTACT: 1,
-  DEVICE: 2
+  DEVICE: 2,
+  DEVICE_STATE: 3
 };
 
 /**

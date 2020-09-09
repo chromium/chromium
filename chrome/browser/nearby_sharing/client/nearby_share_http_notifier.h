@@ -22,6 +22,10 @@ class NearbyShareHttpNotifier {
         const nearbyshare::proto::UpdateDeviceRequest& request) = 0;
     virtual void OnUpdateDeviceResponse(
         const nearbyshare::proto::UpdateDeviceResponse& response) = 0;
+    virtual void OnGetDeviceStateRequest(
+        const nearbyshare::proto::GetDeviceStateRequest& request) = 0;
+    virtual void OnGetDeviceStateResponse(
+        const nearbyshare::proto::GetDeviceStateResponse& response) = 0;
     virtual void OnListContactPeopleRequest(
         const nearbyshare::proto::ListContactPeopleRequest& request) = 0;
     virtual void OnListContactPeopleResponse(
@@ -49,6 +53,8 @@ class NearbyShareHttpNotifier {
   // Sends |request| to all observers.
   void NotifyOfRequest(const nearbyshare::proto::UpdateDeviceRequest& request);
   void NotifyOfRequest(
+      const nearbyshare::proto::GetDeviceStateRequest& request);
+  void NotifyOfRequest(
       const nearbyshare::proto::CheckContactsReachabilityRequest& request);
   void NotifyOfRequest(
       const nearbyshare::proto::ListContactPeopleRequest& request);
@@ -58,6 +64,8 @@ class NearbyShareHttpNotifier {
   // Sends |response| to all observers.
   void NotifyOfResponse(
       const nearbyshare::proto::UpdateDeviceResponse& response);
+  void NotifyOfResponse(
+      const nearbyshare::proto::GetDeviceStateResponse& response);
   void NotifyOfResponse(
       const nearbyshare::proto::ListContactPeopleResponse& response);
   void NotifyOfResponse(
