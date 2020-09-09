@@ -77,7 +77,6 @@ crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_FourColors_Rot_18
 crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_FourColors_Rot_270 [ Skip ]
 crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_FourColors_Rot_90 [ Skip ]
 crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_VP8_Incompatible_Stride [ Skip ]
 crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_VP9 [ Skip ]
 crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_VP9_DXVA [ Skip ]
 
@@ -363,7 +362,6 @@ crbug.com/1021566 [ use-skia-dawn skia-renderer ] Pixel_Video_MP4_FourColors_Asp
 crbug.com/1021566 [ use-skia-dawn skia-renderer ] Pixel_Video_MP4_FourColors_Rot_180 [ Skip ]
 crbug.com/1021566 [ use-skia-dawn skia-renderer ] Pixel_Video_MP4_FourColors_Rot_270 [ Skip ]
 crbug.com/1021566 [ use-skia-dawn skia-renderer ] Pixel_Video_MP4_FourColors_Rot_90 [ Skip ]
-crbug.com/1021566 [ use-skia-dawn ] Pixel_Video_VP8_Incompatible_Stride [ Skip ]
 crbug.com/1021566 [ use-skia-dawn ] Pixel_Video_VP9 [ Skip ]
 crbug.com/1021566 [ use-skia-dawn ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1021566 [ use-skia-dawn ] Pixel_WebGLGreenTriangle_AA_Alpha [ Skip ]
