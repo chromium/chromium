@@ -174,4 +174,5 @@ blink_modules_sources("webgl") {
 
   public_deps = [ "//device/vr/public/mojom:mojom_blink" ]
   deps = [ "//third_party/blink/renderer/modules/xr:xr" ]
+  allow_circular_includes_from = deps
 }

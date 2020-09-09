@@ -109,4 +109,6 @@ blink_modules_sources("xr") {
     "//device/vr/public/mojom:mojom_blink",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+
+  public_deps = [ "//third_party/blink/renderer/modules/gamepad:gamepad" ]
 }

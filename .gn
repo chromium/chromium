@@ -262,7 +262,6 @@ no_check_targets = [
   "//third_party/blink/renderer/modules/service_worker:*",  # 23 errors
   "//third_party/blink/renderer/modules/webcodecs:*",  # 13 errors
   "//third_party/blink/renderer/modules/webtransport:*",  # 16 errors
-  "//third_party/blink/renderer/modules/xr:*",  # 13 errors
   "//third_party/blink/renderer/modules:*",  # 321 errors
   "//third_party/blink/renderer/platform/heap:*",  # 65 errors
   "//third_party/blink/renderer/platform/instrumentation:*",  # 13 errors
