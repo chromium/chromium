@@ -361,19 +361,12 @@ id<GREYMatcher> SearchIconButton() {
 }
 
 - (void)verifyEmptyBackgroundAppears {
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kTableViewIllustratedEmptyViewID)]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                            IDS_IOS_BOOKMARK_EMPTY_MESSAGE))]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID(kBookmarkEmptyStateExplanatoryLabelIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  id<GREYMatcher> emptyBackground =
+      grey_accessibilityID([ChromeEarlGrey isIllustratedEmptyStatesEnabled]
+                               ? kTableViewIllustratedEmptyViewID
+                               : kBookmarkEmptyStateExplanatoryLabelIdentifier);
+  [[EarlGrey selectElementWithMatcher:emptyBackground]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)verifyEmptyState {

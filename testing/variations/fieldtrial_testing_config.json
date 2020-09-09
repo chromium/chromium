@@ -3379,22 +3379,6 @@
             ]
         }
     ],
-    "IllustratedEmptyStates": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IllustratedEmptyStates"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
     "IncludeBetaForumMenuItem": [
         {
             "platforms": [
