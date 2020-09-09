@@ -21723,6 +21723,7 @@ Called by update_document_policy_enum.py.-->
   <int value="782" label="LookalikeWarningAllowlistDomains"/>
   <int value="783" label="PrintingAPIExtensionsAllowlist"/>
   <int value="784" label="QuickUnlockModeAllowlist"/>
+  <int value="785" label="AttestationExtensionAllowlist"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

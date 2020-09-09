@@ -42,7 +42,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
       api_epk::ChallengeMachineKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
   // TODO(https://crbug.com/1113443): This implementation needs to check if the
-  // extension is allowlisted via the AttestationExtensionWhitelist policy.
+  // extension is allowlisted via the AttestationExtensionAllowlist policy.
   auto c = base::BindOnce(
       &EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKeyLacros,
       this);

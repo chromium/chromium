@@ -160,21 +160,21 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
   base::ListValue args_;
 };
 
-TEST_F(EPKChallengeMachineKeyTest, ExtensionNotWhitelisted) {
-  base::ListValue empty_whitelist;
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, empty_whitelist);
+TEST_F(EPKChallengeMachineKeyTest, ExtensionNotAllowed) {
+  base::ListValue empty_allowlist;
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
   EXPECT_EQ(chromeos::attestation::TpmChallengeKeyResult::
-                kExtensionNotWhitelistedErrorMsg,
+                kExtensionNotAllowedErrorMsg,
             RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
 }
 
 TEST_F(EPKChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::Value whitelist(base::Value::Type::LIST);
-  whitelist.Append(extension_->id());
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, whitelist);
+  base::Value allowlist(base::Value::Type::LIST);
+  allowlist.Append(extension_->id());
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   std::unique_ptr<base::Value> value(
       RunFunctionAndReturnSingleResult(func_.get(), CreateArgs(), browser()));
@@ -187,9 +187,9 @@ TEST_F(EPKChallengeMachineKeyTest, Success) {
 TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   SetMockTpmChallenger();
 
-  base::ListValue whitelist;
-  whitelist.AppendString(extension_->id());
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, whitelist);
+  base::ListValue allowlist;
+  allowlist.AppendString(extension_->id());
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   EXPECT_CALL(*mock_tpm_challenge_key_, BuildResponse)
       .WillOnce(Invoke(FakeRunCheckNotRegister));
@@ -231,12 +231,12 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
   scoped_refptr<EnterprisePlatformKeysChallengeUserKeyFunction> func_;
 };
 
-TEST_F(EPKChallengeUserKeyTest, ExtensionNotWhitelisted) {
-  base::ListValue empty_whitelist;
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, empty_whitelist);
+TEST_F(EPKChallengeUserKeyTest, ExtensionNotAllowed) {
+  base::ListValue empty_allowlist;
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
   EXPECT_EQ(chromeos::attestation::TpmChallengeKeyResult::
-                kExtensionNotWhitelistedErrorMsg,
+                kExtensionNotAllowedErrorMsg,
             RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
 }
 

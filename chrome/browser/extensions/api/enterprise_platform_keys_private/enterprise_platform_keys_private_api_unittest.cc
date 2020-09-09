@@ -90,22 +90,22 @@ class EPKPChallengeMachineKeyTest : public EPKPChallengeKeyTestBase {
 // Base 64 encoding of 'challenge'.
 const char EPKPChallengeMachineKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\"]";
 
-TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotWhitelisted) {
-  base::ListValue empty_whitelist;
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, empty_whitelist);
+TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowed) {
+  base::ListValue empty_allowlist;
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
   EXPECT_EQ(
       chromeos::attestation::TpmChallengeKeyResult::
-          kExtensionNotWhitelistedErrorMsg,
+          kExtensionNotAllowedErrorMsg,
       utils::RunFunctionAndReturnError(func_.get(), kFuncArgs, browser()));
 }
 
 TEST_F(EPKPChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::ListValue whitelist;
-  whitelist.AppendString(extension_->id());
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, whitelist);
+  base::ListValue allowlist;
+  allowlist.AppendString(extension_->id());
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
@@ -130,22 +130,22 @@ class EPKPChallengeUserKeyTest : public EPKPChallengeKeyTestBase {
 // Base 64 encoding of 'challenge', register_key required.
 const char EPKPChallengeUserKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\", true]";
 
-TEST_F(EPKPChallengeUserKeyTest, ExtensionNotWhitelisted) {
-  base::ListValue empty_whitelist;
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, empty_whitelist);
+TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowed) {
+  base::ListValue empty_allowlist;
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
   EXPECT_EQ(
       chromeos::attestation::TpmChallengeKeyResult::
-          kExtensionNotWhitelistedErrorMsg,
+          kExtensionNotAllowedErrorMsg,
       utils::RunFunctionAndReturnError(func_.get(), kFuncArgs, browser()));
 }
 
 TEST_F(EPKPChallengeUserKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::ListValue whitelist;
-  whitelist.AppendString(extension_->id());
-  prefs_->Set(prefs::kAttestationExtensionWhitelist, whitelist);
+  base::ListValue allowlist;
+  allowlist.AppendString(extension_->id());
+  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));

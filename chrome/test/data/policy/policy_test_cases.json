@@ -4599,6 +4599,21 @@
     ]
   },
 
+  "AttestationExtensionAllowlist": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {
+          "AttestationExtensionAllowlist": [
+            "test_ext_id1",
+            "test_ext_id2"
+          ]
+        },
+        "prefs": { "attestation.extension_allowlist": {} }
+      }
+    ]
+  },
+
   "AttestationExtensionWhitelist": {
     "os": ["chromeos"],
     "policy_pref_mapping_test": [
@@ -4609,7 +4624,7 @@
             "test_ext_id2"
           ]
         },
-        "prefs": { "attestation.extension_whitelist": {} }
+        "prefs": { "attestation.extension_allowlist": {} }
       }
     ]
   },

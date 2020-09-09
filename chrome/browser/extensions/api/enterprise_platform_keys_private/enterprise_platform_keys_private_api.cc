@@ -33,11 +33,11 @@ EPKPChallengeKey::~EPKPChallengeKey() = default;
 
 void EPKPChallengeKey::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kAttestationExtensionWhitelist);
+  registry->RegisterListPref(prefs::kAttestationExtensionAllowlist);
 }
 
-// Check if the extension is whitelisted in the user policy.
-bool EPKPChallengeKey::IsExtensionWhitelisted(
+// Check if the extension is allowisted in the user policy.
+bool EPKPChallengeKey::IsExtensionAllowed(
     Profile* profile,
     scoped_refptr<const Extension> extension) {
   if (!chromeos::ProfileHelper::Get()->GetUserByProfile(profile)) {
@@ -48,11 +48,11 @@ bool EPKPChallengeKey::IsExtensionWhitelisted(
   }
   if (Manifest::IsComponentLocation(extension->location())) {
     // Note: For this to even be called, the component extension must also be
-    // whitelisted in chrome/common/extensions/api/_permission_features.json
+    // allowed in chrome/common/extensions/api/_permission_features.json
     return true;
   }
   const base::ListValue* list =
-      profile->GetPrefs()->GetList(prefs::kAttestationExtensionWhitelist);
+      profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
   base::Value value(extension->id());
   return list->Find(value) != list->end();
 }
@@ -65,11 +65,11 @@ void EPKPChallengeKey::Run(
     bool register_key) {
   Profile* profile = ChromeExtensionFunctionDetails(caller.get()).GetProfile();
 
-  if (!IsExtensionWhitelisted(profile, caller->extension())) {
+  if (!IsExtensionAllowed(profile, caller->extension())) {
     std::move(callback).Run(
         chromeos::attestation::TpmChallengeKeyResult::MakeError(
             chromeos::attestation::TpmChallengeKeyResultCode::
-                kExtensionNotWhitelistedError));
+                kExtensionNotAllowedError));
     return;
   }
 

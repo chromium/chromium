@@ -26,7 +26,7 @@ namespace extensions {
 
 class EPKPChallengeKey {
  public:
-  static const char kExtensionNotWhitelistedError[];
+  static const char kExtensionNotAllowedError[];
   static const char kChallengeBadBase64Error[];
   EPKPChallengeKey();
   EPKPChallengeKey(const EPKPChallengeKey&) = delete;
@@ -44,9 +44,9 @@ class EPKPChallengeKey {
            bool register_key);
 
  private:
-  // Check if the extension is whitelisted in the user policy.
-  bool IsExtensionWhitelisted(Profile* profile,
-                              scoped_refptr<const Extension> extension);
+  // Check if the extension is allowed in the user policy.
+  bool IsExtensionAllowed(Profile* profile,
+                          scoped_refptr<const Extension> extension);
 
   std::unique_ptr<chromeos::attestation::TpmChallengeKey> impl_;
 };

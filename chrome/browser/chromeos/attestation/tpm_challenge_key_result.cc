@@ -54,7 +54,7 @@ const char TpmChallengeKeyResult::kTimeoutErrorMsg[] =
     "Device web based attestation failed with timeout error.";
 const char TpmChallengeKeyResult::kDeviceWebBasedAttestationUrlErrorMsg[] =
     "Device web based attestation is not enabled for the provided URL.";
-const char TpmChallengeKeyResult::kExtensionNotWhitelistedErrorMsg[] =
+const char TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg[] =
     "The extension does not have permission to call this function.";
 const char TpmChallengeKeyResult::kChallengeBadBase64ErrorMsg[] =
     "Challenge is not base64 encoded.";
@@ -128,8 +128,8 @@ const char* TpmChallengeKeyResult::GetErrorMessage() const {
       return kTimeoutErrorMsg;
     case TpmChallengeKeyResultCode::kDeviceWebBasedAttestationUrlError:
       return kDeviceWebBasedAttestationUrlErrorMsg;
-    case TpmChallengeKeyResultCode::kExtensionNotWhitelistedError:
-      return kExtensionNotWhitelistedErrorMsg;
+    case TpmChallengeKeyResultCode::kExtensionNotAllowedError:
+      return kExtensionNotAllowedErrorMsg;
     case TpmChallengeKeyResultCode::kChallengeBadBase64Error:
       return kChallengeBadBase64ErrorMsg;
     case TpmChallengeKeyResultCode::kDeviceWebBasedAttestationNotOobeError:

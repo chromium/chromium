@@ -695,6 +695,7 @@
       'policies': [
         'AttestationEnabledForDevice',
         'AttestationEnabledForUser',
+        'AttestationExtensionAllowlist',
         'AttestationExtensionWhitelist',
         'AttestationForContentProtectionEnabled',
         'DeviceWebBasedAttestationAllowedUrls',
@@ -12987,6 +12988,27 @@
           If it is set to false, or if it is not set, calls to the API will fail with an error code.''',
     },
     {
+      'name': 'AttestationExtensionAllowlist',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'supported_on': ['chrome_os:87-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['ghdilpkmfbfdnomkmaiogjhjnggaggoi'],
+      'id': 785,
+      'caption': '''Extensions allowed to to use the remote attestation API''',
+      'tags': [],
+      'desc': '''This policy specifies the allowed extensions to use the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> functions for remote attestation. Extensions must be added to this list to use the API.
+
+          If an extension is not in the list, or the list is not set, the call to the API will fail with an error code.''',
+    },
+    {
       'name': 'AttestationExtensionWhitelist',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'list',
@@ -12995,6 +13017,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:28-'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -13005,7 +13028,9 @@
       'tags': [],
       'desc': '''This policy specifies the allowed extensions to use the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> function <ph name="CHALLENGE_USER_KEY_FUNCTION">chrome.enterprise.platformKeys.challengeUserKey()</ph> for remote attestation. Extensions must be added to this list to use the API.
 
-          If an extension is not in the list, or the list is not set, the call to the API will fail with an error code.''',
+          If an extension is not in the list, or the list is not set, the call to the API will fail with an error code.
+
+          This policy is deprecated, please use <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME">AttestationExtensionAllowlist</ph> instead.''',
     },
     {
       'name': 'AttestationForContentProtectionEnabled',
@@ -23854,6 +23879,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
       'policies': [
         'AttestationEnabledForDevice',
         'AttestationEnabledForUser',
+        'AttestationExtensionAllowlist',
         'AttestationExtensionWhitelist',
         'AttestationForContentProtectionEnabled',
       ],
@@ -24124,6 +24150,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 784,
+  'highest_id_currently_used': 785,
   'highest_atomic_group_id_currently_used': 40
 }

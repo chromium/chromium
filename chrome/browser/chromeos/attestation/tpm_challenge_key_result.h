@@ -30,7 +30,7 @@ enum class TpmChallengeKeyResultCode {
   kAttestationUnsupportedError = 12,
   kTimeoutError = 13,
   kDeviceWebBasedAttestationUrlError = 14,
-  kExtensionNotWhitelistedError = 15,
+  kExtensionNotAllowedError = 15,
   kChallengeBadBase64Error = 16,
   kDeviceWebBasedAttestationNotOobeError = 17,
   kGetPublicKeyFailedError = 18,
@@ -58,7 +58,7 @@ struct TpmChallengeKeyResult {
   static const char kAttestationUnsupportedErrorMsg[];
   static const char kTimeoutErrorMsg[];
   static const char kDeviceWebBasedAttestationUrlErrorMsg[];
-  static const char kExtensionNotWhitelistedErrorMsg[];
+  static const char kExtensionNotAllowedErrorMsg[];
   static const char kChallengeBadBase64ErrorMsg[];
   static const char kDeviceWebBasedAttestationNotOobeErrorMsg[];
   static const char kGetPublicKeyFailedErrorMsg[];

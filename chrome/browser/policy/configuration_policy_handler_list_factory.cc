@@ -1640,9 +1640,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::move(screen_lock_legacy_policies),
       std::make_unique<ScreenLockDelayPolicyHandler>(chrome_schema)));
 
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kAttestationExtensionWhitelist,
-      prefs::kAttestationExtensionWhitelist, false));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kAttestationExtensionAllowlist,
+          prefs::kAttestationExtensionAllowlist, false),
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kAttestationExtensionWhitelist,
+          prefs::kAttestationExtensionAllowlist, false)));
 
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(key::kQuickUnlockModeAllowlist,
