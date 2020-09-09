@@ -104,14 +104,6 @@ class CrostiniImpl {
     } else {
       this.shared_paths_[url] = [vmName];
     }
-
-    // Record UMA.
-    const root = this.getRoot_(entry);
-    const suffix = CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE.get(root) ||
-        CrostiniImpl.UMA_ROOT_TYPE_OTHER;
-    metrics.recordSmallCount(
-        'CrostiniSharedPaths.Depth.' + suffix,
-        entry.fullPath.split('/').length - 1);
   }
 
   /**
@@ -274,9 +266,3 @@ CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE = new Map([
   [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
   [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
 ]);
-
-/**
- * @private {string}
- * @const
- */
-CrostiniImpl.UMA_ROOT_TYPE_OTHER = 'Other';
