@@ -6,8 +6,8 @@ module prerender.mojom;
 
 enum PrerenderMode {
   // Neither prefetch nor prerender.
-  kNoPrerender = 0,
+  kNoPrerender,
 
   // Prefetch some network resources to warm up the cache.
-  kPrefetchOnly = 2,
+  kPrefetchOnly,
 };

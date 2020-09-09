@@ -60,7 +60,7 @@ class PrerenderHelper
   void OnThrottleDestroyed();
   void SendPrefetchFinished();
 
-  prerender::mojom::PrerenderMode prerender_mode_;
+  const prerender::mojom::PrerenderMode prerender_mode_;
   std::string histogram_prefix_;
 
   // Pending requests for this frame..
