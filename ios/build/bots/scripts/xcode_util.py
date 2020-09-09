@@ -20,9 +20,14 @@ def select(xcode_app_path):
       '-s',
       xcode_app_path,
   ]
-  LOGGER.debug("Selecting XCode with command: %s" % cmd)
-
+  LOGGER.debug('Selecting XCode with command: %s and "xcrun simctl list".' % cmd)
   output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+
+  # This is to avoid issues caused by mixed usage of different Xcode versions on
+  # one machine.
+  xcrun_simctl_cmd = ['xcrun', 'simctl', 'list']
+  output += subprocess.check_output(xcrun_simctl_cmd, stderr=subprocess.STDOUT)
+
   return output
 
 
