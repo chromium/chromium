@@ -203,11 +203,7 @@ TEST_P(LayerTreeHostReadbackPixelTest, ReadbackSmallNonRootLayerWithChild) {
       base::FilePath(FILE_PATH_LITERAL("green_small_with_blue_corner.png")));
 }
 
-using LayerTreeHostReadbackPixelTestMaybeVulkan =
-    LayerTreeHostReadbackPixelTest;
-
-TEST_P(LayerTreeHostReadbackPixelTestMaybeVulkan,
-       ReadbackSubtreeSurroundsTargetLayer) {
+TEST_P(LayerTreeHostReadbackPixelTest, ReadbackSubtreeSurroundsTargetLayer) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(0, 0, 200, 200), SK_ColorWHITE);
 
@@ -394,7 +390,7 @@ TEST_P(LayerTreeHostReadbackPixelTest, ReadbackNonRootLayerOutsideViewport) {
       base::FilePath(FILE_PATH_LITERAL("green_with_blue_corner.png")));
 }
 
-TEST_P(LayerTreeHostReadbackPixelTestMaybeVulkan, ReadbackNonRootOrFirstLayer) {
+TEST_P(LayerTreeHostReadbackPixelTest, ReadbackNonRootOrFirstLayer) {
   // This test has 3 render passes with the copy request on the render pass in
   // the middle. This test caught an issue where copy requests on non-root
   // non-first render passes were being treated differently from the first
@@ -449,28 +445,6 @@ ReadbackTestConfig const kTestConfigs[] = {
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostReadbackPixelTest,
                          ::testing::ValuesIn(kTestConfigs),
-                         ::testing::PrintToStringParamName());
-
-// TODO(crbug.com/974283): These tests are crashing with vulkan when TSan or
-// MSan are used.
-ReadbackTestConfig const kMaybeVulkanTestConfigs[] = {
-    ReadbackTestConfig{viz::RendererType::kSoftware, TestReadBackType::kBitmap},
-    ReadbackTestConfig{viz::RendererType::kGL, TestReadBackType::kTexture},
-    ReadbackTestConfig{viz::RendererType::kGL, TestReadBackType::kBitmap},
-    ReadbackTestConfig{viz::RendererType::kSkiaGL, TestReadBackType::kTexture},
-    ReadbackTestConfig{viz::RendererType::kSkiaGL, TestReadBackType::kBitmap},
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS) && !defined(THREAD_SANITIZER) && \
-    !defined(MEMORY_SANITIZER)
-    ReadbackTestConfig{viz::RendererType::kSkiaVk, TestReadBackType::kBitmap},
-#endif
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    ReadbackTestConfig{viz::RendererType::kSkiaDawn, TestReadBackType::kBitmap},
-#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         LayerTreeHostReadbackPixelTestMaybeVulkan,
-                         ::testing::ValuesIn(kMaybeVulkanTestConfigs),
                          ::testing::PrintToStringParamName());
 
 class LayerTreeHostReadbackDeviceScalePixelTest
