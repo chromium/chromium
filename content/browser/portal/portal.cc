@@ -338,17 +338,30 @@ void Portal::Activate(blink::TransferableMessage data,
                      std::move(data), activation_time, std::move(callback)));
 }
 
+namespace {
+const char* kCrossOriginPostMessageError =
+    "postMessage failed because portal is not same origin with its host";
+}
+
 void Portal::PostMessageToGuest(blink::TransferableMessage message) {
-  if (!IsSameOrigin())
+  if (!IsSameOrigin()) {
+    owner_render_frame_host()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        kCrossOriginPostMessageError);
     return;
+  }
   portal_contents_->GetMainFrame()->ForwardMessageFromHost(
       std::move(message), owner_render_frame_host_->GetLastCommittedOrigin());
 }
 
 void Portal::PostMessageToHost(blink::TransferableMessage message) {
   DCHECK(GetPortalContents());
-  if (!IsSameOrigin())
+  if (!IsSameOrigin()) {
+    portal_contents_->GetMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        kCrossOriginPostMessageError);
     return;
+  }
   client().ForwardMessageFromGuest(
       std::move(message),
       GetPortalContents()->GetMainFrame()->GetLastCommittedOrigin());
