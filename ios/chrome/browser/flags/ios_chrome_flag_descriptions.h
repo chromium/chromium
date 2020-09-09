@@ -302,6 +302,10 @@ extern const char kMarkHttpAsDescription[];
 extern const char kMobileGoogleSRPName[];
 extern const char kMobileGoogleSRPDescription[];
 
+// Title and description for the flag to enable mobile identity consistency.
+extern const char kMobileIdentityConsistencyName[];
+extern const char kMobileIdentityConsistencyDescription[];
+
 // Title and description for the flag to preserve the default match when an
 // async match updates.
 extern const char kOmniboxPreserveDefaultMatchAgainstAsyncUpdateName[];

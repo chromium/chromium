@@ -47,6 +47,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/ios/browser/features.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/sync_base_switches.h"
@@ -687,6 +688,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScreenTimeIntegrationName,
      flag_descriptions::kScreenTimeIntegrationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kScreenTimeIntegration)},
+    {"mobile-identity-consistency",
+     flag_descriptions::kMobileIdentityConsistencyName,
+     flag_descriptions::kMobileIdentityConsistencyDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(signin::kMobileIdentityConsistency)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

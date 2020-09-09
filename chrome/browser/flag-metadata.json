@@ -3102,7 +3102,7 @@
   },
   {
     "name": "mobile-identity-consistency",
-    "owners": [ "bsazonov", "aliceywang", "msarda" ],
+    "owners": [ "bsazonov", "aliceywang", "msarda", "fernandex" ],
     "expiry_milestone": 90
   },
   {

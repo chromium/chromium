@@ -12,4 +12,9 @@ const base::Feature kMobileIdentityConsistency{
     "MobileIdentityConsistency", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_IOS)
+const base::Feature kMobileIdentityConsistency{
+    "MobileIdentityConsistency", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace signin
