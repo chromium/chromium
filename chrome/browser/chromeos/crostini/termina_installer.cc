@@ -43,9 +43,11 @@ void TerminaInstaller::Install(
   if (base::FeatureList::IsEnabled(chromeos::features::kCrostiniUseDlc)) {
     RemoveComponentIfPresent(std::move(remove_callback), uninstall_result_ptr);
     InstallDlc(std::move(callback));
+    dlc_id_ = kCrostiniDlcName;
   } else {
     RemoveDlcIfPresent(std::move(remove_callback), uninstall_result_ptr);
     InstallComponent(std::move(callback));
+    dlc_id_ = base::nullopt;
   }
 }
 
@@ -306,6 +308,11 @@ base::FilePath TerminaInstaller::GetInstallLocation() {
   CHECK(termina_location_)
       << "GetInstallLocation() called while termina not installed";
   return *termina_location_;
+}
+
+base::Optional<std::string> TerminaInstaller::GetDlcId() {
+  CHECK(termina_location_) << "GetDlcId() called while termina not installed";
+  return dlc_id_;
 }
 
 }  // namespace crostini

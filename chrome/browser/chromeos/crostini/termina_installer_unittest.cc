@@ -110,6 +110,7 @@ class TerminaInstallTest : public testing::Test {
 
     EXPECT_EQ(termina_installer_.GetInstallLocation(),
               base::FilePath(dlc_root_path_));
+    EXPECT_EQ(termina_installer_.GetDlcId(), "termina-dlc");
 
     run_loop.Run();
   }
@@ -310,6 +311,7 @@ TEST_F(TerminaComponentInstallTest, InstallComponent) {
   EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
       imageloader::kTerminaComponentName));
   EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
+  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
 }
 
 TEST_F(TerminaComponentInstallTest, InstallComponentOffline) {
@@ -336,6 +338,7 @@ TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalled) {
       imageloader::kTerminaComponentName));
   CheckDlcNotInstalled();
   EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
+  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
 }
 
 TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalledError) {
@@ -350,6 +353,7 @@ TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalledError) {
   EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
       imageloader::kTerminaComponentName));
   EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
+  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
 }
 
 TEST_F(TerminaComponentInstallTest, LoadComponentAlreadyInstalled) {

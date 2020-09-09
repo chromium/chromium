@@ -1181,6 +1181,10 @@ void CrostiniManager::StartTerminaVm(std::string name,
   }
 
   vm_tools::concierge::StartVmRequest request;
+  base::Optional<std::string> dlc_id = termina_installer_.GetDlcId();
+  if (dlc_id.has_value()) {
+    request.mutable_vm()->set_dlc_id(*dlc_id);
+  }
   request.set_name(std::move(name));
   request.set_start_termina(true);
   request.set_owner_id(owner_id_);

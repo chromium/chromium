@@ -54,6 +54,9 @@ class TerminaInstaller {
   // get a Success response back before calling this method.
   base::FilePath GetInstallLocation();
 
+  // Get the id of the installed DLC, or nullopt if DLC is not being used.
+  base::Optional<std::string> GetDlcId();
+
  private:
   void InstallDlc(base::OnceCallback<void(InstallResult)> callback);
   void OnInstallDlc(base::OnceCallback<void(InstallResult)> callback,
@@ -80,6 +83,7 @@ class TerminaInstaller {
   bool component_update_check_needed_{true};
 
   base::Optional<base::FilePath> termina_location_{base::nullopt};
+  base::Optional<std::string> dlc_id_{};
   base::WeakPtrFactory<TerminaInstaller> weak_ptr_factory_{this};
 };
 
