@@ -188,21 +188,21 @@ class DeepScanningDialogDelegateBrowserTest
     : public DeepScanningBrowserTestBase,
       public DeepScanningDialogViews::TestObserver {
  public:
-  DeepScanningDialogDelegateBrowserTest() : DeepScanningBrowserTestBase(false) {
+  DeepScanningDialogDelegateBrowserTest() {
     DeepScanningDialogViews::SetObserverForTesting(this);
   }
 
   void EnableUploadsScanningAndReporting() {
     SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
-    SetDlpPolicy(CHECK_UPLOADS);
-    SetMalwarePolicy(SEND_UPLOADS);
-    SetWaitPolicy(DELAY_UPLOADS);
-    SetUnsafeEventsReportingPolicy(true);
+    SetDlpPolicyForConnectors(CHECK_UPLOADS);
+    SetMalwarePolicyForConnectors(SEND_UPLOADS);
+    SetDelayDeliveryUntilVerdictPolicyForConnectors(DELAY_UPLOADS);
+    SetOnSecurityEventReporting(true);
 
     // Add the wildcard pattern to this policy since malware responses are
     // verified for most of these tests.
-    AddUrlToCheckForMalwareOfUploads("*");
+    AddUrlsToCheckForMalwareOfUploadsForConnectors({"*"});
 
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
@@ -471,7 +471,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  SetAllowPasswordProtectedFilesPolicy(allow_password_protected_files());
+  SetAllowPasswordProtectedFilesPolicyForConnectors(
+      allow_password_protected_files());
 
   DeepScanningDialogDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeDeepScanningDialogDelegate::Create));
@@ -566,8 +567,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  SetBlockUnsupportedFileTypesPolicy(block_unsupported_file_types());
-  ClearUrlsToCheckForMalwareOfUploads();
+  SetBlockUnsupportedFileTypesPolicyForConnectors(
+      block_unsupported_file_types());
+  ClearUrlsToCheckForMalwareOfUploadsForConnectors();
 
   DeepScanningDialogDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeDeepScanningDialogDelegate::Create));
@@ -662,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  SetBlockLargeFileTransferPolicy(block_large_file_transfer());
+  SetBlockLargeFileTransferPolicyForConnectors(block_large_file_transfer());
 
   DeepScanningDialogDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeDeepScanningDialogDelegate::Create));
@@ -760,7 +762,8 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogDelegateDelayDeliveryUntilVerdictTest,
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  SetWaitPolicy(delay_delivery_until_verdict());
+  SetDelayDeliveryUntilVerdictPolicyForConnectors(
+      delay_delivery_until_verdict());
 
   DeepScanningDialogDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeDeepScanningDialogDelegate::Create));

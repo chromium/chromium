@@ -15,26 +15,14 @@ namespace safe_browsing {
 // used by browser tests should be added to this class.
 class DeepScanningBrowserTestBase : public InProcessBrowserTest {
  public:
-  explicit DeepScanningBrowserTestBase(bool use_legacy_policies = true);
+  DeepScanningBrowserTestBase();
   ~DeepScanningBrowserTestBase() override;
 
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Setters for deep scanning policies.
-  void SetDlpPolicy(CheckContentComplianceValues state);
-  void SetMalwarePolicy(SendFilesForMalwareCheckValues state);
-  void SetWaitPolicy(DelayDeliveryUntilVerdictValues state);
-  void SetAllowPasswordProtectedFilesPolicy(
-      AllowPasswordProtectedFilesValues state);
-  void SetBlockUnsupportedFileTypesPolicy(
-      BlockUnsupportedFiletypesValues state);
-  void SetBlockLargeFileTransferPolicy(BlockLargeFileTransferValues state);
   void SetUnsafeEventsReportingPolicy(bool report);
-  void AddUrlToCheckComplianceOfDownloads(const std::string& url);
-  void AddUrlToCheckForMalwareOfUploads(const std::string& url);
-  void ClearUrlsToCheckComplianceOfDownloads();
-  void ClearUrlsToCheckForMalwareOfUploads();
 
   // Sets up a FakeDeepScanningDialogDelegate to use this class's StatusCallback
   // and EncryptionStatusCallback. Also sets up a test DM token.
@@ -49,13 +37,11 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
   void CallQuitClosure();
 
   // Set what StatusCallback returns.
-  void SetStatusCallbackResponse(DeepScanningClientResponse response);
   void SetStatusCallbackResponse(
       enterprise_connectors::ContentAnalysisResponse response);
 
   // Callbacks used to set up the fake delegate factory.
-  DeepScanningClientResponse StatusCallback(const base::FilePath& path);
-  enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
+  enterprise_connectors::ContentAnalysisResponse StatusCallback(
       const base::FilePath& path);
   bool EncryptionStatusCallback(const base::FilePath& path);
 
@@ -69,12 +55,10 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::RepeatingClosure quit_closure_;
-  DeepScanningClientResponse status_callback_response_;
   enterprise_connectors::ContentAnalysisResponse
       connector_status_callback_response_;
   base::ScopedTempDir temp_dir_;
   std::vector<base::FilePath> created_file_paths_;
-  bool use_legacy_policies_;
 };
 
 }  // namespace safe_browsing

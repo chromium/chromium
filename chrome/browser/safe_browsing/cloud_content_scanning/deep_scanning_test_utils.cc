@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
@@ -568,6 +569,23 @@ void ClearUrlsToCheckForMalwareOfDownloadsForConnectors() {
   ClearConnectorUrlPattern(
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, true,
       MakeListValue({"malware"}));
+}
+
+void SetOnSecurityEventReporting(bool enabled) {
+  ListPrefUpdate settings_list(g_browser_process->local_state(),
+                               enterprise_connectors::kOnSecurityEventPref);
+  DCHECK(settings_list.Get());
+  if (enabled) {
+    if (settings_list->empty()) {
+      base::Value settings(base::Value::Type::DICTIONARY);
+
+      settings.SetKey(enterprise_connectors::kKeyServiceProvider,
+                      base::Value("google"));
+      settings_list->Append(std::move(settings));
+    }
+  } else {
+    settings_list->ClearList();
+  }
 }
 
 }  // namespace safe_browsing

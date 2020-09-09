@@ -144,6 +144,7 @@ void ClearUrlsToCheckComplianceOfUploadsForConnectors();
 void ClearUrlsToCheckForMalwareOfUploadsForConnectors();
 void ClearUrlsToCheckComplianceOfDownloadsForConnectors();
 void ClearUrlsToCheckForMalwareOfDownloadsForConnectors();
+void SetOnSecurityEventReporting(bool enabled);
 
 }  // namespace safe_browsing
 

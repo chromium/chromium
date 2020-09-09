@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_views.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/fake_deep_scanning_dialog_delegate.h"
 #include "chrome/browser/ui/browser.h"
@@ -46,8 +47,7 @@ class DeepScanningDialogViewsBehaviorBrowserTest
       public testing::WithParamInterface<
           std::tuple<bool, bool, base::TimeDelta>> {
  public:
-  DeepScanningDialogViewsBehaviorBrowserTest()
-      : DeepScanningBrowserTestBase(false) {
+  DeepScanningDialogViewsBehaviorBrowserTest() {
     DeepScanningDialogViews::SetObserverForTesting(this);
 
     expected_scan_result_ = dlp_success() && malware_success();
@@ -188,8 +188,7 @@ class DeepScanningDialogViewsCancelPendingScanBrowserTest
     : public DeepScanningBrowserTestBase,
       public DeepScanningDialogViews::TestObserver {
  public:
-  DeepScanningDialogViewsCancelPendingScanBrowserTest()
-      : DeepScanningBrowserTestBase(false) {
+  DeepScanningDialogViewsCancelPendingScanBrowserTest() {
     DeepScanningDialogViews::SetObserverForTesting(this);
   }
 
@@ -232,8 +231,7 @@ class DeepScanningDialogViewsWarningBrowserTest
       public DeepScanningDialogViews::TestObserver,
       public testing::WithParamInterface<bool> {
  public:
-  DeepScanningDialogViewsWarningBrowserTest()
-      : DeepScanningBrowserTestBase(false) {
+  DeepScanningDialogViewsWarningBrowserTest() {
     DeepScanningDialogViews::SetObserverForTesting(this);
   }
 
@@ -281,8 +279,7 @@ class DeepScanningDialogViewsAppearanceBrowserTest
       public testing::WithParamInterface<
           std::tuple<bool, bool, DeepScanAccessPoint>> {
  public:
-  DeepScanningDialogViewsAppearanceBrowserTest()
-      : DeepScanningBrowserTestBase(false) {
+  DeepScanningDialogViewsAppearanceBrowserTest() {
     DeepScanningDialogViews::SetObserverForTesting(this);
   }
 
@@ -389,14 +386,14 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogViewsBehaviorBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  SetDlpPolicy(CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicy(SEND_UPLOADS_AND_DOWNLOADS);
-  AddUrlToCheckForMalwareOfUploads("*");
+  SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
+  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
+  AddUrlsToCheckForMalwareOfUploadsForConnectors({"*"});
   SetStatusCallbackResponse(SimpleContentAnalysisResponseForTesting(
       dlp_success(), malware_success()));
 
   // Always set this policy so the UI is shown.
-  SetWaitPolicy(DELAY_UPLOADS);
+  SetDelayDeliveryUntilVerdictPolicyForConnectors(DELAY_UPLOADS);
 
   // Set up delegate test values.
   FakeDeepScanningDialogDelegate::SetResponseDelay(response_delay());
@@ -456,12 +453,12 @@ IN_PROC_BROWSER_TEST_F(DeepScanningDialogViewsCancelPendingScanBrowserTest,
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  SetDlpPolicy(CHECK_UPLOADS);
+  SetDlpPolicyForConnectors(CHECK_UPLOADS);
   SetStatusCallbackResponse(SimpleContentAnalysisResponseForTesting(
       /*dlp=*/true, /*malware=*/base::nullopt));
 
   // Always set this policy so the UI is shown.
-  SetWaitPolicy(DELAY_UPLOADS);
+  SetDelayDeliveryUntilVerdictPolicyForConnectors(DELAY_UPLOADS);
 
   // Set up delegate test values. An unresponsive delegate is set up to avoid
   // a race between the file responses and the "Cancel" button being clicked.
@@ -500,8 +497,8 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogViewsWarningBrowserTest, Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Setup policies.
-  SetDlpPolicy(CHECK_UPLOADS);
-  SetWaitPolicy(DELAY_UPLOADS);
+  SetDlpPolicyForConnectors(CHECK_UPLOADS);
+  SetDelayDeliveryUntilVerdictPolicyForConnectors(DELAY_UPLOADS);
 
   // Setup the DLP warning response.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -558,14 +555,14 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogViewsAppearanceBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  SetDlpPolicy(CHECK_UPLOADS);
-  SetMalwarePolicy(SEND_UPLOADS);
+  SetDlpPolicyForConnectors(CHECK_UPLOADS);
+  SetMalwarePolicyForConnectors(SEND_UPLOADS);
 
   SetStatusCallbackResponse(
       SimpleContentAnalysisResponseForTesting(success(), success()));
 
   // Always set this policy so the UI is shown.
-  SetWaitPolicy(DELAY_UPLOADS);
+  SetDelayDeliveryUntilVerdictPolicyForConnectors(DELAY_UPLOADS);
 
   // Set up delegate test values.
   FakeDeepScanningDialogDelegate::SetResponseDelay(kSmallDelay);

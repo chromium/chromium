@@ -10,7 +10,6 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
 
 namespace download {
 class DownloadItem;
@@ -59,13 +58,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
  private:
   // Callbacks for when |binary_upload_service_| finishes uploading.
-  void OnLegacyScanComplete(BinaryUploadService::Result result,
-                            DeepScanningClientResponse response);
-  void OnConnectorScanComplete(
-      BinaryUploadService::Result result,
-      enterprise_connectors::ContentAnalysisResponse response);
-  template <typename T>
-  void OnScanComplete(BinaryUploadService::Result result, T response);
+  void OnScanComplete(BinaryUploadService::Result result,
+                      enterprise_connectors::ContentAnalysisResponse response);
 
   // Finishes the request, providing the result through |callback_| and
   // notifying |download_service_|.
@@ -84,10 +78,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   void OpenDownload();
 
   // Populates a request with the appropriate data depending on the used proto.
-  void PrepareLegacyRequest(BinaryUploadService::Request* request,
-                            Profile* profile);
-  void PrepareConnectorRequest(BinaryUploadService::Request* request,
-                               Profile* profile);
+  void PrepareRequest(BinaryUploadService::Request* request, Profile* profile);
 
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.

@@ -50,8 +50,9 @@ namespace {
 
 // Extract the metadata proto from the raw request string. Returns true on
 // success.
-template <typename T>
-bool GetUploadMetadata(const std::string& upload_request, T* out_proto) {
+bool GetUploadMetadata(
+    const std::string& upload_request,
+    enterprise_connectors::ContentAnalysisRequest* out_proto) {
   // The request is of the following format, see multipart_uploader.h for
   // details:
   // ---MultipartBoundary---
@@ -99,13 +100,9 @@ class FakeBinaryFCMService : public BinaryFCMService {
 class DownloadDeepScanningBrowserTest
     : public DeepScanningBrowserTestBase,
       public content::DownloadManager::Observer,
-      public download::DownloadItem::Observer,
-      public testing::WithParamInterface<bool> {
+      public download::DownloadItem::Observer {
  public:
-  DownloadDeepScanningBrowserTest()
-      : DeepScanningBrowserTestBase(use_legacy_policies()) {}
-
-  bool use_legacy_policies() const { return GetParam(); }
+  DownloadDeepScanningBrowserTest() = default;
 
   void OnDownloadCreated(content::DownloadManager* manager,
                          download::DownloadItem* item) override {
@@ -145,8 +142,8 @@ class DownloadDeepScanningBrowserTest
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());
-    AddUrlToCheckComplianceOfDownloads(
-        embedded_test_server()->base_url().spec());
+    AddUrlsToCheckComplianceOfDownloadsForConnectors(
+        {embedded_test_server()->base_url().spec()});
 
     SetBinaryUploadServiceTestFactory();
     SetUrlLoaderInterceptor();
@@ -155,9 +152,10 @@ class DownloadDeepScanningBrowserTest
 
     SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
-    SetDlpPolicy(CheckContentComplianceValues::CHECK_DOWNLOADS);
-    SetMalwarePolicy(SendFilesForMalwareCheckValues::SEND_DOWNLOADS);
-    SetAllowPasswordProtectedFilesPolicy(
+    SetDlpPolicyForConnectors(CheckContentComplianceValues::CHECK_DOWNLOADS);
+    SetMalwarePolicyForConnectors(
+        SendFilesForMalwareCheckValues::SEND_DOWNLOADS);
+    SetAllowPasswordProtectedFilesPolicyForConnectors(
         AllowPasswordProtectedFilesValues::ALLOW_NONE);
   }
 
@@ -310,33 +308,22 @@ class DownloadDeepScanningBrowserTest
   void InterceptRequest(const network::ResourceRequest& request) {
     if (request.url ==
         BinaryUploadService::GetUploadUrl(/*is_advanced_protection=*/true)) {
-      if (use_legacy_policies()) {
-        ASSERT_TRUE(GetUploadMetadata(network::GetUploadData(request),
-                                      &last_app_request_));
-      } else {
-        ASSERT_TRUE(GetUploadMetadata(network::GetUploadData(request),
-                                      &last_app_content_analysis_request_));
-      }
+      ASSERT_TRUE(GetUploadMetadata(network::GetUploadData(request),
+                                    &last_app_content_analysis_request_));
       if (waiting_for_app_)
         std::move(waiting_for_upload_closure_).Run();
     }
 
     if (request.url ==
         BinaryUploadService::GetUploadUrl(/*is_advanced_protection=*/false)) {
-      if (use_legacy_policies()) {
-        ASSERT_TRUE(GetUploadMetadata(network::GetUploadData(request),
-                                      &last_enterprise_request_));
-      } else {
-        ASSERT_TRUE(
-            GetUploadMetadata(network::GetUploadData(request),
-                              &last_enterprise_content_analysis_request_));
-      }
+      ASSERT_TRUE(
+          GetUploadMetadata(network::GetUploadData(request),
+                            &last_enterprise_content_analysis_request_));
       if (waiting_for_enterprise_)
         std::move(waiting_for_upload_closure_).Run();
     }
 
     if (request.url == connector_url_) {
-      ASSERT_TRUE(!use_legacy_policies());
       ASSERT_TRUE(
           GetUploadMetadata(network::GetUploadData(request),
                             &last_enterprise_content_analysis_request_));
@@ -373,9 +360,7 @@ class DownloadDeepScanningBrowserTest
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, DownloadDeepScanningBrowserTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
                        SafeDownloadHasCorrectDangerType) {
   // The file is SAFE according to the metadata check
   ClientDownloadResponse metadata_response;
@@ -383,21 +368,13 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   ExpectMetadataResponse(metadata_response);
 
   // The DLP scan runs synchronously, but doesn't find anything.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse sync_response;
-    sync_response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::SUCCESS);
-    ExpectDeepScanSynchronousResponse(/*is_advanced_protection=*/false,
-                                      sync_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse sync_response;
-    auto* result = sync_response.add_results();
-    result->set_tag("dlp");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                             sync_response, {"dlp", "malware"});
-  }
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* dlp_result = sync_response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp", "malware"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -408,22 +385,14 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   WaitForDeepScanRequest(/*is_advanced_protection=*/false);
 
   // The malware scan finishes asynchronously, and doesn't find anything.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse async_response;
-    async_response.set_token(last_enterprise_request().request_token());
-    async_response.mutable_malware_scan_verdict()->set_verdict(
-        MalwareDeepScanningVerdict::CLEAN);
-    SendFcmMessage(async_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse async_response;
-    async_response.set_request_token(
-        last_enterprise_content_analysis_request().request_token());
-    auto* result = async_response.add_results();
-    result->set_tag("malware");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    SendFcmMessage(async_response);
-  }
+  enterprise_connectors::ContentAnalysisResponse async_response;
+  async_response.set_request_token(
+      last_enterprise_content_analysis_request().request_token());
+  auto* malware_result = async_response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  SendFcmMessage(async_response);
 
   WaitForDownloadToFinish();
 
@@ -436,28 +405,20 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
 }
 
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
   // The file is SAFE according to the metadata check
   ClientDownloadResponse metadata_response;
   metadata_response.set_verdict(ClientDownloadResponse::SAFE);
   ExpectMetadataResponse(metadata_response);
 
   // The DLP scan runs synchronously, but doesn't find anything.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse sync_response;
-    sync_response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::SUCCESS);
-    ExpectDeepScanSynchronousResponse(/*is_advanced_protection=*/false,
-                                      sync_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse sync_response;
-    auto* result = sync_response.add_results();
-    result->set_tag("dlp");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                             sync_response, {"dlp", "malware"});
-  }
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* dlp_result = sync_response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp", "malware"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -468,22 +429,14 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
   WaitForDeepScanRequest(/*is_advanced_protection=*/false);
 
   // The malware scan finishes asynchronously, and fails
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse async_response;
-    async_response.set_token(last_enterprise_request().request_token());
-    async_response.mutable_malware_scan_verdict()->set_verdict(
-        MalwareDeepScanningVerdict::SCAN_FAILURE);
-    SendFcmMessage(async_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse async_response;
-    async_response.set_request_token(
-        last_enterprise_content_analysis_request().request_token());
-    auto* result = async_response.add_results();
-    result->set_tag("malware");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
-    SendFcmMessage(async_response);
-  }
+  enterprise_connectors::ContentAnalysisResponse async_response;
+  async_response.set_request_token(
+      last_enterprise_content_analysis_request().request_token());
+  auto* malware_result = async_response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+  SendFcmMessage(async_response);
 
   WaitForDownloadToFinish();
 
@@ -495,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
   EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
 }
 
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
                        PartialFailureShowsMalwareWarning) {
   // The file is SAFE according to the metadata check
   ClientDownloadResponse metadata_response;
@@ -503,21 +456,13 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   ExpectMetadataResponse(metadata_response);
 
   // The DLP scan runs synchronously, and fails.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse sync_response;
-    sync_response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::FAILURE);
-    ExpectDeepScanSynchronousResponse(/*is_advanced_protection=*/false,
-                                      sync_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse sync_response;
-    auto* result = sync_response.add_results();
-    result->set_tag("dlp");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
-    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                             sync_response, {"dlp", "malware"});
-  }
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* dlp_result = sync_response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp", "malware"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -528,25 +473,17 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   WaitForDeepScanRequest(/*is_advanced_protection=*/false);
 
   // The malware scan finishes asynchronously, and finds malware.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse async_response;
-    async_response.set_token(last_enterprise_request().request_token());
-    async_response.mutable_malware_scan_verdict()->set_verdict(
-        MalwareDeepScanningVerdict::MALWARE);
-    SendFcmMessage(async_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse async_response;
-    async_response.set_request_token(
-        last_enterprise_content_analysis_request().request_token());
-    auto* result = async_response.add_results();
-    result->set_tag("malware");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    auto* malware_rule = result->add_triggered_rules();
-    malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-    malware_rule->set_rule_name("malware");
-    SendFcmMessage(async_response);
-  }
+  enterprise_connectors::ContentAnalysisResponse async_response;
+  async_response.set_request_token(
+      last_enterprise_content_analysis_request().request_token());
+  auto* malware_result = async_response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* malware_rule = malware_result->add_triggered_rules();
+  malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  malware_rule->set_rule_name("malware");
+  SendFcmMessage(async_response);
 
   WaitForDownloadToFinish();
 
@@ -559,7 +496,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::IN_PROGRESS);
 }
 
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
                        PartialFailureShowsDlpWarning) {
   // The file is SAFE according to the metadata check
   ClientDownloadResponse metadata_response;
@@ -567,25 +504,15 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   ExpectMetadataResponse(metadata_response);
 
   // The DLP scan runs synchronously, and finds a violation.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse sync_response;
-    sync_response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::SUCCESS);
-    sync_response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-        DlpDeepScanningVerdict::TriggeredRule::BLOCK);
-    ExpectDeepScanSynchronousResponse(/*is_advanced_protection=*/false,
-                                      sync_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse sync_response;
-    auto* result = sync_response.add_results();
-    result->set_tag("dlp");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    auto* dlp_rule = result->add_triggered_rules();
-    dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                             sync_response, {"dlp", "malware"});
-  }
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* dlp_result = sync_response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp", "malware"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -596,22 +523,14 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   WaitForDeepScanRequest(/*is_advanced_protection=*/false);
 
   // The malware scan finishes asynchronously, and fails.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse async_response;
-    async_response.set_token(last_enterprise_request().request_token());
-    async_response.mutable_malware_scan_verdict()->set_verdict(
-        MalwareDeepScanningVerdict::SCAN_FAILURE);
-    SendFcmMessage(async_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse async_response;
-    async_response.set_request_token(
-        last_enterprise_content_analysis_request().request_token());
-    auto* result = async_response.add_results();
-    result->set_tag("malware");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
-    SendFcmMessage(async_response);
-  }
+  enterprise_connectors::ContentAnalysisResponse async_response;
+  async_response.set_request_token(
+      last_enterprise_content_analysis_request().request_token());
+  auto* malware_result = async_response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+  SendFcmMessage(async_response);
 
   WaitForDownloadToFinish();
 
@@ -624,7 +543,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
                        DangerousHostNotMalwareScanned) {
   // The file is DANGEROUS_HOST according to the metadata check
   ClientDownloadResponse metadata_response;
@@ -632,21 +551,13 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   ExpectMetadataResponse(metadata_response);
 
   // The DLP scan still runs, but finds nothing
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse sync_response;
-    sync_response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::SUCCESS);
-    ExpectDeepScanSynchronousResponse(/*is_advanced_protection=*/false,
-                                      sync_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse sync_response;
-    auto* result = sync_response.add_results();
-    result->set_tag("dlp");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                             sync_response, {"dlp", "malware"});
-  }
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* result = sync_response.add_results();
+  result->set_tag("dlp");
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp", "malware"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/signed.exe");
@@ -664,7 +575,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::IN_PROGRESS);
 }
 
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
                        PasswordProtectedTxtFilesAreBlocked) {
   // The file is SAFE according to the metadata check
   ClientDownloadResponse metadata_response;
@@ -688,7 +599,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   SetUpReporting();
   base::HistogramTester histograms;
 
@@ -698,15 +609,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   ExpectMetadataResponse(metadata_response);
 
   // No scan runs synchronously.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse sync_response;
-    ExpectDeepScanSynchronousResponse(/*is_advanced_protection=*/false,
-                                      sync_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse sync_response;
-    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                             sync_response, {"dlp", "malware"});
-  }
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp", "malware"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -717,25 +622,17 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   WaitForDeepScanRequest(/*is_advanced_protection=*/false);
 
   // The malware scan finishes asynchronously, and finds malware.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse async_response;
-    async_response.set_token(last_enterprise_request().request_token());
-    async_response.mutable_malware_scan_verdict()->set_verdict(
-        MalwareDeepScanningVerdict::MALWARE);
-    SendFcmMessage(async_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse async_response;
-    async_response.set_request_token(
-        last_enterprise_content_analysis_request().request_token());
-    auto* result = async_response.add_results();
-    result->set_tag("malware");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    auto* malware_rule = result->add_triggered_rules();
-    malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-    malware_rule->set_rule_name("malware");
-    SendFcmMessage(async_response);
-  }
+  enterprise_connectors::ContentAnalysisResponse async_response_1;
+  async_response_1.set_request_token(
+      last_enterprise_content_analysis_request().request_token());
+  auto* result = async_response_1.add_results();
+  result->set_tag("malware");
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* malware_rule_1 = result->add_triggered_rules();
+  malware_rule_1->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  malware_rule_1->set_rule_name("malware");
+  SendFcmMessage(async_response_1);
 
   // A single unsafe event should be recorded for this request.
   std::set<std::string> zip_types = {"application/zip",
@@ -758,31 +655,21 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
 
   // The DLP scan finishes asynchronously, and finds nothing. The malware result
   // is attached to the response again.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse async_response;
-    async_response.set_token(last_enterprise_request().request_token());
-    async_response.mutable_malware_scan_verdict()->set_verdict(
-        MalwareDeepScanningVerdict::MALWARE);
-    async_response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::SUCCESS);
-    SendFcmMessage(async_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse async_response;
-    async_response.set_request_token(
-        last_enterprise_content_analysis_request().request_token());
-    auto* malware_result = async_response.add_results();
-    malware_result->set_tag("malware");
-    malware_result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    auto* malware_rule = malware_result->add_triggered_rules();
-    malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-    malware_rule->set_rule_name("malware");
-    auto* dlp_result = async_response.add_results();
-    dlp_result->set_tag("dlp");
-    dlp_result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    SendFcmMessage(async_response);
-  }
+  enterprise_connectors::ContentAnalysisResponse async_response_2;
+  async_response_2.set_request_token(
+      last_enterprise_content_analysis_request().request_token());
+  auto* malware_result = async_response_2.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* malware_rule_2 = malware_result->add_triggered_rules();
+  malware_rule_2->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  malware_rule_2->set_rule_name("malware");
+  auto* dlp_result = async_response_2.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  SendFcmMessage(async_response_2);
 
   // The file should be blocked.
   ASSERT_EQ(download_items().size(), 1u);
@@ -813,15 +700,11 @@ class DownloadRestrictionsDeepScanningBrowserTest
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kDownloadRestrictions,
         static_cast<int>(DownloadPrefs::DownloadRestriction::DANGEROUS_FILES));
-    SetDlpPolicy(CheckContentComplianceValues::CHECK_NONE);
+    SetDlpPolicyForConnectors(CheckContentComplianceValues::CHECK_NONE);
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         DownloadRestrictionsDeepScanningBrowserTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(DownloadRestrictionsDeepScanningBrowserTest,
                        ReportsDownloadsBlockedByDownloadRestrictions) {
   SetUpReporting();
 
@@ -880,11 +763,7 @@ class WhitelistedUrlDeepScanningBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         WhitelistedUrlDeepScanningBrowserTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(WhitelistedUrlDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(WhitelistedUrlDeepScanningBrowserTest,
                        WhitelistedUrlStillDoesDlp) {
   // The file is SAFE according to the metadata check
   ClientDownloadResponse metadata_response;
@@ -892,25 +771,15 @@ IN_PROC_BROWSER_TEST_P(WhitelistedUrlDeepScanningBrowserTest,
   ExpectMetadataResponse(metadata_response);
 
   // The DLP scan runs synchronously, and finds a violation.
-  if (use_legacy_policies()) {
-    DeepScanningClientResponse sync_response;
-    sync_response.mutable_dlp_scan_verdict()->set_status(
-        DlpDeepScanningVerdict::SUCCESS);
-    sync_response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-        DlpDeepScanningVerdict::TriggeredRule::BLOCK);
-    ExpectDeepScanSynchronousResponse(/*is_advanced_protection=*/false,
-                                      sync_response);
-  } else {
-    enterprise_connectors::ContentAnalysisResponse sync_response;
-    auto* result = sync_response.add_results();
-    result->set_tag("dlp");
-    result->set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    auto* dlp_rule = result->add_triggered_rules();
-    dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                             sync_response, {"dlp"});
-  }
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* result = sync_response.add_results();
+  result->set_tag("dlp");
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = result->add_triggered_rules();
+  dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");

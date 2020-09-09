@@ -64,19 +64,10 @@ class UnresponsiveDeepScanningDialogDelegate
 
 }  // namespace
 
-DeepScanningBrowserTestBase::DeepScanningBrowserTestBase(
-    bool use_legacy_policies)
-    : use_legacy_policies_(use_legacy_policies) {
+DeepScanningBrowserTestBase::DeepScanningBrowserTestBase() {
   // Enable every deep scanning features.
-  if (use_legacy_policies_) {
-    scoped_feature_list_.InitWithFeatures(
-        {kContentComplianceEnabled, kMalwareScanEnabled},
-        {enterprise_connectors::kEnterpriseConnectorsEnabled});
-  } else {
-    scoped_feature_list_.InitWithFeatures(
-        {enterprise_connectors::kEnterpriseConnectorsEnabled},
-        {kContentComplianceEnabled, kMalwareScanEnabled});
-  }
+  scoped_feature_list_.InitWithFeatures(
+      {enterprise_connectors::kEnterpriseConnectorsEnabled}, {});
 
   // Change the time values of the upload UI to smaller ones to make tests
   // showing it run faster.
@@ -95,77 +86,19 @@ void DeepScanningBrowserTestBase::TearDownOnMainThread() {
   enterprise_connectors::ConnectorsManager::GetInstance()->TearDownForTesting();
   DeepScanningDialogDelegate::ResetFactoryForTesting();
 
-  SetDlpPolicy(CheckContentComplianceValues::CHECK_NONE);
-  SetMalwarePolicy(SendFilesForMalwareCheckValues::DO_NOT_SCAN);
-  SetWaitPolicy(DelayDeliveryUntilVerdictValues::DELAY_NONE);
-  SetAllowPasswordProtectedFilesPolicy(
+  SetDlpPolicyForConnectors(CheckContentComplianceValues::CHECK_NONE);
+  SetMalwarePolicyForConnectors(SendFilesForMalwareCheckValues::DO_NOT_SCAN);
+  SetDelayDeliveryUntilVerdictPolicyForConnectors(
+      DelayDeliveryUntilVerdictValues::DELAY_NONE);
+  SetAllowPasswordProtectedFilesPolicyForConnectors(
       AllowPasswordProtectedFilesValues::ALLOW_UPLOADS_AND_DOWNLOADS);
-  SetBlockUnsupportedFileTypesPolicy(
+  SetBlockUnsupportedFileTypesPolicyForConnectors(
       BlockUnsupportedFiletypesValues::BLOCK_UNSUPPORTED_FILETYPES_NONE);
-  SetBlockLargeFileTransferPolicy(BlockLargeFileTransferValues::BLOCK_NONE);
+  SetBlockLargeFileTransferPolicyForConnectors(
+      BlockLargeFileTransferValues::BLOCK_NONE);
   SetUnsafeEventsReportingPolicy(false);
-  ClearUrlsToCheckComplianceOfDownloads();
-  ClearUrlsToCheckForMalwareOfUploads();
-}
-
-void DeepScanningBrowserTestBase::SetDlpPolicy(
-    CheckContentComplianceValues state) {
-  if (use_legacy_policies_) {
-    g_browser_process->local_state()->SetInteger(prefs::kCheckContentCompliance,
-                                                 state);
-  } else {
-    SetDlpPolicyForConnectors(state);
-  }
-}
-
-void DeepScanningBrowserTestBase::SetMalwarePolicy(
-    SendFilesForMalwareCheckValues state) {
-  if (use_legacy_policies_) {
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingSendFilesForMalwareCheck, state);
-  } else {
-    SetMalwarePolicyForConnectors(state);
-  }
-}
-
-void DeepScanningBrowserTestBase::SetWaitPolicy(
-    DelayDeliveryUntilVerdictValues state) {
-  if (use_legacy_policies_) {
-    g_browser_process->local_state()->SetInteger(
-        prefs::kDelayDeliveryUntilVerdict, state);
-  } else {
-    SetDelayDeliveryUntilVerdictPolicyForConnectors(state);
-  }
-}
-
-void DeepScanningBrowserTestBase::SetAllowPasswordProtectedFilesPolicy(
-    AllowPasswordProtectedFilesValues state) {
-  if (use_legacy_policies_) {
-    g_browser_process->local_state()->SetInteger(
-        prefs::kAllowPasswordProtectedFiles, state);
-  } else {
-    SetAllowPasswordProtectedFilesPolicyForConnectors(state);
-  }
-}
-
-void DeepScanningBrowserTestBase::SetBlockUnsupportedFileTypesPolicy(
-    BlockUnsupportedFiletypesValues state) {
-  if (use_legacy_policies_) {
-    g_browser_process->local_state()->SetInteger(
-        prefs::kBlockUnsupportedFiletypes, state);
-  } else {
-    SetBlockUnsupportedFileTypesPolicyForConnectors(state);
-  }
-}
-
-void DeepScanningBrowserTestBase::SetBlockLargeFileTransferPolicy(
-    BlockLargeFileTransferValues state) {
-  if (use_legacy_policies_) {
-    g_browser_process->local_state()->SetInteger(prefs::kBlockLargeFileTransfer,
-                                                 state);
-  } else {
-    SetBlockLargeFileTransferPolicyForConnectors(state);
-  }
+  ClearUrlsToCheckComplianceOfDownloadsForConnectors();
+  ClearUrlsToCheckForMalwareOfUploadsForConnectors();
 }
 
 void DeepScanningBrowserTestBase::SetUnsafeEventsReportingPolicy(bool report) {
@@ -173,53 +106,11 @@ void DeepScanningBrowserTestBase::SetUnsafeEventsReportingPolicy(bool report) {
       prefs::kUnsafeEventsReportingEnabled, report);
 }
 
-void DeepScanningBrowserTestBase::AddUrlToCheckComplianceOfDownloads(
-    const std::string& url) {
-  if (use_legacy_policies_) {
-    ListPrefUpdate(g_browser_process->local_state(),
-                   prefs::kURLsToCheckComplianceOfDownloadedContent)
-        ->Append(url);
-  } else {
-    AddUrlsToCheckComplianceOfDownloadsForConnectors({url});
-  }
-}
-
-void DeepScanningBrowserTestBase::AddUrlToCheckForMalwareOfUploads(
-    const std::string& url) {
-  if (use_legacy_policies_) {
-    ListPrefUpdate(g_browser_process->local_state(),
-                   prefs::kURLsToCheckForMalwareOfUploadedContent)
-        ->Append(url);
-  } else {
-    AddUrlsToCheckForMalwareOfUploadsForConnectors({url});
-  }
-}
-
-void DeepScanningBrowserTestBase::ClearUrlsToCheckComplianceOfDownloads() {
-  if (use_legacy_policies_) {
-    ListPrefUpdate(g_browser_process->local_state(),
-                   prefs::kURLsToCheckComplianceOfDownloadedContent)
-        ->Clear();
-  } else {
-    ClearUrlsToCheckComplianceOfDownloadsForConnectors();
-  }
-}
-
-void DeepScanningBrowserTestBase::ClearUrlsToCheckForMalwareOfUploads() {
-  if (use_legacy_policies_) {
-    ListPrefUpdate(g_browser_process->local_state(),
-                   prefs::kURLsToCheckForMalwareOfUploadedContent)
-        ->Clear();
-  } else {
-    ClearUrlsToCheckForMalwareOfUploadsForConnectors();
-  }
-}
-
 void DeepScanningBrowserTestBase::SetUpDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
   DeepScanningDialogDelegate::SetFactoryForTesting(base::BindRepeating(
       &FakeDeepScanningDialogDelegate::Create, base::DoNothing(),
-      base::Bind(&DeepScanningBrowserTestBase::ConnectorStatusCallback,
+      base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
                  base::Unretained(this)),
       base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
                  base::Unretained(this)),
@@ -230,7 +121,7 @@ void DeepScanningBrowserTestBase::SetUpUnresponsiveDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
   DeepScanningDialogDelegate::SetFactoryForTesting(base::BindRepeating(
       &UnresponsiveDeepScanningDialogDelegate::Create, base::DoNothing(),
-      base::Bind(&DeepScanningBrowserTestBase::ConnectorStatusCallback,
+      base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
                  base::Unretained(this)),
       base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
                  base::Unretained(this)),
@@ -248,23 +139,12 @@ void DeepScanningBrowserTestBase::CallQuitClosure() {
 }
 
 void DeepScanningBrowserTestBase::SetStatusCallbackResponse(
-    DeepScanningClientResponse response) {
-  status_callback_response_ = response;
-}
-
-void DeepScanningBrowserTestBase::SetStatusCallbackResponse(
     enterprise_connectors::ContentAnalysisResponse response) {
   connector_status_callback_response_ = response;
 }
 
-DeepScanningClientResponse DeepScanningBrowserTestBase::StatusCallback(
-    const base::FilePath& path) {
-  return status_callback_response_;
-}
-
 enterprise_connectors::ContentAnalysisResponse
-DeepScanningBrowserTestBase::ConnectorStatusCallback(
-    const base::FilePath& path) {
+DeepScanningBrowserTestBase::StatusCallback(const base::FilePath& path) {
   return connector_status_callback_response_;
 }
 

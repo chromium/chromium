@@ -64,47 +64,28 @@ class FakeBinaryUploadService : public BinaryUploadService {
                             /*profile=*/nullptr,
                             /*binary_fcm_service=*/nullptr),
         saved_result_(BinaryUploadService::Result::UNKNOWN),
-        saved_response_(DeepScanningClientResponse()) {}
+        saved_response_(enterprise_connectors::ContentAnalysisResponse()) {}
 
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override {
-    if (request->use_legacy_proto()) {
-      last_request_ = request->deep_scanning_request();
-      request->FinishLegacyRequest(saved_result_, saved_response_);
-    } else {
-      last_content_analysis_request_ = request->content_analysis_request();
-      request->FinishConnectorRequest(saved_result_,
-                                      saved_content_analysis_response_);
-    }
+    last_request_ = request->content_analysis_request();
+    request->FinishConnectorRequest(saved_result_, saved_response_);
   }
 
   void SetResponse(BinaryUploadService::Result result,
                    enterprise_connectors::ContentAnalysisResponse response) {
     saved_result_ = result;
-    saved_content_analysis_response_ = response;
-  }
-
-  void SetResponse(BinaryUploadService::Result result,
-                   DeepScanningClientResponse response) {
-    saved_result_ = result;
     saved_response_ = response;
   }
 
-  const enterprise_connectors::ContentAnalysisRequest&
-  last_content_analysis_request() {
-    return last_content_analysis_request_;
+  const enterprise_connectors::ContentAnalysisRequest& last_request() {
+    return last_request_;
   }
-
-  const DeepScanningClientRequest& last_request() { return last_request_; }
 
  private:
   BinaryUploadService::Result saved_result_;
 
-  DeepScanningClientResponse saved_response_;
-  DeepScanningClientRequest last_request_;
-
-  enterprise_connectors::ContentAnalysisResponse
-      saved_content_analysis_response_;
-  enterprise_connectors::ContentAnalysisRequest last_content_analysis_request_;
+  enterprise_connectors::ContentAnalysisResponse saved_response_;
+  enterprise_connectors::ContentAnalysisRequest last_request_;
 };
 
 class FakeDownloadProtectionService : public DownloadProtectionService {
@@ -125,15 +106,13 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
   FakeBinaryUploadService binary_upload_service_;
 };
 
-class DeepScanningRequestTest : public testing::TestWithParam<bool> {
+class DeepScanningRequestTest : public testing::Test {
  public:
   DeepScanningRequestTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
   }
-
-  bool use_legacy_policies() { return GetParam(); }
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -168,41 +147,14 @@ class DeepScanningRequestTest : public testing::TestWithParam<bool> {
 
     enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
 
-    AddUrlToList(prefs::kURLsToCheckComplianceOfDownloadedContent, tab_url_);
+    AddUrlToListForConnectors(prefs::kURLsToCheckComplianceOfDownloadedContent,
+                              tab_url_.host());
   }
 
   void TearDown() override {
     SetDMTokenForTesting(policy::DMToken::CreateEmptyTokenForTesting());
     enterprise_connectors::ConnectorsManager::GetInstance()
         ->TearDownForTesting();
-  }
-
-  void SetDlpPolicy(CheckContentComplianceValues state) {
-    if (use_legacy_policies()) {
-      TestingBrowserProcess::GetGlobal()->local_state()->SetInteger(
-          prefs::kCheckContentCompliance, state);
-    } else {
-      SetDlpPolicyForConnectors(state);
-    }
-  }
-
-  void SetMalwarePolicy(SendFilesForMalwareCheckValues state) {
-    if (use_legacy_policies()) {
-      profile_->GetPrefs()->SetInteger(
-          prefs::kSafeBrowsingSendFilesForMalwareCheck, state);
-    } else {
-      SetMalwarePolicyForConnectors(state);
-    }
-  }
-
-  void AddUrlToList(const char* pref_name, const GURL& url) {
-    if (use_legacy_policies()) {
-      ListPrefUpdate(TestingBrowserProcess::GetGlobal()->local_state(),
-                     pref_name)
-          ->Append(url.host());
-    } else {
-      AddUrlToListForConnectors(pref_name, url.host());
-    }
   }
 
   void AddUrlToProfilePrefList(const char* pref_name, const GURL& url) {
@@ -216,17 +168,10 @@ class DeepScanningRequestTest : public testing::TestWithParam<bool> {
   }
 
   void EnableAllFeatures() {
-    if (use_legacy_policies()) {
-      SetFeatures({kMalwareScanEnabled, kContentComplianceEnabled,
-                   extensions::SafeBrowsingPrivateEventRouter::
-                       kRealtimeReportingFeature},
-                  {enterprise_connectors::kEnterpriseConnectorsEnabled});
-    } else {
-      SetFeatures({enterprise_connectors::kEnterpriseConnectorsEnabled},
-                  {kMalwareScanEnabled, kContentComplianceEnabled,
-                   extensions::SafeBrowsingPrivateEventRouter::
-                       kRealtimeReportingFeature});
-    }
+    SetFeatures({enterprise_connectors::kEnterpriseConnectorsEnabled},
+                {kMalwareScanEnabled, kContentComplianceEnabled,
+                 extensions::SafeBrowsingPrivateEventRouter::
+                     kRealtimeReportingFeature});
   }
 
   void DisableAllFeatures() {
@@ -238,40 +183,19 @@ class DeepScanningRequestTest : public testing::TestWithParam<bool> {
   }
 
   const std::vector<base::Feature> DlpFeatures() {
-    if (use_legacy_policies()) {
-      return {kContentComplianceEnabled,
-              extensions::SafeBrowsingPrivateEventRouter::
-                  kRealtimeReportingFeature};
-    } else {
-      return {enterprise_connectors::kEnterpriseConnectorsEnabled};
-    }
+    return {enterprise_connectors::kEnterpriseConnectorsEnabled};
   }
 
   const std::vector<base::Feature> MalwareFeatures() {
-    if (use_legacy_policies()) {
-      return {kMalwareScanEnabled, extensions::SafeBrowsingPrivateEventRouter::
-                                       kRealtimeReportingFeature};
-    } else {
-      return {enterprise_connectors::kEnterpriseConnectorsEnabled};
-    }
+    return {enterprise_connectors::kEnterpriseConnectorsEnabled};
   }
 
   const std::vector<base::Feature> DisabledMalwareFeatures() {
-    if (use_legacy_policies()) {
-      return {kMalwareScanEnabled,
-              enterprise_connectors::kEnterpriseConnectorsEnabled};
-    } else {
-      return {kMalwareScanEnabled};
-    }
+    return {kMalwareScanEnabled};
   }
 
   const std::vector<base::Feature> DisabledDlpFeatures() {
-    if (use_legacy_policies()) {
-      return {kContentComplianceEnabled,
-              enterprise_connectors::kEnterpriseConnectorsEnabled};
-    } else {
-      return {kContentComplianceEnabled};
-    }
+    return {kContentComplianceEnabled};
   }
 
   void ValidateDefaultSettings(
@@ -280,10 +204,8 @@ class DeepScanningRequestTest : public testing::TestWithParam<bool> {
 
     enterprise_connectors::AnalysisSettings default_settings;
     default_settings.tags = {"malware"};
-    if (!use_legacy_policies()) {
-      default_settings.analysis_url =
-          GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
-    }
+    default_settings.analysis_url =
+        GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
 
     ASSERT_EQ(settings.value().tags, default_settings.tags);
     ASSERT_EQ(settings.value().block_large_files,
@@ -302,10 +224,8 @@ class DeepScanningRequestTest : public testing::TestWithParam<bool> {
   base::Optional<enterprise_connectors::AnalysisSettings> settings() {
     // Clear the cache before getting settings so there's no race with the pref
     // change and the cached values being updated.
-    if (!use_legacy_policies()) {
-      enterprise_connectors::ConnectorsManager::GetInstance()
-          ->ClearCacheForTesting();
-    }
+    enterprise_connectors::ConnectorsManager::GetInstance()
+        ->ClearCacheForTesting();
 
     return DeepScanningRequest::ShouldUploadBinary(&item_);
   }
@@ -329,11 +249,9 @@ class DeepScanningRequestTest : public testing::TestWithParam<bool> {
   DownloadCheckResult last_result_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, DeepScanningRequestTest, testing::Bool());
-
-TEST_P(DeepScanningRequestTest, ChecksFeatureFlags) {
-  SetDlpPolicy(CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicy(SEND_UPLOADS_AND_DOWNLOADS);
+TEST_F(DeepScanningRequestTest, ChecksFeatureFlags) {
+  SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
+  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
 
   // Try each request with settings indicating both DLP and Malware requests
   // should be sent to show features work correctly.
@@ -347,15 +265,15 @@ TEST_P(DeepScanningRequestTest, ChecksFeatureFlags) {
   // feature flags, so the 2 tags should always stay.
   auto expect_dlp_and_malware_tags = [this]() {
     EXPECT_EQ(2, download_protection_service_.GetFakeBinaryUploadService()
-                     ->last_content_analysis_request()
+                     ->last_request()
                      .tags_size());
 
     EXPECT_EQ("dlp", download_protection_service_.GetFakeBinaryUploadService()
-                         ->last_content_analysis_request()
+                         ->last_request()
                          .tags(0));
     EXPECT_EQ("malware",
               download_protection_service_.GetFakeBinaryUploadService()
-                  ->last_content_analysis_request()
+                  ->last_request()
                   .tags(1));
   };
 
@@ -366,16 +284,7 @@ TEST_P(DeepScanningRequestTest, ChecksFeatureFlags) {
         base::DoNothing(), &download_protection_service_,
         dlp_and_malware_settings());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_malware_scan_request());
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_dlp_scan_request());
-    } else {
-      expect_dlp_and_malware_tags();
-    }
+    expect_dlp_and_malware_tags();
   }
   {
     DisableAllFeatures();
@@ -384,16 +293,7 @@ TEST_P(DeepScanningRequestTest, ChecksFeatureFlags) {
         base::DoNothing(), &download_protection_service_,
         dlp_and_malware_settings());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_malware_scan_request());
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_dlp_scan_request());
-    } else {
-      expect_dlp_and_malware_tags();
-    }
+    expect_dlp_and_malware_tags();
   }
   {
     SetFeatures(/*enabled*/ DlpFeatures(),
@@ -403,16 +303,7 @@ TEST_P(DeepScanningRequestTest, ChecksFeatureFlags) {
         base::DoNothing(), &download_protection_service_,
         dlp_and_malware_settings());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_malware_scan_request());
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_dlp_scan_request());
-    } else {
-      expect_dlp_and_malware_tags();
-    }
+    expect_dlp_and_malware_tags();
   }
   {
     SetFeatures(/*enabled*/ MalwareFeatures(),
@@ -422,18 +313,9 @@ TEST_P(DeepScanningRequestTest, ChecksFeatureFlags) {
         base::DoNothing(), &download_protection_service_,
         dlp_and_malware_settings());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_malware_scan_request());
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_dlp_scan_request());
-    } else {
-      expect_dlp_and_malware_tags();
-    }
+    expect_dlp_and_malware_tags();
   }
-  if (!use_legacy_policies()) {
+  {
     // Validate that the Connector feature still allows scanning if the other
     // two flags are off.
     SetFeatures(
@@ -448,142 +330,96 @@ TEST_P(DeepScanningRequestTest, ChecksFeatureFlags) {
   }
 }
 
-TEST_P(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
+TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   EnableAllFeatures();
 
   {
-    SetDlpPolicy(CHECK_UPLOADS_AND_DOWNLOADS);
-    SetMalwarePolicy(SEND_UPLOADS_AND_DOWNLOADS);
+    SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
+    SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_, settings().value());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_malware_scan_request());
-      EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_request()
-                    .malware_scan_request()
-                    .population(),
-                MalwareDeepScanningClientRequest::POPULATION_ENTERPRISE);
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_dlp_scan_request());
-      EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_request()
-                    .dlp_scan_request()
-                    .url(),
-                download_url_.spec());
-    } else {
-      EXPECT_EQ(2, download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_content_analysis_request()
-                       .tags_size());
-      EXPECT_EQ("dlp",
-                download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_content_analysis_request()
-                    .tags(0));
-      EXPECT_EQ("malware",
-                download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_content_analysis_request()
-                    .tags(1));
-      EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_content_analysis_request()
-                    .request_data()
-                    .url(),
-                download_url_.spec());
-    }
+    EXPECT_EQ(2, download_protection_service_.GetFakeBinaryUploadService()
+                     ->last_request()
+                     .tags_size());
+    EXPECT_EQ("dlp", download_protection_service_.GetFakeBinaryUploadService()
+                         ->last_request()
+                         .tags(0));
+    EXPECT_EQ("malware",
+              download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .tags(1));
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .request_data()
+                  .url(),
+              download_url_.spec());
   }
 
   {
-    SetDlpPolicy(CHECK_NONE);
-    SetMalwarePolicy(SEND_UPLOADS_AND_DOWNLOADS);
+    SetDlpPolicyForConnectors(CHECK_NONE);
+    SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_, settings().value());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_malware_scan_request());
-      EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_request()
-                    .malware_scan_request()
-                    .population(),
-                MalwareDeepScanningClientRequest::POPULATION_ENTERPRISE);
-
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_dlp_scan_request());
-    } else {
-      EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_content_analysis_request()
-                       .tags_size());
-      EXPECT_EQ("malware",
-                download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_content_analysis_request()
-                    .tags(0));
-    }
+    EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
+                     ->last_request()
+                     .tags_size());
+    EXPECT_EQ("malware",
+              download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .tags(0));
   }
 
   {
-    SetDlpPolicy(CHECK_UPLOADS_AND_DOWNLOADS);
+    SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
     // The Connector policies need at least 1 pattern to be enabled, so adding
     // this pattern is necessary to have equivalent behaviour.
-    if (!use_legacy_policies())
-      AddUrlToList(prefs::kURLsToCheckComplianceOfDownloadedContent, tab_url_);
-    SetMalwarePolicy(DO_NOT_SCAN);
+    AddUrlToListForConnectors(prefs::kURLsToCheckComplianceOfDownloadedContent,
+                              tab_url_.host());
+    SetMalwarePolicyForConnectors(DO_NOT_SCAN);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_, settings().value());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_malware_scan_request());
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_request()
-                      .has_dlp_scan_request());
-    } else {
-      EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_content_analysis_request()
-                       .tags_size());
-      EXPECT_EQ("dlp",
-                download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_content_analysis_request()
-                    .tags(0));
-    }
+    EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
+                     ->last_request()
+                     .tags_size());
+    EXPECT_EQ("dlp", download_protection_service_.GetFakeBinaryUploadService()
+                         ->last_request()
+                         .tags(0));
   }
 
   {
-    SetDlpPolicy(CHECK_NONE);
-    SetMalwarePolicy(DO_NOT_SCAN);
+    SetDlpPolicyForConnectors(CHECK_NONE);
+    SetMalwarePolicyForConnectors(DO_NOT_SCAN);
     EXPECT_FALSE(settings().has_value());
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_,
         enterprise_connectors::AnalysisSettings());
     request.Start();
-    if (use_legacy_policies()) {
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_malware_scan_request());
-      EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                       ->last_request()
-                       .has_dlp_scan_request());
-    } else {
-      EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                      ->last_content_analysis_request()
-                      .tags()
-                      .empty());
-    }
+    EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
+                    ->last_request()
+                    .tags()
+                    .empty());
   }
 }
 
-TEST_P(DeepScanningRequestTest, GeneratesCorrectRequestForAPP) {
-  // Connectors are enabled by default, so turn them off for the legacy test
-  // case.
-  if (use_legacy_policies())
+class DeepScanningAPPRequestTest : public DeepScanningRequestTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  DeepScanningAPPRequestTest() = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(, DeepScanningAPPRequestTest, testing::Bool());
+
+TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
+  // APP requests should be correct even when the Connectors feature is
+  // disabled.
+  if (GetParam())
     DisableAllFeatures();
 
   enterprise_connectors::AnalysisSettings settings;
@@ -593,31 +429,17 @@ TEST_P(DeepScanningRequestTest, GeneratesCorrectRequestForAPP) {
       base::DoNothing(), &download_protection_service_, std::move(settings));
   request.Start();
 
-  if (use_legacy_policies()) {
-    EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
-                    ->last_request()
-                    .has_malware_scan_request());
-    EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                     ->last_request()
-                     .has_dlp_scan_request());
-    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
-                  ->last_request()
-                  .malware_scan_request()
-                  .population(),
-              MalwareDeepScanningClientRequest::POPULATION_TITANIUM);
-  } else {
-    EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
-                     ->last_content_analysis_request()
-                     .tags()
-                     .size());
-    EXPECT_EQ("malware",
-              download_protection_service_.GetFakeBinaryUploadService()
-                  ->last_content_analysis_request()
-                  .tags()[0]);
-    EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
-                     ->last_content_analysis_request()
-                     .has_device_token());
-  }
+  EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
+                   ->last_request()
+                   .tags()
+                   .size());
+  EXPECT_EQ("malware",
+            download_protection_service_.GetFakeBinaryUploadService()
+                ->last_request()
+                .tags()[0]);
+  EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
+                   ->last_request()
+                   .has_device_token());
 }
 
 class DeepScanningReportingTest : public DeepScanningRequestTest {
@@ -654,15 +476,13 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, DeepScanningReportingTest, testing::Bool());
-
-TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
-  SetDlpPolicy(CHECK_UPLOADS_AND_DOWNLOADS);
+TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
+  SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
   // The Connector policies need at least 1 pattern to be enabled, so adding
   // this pattern is necessary to have equivalent behaviour.
-  if (!use_legacy_policies())
-    AddUrlToList(prefs::kURLsToCheckComplianceOfDownloadedContent, tab_url_);
-  SetMalwarePolicy(SEND_UPLOADS_AND_DOWNLOADS);
+  AddUrlToListForConnectors(prefs::kURLsToCheckComplianceOfDownloadedContent,
+                            tab_url_.host());
+  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
 
   {
     DeepScanningRequest request(
@@ -672,41 +492,28 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         &download_protection_service_, settings().value());
 
     ContentAnalysisScanResult dlp_verdict;
-    if (use_legacy_policies()) {
-      DeepScanningClientResponse response;
-      response.mutable_malware_scan_verdict()->set_verdict(
-          MalwareDeepScanningVerdict::MALWARE);
-      response.mutable_dlp_scan_verdict()->set_status(
-          DlpDeepScanningVerdict::SUCCESS);
-      response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-          DlpDeepScanningVerdict::TriggeredRule::BLOCK);
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = SensitiveDataVerdictToResult(response.dlp_scan_verdict());
-    } else {
-      enterprise_connectors::ContentAnalysisResponse response;
+    enterprise_connectors::ContentAnalysisResponse response;
 
-      auto* malware_result = response.add_results();
-      malware_result->set_tag("malware");
-      malware_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-      auto* malware_rule = malware_result->add_triggered_rules();
-      malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-      malware_rule->set_rule_name("malware");
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* malware_rule = malware_result->add_triggered_rules();
+    malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    malware_rule->set_rule_name("malware");
 
-      auto* dlp_result = response.add_results();
-      dlp_result->set_tag("dlp");
-      dlp_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-      auto* dlp_rule = dlp_result->add_triggered_rules();
-      dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-      dlp_rule->set_rule_name("dlp_rule");
-      dlp_rule->set_rule_id("0");
+    auto* dlp_result = response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* dlp_rule = dlp_result->add_triggered_rules();
+    dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    dlp_rule->set_rule_name("dlp_rule");
+    dlp_rule->set_rule_id("0");
 
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
-    }
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
+    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
@@ -737,41 +544,28 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         &download_protection_service_, settings().value());
 
     ContentAnalysisScanResult dlp_verdict;
-    if (use_legacy_policies()) {
-      DeepScanningClientResponse response;
-      response.mutable_malware_scan_verdict()->set_verdict(
-          MalwareDeepScanningVerdict::UWS);
-      response.mutable_dlp_scan_verdict()->set_status(
-          DlpDeepScanningVerdict::SUCCESS);
-      response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-          DlpDeepScanningVerdict::TriggeredRule::WARN);
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = SensitiveDataVerdictToResult(response.dlp_scan_verdict());
-    } else {
-      enterprise_connectors::ContentAnalysisResponse response;
+    enterprise_connectors::ContentAnalysisResponse response;
 
-      auto* malware_result = response.add_results();
-      malware_result->set_tag("malware");
-      malware_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-      auto* malware_rule = malware_result->add_triggered_rules();
-      malware_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
-      malware_rule->set_rule_name("uws");
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* malware_rule = malware_result->add_triggered_rules();
+    malware_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
+    malware_rule->set_rule_name("uws");
 
-      auto* dlp_result = response.add_results();
-      dlp_result->set_tag("dlp");
-      dlp_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-      auto* dlp_rule = dlp_result->add_triggered_rules();
-      dlp_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
-      dlp_rule->set_rule_name("dlp_rule");
-      dlp_rule->set_rule_id("0");
+    auto* dlp_result = response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* dlp_rule = dlp_result->add_triggered_rules();
+    dlp_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
+    dlp_rule->set_rule_name("dlp_rule");
+    dlp_rule->set_rule_id("0");
 
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
-    }
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
+    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
@@ -802,31 +596,20 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         &download_protection_service_, settings().value());
 
     ContentAnalysisScanResult dlp_verdict;
-    if (use_legacy_policies()) {
-      DeepScanningClientResponse response;
-      response.mutable_dlp_scan_verdict()->set_status(
-          DlpDeepScanningVerdict::SUCCESS);
-      response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-          DlpDeepScanningVerdict::TriggeredRule::BLOCK);
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = SensitiveDataVerdictToResult(response.dlp_scan_verdict());
-    } else {
-      enterprise_connectors::ContentAnalysisResponse response;
+    enterprise_connectors::ContentAnalysisResponse response;
 
-      auto* dlp_result = response.add_results();
-      dlp_result->set_tag("dlp");
-      dlp_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-      auto* dlp_rule = dlp_result->add_triggered_rules();
-      dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-      dlp_rule->set_rule_name("dlp_rule");
-      dlp_rule->set_rule_id("0");
+    auto* dlp_result = response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* dlp_rule = dlp_result->add_triggered_rules();
+    dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    dlp_rule->set_rule_name("dlp_rule");
+    dlp_rule->set_rule_id("0");
 
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
-    }
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
+    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
@@ -855,31 +638,20 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         &download_protection_service_, settings().value());
 
     ContentAnalysisScanResult dlp_verdict;
-    if (use_legacy_policies()) {
-      DeepScanningClientResponse response;
-      response.mutable_dlp_scan_verdict()->set_status(
-          DlpDeepScanningVerdict::SUCCESS);
-      response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-          DlpDeepScanningVerdict::TriggeredRule::WARN);
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = SensitiveDataVerdictToResult(response.dlp_scan_verdict());
-    } else {
-      enterprise_connectors::ContentAnalysisResponse response;
+    enterprise_connectors::ContentAnalysisResponse response;
 
-      auto* dlp_result = response.add_results();
-      dlp_result->set_tag("dlp");
-      dlp_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-      auto* dlp_rule = dlp_result->add_triggered_rules();
-      dlp_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
-      dlp_rule->set_rule_name("dlp_rule");
-      dlp_rule->set_rule_id("0");
+    auto* dlp_result = response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* dlp_rule = dlp_result->add_triggered_rules();
+    dlp_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
+    dlp_rule->set_rule_name("dlp_rule");
+    dlp_rule->set_rule_id("0");
 
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
-    }
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
+    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
@@ -908,37 +680,24 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         &download_protection_service_, settings().value());
 
     ContentAnalysisScanResult dlp_verdict;
-    if (use_legacy_policies()) {
-      DeepScanningClientResponse response;
-      response.mutable_dlp_scan_verdict()->set_status(
-          DlpDeepScanningVerdict::SUCCESS);
-      response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-          DlpDeepScanningVerdict::TriggeredRule::WARN);
-      response.mutable_dlp_scan_verdict()->add_triggered_rules()->set_action(
-          DlpDeepScanningVerdict::TriggeredRule::BLOCK);
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = SensitiveDataVerdictToResult(response.dlp_scan_verdict());
-    } else {
-      enterprise_connectors::ContentAnalysisResponse response;
+    enterprise_connectors::ContentAnalysisResponse response;
 
-      auto* dlp_result = response.add_results();
-      dlp_result->set_tag("dlp");
-      dlp_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-      auto* dlp_rule1 = dlp_result->add_triggered_rules();
-      dlp_rule1->set_action(enterprise_connectors::TriggeredRule::WARN);
-      dlp_rule1->set_rule_name("dlp_rule1");
-      dlp_rule1->set_rule_id("0");
-      auto* dlp_rule2 = dlp_result->add_triggered_rules();
-      dlp_rule2->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-      dlp_rule2->set_rule_name("dlp_rule2");
-      dlp_rule2->set_rule_id("0");
+    auto* dlp_result = response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* dlp_rule1 = dlp_result->add_triggered_rules();
+    dlp_rule1->set_action(enterprise_connectors::TriggeredRule::WARN);
+    dlp_rule1->set_rule_name("dlp_rule1");
+    dlp_rule1->set_rule_id("0");
+    auto* dlp_rule2 = dlp_result->add_triggered_rules();
+    dlp_rule2->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    dlp_rule2->set_rule_name("dlp_rule2");
+    dlp_rule2->set_rule_id("0");
 
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-      dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
-    }
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
+    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
@@ -966,24 +725,15 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
 
-    if (use_legacy_policies()) {
-      DeepScanningClientResponse response;
-      response.mutable_dlp_scan_verdict()->set_status(
-          DlpDeepScanningVerdict::FAILURE);
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
+    enterprise_connectors::ContentAnalysisResponse response;
 
-    } else {
-      enterprise_connectors::ContentAnalysisResponse response;
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
-      auto* malware_result = response.add_results();
-      malware_result->set_tag("malware");
-      malware_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
-
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-    }
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
@@ -994,8 +744,7 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*reason*/
-        use_legacy_policies() ? "DLP_SCAN_FAILED" : "ANALYSIS_CONNECTOR_FAILED",
+        /*reason*/ "ANALYSIS_CONNECTOR_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/
@@ -1013,23 +762,15 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
 
-    if (use_legacy_policies()) {
-      DeepScanningClientResponse response;
-      response.mutable_malware_scan_verdict()->set_verdict(
-          MalwareDeepScanningVerdict::SCAN_FAILURE);
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-    } else {
-      enterprise_connectors::ContentAnalysisResponse response;
+    enterprise_connectors::ContentAnalysisResponse response;
 
-      auto* malware_result = response.add_results();
-      malware_result->set_tag("malware");
-      malware_result->set_status(
-          enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
-      download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-          BinaryUploadService::Result::SUCCESS, response);
-    }
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
@@ -1040,9 +781,7 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*reason*/
-        use_legacy_policies() ? "MALWARE_SCAN_FAILED"
-                              : "ANALYSIS_CONNECTOR_FAILED",
+        /*reason*/ "ANALYSIS_CONNECTOR_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/
@@ -1054,13 +793,11 @@ TEST_P(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   }
 }
 
-TEST_P(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
+TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
   SetFeatures(/*enabled*/ MalwareFeatures(),
               /*disabled*/ {kContentComplianceEnabled});
-  SetMalwarePolicy(SEND_UPLOADS_AND_DOWNLOADS);
-  if (!use_legacy_policies()) {
-    ClearUrlsToCheckComplianceOfDownloadsForConnectors();
-  }
+  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
+  ClearUrlsToCheckComplianceOfDownloadsForConnectors();
 
   content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
   EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(download_url_));
@@ -1075,45 +812,31 @@ TEST_P(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
 
   // With the new malware policy list set, the item should not be uploaded since
   // DeepScanningRequest honours that policy.
-  AddUrlToList(prefs::kURLsToNotCheckForMalwareOfDownloadedContent,
-               download_url_);
+  AddUrlToListForConnectors(prefs::kURLsToNotCheckForMalwareOfDownloadedContent,
+                            download_url_.host());
   EXPECT_FALSE(settings().has_value());
 }
 
-TEST_P(DeepScanningRequestTest, PopulatesRequest) {
-  SetDlpPolicy(CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicy(SEND_UPLOADS_AND_DOWNLOADS);
+TEST_F(DeepScanningRequestTest, PopulatesRequest) {
+  SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
+  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
 
   EnableAllFeatures();
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
       base::DoNothing(), &download_protection_service_, settings().value());
   request.Start();
-  if (use_legacy_policies()) {
-    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
-                  ->last_request()
-                  .filename(),
-              "download.exe");
-    EXPECT_EQ(
-        download_protection_service_.GetFakeBinaryUploadService()
-            ->last_request()
-            .digest(),
-        // Hex-encoding of 'hash'
-        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
-  } else {
-    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
-                  ->last_content_analysis_request()
-                  .request_data()
-                  .filename(),
-              "download.exe");
-    EXPECT_EQ(
-        download_protection_service_.GetFakeBinaryUploadService()
-            ->last_content_analysis_request()
-            .request_data()
-            .digest(),
-        // Hex-encoding of 'hash'
-        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
-  }
+  EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                ->last_request()
+                .request_data()
+                .filename(),
+            "download.exe");
+  EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                ->last_request()
+                .request_data()
+                .digest(),
+            // Hex-encoding of 'hash'
+            "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
 }
 
 }  // namespace safe_browsing
