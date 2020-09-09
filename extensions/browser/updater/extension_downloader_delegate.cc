@@ -54,10 +54,6 @@ void ExtensionDownloaderDelegate::OnExtensionDownloadCacheStatusRetrieved(
     const ExtensionId& id,
     CacheStatus cache_status) {}
 
-void ExtensionDownloaderDelegate::OnExtensionManifestUpdateCheckStatusReceived(
-    const ExtensionId& id,
-    const std::string& status) {}
-
 void ExtensionDownloaderDelegate::OnExtensionDownloadFailed(
     const ExtensionId& id,
     Error error,

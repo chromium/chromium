@@ -72,10 +72,6 @@ std::string InstallStageTracker::GetFormattedInstallationData(
     str << "; unpacker_failure_reason: "
         << static_cast<int>(data.unpacker_failure_reason.value());
   }
-  if (data.update_check_status) {
-    str << "; update_check_status: "
-        << static_cast<int>(data.update_check_status.value());
-  }
   if (data.manifest_invalid_error) {
     str << "; manifest_invalid_error: "
         << static_cast<int>(data.manifest_invalid_error.value());
@@ -218,33 +214,6 @@ void InstallStageTracker::ReportDownloadingCacheStatus(
   data.downloading_cache_status = cache_status;
   for (auto& observer : observers_) {
     observer.OnExtensionDownloadCacheStatusRetrieved(id, cache_status);
-    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
-  }
-}
-
-void InstallStageTracker::ReportManifestUpdateCheckStatus(
-    const ExtensionId& id,
-    const std::string& status) {
-  InstallationData& data = installation_data_map_[id];
-  // Map the current status to UpdateCheckStatus enum.
-  if (status == "ok")
-    data.update_check_status = UpdateCheckStatus::kOk;
-  else if (status == "noupdate")
-    data.update_check_status = UpdateCheckStatus::kNoUpdate;
-  else if (status == "error-internal")
-    data.update_check_status = UpdateCheckStatus::kErrorInternal;
-  else if (status == "error-hash")
-    data.update_check_status = UpdateCheckStatus::kErrorHash;
-  else if (status == "error-osnotsupported")
-    data.update_check_status = UpdateCheckStatus::kErrorOsNotSupported;
-  else if (status == "error-hwnotsupported")
-    data.update_check_status = UpdateCheckStatus::kErrorHardwareNotSupported;
-  else if (status == "error-unsupportedprotocol")
-    data.update_check_status = UpdateCheckStatus::kErrorUnsupportedProtocol;
-  else
-    data.update_check_status = UpdateCheckStatus::kUnknown;
-
-  for (auto& observer : observers_) {
     observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
   }
 }

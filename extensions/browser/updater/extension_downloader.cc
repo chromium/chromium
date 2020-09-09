@@ -838,9 +838,6 @@ void ExtensionDownloader::HandleManifestResults(
     VLOG(2) << "parsing manifest succeeded (" << fetch_data->full_url() << ")";
   }
 
-  // Report manifest update check status.
-  NotifyExtensionManifestUpdateCheckStatus(results->update_list);
-
   const ExtensionIdSet extension_ids = fetch_data->GetExtensionIds();
   NotifyExtensionsDownloadStageChanged(
       extension_ids, ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED);
@@ -1356,17 +1353,6 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
 
   // If there are any pending downloads left, start the next one.
   extensions_queue_.StartNextRequest();
-}
-
-void ExtensionDownloader::NotifyExtensionManifestUpdateCheckStatus(
-    std::vector<UpdateManifestResult> results) {
-  for (const auto& manifest_result : results) {
-    // Status is received only for the successfully parsed manifests.
-    if (!manifest_result.parse_error) {
-      delegate_->OnExtensionManifestUpdateCheckStatusReceived(
-          manifest_result.extension_id, manifest_result.status);
-    }
-  }
 }
 
 void ExtensionDownloader::NotifyExtensionsManifestInvalidFailure(

@@ -438,13 +438,6 @@ void ExtensionUpdater::OnExtensionDownloadCacheStatusRetrieved(
       id, cache_status);
 }
 
-void ExtensionUpdater::OnExtensionManifestUpdateCheckStatusReceived(
-    const ExtensionId& id,
-    const std::string& status) {
-  InstallStageTracker::Get(profile_)->ReportManifestUpdateCheckStatus(id,
-                                                                      status);
-}
-
 void ExtensionUpdater::OnExtensionDownloadFailed(
     const ExtensionId& id,
     Error error,

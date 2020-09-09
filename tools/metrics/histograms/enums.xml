@@ -71386,6 +71386,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="UpdateCheckStatus">
+  <obsolete>
+    Deprecated 09/2020 because the corresponding histogram is deprecated.
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="Ok"/>
   <int value="2" label="No update"/>

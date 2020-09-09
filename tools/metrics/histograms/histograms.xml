@@ -59010,6 +59010,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledFailureUpdateCheckStatus"
     enum="UpdateCheckStatus" expires_after="2020-09-01">
+  <obsolete>
+    Removed 2020-08-28 because it is verified from the collected statistics that
+    we always receive &quot;no update&quot; status in case of
+    CRX_FETCH_URL_EMPTY.
+  </obsolete>
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>

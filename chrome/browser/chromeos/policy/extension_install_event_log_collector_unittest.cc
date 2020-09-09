@@ -425,8 +425,6 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
           registry(), delegate(), profile());
 
   // One extension failed.
-  install_stage_tracker()->ReportManifestUpdateCheckStatus(kExtensionId1,
-                                                           "noupdate");
   install_stage_tracker()->ReportInfoOnNoUpdatesFailure(kExtensionId1,
                                                         "rate limit");
   install_stage_tracker()->ReportFailure(
@@ -448,8 +446,6 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
           registry(), delegate(), profile());
 
   // One extension failed.
-  install_stage_tracker()->ReportManifestUpdateCheckStatus(kExtensionId1,
-                                                           "noupdate");
   install_stage_tracker()->ReportInfoOnNoUpdatesFailure(kExtensionId1, "");
   install_stage_tracker()->ReportFailure(
       kExtensionId1,

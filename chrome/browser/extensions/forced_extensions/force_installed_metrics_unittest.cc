@@ -98,8 +98,6 @@ constexpr char kFailureSessionStats[] =
 #endif  // defined(OS_CHROMEOS)
 constexpr char kPossibleNonMisconfigurationFailures[] =
     "Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured";
-constexpr char kManifestUpdateCheckStatus[] =
-    "Extensions.ForceInstalledFailureUpdateCheckStatus";
 constexpr char kDisableReason[] =
     "Extensions.ForceInstalledNotLoadedDisableReason";
 constexpr char kBlocklisted[] = "Extensions.ForceInstalledAndBlackListed";
@@ -630,43 +628,15 @@ TEST_F(ForceInstalledMetricsTest,
       1);
 }
 
-// Reporting update check status when the force installed extension
-// fails to install with error CRX_FETCH_URL_EMPTY.
-TEST_F(ForceInstalledMetricsTest, ExtensionsUpdateCheckStatusReporting) {
-  SetupForceList();
-
-  auto extension =
-      ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  tracker_->OnExtensionLoaded(profile_, extension.get());
-
-  install_stage_tracker_->ReportManifestUpdateCheckStatus(kExtensionId2,
-                                                          "noupdate");
-  install_stage_tracker_->ReportInfoOnNoUpdatesFailure(kExtensionId2, "");
-  install_stage_tracker_->ReportFailure(
-      kExtensionId2, InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY);
-  // ForceInstalledMetrics shuts down timer because all extension are either
-  // loaded or failed.
-  EXPECT_FALSE(fake_timer_->IsRunning());
-  histogram_tester_.ExpectTotalCount(kManifestUpdateCheckStatus, 1);
-  histogram_tester_.ExpectBucketCount(
-      kManifestUpdateCheckStatus,
-      InstallStageTracker::UpdateCheckStatus::kNoUpdate, 1);
-}
-
 // Reporting info when the force installed extension fails to install with error
 // CRX_FETCH_URL_EMPTY due to no updates from the server.
 TEST_F(ForceInstalledMetricsTest, ExtensionsNoUpdatesInfoReporting) {
   SetupForceList();
 
-  install_stage_tracker_->ReportManifestUpdateCheckStatus(kExtensionId1,
-                                                          "noupdate");
   install_stage_tracker_->ReportInfoOnNoUpdatesFailure(kExtensionId1,
                                                        "disabled by client");
   install_stage_tracker_->ReportFailure(
       kExtensionId1, InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY);
-
-  install_stage_tracker_->ReportManifestUpdateCheckStatus(kExtensionId2,
-                                                          "noupdate");
   install_stage_tracker_->ReportInfoOnNoUpdatesFailure(kExtensionId2, "");
   install_stage_tracker_->ReportFailure(
       kExtensionId2, InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY);
@@ -1098,8 +1068,6 @@ TEST_F(ForceInstalledMetricsTest,
   auto extension =
       ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
   tracker_->OnExtensionLoaded(profile_, extension.get());
-  install_stage_tracker_->ReportManifestUpdateCheckStatus(kExtensionId2,
-                                                          "noupdate");
   install_stage_tracker_->ReportInfoOnNoUpdatesFailure(kExtensionId2, "");
   install_stage_tracker_->ReportFailure(
       kExtensionId2, InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY);
@@ -1118,8 +1086,6 @@ TEST_F(ForceInstalledMetricsTest,
   auto extension =
       ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
   tracker_->OnExtensionLoaded(profile_, extension.get());
-  install_stage_tracker_->ReportManifestUpdateCheckStatus(kExtensionId2,
-                                                          "noupdate");
   install_stage_tracker_->ReportInfoOnNoUpdatesFailure(kExtensionId2,
                                                        "rate limit");
   install_stage_tracker_->ReportFailure(

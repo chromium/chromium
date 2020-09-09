@@ -213,9 +213,6 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
                                        Stage stage) override;
   void OnExtensionDownloadCacheStatusRetrieved(const ExtensionId& id,
                                                CacheStatus status) override;
-  void OnExtensionManifestUpdateCheckStatusReceived(
-      const ExtensionId& id,
-      const std::string& status) override;
   void OnExtensionDownloadFailed(const ExtensionId& id,
                                  Error error,
                                  const PingResult& ping,

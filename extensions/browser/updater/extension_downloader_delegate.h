@@ -215,13 +215,6 @@ class ExtensionDownloaderDelegate {
       const ExtensionId& id,
       CacheStatus cache_status);
 
-  // Invoked after the fetched manifest update results are parsed successfully,
-  // |status| contains information about the status of update check as returned
-  // by the update server.
-  virtual void OnExtensionManifestUpdateCheckStatusReceived(
-      const ExtensionId& id,
-      const std::string& status);
-
   // Invoked if the extension couldn't be downloaded. |error| contains the
   // failure reason.
   virtual void OnExtensionDownloadFailed(const ExtensionId& id,
