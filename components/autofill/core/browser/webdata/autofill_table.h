@@ -221,7 +221,8 @@ struct PaymentsCustomerData;
 //                      will additionally be added in unmasked_credit_cards.
 //
 //   id                 String assigned by the server to identify this card.
-//                      This is opaque to the client.
+//                      This is a legacy version of instrument_id and is opaque
+//                      to the client.
 //   status             Server's status of this card.
 //                      TODO(brettw) define constants for this.
 //   name_on_card
@@ -236,6 +237,9 @@ struct PaymentsCustomerData;
 //   card_issuer        Issuer for the card. An integer representing the
 //                      CardIssuer.Issuer enum from the Chrome Sync response.
 //                      For example, GOOGLE or ISSUER_UNKNOWN.
+//   instrument_id      Credit card id assigned by the server to identify this
+//                      card. This is opaque to the client, and |id| is the
+//                      legacy version of this.
 //
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
@@ -614,6 +618,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns();
   bool MigrateToVersion87AddCreditCardNicknameColumn();
   bool MigrateToVersion88AddNewNameColumns();
+  bool MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
