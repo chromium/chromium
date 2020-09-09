@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">已复制到 Chrome</translation>
 <translation id="6648150602980899529">您正要登录由 <ph name="DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此帐号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
-<translation id="6724102885918156196">若要将 Chrome 设为默认浏览器，请执行以下操作：
-        1. 打开“设置”。
-        2. 点按“默认浏览器应用”。
-        3. 选择“Chrome”。</translation>
 <translation id="6822673484890854830">Chrome 无法检查所有密码。请稍后再试。</translation>
 <translation id="7165736900384873061">开始使用 Google Chrome QR 码扫描器</translation>
 <translation id="7172660552945675509">提示：<ph name="BEGIN_LINK" />将 Chrome 移到 Dock 中<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录帐号并开启同步功能</translation>
 <translation id="766361182512894255">您的密码遭遇了数据泄露。Chrome 建议您立即更改此密码。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
+<translation id="8045508249136869751">若要将 Chrome 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chrome”。</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>
 <translation id="8459495907675268833">所选数据已从 Chrome 和同步的设备中移除。不过，您的 Google 帐号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>

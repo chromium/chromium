@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="7269362888766543920">Några tillägg har fått Chromium att krascha. Testa att avinstallera dem.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Så här använder du Chromium som standard:
-        1. Öppna Inställningar. 
-        2. Tryck på Standardwebbläsarapp.
-        3. Välj Chromium.</translation>
 <translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="7400689562045506105">Använd Chromium överallt</translation>
 <translation id="766897673682622022">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="8073677936375100957">Vill du rensa din data i Chromium från den här enheten?</translation>
 <translation id="8175055321229419309">Tips! <ph name="BEGIN_LINK" />Flytta Chromium till Dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Så här använder du Chromium som standard: Öppna inställningarna, tryck på Standardwebbläsarapp och välj Chromium.</translation>
 <translation id="8252885722420466166">Ange din plats och få en bättre upplevelse av Google när du använder Chromium.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8776843108004031667">Det här kontot och data som inte har sparats tas bort från Chromium.</translation>

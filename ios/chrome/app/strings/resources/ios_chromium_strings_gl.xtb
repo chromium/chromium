@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
 <translation id="7269362888766543920">Algúns complementos fan que Chromium falle. Proba a desinstalalos.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Para facer que Chromium sexa o teu navegador predeterminado, sigue estes pasos:
-        1. Abre Configuración. 
-        2. Toca Aplicación de navegación predeterminada.
-        3. Selecciona Chromium.</translation>
 <translation id="7357211569052832586">Os datos seleccionados elimináronse de Chromium e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en history.google.com.</translation>
 <translation id="7400689562045506105">Usa Chromium en todas partes</translation>
 <translation id="766897673682622022">O teu contrasinal quedou exposto debido a unha violación da seguranza dos datos. Chromium recoméndache que o cambies agora.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión en todos eles</translation>
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Consello: <ph name="BEGIN_LINK" />Engade Chromium á barra de aplicacións<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Para facer que Chromium sexa o teu navegador predeterminado, abre Settings (Configuración), toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chromium.</translation>
 <translation id="8252885722420466166">Obtén unha mellor experiencia de Google en Chromium baseada na túa localización.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Reservados todos os dereitos.</translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>

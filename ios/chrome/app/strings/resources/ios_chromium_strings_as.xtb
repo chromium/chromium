@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromiumএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে।</translation>
 <translation id="7269362888766543920">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি সেইবোৰ আনইনষ্টল কৰি চাওক।</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromiumক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিবলৈ:
-        ১) ছেটিংসমূহ খোলক। 
-        ২) ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক।
-        ৩) Chromium বাছনি কৰক।</translation>
 <translation id="7357211569052832586">বাছনি কৰা ডেটাখিনি Chromium আৰু ছিংক কৰি থোৱা ডিভাইচসমূহৰ পৰা আঁতৰোৱা হৈছে। Googleৰ অন্য সেৱাত কৰা সন্ধান আৰু অন্যান্য কাৰ্যকলাপৰ দৰে আপোনাৰ Google একাউণ্টৰ অইন ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস history.google.comত থাকিব পাৰে।</translation>
 <translation id="7400689562045506105">সকলোতে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="766897673682622022">কোনো ডেটা উলংঘনৰ ফলত আপোনাৰ পাছৱৰ্ডটো ফাদিল হৈছে। Chromiumএ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ আপোনাৰ সকলো ডিভাইচত ছাইন ইন কৰক</translation>
 <translation id="8073677936375100957">এই ডিভাইচটোৰ পৰা Chromium ডেটা মচিবনে?</translation>
 <translation id="8175055321229419309">পৰামৰ্শ: <ph name="BEGIN_LINK" />Chromiumক আপোনাৰ ড’কলৈ নিয়ক<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Chromiumক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিবলৈ ছেটিংসমূহ খুলি ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক আৰু Chromium বাছনি কৰক।</translation>
 <translation id="8252885722420466166">আপোনাৰ অৱস্থানৰ ভিত্তিত Chromiumত Google ব্যৱহাৰৰ উৎকৃষ্ট অভিজ্ঞতা লাভ কৰক।</translation>
 <translation id="8586442755830160949">স্বত্ত্বাধিকাৰ <ph name="YEAR" /> The Chromium Authors. সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="8776843108004031667">এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা Chromiumৰ পৰা আঁতৰোৱা হ’ব।</translation>

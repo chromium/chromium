@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
 <translation id="7269362888766543920">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式。</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">如要將 Chromium 設為預設瀏覽器：
-        1. 開啟「設定」。
-        2. 輕觸 [預設的瀏覽器應用程式]。
-        3. 選取 [Chromium]。</translation>
 <translation id="7357211569052832586">系統已將你所選取的資料從 Chromium 和其他同步的裝置中移除。你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
 <translation id="7400689562045506105">Chromium 隨時隨地都能派上用場</translation>
 <translation id="766897673682622022">你的密碼因為資料侵害事件遭到外洩。Chromium 建議你立即變更密碼。</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">在你所有的裝置上登入帳戶後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="8073677936375100957">要清除這個裝置上的 Chromium 資料嗎？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />將 Chromium 移至 Dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">如要將 Chromium 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 Chromium。</translation>
 <translation id="8252885722420466166">Chromium 可根據您的位置資訊提供更優質的 Google 服務。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8776843108004031667">系統會將這個帳戶和所有未儲存的資料從 Chromium 中移除。</translation>

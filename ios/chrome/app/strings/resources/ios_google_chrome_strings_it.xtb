@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Copiata in Chrome</translation>
 <translation id="6648150602980899529">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="6676840375528380067">Eliminare i dati di Chrome dal dispositivo?</translation>
-<translation id="6724102885918156196">Per impostare Chrome come browser predefinito:
-        1. Apri le Impostazioni. 
-        2. Tocca Default Browser App (App browser predefinita).
-        3. Seleziona Chrome.</translation>
 <translation id="6822673484890854830">Chrome non ha potuto controllare tutte le password. Riprova più tardi.</translation>
 <translation id="7165736900384873061">Inizia a utilizzare lo scanner QR di Google Chrome</translation>
 <translation id="7172660552945675509">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chrome nel dock<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome e attiva la sincronizzazione per visualizzare le tue schede</translation>
 <translation id="766361182512894255">La tua password è stata compromessa a causa di una violazione dei dati. Chrome consiglia di cambiare subito la password.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
+<translation id="8045508249136869751">Per impostare Chrome come browser predefinito, apri le Impostazioni, tocca Default Browser App (App browser predefinita) e seleziona Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="840168496893712993">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Prova a disinstallarli.</translation>
 <translation id="8459495907675268833">I dati selezionati sono stati rimossi da Chrome e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>

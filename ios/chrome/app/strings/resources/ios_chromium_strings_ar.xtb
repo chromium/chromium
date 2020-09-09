@@ -47,10 +47,6 @@
 <translation id="725427773388857052">‏يستطيع Chromium مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="7269362888766543920">‏تتسبب بعض الإضافات في تعطل Chromium. يُرجى إلغاء تثبتها.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">‏لجعل Chromium المتصفِّح التلقائي، اتّبِع الخطوات التالية:
-        1- افتح تطبيق Settings (الإعدادات). 
-        2- انقر على Default Browser App (تطبيق المتصفِّح التلقائي).
-        3- اختَر Chromium.</translation>
 <translation id="7357211569052832586">‏تمت إزالة البيانات المُحددة من Chromium والأجهزة التي تمت مزامنتها. قد يحتوي حسابك في Google على نماذج أخرى من سجل التصفح، مثل عمليات البحث والأنشطة من خدمات Google الأخرى في history.google.com.</translation>
 <translation id="7400689562045506105">‏استخدام Chromium في كل مكان</translation>
 <translation id="766897673682622022">‏تم الكشف عن كلمة المرور الخاصة بك في عملية اختراق بيانات. لذا ينصح Chromium بتغيير كلمة المرور الآن.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، سجِّل الدخول على جميع أجهزتك.</translation>
 <translation id="8073677936375100957">‏هل تريد محو بيانات Chromium من هذا الجهاز؟</translation>
 <translation id="8175055321229419309">‏نصيحة: <ph name="BEGIN_LINK" />انقل Chromium إلى شريط الإرساء<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">‏لجعل Chromium المتصفِّح التلقائي، افتح تطبيق Settings (الإعدادات) ثم انقر على Default Browser App (تطبيق المتصفّح التلقائي) واختَر Chromium.</translation>
 <translation id="8252885722420466166">‏احصل على تجربة أفضل لاستخدام Google في Chromium استنادًا إلى موقعك.</translation>
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>
 <translation id="8776843108004031667">‏ستتم إزالة هذا الحساب بالإضافة إلى أي بيانات لم يتم حفظها من Chromium.</translation>

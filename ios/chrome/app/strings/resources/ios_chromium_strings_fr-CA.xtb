@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires.</translation>
 <translation id="7269362888766543920">Certains modules complémentaires provoquent le plantage de Chromium. Veuillez essayer de les désinstaller.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Pour faire de Chromium votre navigateur par défaut :
-        1. Ouvrez les paramètres. 
-        2. Touchez Application de navigation par défaut.
-        3. Sélectionnez Chromium.</translation>
 <translation id="7357211569052832586">Les données sélectionnées ont été supprimées de Chromium et des appareils synchronisés. D'autres formes d'historique de navigation, telles que les recherches et l'activité d'autres services Google, peuvent exister sur votre compte Google. Plus de détails à history.google.com.</translation>
 <translation id="7400689562045506105">Utiliser Chromium partout</translation>
 <translation id="766897673682622022">Votre mot de passe a été exposé dans une violation de données. Chromium vous recommande de modifier ce mot de passe maintenant.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous sur tous vos appareils</translation>
 <translation id="8073677936375100957">Effacer vos données Chromium de cet appareil?</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />déplacez Chromium dans le dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Pour faire de Chromium votre navigateur par défaut, ouvrez Réglages, puis touchez Navigateur par défaut et sélectionnez Chromium.</translation>
 <translation id="8252885722420466166">Profitez d'une meilleure expérience Google dans Chromium en fonction de votre emplacement.</translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> Les auteurs de Chrome. Tous droits réservés.</translation>
 <translation id="8776843108004031667">Ce compte et toutes les données non enregistrées seront supprimés de Chromium.</translation>

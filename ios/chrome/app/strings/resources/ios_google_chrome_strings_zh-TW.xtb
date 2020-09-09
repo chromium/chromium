@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">已複製到 Chrome</translation>
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
-<translation id="6724102885918156196">如要將 Chrome 設為預設瀏覽器：
-        1. 開啟「設定」。
-        2. 輕觸 [預設的瀏覽器應用程式]。
-        3. 選取 [Chrome]。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome QR 掃描器</translation>
 <translation id="7172660552945675509">提示：<ph name="BEGIN_LINK" />將 Chrome 移至 Dock<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="766361182512894255">你的密碼因為資料侵害事件遭到外洩。Chrome 建議你立即變更密碼。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
+<translation id="8045508249136869751">如要將 Chrome 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 Chrome。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
 <translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>

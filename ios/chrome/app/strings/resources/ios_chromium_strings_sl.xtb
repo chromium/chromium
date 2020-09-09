@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
 <translation id="7269362888766543920">Nekateri dodatki povzročajo zrušitve Chromiuma. Poskusite jih odstraniti.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromium nastavite kot privzeti tiskalnik tako:
-        1. Odprite nastavitve. 
-        2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
-        3. Izberite Chromium.</translation>
 <translation id="7357211569052832586">Izbrani podatki so bili odstranjeni iz Chromiuma in sinhroniziranih naprav. V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na history.google.com.</translation>
 <translation id="7400689562045506105">Uporaba Chromiuma povsod</translation>
 <translation id="766897673682622022">Geslo je bilo razkrito zaradi podatkovne kršitve. Chromium priporoča, da takoj spremenite geslo.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, se prijavite v vseh napravah</translation>
 <translation id="8073677936375100957">Ali želite izbrisati podatke v Chromiumu iz te naprave?</translation>
 <translation id="8175055321229419309">Nasvet: <ph name="BEGIN_LINK" />premaknite Chromium v vrstico z aplikacijami<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Če želite Chromium nastaviti kot privzetega, odprite nastavitve, dotaknite se »Privzeti brskalnik« in izberite Chromium.</translation>
 <translation id="8252885722420466166">Izboljšajte izkušnjo z Googlom v Chromiumu na podlagi lokacije.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="8776843108004031667">Ta račun in neshranjeni podatki bodo odstranjeni iz Chromiuma.</translation>

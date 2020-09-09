@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="7269362888766543920">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Sådan gør du Chromium til din standardbrowser:
-        1. Åbn Indstillinger. 
-        2. Tryk på Standardbrowserapp.
-        3. Vælg Chromium.</translation>
 <translation id="7357211569052832586">De valgte data er fjernet fra Chromium og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7400689562045506105">Brug Chromium, uanset hvor du er</translation>
 <translation id="766897673682622022">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Chromium anbefaler, at du skifter din adgangskode med det samme.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Log ind på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
 <translation id="8175055321229419309">Tip! <ph name="BEGIN_LINK" />Flyt Chromium til din dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Du kan gøre Chromium til din standardbrowser ved at åbne Indstillinger, trykke på Standardbrowserapp og vælge Chromium.</translation>
 <translation id="8252885722420466166">Angiv din placering, og få en bedre oplevelse, når du bruger Chromium.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8776843108004031667">Denne konto og data, som ikke er gemt, fjernes fra Chromium.</translation>

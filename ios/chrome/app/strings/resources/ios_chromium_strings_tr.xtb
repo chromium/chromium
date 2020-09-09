@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir.</translation>
 <translation id="7269362888766543920">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen bunların yüklemesini kaldırmayı deneyin.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromium'u varsayılan tarayıcınız yapmak için:
-        1. Ayarlar'ı açın. 
-        2. Varsayılan Tarayıcı Uygulaması'na dokunun.
-        3. Chromium'u seçin.</translation>
 <translation id="7357211569052832586">Seçilen veriler Chromium'dan ve senkronize edilen cihazlardan kaldırıldı. Google Hesabınızda diğer tarama geçmişi biçimleri (örneğin, history.google.com adresindeki diğer Google hizmetlerine bağlı aramalar ve etkinlikler) bulunabilir.</translation>
 <translation id="7400689562045506105">Chromium'u Her Yerde Kullanın</translation>
 <translation id="766897673682622022">Şifreniz bir veri ihlali nedeniyle açığa çıktı. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Chromium kullandığınız her yerde sekmelerinizi görmek için tüm cihazlarınızda oturum açın.</translation>
 <translation id="8073677936375100957">Chromium verileriniz bu cihazdan temizlensin mi?</translation>
 <translation id="8175055321229419309">İpucu: <ph name="BEGIN_LINK" />Chromium'u yuva bölümüne taşıyın<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Chromium'u varsayılan tarayıcınız yapmak için Ayarlar'ı açın, Varsayılan Tarayıcı Uygulaması'na dokunup Chromium'u seçin.</translation>
 <translation id="8252885722420466166">Chromium'da, konumunuza dayalı olarak daha iyi bir Google deneyimi yaşayın.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="8776843108004031667">Bu hesap ve kaydedilmemiş tüm veriler Chromium'dan kaldırılacak.</translation>

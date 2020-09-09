@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Kopirano u Chrome</translation>
 <translation id="6648150602980899529">Prijavljujete se s računom kojim upravlja domena <ph name="DOMAIN" /> i dajete njenom administratoru kontrolu nad vašim podacima iz Chromea. Vaši podaci će se trajno povezati s ovim računom. Odjavom iz Chromea izbrisat će se vaši podaci iz ovog uređaja, ali će ostati pohranjeni na vašem Google računu.</translation>
 <translation id="6676840375528380067">Obrisati Chrome podatke s ovog uređaja?</translation>
-<translation id="6724102885918156196">Da postavite Chrome kao zadani preglednik:
-        1. Otvorite Postavke. 
-        2. Dodirnite Zadana aplikacija preglednika.
-        3. Odaberite Chrome.</translation>
 <translation id="6822673484890854830">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="7165736900384873061">Uključite QR skener u Google Chromeu</translation>
 <translation id="7172660552945675509">Savjet: <ph name="BEGIN_LINK" />Premjestite Chrome na priključnu stranicu<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chrome, prijavite se i uključite sinhronizaciju</translation>
 <translation id="766361182512894255">Vaša lozinka je bila izložena prilikom narušavanja podataka. Chrome preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7698568245838009292">Chrome želi pristup kameri</translation>
+<translation id="8045508249136869751">Da postavite Chrome kao zadani preglednik, otvorite Postavke, dodirnite Zadana aplikacija preglednika i odaberite Chrome.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>
 <translation id="840168496893712993">Neki dodaci uzrokuju pad aplikacije Chromea. Pokušajte ih deinstalirati.</translation>
 <translation id="8459495907675268833">Odabrani podaci su uklonjeni iz Chromea i sinhroniziranih uređaja. Vaš Google račun može imati druge oblike historije pregledanja, kao što su pretraživanja i aktivnosti s drugih Googleovih usluga na history.google.com.</translation>

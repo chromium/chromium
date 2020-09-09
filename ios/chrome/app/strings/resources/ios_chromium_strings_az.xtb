@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
 <translation id="7269362888766543920">Bəzi addonlar Chromium'da xətaya səbəb oldu. Lütfən, onları sistemdən silməyə cəhd edin.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromium'u defolt etmək üçün:
-        1. Ayarları açın. 
-        2. Defolt Brauzer Tətbiqi seçiminə toxunun.
-        3. Chromium seçin.</translation>
 <translation id="7357211569052832586">Seçilmiş data Chromium və sinxronizasiya olunmuş cihazdan silindi. Google Hesabınızın history.google.com linkində axtarış və digər Google xidmətlərindən fəaliyyət kimi axtarış tarixçəsi formaları ola bilər.</translation>
 <translation id="7400689562045506105">Chromium'u Hər yerdə İstifadə edin</translation>
 <translation id="766897673682622022">Parolunuz data pozulması zamanı ələ keçirilib. Chromium parolunuzu indi dəyişməyi məsləhət görür.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Chromium istifadə etdiyiniz hər yerdən tabları görmək üçün bütün cihazlarda daxil olun</translation>
 <translation id="8073677936375100957">Chromium datası bu cihazdan silinsin?</translation>
 <translation id="8175055321229419309">İp ucu: <ph name="BEGIN_LINK" />Chromium'u masaüstünüzə köçürün<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Chromium'u defolt etmək üçün Ayarları açın, Defolt Brauzer Tətbiqinə toxunun və Chromium'u seçin.</translation>
 <translation id="8252885722420466166">Məkanınıza əsasən Chromium'da daha yaxşı təcrübə əldə edin.</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="8776843108004031667">Bu hesab və bütün saxlanmamış data Chromium'dan silinəcək.</translation>

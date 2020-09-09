@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Kopiert til Chrome</translation>
 <translation id="6648150602980899529">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de lagres fortsatt i Google-kontoen din.</translation>
 <translation id="6676840375528380067">Vil du fjerne Chrome-dataene dine fra denne enheten?</translation>
-<translation id="6724102885918156196">Slik velger du Chrome som standard:
-        1. Åpne Innstillinger. 
-        2. Trykk på «Standard nettleserapp» (eller lignende).
-        3. Velg Chrome.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
 <translation id="7165736900384873061">Begynn å bruke Google Chrome QR-skanneren</translation>
 <translation id="7172660552945675509">Tips: <ph name="BEGIN_LINK" />Flytt Chrome til dokken<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">For å se fanene dine overalt hvor du bruker Chrome, logg på og slå på synkronisering</translation>
 <translation id="766361182512894255">Passordet ditt har vært avdekket i et databrudd. Chrome anbefaler at du bytter passord nå.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
+<translation id="8045508249136869751">For å velge Chrome som standardnettleser, åpne Innstillinger, trykk på Standard nettleserapp, og velg Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="840168496893712993">Noen tillegg fører til at Chrome krasjer. Prøv å avinstallere dem.</translation>
 <translation id="8459495907675268833">De valgte dataene er fjernet fra Chrome og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>

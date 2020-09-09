@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="7269362888766543920">ส่วนเสริมบางรายการทำให้ Chromium ขัดข้อง โปรดลองถอนการติดตั้งส่วนเสริมนั้น</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">หากต้องการกำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้น ให้ทำดังนี้
-        1. เปิดการตั้งค่า 
-        2. แตะแอปเบราว์เซอร์เริ่มต้น
-        3. เลือก Chromium</translation>
 <translation id="7357211569052832586">ระบบได้นำข้อมูลที่เลือกไว้ออกจาก Chromium และอุปกรณ์ที่ซิงค์แล้ว บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ เช่น การค้นหาและกิจกรรมจากบริการอื่นๆ ของ Google ที่ history.google.com</translation>
 <translation id="7400689562045506105">ใช้ Chromium ได้ทุกที่</translation>
 <translation id="766897673682622022">รหัสผ่านของคุณถูกเปิดเผยในการละเมิดข้อมูล Chromium ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
 <translation id="8073677936375100957">ล้างข้อมูล Chromium ของคุณออกจากอุปกรณ์นี้ไหม</translation>
 <translation id="8175055321229419309">เคล็ดลับ: <ph name="BEGIN_LINK" />ย้าย Chromium ไปไว้ที่ Dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">ในการกำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้น ให้เปิดการตั้งค่าแล้วแตะ "แอปเบราว์เซอร์เริ่มต้น" จากนั้นเลือก Chromium</translation>
 <translation id="8252885722420466166">รับประสบการณ์การใช้งาน Google ที่ดีขึ้นใน Chromium โดยอิงจากตำแหน่งของคุณ</translation>
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="8776843108004031667">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chromium</translation>

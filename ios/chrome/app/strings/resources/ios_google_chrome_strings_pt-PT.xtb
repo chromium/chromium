@@ -46,10 +46,6 @@
 <translation id="6600954340915313787">Copiado para o Chrome</translation>
 <translation id="6648150602980899529">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="6676840375528380067">Pretende limpar os dados do Chrome deste dispositivo?</translation>
-<translation id="6724102885918156196">Para definir o Chrome como o navegador predefinido:
-        1. Abra as Definições. 
-        2. Toque em App de navegador predefinida.
-        3. Selecione o Chrome.</translation>
 <translation id="6822673484890854830">O Chrome não conseguiu verificar todas as palavras-passe. Tente novamente mais tarde.</translation>
 <translation id="7165736900384873061">Começar a utilizar o leitor de QR do Google Chrome</translation>
 <translation id="7172660552945675509">Sugestão: <ph name="BEGIN_LINK" />mova o Chrome para a Dock<ph name="END_LINK" /></translation>
@@ -63,6 +59,7 @@
 <translation id="7662994914830945754">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, inicie sessão e ative a sincronização.</translation>
 <translation id="766361182512894255">A sua palavra-passe foi exposta numa violação de dados. O Chrome recomenda a alteração da palavra-passe agora.</translation>
 <translation id="7698568245838009292">O Chrome pretende aceder à câmara</translation>
+<translation id="8045508249136869751">Para definir o Chrome como o navegador predefinido, abra as Definições, toque em App de navegador predefinida e selecione o Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns suplementos provocam falhas no sistema do Chrome. Tente desinstalá-los.</translation>
 <translation id="8459495907675268833">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em history.google.com.</translation>

@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium kan je beschermen tegen gegevenslekken, niet-beveiligde websites en meer.</translation>
 <translation id="7269362888766543920">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder deze add-ons.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromium instellen als je standaardbrowser:
-        1. Open 'Instellingen'. 
-        2. Tik op 'Standaard browser-app'.
-        3. Selecteer 'Chromium'.</translation>
 <translation id="7357211569052832586">De geselecteerde gegevens zijn verwijderd uit Chromium en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via history.google.com.</translation>
 <translation id="7400689562045506105">Chromium overal gebruiken</translation>
 <translation id="766897673682622022">Je wachtwoord is gelekt bij een gegevenslek. Chromium raadt je aan om het wachtwoord nu te wijzigen.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="8073677936375100957">Je Chromium-gegevens van dit apparaat wissen?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Verplaats Chromium naar je dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Chromium instellen als je standaardbrowser: open 'Instellingen', tik op 'Standaard browser-app' en selecteer 'Chromium'.</translation>
 <translation id="8252885722420466166">Gebruik Google in Chromium beter en efficiënter op basis van je locatie.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="8776843108004031667">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chromium.</translation>

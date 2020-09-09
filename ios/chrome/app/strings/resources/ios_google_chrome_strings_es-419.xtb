@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Se copió en Chrome.</translation>
 <translation id="6648150602980899529">Estás accediendo con una cuenta administrada por <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>
 <translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome de este dispositivo?</translation>
-<translation id="6724102885918156196">Para establecer Chrome como navegador predeterminado, haz lo siguiente:
-        1. Abre Settings. 
-        2. Presiona Default Browser App.
-        3. Selecciona Chrome.</translation>
 <translation id="6822673484890854830">Chrome no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="7165736900384873061">Usar el escáner QR en Google Chrome</translation>
 <translation id="7172660552945675509">Sugerencia: <ph name="BEGIN_LINK" />Lleva Chrome a tu Dock<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta y activa la sincronización</translation>
 <translation id="766361182512894255">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. Chrome te recomienda cambiarla ahora.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
+<translation id="8045508249136869751">Para establecer Chrome como navegador predeterminado, abre Settings y Default Browser App; luego, selecciona Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos causan bloqueos en Chrome. Prueba a desinstalarlos.</translation>
 <translation id="8459495907675268833">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>

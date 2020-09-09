@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga.</translation>
 <translation id="7269362888766543920">Neki programski dodaci uzrokuju pad aplikacije Chromium. Pokušajte ih deinstalirati.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Da postavite Chromium kao zadani preglednik:
-        1. Otvorite Postavke. 
-        2. Dodirnite Zadana aplikacija preglednika.
-        3. Odaberite Chromium.</translation>
 <translation id="7357211569052832586">Odabrani podaci su uklonjeni iz Chromiuma i sinhroniziranih uređaja. Vaš Google uređaj može imati druge oblike historije pregledanja kao što su pretraživanja i aktivnosti s drugih Googleovih usluga na history.google.com.</translation>
 <translation id="7400689562045506105">Koristite Chromium svugdje</translation>
 <translation id="766897673682622022">Vaša lozinka je bila izložena prilikom narušavanja podataka. Chromium preporučuje da odmah promijenite lozinku.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se na svim uređajima</translation>
 <translation id="8073677936375100957">Izbrisati Chromium podatke s ovog uređaja?</translation>
 <translation id="8175055321229419309">Savjet: <ph name="BEGIN_LINK" />Pomjerite Chromium na priključnu stranicu<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Da postavite Chromium kao zadani preglednik, otvorite Postavke, dodirnite Zadana aplikacija preglednika i odaberite Chromium.</translation>
 <translation id="8252885722420466166">Ostvarite bolje iskustvo s Googleom u Chromiumu na osnovu svoje lokacije.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" /> Autori Chromiuma. Sva prava zadržana.</translation>
 <translation id="8776843108004031667">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromiuma.</translation>

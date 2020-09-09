@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="7269362888766543920">Noen tillegg fører til at Chromium krasjer. Prøv å avinstallere dem.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Slik velger du Chromium som standardnettleser:
-        1. Åpne Innstillinger. 
-        2. Trykk på «Standard nettleserapp» (eller lignende).
-        3. Velg Chromium.</translation>
 <translation id="7357211569052832586">De valgte dataene er fjernet fra Chromium og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7400689562045506105">Bruk Chromium overalt</translation>
 <translation id="766897673682622022">Passordet ditt har vært avdekket i et databrudd. Chromium anbefaler at du bytter passord nå.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Flytt Chromium til dokken<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">For å velge Chromium som standardnettleser, åpne Innstillinger, trykk på Standard nettleserapp, og velg Chromium.</translation>
 <translation id="8252885722420466166">Få en bedre Google-opplevelse i Chromium basert på hvor du er.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>

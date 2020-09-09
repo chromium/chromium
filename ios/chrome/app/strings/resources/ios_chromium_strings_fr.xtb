@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="7269362888766543920">Certains modules complémentaires entraînent le plantage de Chromium. Veuillez essayer de les désinstaller.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Pour définir Chromium comme votre navigateur par défaut, procédez comme suit :
-        1. Accédez aux réglages. 
-        2. Appuyez sur "Navigateur par défaut".
-        3. Sélectionnez "Chromium".</translation>
 <translation id="7357211569052832586">Les données sélectionnées ont été supprimées de Chromium et des appareils synchronisés. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page history.google.com concernant, par exemple, vos recherches ou vos activités via d'autres services Google.</translation>
 <translation id="7400689562045506105">Utilisez Chromium où que vous soyez</translation>
 <translation id="766897673682622022">Votre mot de passe a été compromis lors d'une violation des données. Chromium vous recommande de le modifier immédiatement.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous à votre compte</translation>
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />Placez Chromium dans le dock.<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Pour définir Chromium comme votre navigateur par défaut, ouvrez "Paramètres", appuyez sur "Navigateur par défaut", puis sélectionnez "Chromium".</translation>
 <translation id="8252885722420466166">Améliorez votre expérience Google dans Chromium grâce à votre position.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>

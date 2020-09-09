@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium dapat membantu Anda agar tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya.</translation>
 <translation id="7269362888766543920">Beberapa add-on telah menyebabkan Chromium berhenti bekerja. Harap coba uninstal.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Untuk menjadikan Chromium sebagai default:
-        1. Buka Settings. 
-        2. Ketuk Default Browser App.
-        3. Pilih Chromium.</translation>
 <translation id="7357211569052832586">Data yang dipilih telah dihapus dari Chromium dan perangkat yang disinkronkan. Akun Google Anda mungkin memiliki bentuk histori penelusuran lain seperti penelusuran dan aktivitas dari layanan Google lainnya di history.google.com.</translation>
 <translation id="7400689562045506105">Gunakan Chromium di Mana Saja</translation>
 <translation id="766897673682622022">Sandi Anda terekspos saat terjadi pelanggaran data. Chromium merekomendasikan untuk mengubah sandi sekarang.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Untuk melihat tab Chromium Anda dari perangkat lain, login ke semua perangkat Anda</translation>
 <translation id="8073677936375100957">Hapus data Chromium Anda dari perangkat ini?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Pindahkan Chromium ke dok<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Agar Chromium menjadi browser default Anda, Buka Setelan, ketuk Aplikasi Browser Default, lalu pilih Chromium.</translation>
 <translation id="8252885722420466166">Dapatkan pengalaman menggunakan Google yang lebih baik di Chromium berdasarkan lokasi Anda.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8776843108004031667">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chromium.</translation>

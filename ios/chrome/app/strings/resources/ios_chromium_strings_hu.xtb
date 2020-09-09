@@ -47,10 +47,6 @@
 <translation id="725427773388857052">A Chromium segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
 <translation id="7269362888766543920">Bizonyos bővítmények a Chromium összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">A Chromium beállítása alapértelmezett böngészőként:
-        1. Nyissa meg a Beállításokat. 
-        2. Koppintson az Alapértelmezett böngésző lehetőségre.
-        3. Válassza ki a Chromium böngészőt.</translation>
 <translation id="7357211569052832586">A kiválasztott adatokat eltávolítottuk a Chromiumból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
 <translation id="7400689562045506105">A Chromium mindenhol használható</translation>
 <translation id="766897673682622022">Jelszava adatvédelmi incidens során nyilvánosságra került. A Chromium a jelszó azonnali módosítását javasolja.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Jelentkezzen be minden eszközén, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
 <translation id="8073677936375100957">Törli Chromium-adatait az eszközről?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Helyezze át a Chromiumot a Dockra<ph name="END_LINK" />.</translation>
+<translation id="8235785158661376110">Ha alapértelmezett böngészőként szeretné beállítani a Chromiumot, nyissa meg a Beállításokat, koppintson az Alapértelmezett böngésző lehetőségre, majd válassza ki a Chromiumot.</translation>
 <translation id="8252885722420466166">Jobb Google-felhasználói élmény a Chromiumban a tartózkodási hely alapján.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8776843108004031667">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chromiumból.</translation>

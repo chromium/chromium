@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Copiada de Chrome</translation>
 <translation id="6648150602980899529">Esteu iniciant la sessió amb un compte gestionat per <ph name="DOMAIN" /> i esteu proporcionant a l'administrador el control de les vostres dades de Chrome. Les dades estaran permanentment lligades a aquest compte. Si tanqueu la sessió de Chrome, se suprimiran les vostres dades d'aquest dispositiu, però continuaran emmagatzemades al compte de Google.</translation>
 <translation id="6676840375528380067">Vols esborrar les dades de Chrome del dispositiu?</translation>
-<translation id="6724102885918156196">Per establir Chrome com a navegador predeterminat, fes el següent:
-        1. Obre Configuració. 
-        2. Toca Aplicació de navegador predeterminada.
-        3. Selecciona Chrome.</translation>
 <translation id="6822673484890854830">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="7165736900384873061">Comença a utilitzar l'escàner QR de Google Chrome</translation>
 <translation id="7172660552945675509">Consell: <ph name="BEGIN_LINK" />moveu Chrome al Dock<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió i activa la sincronització</translation>
 <translation id="766361182512894255">La teva contrasenya ha quedat exposada en l'àmbit d'una violació de les dades. Chrome et recomana que canviïs la contrasenya ara.</translation>
 <translation id="7698568245838009292">Chrome sol·licita accés a la càmera</translation>
+<translation id="8045508249136869751">Per establir Chrome com a navegador predeterminat, obre Configuració, toca Aplicació de navegador predeterminada i selecciona Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="840168496893712993">Alguns complements fan que Chrome es bloquegi. Proveu de desinstal·lar-los.</translation>
 <translation id="8459495907675268833">Les dades seleccionades s'han suprimit de Chrome i dels dispositius sincronitzats. És possible que el vostre compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>

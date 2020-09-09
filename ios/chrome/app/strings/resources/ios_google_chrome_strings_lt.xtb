@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Nukopijuota į „Chrome“</translation>
 <translation id="6648150602980899529">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chrome“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chrome“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
 <translation id="6676840375528380067">Išvalyti jūsų „Chrome“ duomenis iš šio įrenginio?</translation>
-<translation id="6724102885918156196">Jei norite nustatyti „Chrome“ kaip numatytąją naršyklę, atlikite toliau nurodytus veiksmus.
-        1. Atidarykite „Nustatymų“ skiltį. 
-        2. Palieskite „Numatytoji naršyklės programa“.
-        3. Pasirinkite „Chrome“.</translation>
 <translation id="6822673484890854830">„Chrome“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą vėliau.</translation>
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>
 <translation id="7172660552945675509">Patarimas: <ph name="BEGIN_LINK" />perkelkite „Chrome“ į doką<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="766361182512894255">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. „Chrome“ rekomenduoja dabar pakeisti slaptažodį.</translation>
 <translation id="7698568245838009292">„Chrome“ nori pasiekti fotoaparatą</translation>
+<translation id="8045508249136869751">Jei norite nustatyti „Chrome“ kaip numatytąją naršyklę, atidarykite skiltį „Nustatymai“, palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chrome“.</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="840168496893712993">Dėl tam tikrų priedų „Chrome“ užstringa. Pabandykite juos pašalinti.</translation>
 <translation id="8459495907675268833">Pasirinkti duomenys pašalinti iš „Chrome“ ir sinchronizuojamų įrenginių. Adresu history.google.com gali būti pateikta kitų formų jūsų „Google“ paskyros istorija, pvz., paieškos ir veikla kitose „Google“ paslaugose.</translation>

@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium vam može pomoći da se bolje zaštitite od povrede podataka, nesigurnih web-lokacija i još mnogo toga.</translation>
 <translation id="7269362888766543920">Neki programski dodaci uzrokuju rušenje Chromiuma. Pokušajte ih deinstalirati.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Da biste postavili Chromium kao zadani preglednik:
-        1. Otvorite Postavke. 
-        2. Dodirnite opciju Zadana aplikacija preglednika.
-        3. Odaberite Chromium.</translation>
 <translation id="7357211569052832586">Odabrani podaci uklonjeni su iz Chromiuma i sa sinkroniziranih uređaja. Na Google računu možda postoje drugi oblici povijesti pregledavanja, primjerice pretraživanja i aktivnosti s drugih Googleovih usluga, na stranici history.google.com.</translation>
 <translation id="7400689562045506105">Upotrebljavajte Chromium svugdje</translation>
 <translation id="766897673682622022">Vaša je zaporka ugrožena zbog povrede podataka. Chromium preporučuje da je odmah promijenite.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chromium, prijavite se na svim svojim uređajima</translation>
 <translation id="8073677936375100957">Želite li izbrisati svoje podatke iz Chromiuma s ovog uređaja?</translation>
 <translation id="8175055321229419309">Savjet: <ph name="BEGIN_LINK" />premjestite Chromium na priključnu stanicu<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Da biste Chromium postavili kao zadani preglednik, otvorite Postavke, Zadana aplikacija preglednika i odaberite Chromium.</translation>
 <translation id="8252885722420466166">Doživite Google na bolji način u Chromiumu na temelju svoje lokacije.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromiuma. Sva prava pridržana.</translation>
 <translation id="8776843108004031667">Taj račun i svi nespremljeni podaci uklonit će se iz Chromiuma.</translation>

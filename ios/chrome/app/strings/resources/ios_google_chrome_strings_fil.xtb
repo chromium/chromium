@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Kinopya sa Chrome</translation>
 <translation id="6648150602980899529">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="6676840375528380067">I-clear ang iyong data sa Chrome sa device na ito?</translation>
-<translation id="6724102885918156196">Para itakda ang Chrome bilang iyong default:
-        1. Buksan ang Mga Setting. 
-        2. I-tap ang Default na Browser App.
-        3. Piliin ang Chrome.</translation>
 <translation id="6822673484890854830">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7165736900384873061">Simulan ang paggamit ng QR scanner ng Google Chrome</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Ilipat ang Chrome sa iyong dock<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in at i-on ang pag-sync</translation>
 <translation id="766361182512894255">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Chromium na palitan ang password ngayon.</translation>
 <translation id="7698568245838009292">Gustong I-access ng Chrome ang Camera</translation>
+<translation id="8045508249136869751">Para itakda ang Chrome bilang iyong default, Buksan ang Mga Setting, i-tap ang Default na Browser App, at piliin ang Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="840168496893712993">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Pakisubukang i-uninstall ang mga ito.</translation>
 <translation id="8459495907675268833">Inalis ang piniling data mula sa Chrome at mga naka-sync na device. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account gaya ng mga paghahanap at aktibidad mula sa iba pang mga serbisyo ng Google sa history.google.com.</translation>

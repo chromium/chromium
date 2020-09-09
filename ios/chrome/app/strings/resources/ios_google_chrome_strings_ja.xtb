@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Chrome にコピー済み</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" /> で管理されているアカウントでログインし、管理者に Chrome データの管理を委託します。今後 Chrome データはこのアカウントに関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントで保持されます。</translation>
 <translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
-<translation id="6724102885918156196">Chrome を既定のブラウザにするには:
-        1. [設定] を開きます。
-        2. [デフォルトのブラウザアプリ] をタップします。
-        3. [Chrome] を選択します。</translation>
 <translation id="6822673484890854830">Chrome ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>
 <translation id="7172660552945675509">ヒント: <ph name="BEGIN_LINK" />Chrome を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">どのデバイスからでも Chrome で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="766361182512894255">データ侵害によってパスワードが漏洩しました。パスワードをすぐに変更することをおすすめします。</translation>
 <translation id="7698568245838009292">Chrome がカメラへのアクセス許可を求めています</translation>
+<translation id="8045508249136869751">Chrome を既定のブラウザにするには、[設定] を開き、[デフォルトのブラウザアプリ] をタップして、Chrome を選択します。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">アドオンが原因でChromeがクラッシュしました。アドオンをアンインストールしてみてください。</translation>
 <translation id="8459495907675268833">選択したデータが Chrome から削除され、同期されたデバイスからも削除されました。他の Google サービスでの検索や操作など、Google アカウントの他の形式の閲覧履歴が history.google.com に残ることがあります。</translation>

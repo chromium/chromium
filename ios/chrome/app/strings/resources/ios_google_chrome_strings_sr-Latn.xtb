@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Kopirana u Chrome</translation>
 <translation id="6648150602980899529">Prijavljujete se pomoću naloga kojim upravlja <ph name="DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="6676840375528380067">Želite li da obrišete Chrome podatke sa ovog uređaja?</translation>
-<translation id="6724102885918156196">Da biste postavili Chrome za podrazumevani pregledač:
-        1. Otvorite Podešavanja. 
-        2. Dodirnite Podrazumevana aplikacija za pregledanje.
-        3. Izaberite Chrome.</translation>
 <translation id="6822673484890854830">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="7165736900384873061">Počnite da koristite Google Chrome QR skener</translation>
 <translation id="7172660552945675509">Savet: <ph name="BEGIN_LINK" />Premestite Chrome na dok<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se i uključite sinhronizaciju</translation>
 <translation id="766361182512894255">Vaša lozinka je otkrivena pri upadu u podatke. Chrome preporučuje da odmah promenite lozinku.</translation>
 <translation id="7698568245838009292">Chrome želi da pristupi kameri</translation>
+<translation id="8045508249136869751">Da bi Chrome bio podrazumevan, otvorite Podešavanja, dodirnite Podrazumevana aplikacija za pregledanje i izaberite Chrome.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci izazivaju otkazivanje Chrome-a. Pokušajte da ih deinstalirate.</translation>
 <translation id="8459495907675268833">Izabrani podaci su uklonjeni iz Chrome-a i sa sinhronizovanih uređaja. Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i aktivnosti u drugim Google uslugama na history.google.com.</translation>

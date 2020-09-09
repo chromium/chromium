@@ -46,10 +46,6 @@
 <translation id="725427773388857052">Chromium kann dazu beitragen, Sie beispielsweise vor Datenpannen und unsicheren Websites zu schützen</translation>
 <translation id="7269362888766543920">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstallieren Sie diese Add-ons.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">So legen Sie Chromium als Standardbrowser fest:
-        1. Öffnen Sie die Einstellungen. 
-        2. Tippen Sie auf "Standard-Webbrowser".
-        3. Wählen Sie Chromium aus.</translation>
 <translation id="7357211569052832586">Die ausgewählten Daten wurden aus Chromium und von allen synchronisierten Geräten entfernt. Eventuell finden Sie unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für Ihr Google-Konto.</translation>
 <translation id="7400689562045506105">Chromium überall nutzen</translation>
 <translation id="766897673682622022">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Chromium empfiehlt, das Passwort jetzt zu ändern.</translation>
@@ -60,6 +56,7 @@
 <translation id="8013573822802650211">Melden Sie sich auf allen Ihren Geräten an, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
 <translation id="8073677936375100957">Ihre Chromium-Daten von diesem Gerät löschen?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Ziehen Sie Chromium in Ihr Dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Wenn Sie Chromium als Standardbrowser festlegen möchten, öffnen Sie die Einstellungen, tippen Sie auf "Standard-Webbrowser" und wählen Sie dann "Chromium" aus.</translation>
 <translation id="8252885722420466166">Geben Sie Ihren Standort an, um Google über Chromium noch besser nutzen zu können.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>

@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="7269362888766543920">部分插件会导致 Chromium 崩溃，请尝试卸载这些插件。</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">若要将 Chromium 设为默认浏览器，请执行以下操作：
-        1. 打开“设置”。
-        2. 点按“默认浏览器应用”。
-        3. 选择“Chromium”。</translation>
 <translation id="7357211569052832586">所选数据已从 Chromium 和同步的设备中移除。不过，您的 Google 帐号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="7400689562045506105">随时随地使用 Chromium</translation>
 <translation id="766897673682622022">您的密码遭遇了数据泄露。Chromium 建议您立即更改此密码。</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">要查看您在其他设备上用 Chromium 打开的标签页，请在所有设备上登录</translation>
 <translation id="8073677936375100957">从这部设备中清除您的 Chromium 数据？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />将 Chromium 移到 Dock 中<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">若要将 Chromium 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chromium”。</translation>
 <translation id="8252885722420466166">Chromium 可根据您的位置信息为您提供更好的 Google 产品使用体验。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此帐号以及所有未保存的数据。</translation>

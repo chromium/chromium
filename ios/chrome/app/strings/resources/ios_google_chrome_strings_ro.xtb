@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Copiat în Chrome</translation>
 <translation id="6648150602980899529">Te conectezi cu un cont gestionat de <ph name="DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="6676840375528380067">Ștergi datele tale Chrome de pe acest dispozitiv?</translation>
-<translation id="6724102885918156196">Pentru a seta Chrome ca browser prestabilit:
-        1. deschide Setările; 
-        2. atinge Aplicația browser prestabilită;
-        3. selectează Chrome.</translation>
 <translation id="6822673484890854830">Chrome nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="7165736900384873061">Începe să folosești scanerul QR din Google Chrome</translation>
 <translation id="7172660552945675509">Sfat: <ph name="BEGIN_LINK" />mută Chrome în bara de andocare<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Pentru a vedea toate filele tale deschise în Chrome, conectează-te și activează sincronizarea</translation>
 <translation id="766361182512894255">Parola a fost expusă în urma încălcării securității datelor. Chrome recomandă să-ți schimbi acum parola.</translation>
 <translation id="7698568245838009292">Chrome vrea să acceseze camera foto</translation>
+<translation id="8045508249136869751">Pentru a seta Chrome ca browser prestabilit, deschide Setări, atinge Aplicația browser prestabilită și selectează Chrome.</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="840168496893712993">Unele suplimente determină blocarea browserului Chrome. Încearcă să le dezinstalezi.</translation>
 <translation id="8459495907675268833">Datele selectate au fost eliminate din Chrome și de pe dispozitivele sincronizate. Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi căutările și activitatea din alte servicii Google, la history.google.com.</translation>

@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta.</translation>
 <translation id="7269362888766543920">Jokin laajennus kaataa Chromiumin. Kokeile poistaa laajennuksia.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Näin teet Chromiumista oletusselaimesi:
-        1. Avaa Asetukset. 
-        2. Valitse Oletusselain.
-        3. Valitse Chromium.</translation>
 <translation id="7357211569052832586">Valitut tiedot on poistettu Chromiumista ja synkronoiduilta laitteilta. Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toimintaa muista Google-palveluista. Voit katsella tietoja osoitteessa history.google.com.</translation>
 <translation id="7400689562045506105">Käytä Chromiumia missä tahansa</translation>
 <translation id="766897673682622022">Salasanasi vaarantui tietosuojaloukkauksessa. Chromium suosittelee salasanan vaihtamista välittömästi.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="8073677936375100957">Poistetaanko Chromium-data tältä laitteelta?</translation>
 <translation id="8175055321229419309">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chromium Dockiin<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Voit tehdä Chromiumista oletusselaimesi avaamalla Asetukset ja valitsemalla Oletusselainsovellus ja sitten Chromium.</translation>
 <translation id="8252885722420466166">Saat sijaintitietojen avulla paremman Googlen käyttökokemuksen Chromiumissa.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8776843108004031667">Tämä tili ja kaikki tallentamaton data poistetaan Chromiumista.</translation>

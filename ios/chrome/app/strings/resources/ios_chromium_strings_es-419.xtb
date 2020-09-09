@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="7269362888766543920">Algunos complementos causan fallos en Chromium. Intenta desinstalarlos.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Para establecer Chromium como navegador predeterminado, haz lo siguiente:
-        1. Abre Configuración. 
-        2. Presiona Default Browser App (Aplicación de navegador predeterminada).
-        3. Selecciona Chromium.</translation>
 <translation id="7357211569052832586">Los datos seleccionados se quitaron de Chromium y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>
 <translation id="7400689562045506105">Usa Chromium en todas partes</translation>
 <translation id="766897673682622022">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. Chromium te recomienda cambiarla ahora.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium de este dispositivo?</translation>
 <translation id="8175055321229419309">Sugerencia: <ph name="BEGIN_LINK" />Lleva Chromium a tu Dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Para establecer Chromium como navegador predeterminado, abre Settings y Default Browser App; luego, selecciona Chromium.</translation>
 <translation id="8252885722420466166">Obtén una mejor experiencia de Google en Chromium según tu ubicación.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8776843108004031667">Esta cuenta y todos los datos sin guardar se quitarán de Chromium.</translation>

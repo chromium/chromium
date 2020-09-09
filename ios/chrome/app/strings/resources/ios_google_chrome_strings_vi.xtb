@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Đã sao chép vào Chrome</translation>
 <translation id="6648150602980899529">Bạn đang đăng nhập bằng tài khoản do <ph name="DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
 <translation id="6676840375528380067">Xóa dữ liệu Chrome của bạn khỏi thiết bị này?</translation>
-<translation id="6724102885918156196">Cách đặt Chrome làm trình duyệt mặc định:
-        1. Mở phần Cài đặt. 
-        2. Nhấn vào Ứng dụng trình duyệt mặc định.
-        3. Chọn Chrome.</translation>
 <translation id="6822673484890854830">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
 <translation id="7165736900384873061">Bắt đầu dùng trình quét QR của Chrome</translation>
 <translation id="7172660552945675509">Mẹo: <ph name="BEGIN_LINK" />Di chuyển Chrome sang thanh dock<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chrome, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="766361182512894255">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Chrome khuyên bạn nên đổi ngay mật khẩu.</translation>
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
+<translation id="8045508249136869751">Để đặt Chrome làm trình duyệt mặc định, hãy mở phần Cài đặt, nhấn vào Ứng dụng trình duyệt mặc định rồi chọn Chrome.</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="840168496893712993">Một số tiện ích bổ sung khiến Chrome trục trặc. Hãy thử gỡ cài đặt chúng.</translation>
 <translation id="8459495907675268833">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại history.google.com.</translation>

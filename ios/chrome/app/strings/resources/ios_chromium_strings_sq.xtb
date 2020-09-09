@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
 <translation id="7269362888766543920">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Provo t'i çinstalosh ata.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Për ta bërë Chromium shfletuesin e parazgjedhur:
-        1. Hap "Cilësimet". 
-        2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit".
-        3. Zgjidh Chromium.</translation>
 <translation id="7357211569052832586">Të dhënat e zgjedhura janë hequr nga Chromium dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google në history.google.com.</translation>
 <translation id="7400689562045506105">Përdore Chromium kudo</translation>
 <translation id="766897673682622022">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Për të parë skedat e tua nga çdo vend ku përdor Chromium, identifikohu në të gjitha pajisjet e tua</translation>
 <translation id="8073677936375100957">Të pastrohen të dhënat e tua të Chromium nga kjo pajisje?</translation>
 <translation id="8175055321229419309">Këshillë: <ph name="BEGIN_LINK" />Zhvendose Chromium te stacioni yt<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Për ta bërë Chromium shfletuesin e parazgjedhur, hap "Cilësimet", trokit tek "Aplikacioni i parazgjedhur i shfletuesit" dhe zgjidh "Chromium".</translation>
 <translation id="8252885722420466166">Përjeto një përvojë më të mirë të Google në Chromium bazuar në vendndodhjen tënde.</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="8776843108004031667">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chromium.</translation>

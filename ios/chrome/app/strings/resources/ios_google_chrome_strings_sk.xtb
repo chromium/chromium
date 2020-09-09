@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Skopírovaná do prehliadača Chrome</translation>
 <translation id="6648150602980899529">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="DOMAIN" /> a jej správcovi tým dávate kontrolu nad vašimi údajmi prehliadača Chrome. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z Chromu odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
 <translation id="6676840375528380067">Chcete vymazať údaje Chromu z tohto zariadenia?</translation>
-<translation id="6724102885918156196">Ak chcete Chrome nastaviť ako predvolený prehliadač, postupujte nasledovne:
-        1. Otvorte Nastavenia. 
-        2. Klepnite na predvolenú aplikáciu prehliadača.
-        3. Vyberte Chrome.</translation>
 <translation id="6822673484890854830">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova neskôr.</translation>
 <translation id="7165736900384873061">Začnite používať čítačku QR prehliadača Google Chrome</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Presuňte Chrome do doku<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="766361182512894255">V rámci porušenia ochrany údajov bolo prezradené vaše heslo. Chrome vám ho odporúča okamžite zmeniť.</translation>
 <translation id="7698568245838009292">Chrome chce použiť fotoaparát</translation>
+<translation id="8045508249136869751">Ak chcete Chrome nastaviť ako predvolený prehliadač, otvorte Nastavenia, klepnite na položku Predvolený prehliadač a vyberte Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="840168496893712993">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Skúste ich odinštalovať.</translation>
 <translation id="8459495907675268833">Vybraté údaje boli odstránené z Chromu a synchronizovaných zariadení. Váš účet Google môže mať na adrese history.google.com ďalšie formy histórie prehliadania, ako napríklad vyhľadávania a aktivity v iných službách Google.</translation>

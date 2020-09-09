@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
 <translation id="7269362888766543920">Một số tiện ích bổ sung khiến Chromium trục trặc. Hãy thử gỡ cài đặt chúng.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Cách đặt Chromium làm trình duyệt mặc định:
-        1. Mở phần Cài đặt. 
-        2. Nhấn vào Ứng dụng trình duyệt mặc định.
-        3. Chọn Chromium.</translation>
 <translation id="7357211569052832586">Dữ liệu được chọn đã bị xóa khỏi Chromium và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại history.google.com.</translation>
 <translation id="7400689562045506105">Sử dụng Chromium mọi nơi</translation>
 <translation id="766897673682622022">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Chromium khuyên bạn nên đổi ngay mật khẩu.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị</translation>
 <translation id="8073677936375100957">Xóa dữ liệu Chromium của bạn khỏi thiết bị này?</translation>
 <translation id="8175055321229419309">Mẹo: <ph name="BEGIN_LINK" />Di chuyển Chromium sang thanh dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Để đặt Chromium làm trình duyệt mặc định, hãy mở phần Cài đặt, nhấn vào Ứng dụng trình duyệt mặc định rồi chọn Chromium.</translation>
 <translation id="8252885722420466166">Có được trải nghiệm Google tốt hơn trong Chromium dựa trên vị trí của bạn.</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="8776843108004031667">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chromium.</translation>

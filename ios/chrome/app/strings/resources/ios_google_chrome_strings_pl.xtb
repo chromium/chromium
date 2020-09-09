@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Skopiowana do Chrome</translation>
 <translation id="6648150602980899529">Logujesz się na konto, którym zarządza <ph name="DOMAIN" />, i przekazujesz jego administratorowi kontrolę nad Twoimi danymi Chrome. Zostaną one trwale przypisane do tego konta. Gdy się wylogujesz, znikną one z tego urządzenia, ale pozostaną zapisane na Twoim koncie Google.</translation>
 <translation id="6676840375528380067">Usunąć dane Chrome z tego urządzenia?</translation>
-<translation id="6724102885918156196">Aby ustawić Chrome jako przeglądarkę domyślną:
-        1. Wybierz Ustawienia. 
-        2. Kliknij Domyślna przeglądarka.
-        3. Wybierz Chrome.</translation>
 <translation id="6822673484890854830">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie później.</translation>
 <translation id="7165736900384873061">Skaner QR w Google Chrome</translation>
 <translation id="7172660552945675509">Wskazówka: <ph name="BEGIN_LINK" />przenieś Chrome do Docka<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się i włącz synchronizację</translation>
 <translation id="766361182512894255">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chrome zaleca jego natychmiastową zmianę.</translation>
 <translation id="7698568245838009292">Chrome chce mieć dostęp do kamery</translation>
+<translation id="8045508249136869751">Aby ustawić Chrome jako przeglądarkę domyślną, otwórz Ustawienia, kliknij Domyślna przeglądarka i wybierz Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="840168496893712993">Niektóre dodatki mogą powodować awarie Chrome. Spróbuj je odinstalować.</translation>
 <translation id="8459495907675268833">Wybrane dane zostały usunięte z Chrome i synchronizowanych urządzeń. Inne rodzaje historii przeglądania, takie jak wyszukiwania i aktywność w innych usługach Google, mogą być nadal dostępne na Twoim koncie Google na history.google.com</translation>

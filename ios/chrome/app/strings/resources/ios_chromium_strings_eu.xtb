@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chromium-ek.</translation>
 <translation id="7269362888766543920">Gehigarri batzuek huts eginarazten diote Chromium-i. Desinstala itzazu.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromium arakatzaile lehenetsi bihurtzeko:
-        1. Ireki Ezarpenak. 
-        2. Sakatu Arakatzaile lehenetsia atala.
-        3. Hautatu Chromium.</translation>
 <translation id="7357211569052832586">Kendu dira hautatutako datuak Chromium-etik eta sinkronizatutako gailuetatik. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta beste Google-ren zerbitzu batzuetako jarduerak) edukitzea history.google.com webgunean.</translation>
 <translation id="7400689562045506105">Erabili Chromium edonon</translation>
 <translation id="766897673682622022">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Pasahitza berehala aldatzea gomendatzen du Chromium-ek.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="8073677936375100957">Gailu honetan dituzun Chromium-eko datuak garbitu nahi dituzu?</translation>
 <translation id="8175055321229419309">Aholkua: <ph name="BEGIN_LINK" />ainguratu Chromium dock-ean<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Chromium arakatzaile lehenetsi bihurtzeko, ireki Ezarpenak, sakatu Arakatzaile lehenetsia eta hautatu Chromium.</translation>
 <translation id="8252885722420466166">Atera etekin handiagoa Chromium-i Google-n, kokapena erabilita.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8776843108004031667">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik.</translation>

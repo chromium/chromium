@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami.</translation>
 <translation id="7269362888766543920">Niektóre dodatki mogą powodować awarie Chromium. Spróbuj je odinstalować.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Aby ustawić Chromium jako przeglądarkę domyślną:
-        1. Wybierz Ustawienia. 
-        2. Kliknij Domyślna przeglądarka.
-        3. Wybierz Chromium.</translation>
 <translation id="7357211569052832586">Wybrane dane zostały usunięte z Chromium i synchronizowanych urządzeń. Inne rodzaje historii przeglądania, takie jak wyszukiwania i aktywność w innych usługach Google, mogą być nadal dostępne na Twoim koncie Google na history.google.com</translation>
 <translation id="7400689562045506105">Korzystaj z Chromium w dowolnym miejscu</translation>
 <translation id="766897673682622022">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chromium zaleca jego natychmiastową zmianę.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, zaloguj się na wszystkich urządzeniach</translation>
 <translation id="8073677936375100957">Usunąć dane Chromium z tego urządzenia?</translation>
 <translation id="8175055321229419309">Wskazówka: <ph name="BEGIN_LINK" />przenieś Chromium do Docka<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Aby ustawić Chromium jako przeglądarkę domyślną, otwórz Ustawienia, kliknij Domyślna przeglądarka i wybierz Chromium.</translation>
 <translation id="8252885722420466166">Włączenie udostępniania lokalizacji w Chromium pozwala w pełni korzystać z usług Google.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8776843108004031667">To konto razem z wszelkimi niezapisanymi danymi zostanie usunięte z Chromium.</translation>

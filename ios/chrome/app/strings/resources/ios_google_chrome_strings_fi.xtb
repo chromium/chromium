@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Kopioitiin Chromeen.</translation>
 <translation id="6648150602980899529">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="6676840375528380067">Poistetaanko Chrome-data tältä laitteelta?</translation>
-<translation id="6724102885918156196">Näin teet Chromesta oletusselaimesi:
-        1. Avaa Asetukset. 
-        2. Valitse Oletusselain.
-        3. Valitse Chrome.</translation>
 <translation id="6822673484890854830">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="7165736900384873061">Aloita Google Chromen QR-lukijan käyttö</translation>
 <translation id="7172660552945675509">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chrome Dockiin.<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="766361182512894255">Salasanasi vaarantui tietosuojaloukkauksessa. Chrome suosittelee salasanan vaihtamista välittömästi.</translation>
 <translation id="7698568245838009292">Chrome pyytää kameran käyttöoikeutta</translation>
+<translation id="8045508249136869751">Voit tehdä Chromesta oletusselaimesi avaamalla Asetukset ja valitsemalla Oletusselainsovellus ja sitten Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="840168496893712993">Jokin laajennus kaataa Chromen. Kokeile poistaa laajennuksia.</translation>
 <translation id="8459495907675268833">Valitut tiedot on poistettu Chromesta ja synkronoiduilta laitteilta. Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toimintaa muista Google-palveluista, osoitteessa history.google.com.</translation>

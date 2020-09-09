@@ -47,10 +47,6 @@
 <translation id="725427773388857052">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chromium તમારી સહાય કરી શકે છે.</translation>
 <translation id="7269362888766543920">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરીને તેમને અનઇન્સ્ટૉલ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromiumને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવવા માટે:
-        1. સેટિંગ ખોલો. 
-        2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો.
-        3. Chromium પસંદ કરો.</translation>
 <translation id="7357211569052832586">પસંદ કરેલ ડેટા Chromium અને સિંક કરેલ ડિવાઇસમાંથી દૂર કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો જેમ કે શોધ અને history.google.com પરની બીજા Google સેવાઓમાંની પ્રવૃત્તિ હોય શકે છે.</translation>
 <translation id="7400689562045506105">Chromium નો ઉપયોગ સર્વત્ર કરો</translation>
 <translation id="766897673682622022">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. Chromium હમણાં જ પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">તમે જ્યાંથી Chromiumનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
 <translation id="8073677936375100957">ડિવાઇસમાંથી તમારા Chromium ડેટાને સાફ કરીએ?</translation>
 <translation id="8175055321229419309">ટિપ: <ph name="BEGIN_LINK" />Chromium ને તમારા ડૉક પર ખસેડો<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Chromiumને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવવા માટે સેટિંગ ખોલો, ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો અને Chromiumને પસંદ કરો.</translation>
 <translation id="8252885722420466166">Chromium માં તમારા સ્થાન પર આધારિત બહેતર Google અનુભવ મેળવો.</translation>
 <translation id="8586442755830160949">કોપિરાઇટ <ph name="YEAR" /> The Chromium Authors. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="8776843108004031667">Chromiumમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>

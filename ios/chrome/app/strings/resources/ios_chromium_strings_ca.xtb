@@ -47,10 +47,6 @@
 <translation id="725427773388857052">Chromium pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="7269362888766543920">Alguns complements fan que Chromium es bloquegi. Prova de desinstal·lar-los.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Per establir Chromium com a navegador predeterminat, fes el següent:
-        1. Obre Configuració. 
-        2. Toca Aplicació de navegador predeterminada.
-        3. Selecciona Chromium.</translation>
 <translation id="7357211569052832586">Les dades seleccionades s'han suprimit de Chromium i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>
 <translation id="7400689562045506105">Utilitza Chromium a tot arreu</translation>
 <translation id="766897673682622022">La teva contrasenya ha quedat exposada en l'àmbit d'una violació de les dades. Chromium et recomana que canviïs la contrasenya ara.</translation>
@@ -61,6 +57,7 @@
 <translation id="8013573822802650211">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió en tots els dispositius</translation>
 <translation id="8073677936375100957">Vols esborrar les dades de Chromium del dispositiu?</translation>
 <translation id="8175055321229419309">Consell: <ph name="BEGIN_LINK" />mou Chromium al Dock<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Per establir Chromium com a navegador predeterminat, obre Configuració, toca Aplicació de navegador predeterminada i selecciona Chromium.</translation>
 <translation id="8252885722420466166">Compartiu la vostra ubicació per tal de gaudir dels avantatges de Chromium.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>

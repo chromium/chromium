@@ -46,10 +46,6 @@
 <translation id="725427773388857052">Chromium እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ለመጠበቅ ሊያግዘዎት ይችላል።</translation>
 <translation id="7269362888766543920">አንዳንድ ተጨማሪዎች Chromium እንዲበላሽ ያደርጋሉ። እባክዎ እነሱን ለማራገፍ ይሞክሩ።</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7349905826685622881">Chromiumን የእርስዎ ነባሪ ለማድረግ፦
-        1. ቅንብሮችን ይክፈቱ። 
-        2. ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ።
-        3. Chromiumን ይምረጡ።</translation>
 <translation id="7357211569052832586">የተመረጠው ውሂብ ከChromium እና የሰመሩ መሣሪያዎች ተወግዷል። የGoogle መለያዎ history.google.com ላይ እንደ የሌሎች Google አገልግሎቶች ፍለጋዎች እና እንቅስቃሴ ያለ ሌሎች የአሰሳ ታሪክ ዓይነት ሊኖረው ይችላል።</translation>
 <translation id="7400689562045506105">Chromiumን በሁሉም ቦታ ይጠቀሙ</translation>
 <translation id="766897673682622022">የይለፍ ቃልዎ በውሂብ ጥሰት ውስጥ ተጋልጧል። Chromium የይለፍ ቃልን አሁኑኑ እንዲቀይሩ ይመክራል።</translation>
@@ -60,6 +56,7 @@
 <translation id="8013573822802650211">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት በሁሉም መሣሪያዎችዎ ላይ ይግቡ</translation>
 <translation id="8073677936375100957">የChromium ውሂብዎ ከዚህ መሣሪያ ላይ ይጽዳ?</translation>
 <translation id="8175055321229419309">ጠቃሚ ምክር፦ <ph name="BEGIN_LINK" />Chromiumን ወደ የእርስዎ መትከያ ይውሰዱት<ph name="END_LINK" /></translation>
+<translation id="8235785158661376110">Chromiumን የእርስዎ ነባሪ ለማድረግ ቅንብሮችን ይክፈቱ፣ ነባሪውን የአሳሽ መተግበሪያ መታ ያድርጉ እና Chromiumን ይምረጡ።</translation>
 <translation id="8252885722420466166">በአካባቢዎ ላይ በመመስረት በChromium ውስጥ የተሻለ የGoogle ተሞክሮ ያግኙ።</translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="8776843108004031667">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChromium ይወገዳል።</translation>

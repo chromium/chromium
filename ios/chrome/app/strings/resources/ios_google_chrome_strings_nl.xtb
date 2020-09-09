@@ -47,10 +47,6 @@
 <translation id="6600954340915313787">Gekopieerd naar Chrome</translation>
 <translation id="6648150602980899529">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chrome-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chrome, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
 <translation id="6676840375528380067">Je Chrome-gegevens van dit apparaat wissen?</translation>
-<translation id="6724102885918156196">Chrome instellen als je standaardbrowser:
-        1. Open 'Instellingen'. 
-        2. Tik op 'Standaard browser-app'.
-        3. Selecteer 'Chrome'.</translation>
 <translation id="6822673484890854830">Chrome kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="7165736900384873061">QR-scanner van Google Chrome gebruiken</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Verplaats Chrome naar je dock<ph name="END_LINK" /></translation>
@@ -64,6 +60,7 @@
 <translation id="7662994914830945754">Log in en schakel synchroniseren in om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="766361182512894255">Je wachtwoord is gelekt bij een gegevenslek. Chrome raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
+<translation id="8045508249136869751">Chrome instellen als je standaardbrowser: open 'Instellingen', tik op 'Standaard browser-app' en selecteer 'Chrome'.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="840168496893712993">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder deze add-ons.</translation>
 <translation id="8459495907675268833">De geselecteerde gegevens zijn verwijderd uit Chrome en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via history.google.com.</translation>
