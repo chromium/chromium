@@ -52,13 +52,14 @@ void VizDevToolsConnector::ConnectVizDevTools() {
   mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket;
   int port = ui_devtools::UiDevToolsServer::GetUiDevToolsPort(
       switches::kEnableVizDevTools, kVizDevToolsDefaultPort);
+  mojo::PendingReceiver<network::mojom::TCPServerSocket>
+      server_socket_receiver = server_socket.InitWithNewPipeAndPassReceiver();
   // Jump to the UI thread to get the network context, create the socket, then
   // jump back to the IO thread to complete the callback.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &CreateSocketOnUiThread,
-          server_socket.InitWithNewPipeAndPassReceiver(), port,
+          &CreateSocketOnUiThread, std::move(server_socket_receiver), port,
           base::BindOnce(&VizDevToolsConnector::OnVizDevToolsSocketCreated,
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(server_socket))));
