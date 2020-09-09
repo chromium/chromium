@@ -126,6 +126,12 @@ gfx::Image GetPlaceholderAvatarIconWithColors(SkColor fill_color,
 // Gets the resource ID of the default avatar icon at |index|.
 int GetDefaultAvatarIconResourceIDAtIndex(size_t index);
 
+#if defined(OS_WIN)
+// Gets the resource ID of the 2x sized version of the old profile avatar icon
+// at |index|.
+int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index);
+#endif  // defined(OS_WIN)
+
 // Gets the resource filename of the default avatar icon at |index|.
 const char* GetDefaultAvatarIconFileNameAtIndex(size_t index);
 
@@ -158,16 +164,13 @@ size_t GetRandomAvatarIconIndex(
     const std::unordered_set<size_t>& used_icon_indices);
 
 #if defined(OS_WIN)
-// Get the 1x and 2x avatar images for a ProfileAttributesEntry.
-void GetWinAvatarImages(ProfileAttributesEntry* entry,
-                        SkBitmap* avatar_image_1x,
-                        SkBitmap* avatar_image_2x);
+// Get the 2x avatar image for a ProfileAttributesEntry.
+SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry);
 
 // Badges |app_icon_bitmap| with |avatar_bitmap| at the bottom right corner and
 // returns the resulting SkBitmap.
 SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
-                                         const SkBitmap& avatar_bitmap,
-                                         int scale_factor);
+                                         const SkBitmap& avatar_bitmap);
 #endif  // OS_WIN
 
 }  // namespace profiles

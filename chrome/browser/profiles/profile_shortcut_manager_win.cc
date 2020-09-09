@@ -102,7 +102,6 @@ void OnProfileIconCreateSuccess(base::FilePath profile_path) {
 // resources in the case of an unbadged icon.
 base::FilePath CreateOrUpdateShortcutIconForProfile(
     const base::FilePath& profile_path,
-    const SkBitmap& avatar_bitmap_1x,
     const SkBitmap& avatar_bitmap_2x) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -126,10 +125,10 @@ base::FilePath CreateOrUpdateShortcutIconForProfile(
     return base::FilePath();
 
   gfx::ImageFamily badged_bitmaps;
-  if (!avatar_bitmap_1x.empty()) {
+  if (!avatar_bitmap_2x.empty()) {
     badged_bitmaps.Add(gfx::Image::CreateFrom1xBitmap(
         profiles::GetBadgedWinIconBitmapForAvatar(app_icon_bitmap,
-                                                  avatar_bitmap_1x, 1)));
+                                                  avatar_bitmap_2x)));
   }
 
   SkBitmap large_app_icon_bitmap =
@@ -138,7 +137,7 @@ base::FilePath CreateOrUpdateShortcutIconForProfile(
   if (!large_app_icon_bitmap.isNull() && !avatar_bitmap_2x.empty()) {
     badged_bitmaps.Add(gfx::Image::CreateFrom1xBitmap(
         profiles::GetBadgedWinIconBitmapForAvatar(large_app_icon_bitmap,
-                                                  avatar_bitmap_2x, 2)));
+                                                  avatar_bitmap_2x)));
   }
 
   // If we have no badged bitmaps, we should just use the default chrome icon.
@@ -412,8 +411,7 @@ struct CreateOrUpdateShortcutsParams {
   // incognito window directly from the desktop shortcut.
   bool incognito;
 
-  // Avatar images for this profile.
-  SkBitmap avatar_image_1x;
+  // Avatar image for this profile.
   SkBitmap avatar_image_2x;
 };
 
@@ -428,7 +426,7 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
                                                 base::BlockingType::MAY_BLOCK);
 
   const base::FilePath shortcut_icon = CreateOrUpdateShortcutIconForProfile(
-      params.profile_path, params.avatar_image_1x, params.avatar_image_2x);
+      params.profile_path, params.avatar_image_2x);
   if (shortcut_icon.empty() ||
       params.create_mode ==
           ProfileShortcutManagerWin::CREATE_OR_UPDATE_ICON_ONLY) {
@@ -956,8 +954,7 @@ void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(
       params.profile_name = all_profiles[0]->GetName();
   } else {
     params.profile_name = entry->GetName();
-    profiles::GetWinAvatarImages(entry, &params.avatar_image_1x,
-                                 &params.avatar_image_2x);
+    params.avatar_image_2x = profiles::GetWin2xAvatarImage(entry);
   }
   base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
       ->PostTask(FROM_HERE,

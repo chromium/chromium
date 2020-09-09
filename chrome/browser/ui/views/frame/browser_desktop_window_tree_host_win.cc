@@ -569,8 +569,6 @@ SkBitmap GetBadgedIconBitmapForProfile(Profile* profile) {
   if (app_icon_bitmap.isNull())
     return SkBitmap();
 
-  SkBitmap avatar_bitmap_1x;
-  SkBitmap avatar_bitmap_2x;
 
   ProfileAttributesEntry* entry = nullptr;
   if (!g_browser_process->profile_manager()
@@ -578,9 +576,9 @@ SkBitmap GetBadgedIconBitmapForProfile(Profile* profile) {
            .GetProfileAttributesWithPath(profile->GetPath(), &entry))
     return SkBitmap();
 
-  profiles::GetWinAvatarImages(entry, &avatar_bitmap_1x, &avatar_bitmap_2x);
+  SkBitmap avatar_bitmap_2x = profiles::GetWin2xAvatarImage(entry);
   return profiles::GetBadgedWinIconBitmapForAvatar(app_icon_bitmap,
-                                                   avatar_bitmap_1x, 1);
+                                                   avatar_bitmap_2x);
 }
 
 void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
