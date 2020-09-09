@@ -9,7 +9,6 @@ package feedwire;
 option optimize_for = LITE_RUNTIME;
 
 // Feature capability of either the client or the server.
-// Next ID: 20
 enum Capability {
   UNKNOWN_CAPABILITY = 0;
   // The client is capable of a basic UI.
@@ -28,4 +27,5 @@ enum Capability {
   REQUEST_SCHEDULE = 20;
   OPEN_IN_TAB = 27;
   DOWNLOAD_LINK = 28;
+  PREFETCH_METADATA = 43;
 }
