@@ -13,11 +13,13 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -159,6 +161,13 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
   parameters.SetStringKey("bodyText", GetBodyText());
   parameters.SetKey("interceptedAccount",
                     GetAccountInfoValue(intercepted_account()));
+  parameters.SetStringKey("headerBackgroundColor",
+                          color_utils::SkColorToRgbaString(
+                              bubble_parameters_.profile_highlight_color));
+  parameters.SetStringKey(
+      "headerTextColor",
+      color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(
+          bubble_parameters_.profile_highlight_color)));
   return parameters;
 }
 

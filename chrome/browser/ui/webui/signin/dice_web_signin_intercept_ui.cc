@@ -7,7 +7,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -18,7 +17,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/resources/grit/webui_resources.h"
 
 DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
@@ -33,15 +31,6 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_icons.js", IDR_SIGNIN_ICONS_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  SkColor background_color =
-      GetThemeColorsForProfile(profile).profile_highlight_color;
-  source->AddString("headerBackgroundColor",
-                    color_utils::SkColorToRgbaString(background_color));
-  source->AddString("headerTextColor",
-                    color_utils::SkColorToRgbaString(
-                        GetProfileForegroundTextColor(background_color)));
 
   // Localized strings.
   source->UseStringsJs();
@@ -62,7 +51,7 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER);
 
-  content::WebUIDataSource::Add(profile, source);
+  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 DiceWebSigninInterceptUI::~DiceWebSigninInterceptUI() = default;

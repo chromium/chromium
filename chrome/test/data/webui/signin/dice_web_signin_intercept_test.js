@@ -35,6 +35,8 @@ suite('DiceWebSigninInterceptTest', function() {
       headerText: 'header_text',
       bodyTitle: 'body_title',
       bodyText: 'body_text',
+      headerTextColor: 'rgba(255, 255, 255, 1)',
+      headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
       primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2}
     });
@@ -89,6 +91,8 @@ suite('DiceWebSigninInterceptTest', function() {
       headerText: 'new_header_text',
       bodyTitle: 'new_body_title',
       bodyText: 'new_body_text',
+      headerTextColor: 'rgba(255, 255, 255, 1)',
+      headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
     });
     checkTextValues('new_header_text', 'new_body_title', 'new_body_text');
@@ -103,6 +107,8 @@ suite('DiceWebSigninInterceptTest', function() {
       headerText: 'header_text',
       bodyTitle: 'body_title',
       bodyText: 'body_text',
+      headerTextColor: 'rgba(255, 255, 255, 1)',
+      headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_2},
     };
 

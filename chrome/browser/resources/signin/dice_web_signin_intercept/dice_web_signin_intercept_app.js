@@ -34,7 +34,6 @@ Polymer({
 
   /** @override */
   attached() {
-    this.setColors_();
     this.diceWebSigninInterceptBrowserProxy_ =
         DiceWebSigninInterceptBrowserProxyImpl.getInstance();
     this.addWebUIListener(
@@ -54,15 +53,6 @@ Polymer({
     this.diceWebSigninInterceptBrowserProxy_.cancel();
   },
 
-  /** @private */
-  setColors_() {
-    this.style.setProperty(
-        '--header-background-color',
-        loadTimeData.getString('headerBackgroundColor'));
-    this.style.setProperty(
-        '--header-text-color', loadTimeData.getString('headerTextColor'));
-  },
-
   /**
    * Called when the interception parameters are updated.
    * @param {!InterceptionParameters} parameters
@@ -70,6 +60,9 @@ Polymer({
    */
   handleParametersChanged_(parameters) {
     this.interceptionParameters_ = parameters;
+    this.style.setProperty(
+        '--header-background-color', parameters.headerBackgroundColor);
+    this.style.setProperty('--header-text-color', parameters.headerTextColor);
     this.notifyPath('interceptionParameters_.interceptedAccount.isManaged');
   },
 });

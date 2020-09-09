@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
 class WebContents;
@@ -83,11 +84,10 @@ class DiceWebSigninInterceptor : public KeyedService,
    public:
     // Parameters for interception bubble UIs.
     struct BubbleParameters {
-      bool operator==(const BubbleParameters& rhs) const;
-
       SigninInterceptionType interception_type;
       AccountInfo intercepted_account;
       AccountInfo primary_account;
+      SkColor profile_highlight_color;
     };
 
     virtual ~Delegate() = default;
@@ -173,13 +173,13 @@ class DiceWebSigninInterceptor : public KeyedService,
   void OnExtendedAccountInfoFetchTimeout();
 
   // Called after the user chose whether a new profile would be created.
-  void OnProfileCreationChoice(bool create);
+  void OnProfileCreationChoice(SkColor profile_color, bool create);
   // Called after the user chose whether the session should continue in a new
   // profile.
   void OnProfileSwitchChoice(bool switch_profile);
 
   // Called when the new profile is created.
-  void OnNewSignedInProfileCreated(Profile* new_profile);
+  void OnNewSignedInProfileCreated(SkColor profile_color, Profile* new_profile);
 
   // Deletes session_startup_helper_
   void DeleteSessionStartupHelper();
