@@ -45,6 +45,13 @@ bool ZeroSuggestVerbatimMatchProviderTest::IsVerbatimMatchEligible() const {
 void ZeroSuggestVerbatimMatchProviderTest::SetUp() {
   provider_ = new ZeroSuggestVerbatimMatchProvider(&mock_client_);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return false; });
+  ON_CALL(mock_client_, Classify)
+      .WillByDefault(
+          [](const base::string16& text, bool prefer_keyword,
+             bool allow_exact_keyword_match,
+             metrics::OmniboxEventProto::PageClassification page_classification,
+             AutocompleteMatch* match,
+             GURL* alternate_nav_url) { match->destination_url = GURL(text); });
 }
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
@@ -106,15 +113,14 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // test. As a result, the test would validate what the mocks fill in.
 }
 
-TEST_P(ZeroSuggestVerbatimMatchProviderTest,
-       OffersVerbatimMatchWithEmptyInput) {
+TEST_P(ZeroSuggestVerbatimMatchProviderTest, NoVerbatimMatchWithEmptyInput) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(base::string16(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_url(GURL(url));
   input.set_focus_type(OmniboxFocusType::DEFAULT);
   provider_->Start(input, false);
-  ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
+  ASSERT_TRUE(provider_->matches().empty());
   // Note: we intentionally do not validate the match content here.
   // The content is populated either by HistoryURLProvider or
   // AutocompleteProviderClient both of which we would have to mock for this
@@ -122,7 +128,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 }
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
-       OffersVerbatimMatchWithEmptyInputInIncognito) {
+       NoVerbatimMatchWithEmptyInputInIncognito) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(base::string16(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
@@ -130,21 +136,21 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   input.set_focus_type(OmniboxFocusType::DEFAULT);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
-  ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
+  ASSERT_TRUE(provider_->matches().empty());
   // Note: we intentionally do not validate the match content here.
   // The content is populated either by HistoryURLProvider or
   // AutocompleteProviderClient both of which we would have to mock for this
   // test. As a result, the test would validate what the mocks fill in.
 }
 
-TEST_P(ZeroSuggestVerbatimMatchProviderTest, OffersVerbatimMatchOnClearInput) {
+TEST_P(ZeroSuggestVerbatimMatchProviderTest, NoVerbatimMatchOnClearInput) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(base::string16(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_url(GURL(url));
   input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
   provider_->Start(input, false);
-  ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
+  ASSERT_TRUE(provider_->matches().empty());
   // Note: we intentionally do not validate the match content here.
   // The content is populated either by HistoryURLProvider or
   // AutocompleteProviderClient both of which we would have to mock for this
@@ -152,7 +158,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, OffersVerbatimMatchOnClearInput) {
 }
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
-       OffersVerbatimMatchOnClearInputInIncognito) {
+       NoVerbatimMatchOnClearInputInIncognito) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(base::string16(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
@@ -160,7 +166,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
-  ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
+  ASSERT_TRUE(provider_->matches().empty());
   // Note: we intentionally do not validate the match content here.
   // The content is populated either by HistoryURLProvider or
   // AutocompleteProviderClient both of which we would have to mock for this
