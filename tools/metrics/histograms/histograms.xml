@@ -212213,6 +212213,9 @@ regressions. -->
   <suffix name="DeferAllScript" label="Defers execution of script"/>
   <suffix name="DelayAsyncScriptExecution"
       label="Delays execution of async scripts"/>
+  <suffix name="DelayCompetingLowPriorityRequests"
+      label="Delays low priority requests behind in-flight 'important'
+             requests"/>
   <suffix name="FastHostHints"
       label="Provides information about hosts that historically provide a
              fast and responsive user experience."/>
