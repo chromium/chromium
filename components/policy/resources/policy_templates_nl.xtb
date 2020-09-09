@@ -4530,7 +4530,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als dit beleid niet is ingesteld of is ingesteld op 'False', wordt <ph name="TLS_FALSE_START" /> ingeschakeld. Als dit beleid is ingesteld op 'True', wordt <ph name="TLS_FALSE_START" /> uitgeschakeld.</translation>
 <translation id="7433714841194914373">Instant inschakelen</translation>
 <translation id="7434202861148928348">De vereiste domeinnamen configureren voor clients voor externe toegang</translation>
-<translation id="7443616896860707393">Prompts voor algemene HTTP-authenticatie met verschillende herkomst</translation>
 <translation id="7448430478749155471">De toegankelijkheidsfunctie 'Selecteer om uitgesproken te worden' op het inlogscherm inschakelen</translation>
 <translation id="7458437477941640506">Herstel de doelversie niet als de OS-versie nieuwer is dan de doelversie. Updates zijn ook uitgeschakeld.</translation>
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>

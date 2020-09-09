@@ -4103,7 +4103,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Le lingue attualmente supportate sono: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6924916062195228978">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descrizione del criterio per il formato delle voci di questo elenco. Ad esempio, impostando <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici, utilizzando il formato specificato alla pagina https://www.chromium.org/administrators/url-blacklist-filter-format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
 
-      Questo criterio consente anche di abilitare il richiamo automatico da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
+      Questo criterio consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
 
       Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
@@ -4399,11 +4399,11 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se imposti questa norma su true disattivi le stampanti che usano protocolli diversi da IPPS, USB o IPP-over-USB poiché il nome utente e il nome file non devono essere inviati nella rete in modo esplicito.</translation>
 <translation id="7258823566580374486">Attiva separazione degli host di accesso remoto</translation>
-<translation id="7259664319370317355">Questo criterio è obsoleto. Utilizza il criterio "<ph name="URL_ALLOWLIST_POLICY_NAME" />".
+<translation id="7259664319370317355">Questo criterio è deprecato. Utilizza il criterio "<ph name="URL_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni alla lista bloccata di URL. Consulta la descrizione del criterio per il formato delle voci di questo elenco. Ad esempio, impostando <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici, utilizzando il formato specificato alla pagina https://www.chromium.org/administrators/url-blacklist-filter-format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. La lista consentita ha la precedenza sulla lista bloccata. Per questo criterio è possibile definire al massimo 1000 voci.
 
-      Questo criterio consente anche di abilitare il richiamo automatico da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
+      Questo criterio consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
 
       Se il criterio non viene configurato, non sono consentite eccezioni.
 
@@ -4530,7 +4530,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
       Se la norma non viene impostata, o viene impostata su false, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene attivata. Se viene impostata su true, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene disattivata.</translation>
 <translation id="7433714841194914373">Abilita Instant</translation>
 <translation id="7434202861148928348">Configura i nomi di dominio richiesti per i client di accesso remoto</translation>
-<translation id="7443616896860707393">Richieste di autenticazione di base HTTP tra origini</translation>
 <translation id="7448430478749155471">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="7458437477941640506">Non eseguire il rollback alla versione target se la versione del sistema operativo è più nuova del target. Anche gli aggiornamenti sono disattivati.</translation>
 <translation id="7459601923199346224">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la gestione dei certificati.</translation>

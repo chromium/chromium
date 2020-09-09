@@ -4734,7 +4734,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Vaš administrator<ph name="END_LINK" /> je isključio Sigurno pregledanje</translation>
 <translation id="6742339027238151589">Dostupno skripti</translation>
 <translation id="6745592621698551453">Ažuriraj sada</translation>
-<translation id="6746124502594467657">Pomjeri dolje</translation>
+<translation id="6746124502594467657">Pomjeri nadolje</translation>
 <translation id="674632704103926902">Omogući prevlačenje dodirom</translation>
 <translation id="6748465660675848252">Možete nastaviti, ali samo vaši sinhronizirani podaci i postavke će se vratiti. Svi lokalni podaci će se izgubiti.</translation>
 <translation id="6749006854028927059">Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, naprimjer, radi personaliziranja oglasa. Moguće je da će funkcije na nekim web lokacijama prestati s radom.</translation>
@@ -6244,7 +6244,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8585480574870650651">Uklonite Crostini</translation>
 <translation id="8588866096426746242">Prikaži status profila</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR pikaz na VR naočale</translation>
-<translation id="8589316013260923499">Domena <ph name="DOMAIN" /> je onemogućila otklanjanje grešaka putem ADB-a. Nije moguće lokalno instalirati nove aplikacije.</translation>
 <translation id="8590375307970699841">Postavi automatska ažuriranja</translation>
 <translation id="8591783563402255548">1 sekunda</translation>
 <translation id="8592141010104017453">Uopšte ne prikazuj obavještenja</translation>
@@ -6259,7 +6258,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8605428685123651449">SQLite memorija</translation>
 <translation id="8608618451198398104">Dodavanje Kerberos tiketa</translation>
 <translation id="860909219589324847">Nikada nemoj koristiti podatke za prijenos</translation>
-<translation id="8609465669617005112">Pomjeri prema gore</translation>
+<translation id="8609465669617005112">Pomjeri nagore</translation>
 <translation id="8610103157987623234">Neispravan format, pokušajte ponovo</translation>
 <translation id="8611682088849615761">Nastavi dozvoljavati ovoj web lokaciji punu kontrolu nad MIDI uređajima</translation>
 <translation id="8613164732773110792">Samo mala slova, brojevi, donje crte ili crtice</translation>

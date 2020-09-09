@@ -4555,7 +4555,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle n'est pas configurée, ou si elle est définie sur "False", <ph name="TLS_FALSE_START" /> est activé. Si elle est définie sur "True", <ph name="TLS_FALSE_START" /> est désactivé.</translation>
 <translation id="7433714841194914373">Activer la recherche instantanée</translation>
 <translation id="7434202861148928348">Configurer les noms de domaines requis pour les clients d'accès à distance</translation>
-<translation id="7443616896860707393">Invites d'authentification de base HTTP (Basic Auth) multi-domaine</translation>
 <translation id="7448430478749155471">Activer la fonctionnalité Sélectionner pour prononcer sur l'écran de connexion</translation>
 <translation id="7458437477941640506">Ne rétablissez pas la version cible si elle est antérieure à la version de l'OS. Les mises à jour seront également désactivées.</translation>
 <translation id="7459601923199346224">Configure les règles au niveau de l'utilisateur et de l'appareil dans le cadre de la gestion des certificats.</translation>

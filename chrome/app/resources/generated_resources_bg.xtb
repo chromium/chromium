@@ -4478,6 +4478,7 @@
 <translation id="6415900369006735853">Връзка с интернет през телефона ви</translation>
 <translation id="6416743254476733475">Разрешаване или блокиране на компютъра ви.</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
+<translation id="6417468503703810114">Поведение по подразбиране</translation>
 <translation id="6418160186546245112">Предишната инсталирана версия на <ph name="IDS_SHORT_PRODUCT_NAME" /> се възстановява</translation>
 <translation id="6418481728190846787">Премахване за постоянно на достъпа за всички приложения</translation>
 <translation id="6418511932144861495">Инсталиране на критична актуализация</translation>
@@ -5553,6 +5554,7 @@
 <translation id="7766082757934713382">Помага за намаляването на преноса на данни от мрежата, като поставя на пауза автоматичните актуализации на приложенията и системата.</translation>
 <translation id="7766807826975222231">Направете обиколка</translation>
 <translation id="7766838926148951335">Приемам разрешенията</translation>
+<translation id="7768507955883790804">Сайтовете автоматично следват тази настройка, когато ги посещавате</translation>
 <translation id="7768770796815395237">Промяна</translation>
 <translation id="7768784765476638775">Прочитане на глас</translation>
 <translation id="7769672763586021400">Идент. № на модела</translation>
@@ -6242,7 +6244,6 @@
 <translation id="8585480574870650651">Премахване на Crostini</translation>
 <translation id="8588866096426746242">Статистика за потребителския профил</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – предава съдържание във VR към очила</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> деактивира отстраняването на грешки през ADB. Не е възможно локалното инсталиране на нови приложения.</translation>
 <translation id="8590375307970699841">Настройка за автоматични актуализации</translation>
 <translation id="8591783563402255548">1 секунда</translation>
 <translation id="8592141010104017453">Известията да не се показват въобще</translation>

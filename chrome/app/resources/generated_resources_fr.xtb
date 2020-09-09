@@ -4406,7 +4406,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6317318380444133405">L'imprimante est désormais incompatible.</translation>
 <translation id="6317369057005134371">Création de la fenêtre de l'application en cours…</translation>
 <translation id="6317608858038767920">Serveur de noms personnalisé <ph name="INPUT_INDEX" /></translation>
-<translation id="6318125393809743217">Ajouter un fichier policies.json file avec des configurations de règles.</translation>
+<translation id="6318125393809743217">Ajouter un fichier policies.json avec des configurations de règles.</translation>
 <translation id="6318407754858604988">Le téléchargement a commencé</translation>
 <translation id="6318944945640833942">Impossible de détecter l'imprimante. Veuillez saisir à nouveau son adresse.</translation>
 <translation id="6321407676395378991">Activer l'économiseur d'écran</translation>
@@ -4479,6 +4479,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6415900369006735853">Se connecter à Internet via votre téléphone</translation>
 <translation id="6416743254476733475">Autorisez ou bloquez ces actions sur votre ordinateur.</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
+<translation id="6417468503703810114">Comportement par défaut</translation>
 <translation id="6418160186546245112">Retour à la version précédemment installée de <ph name="IDS_SHORT_PRODUCT_NAME" />…</translation>
 <translation id="6418481728190846787">Supprimer l'accès à toutes les applications de manière définitive</translation>
 <translation id="6418511932144861495">Installer une mise à jour critique</translation>
@@ -5554,6 +5555,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7766082757934713382">Aide à réduire la consommation de données réseau en suspendant les mises à jour automatiques du système et des applications</translation>
 <translation id="7766807826975222231">Visite guidée</translation>
 <translation id="7766838926148951335">Accepter les autorisations</translation>
+<translation id="7768507955883790804">Les sites se basent automatiquement sur ce paramètre lorsque vous les consultez</translation>
 <translation id="7768770796815395237">Modifier</translation>
 <translation id="7768784765476638775">Sélectionner pour prononcer</translation>
 <translation id="7769672763586021400">ID du modèle</translation>
@@ -6243,7 +6245,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8585480574870650651">Supprimer Crostini</translation>
 <translation id="8588866096426746242">Afficher les statistiques du profil</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – RV diffusée sur un casque</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> a désactivé le débogage ADB. Aucune nouvelle application ne peut être téléchargée indépendamment.</translation>
 <translation id="8590375307970699841">Configurer les mises à jour automatiques</translation>
 <translation id="8591783563402255548">1 seconde</translation>
 <translation id="8592141010104017453">N'afficher aucune notification</translation>

@@ -510,6 +510,7 @@
 <translation id="158849752021629804">ホーム ネットワークが必要です</translation>
 <translation id="1588870296199743671">次のプログラムでリンクを開く...</translation>
 <translation id="1589055389569595240">スペルと文法を表示</translation>
+<translation id="1591679663873027990">Parallels Desktop に USB デバイスへのアクセスを許可します。USB デバイスを取り外した後、Parallels Desktop にデバイスのデータは残りません。</translation>
 <translation id="1593594475886691512">フォーマット中...</translation>
 <translation id="159359590073980872">画像キャッシュ</translation>
 <translation id="1593926297800505364">お支払い方法を保存</translation>
@@ -826,6 +827,7 @@
 <translation id="1954813140452229842">共有フォルダのマウントエラー。認証情報を確認してもう一度お試しください。</translation>
 <translation id="1956050014111002555">ファイルに含まれる複数の証明書のうち、いずれもインポートできませんでした:</translation>
 <translation id="1956390763342388273">「<ph name="FOLDER_PATH" />」のすべてのファイルがアップロードされます。この操作は、サイトを信頼できる場合にのみ行ってください。</translation>
+<translation id="196040970347962278">まずインターネット接続を確立してください</translation>
 <translation id="1962233722219655970">このページは、お使いのパソコンでは動作しないネイティブ クライアント アプリを使用しています。</translation>
 <translation id="1963227389609234879">すべて削除</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
@@ -1864,6 +1866,7 @@
 <translation id="321834671654278338">Linux アンインストーラ</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> コネクタのプロセスで問題が発生しました。再起動しますか？</translation>
 <translation id="3222066309010235055">事前レンダリング: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989"><ph name="USB_VM_NAME" /> に接続</translation>
 <translation id="3223531857777746191">リセットボタン</translation>
 <translation id="3225084153129302039">デフォルトの紫のアバター</translation>
 <translation id="3225319735946384299">コード署名</translation>
@@ -1876,6 +1879,7 @@
 <translation id="3246107497225150582">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
 <translation id="3248902735035392926">安全性に問題がないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう</translation>
+<translation id="325036368918787455">シークレット モードを終了</translation>
 <translation id="3251759466064201842">&lt;証明書に含まれていません&gt;</translation>
 <translation id="3253225298092156258">利用できません</translation>
 <translation id="3253448572569133955">不明なアカウント</translation>
@@ -2115,6 +2119,7 @@
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3528498924003805721">ショートカットの対象</translation>
 <translation id="3532273508346491126">同期の管理</translation>
+<translation id="3532521178906420528">ネットワーク接続を確立しています...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - オーディオがミュートされています</translation>
 <translation id="3537881477201137177">後から [設定] で変更することができます</translation>
 <translation id="3538066758857505094">Linux のアンインストール中にエラーが発生しました。もう一度お試しください。</translation>
@@ -3124,6 +3129,7 @@
 <translation id="4750394297954878236">候補</translation>
 <translation id="475088594373173692">最初のユーザー</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
+<translation id="4752124003533492687">「<ph name="USB_DEVICE_NAME" />」を接続するには、[設定] を開いてください</translation>
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
 <translation id="4756388243121344051">履歴(&amp;H)</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
@@ -4472,6 +4478,7 @@
 <translation id="6415900369006735853">スマートフォンを使用してインターネットに接続します</translation>
 <translation id="6416743254476733475">パソコンで許可またはブロックしてください。</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
+<translation id="6417468503703810114">デフォルトの動作</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> の以前のインストール バージョンに戻しています</translation>
 <translation id="6418481728190846787">すべてのアプリのアクセスを完全に削除する</translation>
 <translation id="6418511932144861495">重要なアップデートのインストール</translation>
@@ -4639,6 +4646,7 @@
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> が、自身を自動的に認証できるよう、証明書への恒久的なアクセス許可を求めています。</translation>
 <translation id="6635944431854494329">所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。</translation>
 <translation id="6635956300022133031">テキスト読み上げ用の音声を選択してカスタマイズします</translation>
+<translation id="6636588250634969791">続行する前に SIM を挿入してください</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
 <translation id="6641138807883536517">ランダム生成のセキュア モジュール パスワードが使用できなくなっています。これは Powerwash の実行後に通常起こることです。</translation>
 <translation id="6642720633335369752">開いているアプリのウィンドウをすべて表示するには、下から上にスワイプして長押しします。</translation>
@@ -5181,6 +5189,7 @@
 <translation id="7303900363563182677">このサイトでは、クリップボードにコピーされているテキストや画像へのアクセスがブロックされています</translation>
 <translation id="7305123176580523628">USB プリンタが接続されました</translation>
 <translation id="730515362922783851">ローカル ネットワークまたはインターネット上のデバイスとのデータ交換</translation>
+<translation id="7306521477691455105">「<ph name="USB_DEVICE_NAME" />」を「<ph name="USB_VM_NAME" />」に接続するには、[設定] を開いてください</translation>
 <translation id="7307129035224081534">一時停止中</translation>
 <translation id="7308002049209013926">ランチャーを使うと、新しいアプリやアクティビティにすばやく移動できます。キーボードからランチャーを表示するには、Alt+Shift+L キーを押します。</translation>
 <translation id="7309257895202129721">コントロールを表示(&amp;C)</translation>
@@ -5545,6 +5554,7 @@
 <translation id="7766082757934713382">アプリとシステムの自動アップデートを一時的に停止することで、ネットワークのデータ使用量を減らします。</translation>
 <translation id="7766807826975222231">使い方ガイド</translation>
 <translation id="7766838926148951335">権限を許可</translation>
+<translation id="7768507955883790804">サイトにアクセスしたときにこの設定の動作を自動的に行います</translation>
 <translation id="7768770796815395237">変更</translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
@@ -6234,7 +6244,6 @@
 <translation id="8585480574870650651">Crostini の削除</translation>
 <translation id="8588866096426746242">プロフィール統計情報を表示</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR をヘッドセットに配信しています</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> により ADB デバッグが無効になりました。新しいアプリケーションのサイドローディングは行えません。</translation>
 <translation id="8590375307970699841">自動更新を設定</translation>
 <translation id="8591783563402255548">1秒</translation>
 <translation id="8592141010104017453">通知を一切表示しない</translation>
@@ -6802,6 +6811,7 @@
 <translation id="947329552760389097">要素の検証(&amp;I)</translation>
 <translation id="951991426597076286">同意しない</translation>
 <translation id="952992212772159698">無効</translation>
+<translation id="956444359529327203">ゲストモードを終了</translation>
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>
 <translation id="9580706199804957">Google サービスに接続できませんでした</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1013149566889033026">Ще се отвори нов раздел в режим „инкогнито“</translation>
 <translation id="1028699632127661925">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Изчиств. и на данните от тези сайтове и прил.?</translation>
 <translation id="1036348656032585052">Изключване</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
 <translation id="3778956594442850293">Добавено към началния екран</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
+<translation id="3800748312755064483">Временно влизане в профила</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>

@@ -4540,7 +4540,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
       Si la política se establece en false o no se configura, <ph name="TLS_FALSE_START" /> se habilitará. Si se establece en true, <ph name="TLS_FALSE_START" /> se inhabilitará.</translation>
 <translation id="7433714841194914373">Habilitar Instant</translation>
 <translation id="7434202861148928348">Configurar los nombres de dominio obligatorios para clientes de acceso remoto</translation>
-<translation id="7443616896860707393">Avisos de autenticación básica de HTTP de origen cruzado</translation>
 <translation id="7448430478749155471">Habilita la función de Seleccionar para pronunciar en la pantalla de acceso</translation>
 <translation id="7458437477941640506">No implementes una reversión a la versión objetivo si la versión del sistema operativo es más reciente que la objetivo. Las actualizaciones también se inhabilitan.</translation>
 <translation id="7459601923199346224">Controla las políticas de dispositivo y usuario para la administración de certificados.</translation>

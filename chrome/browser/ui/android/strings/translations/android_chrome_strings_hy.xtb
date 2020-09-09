@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1013149566889033026">Կբացվի նոր ինկոգնիտո ներդիր</translation>
 <translation id="1028699632127661925">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
 <translation id="103269572468856066">Մաքրե՞լ այս տվյալները</translation>
 <translation id="1036348656032585052">Անջատել</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3778956594442850293">Ավելացվեց հիմնական էկրանին</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
+<translation id="3800748312755064483">Ժամանակավոր մուտք</translation>
 <translation id="3810838688059735925">Տեսանյութ</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ներբեռնում ջնջվեց</translation>

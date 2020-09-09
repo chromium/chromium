@@ -826,7 +826,7 @@
 <translation id="1954813140452229842">शेअर माउंट करताना एरर आली. कृपया तुमची क्रेडेंशियल तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1956050014111002555">फाइलमध्ये एकाधिक प्रमाणपत्रे आहेत ज्यापैकी एकही इंपोर्ट झालेले नाही: </translation>
 <translation id="1956390763342388273">हे "<ph name="FOLDER_PATH" />" वरील सर्व फाइल अपलोड करेल. जर तुमचा साइटवर विश्वास असेल तरच हे करा.</translation>
-<translation id="196040970347962278">प्रथम इंटरनेट कनेक्शन इंस्टॉल करा</translation>
+<translation id="196040970347962278">प्रथम इंटरनेट कनेक्शन स्थापित करा</translation>
 <translation id="1962233722219655970">हे पेज एक मूळ क्लायंट अ‍ॅप वापरते जो तुमच्या कॉंप्युटरवर काम करत नाही.</translation>
 <translation id="1963227389609234879">सर्व काढून टाका</translation>
 <translation id="1963976881984600709">साधारण संरक्षण</translation>
@@ -2118,7 +2118,7 @@
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3528498924003805721">शॉर्टकट लक्ष्ये</translation>
 <translation id="3532273508346491126">सिंक व्यवस्थापन</translation>
-<translation id="3532521178906420528">नेटवर्क कनेक्शन इंस्टॉल करत आहे ...</translation>
+<translation id="3532521178906420528">नेटवर्क कनेक्शन स्थापित करत आहे ...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ऑडिओ नि:शब्द केला</translation>
 <translation id="3537881477201137177">हे नंतर सेटिंग्जमध्ये बदलले जाऊ शकते</translation>
 <translation id="3538066758857505094">Linux अनइंस्टॉल करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
@@ -6240,7 +6240,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8585480574870650651">Crostini काढून टाका</translation>
 <translation id="8588866096426746242">प्रोफाइल आकडेवारी दर्शवा</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR हेडसेटवर सादर करत आहे</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> ने ADB डीबगिंग बंद केले आहे. नवीन अ‍ॅप्लिकेशन साइडलोड केली जाऊ शकत नाहीत.</translation>
 <translation id="8590375307970699841">स्वयंचलित अपडेट सेट करा</translation>
 <translation id="8591783563402255548">एक सेकंद</translation>
 <translation id="8592141010104017453">सूचना अजिबात दाखवू नका</translation>

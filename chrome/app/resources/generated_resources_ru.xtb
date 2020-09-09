@@ -4476,6 +4476,7 @@
 <translation id="6415900369006735853">Подключайтесь к Интернету через телефон.</translation>
 <translation id="6416743254476733475">Разрешите или заблокируйте на компьютере.</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
+<translation id="6417468503703810114">Настройки по умолчанию</translation>
 <translation id="6418160186546245112">Возврат к предыдущей версии <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Окончательно запретить доступ всем приложениям</translation>
 <translation id="6418511932144861495">Установка критического обновления</translation>
@@ -5551,6 +5552,7 @@
 <translation id="7766082757934713382">Эта функция приостанавливает автоматическое обновление системы и приложений, что позволяет экономить сетевой трафик.</translation>
 <translation id="7766807826975222231">Узнать больше</translation>
 <translation id="7766838926148951335">Разрешить</translation>
+<translation id="7768507955883790804">Когда вы посещаете сайты, они автоматически следуют указанным ниже настройкам.</translation>
 <translation id="7768770796815395237">Изменить</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
@@ -6239,7 +6241,6 @@
 <translation id="8585480574870650651">Удалить Crostini</translation>
 <translation id="8588866096426746242">Показать статистику профиля</translation>
 <translation id="8588868914509452556">VR-контент с вкладки "<ph name="WINDOW_TITLE" />" сейчас транслируется на очки</translation>
-<translation id="8589316013260923499">Администратор домена <ph name="DOMAIN" /> отключил отладку с помощью ADB. Новые приложения нельзя устанавливать из неизвестного источника.</translation>
 <translation id="8590375307970699841">Настройка автоматических обновлений</translation>
 <translation id="8591783563402255548">1 секунда</translation>
 <translation id="8592141010104017453">Не показывать уведомления</translation>

@@ -4476,6 +4476,7 @@
 <translation id="6415900369006735853">휴대전화를 통해 인터넷에 연결합니다.</translation>
 <translation id="6416743254476733475">컴퓨터에서 권한을 허용하거나 차단하세요.</translation>
 <translation id="6417265370957905582">Google 어시스턴트</translation>
+<translation id="6417468503703810114">기본 동작</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" />의 이전 설치 버전으로 되돌리는 중</translation>
 <translation id="6418481728190846787">모든 앱에 대한 액세스 완전히 삭제</translation>
 <translation id="6418511932144861495">중요한 업데이트 설치</translation>
@@ -5551,6 +5552,7 @@
 <translation id="7766082757934713382">자동 앱 및 시스템 업데이트를 일시중지하여 네트워크 데이터 사용량을 줄일 수 있습니다.</translation>
 <translation id="7766807826975222231">둘러보기</translation>
 <translation id="7766838926148951335">권한 수락</translation>
+<translation id="7768507955883790804">사이트를 방문할 때 이 설정을 자동으로 따릅니다.</translation>
 <translation id="7768770796815395237">변경</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769672763586021400">모델 ID</translation>
@@ -6240,7 +6242,6 @@
 <translation id="8585480574870650651">Crostini 삭제</translation>
 <translation id="8588866096426746242">프로필 통계 보기</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 헤드셋에 VR 전송 중</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" />에서 ADB 디버깅을 사용 중지했습니다. 어떠한 새 애플리케이션도 사이드로드되지 않습니다.</translation>
 <translation id="8590375307970699841">자동 업데이트 설정</translation>
 <translation id="8591783563402255548">1초</translation>
 <translation id="8592141010104017453">알림 표시 안함</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1013149566889033026">Un nouvel onglet de navigation privée va s'ouvrir</translation>
 <translation id="1028699632127661925">Envoi sur <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Effacer ces données ?</translation>
 <translation id="1036348656032585052">Désactiver</translation>
@@ -345,6 +346,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3775705724665058594">Envoyer à vos appareils</translation>
 <translation id="3778956594442850293">Ajouté à l'écran d'accueil</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3800748312755064483">Se connecter temporairement</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements supprimés</translation>

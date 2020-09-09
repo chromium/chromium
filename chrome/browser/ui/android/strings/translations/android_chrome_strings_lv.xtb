@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1013149566889033026">Tiks atvērta jauna inkognito cilne.</translation>
 <translation id="1028699632127661925">Notiek sūtīšana uz: <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Dzēst arī šo vietņu un lietotņu datus?</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
@@ -345,6 +346,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3775705724665058594">Sūtīšana uz jūsu ierīcēm</translation>
 <translation id="3778956594442850293">Pievienots sākuma ekrānam</translation>
 <translation id="3789841737615482174">Instalēt</translation>
+<translation id="3800748312755064483">Īslaicīgi pierakstīties</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
 <translation id="3819178904835489326">Izdzēsti <ph name="NUMBER_OF_DOWNLOADS" /> lejupielādētie vienumi</translation>

@@ -4574,7 +4574,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu chính sách này chưa được đặt hoặc được đặt thành false, <ph name="TLS_FALSE_START" /> sẽ được bật. Nếu chính sách này được đặt thành true, <ph name="TLS_FALSE_START" /> sẽ bị tắt.</translation>
 <translation id="7433714841194914373">Bật chế độ Instant</translation>
 <translation id="7434202861148928348">Định cấu hình tên miền bắt buộc cho ứng dụng truy cập từ xa</translation>
-<translation id="7443616896860707393">Lời nhắc xác thực cơ bản HTTP giữa các gốc</translation>
 <translation id="7448430478749155471">Bật tính năng chọn để nói trên màn hình đăng nhập</translation>
 <translation id="7458437477941640506">Không thể khôi phục về phiên bản đích nếu phiên bản hệ điều hành mới hơn phiên bản đích. Các bản cập nhật cũng sẽ bị tắt.</translation>
 <translation id="7459601923199346224">Kiểm soát các chính sách quản lý chứng chỉ cho thiết bị và người dùng.</translation>

@@ -4478,6 +4478,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6415900369006735853">Piekļūstiet internetam, izmantojot tālruni</translation>
 <translation id="6416743254476733475">Atļaujiet vai bloķējiet savā datorā.</translation>
 <translation id="6417265370957905582">Google asistents</translation>
+<translation id="6417468503703810114">Noklusējuma iestatījums</translation>
 <translation id="6418160186546245112">Notiek iepriekš instalētās <ph name="IDS_SHORT_PRODUCT_NAME" /> versijas atjaunošana</translation>
 <translation id="6418481728190846787">Neatgriezeniski noņemt piekļuvi visām lietotnēm</translation>
 <translation id="6418511932144861495">Kritiska atjauninājuma instalēšana</translation>
@@ -5553,6 +5554,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="7766082757934713382">Palīdz samazināt tīkla datu lietojumu, apturot automātiskos lietotņu un sistēmas atjauninājumus.</translation>
 <translation id="7766807826975222231">Skatīt ceļvedi</translation>
 <translation id="7766838926148951335">Piekrist atļaujām</translation>
+<translation id="7768507955883790804">Vietnēs tiks automātiski lietots šis iestatījums, kad tās apmeklēsiet.</translation>
 <translation id="7768770796815395237">Mainīt</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
@@ -6241,7 +6243,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8585480574870650651">Crostini noņemšana</translation>
 <translation id="8588866096426746242">Rādīt profila statistiku</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> — VR rādīšana skatītājā</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> atspējoja ADB atkļūdošanu. Nevar sānielādēt jaunas lietojumprogrammas.</translation>
 <translation id="8590375307970699841">Iestatīt automātiskos atjauninājumus</translation>
 <translation id="8591783563402255548">1 sekunde</translation>
 <translation id="8592141010104017453">Nerādīt paziņojumus vispār</translation>

@@ -4472,6 +4472,7 @@
 <translation id="6415900369006735853">Утсаараа интернэтэд холбогдох</translation>
 <translation id="6416743254476733475">Компьютер дээрээ зөвшөөрч эсвэл хориглоно уу.</translation>
 <translation id="6417265370957905582">Google туслах</translation>
+<translation id="6417468503703810114">Өгөгдмөл байдал</translation>
 <translation id="6418160186546245112">Өмнө нь суулгасан <ph name="IDS_SHORT_PRODUCT_NAME" /> хувилбарт шилжүүлэх</translation>
 <translation id="6418481728190846787">Бүх аппликейшнууд руу нэвтрэх эрхийг тогтмол устгах</translation>
 <translation id="6418511932144861495">Чухал шинэчлэлтийг суулгах</translation>
@@ -5547,6 +5548,7 @@
 <translation id="7766082757934713382">Автомат апп болон систем шинэчлэлтийг түр зогсоосноор сүлжээний дата ашиглалтыг багасгахад тусалдаг</translation>
 <translation id="7766807826975222231">Аялцгаая</translation>
 <translation id="7766838926148951335">Зөвшөөрлийг зөвшөөрөх</translation>
+<translation id="7768507955883790804">Таныг сайт руу зочлоход энэ тохиргоог сайт автоматаар дагана</translation>
 <translation id="7768770796815395237">Өөрчлөх</translation>
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
@@ -6232,7 +6234,6 @@
 <translation id="8585480574870650651">Crostini-г хасах</translation>
 <translation id="8588866096426746242">Профайлын статистик харуулах</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - Виртуал бодит байдлыг (VR) чихэвчид дамжуулж байна</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> ADB дебаг хийхийг идэвхгүй болгосон. Ямар ч шинэ аппыг хөндлөнгөөс ачаалах боломжгүй.</translation>
 <translation id="8590375307970699841">Автоматаар шинэчлэх тохиргоог хийх</translation>
 <translation id="8591783563402255548">1 секунд</translation>
 <translation id="8592141010104017453">Мэдэгдлийг огт харуулахгүй</translation>

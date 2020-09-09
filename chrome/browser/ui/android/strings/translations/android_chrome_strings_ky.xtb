@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1013149566889033026">Жаңы жашыруун өтмөк ачылат</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө...</translation>
 <translation id="103269572468856066">Маалымат бул сайттар менен колдонмолордон да өчүрүлсүнбү?</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="3778956594442850293">Башкы экранга кошулду</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
+<translation id="3800748312755064483">Убактылуу кирүү</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
 <translation id="3819178904835489326">Жүктөлүп алынган <ph name="NUMBER_OF_DOWNLOADS" /> нерсе өчүрүлдү</translation>

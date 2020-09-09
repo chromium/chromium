@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1013149566889033026">ਇੱਕ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੁੱਲ੍ਹੇਗੀ</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ਨੂੰ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="103269572468856066">ਇਹਨਾਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਤੋਂ ਵੀ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="3778956594442850293">ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3789841737615482174">ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="3800748312755064483">ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3810838688059735925">ਵੀਡਿਓ</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ਡਾਊਨਲੋਡ ਮਿਟਾਏ ਗਏ</translation>

@@ -4477,6 +4477,7 @@
 <translation id="6415900369006735853">अपने फ़ोन पर इंटरनेट चालू करें</translation>
 <translation id="6416743254476733475">अपने कंप्यूटर पर अनुमति दें या ब्लॉक करें.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6417468503703810114">डिफ़ॉल्ट तरीका</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> के पहले से इंस्‍टॉल किए गए संस्‍करण पर वापस लाना</translation>
 <translation id="6418481728190846787">सभी ऐप्लिकेशन की एक्सेस स्थायी रूप से हटाएं</translation>
 <translation id="6418511932144861495">ज़रूरी अपडेट इंस्टॉल करें</translation>
@@ -5552,6 +5553,7 @@
 <translation id="7766082757934713382">इससे आप ऐप्लिकेशन और सिस्टम को अपने-आप अपडेट होने से रोक सकते हैं. इससे आपका नेटवर्क डेटा कम खर्च होगा</translation>
 <translation id="7766807826975222231">एक झलक देखें</translation>
 <translation id="7766838926148951335">अनुमतियां स्वीकार करें</translation>
+<translation id="7768507955883790804">जब आप साइटों पर जाते हैं, तो साइटें अपने-आप इस सेटिंग को फ़ॉलो करती हैं</translation>
 <translation id="7768770796815395237">बदलें</translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
@@ -6240,7 +6242,6 @@
 <translation id="8585480574870650651">Crostini हटाएं</translation>
 <translation id="8588866096426746242">प्रोफ़ाइल आंकड़े दिखाएं</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR हेडसेट को दिखा रहा है</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. कोई भी नया ऐप्लिकेशन अलग से लोड नहीं किया जा सकता है.</translation>
 <translation id="8590375307970699841">स्वचालित अपडेट सेट अप करें</translation>
 <translation id="8591783563402255548">1 सेकंड</translation>
 <translation id="8592141010104017453">सूचनाएं बिल्कुल न दिखाएं</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1013149566889033026">एक नया गुप्त टैब खुलेगा</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> पर भेजा जा रहा है...</translation>
 <translation id="103269572468856066">इन साइटों और ऐप से जुड़ा डेटा मिटाना है?</translation>
 <translation id="1036348656032585052">बंद करें</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3778956594442850293">होम स्‍क्रीन में जोड़ा गया</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
+<translation id="3800748312755064483">कुछ समय के लिए साइन इन करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>

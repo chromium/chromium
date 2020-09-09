@@ -4498,7 +4498,6 @@
       如果此政策未设置或设为 false，系统将启用 <ph name="TLS_FALSE_START" />。如果此政策设为 true，系统将停用 <ph name="TLS_FALSE_START" />。</translation>
 <translation id="7433714841194914373">启用“即搜即得”</translation>
 <translation id="7434202861148928348">为远程访问客户端配置所需的域名</translation>
-<translation id="7443616896860707393">跨域 HTTP 基本身份验证提示</translation>
 <translation id="7448430478749155471">在登录屏幕上启用“随选朗读”</translation>
 <translation id="7458437477941640506">如果操作系统版本比目标版本新，则不会回滚到目标版本。相应更新也会被停用。</translation>
 <translation id="7459601923199346224">控制证书管理机制的用户和设备政策。</translation>

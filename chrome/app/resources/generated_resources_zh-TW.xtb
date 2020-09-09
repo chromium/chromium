@@ -4476,6 +4476,7 @@
 <translation id="6415900369006735853">透過手機連上網際網路</translation>
 <translation id="6416743254476733475">請透過電腦允許或封鎖相關要求。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
+<translation id="6417468503703810114">預設行為</translation>
 <translation id="6418160186546245112">還原至先前安裝的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 版本</translation>
 <translation id="6418481728190846787">永久移除所有應用程式的存取權</translation>
 <translation id="6418511932144861495">安裝重大更新</translation>
@@ -5551,6 +5552,7 @@
 <translation id="7766082757934713382">透過暫停應用程式和系統的自動更新來降低網路數據用量</translation>
 <translation id="7766807826975222231">觀看導覽</translation>
 <translation id="7766838926148951335">接受權限</translation>
+<translation id="7768507955883790804">網站會在你造訪時自動遵守這項設定</translation>
 <translation id="7768770796815395237">變更</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7769672763586021400">型號 ID</translation>
@@ -6239,7 +6241,6 @@
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8588866096426746242">顯示設定檔統計資料</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 正在對頭戴式裝置展示 VR</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> 已停用 ADB 偵錯。無法側載任何新的應用程式。</translation>
 <translation id="8590375307970699841">設定自動更新</translation>
 <translation id="8591783563402255548">1 秒</translation>
 <translation id="8592141010104017453">完全不顯示通知</translation>

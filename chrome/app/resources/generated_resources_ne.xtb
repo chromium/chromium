@@ -506,6 +506,7 @@
 <translation id="158849752021629804">गृह नेटवर्क आवश्यक छ</translation>
 <translation id="1588870296199743671">यस मार्फत लिङ्क खोल्नुहोस्...</translation>
 <translation id="1589055389569595240">हिज्जे र व्याकरण देखाउनुहोस्</translation>
+<translation id="1591679663873027990">Parallels Desktop लाई USB यन्त्रहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। USB यन्त्र झिकिसकेपछि Parallels Desktop ले यो यन्त्र याद राख्ने छैन।</translation>
 <translation id="1593594475886691512">फर्म्याट गर्दै...</translation>
 <translation id="159359590073980872">छवि क्यास</translation>
 <translation id="1593926297800505364">भुक्तानी विधि सुरक्षित गर्नुहोस्</translation>
@@ -822,6 +823,7 @@
 <translation id="1954813140452229842">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। कृपया आफ्ना प्रमाणहरूको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1956050014111002555">फाइलमा बहुविध प्रमाणपत्रहरू समावेश गरिएको थियो, जस मध्ये कुनै पनि आयात गरिएका थिएनन्:</translation>
 <translation id="1956390763342388273">यस कार्यले "<ph name="FOLDER_PATH" />" मा रहेका सबै फाइलहरू अपलोड गर्ने छ। तपाईंलाई साइटमाथि विश्वास छ भने मात्र यो कार्य गर्नुहोस्‌।</translation>
+<translation id="196040970347962278">सर्वप्रथम इन्टरनेट जोड्नुहोस्</translation>
 <translation id="1962233722219655970">यस पृष्ठले एक सहज ग्राहक एप प्रयोग गर्छ जुन तपाइँको कम्प्युटरटमा चल्दैन।</translation>
 <translation id="1963227389609234879">सबै हटाउनुहोस्</translation>
 <translation id="1963976881984600709">मानक सुरक्षा</translation>
@@ -1861,6 +1863,7 @@
 <translation id="321834671654278338">Linux को स्थापना रद्दकर्ता</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> कनेक्टर प्रक्रिया क्र्यास भएको छ। फेरी सुरु गर्ने?</translation>
 <translation id="3222066309010235055">प्रिरेन्डर: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989"><ph name="USB_VM_NAME" /> मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3223531857777746191">रिसेट गर्ने बटन</translation>
 <translation id="3225084153129302039">पूर्वनिर्धारित बैजनी अवतार</translation>
 <translation id="3225319735946384299">कोड साइनिङ</translation>
@@ -1873,6 +1876,7 @@
 <translation id="3246107497225150582">{0,plural, =1{एक दिनभित्र यन्त्र अपडेट गर्नुहोस्}other{# एक दिनभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क सम्बन्धी त्रुटि</translation>
 <translation id="3248902735035392926">सुरक्षासम्बन्धी विषयहरू केही क्षण निकालेर <ph name="BEGIN_LINK" />अहिले नै आफ्ना एक्स्टेन्सनहरू जाँच्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">इन्कोग्निटो विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्रको भाग होइन&gt;</translation>
 <translation id="3253225298092156258">उपलब्ध छैन</translation>
 <translation id="3253448572569133955">अज्ञात खाता</translation>
@@ -2112,6 +2116,7 @@
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3528498924003805721">सर्टकट लक्ष्यहरू</translation>
 <translation id="3532273508346491126">सिंकको व्यवस्थापन</translation>
+<translation id="3532521178906420528">इन्टरनेट कनेक्ट गरिँदै …</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - अडियो म्यूट गरिएको छ</translation>
 <translation id="3537881477201137177">यसलाई पछि सेटिङमा गई परिमार्जन गर्न सकिने छ</translation>
 <translation id="3538066758857505094">Linux को स्थापना गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
@@ -3120,6 +3125,7 @@
 <translation id="4750394297954878236">सुझावहरू</translation>
 <translation id="475088594373173692">पहिलो प्रयोगकर्ता</translation>
 <translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
+<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" /> कनेक्ट गर्न सेटिङ खोल्नुहोस्</translation>
 <translation id="4756378406049221019">रोक्नुहोस्/पुनः लोड गर्नुहोस्</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
@@ -4467,6 +4473,7 @@
 <translation id="6415900369006735853">आफ्नो फोनमार्फत इन्टरनेटमा जोडिनुहोस्</translation>
 <translation id="6416743254476733475">आफ्नो कम्प्युटरमा अनुमति दिनुहोस् वा रोक लगाउनुहोस्।</translation>
 <translation id="6417265370957905582">Google सहायक</translation>
+<translation id="6417468503703810114">पूर्वनिर्धारित तरिका</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> को अघिल्लो स्थापित संस्करणमा फिर्ता जाँदै</translation>
 <translation id="6418481728190846787">सबै अनुप्रयोगहरूको लागि दूर पहुँच स्थायी रूपमा हटाउनुहोस्</translation>
 <translation id="6418511932144861495">महत्वपूर्ण अद्यावधिक स्थापना गर्नुहोस्</translation>
@@ -4634,6 +4641,7 @@
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />ले तपाईँको तर्फबाटप्रमाणीकरणगर्न एउटा प्रमाणपत्रको स्थायी पहुँच गर्न चाहन्छ।</translation>
 <translation id="6635944431854494329">मालिक सेटिङ &gt; उन्नत &gt; निदान र प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाउनुहोस् नामक सेटिङमा गएर यो सुविधा नियन्त्रण गर्न सक्छन्।</translation>
 <translation id="6635956300022133031">पाठवाचकका आवाजहरू चयन गर्नुहोस् र आफू अनुकूल पार्नुहोस्</translation>
+<translation id="6636588250634969791">अगाडि बढ्न SIM कार्ड हाल्नुहोस्</translation>
 <translation id="6639554308659482635">SQLite मेमोरी</translation>
 <translation id="6641138807883536517">अनियमित रूपमा सिर्जना गरिएको मोड्युलको सुरक्षित पासवर्ड उपलब्ध छैन। पावरवासपछि यो सामान्य हो।</translation>
 <translation id="6642720633335369752">खुलेका सबै अनुप्रयोगहरूको विन्डो हेर्न तलबाट माथितिर स्वाइप गरी थिचिराख्नुहोस्।</translation>
@@ -5176,6 +5184,7 @@
 <translation id="7303900363563182677">यो साइटलाई क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र छविहरू हेर्न रोक लगाइएको छ</translation>
 <translation id="7305123176580523628">USB प्रिन्टर जोडियो</translation>
 <translation id="730515362922783851">स्थानीय नेटवर्क वा इन्टरनेटमा कुनै पनि यन्त्रमार्फत डेटा सेयर गर्नुहोस्</translation>
+<translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> <ph name="USB_VM_NAME" /> मा कनेक्ट गर्न सेटिङ खोल्नुहोस्</translation>
 <translation id="7307129035224081534">पज गरियो</translation>
 <translation id="7308002049209013926">नयाँ एप र गतिविधिहरूसम्म तत्काल पुग्न लन्चर प्रयोग गर्नुहोस्। यो कार्य गर्न Alt + Shift + L थिच्नुहोस्।</translation>
 <translation id="7309257895202129721">&amp;नियन्त्रणहरू देखाउनुहोस्</translation>
@@ -5540,6 +5549,7 @@
 <translation id="7766082757934713382">यसले स्वचालित एप तथा सिस्टम अपडेट अस्थायी रूपमा बन्द गरेर डेटाको खपत कम गर्न मद्दत गर्छ</translation>
 <translation id="7766807826975222231">भ्रमण गर्नुहोस्</translation>
 <translation id="7766838926148951335">अनुमतिहरू स्वीकार गर्नुहोस्</translation>
+<translation id="7768507955883790804">तपाईं कुनै साइटमा जाँदा उक्त साइटमा स्वतः यो सेटिङ लागू हुन्छ</translation>
 <translation id="7768770796815395237">परिवर्तन गर्नुहोस्</translation>
 <translation id="7768784765476638775">चयन गरेर बोल्ने</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
@@ -6228,7 +6238,6 @@
 <translation id="8585480574870650651">Crostini हटाउनुहोस्</translation>
 <translation id="8588866096426746242">प्रोफाइलको तथ्याङ्क देखाउनुहोस्</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR हेडसेट प्रस्तुत गरिँदै</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> ले ADB डिबग प्रक्रिया असक्षम पारेको छ। कुनै पनि नयाँ एप अज्ञात स्रोतबाट इन्स्टल गर्न मिल्दैन।</translation>
 <translation id="8590375307970699841">स्वचालित अद्यावधिकहरू सेटअप गर्नुहोस्</translation>
 <translation id="8591783563402255548">१ सेकेन्ड</translation>
 <translation id="8592141010104017453">कुनै पनि सूचना नदेखाउनुहोस्</translation>
@@ -6796,6 +6805,7 @@
 <translation id="947329552760389097">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>
 <translation id="952992212772159698">सक्रिय छैन</translation>
+<translation id="956444359529327203">अतिथि विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="956500788634395331">तपाईं हानिकारक हुन सक्ने एक्स्टेन्सनहरूबाट सुरक्षित हुनुहुन्छ</translation>
 <translation id="957960681186851048">यो साइटले स्वतः एकभन्दा बढी फाइलहरू डाउनलोड गर्ने प्रयास गर्‍यो</translation>
 <translation id="9580706199804957">Google का सेवाहरूसँग जडान गर्न सकिएन</translation>

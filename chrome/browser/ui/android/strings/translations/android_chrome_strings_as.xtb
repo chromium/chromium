@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1013149566889033026">এটা ইনক’গনিট’ টেব খুলিব</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
 <translation id="103269572468856066">এই ছাইট আৰু এপৰ পৰাও ডেটা মচিবনে?</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3778956594442850293">গৃহ স্ক্ৰীণত যোগ কৰা হ’ল</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
+<translation id="3800748312755064483">অস্থায়ীভাৱে ছাইন ইন কৰক</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টা ডাউনল'ড মচা হ'ল</translation>

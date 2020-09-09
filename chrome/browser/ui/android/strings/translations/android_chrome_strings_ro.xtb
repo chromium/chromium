@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1013149566889033026">Se va deschide o nouă filă incognito</translation>
 <translation id="1028699632127661925">Se trimite la <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Ștergi și datele de la aceste site-uri și aplicații?</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
@@ -345,6 +346,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3775705724665058594">Trimite pe dispozitivele tale</translation>
 <translation id="3778956594442850293">S-a adăugat pe ecranul de pornire</translation>
 <translation id="3789841737615482174">Instalează</translation>
+<translation id="3800748312755064483">Conectează-te temporar</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descărcări șterse</translation>

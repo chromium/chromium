@@ -4479,6 +4479,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6415900369006735853">Connectez-vous à Internet au moyen de votre téléphone</translation>
 <translation id="6416743254476733475">Autoriser ou bloquer sur votre ordinateur</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
+<translation id="6417468503703810114">Valeur par défaut</translation>
 <translation id="6418160186546245112">Retour à la version précédemment installée de <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Supprimer définitivement l'accès pour toutes les applications</translation>
 <translation id="6418511932144861495">Installer une mise à jour essentielle</translation>
@@ -5554,6 +5555,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7766082757934713382">Aide à réduire l'utilisation de données réseau en interrompant les mises à jour automatiques des applications et des systèmes</translation>
 <translation id="7766807826975222231">Visite guidée</translation>
 <translation id="7766838926148951335">Accepter les autorisations</translation>
+<translation id="7768507955883790804">Les sites respectent automatiquement ce paramètres quand vous les visitez</translation>
 <translation id="7768770796815395237">Changer</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7769672763586021400">Identifiant de modèle</translation>
@@ -6242,7 +6244,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8585480574870650651">Supprimer Crostini</translation>
 <translation id="8588866096426746242">Afficher les statistiques de profil</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - Présentation RV en cours dans le casque</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> a désactivé le débogage PDA. Aucune nouvelle application ne peut être téléchargée d'une source tierce.</translation>
 <translation id="8590375307970699841">Configurer les mises à jour automatiques</translation>
 <translation id="8591783563402255548">1 seconde</translation>
 <translation id="8592141010104017453">N'afficher aucune notification</translation>

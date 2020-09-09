@@ -4476,6 +4476,7 @@
 <translation id="6415900369006735853">חיבור לאינטרנט דרך הטלפון</translation>
 <translation id="6416743254476733475">צריך להתיר או לחסום במחשב.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6417468503703810114">התנהגות ברירת מחדל</translation>
 <translation id="6418160186546245112">חוזר לגרסה המותקנת הקודמת של <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">הסר לצמיתות גישה עבור כל היישומים</translation>
 <translation id="6418511932144861495">התקנה של עדכון קריטי</translation>
@@ -5551,6 +5552,7 @@
 <translation id="7766082757934713382">המתג הזה עוזר לצמצם את השימוש בחבילת הגלישה על ידי הרשת, על ידי השהיית העדכונים האוטומטיים של האפליקציה והמערכת.</translation>
 <translation id="7766807826975222231">הצטרף לסיור</translation>
 <translation id="7766838926148951335">אשר הרשאות</translation>
+<translation id="7768507955883790804">אתרים יפעלו לפי ההגדרה הזו באופן אוטומטי בזמן הביקור בהם</translation>
 <translation id="7768770796815395237">שינוי</translation>
 <translation id="7768784765476638775">הקראה</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
@@ -6241,7 +6243,6 @@
 <translation id="8585480574870650651">‏הסרה של Crostini</translation>
 <translation id="8588866096426746242">הצגת נתונים סטטיסטיים של פרופיל</translation>
 <translation id="8588868914509452556">‏<ph name="WINDOW_TITLE" /> - VR מוצג במשקפי VR</translation>
-<translation id="8589316013260923499">‏ניפוי באגים באמצעות ADB הושבת על-ידי <ph name="DOMAIN" />. לא ניתן להתקין אפליקציות חדשות ממקור לא ידוע.</translation>
 <translation id="8590375307970699841">הגדר עדכונים אוטומטיים</translation>
 <translation id="8591783563402255548">שנייה</translation>
 <translation id="8592141010104017453">לא להציג הודעות</translation>

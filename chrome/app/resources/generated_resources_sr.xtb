@@ -1863,7 +1863,7 @@
 <translation id="321834671654278338">Linux програм за деинсталирање</translation>
 <translation id="3220586366024592812">Процес конектора за <ph name="CLOUD_PRINT_NAME" /> је отказао. Желите ли поново да га покренете?</translation>
 <translation id="3222066309010235055">Претприказивање: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
-<translation id="3222779980972075989">Повежите се са уређајем <ph name="USB_VM_NAME" /></translation>
+<translation id="3222779980972075989">Повежите се са <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Дугме Ресетуј</translation>
 <translation id="3225084153129302039">Подразумевани љубичасти аватар</translation>
 <translation id="3225319735946384299">Потписивање кода</translation>
@@ -3126,7 +3126,7 @@
 <translation id="4750394297954878236">Предлози</translation>
 <translation id="475088594373173692">Први корисник</translation>
 <translation id="4751476147751820511">Сензори за покрет или светло</translation>
-<translation id="4752124003533492687">Отворите Подешавања да бисте повезали уређај <ph name="USB_DEVICE_NAME" /></translation>
+<translation id="4752124003533492687">Отворите Подешавања да бисте повезали <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="4756378406049221019">Заустави/поново учитај</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4759238208242260848">Преузимања</translation>
@@ -5187,7 +5187,7 @@
 <translation id="7303900363563182677">Овом сајту је блокиран увид у текст и слике који су копирани у привремену меморију</translation>
 <translation id="7305123176580523628">USB штампач је повезан</translation>
 <translation id="730515362922783851">Размена података са било којим уређајем на локалној мрежи или интернету</translation>
-<translation id="7306521477691455105">Отворите Подешавања да бисте повезали уређај <ph name="USB_DEVICE_NAME" /> са уређајем <ph name="USB_VM_NAME" /></translation>
+<translation id="7306521477691455105">Отворите Подешавања да бисте повезали <ph name="USB_DEVICE_NAME" /> са <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Паузирано</translation>
 <translation id="7308002049209013926">Користите Покретач да бисте брзо приступали новим апликацијама и активностима. Да бисте дошли овде помоћу тастатуре, притисните Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Прикажи &amp;контроле</translation>
@@ -6242,7 +6242,6 @@
 <translation id="8585480574870650651">Уклоните Crostini</translation>
 <translation id="8588866096426746242">Прикажи статистику профила</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – ВР се приказује преко хедсета</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> је онемогућио ADB отклањање грешака. Није могуће учитати нове апликације са извора треће стране.</translation>
 <translation id="8590375307970699841">Подеси аутоматска ажурирања</translation>
 <translation id="8591783563402255548">1 секунда</translation>
 <translation id="8592141010104017453">Не приказуј никаква обавештења</translation>

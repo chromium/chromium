@@ -116,6 +116,7 @@
 <translation id="2127372758936585790">নিম্ন শক্তির চার্জার</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2144487987174258011">Adobe ফ্ল্যাশ প্লেয়ার আপডেট করার জন্য বন্ধ করে আবার চালু করুন</translation>
+<translation id="2180011262286780504">আপনার অ্যাডমিনিস্ট্রেটর স্ক্রিন ক্যাপচার নেওয়ার সুবিধা বন্ধ করে দিয়েছেন।</translation>
 <translation id="2208323208084708176">একীভূত ডেস্কটপ মোড</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2222338659135520253">সাইন-ইন করা প্রয়োজন</translation>
@@ -239,6 +240,7 @@
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> নেটওয়ার্কের থেকে ডিসকানেক্ট করা হয়েছে</translation>
 <translation id="3430396595145920809">ফিরে যেতে আপনার স্ক্রিনের ডান দিক থেকে সোয়াইপ করুন</translation>
 <translation id="343571671045587506">রিমাইন্ডার এডিট করুন</translation>
+<translation id="3435967511775410570">আঙুলের ছাপ শনাক্ত করা হয়েছে</translation>
 <translation id="3445925074670675829">USB-C ডিভাইস</translation>
 <translation id="3454224730401036106">আপনার নেটওয়ার্ক সংযোগটি আরও সুরক্ষিত নেটওয়ার্কে পরিবর্তিত হয়েছে</translation>
 <translation id="3465223694362104965">আপনি শেষবার সাইন-ইন করার পরে আরেকটি কীবোর্ড এই ডিভাইসে কানেক্ট করা হয়েছে। এটি ব্যবহার করার আগে কীবোর্ডটিকে আপনি নিরাপদ বলে মনে করেন কিনা তা দেখে নিন।</translation>
@@ -601,6 +603,7 @@
 <translation id="7654687942625752712">পড়ে শোনানো বিকল্প চালু করতে পাঁচ সেকেন্ডের জন্য ভলিউম কীগুলি প্রেস করে ধরে রাখুন।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">আঙুলের ছাপের সাহায্যে যাচাই করুন</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
@@ -618,6 +621,7 @@
 <translation id="7886277072580235377">আপনি সাইন-আউট করলে আপনার ইন্টারনেট সেশন মুছে ফেলা হবে। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">একটি ইমেল পাঠান</translation>
 <translation id="7897375687985782769">স্ক্রিন ঘোরানোর জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি স্ক্রিন ঘোরাতে চান?</translation>
+<translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7904094684485781019">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর একাধিক সাইন-ইন অননুমোদিত করেছেন৷</translation>
 <translation id="7933084174919150729">Google অ্যাসিস্ট্যান্ট শুধুমাত্র প্রাথমিক প্রোফাইলেই ব্যবহার করা যায়।</translation>
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
@@ -628,6 +632,7 @@
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7984197416080286869">অনেকবার আঙ্গুলের ছাপ দিয়ে আনলক করার চেষ্টা করা হয়েছে</translation>
 <translation id="7994370417837006925">একাধিক সাইন-ইন</translation>
+<translation id="7995804128062002838">স্ক্রিন ক্যাপচার নেওয়া যায়নি</translation>
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
 <translation id="8004512796067398576">বৃদ্ধি</translation>
 <translation id="8029629653277878342">আরও নিরাপত্তার জন্য পিন বা পাসওয়ার্ড দিতে হবে</translation>
@@ -715,6 +720,7 @@
 <translation id="8843682306134542540">রোটেশন লক টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
+<translation id="885387440427703469">স্ক্রিন ক্যাপচার নেওয়ার সুবিধা বন্ধ করা হয়েছে</translation>
 <translation id="8870509716567206129">অ্যাপ্লিকেশনটি বিভক্ত-স্ক্রিন সমর্থন করে না৷</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>

@@ -4478,6 +4478,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6415900369006735853">Conectează-te la internet folosind telefonul</translation>
 <translation id="6416743254476733475">Permite sau blochează pe computer.</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
+<translation id="6417468503703810114">Comportament prestabilit</translation>
 <translation id="6418160186546245112">Se revine la versiunea <ph name="IDS_SHORT_PRODUCT_NAME" /> instalată anterior</translation>
 <translation id="6418481728190846787">Eliminați definitiv accesul tuturor aplicațiilor</translation>
 <translation id="6418511932144861495">Instalează actualizarea importantă</translation>
@@ -5553,6 +5554,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7766082757934713382">Reduce utilizarea datelor din rețea prin întreruperea actualizărilor automate ale aplicațiilor și sistemului</translation>
 <translation id="7766807826975222231">Faceți un tur</translation>
 <translation id="7766838926148951335">Acceptă permisiunile</translation>
+<translation id="7768507955883790804">Site-urile aplică automat această setare când le accesezi</translation>
 <translation id="7768770796815395237">Modifică</translation>
 <translation id="7768784765476638775">Selectează și ascultă</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
@@ -6242,7 +6244,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8585480574870650651">Elimină Crostini</translation>
 <translation id="8588866096426746242">Afișează statisticile profilului</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - se prezintă RV pe vizualizator</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> a dezactivat remedierea erorilor prin ADB. Nu se pot instala aplicații noi din alte surse.</translation>
 <translation id="8590375307970699841">Configurează actualizările automate</translation>
 <translation id="8591783563402255548">1 secundă</translation>
 <translation id="8592141010104017453">Nu afișa nicio notificare</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1013149566889033026">Ќе се отвори нова картичка „Инкогнито“</translation>
 <translation id="1028699632127661925">Се испраќа до <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Да се избришат податоците и од сајтовиве и апликацииве?</translation>
 <translation id="1036348656032585052">Исклучи</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3778956594442850293">Додадено на почетен екран</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
+<translation id="3800748312755064483">Најавете се привремено</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1013149566889033026">系统将打开一个新的无痕式标签页</translation>
 <translation id="1028699632127661925">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">一并清除以下网站和应用内的数据？</translation>
 <translation id="1036348656032585052">关闭</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3778956594442850293">已添加到主屏幕</translation>
 <translation id="3789841737615482174">安装</translation>
+<translation id="3800748312755064483">临时登录</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已删除 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>

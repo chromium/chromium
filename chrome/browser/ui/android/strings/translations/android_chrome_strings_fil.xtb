@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1013149566889033026">May bubukas na bagong tab na incognito</translation>
 <translation id="1028699632127661925">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">I-clear ang data sa mga site at app?</translation>
 <translation id="1036348656032585052">I-off</translation>
@@ -345,6 +346,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3775705724665058594">Ipadala sa iyong mga device</translation>
 <translation id="3778956594442850293">Idinagdag sa Home screen</translation>
 <translation id="3789841737615482174">Mag-install</translation>
+<translation id="3800748312755064483">Pansamantalang mag-sign in</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Mamahala</translation>
 <translation id="3819178904835489326">Na-delete ang <ph name="NUMBER_OF_DOWNLOADS" /> (na) pag-download</translation>

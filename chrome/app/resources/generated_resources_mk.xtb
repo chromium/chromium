@@ -4478,6 +4478,7 @@
 <translation id="6415900369006735853">Поврзете се на интернет преку телефонот</translation>
 <translation id="6416743254476733475">Дозволете или блокирајте на компјутерот.</translation>
 <translation id="6417265370957905582">Помошник на Google</translation>
+<translation id="6417468503703810114">Стандардното однесување</translation>
 <translation id="6418160186546245112">Враќање на претходно инсталирана верзија на <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Трајно отстрани пристап за сите апликации</translation>
 <translation id="6418511932144861495">Инсталирајте важно ажурирање</translation>
@@ -5553,6 +5554,7 @@
 <translation id="7766082757934713382">Помага да се намали сообраќајот на мрежата со паузирање на автоматските ажурирања на апликациите и системот</translation>
 <translation id="7766807826975222231">Направете разгледување</translation>
 <translation id="7766838926148951335">Прифати ги дозволите</translation>
+<translation id="7768507955883790804">Сајтовите автоматски ја следат оваа поставка кога ги посетувате</translation>
 <translation id="7768770796815395237">Промени</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7769672763586021400">ID на модел</translation>
@@ -6244,7 +6246,6 @@
 <translation id="8585480574870650651">Отстранување на Crostini</translation>
 <translation id="8588866096426746242">Покажи статистики за профилот</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR-содржини се прикажуваат преку слушалки</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> го оневозможи отстранувањето грешки на ADB Нови апликации не може да се инсталираат од непознат извор.</translation>
 <translation id="8590375307970699841">Постави автоматски ажурирања</translation>
 <translation id="8591783563402255548">1 секунда</translation>
 <translation id="8592141010104017453">Воопшто не прикажувај известувања</translation>

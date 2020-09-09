@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1013149566889033026">Un nouvel onglet de navigation privée s'ouvrira</translation>
 <translation id="1028699632127661925">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="103269572468856066">Supprimer aussi les données de ces sites et de ces applis?</translation>
 <translation id="1036348656032585052">Désactiver</translation>
@@ -345,6 +346,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3775705724665058594">Envoyer à vos appareils</translation>
 <translation id="3778956594442850293">Ajouté à l'écran d'accueil</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3800748312755064483">Se connecter temporairement</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements supprimés</translation>

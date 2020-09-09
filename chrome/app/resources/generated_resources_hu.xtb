@@ -1879,7 +1879,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3246107497225150582">{0,plural, =1{Egy napon belül frissítse az eszközt}other{# napon belül frissítse az eszközt}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Hálózati hiba</translation>
 <translation id="3248902735035392926">A biztonság fontos. Szánjon egy pillanatot <ph name="BEGIN_LINK" />bővítményeinek ellenőrzésére<ph name="END_LINK" />.</translation>
-<translation id="325036368918787455">Inkognitó munkamenet bezárása</translation>
+<translation id="325036368918787455">Inkognitó ablakok bezárása</translation>
 <translation id="3251759466064201842">&lt;Nem része a tanúsítványnak&gt;</translation>
 <translation id="3253225298092156258">Nem hozzáférhető</translation>
 <translation id="3253448572569133955">Ismeretlen fiók</translation>
@@ -6245,7 +6245,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8585480574870650651">A Crostini eltávolítása</translation>
 <translation id="8588866096426746242">Profilstatisztikák megjelenítése</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR-tartalmat jelenít meg egy headseten</translation>
-<translation id="8589316013260923499">A(z) <ph name="DOMAIN" /> letiltotta az ADB-hibakeresést. Nem lehet külső forrásból telepíteni új alkalmazásokat.</translation>
 <translation id="8590375307970699841">Automatikus frissítések beállítása</translation>
 <translation id="8591783563402255548">1 másodperc</translation>
 <translation id="8592141010104017453">Semmilyen értesítés ne jelenjen meg</translation>

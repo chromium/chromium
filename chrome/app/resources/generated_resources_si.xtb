@@ -4477,6 +4477,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6415900369006735853">ඔබේ දුරකථනය හරහා අන්තර්ජාලයට සම්බන්ධ කරන්න</translation>
 <translation id="6416743254476733475">ඔබේ පරිගණකයේ ඉඩ දෙන්න, නැති නම් අවහිර කරන්න.</translation>
 <translation id="6417265370957905582">Google සහායක</translation>
+<translation id="6417468503703810114">සුපුරුදු හැසිරීම</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> හි පෙර ස්ථාපිර අනුවාදනයට නැවත යමින්</translation>
 <translation id="6418481728190846787">සියලු යෙදුම් සඳහා ප්‍රවේශය ස්ථීරව ඉවත් කරන්න</translation>
 <translation id="6418511932144861495">වැදගත් යාවත්කාලීනය ස්ථාපනය කරන්න</translation>
@@ -5550,6 +5551,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7766082757934713382">ස්වයංක්‍රීය යෙදුම් සහ පද්ධති යාවත්කාලීන කිරීම් විරාම කිරීම ජාල දත්ත භාවිතය අඩු කිරීමට උපකාරී වේ</translation>
 <translation id="7766807826975222231">සංචාරයක් කරන්න</translation>
 <translation id="7766838926148951335">අවසර පිළිගන්න</translation>
+<translation id="7768507955883790804">ඔබ මෙම අඩවිවලට පිවිසෙන විට ඒවා ස්වයංක්‍රීයව මෙම සැකසීම අනුගමනය කරයි</translation>
 <translation id="7768770796815395237">වෙනස</translation>
 <translation id="7768784765476638775">කීමට-තේරීම</translation>
 <translation id="7769672763586021400">ආදර්ශ ID</translation>
@@ -6237,7 +6239,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8585480574870650651">Crostini ඉවත් කරන්න</translation>
 <translation id="8588866096426746242">පැතිකඩ සංඛ්‍යාන පෙන්වන්න</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - හෙඩ්සෙට් එකට VR ඉදිරිපත් කිරීම</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> ADB නිදොස් කිරීම අබල කර ඇත. නව යෙදුම් කිසිවක් sideload කළ නොහැක.</translation>
 <translation id="8590375307970699841">ස්වයංක්‍රිය යාවත්කාලීන පිහිටුවන්න</translation>
 <translation id="8591783563402255548">1 තත්පරයක්</translation>
 <translation id="8592141010104017453">කිසිවිටක දැනුම්දීම් පෙන්වන්න එපා</translation>

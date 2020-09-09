@@ -4556,7 +4556,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan tidak disetel, atau disetel ke False, <ph name="TLS_FALSE_START" /> akan diaktifkan. Jika disetel ke True, <ph name="TLS_FALSE_START" /> akan dinonaktifkan.</translation>
 <translation id="7433714841194914373">Aktifkan Instan</translation>
 <translation id="7434202861148928348">Mengonfigurasi nama domain wajib untuk klien akses jarak jauh</translation>
-<translation id="7443616896860707393">Permintaan Autentikasi Dasar HTTP lintas asal</translation>
 <translation id="7448430478749155471">Mengaktifkan fitur klik untuk diucapkan di layar login</translation>
 <translation id="7458437477941640506">Jangan kembalikan ke versi target jika versi OS lebih baru daripada target. Update juga dinonaktifkan.</translation>
 <translation id="7459601923199346224">Mengontrol kebijakan pengguna dan perangkat untuk pengelolaan sertifikat.</translation>

@@ -4475,6 +4475,7 @@
 <translation id="6415900369006735853">اتصال به اینترنت ازطریق تلفن</translation>
 <translation id="6416743254476733475">در رایانه مجاز یا مسدود کنید.</translation>
 <translation id="6417265370957905582">‏دستیار Google</translation>
+<translation id="6417468503703810114">رفتار پيش‌فرض</translation>
 <translation id="6418160186546245112">بازگرداندن به نسخه نصب شده قبلی <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">حذف دائم دسترسی برای تمام برنامه‌ها</translation>
 <translation id="6418511932144861495">نصب به‌روزرسانی ضروری</translation>
@@ -5550,6 +5551,7 @@
 <translation id="7766082757934713382">با متوقف کردن موقت به‌روزرسانی‌های خودکار سیستم و برنامه‌ها، مصرف داده شبکه را کاهش دهید</translation>
 <translation id="7766807826975222231">شرکت در تور</translation>
 <translation id="7766838926148951335">پذیرفتن مجوزها</translation>
+<translation id="7768507955883790804">وقتی از سایت‌ها بازدید می‌کنید، آن‌ها به‌طور خودکار این تنظیم را دنبال می‌کنند</translation>
 <translation id="7768770796815395237">تغییر دادن</translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7769672763586021400">شناسه مدل</translation>
@@ -6239,7 +6241,6 @@
 <translation id="8585480574870650651">‏برداشتن Crostini</translation>
 <translation id="8588866096426746242">نمایش آمار نمایه</translation>
 <translation id="8588868914509452556">‏<ph name="WINDOW_TITLE" /> - VR برای هدست ارائه می‌شود</translation>
-<translation id="8589316013260923499">‏<ph name="DOMAIN" /> اشکال‌زدایی ADB (پل اشکال‌زدایی Android) را غیرفعال کرده است. هیچ برنامه جدیدی نمی‌تواند به‌صورت جانبی بارگیری شود.</translation>
 <translation id="8590375307970699841">راه‌اندازی به‌روزرسانی‌های خودکار</translation>
 <translation id="8591783563402255548">۱ ثانیه</translation>
 <translation id="8592141010104017453">هرگز اعلان نشان داده نشود</translation>

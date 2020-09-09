@@ -4539,7 +4539,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politika ayarlanmazsa veya yanlış seçeneğine ayarlanırsa <ph name="TLS_FALSE_START" /> özelliği etkinleştirilir. Doğru seçeneğine ayarlanırsa <ph name="TLS_FALSE_START" /> özelliği devre dışı olur.</translation>
 <translation id="7433714841194914373">Anında Arama'yı etkinleştir</translation>
 <translation id="7434202861148928348">Uzaktan erişim istemcileri için gereken alan adlarını yapılandır</translation>
-<translation id="7443616896860707393">Çapraz kökenli HTTP Basic Auth bilgi istemleri</translation>
 <translation id="7448430478749155471">Giriş ekranında seç ve dinle özelliğini etkinleştir</translation>
 <translation id="7458437477941640506">OS sürümü hedeften daha yeniyse hedef sürüme geri dönmeyin. Güncellemeler de devre dışı bırakılır.</translation>
 <translation id="7459601923199346224">Sertifika yönetimi için kullanıcı ve cihaz politikalarını kontrol eder.</translation>

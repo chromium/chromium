@@ -936,6 +936,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Ist sie auf "Inhaltscompliance von Uploads und Downloads prüfen" gesetzt, werden in <ph name="PRODUCT_NAME" /> die Regeln verwendet, die unter "Inhaltscompliance von Downloads prüfen" und "Inhaltscompliance von Uploads prüfen" beschrieben sind.
       </translation>
+<translation id="2423255396068675416">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> ausführen, solange <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aktiviert sind. Ist die Richtlinie deaktiviert, ist auch <ph name="PRODUCT_CROSTINI_NAME" /> für Nutzer deaktiviert. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="2424098959650060417">Legt fest, welche Drucker aus "<ph name="BULK_PRINTERS_POLICY_NAME" />" Nutzern zur Verfügung stehen.
 
       Gibt an, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Wenn "<ph name="PRINTERS_ALLOW_ALL" />" ausgewählt ist, werden alle Drucker angezeigt. Wenn "<ph name="PRINTERS_BLACKLIST" />" ausgewählt ist, wird der Zugriff auf die angegebenen Drucker anhand von "<ph name="BULK_PRINTERS_BLACKLIST" />" eingeschränkt.  Wenn "<ph name="PRINTERS_WHITELIST" />" ausgewählt ist, gibt "<ph name="BULK_PRINTERS_WHITELIST" />" nur die Drucker an, die ausgewählt werden können.
@@ -3755,6 +3756,7 @@ Ein Teil der Proxyeinstellungen ist für Android-Apps verfügbar und kann auf fr
 <translation id="6449476513004303784">Nutzern nicht erlauben, Zertifikate zu verwalten</translation>
 <translation id="6453641799812499182">Einschränkungen bei <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung aktivieren</translation>
 <translation id="645425387487868471">Erzwungene Anmeldung für <ph name="PRODUCT_NAME" /> aktivieren</translation>
+<translation id="6458361632497500815">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können alle Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> verwenden, solange alle 3 Richtlinien, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> und <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />, aktiviert sind. Ist die Richtlinie deaktiviert, können nicht verknüpfte Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> nicht verwenden. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="646376229090051440">Ermöglicht das Erstellen einer Liste mit Protokollen und für jedes Protokoll eine verknüpfte Liste mit zugelassenen Quellmustern, die eine externe App starten können, ohne beim Nutzer nachzufragen. Das abschließende Trennzeichen sollte beim Aufführen des Protokolls nicht mit angegeben werden. Geben Sie also beispielsweise "skype" ein, statt "skype:" oder "skype://".
 
       Wenn diese Richtlinie konfiguriert ist, darf ein Protokoll nur dann ohne Nachfrage eine externe App starten, wenn es auf der Liste aufgeführt ist und die Quelle der Website, die das Protokoll starten will, mit einem der Muster in der Liste allowed_origins des jeweiligen Protokolls übereinstimmt. Wenn eine der Bedingungen nicht erfüllt ist, wird die Nachfrage beim Starten externer Protokolle durch die Richtlinie nicht weggelassen.
@@ -3991,6 +3993,9 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 <translation id="6758659208493449452">Mit dieser Richtlinie wird festgelegt, ob Teilnehmer am erweiterten Sicherheitsprogramm zusätzlich geschützt werden. Bei manchen dieser Funktionen werden unter Umständen Daten mit Google geteilt. Teilnehmer am erweiterten Sicherheitsprogramm können beispielsweise ihre heruntergeladenen Dateien für einen Malware-Scan an Google senden. Wird die Richtlinie auf "true" gesetzt oder nicht konfiguriert, werden entsprechende Nutzer zusätzlich geschützt. Wird die Richtlinie auf "false" gesetzt, stehen ihnen nur die Standardfunktionen für Privatnutzer zur Verfügung.</translation>
 <translation id="6766216162565713893">Websites dürfen den Nutzer um Zugriff auf ein Bluetooth-Gerät in der Nähe bitten</translation>
 <translation id="6770454900105963262">Informationen zu aktiven Kiosksitzungen senden</translation>
+<translation id="6782977971207381602">Wenn die Richtlinie aktiviert ist, kann das Gerät unter <ph name="PRODUCT_OS_NAME" /> virtuelle Maschinen ausführen. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> müssen aktiviert sein, um <ph name="PRODUCT_CROSTINI_NAME" /> zu verwenden. Ist die Richtlinie deaktiviert, kann das Gerät keine virtuellen Maschinen ausführen. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer virtueller Maschinen angewandt. Die bereits ausgeführten sind nicht betroffen.
+
+      Wenn diese Richtlinie auf einem verwalteten Gerät nicht konfiguriert ist, kann das Gerät keine virtuellen Maschinen ausführen. Nicht verwaltete Geräte können virtuelle Maschinen ausführen.</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
 <translation id="6786967369487349613">Roaming-Profilverzeichnis festlegen</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
@@ -4097,6 +4102,13 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Sollte eine Sprache sowohl in dieser Richtlinie als auch in der Richtlinie "<ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" />" enthalten sein, hat letztere Vorrang und die Sprache wird für die Rechtschreibprüfung aktiviert.
 
       Aktuell werden die folgenden Sprachen unterstützt: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
+<translation id="6924916062195228978">Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von <ph name="URL_BLOCKLIST_POLICY_NAME" />). Informationen zum Format der Einträge in der Liste finden Sie in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn Sie <ph name="URL_BLOCKLIST_POLICY_NAME" /> auf * setzen. Sie können diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter ( https://www.chromium.org/administrators/url-blacklist-filter-format ) angegebenen Formats Ausnahmen für bestimmte Schemata, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie <ph name="URL_ALLOWLIST_POLICY_NAME" /> hat Vorrang vor <ph name="URL_BLOCKLIST_POLICY_NAME" />. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
+
+      Mit ihr lässt sich außerdem das automatische Aufrufen durch Browser externer Anwendungen aktivieren, die als Handler für die aufgeführten Protokolle registriert sind, z. B. "tel:" oder "ssh:".
+
+      Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen zu <ph name="URL_BLOCKLIST_POLICY_NAME" /> möglich.
+
+      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="6926703471186170050">Duplexdruck (lange Kante) aktivieren</translation>
 <translation id="6931242315485576290">Synchronisierung der Daten mit Google deaktivieren</translation>
 <translation id="6932419914671987652">Wenn diese Richtlinie aktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> Gastsitzungen und verhindert Profilanmeldungen. Gastanmeldungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen sich alle Fenster im Inkognitomodus befinden.
@@ -4386,6 +4398,15 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn diese Richtlinie auf "true" gesetzt ist, werden Drucker deaktiviert, die andere Protokolle als IPPS, USB oder IPP über USB verwenden. Dies liegt daran, dass Nutzername und Dateiname nicht offen über das Netzwerk gesendet werden sollten.</translation>
 <translation id="7258823566580374486">Zugangsbeschränkung für Remotezugriff-Hosts aktivieren</translation>
+<translation id="7259664319370317355">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+      Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen zur URL-Sperrliste). Informationen zum Format der Einträge in der Liste finden Sie in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn Sie <ph name="URL_BLOCKLIST_POLICY_NAME" /> auf * setzen. Sie können diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter ( https://www.chromium.org/administrators/url-blacklist-filter-format ) angegebenen Formats Ausnahmen für bestimmte Schemata, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Zulassungsliste hat Vorrang vor der Sperrliste. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
+
+      Mit ihr lässt sich außerdem das automatische Aufrufen durch Browser externer Anwendungen aktivieren, die als Handler für die aufgeführten Protokolle registriert sind, z. B. "tel:" oder "ssh:".
+
+      Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen möglich.
+
+      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="7260204423892780600">Legt die Einstellungen für Google Assistant fest.</translation>
 <translation id="7260277299188117560">P2P für automatische Updates aktivieren</translation>
 <translation id="7261252191178797385">Gerätehintergrundbild</translation>
@@ -4495,6 +4516,11 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 <translation id="7389872682701720082">Wenn Sie diese Einstellung aktivieren, werden nicht veraltete Plug-ins immer ausgeführt.
 
       Ist diese Einstellung deaktiviert oder nicht konfiguriert, müssen die Nutzer der Ausführung von Plug-ins zustimmen, die eine Autorisierung erfordern. Diese Plug-ins können ein Sicherheitsrisiko darstellen.</translation>
+<translation id="7400971609879083218">Wenn die Richtlinie aktiviert ist, kann in Bildern von Drittanbietern auf einer Seite eine Authentifizierungsaufforderung angezeigt werden.
+
+       Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann in Bildern von Drittanbietern keine Authentifizierungsaufforderung angezeigt werden.
+
+      Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</translation>
 <translation id="7417972229667085380">Prozentsatz für die Skalierung der Inaktivitätsspanne im Präsentationsmodus (veraltet)</translation>
 <translation id="7421483919690710988">Cache-Größe für Mediendatenträger in Byte festlegen</translation>
 <translation id="7424751532654212117">Liste der Ausnahmen von der Liste der deaktivierten Plug-ins</translation>
@@ -4503,7 +4529,6 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
       Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, wird die Funktion "<ph name="TLS_FALSE_START" />" aktiviert. Ist "true" festgelegt, wird die Funktion "<ph name="TLS_FALSE_START" />" deaktiviert.</translation>
 <translation id="7433714841194914373">Google Instant aktivieren</translation>
 <translation id="7434202861148928348">Erforderliche Domainnamen für Remotezugriff-Clients konfigurieren</translation>
-<translation id="7443616896860707393">Ursprungsübergreifende HTTP-Basic-Authentifizierungsabfragen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="7458437477941640506">Führen Sie kein Rollback auf die Zielversion durch, wenn die Version des Betriebssystems neuer als die der Zielversion ist. Aktualisierungen sind ebenfalls deaktiviert.</translation>
 <translation id="7459601923199346224">Diese Richtlinie steuert Nutzer- und Geräterichtlinien zur Zertifikatverwaltung.</translation>
@@ -5771,6 +5796,7 @@ Wenn die Richtlinie auf "true" gesetzt ist, ist "Kopf- und Fußzeilen" im Dialog
 <translation id="9217154963008402249">Häufigkeit von Kontrollnetzwerkpaketen</translation>
 <translation id="922540222991413931">Installationsquellen für Erweiterungen, Apps und Nutzerskripte konfigurieren</translation>
 <translation id="924557436754151212">Gespeicherte Passwörter bei erster Ausführung aus Standardbrowser importieren</translation>
+<translation id="927384371566552478">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, steht Nutzern die Benutzeroberfläche zum Exportieren/Importieren zur Verfügung. Ist die Richtlinie deaktiviert, steht Nutzern die Benutzeroberfläche zum Exportieren/Importieren nicht zur Verfügung.</translation>
 <translation id="927444535723396977">Wenn die Richtlinie auf "1" gesetzt ist, können Websites JavaScript ausführen. Wenn sie auf "2" gesetzt ist, wird die Ausführung von JavaScript verweigert.
 
       Wird die Richtlinie nicht konfiguriert, können Websites JavaScript ausführen, aber Nutzer können diese Einstellung ändern.</translation>

@@ -4478,6 +4478,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6415900369006735853">Kumonekta sa internet sa pamamagitan ng iyong telepono</translation>
 <translation id="6416743254476733475">Payagan o i-block sa iyong computer.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6417468503703810114">Default na gawi</translation>
 <translation id="6418160186546245112">Nire-revert sa dating naka-install na bersyon ng <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Permanenteng alisin ang access para sa lahat ng apps</translation>
 <translation id="6418511932144861495">I-install ang mahalagang update</translation>
@@ -5553,6 +5554,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7766082757934713382">Nakakatulong na mabawasan ang paggamit ng data ng network sa pamamagitan ng pag-pause sa mga awtomatikong update sa app at system</translation>
 <translation id="7766807826975222231">Maglibot</translation>
 <translation id="7766838926148951335">Tanggapin ang mga pahintulot</translation>
+<translation id="7768507955883790804">Awtomatikong susundin ng mga site ang setting na ito kapag bumisita ka sa mga ito</translation>
 <translation id="7768770796815395237">Baguhin</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769672763586021400">Model ID</translation>
@@ -6243,7 +6245,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8585480574870650651">Alisin ang Crostini</translation>
 <translation id="8588866096426746242">Ipakita ang mga istatistika ng profile</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - ipinapakita ang VR sa headset</translation>
-<translation id="8589316013260923499">Na-disable ng <ph name="DOMAIN" /> ang pag-debug ng ADB. Hindi puwedeng mag-sideload ng mga bagong application.</translation>
 <translation id="8590375307970699841">Mag-set up ng mga awtomatikong update</translation>
 <translation id="8591783563402255548">1 segundo</translation>
 <translation id="8592141010104017453">Huwag magpakita ng anumang notification</translation>

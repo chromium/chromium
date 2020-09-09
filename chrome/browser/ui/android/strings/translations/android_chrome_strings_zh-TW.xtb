@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1013149566889033026">系統會開啟新的無痕分頁</translation>
 <translation id="1028699632127661925">正在傳送到「<ph name="DEVICE_NAME" />」...</translation>
 <translation id="103269572468856066">要一併清除這些網站和應用程式中的資料嗎？</translation>
 <translation id="1036348656032585052">關閉</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">傳送至你的裝置</translation>
 <translation id="3778956594442850293">已新增至主畫面</translation>
 <translation id="3789841737615482174">安裝</translation>
+<translation id="3800748312755064483">暫時登入</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>

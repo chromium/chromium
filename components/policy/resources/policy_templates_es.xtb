@@ -4570,7 +4570,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si esta política no se establece o se le asigna el valor false, se habilitará <ph name="TLS_FALSE_START" />. Si se asigna el valor true a esta política, se inhabilitará <ph name="TLS_FALSE_START" />.</translation>
 <translation id="7433714841194914373">Habilitar Instant</translation>
 <translation id="7434202861148928348">Configurar los nombres de dominio requeridos para los clientes de acceso remoto</translation>
-<translation id="7443616896860707393">Mensajes de autenticación básica de HTTP de origen cruzado</translation>
 <translation id="7448430478749155471">Habilita la función Enunciar Selección en la pantalla de inicio de sesión</translation>
 <translation id="7458437477941640506">No vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. También inhabilita las actualizaciones.</translation>
 <translation id="7459601923199346224">Controla las políticas de usuarios y dispositivos para gestionar certificados.</translation>

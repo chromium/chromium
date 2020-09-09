@@ -6244,7 +6244,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8585480574870650651">Remove Crostini</translation>
 <translation id="8588866096426746242">Show profile stats</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR presenting to headset</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> has disabled ADB debugging. No new applications can be sideloaded.</translation>
 <translation id="8590375307970699841">Set up automatic updates</translation>
 <translation id="8591783563402255548">1 second</translation>
 <translation id="8592141010104017453">Don't show notifications at all</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1013149566889033026">برگه ناشناس جدیدی باز می‌شود</translation>
 <translation id="1028699632127661925">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">داده‌های این سایت‌ها و برنامه‌ها نیز پاک شود؟</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">ارسال به دستگاه‌هایتان</translation>
 <translation id="3778956594442850293">به صفحه اصلی اضافه شد</translation>
 <translation id="3789841737615482174">نصب</translation>
+<translation id="3800748312755064483">ورود موقتی به سیستم</translation>
 <translation id="3810838688059735925">فیلم</translation>
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری حذف شد</translation>

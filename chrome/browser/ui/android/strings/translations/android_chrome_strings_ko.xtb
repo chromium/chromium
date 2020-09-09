@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1013149566889033026">새 시크릿 탭이 열립니다.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />에 보내는 중...</translation>
 <translation id="103269572468856066">아래 사이트 및 앱의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1036348656032585052">사용 중지</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3778956594442850293">홈 화면에 추가됨</translation>
 <translation id="3789841737615482174">설치</translation>
+<translation id="3800748312755064483">임시 로그인</translation>
 <translation id="3810838688059735925">동영상</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3819178904835489326">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 삭제됨</translation>

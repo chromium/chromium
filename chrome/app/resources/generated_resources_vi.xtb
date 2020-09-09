@@ -3836,7 +3836,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5632566673632479864">Tài khoản <ph name="EMAIL" /> của bạn không còn được phép làm tài khoản chính nữa. Vì tài khoản này do <ph name="DOMAIN" /> quản lý, nên dấu trang, lịch sử, mật khẩu và các tùy chọn cài đặt khác sẽ bị xóa khỏi thiết bị này.</translation>
 <translation id="5632592977009207922">Đang tải xuống, còn <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Di động</translation>
-<translation id="563535393368633106">Hỏi trước khi truy cập (được đề xuất)</translation>
+<translation id="563535393368633106">Hỏi trước khi truy cập (khuyên dùng)</translation>
 <translation id="5636996382092289526">Để sử dụng <ph name="NETWORK_ID" />, trước hết bạn cần <ph name="LINK_START" />truy cập vào trang đăng nhập của mạng<ph name="LINK_END" />. Trang này thường tự động mở sau vài giây. Nếu trang này không mở thì không thể sử dụng mạng này.</translation>
 <translation id="5637476008227280525">Bật dữ liệu di động</translation>
 <translation id="5638309510554459422">Tìm tiện ích và chủ đề trong <ph name="BEGIN_LINK" />Cửa hàng Chrome trực tuyến<ph name="END_LINK" /></translation>
@@ -4478,6 +4478,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6415900369006735853">Kết nối Internet qua điện thoại</translation>
 <translation id="6416743254476733475">Hãy cho phép hoặc chặn trên máy tính của bạn.</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
+<translation id="6417468503703810114">Chế độ mặc định</translation>
 <translation id="6418160186546245112">Hoàn nguyên về phiên bản được cài đặt trước của <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Xóa vĩnh viễn quyền truy cập cho tất cả các ứng dụng</translation>
 <translation id="6418511932144861495">Cài đặt cập nhật quan trọng</translation>
@@ -5553,6 +5554,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7766082757934713382">Giúp giảm mức sử dụng dữ liệu mạng bằng cách tạm dừng chế độ tự động cập nhật ứng dụng và hệ thống</translation>
 <translation id="7766807826975222231">Tham quan</translation>
 <translation id="7766838926148951335">Chấp nhận quyền</translation>
+<translation id="7768507955883790804">Các trang web sẽ tự động tuân theo tùy chọn cài đặt này khi bạn truy cập</translation>
 <translation id="7768770796815395237">Thay đổi</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
 <translation id="7769672763586021400">ID kiểu máy</translation>
@@ -6242,7 +6244,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8585480574870650651">Xóa Crostini</translation>
 <translation id="8588866096426746242">Hiển thị số liệu thống kê hồ sơ</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - Đang trình bày nội dung thực tế ảo đến kính thực tế ảo</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> đã tắt tùy chọn gỡ lỗi ADB. Không thể cài đặt ứng dụng mới không qua cửa hàng.</translation>
 <translation id="8590375307970699841">Thiết lập cập nhật tự động</translation>
 <translation id="8591783563402255548">1 giây</translation>
 <translation id="8592141010104017453">Không hiển thị thông báo nào</translation>

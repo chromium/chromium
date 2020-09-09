@@ -4503,7 +4503,6 @@
       如未設定這項政策，或設為 False，系統將會啟用 <ph name="TLS_FALSE_START" />。如已設為 True，系統將會停用 <ph name="TLS_FALSE_START" />。</translation>
 <translation id="7433714841194914373">啟用互動智慧搜尋</translation>
 <translation id="7434202861148928348">為遠端存取用戶端設定必要的網域名稱</translation>
-<translation id="7443616896860707393">跨原始來源的 HTTP 基本驗證提示</translation>
 <translation id="7448430478749155471">在登入畫面上啟用隨選朗讀功能</translation>
 <translation id="7458437477941640506">如果作業系統版本比目標版本還新，則不復原至目標版本，且一併停用更新。</translation>
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>

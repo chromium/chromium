@@ -4473,6 +4473,7 @@
 <translation id="6415900369006735853">通过手机连接到互联网</translation>
 <translation id="6416743254476733475">在您的计算机上允许或禁止。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
+<translation id="6417468503703810114">默认行为</translation>
 <translation id="6418160186546245112">正在还原到之前安装的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 版本</translation>
 <translation id="6418481728190846787">永久删除对所有应用的访问权限</translation>
 <translation id="6418511932144861495">安装重要更新</translation>
@@ -5548,6 +5549,7 @@
 <translation id="7766082757934713382">暂停应用和系统的自动更新，帮助降低网络流量消耗</translation>
 <translation id="7766807826975222231">功能导览</translation>
 <translation id="7766838926148951335">接受权限</translation>
+<translation id="7768507955883790804">网站会在您访问时自动采用此设置</translation>
 <translation id="7768770796815395237">更改</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769672763586021400">型号 ID</translation>
@@ -6236,7 +6238,6 @@
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8588866096426746242">显示个人资料统计信息</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 正在向头戴设备显示 VR</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> 已停用 ADB 调试。无法旁加载任何新应用。</translation>
 <translation id="8590375307970699841">设置自动更新</translation>
 <translation id="8591783563402255548">1 秒</translation>
 <translation id="8592141010104017453">完全不显示通知</translation>

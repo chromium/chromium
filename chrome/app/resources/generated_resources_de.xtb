@@ -507,6 +507,7 @@
 <translation id="158849752021629804">Heimnetzwerk erforderlich</translation>
 <translation id="1588870296199743671">Link öffnen mit...</translation>
 <translation id="1589055389569595240">Rechtschreibung und Grammatik einblenden</translation>
+<translation id="1591679663873027990">Du kannst Parallels Desktop erlauben, auf USB-Geräte zuzugreifen. Parallels Desktop merkt sich USB-Geräte nicht, nachdem sie entfernt wurden.</translation>
 <translation id="1593594475886691512">Formatierung wird ausgeführt...</translation>
 <translation id="159359590073980872">Bilder-Cache</translation>
 <translation id="1593926297800505364">Zahlungsmethode speichern</translation>
@@ -823,6 +824,7 @@
 <translation id="1954813140452229842">Fehler beim Bereitstellen der Freigabe. Überprüfen Sie Ihre Anmeldedaten und versuchen Sie es noch einmal.</translation>
 <translation id="1956050014111002555">Die Datei enthielt mehrere Zertifikate, von denen keines importiert wurde:</translation>
 <translation id="1956390763342388273">Hierdurch werden alle Dateien aus "<ph name="FOLDER_PATH" />" hochgeladen. Tun Sie dies nur, wenn Sie die Website als vertrauenswürdig einstufen.</translation>
+<translation id="196040970347962278">Stellen Sie zuerst eine Verbindung zum Internet her</translation>
 <translation id="1962233722219655970">Diese Seite verwendet eine Native Client App, die auf Ihrem Computer nicht funktioniert.</translation>
 <translation id="1963227389609234879">Alle entfernen</translation>
 <translation id="1963976881984600709">Standardschutz</translation>
@@ -1860,6 +1862,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="321834671654278338">Linux-Deinstallationsprogramm</translation>
 <translation id="3220586366024592812">Der <ph name="CLOUD_PRINT_NAME" />-Connector-Prozess ist abgestürzt. Neu starten?</translation>
 <translation id="3222066309010235055">Vorab rendern: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989">Mit <ph name="USB_VM_NAME" /> verbinden</translation>
 <translation id="3223531857777746191">Taste zum Zurücksetzen</translation>
 <translation id="3225084153129302039">Lila Standardavatar</translation>
 <translation id="3225319735946384299">Codesignatur</translation>
@@ -1872,6 +1875,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3246107497225150582">{0,plural, =1{Gerät innerhalb eines Tages aktualisieren}other{Gerät innerhalb von # Tagen aktualisieren}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netzwerkfehler</translation>
 <translation id="3248902735035392926">Sicherheit ist wichtig. Nehmen Sie sich einen Moment Zeit, um Ihre <ph name="BEGIN_LINK" />Erweiterungen zu prüfen<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">Inkognitofenster schließen</translation>
 <translation id="3251759466064201842">&lt;Gehört nicht zum Zertifikat&gt;</translation>
 <translation id="3253225298092156258">Nicht verfügbar</translation>
 <translation id="3253448572569133955">Unbekanntes Konto</translation>
@@ -2111,6 +2115,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3527085408025491307">Ordner</translation>
 <translation id="3528498924003805721">Verknüpfungsziele</translation>
 <translation id="3532273508346491126">Synchronisierungsverwaltung</translation>
+<translation id="3532521178906420528">Netzwerkverbindung wird hergestellt…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – stummgeschaltet</translation>
 <translation id="3537881477201137177">Das kann später in den Einstellungen geändert werden</translation>
 <translation id="3538066758857505094">Fehler beim Deinstallieren von Linux. Bitte versuchen Sie es noch einmal.</translation>
@@ -3120,6 +3125,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4750394297954878236">Vorschläge</translation>
 <translation id="475088594373173692">Erster Nutzer</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
+<translation id="4752124003533492687">Öffnen Sie die Einstellungen, um <ph name="USB_DEVICE_NAME" /> zu verbinden</translation>
 <translation id="4756378406049221019">Stopp/Neu laden</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -4636,6 +4642,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> fordert ständigen Zugriff auf ein Zertifikat an, um sich in Ihrem Namen zu authentifizieren.</translation>
 <translation id="6635944431854494329">Diese Funktion kann vom Inhaber über "Einstellungen" &gt; "Erweitert" &gt; "Diagnose- und Nutzungsdaten automatisch an Google senden" gesteuert werden.</translation>
 <translation id="6635956300022133031">Stimmen für die Sprachausgabe auswählen und anpassen</translation>
+<translation id="6636588250634969791">Legen Sie eine SIM-Karte ein, um fortzufahren</translation>
 <translation id="6639554308659482635">SQLite-Speicher</translation>
 <translation id="6641138807883536517">Das zufällig generierte Passwort für das Sicherheitsmodul ist nicht verfügbar. Dies ist nach einem Powerwash normal.</translation>
 <translation id="6642720633335369752">Sie können sich alle geöffneten App-Fenster ansehen, indem Sie von unten nach oben wischen und das Display gedrückt halten.</translation>
@@ -5178,6 +5185,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7303900363563182677">Diese Website wurde daran gehindert, Texte und Bilder aus der Zwischenablage abzurufen</translation>
 <translation id="7305123176580523628">USB-Drucker verbunden</translation>
 <translation id="730515362922783851">Daten mit einem beliebigen Gerät im lokalen Netzwerk oder Internet austauschen</translation>
+<translation id="7306521477691455105">Öffnen Sie die Einstellungen, um <ph name="USB_DEVICE_NAME" /> mit <ph name="USB_VM_NAME" /> zu verbinden</translation>
 <translation id="7307129035224081534">Pausiert</translation>
 <translation id="7308002049209013926">Über den Launcher gelangen Sie schnell zu neuen Apps und Aktivitäten. Zum Öffnen über die Tastatur drücken Sie Alt + Umschalttaste + L.</translation>
 <translation id="7309257895202129721">&amp;Steuerelemente anzeigen</translation>
@@ -6231,7 +6239,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8585480574870650651">Crostini entfernen</translation>
 <translation id="8588866096426746242">Profilstatistiken anzeigen</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR wird auf Headset abgespielt</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> hat die ADB-Fehlerbehebung deaktiviert. Es können keine neuen Apps per Sideload übertragen werden.</translation>
 <translation id="8590375307970699841">Automatische Updates einrichten</translation>
 <translation id="8591783563402255548">1 Sekunde</translation>
 <translation id="8592141010104017453">Keine Benachrichtigungen anzeigen</translation>
@@ -6799,6 +6806,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="947329552760389097">&amp;Elemente untersuchen</translation>
 <translation id="951991426597076286">Ablehnen</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>
+<translation id="956444359529327203">Gastfenster schließen</translation>
 <translation id="956500788634395331">Sie sind vor potenziell schädlichen Erweiterungen geschützt</translation>
 <translation id="957960681186851048">Diese Website hat versucht, automatisch mehrere Dateien herunterzuladen</translation>
 <translation id="9580706199804957">Keine Verbindung mit Google-Diensten möglich</translation>

@@ -116,6 +116,7 @@
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
 <translation id="2144487987174258011">Adobe Flash Player を更新するには再起動してください</translation>
+<translation id="2180011262286780504">スクリーン キャプチャ機能は管理者によって無効にされています。</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222338659135520253">ログインしてください</translation>
@@ -239,6 +240,7 @@
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> との接続を解除します</translation>
 <translation id="3430396595145920809">右側からスワイプすると前の画面に戻ります</translation>
 <translation id="343571671045587506">リマインダーの編集</translation>
+<translation id="3435967511775410570">指紋を認識しました</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3454224730401036106">より安全なネットワークに接続が切り替えられました</translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
@@ -601,6 +603,7 @@
 <translation id="7654687942625752712">音声フィードバックを無効にするには、音量大と音量小の両方のボタンを 5 秒間押し続けてください。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7705822912736783206">指紋による認証</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 件の通知}other{# 件の通知}}</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
@@ -618,6 +621,7 @@
 <translation id="7886277072580235377">ログアウトするとインターネット セッションは終了します。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">メールを送って</translation>
 <translation id="7897375687985782769">画面回転のキーボード ショートカットを押しました。画面を回転しますか？</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
 <translation id="7933084174919150729">Google アシスタントはメインのプロフィールでのみご利用いただけます。</translation>
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>
@@ -628,6 +632,7 @@
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7984197416080286869">指紋認証の試行回数が上限を超えています</translation>
 <translation id="7994370417837006925">マルチログイン</translation>
+<translation id="7995804128062002838">画面をキャプチャできませんでした</translation>
 <translation id="8000066093800657092">ネットワーク接続なし</translation>
 <translation id="8004512796067398576">増やす</translation>
 <translation id="8029629653277878342">セキュリティ強化のため PIN またはパスワードが必要です</translation>
@@ -715,6 +720,7 @@
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
+<translation id="885387440427703469">スクリーン キャプチャは無効になっています</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>

@@ -4511,7 +4511,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política não for configurada ou se for definida como "false", <ph name="TLS_FALSE_START" /> será ativada. Se for definida como "true", <ph name="TLS_FALSE_START" /> será desativada.</translation>
 <translation id="7433714841194914373">Ativar o Instant</translation>
 <translation id="7434202861148928348">Configurar os nomes de domínio obrigatórios para clientes de acesso remoto</translation>
-<translation id="7443616896860707393">Solicitações básicas de autorização HTTPS de múltiplas origens</translation>
 <translation id="7448430478749155471">Ativa o recurso "Selecionar para ouvir" na tela de login</translation>
 <translation id="7458437477941640506">Não faça a reversão para a versão de destino se a versão do SO for mais recente que a de destino. As atualizações também estão desativadas.</translation>
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>

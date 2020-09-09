@@ -4478,7 +4478,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6415900369006735853">Looge Interneti-ühendus telefoni kaudu</translation>
 <translation id="6416743254476733475">Lubage või blokeerige oma arvutis.</translation>
 <translation id="6417265370957905582">Google'i assistent</translation>
-<translation id="6417468503703810114">Vaikimisi käitumine</translation>
+<translation id="6417468503703810114">Vaikekäitumine</translation>
 <translation id="6418160186546245112">Toote <ph name="IDS_SHORT_PRODUCT_NAME" /> varem installitud versiooni ennistamine</translation>
 <translation id="6418481728190846787">Kõikide rakenduste juurdepääsu jääv eemaldamine</translation>
 <translation id="6418511932144861495">Installige kriitiline värskendus</translation>
@@ -6244,7 +6244,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8585480574870650651">Crostini eemaldamine</translation>
 <translation id="8588866096426746242">Kuva profiili statistika</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR-i esitatakse peakomplektis</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> keelas ADB silumise. Uusi rakendusi ei saa kõrval laadida.</translation>
 <translation id="8590375307970699841">Automaatsete värskenduste seadistamine</translation>
 <translation id="8591783563402255548">1 sekund</translation>
 <translation id="8592141010104017453">Ära kuva märguandeid üldse</translation>

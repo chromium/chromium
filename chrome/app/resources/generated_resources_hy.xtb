@@ -4481,6 +4481,7 @@
 <translation id="6415900369006735853">Միացեք համացանցին հեռախոսի միջոցով։</translation>
 <translation id="6416743254476733475">Թույլատրեք կամ արգելափակեք ձեր համակարգչում։</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
+<translation id="6417468503703810114">Կանխադրված կարգավորում</translation>
 <translation id="6418160186546245112">Վերադարձ <ph name="IDS_SHORT_PRODUCT_NAME" />-ի նախկինում տեղադրված տարբերակի</translation>
 <translation id="6418481728190846787">Մշտապես արգելել բոլոր հավելվածներին</translation>
 <translation id="6418511932144861495">Կարևոր թարմացման տեղադրում</translation>
@@ -5556,6 +5557,7 @@
 <translation id="7766082757934713382">Օգնում է նվազեցնել թրաֆիկի օգտագործումը՝ հավելվածների և համակարգի ավտոմատ թարմացումները դադարեցնելու միջոցով</translation>
 <translation id="7766807826975222231">Կատարել շրջայց</translation>
 <translation id="7766838926148951335">Ընդունել</translation>
+<translation id="7768507955883790804">Երբ դուք այցելում եք կայքեր, դրանք ավտոմատ հետևում են այս կարգավորմանը։</translation>
 <translation id="7768770796815395237">Փոխել</translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
@@ -6243,7 +6245,6 @@
 <translation id="8585480574870650651">Հեռացնել Crostini-ն</translation>
 <translation id="8588866096426746242">Ցուցադրել պրոֆիլի վիճակագրությունը</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> ներդիրից VR բովանդակությունը հեռարձակվում է ակնոցին</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը։ Կողմնակի աղբյուրից ոչ մի հավելված չի կարող բեռնվել։</translation>
 <translation id="8590375307970699841">Ավտոմատ թարմացումների կարգավորում</translation>
 <translation id="8591783563402255548">1 վայրկյան</translation>
 <translation id="8592141010104017453">Չցուցադրել ծանուցումներ</translation>

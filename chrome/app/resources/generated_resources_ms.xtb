@@ -510,7 +510,7 @@
 <translation id="158849752021629804">Perlukan rangkaian rumah</translation>
 <translation id="1588870296199743671">Buka Pautan Dengan...</translation>
 <translation id="1589055389569595240">Tunjukkan Ejaan dan Tatabahasa</translation>
-<translation id="1591679663873027990">Berikan Parallels Desktop kebenaran untuk mengakses peranti USB. Parallels Desktop tidak akan mengingat peranti USB selepas peranti itu dialih keluar.</translation>
+<translation id="1591679663873027990">Berikan Parallels Desktop kebenaran untuk mengakses peranti USB. Parallels Desktop tidak akan ingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="1593594475886691512">Memformatkan...</translation>
 <translation id="159359590073980872">Cache Imej</translation>
 <translation id="1593926297800505364">Simpan kaedah pembayaran</translation>
@@ -4478,6 +4478,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6415900369006735853">Sambung ke Internet melalui telefon anda</translation>
 <translation id="6416743254476733475">Benarkan atau sekat pada komputer anda.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6417468503703810114">Tindakan lalai</translation>
 <translation id="6418160186546245112">Berbalik kepada versi <ph name="IDS_SHORT_PRODUCT_NAME" /> yang dipasang sebelum ini</translation>
 <translation id="6418481728190846787">Mengalih keluar akses bagi semua apl secara kekal</translation>
 <translation id="6418511932144861495">Pasang kemas kini genting</translation>
@@ -5553,6 +5554,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7766082757934713382">Bantu mengurangkan penggunaan data rangkaian dengan menjedakan kemas kini apl dan sistem automatik</translation>
 <translation id="7766807826975222231">Buat lawatan</translation>
 <translation id="7766838926148951335">Terima kebenaran</translation>
+<translation id="7768507955883790804">Tapak mengikut tetapan ini secara automatik apabila anda melawatnya</translation>
 <translation id="7768770796815395237">Tukar</translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
 <translation id="7769672763586021400">ID Model</translation>
@@ -6243,7 +6245,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8585480574870650651">Alih keluar Crostini</translation>
 <translation id="8588866096426746242">Tunjukkan statistik profil</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - penayangan VR ke set kepala</translation>
-<translation id="8589316013260923499"><ph name="DOMAIN" /> telah melumpuhkan penyahpepijatan ADB. Tiada aplikasi baharu yang dapat dimuat sisi.</translation>
 <translation id="8590375307970699841">Sediakan kemas kini automatik</translation>
 <translation id="8591783563402255548">1 saat</translation>
 <translation id="8592141010104017453">Jangan tunjukkan pemberitahuan sama sekali</translation>

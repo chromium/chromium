@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1013149566889033026">Откроется новая вкладка в режиме инкогнито</translation>
 <translation id="1028699632127661925">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="103269572468856066">Удалить эти данные?</translation>
 <translation id="1036348656032585052">Отключить</translation>
@@ -345,6 +346,7 @@
 <translation id="3775705724665058594">Отправка на свои устройства</translation>
 <translation id="3778956594442850293">Добавлено на главный экран</translation>
 <translation id="3789841737615482174">Установить</translation>
+<translation id="3800748312755064483">Войти временно</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Настроить</translation>
 <translation id="3819178904835489326">Удаленные скачивания: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
