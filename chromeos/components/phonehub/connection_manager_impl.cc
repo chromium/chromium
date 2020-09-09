@@ -85,7 +85,8 @@ void ConnectionManagerImpl::SendMessage(const std::string& payload) {
 
 void ConnectionManagerImpl::OnConnectionAttemptFailure(
     chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
-  PA_LOG(WARNING) << "AttemptConnection() failed to establish connection.";
+  PA_LOG(WARNING) << "AttemptConnection() failed to establish connection with "
+                  << "error: " << reason << ".";
   connection_attempt_.reset();
   NotifyStatusChanged();
 }
