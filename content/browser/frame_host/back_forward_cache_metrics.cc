@@ -192,7 +192,18 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
         static_cast<int64_t>(browsing_instance_not_swapped_reason_.value()));
   }
 
+  builder.SetBackForwardCache_DisabledForRenderFrameHostReasonCount(
+      disabled_reasons_.size());
+
   builder.Record(ukm::UkmRecorder::Get());
+
+  for (const std::string& reason : disabled_reasons_) {
+    ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason
+        rfh_reason_builder(source_id);
+    rfh_reason_builder.SetReason(
+        static_cast<int64_t>(base::HashMetricName(reason) & ((1 << 16) - 1)));
+    rfh_reason_builder.Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void BackForwardCacheMetrics::MainFrameDidNavigateAwayFromDocument(
