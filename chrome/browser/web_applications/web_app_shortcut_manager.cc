@@ -47,7 +47,12 @@ void WebAppShortcutManager::GetShortcutInfoForApp(
     const AppId& app_id,
     GetShortcutInfoCallback callback) {
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
-  DCHECK(app);
+
+  // app could be nullptr if registry profile is being deleted.
+  if (!app) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
 
   // Build a common intersection between desired and downloaded icons.
   auto icon_sizes_in_px = base::STLSetIntersection<std::vector<SquareSizePx>>(
