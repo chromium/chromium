@@ -9,6 +9,8 @@ source_set("lib") {
   sources = [
     "memory_instrumentation/aggregate_metrics_processor.cc",
     "memory_instrumentation/aggregate_metrics_processor.h",
+    "memory_instrumentation/chrome_graph_processor.cc",
+    "memory_instrumentation/chrome_graph_processor.h",
     "memory_instrumentation/coordinator_impl.cc",
     "memory_instrumentation/coordinator_impl.h",
     "memory_instrumentation/global_dump_graph_converter.cc",
@@ -46,6 +48,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "memory_instrumentation/chrome_graph_processor_unittest.cc",
     "memory_instrumentation/coordinator_impl_unittest.cc",
     "memory_instrumentation/global_dump_graph_converter_unittest.cc",
     "memory_instrumentation/graph_processor_unittest.cc",
