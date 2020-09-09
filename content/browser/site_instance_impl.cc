@@ -639,9 +639,8 @@ bool SiteInstanceImpl::IsSuitableForURL(const GURL& url) {
     // If the site URLs do not match, but neither this SiteInstance nor the
     // destination site_url require dedicated processes, then it is safe to use
     // this SiteInstance.
-    if (!RequiresDedicatedProcess() &&
-        !DoesSiteURLRequireDedicatedProcess(GetIsolationContext(),
-                                            site_info.site_url())) {
+    if (!RequiresDedicatedProcess() && !DoesSiteInfoRequireDedicatedProcess(
+                                           GetIsolationContext(), site_info)) {
       return true;
     }
 
@@ -660,8 +659,7 @@ bool SiteInstanceImpl::RequiresDedicatedProcess() {
   if (!has_site_)
     return false;
 
-  return DoesSiteURLRequireDedicatedProcess(GetIsolationContext(),
-                                            site_info_.site_url());
+  return DoesSiteInfoRequireDedicatedProcess(GetIsolationContext(), site_info_);
 }
 
 void SiteInstanceImpl::IncrementActiveFrameCount() {
@@ -1177,8 +1175,7 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
 
   // Allow the default SiteInstance to be used for sites that don't need to be
   // isolated in their own process.
-  return !DoesSiteURLRequireDedicatedProcess(isolation_context,
-                                             site_info.site_url());
+  return !DoesSiteInfoRequireDedicatedProcess(isolation_context, site_info);
 }
 
 // static
@@ -1209,22 +1206,23 @@ bool SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
     const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
-         DoesSiteURLRequireDedicatedProcess(
+         DoesSiteInfoRequireDedicatedProcess(
              isolation_context,
-             SiteInstanceImpl::ComputeSiteInfo(isolation_context, url)
-                 .site_url());
+             SiteInstanceImpl::ComputeSiteInfo(isolation_context, url));
 }
 
 // static
-bool SiteInstanceImpl::DoesSiteURLRequireDedicatedProcess(
+bool SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
     const IsolationContext& isolation_context,
-    const GURL& site_url) {
+    const SiteInfo& site_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(isolation_context.browser_or_resource_context());
 
   // If --site-per-process is enabled, site isolation is enabled everywhere.
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
     return true;
+
+  const GURL& site_url = site_info.site_url();
 
   // Always require a dedicated process for isolated origins.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -1266,15 +1264,13 @@ bool SiteInstanceImpl::ShouldLockProcess(
       isolation_context.browser_or_resource_context().ToBrowserContext();
   DCHECK(browser_context);
 
-  const GURL& site_url = site_info.site_url();
-
   // Don't lock to origin in --single-process mode, since this mode puts
   // cross-site pages into the same process.  Note that this also covers the
   // single-process mode in Android Webview.
   if (RenderProcessHost::run_renderer_in_process())
     return false;
 
-  if (!DoesSiteURLRequireDedicatedProcess(isolation_context, site_url))
+  if (!DoesSiteInfoRequireDedicatedProcess(isolation_context, site_info))
     return false;
 
   // Guest processes cannot be locked to their site because guests always have
@@ -1284,6 +1280,8 @@ bool SiteInstanceImpl::ShouldLockProcess(
   // RenderFrame routing id.
   if (is_guest)
     return false;
+
+  const GURL& site_url = site_info.site_url();
 
   // Most WebUI processes should be locked on all platforms.  The only exception
   // is NTP, handled via the separate callout to the embedder.

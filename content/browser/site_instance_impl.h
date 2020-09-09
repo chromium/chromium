@@ -572,15 +572,15 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // URLs.
   static bool HasEffectiveURL(BrowserContext* browser_context, const GURL& url);
 
-  // Returns true if pages loaded from |site_url| ought to be handled only by a
+  // Returns true if pages loaded from |site_info| ought to be handled only by a
   // renderer process isolated from other sites. If --site-per-process is used,
   // this is true for all sites. In other site isolation modes, only a subset
   // of sites will require dedicated processes.
-  // Note: Unlike DoesSiteRequireDedicatedProcess(), this method expects a site
-  // URL instead of a plain URL.
-  static bool DoesSiteURLRequireDedicatedProcess(
+  // Note: Unlike DoesSiteRequireDedicatedProcess(), this method expects a
+  // SiteInfo instead of a plain URL.
+  static bool DoesSiteInfoRequireDedicatedProcess(
       const IsolationContext& isolation_context,
-      const GURL& site_url);
+      const SiteInfo& site_info);
 
   // Returns true if |url| and its |site_url| can be placed inside a default
   // SiteInstance.
