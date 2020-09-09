@@ -30,7 +30,6 @@ content::WebUIDataSource* CreateHostDataSource() {
 
   // Add resources from chromeos_media_app_resources.pak.
   source->SetDefaultResource(IDR_MEDIA_APP_INDEX_HTML);
-  source->AddResourcePath("pwa.html", IDR_MEDIA_APP_PWA_HTML);
   source->AddResourcePath("mojo_api_bootstrap.js",
                           IDR_MEDIA_APP_MOJO_API_BOOTSTRAP_JS);
   source->AddResourcePath("media_app.mojom-lite.js",
@@ -38,8 +37,6 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->AddResourcePath("media_app_index_scripts.js",
                           IDR_MEDIA_APP_INDEX_SCRIPTS_JS);
   source->AddLocalizedString("appTitle", IDS_MEDIA_APP_APP_NAME);
-  web_app::SetManifestRequestFilter(source, IDR_MEDIA_APP_MANIFEST,
-                                    IDS_MEDIA_APP_APP_NAME);
 
   // Redirects "system_assets/app_icon_*.png" (from manifest.json) to the icons
   // for the gallery app.

@@ -9,15 +9,15 @@
 
 namespace web_app {
 
-void CreateIconInfoForSystemWebApp(const GURL& app_url,
-                                   const std::string& icon_name,
-                                   SquareSizePx square_size_px,
-                                   int resource_id,
-                                   WebApplicationInfo& web_app) {
-  web_app.icon_infos.emplace_back(app_url.Resolve(icon_name), square_size_px);
-  auto image =
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(resource_id);
-  web_app.icon_bitmaps_any[square_size_px] = image.AsBitmap();
+void CreateIconInfoForSystemWebApp(
+    const GURL& app_url,
+    const std::initializer_list<IconResourceInfo>& icon_infos,
+    WebApplicationInfo& web_app) {
+  for (const auto& info : icon_infos) {
+    web_app.icon_infos.emplace_back(app_url.Resolve(info.icon_name), info.size);
+    auto image =
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(info.resource_id);
+    web_app.icon_bitmaps_any[info.size] = image.AsBitmap();
+  }
 }
-
 }  // namespace web_app

@@ -22,8 +22,8 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForScanningSystemWebApp() {
   // TODO(jschettler): |title| should come from a resource string once the
   // string is finalized.
   info->title = base::UTF8ToUTF16("Scan");
-  web_app::CreateIconInfoForSystemWebApp(info->app_url, "app_icon_192.png", 192,
-                                         IDR_SCANNING_APP_ICON, *info);
+  web_app::CreateIconInfoForSystemWebApp(
+      info->app_url, {{"app_icon_192.png", 192, IDR_SCANNING_APP_ICON}}, *info);
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;

@@ -459,7 +459,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(web_app::ProviderType::kBookmarkApps,
                           web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kManifestInstall)),
+        ::testing::Values(web_app::InstallationType::kWebAppInfoInstall)),
     web_app::ProviderAndInstallationTypeToString);
 
 INSTANTIATE_TEST_SUITE_P(
@@ -468,5 +468,5 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(web_app::ProviderType::kBookmarkApps,
                           web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kManifestInstall)),
+        ::testing::Values(web_app::InstallationType::kWebAppInfoInstall)),
     web_app::ProviderAndInstallationTypeToString);
