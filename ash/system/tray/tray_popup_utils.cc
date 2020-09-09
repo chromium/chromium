@@ -350,8 +350,10 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
                                               bool checked,
                                               bool enterprise_managed) {
   const int dip_size = GetDefaultSizeOfVectorIcon(kCheckCircleIcon);
-  gfx::ImageSkia check_mark =
-      CreateVectorIcon(kHollowCheckCircleIcon, dip_size, gfx::kGoogleGreen300);
+  gfx::ImageSkia check_mark = CreateVectorIcon(
+      kHollowCheckCircleIcon, dip_size,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorProminent));
   if (enterprise_managed) {
     gfx::ImageSkia enterprise_managed_icon = CreateVectorIcon(
         kLoginScreenEnterpriseIcon, dip_size, gfx::kGoogleGrey100);

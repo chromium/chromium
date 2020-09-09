@@ -269,7 +269,7 @@ void ImeListView::AppendImeListAndProperties(
     views::View* ime_view = new ImeListItemView(
         this, list[i].short_name, list[i].name, selected,
         AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPositive),
+            AshColorProvider::ContentLayerType::kIconColorProminent),
         use_unified_theme_);
     scroll_content()->AddChildView(ime_view);
     ime_map_[ime_view] = list[i].id;
