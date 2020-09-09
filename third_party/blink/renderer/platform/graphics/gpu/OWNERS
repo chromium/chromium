@@ -2,3 +2,15 @@
 # there are a couple used by accelerated 2D canvas as well.
 
 # COMPONENT: Blink>WebGL
+
+# WebGL, WebGPU, Dawn, etc.
+kainino@chromium.org
+enga@chromium.org
+cwallez@chromium.org
+
+# WebXR
+bajones@chromium.org
+klausw@chromium.org
+
+# SharedGpuContext, ImageLayerBridge, etc.
+khushalsagar@chromium.org
