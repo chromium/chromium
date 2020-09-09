@@ -114,6 +114,7 @@ if (is_android) {
   }
 
   java_strings_grd_prebuilt("components_java_strings") {
+    resource_overlay = true
     grit_output_dir = "$root_gen_dir/weblayer/java/res"
     generated_files =
         rebase_path(weblayer_components_strings_java_resources, "java/res", ".")

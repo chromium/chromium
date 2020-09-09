@@ -32,7 +32,7 @@
             android:inputType="textFilter"
             android:singleLine="true"
             android:drawablePadding="4dp"
-            android:drawableStart="@drawable/ic_search"
+            android:drawableStart="@drawable/ic_devui_search"
             android:imeOptions="actionDone|actionSearch"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 

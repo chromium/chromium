@@ -1242,6 +1242,7 @@ if (enable_java_templates) {
     }
 
     android_generated_resources(target_name) {
+      forward_variables_from(invoker, [ "resource_overlay" ])
       generating_target_name = ":$_zip_target_name"
       generated_resources_zip = _resources_zip
     }
