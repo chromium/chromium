@@ -23,6 +23,8 @@
 namespace ash {
 
 PinnedFilesContainer::PinnedFilesContainer() {
+  SetID(kHoldingSpacePinnedFilesContainerId);
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding));
 

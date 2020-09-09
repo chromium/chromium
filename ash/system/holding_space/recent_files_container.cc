@@ -22,6 +22,8 @@
 namespace ash {
 
 RecentFilesContainer::RecentFilesContainer() {
+  SetID(kHoldingSpaceRecentFilesContainerId);
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding));
   auto setup_layered_child = [](views::View* child) {

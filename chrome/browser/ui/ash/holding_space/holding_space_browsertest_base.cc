@@ -27,6 +27,23 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
+// Adds and returns a holding space item of the specified `type` backed by the
+// file at the specified `file_path`.
+HoldingSpaceItem* AddItem(HoldingSpaceItem::Type type,
+                          const base::FilePath& file_path) {
+  auto item = HoldingSpaceItem::CreateFileBackedItem(
+      type, file_path,
+      /*file_system_url=*/GURL(),
+      /*image=*/
+      std::make_unique<HoldingSpaceImage>(
+          /*placeholder=*/gfx::ImageSkia(),
+          /*async_bitmap_resolver=*/base::DoNothing()));
+
+  auto* item_ptr = item.get();
+  HoldingSpaceController::Get()->model()->AddItem(std::move(item));
+  return item_ptr;
+}
+
 // Returns the path of the downloads mount point for the given `profile`.
 base::FilePath GetDownloadsPath(Profile* profile) {
   base::FilePath result;
@@ -102,40 +119,28 @@ bool HoldingSpaceBrowserTestBase::IsShowing() {
   return test_api_->IsShowing();
 }
 
-HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddPinnedFile() {
-  auto item = HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kPinnedFile,
-      /*file_path=*/CreateTextFile(GetProfile()),
-      /*file_system_url=*/GURL(),
-      /*image=*/
-      std::make_unique<HoldingSpaceImage>(
-          /*placeholder=*/gfx::ImageSkia(),
-          /*async_bitmap_resolver=*/base::DoNothing()));
+HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddDownloadFile() {
+  return AddItem(HoldingSpaceItem::Type::kDownload,
+                 /*file_path=*/CreateTextFile(GetProfile()));
+}
 
-  auto* item_ptr = item.get();
-  HoldingSpaceController::Get()->model()->AddItem(std::move(item));
-  return item_ptr;
+HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddPinnedFile() {
+  return AddItem(HoldingSpaceItem::Type::kPinnedFile,
+                 /*file_path=*/CreateTextFile(GetProfile()));
 }
 
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddScreenshotFile() {
-  auto item = HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kScreenshot,
-      /*file_path=*/CreateImageFile(GetProfile()),
-      /*file_system_url=*/GURL(),
-      /*image=*/
-      std::make_unique<HoldingSpaceImage>(
-          /*placeholder=*/gfx::ImageSkia(),
-          /*async_bitmap_resolver=*/base::DoNothing()));
+  return AddItem(HoldingSpaceItem::Type::kScreenshot,
+                 /*file_path=*/CreateImageFile(GetProfile()));
+}
 
-  auto* item_ptr = item.get();
-  HoldingSpaceController::Get()->model()->AddItem(std::move(item));
-  return item_ptr;
+std::vector<views::View*> HoldingSpaceBrowserTestBase::GetDownloadChips() {
+  return test_api_->GetDownloadChips();
 }
 
 std::vector<views::View*> HoldingSpaceBrowserTestBase::GetPinnedFileChips() {
   return test_api_->GetPinnedFileChips();
 }
-
 std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenshotViews() {
   return test_api_->GetScreenshotViews();
 }

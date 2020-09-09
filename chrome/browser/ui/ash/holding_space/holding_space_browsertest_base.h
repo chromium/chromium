@@ -47,11 +47,18 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Returns true if holding space UI is showing, false otherwise.
   bool IsShowing();
 
+  // Adds and returns an arbitrary download file to the holding space.
+  HoldingSpaceItem* AddDownloadFile();
+
   // Adds and returns an arbitrary pinned file to the holding space.
   HoldingSpaceItem* AddPinnedFile();
 
   // Adds and returns an arbitrary screenshot file to the holding space.
   HoldingSpaceItem* AddScreenshotFile();
+
+  // Returns the collection of download chips in holding space UI.
+  // If holding space UI is not visible, an empty collection is returned.
+  std::vector<views::View*> GetDownloadChips();
 
   // Returns the collection of pinned file chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.

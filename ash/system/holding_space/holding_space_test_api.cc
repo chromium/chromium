@@ -5,6 +5,7 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 
 #include "ash/drag_drop/drag_drop_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -88,18 +89,37 @@ bool HoldingSpaceTestApi::IsShowing() {
          holding_space_tray_->GetBubbleView()->GetVisible();
 }
 
+std::vector<views::View*> HoldingSpaceTestApi::GetDownloadChips() {
+  std::vector<views::View*> download_chips;
+  if (holding_space_tray_->GetBubbleView()) {
+    FindDescendentsOfClass<HoldingSpaceItemChipView>(
+        holding_space_tray_->GetBubbleView()->GetViewByID(
+            kHoldingSpaceRecentFilesContainerId),
+        &download_chips);
+  }
+  return download_chips;
+}
+
 std::vector<views::View*> HoldingSpaceTestApi::GetPinnedFileChips() {
-  std::vector<views::View*> chips;
-  FindDescendentsOfClass<HoldingSpaceItemChipView>(
-      holding_space_tray_->GetBubbleView(), &chips);
-  return chips;
+  std::vector<views::View*> pinned_file_chips;
+  if (holding_space_tray_->GetBubbleView()) {
+    FindDescendentsOfClass<HoldingSpaceItemChipView>(
+        holding_space_tray_->GetBubbleView()->GetViewByID(
+            kHoldingSpacePinnedFilesContainerId),
+        &pinned_file_chips);
+  }
+  return pinned_file_chips;
 }
 
 std::vector<views::View*> HoldingSpaceTestApi::GetScreenshotViews() {
-  std::vector<views::View*> screenshots;
-  FindDescendentsOfClass<HoldingSpaceScreenshotView>(
-      holding_space_tray_->GetBubbleView(), &screenshots);
-  return screenshots;
+  std::vector<views::View*> screenshot_views;
+  if (holding_space_tray_->GetBubbleView()) {
+    FindDescendentsOfClass<HoldingSpaceScreenshotView>(
+        holding_space_tray_->GetBubbleView()->GetViewByID(
+            kHoldingSpaceRecentFilesContainerId),
+        &screenshot_views);
+  }
+  return screenshot_views;
 }
 
 }  // namespace ash

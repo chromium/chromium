@@ -90,26 +90,33 @@ using HoldingSpaceUiBrowserTest = HoldingSpaceBrowserTestBase;
 
 // Verifies that drag-and-drop of holding space items works.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
+  HoldingSpaceItem* const download_file = AddDownloadFile();
   HoldingSpaceItem* const pinned_file = AddPinnedFile();
   HoldingSpaceItem* const screenshot_file = AddScreenshotFile();
 
   Show();
   ASSERT_TRUE(IsShowing());
 
-  std::vector<views::View*> chips = GetPinnedFileChips();
-  ASSERT_EQ(1u, chips.size());
+  std::vector<views::View*> download_chips = GetDownloadChips();
+  ASSERT_EQ(1u, download_chips.size());
 
-  std::vector<views::View*> screenshots = GetScreenshotViews();
-  ASSERT_EQ(1u, screenshots.size());
+  std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
+  ASSERT_EQ(1u, pinned_file_chips.size());
+
+  std::vector<views::View*> screenshot_views = GetScreenshotViews();
+  ASSERT_EQ(1u, screenshot_views.size());
 
   auto* drop_target_view = DropTargetView::Create(GetRootWindowForNewWindows());
   drop_target_view->GetWidget()->SetBounds(gfx::Rect(0, 0, 100, 100));
   drop_target_view->GetWidget()->ShowInactive();
 
-  MouseDrag(/*from=*/chips[0], /*to=*/drop_target_view);
+  MouseDrag(/*from=*/download_chips[0], /*to=*/drop_target_view);
+  EXPECT_EQ(download_file->file_path(), drop_target_view->copied_file_path());
+
+  MouseDrag(/*from=*/pinned_file_chips[0], /*to=*/drop_target_view);
   EXPECT_EQ(pinned_file->file_path(), drop_target_view->copied_file_path());
 
-  MouseDrag(/*from=*/screenshots[0], /*to=*/drop_target_view);
+  MouseDrag(/*from=*/screenshot_views[0], /*to=*/drop_target_view);
   EXPECT_EQ(screenshot_file->file_path(), drop_target_view->copied_file_path());
 
   drop_target_view->GetWidget()->Close();
