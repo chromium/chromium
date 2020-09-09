@@ -16,7 +16,7 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 
 namespace autofill {
-
+class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
 
@@ -62,6 +62,17 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
                                 delete_metadata_change_list) override;
 
  private:
+  // Returns the table associated with the |web_data_backend_|.
+  AutofillTable* GetAutofillTable();
+
+  // Synchronously load sync metadata from the autofill table and pass it to the
+  // processor so that it can start tracking changes.
+  void LoadAutofillOfferMetadata();
+
+  // AutofillWalletOfferSyncBridge is owned by |web_data_backend_| through
+  // SupportsUserData, so it's guaranteed to outlive |this|.
+  AutofillWebDataBackend* const web_data_backend_;
+
   // The bridge should be used on the same sequence where it is constructed.
   SEQUENCE_CHECKER(sequence_checker_);
 };

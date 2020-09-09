@@ -9,8 +9,11 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/sync/model_impl/sync_metadata_store_change_list.h"
 
 namespace autofill {
 
@@ -56,16 +59,22 @@ syncer::ModelTypeSyncBridge* AutofillWalletOfferSyncBridge::FromWebDataService(
 AutofillWalletOfferSyncBridge::AutofillWalletOfferSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     AutofillWebDataBackend* web_data_backend)
-    : ModelTypeSyncBridge(std::move(change_processor)) {
-  DCHECK(web_data_backend);
+    : ModelTypeSyncBridge(std::move(change_processor)),
+      web_data_backend_(web_data_backend) {
+  DCHECK(web_data_backend_);
+
+  LoadAutofillOfferMetadata();
 }
 
-AutofillWalletOfferSyncBridge::~AutofillWalletOfferSyncBridge() = default;
+AutofillWalletOfferSyncBridge::~AutofillWalletOfferSyncBridge() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
+      GetAutofillTable(), syncer::AUTOFILL_WALLET_OFFER);
 }
 
 base::Optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
@@ -114,6 +123,28 @@ bool AutofillWalletOfferSyncBridge::SupportsIncrementalUpdates() const {
 void AutofillWalletOfferSyncBridge::ApplyStopSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   NOTIMPLEMENTED();
+}
+
+AutofillTable* AutofillWalletOfferSyncBridge::GetAutofillTable() {
+  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+}
+
+void AutofillWalletOfferSyncBridge::LoadAutofillOfferMetadata() {
+  if (!web_data_backend_->GetDatabase() || !GetAutofillTable()) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to load Autofill table."});
+    return;
+  }
+
+  auto batch = std::make_unique<syncer::MetadataBatch>();
+  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_OFFER,
+                                              batch.get())) {
+    change_processor()->ReportError(
+        {FROM_HERE,
+         "Failed reading autofill offer metadata from WebDatabase."});
+    return;
+  }
+  change_processor()->ModelReadyToSync(std::move(batch));
 }
 
 }  // namespace autofill
