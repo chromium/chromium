@@ -83690,10 +83690,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VaapiWrapper.VADisplayStateInitializeSuccess"
-    enum="BooleanSuccess" expires_after="M87">
+    enum="BooleanSuccess" expires_after="2021-08-05">
   <owner>mcasas@chromium.org</owner>
-  <owner>acourbot@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the call to VaapiWrapper's VADisplayState::Initialize() succeeded or
     not.
