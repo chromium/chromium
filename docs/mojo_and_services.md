@@ -180,6 +180,8 @@ class PingResponderImpl : example::mojom::PingResponder {
  public:
   explicit PingResponderImpl(mojo::PendingReceiver<example::mojom::PingResponder> receiver)
       : receiver_(this, std::move(receiver)) {}
+  PingResponderImpl(const PingResponderImpl&) = delete;
+  PingResponderImpl& operator=(const PingResponderImpl&) = delete;
 
   // example::mojom::PingResponder:
   void Ping(PingCallback callback) override {
@@ -189,8 +191,6 @@ class PingResponderImpl : example::mojom::PingResponder {
 
  private:
   mojo::Receiver<example::mojom::PingResponder> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingResponderImpl);
 };
 ```
 
@@ -303,6 +303,8 @@ class MathService : public mojom::MathService {
  public:
   explicit MathService(mojo::PendingReceiver<mojom::MathService> receiver);
   ~MathService() override;
+  MathService(const MathService&) = delete;
+  MathService& operator=(const MathService&) = delete;
 
  private:
   // mojom::MathService:
@@ -311,8 +313,6 @@ class MathService : public mojom::MathService {
               DivideCallback callback) override;
 
   mojo::Receiver<mojom::MathService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MathService);
 };
 
 }  // namespace math

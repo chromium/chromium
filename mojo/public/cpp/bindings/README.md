@@ -237,6 +237,8 @@ class LoggerImpl : public sample::mojom::Logger {
   explicit LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
       : receiver_(this, std::move(receiver)) {}
   ~Logger() override {}
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
 
   // sample::mojom::Logger:
   void Log(const std::string& message) override {
@@ -245,8 +247,6 @@ class LoggerImpl : public sample::mojom::Logger {
 
  private:
   mojo::Receiver<sample::mojom::Logger> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
 };
 ```
 
@@ -331,6 +331,8 @@ class LoggerImpl : public sample::mojom::Logger {
   explicit LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
       : receiver_(this, std::move(receiver)) {}
   ~Logger() override {}
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
 
   // sample::mojom::Logger:
   void Log(const std::string& message) override {
@@ -345,8 +347,6 @@ class LoggerImpl : public sample::mojom::Logger {
  private:
   mojo::Receiver<sample::mojom::Logger> receiver_;
   std::vector<std::string> lines_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
 };
 ```
 
