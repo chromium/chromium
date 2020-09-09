@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_DARK_MODE_DARK_MODE_DETAILED_VIEW_CONTROLLER_H_
 #define ASH_SYSTEM_DARK_MODE_DARK_MODE_DETAILED_VIEW_CONTROLLER_H_
 
+#include "ash/system/dark_mode/color_mode_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
 
 namespace ash {
@@ -13,7 +14,8 @@ class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
 // Controller of dark mode detailed view in UnifiedSystemTray.
-class DarkModeDetailedViewController : public DetailedViewController {
+class DarkModeDetailedViewController : public DetailedViewController,
+                                       public ColorModeObserver {
  public:
   explicit DarkModeDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
@@ -26,6 +28,10 @@ class DarkModeDetailedViewController : public DetailedViewController {
   // DetailedViewControllerBase:
   views::View* CreateView() override;
   base::string16 GetAccessibleName() const override;
+
+  // ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+  void OnColorModeThemed(bool is_themed) override;
 
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;

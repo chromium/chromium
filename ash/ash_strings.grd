@@ -330,29 +330,26 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP" desc="The label used in the tray popup to tell the user we are casting the desktop.">
         Casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_MODE_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle the Dark Mode feature. [CHAR_LIMIT=14]">
-        Dark Mode
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME" desc="The label used as the header in the dark theme popup. [CHAR_LIMIT=14]">
+        Dark theme
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_MODE_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Dark Mode feature on or off.">
-        Toggle Dark Mode. <ph name="STATE_TEXT">$1<ex>Dark Mode is on.</ex></ph>
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Dark theme feature on or off.">
+        Toggle Dark theme. <ph name="STATE_TEXT">$1<ex>Dark theme is on.</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_MODE_ENABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Dark Mode feature is on.">
-        Dark Mode is on.
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_ENABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Dark theme feature is on.">
+        Dark theme is on
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_MODE_DISABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Dark Mode feature is off.">
-        Dark Mode is off.
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_DISABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Dark theme feature is off.">
+        Dark theme is off
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_MODE_SETTINGS_TOOLTIP" desc="The tooltip text used for the button in the status tray to show the Dark Mode feature settings.">
-        Show dark mode settings
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_SETTINGS_TOOLTIP" desc="The tooltip text used for the button in the status tray to show the Dark theme feature settings.">
+        Show dark theme settings
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_MODE_OFF_STATE" desc="Button label for the Dark Mode feature." meaning="Dark Mode feature is off. [CHAR_LIMIT=14]">
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_OFF_STATE" desc="Button label for the Dark theme feature." meaning="Dark theme feature is off. [CHAR_LIMIT=14]">
         Off
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_MODE_ON_STATE" desc="Button label for the Dark Mode feature." meaning="Dark Mode feature is on. [CHAR_LIMIT=14]">
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_ON_STATE" desc="Button label for the Dark theme feature." meaning="Dark theme feature is on. [CHAR_LIMIT=14]">
         On
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_TITLE" desc="The title for the dark theme detailed view.">
-        Dark Theme
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_COLOR_MODE" desc="The title for the dark theme detailed view.">
         Color mode
@@ -360,7 +357,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_TITLE" desc="The title for the dark theme detailed view.">
         Themed (default)
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_DESCRIPTION" desc="The description for the neutral color mode.">
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_DESCRIPTION" desc="The description for the neutral color theme.">
         The themed color mode uses colors extracted from your wallpaper to lightly colorize the interface.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_TITLE" desc="The title for the dark theme detailed view.">
