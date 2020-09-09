@@ -56,6 +56,7 @@ class MODULES_EXPORT ScreenOrientationController final
 
   static mojom::blink::ScreenOrientation ComputeOrientation(const gfx::Rect&,
                                                             uint16_t);
+  void NotifyOrientationChangedInternal();
 
   // Inherited from ExecutionContextLifecycleObserver and
   // PageVisibilityObserver.
@@ -64,8 +65,6 @@ class MODULES_EXPORT ScreenOrientationController final
 
   void UpdateOrientation();
 
-  bool IsActive() const;
-  bool IsVisible() const;
   bool IsActiveAndVisible() const;
 
   void OnLockOrientationResult(int, ScreenOrientationLockResult);

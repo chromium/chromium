@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
@@ -254,6 +255,49 @@ TEST_F(ScreenOrientationControllerTest, PageVisibilityCrash) {
       To<LocalFrame>(frame->Tree().FirstChild())->DomWindow());
   EXPECT_EQ(child_orientation->angle(), 1234);
 
+  url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  web_view_helper.Reset();
+}
+
+TEST_F(ScreenOrientationControllerTest,
+       OrientationChangePropagationToGrandchild) {
+  std::string base_url("http://internal.test/");
+  std::string test_url("page_with_grandchild.html");
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
+      WebString::FromUTF8(test_url));
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
+      WebString::FromUTF8("single_iframe.html"));
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
+      WebString::FromUTF8("visible_iframe.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  ScreenInfoWebWidgetClient client;
+  client.SetAngle(1234);
+  web_view_helper.InitializeAndLoad(base_url + test_url, nullptr, nullptr,
+                                    &client);
+
+  Page* page = web_view_helper.GetWebView()->GetPage();
+  LocalFrame* frame = To<LocalFrame>(page->MainFrame());
+
+  // Fully set up on an orientation and a controller in the main frame and
+  // the grandchild, but not the child.
+  ScreenOrientation::Create(frame->DomWindow());
+  Frame* grandchild = frame->Tree().FirstChild()->Tree().FirstChild();
+  auto* grandchild_orientation =
+      ScreenOrientation::Create(To<LocalFrame>(grandchild)->DomWindow());
+
+  // Update the screen info and ensure it propagated to the grandchild.
+  blink::ScreenInfo screen_info;
+  screen_info.orientation_angle = 90;
+  auto* web_frame_widget_base =
+      static_cast<WebFrameWidgetBase*>(frame->GetWidgetForLocalRoot());
+  web_frame_widget_base->UpdateScreenInfo(screen_info);
+  EXPECT_EQ(grandchild_orientation->angle(), 90);
+
+  url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   web_view_helper.Reset();
 }
 

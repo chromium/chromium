@@ -117,16 +117,9 @@ void ScreenOrientationController::UpdateOrientation() {
   orientation_->SetAngle(screen_info.orientation_angle);
 }
 
-bool ScreenOrientationController::IsActive() const {
-  return orientation_ && screen_orientation_service_.is_bound();
-}
-
-bool ScreenOrientationController::IsVisible() const {
-  return GetPage() && GetPage()->IsPageVisible();
-}
-
 bool ScreenOrientationController::IsActiveAndVisible() const {
-  return IsActive() && IsVisible();
+  return orientation_ && screen_orientation_service_.is_bound() && GetPage() &&
+         GetPage()->IsPageVisible();
 }
 
 void ScreenOrientationController::PageVisibilityChanged() {
@@ -151,42 +144,37 @@ void ScreenOrientationController::PageVisibilityChanged() {
 }
 
 void ScreenOrientationController::NotifyOrientationChanged() {
-  if (!IsVisible() || !GetFrame())
-    return;
-
-  if (IsActive())
-    UpdateOrientation();
-
   // Keep track of the frames that need to be notified before notifying the
   // current frame as it will prevent side effects from the change event
   // handlers.
-  HeapVector<Member<LocalFrame>> child_frames;
-  for (Frame* child = GetFrame()->Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    if (auto* child_local_frame = DynamicTo<LocalFrame>(child))
-      child_frames.push_back(child_local_frame);
+  HeapVector<Member<LocalFrame>> frames;
+  for (Frame* frame = GetFrame(); frame;
+       frame = frame->Tree().TraverseNext(GetFrame())) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame))
+      frames.push_back(local_frame);
   }
+  for (LocalFrame* frame : frames) {
+    if (auto* controller = FromIfExists(*frame->DomWindow()))
+      controller->NotifyOrientationChangedInternal();
+  }
+}
 
-  // Notify current orientation object.
-  if (IsActive() && orientation_) {
-    GetExecutionContext()
-        ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-        ->PostTask(FROM_HERE,
-                   WTF::Bind(
-                       [](ScreenOrientation* orientation) {
-                         ScopedAllowFullscreen allow_fullscreen(
-                             ScopedAllowFullscreen::kOrientationChange);
-                         orientation->DispatchEvent(
-                             *Event::Create(event_type_names::kChange));
-                       },
-                       WrapPersistent(orientation_.Get())));
-  }
+void ScreenOrientationController::NotifyOrientationChangedInternal() {
+  if (!IsActiveAndVisible())
+    return;
 
-  // ... and child frames.
-  for (LocalFrame* child_frame : child_frames) {
-    if (auto* controller = FromIfExists(*child_frame->DomWindow()))
-      controller->NotifyOrientationChanged();
-  }
+  UpdateOrientation();
+  GetExecutionContext()
+      ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(
+                     [](ScreenOrientation* orientation) {
+                       ScopedAllowFullscreen allow_fullscreen(
+                           ScopedAllowFullscreen::kOrientationChange);
+                       orientation->DispatchEvent(
+                           *Event::Create(event_type_names::kChange));
+                     },
+                     WrapPersistent(orientation_.Get())));
 }
 
 void ScreenOrientationController::SetOrientation(
