@@ -169,7 +169,7 @@ const base::FeatureParam<std::string> kEmergencyLegacyCookieAccessParam{
 // [1]
 // https://www.chromium.org/Home/chromium-security/extension-content-script-fetches
 const base::Feature kCorbAllowlistAlsoAppliesToOorCors = {
-    "CorbAllowlistAlsoAppliesToOorCors", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CorbAllowlistAlsoAppliesToOorCors", base::FEATURE_ENABLED_BY_DEFAULT};
 const char kCorbAllowlistAlsoAppliesToOorCorsParamName[] =
     "AllowlistForCorbAndCors";
 

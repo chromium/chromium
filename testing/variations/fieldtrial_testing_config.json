@@ -1485,24 +1485,6 @@
             ]
         }
     ],
-    "CorbAllowlistAlsoAppliesToOorCors": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CorbAllowlistAlsoAppliesToOorCors"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSMinFilelistKB": [
         {
             "platforms": [

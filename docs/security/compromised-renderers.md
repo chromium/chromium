@@ -304,9 +304,10 @@ Protection techniques:
   https://crbug.com/920634 (making
   `network::ResourceRequest::request_initiator` unspoofable without
   having to go through `GetTrustworthyInitiator`) and
-  https://crbug.com/920638 (making
-  `network::ResourceRequest::isolated_world_origin` irrelevant for
-  security decisions).
+  https://crbug.com/1098410 (removing
+  `network::ResourceRequest::isolated_world_origin` which is used
+  in some security decisions instead of `request_initiator` to support
+  an allowlist of extensions that need to bypass CORB/CORS).
 
 
 ## (WIP) SameSite cookies
