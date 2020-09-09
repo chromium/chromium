@@ -99,7 +99,7 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
   if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
     InitRlz(profile);
     InitializeCerts(profile);
-    InitializeCRLSetFetcher(user);
+    InitializeCRLSetFetcher();
     InitializeCertificateTransparencyComponents(user);
     InitializePrimaryProfileServices(profile, user);
 
@@ -152,17 +152,11 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
   }
 }
 
-void UserSessionInitializer::InitializeCRLSetFetcher(
-    const user_manager::User* user) {
-  const std::string username_hash = user->username_hash();
-  if (!username_hash.empty()) {
-    base::FilePath path =
-        ProfileHelper::GetProfilePathByUserIdHash(username_hash);
-    component_updater::ComponentUpdateService* cus =
-        g_browser_process->component_updater();
-    if (cus)
-      component_updater::RegisterCRLSetComponent(cus, path);
-  }
+void UserSessionInitializer::InitializeCRLSetFetcher() {
+  component_updater::ComponentUpdateService* cus =
+      g_browser_process->component_updater();
+  if (cus)
+    component_updater::RegisterCRLSetComponent(cus);
 }
 
 void UserSessionInitializer::InitializeCertificateTransparencyComponents(

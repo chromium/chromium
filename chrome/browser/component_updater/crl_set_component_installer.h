@@ -65,8 +65,7 @@ class CRLSetPolicy : public ComponentInstallerPolicy {
 // Registers a CRLSet component with |cus|. On a new CRLSet update, the default
 // Network Service, returned by content::GetNetworkService(), will be updated
 // with the new CRLSet.
-void RegisterCRLSetComponent(ComponentUpdateService* cus,
-                             const base::FilePath& user_data_dir);
+void RegisterCRLSetComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

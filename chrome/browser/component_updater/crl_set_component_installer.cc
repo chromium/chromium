@@ -163,8 +163,7 @@ std::vector<std::string> CRLSetPolicy::GetMimeTypes() const {
   return std::vector<std::string>();
 }
 
-void RegisterCRLSetComponent(ComponentUpdateService* cus,
-                             const base::FilePath& user_data_dir) {
+void RegisterCRLSetComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<CRLSetPolicy>());
   installer->Register(cus, base::OnceClosure());

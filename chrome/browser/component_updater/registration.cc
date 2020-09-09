@@ -141,17 +141,16 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
     component_updater::DeleteLegacySTHSet(path);
 #endif
 
-#if !defined(OS_CHROMEOS)
-    // CRLSetFetcher attempts to load a CRL set from either the local disk or
-    // network.
-    // For Chrome OS this registration is delayed until user login.
-    component_updater::RegisterCRLSetComponent(cus, path);
-#endif  // !defined(OS_CHROMEOS)
-
     RegisterOriginTrialsComponent(cus, path);
   }
   RegisterSSLErrorAssistantComponent(cus);
   RegisterFileTypePoliciesComponent(cus);
+#if !defined(OS_CHROMEOS)
+  // CRLSetFetcher attempts to load a CRL set from either the local disk or
+  // network.
+  // For Chrome OS this registration is delayed until user login.
+  component_updater::RegisterCRLSetComponent(cus);
+#endif  // !defined(OS_CHROMEOS)
 
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 
