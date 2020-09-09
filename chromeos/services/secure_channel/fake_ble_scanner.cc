@@ -27,6 +27,18 @@ void FakeBleScanner::HandleScanRequestChange() {
   ++num_scan_request_changes_handled_;
 }
 
+FakeBleScannerObserver::Result::Result(
+    multidevice::RemoteDeviceRef remote_device,
+    device::BluetoothDevice* bluetooth_device,
+    ConnectionMedium connection_medium,
+    ConnectionRole connection_role)
+    : remote_device(remote_device),
+      bluetooth_device(bluetooth_device),
+      connection_medium(connection_medium),
+      connection_role(connection_role) {}
+
+FakeBleScannerObserver::Result::~Result() = default;
+
 FakeBleScannerObserver::FakeBleScannerObserver() = default;
 
 FakeBleScannerObserver::~FakeBleScannerObserver() = default;
@@ -34,9 +46,10 @@ FakeBleScannerObserver::~FakeBleScannerObserver() = default;
 void FakeBleScannerObserver::OnReceivedAdvertisement(
     multidevice::RemoteDeviceRef remote_device,
     device::BluetoothDevice* bluetooth_device,
+    ConnectionMedium connection_medium,
     ConnectionRole connection_role) {
-  handled_scan_results_.push_back(
-      std::make_tuple(remote_device, bluetooth_device, connection_role));
+  handled_scan_results_.emplace_back(remote_device, bluetooth_device,
+                                     connection_medium, connection_role);
 }
 
 }  // namespace secure_channel

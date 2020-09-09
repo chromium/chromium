@@ -56,7 +56,13 @@ class FakeBluetoothDevice : public device::MockBluetoothDevice {
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothDevice);
 };
 
-// const size_t kMinNumBytesInServiceData = 2;
+std::vector<std::pair<ConnectionMedium, ConnectionRole>>
+CreateSingleBleScanResult(bool is_background_advertisement) {
+  return std::vector<std::pair<ConnectionMedium, ConnectionRole>>{
+      {ConnectionMedium::kBluetoothLowEnergy,
+       is_background_advertisement ? ConnectionRole::kListenerRole
+                                   : ConnectionRole::kInitiatorRole}};
+}
 
 }  // namespace
 
@@ -154,7 +160,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
 
   void ProcessScanResultAndVerifyNoDeviceIdentified(
       const std::string& service_data) {
-    const FakeBleScannerObserver::ScannedResultList& results =
+    const std::vector<FakeBleScannerObserver::Result>& results =
         fake_delegate_->handled_scan_results();
 
     size_t num_results_before_call = results.size();
@@ -162,11 +168,22 @@ class SecureChannelBleScannerImplTest : public testing::Test {
     EXPECT_EQ(num_results_before_call, results.size());
   }
 
+  // |expected_scan_results| contains the data expected to be provided to
+  // scan observers; if null, we default to a single BLE scan result.
   void ProcessScanResultAndVerifyDevice(
       const std::string& service_data,
       multidevice::RemoteDeviceRef expected_remote_device,
-      bool is_background_advertisement) {
-    const FakeBleScannerObserver::ScannedResultList& results =
+      bool is_background_advertisement,
+      const base::Optional<
+          std::vector<std::pair<ConnectionMedium, ConnectionRole>>>&
+          expected_scan_results = base::nullopt) {
+    std::vector<std::pair<ConnectionMedium, ConnectionRole>>
+        new_expected_results =
+            expected_scan_results.has_value()
+                ? *expected_scan_results
+                : CreateSingleBleScanResult(is_background_advertisement);
+
+    const std::vector<FakeBleScannerObserver::Result>& results =
         fake_delegate_->handled_scan_results();
 
     fake_ble_service_data_helper_->SetIdentifiedDevice(
@@ -175,13 +192,17 @@ class SecureChannelBleScannerImplTest : public testing::Test {
     size_t num_results_before_call = results.size();
     std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device =
         SimulateScanResult(service_data);
-    EXPECT_EQ(num_results_before_call + 1u, results.size());
+    EXPECT_EQ(num_results_before_call + new_expected_results.size(),
+              results.size());
 
-    EXPECT_EQ(expected_remote_device, std::get<0>(results.back()));
-    EXPECT_EQ(fake_bluetooth_device.get(), std::get<1>(results.back()));
-    EXPECT_EQ(is_background_advertisement ? ConnectionRole::kListenerRole
-                                          : ConnectionRole::kInitiatorRole,
-              std::get<2>(results.back()));
+    for (size_t i = 0; i < new_expected_results.size(); ++i) {
+      const auto& result =
+          results[results.size() - new_expected_results.size() + i];
+      EXPECT_EQ(expected_remote_device, result.remote_device);
+      EXPECT_EQ(fake_bluetooth_device.get(), result.bluetooth_device);
+      EXPECT_EQ(new_expected_results[i].first, result.connection_medium);
+      EXPECT_EQ(new_expected_results[i].second, result.connection_role);
+    }
   }
 
   void InvokeStartDiscoveryCallback(bool success, size_t command_index) {
@@ -316,6 +337,37 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Background) {
                                    true /* is_background_advertisement */);
 
   RemoveScanRequest(filter);
+  InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
+  EXPECT_FALSE(discovery_session_is_active());
+}
+
+TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_BleAndNearby) {
+  ConnectionAttemptDetails ble_filter(
+      DeviceIdPair(test_devices()[0].GetDeviceId(),
+                   test_devices()[1].GetDeviceId()),
+      ConnectionMedium::kBluetoothLowEnergy, ConnectionRole::kListenerRole);
+  ConnectionAttemptDetails nearby_filter(
+      DeviceIdPair(test_devices()[0].GetDeviceId(),
+                   test_devices()[1].GetDeviceId()),
+      ConnectionMedium::kNearbyConnections, ConnectionRole::kInitiatorRole);
+
+  AddScanRequest(ble_filter);
+  InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
+  EXPECT_TRUE(discovery_session_is_active());
+
+  AddScanRequest(nearby_filter);
+  EXPECT_TRUE(discovery_session_is_active());
+
+  std::vector<std::pair<ConnectionMedium, ConnectionRole>> expected_results{
+      {ConnectionMedium::kBluetoothLowEnergy, ConnectionRole::kListenerRole},
+      {ConnectionMedium::kNearbyConnections, ConnectionRole::kInitiatorRole}};
+
+  ProcessScanResultAndVerifyDevice("device0ServiceData", test_devices()[0],
+                                   true /* is_background_advertisement */,
+                                   expected_results);
+
+  RemoveScanRequest(ble_filter);
+  RemoveScanRequest(nearby_filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
 }

@@ -219,27 +219,41 @@ void BleScannerImpl::HandlePotentialScanResult(
     const std::string& service_data,
     const BleServiceDataHelper::DeviceWithBackgroundBool& potential_result,
     device::BluetoothDevice* bluetooth_device) {
-  // Background advertisements correspond to the listener role; foreground
-  // advertisements correspond to the initiator role.
-  ConnectionRole connection_role = potential_result.second
-                                       ? ConnectionRole::kListenerRole
-                                       : ConnectionRole::kInitiatorRole;
+  std::vector<std::pair<ConnectionMedium, ConnectionRole>> results;
 
   // Check to see if a corresponding scan request exists. At this point, it is
   // possible that a scan result was received for the correct DeviceIdPair but
-  // incorrect ConnectionRole.
-  bool does_corresponding_scan_request_exist = false;
+  // incorrect ConnectionMedium and/or ConnectionRole.
   for (const auto& scan_request : scan_requests()) {
     if (scan_request.remote_device_id() !=
         potential_result.first.GetDeviceId()) {
       continue;
     }
 
-    // TODO(khorimoto): Also handle Nearby cases; currently, it is assumed that
-    // only BLE scan results are handled.
-    if (scan_request.connection_role() == connection_role) {
-      does_corresponding_scan_request_exist = true;
-      break;
+    switch (scan_request.connection_medium()) {
+      // BLE scans for background advertisements in the listener role and for
+      // foreground advertisements in the initiator role.
+      case ConnectionMedium::kBluetoothLowEnergy:
+        if (potential_result.second &&
+            scan_request.connection_role() == ConnectionRole::kListenerRole) {
+          results.emplace_back(ConnectionMedium::kBluetoothLowEnergy,
+                               ConnectionRole::kListenerRole);
+        } else if (!potential_result.second &&
+                   scan_request.connection_role() ==
+                       ConnectionRole::kInitiatorRole) {
+          results.emplace_back(ConnectionMedium::kBluetoothLowEnergy,
+                               ConnectionRole::kInitiatorRole);
+        }
+        break;
+
+      // Nearby Connections scans for background advertisements in the initiator
+      // role and does not have support for the listener role.
+      case ConnectionMedium::kNearbyConnections:
+        DCHECK_EQ(ConnectionRole::kInitiatorRole,
+                  scan_request.connection_role());
+        results.emplace_back(ConnectionMedium::kNearbyConnections,
+                             ConnectionRole::kInitiatorRole);
+        break;
     }
   }
 
@@ -249,7 +263,7 @@ void BleScannerImpl::HandlePotentialScanResult(
   for (const auto& character : service_data)
     ss << static_cast<uint32_t>(character);
 
-  if (!does_corresponding_scan_request_exist) {
+  if (results.empty()) {
     PA_LOG(WARNING) << "BleScannerImpl::HandleDeviceUpdated(): Received scan "
                     << "result from device with ID \""
                     << potential_result.first.GetTruncatedDeviceIdForLogs()
@@ -267,8 +281,10 @@ void BleScannerImpl::HandlePotentialScanResult(
                << ", Background advertisement: "
                << (potential_result.second ? "true" : "false");
 
-  NotifyReceivedAdvertisementFromDevice(potential_result.first,
-                                        bluetooth_device, connection_role);
+  for (const std::pair<ConnectionMedium, ConnectionRole>& result : results) {
+    NotifyReceivedAdvertisementFromDevice(
+        potential_result.first, bluetooth_device, result.first, result.second);
+  }
 }
 
 void BleScannerImpl::SetServiceDataProviderForTesting(

@@ -62,10 +62,11 @@ DeviceIdPairSet BleScanner::GetAllDeviceIdPairs() {
 void BleScanner::NotifyReceivedAdvertisementFromDevice(
     const multidevice::RemoteDeviceRef& remote_device,
     device::BluetoothDevice* bluetooth_device,
+    ConnectionMedium connection_medium,
     ConnectionRole connection_role) {
   for (auto& observer : observer_list_) {
     observer.OnReceivedAdvertisement(remote_device, bluetooth_device,
-                                     connection_role);
+                                     connection_medium, connection_role);
   }
 }
 

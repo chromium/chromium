@@ -563,7 +563,8 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
         mock_bluetooth_device.get());
 
     fake_ble_scanner()->NotifyReceivedAdvertisementFromDevice(
-        remote_device, mock_bluetooth_device.get(), connection_role);
+        remote_device, mock_bluetooth_device.get(),
+        ConnectionMedium::kBluetoothLowEnergy, connection_role);
 
     // As a result of the connection, all ongoing connection attmepts should
     // have been canceled, since a connection is in progress.

@@ -16,6 +16,7 @@
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
+#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 
 namespace device {
 class BluetoothDevice;
@@ -36,6 +37,7 @@ class BleScanner {
     virtual void OnReceivedAdvertisement(
         multidevice::RemoteDeviceRef remote_device,
         device::BluetoothDevice* bluetooth_device,
+        ConnectionMedium connection_medium,
         ConnectionRole connection_role) = 0;
   };
 
@@ -70,6 +72,7 @@ class BleScanner {
   void NotifyReceivedAdvertisementFromDevice(
       const multidevice::RemoteDeviceRef& remote_device,
       device::BluetoothDevice* bluetooth_device,
+      ConnectionMedium connection_medium,
       ConnectionRole connection_role);
 
  private:

@@ -134,6 +134,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
   // BleScanner::Observer:
   void OnReceivedAdvertisement(multidevice::RemoteDeviceRef remote_device,
                                device::BluetoothDevice* bluetooth_device,
+                               ConnectionMedium connection_medium,
                                ConnectionRole connection_role) override;
 
   // SecureChannel::Observer:

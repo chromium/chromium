@@ -337,7 +337,12 @@ void BleConnectionManagerImpl::OnFailureToGenerateAdvertisement(
 void BleConnectionManagerImpl::OnReceivedAdvertisement(
     multidevice::RemoteDeviceRef remote_device,
     device::BluetoothDevice* bluetooth_device,
+    ConnectionMedium connection_medium,
     ConnectionRole connection_role) {
+  // Only process advertisements received as part of the BLE connection flow.
+  if (connection_medium != ConnectionMedium::kBluetoothLowEnergy)
+    return;
+
   remote_device_id_to_timestamps_map_[remote_device.GetDeviceId()]
       ->RecordAdvertisementReceived();
 

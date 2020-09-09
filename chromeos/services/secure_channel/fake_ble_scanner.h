@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SCANNER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SCANNER_H_
 
-#include <tuple>
 #include <vector>
 
 #include "base/macros.h"
@@ -44,23 +43,33 @@ class FakeBleScanner : public BleScanner {
 // Test BleScanner::Observer implementation.
 class FakeBleScannerObserver : public BleScanner::Observer {
  public:
+  struct Result {
+    Result(multidevice::RemoteDeviceRef remote_device,
+           device::BluetoothDevice* bluetooth_device,
+           ConnectionMedium connection_medium,
+           ConnectionRole connection_role);
+    ~Result();
+
+    multidevice::RemoteDeviceRef remote_device;
+    device::BluetoothDevice* bluetooth_device;
+    ConnectionMedium connection_medium;
+    ConnectionRole connection_role;
+  };
+
   FakeBleScannerObserver();
   ~FakeBleScannerObserver() override;
 
-  using ScannedResultList = std::vector<std::tuple<multidevice::RemoteDeviceRef,
-                                                   device::BluetoothDevice*,
-                                                   ConnectionRole>>;
-
-  const ScannedResultList& handled_scan_results() const {
+  const std::vector<Result>& handled_scan_results() const {
     return handled_scan_results_;
   }
 
  private:
   void OnReceivedAdvertisement(multidevice::RemoteDeviceRef remote_device,
                                device::BluetoothDevice* bluetooth_device,
+                               ConnectionMedium connection_medium,
                                ConnectionRole connection_role) override;
 
-  ScannedResultList handled_scan_results_;
+  std::vector<Result> handled_scan_results_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBleScannerObserver);
 };
