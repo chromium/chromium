@@ -148,6 +148,11 @@ TEST_F('ChromeVoxLearnModeTest', 'Gesture', function() {
         .call(doGesture('touchExplore'))
         .expectSpeechWithQueueMode('Touch explore', QueueMode.FLUSH)
 
+        // Test for inclusion of commandDescriptionMsgId when provided.
+        .call(doGesture('swipeLeft2'))
+        .expectSpeechWithQueueMode('Swipe two fingers left', QueueMode.FLUSH)
+        .expectSpeechWithQueueMode('Escape', QueueMode.QUEUE)
+
         .replay();
   });
 });

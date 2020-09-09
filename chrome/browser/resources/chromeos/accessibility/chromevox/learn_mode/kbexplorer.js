@@ -230,6 +230,9 @@ KbExplorer = class {
       if (gestureData.command) {
         KbExplorer.onCommand(gestureData.command);
       }
+      if (gestureData.commandDescriptionMsgId) {
+        KbExplorer.output(Msgs.getMsg(gestureData.commandDescriptionMsgId));
+      }
     }
   }
 

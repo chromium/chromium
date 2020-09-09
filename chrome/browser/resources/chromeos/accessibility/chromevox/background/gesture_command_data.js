@@ -10,12 +10,16 @@ goog.require('KeyCode');
 /**
  * Map from gesture names (ax::mojom::Gesture defined in
  *     ui/accessibility/ax_enums.mojom.)  to commands.
+ *
+ * Note that only one of |command|, |acceleratorAction|, or |globalKey| is
+ * expected.
  * @type {!Object<string, {msgId: string, command: (string|undefined),
+ *     commandDescriptionMsgId: (string|undefined),
  *     acceleratorAction:
  *     (chrome.accessibilityPrivate.AcceleratorAction|undefined),
- *     globalKey: ({keyCode: KeyCode, modifiers:
+ *     globalKey: ({keyCode: !KeyCode, modifiers:
  *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined),
- *     menuKeyOverride: ({keyCode: KeyCode, modifiers:
+ *     menuKeyOverride: ({keyCode: !KeyCode, modifiers:
  *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined)}>}
  * @const
  */
@@ -43,21 +47,37 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
   },
   'swipeUp2': {msgId: 'swipeup2_gesture', command: 'jumpToTop'},
   'swipeDown2': {msgId: 'swipedown2_gesture', command: 'readFromHere'},
-  'swipeLeft2':
-      {msgId: 'swipeleft2_gesture', globalKey: {keyCode: KeyCode.ESCAPE}},
-  'swipeRight2':
-      {msgId: 'swiperight2_gesture', globalKey: {keyCode: KeyCode.RETURN}},
-  'swipeUp3': {msgId: 'swipeup3_gesture', command: 'nextPage'},
-  'swipeDown3': {msgId: 'swipedown3_gesture', command: 'previousPage'},
+  'swipeLeft2': {
+    msgId: 'swipeleft2_gesture',
+    commandDescriptionMsgId: 'escape_gesture_description',
+    globalKey: {keyCode: KeyCode.ESCAPE}
+  },
+  'swipeRight2': {
+    msgId: 'swiperight2_gesture',
+    commandDescriptionMsgId: 'enter_gesture_description',
+    globalKey: {keyCode: KeyCode.RETURN}
+  },
+  'swipeUp3': {
+    msgId: 'swipeup3_gesture',
+    commandDescriptionMsgId: 'next_page_gesture_description',
+    command: 'nextPage'
+  },
+  'swipeDown3': {
+    msgId: 'swipedown3_gesture',
+    commandDescriptionMsgId: 'previous_page_gesture_description',
+    command: 'previousPage'
+  },
   'swipeLeft3': {msgId: 'swipeleft3_gesture', command: 'previousGranularity'},
   'swipeRight3': {msgId: 'swiperight3_gesture', command: 'nextGranularity'},
   'swipeLeft4': {
     msgId: 'swipeleft4_gesture',
+    commandDescriptionMsgId: 'previous_pane_gesture_description',
     acceleratorAction:
         chrome.accessibilityPrivate.AcceleratorAction.FOCUS_PREVIOUS_PANE
   },
   'swipeRight4': {
     msgId: 'swiperight4_gesture',
+    commandDescriptionMsgId: 'next_pane_gesture_description',
     acceleratorAction:
         chrome.accessibilityPrivate.AcceleratorAction.FOCUS_NEXT_PANE
   },
