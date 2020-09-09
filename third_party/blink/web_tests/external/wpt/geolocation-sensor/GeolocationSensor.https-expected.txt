@@ -11,9 +11,7 @@ FAIL GeolocationSensor: Test that 'onreading' is called and sensor reading is va
 FAIL GeolocationSensor: sensor reading is correct. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: sensor timestamp is updated when time passes. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: Test that sensor can be successfully created and its states are correct. assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor: sensor.start() returns undefined. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: no exception is thrown when calling start() on already started sensor. assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor: sensor.stop() returns undefined. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: no exception is thrown when calling stop() on already stopped sensor. assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: Test that fresh reading is fetched on start(). assert_implements: GeolocationSensor is not supported. undefined
 FAIL GeolocationSensor: frequency hint works. assert_implements: GeolocationSensor is not supported. undefined

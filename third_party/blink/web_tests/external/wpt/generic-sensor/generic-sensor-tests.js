@@ -287,17 +287,6 @@ function runGenericSensorTests(sensorName,
     assert_implements(sensorName in self, `${sensorName} is not supported.`);
     const sensor = new sensorType();
     const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
-    const start_return = sensor.start();
-
-    await sensorWatcher.wait_for("activate");
-    assert_equals(start_return, undefined);
-    sensor.stop();
-  }, `${sensorName}: sensor.start() returns undefined.`);
-
-  sensor_test(async t => {
-    assert_implements(sensorName in self, `${sensorName} is not supported.`);
-    const sensor = new sensorType();
-    const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
     sensor.start();
     sensor.start();
 
@@ -306,17 +295,6 @@ function runGenericSensorTests(sensorName,
     sensor.stop();
   }, `${sensorName}: no exception is thrown when calling start() on already\
  started sensor.`);
-
-  sensor_test(async t => {
-    assert_implements(sensorName in self, `${sensorName} is not supported.`);
-    const sensor = new sensorType();
-    const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
-    sensor.start();
-
-    await sensorWatcher.wait_for("activate");
-    const stop_return = sensor.stop();
-    assert_equals(stop_return, undefined);
-  }, `${sensorName}: sensor.stop() returns undefined.`);
 
   sensor_test(async t => {
     assert_implements(sensorName in self, `${sensorName} is not supported.`);

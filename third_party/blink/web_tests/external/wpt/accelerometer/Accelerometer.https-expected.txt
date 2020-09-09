@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 63 tests; 42 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 tests; 38 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Accelerometer: Test that onerror is sent when sensor is not supported.
 PASS Accelerometer: Test that onerror is sent when permissions are not granted.
 PASS Accelerometer: Test that onerror is send when start() call has failed.
@@ -12,9 +12,7 @@ PASS Accelerometer: Test that 'onreading' is called and sensor reading is valid.
 PASS Accelerometer: sensor reading is correct.
 PASS Accelerometer: sensor timestamp is updated when time passes.
 PASS Accelerometer: Test that sensor can be successfully created and its states are correct.
-PASS Accelerometer: sensor.start() returns undefined.
 PASS Accelerometer: no exception is thrown when calling start() on already started sensor.
-PASS Accelerometer: sensor.stop() returns undefined.
 PASS Accelerometer: no exception is thrown when calling stop() on already stopped sensor.
 PASS Accelerometer: Test that fresh reading is fetched on start().
 PASS Accelerometer: frequency hint works.
@@ -33,9 +31,7 @@ FAIL GravitySensor: Test that 'onreading' is called and sensor reading is valid.
 FAIL GravitySensor: sensor reading is correct. assert_implements: GravitySensor is not supported. undefined
 FAIL GravitySensor: sensor timestamp is updated when time passes. assert_implements: GravitySensor is not supported. undefined
 FAIL GravitySensor: Test that sensor can be successfully created and its states are correct. assert_implements: GravitySensor is not supported. undefined
-FAIL GravitySensor: sensor.start() returns undefined. assert_implements: GravitySensor is not supported. undefined
 FAIL GravitySensor: no exception is thrown when calling start() on already started sensor. assert_implements: GravitySensor is not supported. undefined
-FAIL GravitySensor: sensor.stop() returns undefined. assert_implements: GravitySensor is not supported. undefined
 FAIL GravitySensor: no exception is thrown when calling stop() on already stopped sensor. assert_implements: GravitySensor is not supported. undefined
 FAIL GravitySensor: Test that fresh reading is fetched on start(). assert_implements: GravitySensor is not supported. undefined
 FAIL GravitySensor: frequency hint works. assert_implements: GravitySensor is not supported. undefined
@@ -54,9 +50,7 @@ PASS LinearAccelerationSensor: Test that 'onreading' is called and sensor readin
 PASS LinearAccelerationSensor: sensor reading is correct.
 PASS LinearAccelerationSensor: sensor timestamp is updated when time passes.
 PASS LinearAccelerationSensor: Test that sensor can be successfully created and its states are correct.
-PASS LinearAccelerationSensor: sensor.start() returns undefined.
 PASS LinearAccelerationSensor: no exception is thrown when calling start() on already started sensor.
-PASS LinearAccelerationSensor: sensor.stop() returns undefined.
 PASS LinearAccelerationSensor: no exception is thrown when calling stop() on already stopped sensor.
 PASS LinearAccelerationSensor: Test that fresh reading is fetched on start().
 PASS LinearAccelerationSensor: frequency hint works.
