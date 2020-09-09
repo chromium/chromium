@@ -30,9 +30,9 @@ class MultidevicePhoneHubHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void SetSystemPhoneHubManagerEnabled();
-  void SetFakePhoneHubManagerEnabled();
-  void HandleSetFakePhoneHubManagerEnabled(const base::ListValue* args);
+  void EnableRealPhoneHubManager();
+  void EnableFakePhoneHubManager();
+  void HandleEnableFakePhoneHubManager(const base::ListValue* args);
   void HandleSetFeatureStatus(const base::ListValue* args);
   void HandleSetFakePhoneStatus(const base::ListValue* args);
   void HandleSetBrowserTabs(const base::ListValue* args);

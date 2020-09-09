@@ -32,35 +32,13 @@ js_library("browser_tabs_metadata_form") {
   deps = [ ":types" ]
 }
 
-js_library("phone_status_model_form") {
-  deps = [
-    ":multidevice_phonehub_browser_proxy",
-    ":types",
-  ]
-}
-
-js_library("phonehub_tab") {
-  deps = [
-    ":browser_tabs_model_form",
-    ":multidevice_phonehub_browser_proxy",
-    ":phone_status_model_form",
-    ":types",
-  ]
+js_library("i18n_setup") {
+  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
 }
 
 js_library("multidevice_phonehub_browser_proxy") {
   deps = [
     ":types",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("multidevice_internals") {
-  deps = [
-    ":log_object",
-    ":logging_tab",
-    ":phonehub_tab",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -84,10 +62,38 @@ js_library("log_object") {
   ]
 }
 
+js_library("multidevice_internals") {
+  deps = [
+    ":log_object",
+    ":logging_tab",
+    ":phonehub_tab",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("multidevice_logs_browser_proxy") {
   deps = [
     ":types",
     "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("phone_status_model_form") {
+  deps = [
+    ":multidevice_phonehub_browser_proxy",
+    ":types",
+  ]
+}
+
+js_library("phonehub_tab") {
+  deps = [
+    ":browser_tabs_model_form",
+    ":i18n_setup",
+    ":multidevice_phonehub_browser_proxy",
+    ":phone_status_model_form",
+    ":types",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

@@ -8,37 +8,53 @@
     display: flex;
     flex: 0 0 100%;
   }
+
+  #flagDisabledContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
 
-<div class="cr-row">
-  <div class="cr-padded-text">
-    Toggle on to use fake PhoneHub
-  </div>
-  <cr-toggle checked="{{shouldEnableFakePhoneHubManager_}}">
-  </cr-toggle>
-</div>
-<template is="dom-if" if="[[shouldEnableFakePhoneHubManager_]]" restamp>
+<template is="dom-if" if="[[isPhoneHubEnabled_]]" restamp>
   <div class="cr-row">
     <div class="cr-padded-text">
-      Select feature status
+      Toggle on to use fake PhoneHub
     </div>
-    <select id="featureStatusList" class="md-select"
-        on-change="onFeatureStatusSelected_">
-      <template is="dom-repeat" items="[[featureStatusList_]]">
-        <option>[[getFeatureStatusName_(item)]]</option>
-      </template>
-    </select>
-    <div class="cr-padded-text" hidden="[[isFeatureEnabledAndConnected_]]">
-      More controls will appear if the feature status is set to
-      <span class="emphasize">ENABLED_AND_CONNECTED</span>.
-    </div>
+    <cr-toggle checked="{{shouldEnableFakePhoneHubManager_}}">
+    </cr-toggle>
   </div>
-  <template is="dom-if" if="[[isFeatureEnabledAndConnected_]]" restamp>
+  <template is="dom-if" if="[[shouldEnableFakePhoneHubManager_]]" restamp>
     <div class="cr-row">
-      <phone-status-model-form></phone-status-model-form>
+      <div class="cr-padded-text">
+        Select feature status
+      </div>
+      <select id="featureStatusList" class="md-select"
+          on-change="onFeatureStatusSelected_">
+        <template is="dom-repeat" items="[[featureStatusList_]]">
+          <option>[[getFeatureStatusName_(item)]]</option>
+        </template>
+      </select>
+      <div class="cr-padded-text" hidden="[[isFeatureEnabledAndConnected_]]">
+        More controls will appear if the feature status is set to
+        <span class="emphasize">ENABLED_AND_CONNECTED</span>.
+      </div>
     </div>
-    <div class="cr-row">
-      <browser-tabs-model-form></browser-tabs-model-form>
-    </div>
+    <template is="dom-if" if="[[isFeatureEnabledAndConnected_]]" restamp>
+      <div class="cr-row">
+        <phone-status-model-form></phone-status-model-form>
+      </div>
+      <div class="cr-row">
+        <browser-tabs-model-form></browser-tabs-model-form>
+      </div>
+    </template>
   </template>
+</template>
+<template is="dom-if" if="[[!isPhoneHubEnabled_]]" restamp>
+  <div id="flagDisabledContainer">
+    <p>Phone Hub flag is disabled.</p>
+    <cr-button on-click="onPhoneHubFlagButtonClick_">
+      Enable
+    </cr-button>
+  </div>
 </template>

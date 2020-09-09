@@ -92,14 +92,14 @@ MultidevicePhoneHubHandler::MultidevicePhoneHubHandler() = default;
 
 MultidevicePhoneHubHandler::~MultidevicePhoneHubHandler() {
   if (fake_phone_hub_manager_)
-    SetSystemPhoneHubManagerEnabled();
+    EnableRealPhoneHubManager();
 }
 
 void MultidevicePhoneHubHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setFakePhoneHubManagerEnabled",
       base::BindRepeating(
-          &MultidevicePhoneHubHandler::HandleSetFakePhoneHubManagerEnabled,
+          &MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager,
           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
@@ -118,7 +118,12 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void MultidevicePhoneHubHandler::SetSystemPhoneHubManagerEnabled() {
+void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
+  // If no FakePhoneHubManager is active, return early. This ensures that we
+  // don't unnecessarily re-initialize the Phone Hub UI.
+  if (!fake_phone_hub_manager_)
+    return;
+
   PA_LOG(VERBOSE) << "Setting real Phone Hub Manager";
   fake_phone_hub_manager_.reset();
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -127,22 +132,23 @@ void MultidevicePhoneHubHandler::SetSystemPhoneHubManagerEnabled() {
   ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
 }
 
-void MultidevicePhoneHubHandler::SetFakePhoneHubManagerEnabled() {
+void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
+  DCHECK(!fake_phone_hub_manager_);
   PA_LOG(VERBOSE) << "Setting fake Phone Hub Manager";
   fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
   ash::SystemTray::Get()->SetPhoneHubManager(fake_phone_hub_manager_.get());
 }
 
-void MultidevicePhoneHubHandler::HandleSetFakePhoneHubManagerEnabled(
+void MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager(
     const base::ListValue* args) {
   AllowJavascript();
   bool enabled = false;
   CHECK(args->GetBoolean(0, &enabled));
   if (enabled) {
-    SetFakePhoneHubManagerEnabled();
+    EnableFakePhoneHubManager();
     return;
   }
-  SetSystemPhoneHubManagerEnabled();
+  EnableRealPhoneHubManager();
 }
 
 void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
