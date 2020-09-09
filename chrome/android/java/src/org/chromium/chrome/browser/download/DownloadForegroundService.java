@@ -36,10 +36,6 @@ public class DownloadForegroundService extends Service {
 
     private NotificationManager mNotificationManager;
 
-    // Whether Service.startForeground is called. Notices Android will crash if
-    // Service.startForeground is not called when calling Service.stopForeground.
-    private boolean mStartForeground;
-
     @IntDef({StopForegroundNotification.KILL, StopForegroundNotification.DETACH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface StopForegroundNotification {
@@ -235,7 +231,6 @@ public class DownloadForegroundService extends Service {
     @VisibleForTesting
     void startForegroundInternal(int notificationId, Notification notification) {
         Log.w(TAG, "startForegroundInternal id: " + notificationId);
-        mStartForeground = true;
         ForegroundServiceUtils.getInstance().startForeground(
                 this, notificationId, notification, 0 /* foregroundServiceType */);
     }
@@ -243,10 +238,6 @@ public class DownloadForegroundService extends Service {
     @VisibleForTesting
     void stopForegroundInternal(int flags) {
         Log.w(TAG, "stopForegroundInternal flags: " + flags);
-        if (!mStartForeground) {
-            Log.e(TAG, "stopForeground is called without startForeground.");
-            return;
-        }
         ForegroundServiceUtils.getInstance().stopForeground(this, flags);
     }
 
