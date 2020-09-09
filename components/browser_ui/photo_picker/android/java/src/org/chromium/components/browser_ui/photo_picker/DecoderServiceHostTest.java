@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.photo_picker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -59,6 +60,11 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Before
     public void setUp() throws Exception {
         mContext = InstrumentationRegistry.getTargetContext();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DecoderServiceHost.setIntentSupplier(
+                    () -> { return new Intent(mContext, TestImageDecoderService.class); });
+        });
 
         DecoderServiceHost.setStatusCallback(this);
     }
