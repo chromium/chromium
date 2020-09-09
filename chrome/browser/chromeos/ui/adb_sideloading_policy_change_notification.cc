@@ -57,7 +57,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_TITLE);
       text = l10n_util::GetStringFUTF16(
           IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_MESSAGE,
-          enterprise_display_domain);
+          enterprise_display_domain, device_type);
       notification_id = kAdbSideloadingDisallowedNotificationId;
       break;
     case Type::kPowerwashPlanned:
@@ -65,7 +65,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_PLANNED_NOTIFICATION_TITLE,
           device_type);
       text = l10n_util::GetStringFUTF16(
-          IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_NOTIFICATION_MESSAGE,
+          IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_PLANNED_NOTIFICATION_MESSAGE,
           enterprise_display_domain, device_type);
       notification_id = kAdbSideloadingPowerwashPlannedNotificationId;
       break;
@@ -74,7 +74,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_ON_REBOOT_NOTIFICATION_TITLE,
           device_type);
       text = l10n_util::GetStringFUTF16(
-          IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_NOTIFICATION_MESSAGE,
+          IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_ON_REBOOT_NOTIFICATION_MESSAGE,
           enterprise_display_domain, device_type);
       notification_id = kAdbSideloadingPowerwashOnRebootNotificationId;
       pinned = true;
