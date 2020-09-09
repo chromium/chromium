@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
@@ -39,6 +40,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -66,6 +68,7 @@
 #include "net/base/escape.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -860,7 +863,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     main_web_contents_->SetInitialFocus();
 
     PrefsTabHelper::CreateForWebContents(main_web_contents_);
-    main_web_contents_->SyncRendererPrefs();
+    OverrideAndSyncDevToolsRendererPrefs();
 
     DoAction(action);
     return;
@@ -1021,6 +1024,12 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       g_creation_callbacks.Get());
   for (const auto& callback : copy)
     callback.Run(this);
+
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      language::prefs::kAcceptLanguages,
+      base::BindRepeating(&DevToolsWindow::OnLocaleChanged,
+                          base::Unretained(this)));
 }
 
 // static
@@ -1579,7 +1588,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
       OwnedMainWebContents::TakeWebContents(
           std::move(owned_main_web_contents_)),
       -1, ui::PAGE_TRANSITION_AUTO_TOPLEVEL, TabStripModel::ADD_ACTIVE);
-  main_web_contents_->SyncRendererPrefs();
+  OverrideAndSyncDevToolsRendererPrefs();
 }
 
 BrowserWindow* DevToolsWindow::GetInspectedBrowserWindow() {
@@ -1680,4 +1689,15 @@ void DevToolsWindow::RegisterModalDialogManager(Browser* browser) {
 
 void DevToolsWindow::OnReattachMainTargetComplete(base::Value) {
   std::move(reattach_complete_callback_).Run();
+}
+
+void DevToolsWindow::OnLocaleChanged() {
+  OverrideAndSyncDevToolsRendererPrefs();
+}
+
+void DevToolsWindow::OverrideAndSyncDevToolsRendererPrefs() {
+  main_web_contents_->GetMutableRendererPrefs()->can_accept_load_drops = false;
+  main_web_contents_->GetMutableRendererPrefs()->accept_languages =
+      g_browser_process->GetApplicationLocale();
+  main_web_contents_->SyncRendererPrefs();
 }

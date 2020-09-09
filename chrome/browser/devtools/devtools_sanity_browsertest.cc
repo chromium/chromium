@@ -29,6 +29,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -66,6 +67,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -2578,24 +2580,53 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   CloseDevToolsWindow();
 }
 
+namespace {
+
 class DevToolsLocalizationTest : public DevToolsSanityTest {
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kLang, "es-ES");
+ public:
+  bool NavigatorLanguageMatches(const std::string& expected_locale) {
+    bool result = false;
+    const bool execute_result = content::ExecuteScriptAndExtractBool(
+        main_web_contents(),
+        "window.domAutomationController.send(window.navigator.language === "
+        "'" +
+            expected_locale + "')",
+        &result);
+    return execute_result && result;
   }
 };
 
-// Make it run on Windows only since the browser language on Mac
-// is tied to the OS language and --lang flag won't work
-#if defined(OS_WIN)
-IN_PROC_BROWSER_TEST_F(DevToolsLocalizationTest, testNavigatorLanguage) {
-  bool result = false;
-  OpenDevToolsWindow("about:blank", true);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      main_web_contents(),
-      "window.domAutomationController.send(window.navigator.language === "
-      "'es-ES')",
-      &result));
-  EXPECT_TRUE(result);
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(DevToolsLocalizationTest,
+                       NavigatorLanguageMatchesApplicationLocaleDocked) {
+  g_browser_process->SetApplicationLocale("es-ES");
+
+  OpenDevToolsWindow("about:blank", /* is_docked */ true);
+  EXPECT_TRUE(NavigatorLanguageMatches("es-ES"));
   CloseDevToolsWindow();
 }
-#endif  // defined(OS_WIN)
+
+IN_PROC_BROWSER_TEST_F(DevToolsLocalizationTest,
+                       NavigatorLanguageMatchesApplicationLocaleUndocked) {
+  g_browser_process->SetApplicationLocale("es-ES");
+
+  OpenDevToolsWindow("about:blank", /* is_docked */ false);
+  EXPECT_TRUE(NavigatorLanguageMatches("es-ES"));
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsLocalizationTest,
+                       AcceptedLanguageChangesWhileDevToolsIsOpen) {
+  g_browser_process->SetApplicationLocale("es-ES");
+
+  OpenDevToolsWindow("about:blank", true);
+  EXPECT_TRUE(NavigatorLanguageMatches("es-ES"));
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetString(language::prefs::kAcceptLanguages, "de-DE");
+
+  EXPECT_TRUE(NavigatorLanguageMatches("es-ES"));
+
+  CloseDevToolsWindow();
+}
