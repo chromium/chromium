@@ -347,18 +347,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
                              const SiteInfo& site_info,
                              bool is_guest);
 
-  // Returns an existing RenderProcessHost for |url| in |isolation_context|, if
-  // one exists.  Otherwise a new RenderProcessHost should be created and
-  // registered using RegisterProcessHostForSite().
-  // This should only be used for process-per-site mode, which can be enabled
+  // Returns an existing RenderProcessHost for |site_info| in
+  // |isolation_context|, if one exists.  Otherwise a new RenderProcessHost
+  // should be created and registered using RegisterProcessHostForSite(). This
+  // should only be used for process-per-site mode, which can be enabled
   // globally with a command line flag or per-site, as determined by
-  // SiteInstanceImpl::ShouldUseProcessPerSite.
-  // Important: |url| should be a full URL and *not* a SiteInfo.
-  static RenderProcessHost* GetSoleProcessHostForURL(
-      const IsolationContext& isolation_context,
-      const GURL& url);
-
-  // Variant of the above that takes in a SiteInfo. |is_guest| should be set to
+  // SiteInstanceImpl::ShouldUseProcessPerSite. |is_guest| should be set to
   // true if the call is being made for a <webview> guest SiteInstance.
   // TODO(wjmaclean): Move is_guest into SiteInfo at some point.
   static RenderProcessHost* GetSoleProcessHostForSite(

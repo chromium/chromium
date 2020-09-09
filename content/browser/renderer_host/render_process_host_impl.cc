@@ -4361,16 +4361,6 @@ bool RenderProcessHostImpl::ShouldUseProcessPerSite(
 }
 
 // static
-RenderProcessHost* RenderProcessHostImpl::GetSoleProcessHostForURL(
-    const IsolationContext& isolation_context,
-    const GURL& url) {
-  SiteInfo site_info =
-      SiteInstanceImpl::ComputeSiteInfo(isolation_context, url);
-  return GetSoleProcessHostForSite(isolation_context, site_info,
-                                   /* is_guest */ false);
-}
-
-// static
 RenderProcessHost* RenderProcessHostImpl::GetSoleProcessHostForSite(
     const IsolationContext& isolation_context,
     const SiteInfo& site_info,

@@ -5844,9 +5844,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_NE(c_site_instance->GetProcess(), original_process);
   // C is using the process for C's site.
   EXPECT_EQ(c_site_instance->GetProcess(),
-            RenderProcessHostImpl::GetSoleProcessHostForURL(
+            RenderProcessHostImpl::GetSoleProcessHostForSite(
                 c_site_instance->GetIsolationContext(),
-                c_site_instance->GetSiteURL()));
+                c_site_instance->GetSiteInfo(), c_site_instance->IsGuest()));
 
   // Make sure we will not use process-per-site for B.
   content_browser_client.SetShouldUseProcessPerSite(false);
@@ -5901,9 +5901,10 @@ IN_PROC_BROWSER_TEST_P(
   RenderProcessHostImpl::RegisterSoleProcessHostForSite(
       process_for_b, placeholder_b_site_instance.get());
   EXPECT_EQ(process_for_b,
-            RenderProcessHostImpl::GetSoleProcessHostForURL(
+            RenderProcessHostImpl::GetSoleProcessHostForSite(
                 placeholder_b_site_instance->GetIsolationContext(),
-                placeholder_b_site_instance->GetSiteURL()));
+                placeholder_b_site_instance->GetSiteInfo(),
+                placeholder_b_site_instance->IsGuest()));
   // Make sure we will use process-per-site for B.
   content_browser_client.SetShouldUseProcessPerSite(true);
 
@@ -5922,9 +5923,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_NE(b_site_instance->GetProcess(), original_process);
   EXPECT_EQ(b_site_instance->GetProcess(), process_for_b);
   EXPECT_EQ(b_site_instance->GetProcess(),
-            RenderProcessHostImpl::GetSoleProcessHostForURL(
+            RenderProcessHostImpl::GetSoleProcessHostForSite(
                 b_site_instance->GetIsolationContext(),
-                b_site_instance->GetSiteURL()));
+                b_site_instance->GetSiteInfo(), b_site_instance->IsGuest()));
 
   SetBrowserClientForTesting(old_client);
 }

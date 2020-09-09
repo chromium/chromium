@@ -1042,8 +1042,6 @@ TEST_F(SiteInstanceTest, NoProcessPerSiteForEmptySite) {
   EXPECT_TRUE(instance->GetSiteURL().is_empty());
   host.reset(instance->GetProcess());
 
-  EXPECT_FALSE(RenderProcessHostImpl::GetSoleProcessHostForURL(
-      instance->GetIsolationContext(), GURL()));
   EXPECT_FALSE(RenderProcessHostImpl::GetSoleProcessHostForSite(
       instance->GetIsolationContext(), SiteInfo(), false));
 
