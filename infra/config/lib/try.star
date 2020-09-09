@@ -242,7 +242,6 @@ def try_builder(
         resultdb_bigquery_exports = [resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.try_test_results",
         )],
-        isolated_server = "https://isolateserver.appspot.com",
         **kwargs
     )
 
