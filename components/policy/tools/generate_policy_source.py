@@ -1283,7 +1283,7 @@ class RiskTags(object):
     values = ['  ' + self.enum_for_tag[tag] for tag in self.enum_for_tag]
     values.append('  RISK_TAG_COUNT')
     values.append('  RISK_TAG_NONE')
-    enum_text = 'enum RiskTag {\n'
+    enum_text = 'enum RiskTag : uint8_t {\n'
     enum_text += ',\n'.join(values) + '\n};\n'
     return enum_text
 
