@@ -137,6 +137,8 @@ blink_core_sources("frame") {
     "opened_frame_tracker.h",
     "overlay_interstitial_ad_detector.cc",
     "overlay_interstitial_ad_detector.h",
+    "page_dismissal_scope.cc",
+    "page_dismissal_scope.h",
     "page_scale_constraints.cc",
     "page_scale_constraints.h",
     "page_scale_constraints_set.cc",

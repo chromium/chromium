@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("xmlhttprequest") {
   sources = [
-    "main_thread_disallow_synchronous_xhr_scope.cc",
-    "main_thread_disallow_synchronous_xhr_scope.h",
     "xml_http_request.cc",
     "xml_http_request.h",
     "xml_http_request_event_target.h",

@@ -182,6 +182,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -298,7 +299,6 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/core/xml_names.h"
-#include "third_party/blink/renderer/core/xmlhttprequest/main_thread_disallow_synchronous_xhr_scope.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -3987,7 +3987,7 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   if (ProcessingBeforeUnload())
     return false;
 
-  MainThreadDisallowSynchronousXHRScope disallow_synchronous_xhr;
+  PageDismissalScope in_page_dismissal;
   auto& before_unload_event = *MakeGarbageCollected<BeforeUnloadEvent>();
   before_unload_event.initEvent(event_type_names::kBeforeunload, false, true);
   const base::TimeTicks beforeunload_event_start = base::TimeTicks::Now();
@@ -4081,7 +4081,7 @@ void Document::DispatchUnloadEvents(
     SecurityOrigin* committing_origin,
     base::Optional<Document::UnloadEventTiming>* unload_timing) {
   PluginScriptForbiddenScope forbid_plugin_destructor_scripting;
-  MainThreadDisallowSynchronousXHRScope disallow_synchronous_xhr;
+  PageDismissalScope in_page_dismissal;
   if (parser_)
     parser_->StopParsing();
 

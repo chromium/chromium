@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -72,7 +73,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
-#include "third_party/blink/renderer/core/xmlhttprequest/main_thread_disallow_synchronous_xhr_scope.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request_upload.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1122,8 +1122,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
               WebFeature::kXMLHttpRequestSynchronousInSameOriginSubframe);
         }
       }
-      if (MainThreadDisallowSynchronousXHRScope::
-              ShouldDisallowSynchronousXHR() &&
+      if (PageDismissalScope::IsActive() &&
           !RuntimeEnabledFeatures::AllowSyncXHRInPageDismissalEnabled(
               &execution_context)) {
         HandleNetworkError();
