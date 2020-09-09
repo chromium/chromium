@@ -869,14 +869,6 @@ ci.android_builder(
 )
 
 ci.android_fyi_builder(
-    name = "Android WebLayer P FYI (rel)",
-    console_view_entry = ci.console_view_entry(
-        category = "weblayer",
-        short_name = "p-rel",
-    ),
-)
-
-ci.android_fyi_builder(
     name = "android-weblayer-pie-x86-fyi-rel",
     console_view_entry = ci.console_view_entry(
         category = "weblayer",

@@ -114,11 +114,6 @@
         "specifiers": ["Win10", "Release"],
         "is_try_builder": true
     },
-    "android-weblayer-pie-arm64-fyi-rel": {
-        "port_name": "android-android-pie",
-        "specifiers": ["Android", "android_weblayer", "Release"],
-        "is_try_builder": true
-    },
     "android-webview-pie-arm64-fyi-rel": {
         "port_name": "android-android-pie",
         "specifiers": ["Android", "android_webview", "chrome_android", "Release"],

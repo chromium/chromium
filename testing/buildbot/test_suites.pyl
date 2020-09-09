@@ -4206,23 +4206,6 @@
       }
     },
 
-    'weblayer_shell_wpt': {
-      'weblayer_shell_wpt': {
-        'swarming': {
-          'shards': 15,
-          'expiration': 18000,
-          'hard_timeout': 14400,
-        },
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'results_handler': 'layout tests',
-      },
-    },
-
     # TODO(crbug.com/888429): Port remaining WebRTC tests to swarming.
     'webrtc_chromium_baremetal_gtests': {
       # Run capture unittests as well since our bots have real webcams.

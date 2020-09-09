@@ -830,17 +830,6 @@
     'name': 'chromium.android.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Android WebLayer P FYI (rel)': {
-        'mixins': [
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'weblayer_shell_wpt',
-        },
-        'use_swarming': True,
-        'os_type': 'android',
-      },
       'Android WebView P FYI (rel)': {
         'mixins': [
           'pie_fleet',
