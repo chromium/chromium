@@ -229,36 +229,36 @@ TEST_F(SourceListDirectiveTest, GetIntersectCSPSources) {
     String sources;
     String expected;
   } cases[] = {
-      {"http://example1.com/foo/ http://example2.com/bar/",
-       "http://example1.com/foo/ http://example2.com/bar/"},
+      {"http://example1.com/foo/ http://sub.example2.com/bar/",
+       "http://example1.com/foo/ http://sub.example2.com/bar/"},
       // Normalizing schemes.
-      {"https://example1.com/foo/ http://example2.com/bar/",
-       "https://example1.com/foo/ http://example2.com/bar/"},
-      {"https://example1.com/foo/ https://example2.com/bar/",
-       "https://example1.com/foo/ https://example2.com/bar/"},
-      {"https://example1.com/foo/ wss://example2.com/bar/",
+      {"https://example1.com/foo/ http://sub.example2.com/bar/",
+       "https://example1.com/foo/ http://sub.example2.com/bar/"},
+      {"https://example1.com/foo/ https://sub.example2.com/bar/",
+       "https://example1.com/foo/ https://sub.example2.com/bar/"},
+      {"https://example1.com/foo/ wss://sub.example2.com/bar/",
        "https://example1.com/foo/"},
       // Normalizing hosts.
-      {"http://*.example1.com/foo/ http://*.example2.com/bar/",
+      {"http://*.com/foo/ http://*.example2.com/bar/",
        "http://example1.com/foo/ http://*.example2.com/bar/"},
-      {"http://*.example1.com/foo/ http://foo.example2.com/bar/",
+      {"http://*.com/foo/ http://foo.example2.com/bar/",
        "http://example1.com/foo/ http://foo.example2.com/bar/"},
       // Normalizing ports.
-      {"http://example1.com/foo/ http://example2.com/bar/",
-       "http://example1.com/foo/ http://example2.com/bar/"},
-      {"http://example1.com/foo/ http://example2.com:90/bar/",
+      {"http://example1.com/foo/ http://sub.example2.com/bar/",
+       "http://example1.com/foo/ http://sub.example2.com/bar/"},
+      {"http://example1.com/foo/ http://sub.example2.com:90/bar/",
        "http://example1.com/foo/"},
-      {"http://example1.com:*/foo/ http://example2.com/bar/",
-       "http://example1.com/foo/ http://example2.com/bar/"},
+      {"http://example1.com:*/foo/ http://sub.example2.com/bar/",
+       "http://example1.com/foo/ http://sub.example2.com/bar/"},
       {"http://*.example3.com:100/bar/ http://example1.com/foo/",
        "http://example1.com/foo/ http://*.example3.com:100/bar/"},
       // Normalizing paths.
-      {"http://example1.com/ http://example2.com/",
-       "http://example1.com/foo/ http://example2.com/bar/"},
-      {"http://example1.com/foo/index.html http://example2.com/bar/",
-       "http://example1.com/foo/index.html http://example2.com/bar/"},
-      {"http://example1.com/bar http://example2.com/bar/",
-       "http://example2.com/bar/"},
+      {"http://example1.com/ http://sub.example2.com/",
+       "http://example1.com/foo/ http://sub.example2.com/bar/"},
+      {"http://example1.com/foo/index.html http://sub.example2.com/bar/",
+       "http://example1.com/foo/index.html http://sub.example2.com/bar/"},
+      {"http://example1.com/bar http://sub.example2.com/bar/",
+       "http://sub.example2.com/bar/"},
       // Not similar to be normalized
       {"http://non-example1.com/foo/ http://non-example2.com/bar/", ""},
       {"https://non-example1.com/foo/ wss://non-example2.com/bar/", ""},
@@ -303,8 +303,8 @@ TEST_F(SourceListDirectiveTest, GetIntersectCSPSourcesSchemes) {
                {"https: http: wss:", "http: wss:"},
                {"https: http://another-example1.com/bar/",
                 "https: http://another-example1.com/bar/"},
-               {"http://*.example1.com/",
-                "http://*.example1.com/ http://example1.com/foo/ "
+               {"http://*.com/",
+                "http://*.com/ http://example1.com/foo/ "
                 "https://example1.com/foo/ http://example1.com/bar/page.html"},
                {"http://example1.com/foo/ https://example1.com/foo/",
                 "http://example1.com/foo/ https://example1.com/foo/ "
@@ -364,7 +364,7 @@ TEST_F(SourceListDirectiveTest, Subsumes) {
       {{"https://example1.com/foo/",
         "http://*.example1.com/foo/ http://*.example2.com/bar/"},
        true},
-      {{"http://example2.com/bar/",
+      {{"http://sub.example2.com/bar/",
         "http://*.example3.com:*/bar/ http://*.example2.com/bar/"},
        true},
       {{"http://example3.com:100/bar/",
@@ -372,12 +372,12 @@ TEST_F(SourceListDirectiveTest, Subsumes) {
        true},
       // Lists that intersect into two of the required sources are subsumed.
       {{"http://example1.com/foo/ http://*.example2.com/bar/"}, true},
-      {{"http://example1.com/foo/ http://example2.com/bar/",
-        "http://example2.com/bar/ http://example1.com/foo/"},
+      {{"http://example1.com/foo/ http://sub.example2.com/bar/",
+        "http://sub.example2.com/bar/ http://example1.com/foo/"},
        true},
       // Ordering should not matter.
-      {{"https://example1.com/foo/ https://example2.com/bar/",
-        "http://example2.com/bar/ http://example1.com/foo/"},
+      {{"https://example1.com/foo/ https://sub.example2.com/bar/",
+        "http://sub.example2.com/bar/ http://example1.com/foo/"},
        true},
       // Lists that intersect into a policy identical to the required list are
       // subsumed.
@@ -402,12 +402,12 @@ TEST_F(SourceListDirectiveTest, Subsumes) {
       {{"http://example1.com/foo/ http://*.example2.com/bar/ "
         "http://*.example3.com:*/bar/ http://*.example4.com:*/bar/"},
        false},
-      {{"http://example1.com/foo/ http://example2.com/foo/"}, false},
-      {{"http://*.example1.com/bar/", "http://example1.com/bar/"}, false},
+      {{"http://example1.com/foo/ http://sub.example2.com/foo/"}, false},
+      {{"http://*.com/bar/", "http://example1.com/bar/"}, false},
       {{"http://*.example1.com/foo/"}, false},
-      {{"wss://example2.com/bar/"}, false},
+      {{"wss://sub.example2.com/bar/"}, false},
       {{"http://*.non-example3.com:*/bar/"}, false},
-      {{"http://example3.com/foo/"}, false},
+      {{"http://sub.example3.com/foo/"}, false},
       {{"http://not-example1.com", "http://not-example1.com"}, false},
       {{"http://*", "http://*.com http://*.example3.com:*/bar/"}, false},
   };

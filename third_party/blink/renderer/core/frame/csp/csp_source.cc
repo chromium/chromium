@@ -203,7 +203,9 @@ bool CSPSource::Subsumes(CSPSource* other) const {
     return false;
   }
 
-  bool host_subsumes = (host_ == other->host_ || HostMatches(other->host_));
+  bool host_subsumes = other->host_wildcard_ == kHasWildcard
+                           ? HostMatches("." + other->host_)
+                           : HostMatches(other->host_);
   bool port_subsumes = (port_wildcard_ == kHasWildcard) ||
                        PortMatches(other->port_, other->scheme_) !=
                            PortMatchingResult::kNotMatching;
@@ -217,8 +219,9 @@ bool CSPSource::IsSimilar(CSPSource* other) const {
       other->SchemeMatches(scheme_) != SchemeMatchingResult::kNotMatching;
   if (!schemes_match || IsSchemeOnly() || other->IsSchemeOnly())
     return schemes_match;
-  bool hosts_match = (host_ == other->host_) || HostMatches(other->host_) ||
-                     other->HostMatches(host_);
+  bool hosts_match =
+      HostMatches((other->host_wildcard_ ? "*." : "") + other->host_) ||
+      other->HostMatches((host_wildcard_ ? "*." : "") + host_);
   bool ports_match =
       (other->port_wildcard_ == kHasWildcard) ||
       PortMatches(other->port_, other->scheme_) !=

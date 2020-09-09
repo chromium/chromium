@@ -447,7 +447,7 @@ TEST_F(CSPSourceTest, WildcardsSubsumes) {
        true},
       {{CSPSource::kNoWildcard, CSPSource::kNoWildcard},
        {CSPSource::kHasWildcard, CSPSource::kNoWildcard},
-       true},
+       false},
       // Two out of four possible wildcards.
       {{CSPSource::kHasWildcard, CSPSource::kHasWildcard},
        {CSPSource::kNoWildcard, CSPSource::kNoWildcard},
@@ -466,7 +466,7 @@ TEST_F(CSPSourceTest, WildcardsSubsumes) {
        true},
       {{CSPSource::kNoWildcard, CSPSource::kNoWildcard},
        {CSPSource::kHasWildcard, CSPSource::kHasWildcard},
-       true},
+       false},
       // Three out of four possible wildcards.
       {{CSPSource::kHasWildcard, CSPSource::kHasWildcard},
        {CSPSource::kHasWildcard, CSPSource::kNoWildcard},
@@ -479,7 +479,7 @@ TEST_F(CSPSourceTest, WildcardsSubsumes) {
        true},
       {{CSPSource::kNoWildcard, CSPSource::kHasWildcard},
        {CSPSource::kHasWildcard, CSPSource::kHasWildcard},
-       true},
+       false},
       // Four out of four possible wildcards.
       {{CSPSource::kHasWildcard, CSPSource::kHasWildcard},
        {CSPSource::kHasWildcard, CSPSource::kHasWildcard},
@@ -717,16 +717,17 @@ TEST_F(CSPSourceTest, FirstSubsumesSecond) {
     // If we add another source to `listB` with a host wildcard,
     // then the result should definitely be false.
     list_b.push_back(host_wildcard);
+    EXPECT_FALSE(CSPSource::FirstSubsumesSecond(list_a, list_b));
 
     // If we add another source to `listA` with a port wildcard,
     // it does not make `listB` to be subsumed under `listA`.
     list_b.push_back(port_wildcard);
     EXPECT_FALSE(CSPSource::FirstSubsumesSecond(list_a, list_b));
 
-    // If however we add another source to `listA` with both wildcards,
-    // that CSPSource is subsumed, so the answer should be as expected
-    // before.
+    // If however we add another source to `listA` with both wildcards, and the
+    // source with the port wildcard, the answer should be as expected before.
     list_a.push_back(both_wildcards);
+    list_a.push_back(port_wildcard);
     EXPECT_EQ(test.expected, CSPSource::FirstSubsumesSecond(list_a, list_b));
 
     // If we add a scheme-source expression of 'https' to `listB`, then it
@@ -762,21 +763,21 @@ TEST_F(CSPSourceTest, Intersect) {
       // Wildcards
       {{"http", "example.com", "/", 0, CSPSource::kHasWildcard,
         CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
+       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
+       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard}},
       {{"http", "example.com", "/", 0, CSPSource::kHasWildcard,
         CSPSource::kHasWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
+       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
+       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard}},
       {{"http", "example.com", "/", 0, CSPSource::kHasWildcard,
         CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
+       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
         CSPSource::kHasWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
+       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard}},
       // Ports
       {{"http", "example.com", "/", 80, CSPSource::kNoWildcard,
