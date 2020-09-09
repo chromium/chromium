@@ -318,17 +318,6 @@ class FileTasks {
   }
 
   /**
-   * Records the type of dialog shown when using a crostini app to open a file.
-   * @param {!FileTasks.CrostiniShareDialogType} dialogType
-   * @private
-   */
-  static recordCrostiniShareDialogTypeUMA_(dialogType) {
-    metrics.recordEnum(
-        'CrostiniShareDialog', dialogType,
-        FileTasks.UMA_CROSTINI_SHARE_DIALOG_TYPES_);
-  }
-
-  /**
    * Returns true if the taskId is for an internal task.
    *
    * @param {string} taskId Task identifier.
@@ -1411,27 +1400,6 @@ FileTasks.EXTENSIONS_TO_SKIP_SUGGEST_APPS_ = Object.freeze([
 FileTasks.UMA_ZIP_HANDLER_TASK_IDS_ = Object.freeze([
   FileTasks.ZIP_UNPACKER_TASK_ID, FileTasks.ZIP_ARCHIVER_UNZIP_TASK_ID,
   FileTasks.ZIP_ARCHIVER_ZIP_TASK_ID
-]);
-
-/**
- * Crostini Share Dialog types.
- * Keep in sync with enums.xml FileManagerCrostiniShareDialogType.
- * @enum {string}
- */
-FileTasks.CrostiniShareDialogType = {
-  None: 'None',
-  ShareBeforeOpen: 'ShareBeforeOpen',
-  UnableToOpen: 'UnableToOpen',
-};
-
-/**
- * The indexes of these types must match with the values of
- * FileManagerCrostiniShareDialogType in enums.xml, and should not change.
- */
-FileTasks.UMA_CROSTINI_SHARE_DIALOG_TYPES_ = Object.freeze([
-  FileTasks.CrostiniShareDialogType.None,
-  FileTasks.CrostiniShareDialogType.ShareBeforeOpen,
-  FileTasks.CrostiniShareDialogType.UnableToOpen,
 ]);
 
 /**

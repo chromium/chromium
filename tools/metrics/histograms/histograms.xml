@@ -62977,6 +62977,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.CrostiniShareDialog"
     enum="FileManagerCrostiniShareDialogType" expires_after="2020-10-01">
+  <obsolete>
+    Removed 2020-09.
+  </obsolete>
   <owner>joelhockey@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>Dialog shown when using crostini app to open a file.</summary>
