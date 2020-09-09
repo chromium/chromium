@@ -31,7 +31,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -218,9 +217,12 @@ void ExtendHotseat(Browser* browser) {
 class LauncherPlatformAppBrowserTest
     : public extensions::PlatformAppBrowserTest {
  protected:
-  LauncherPlatformAppBrowserTest() : controller_(nullptr) {}
-
-  ~LauncherPlatformAppBrowserTest() override {}
+  LauncherPlatformAppBrowserTest() = default;
+  LauncherPlatformAppBrowserTest(const LauncherPlatformAppBrowserTest&) =
+      delete;
+  LauncherPlatformAppBrowserTest& operator=(
+      const LauncherPlatformAppBrowserTest&) = delete;
+  ~LauncherPlatformAppBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     controller_ = ChromeLauncherController::instance();
@@ -247,18 +249,17 @@ class LauncherPlatformAppBrowserTest
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
-  ChromeLauncherController* controller_;
+  ChromeLauncherController* controller_ = nullptr;
 
  private:
   apps::AppServiceTest app_service_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(LauncherPlatformAppBrowserTest);
 };
 
 class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
-  ShelfAppBrowserTest() {}
-
+  ShelfAppBrowserTest() = default;
+  ShelfAppBrowserTest(const ShelfAppBrowserTest&) = delete;
+  ShelfAppBrowserTest& operator=(const ShelfAppBrowserTest&) = delete;
   ~ShelfAppBrowserTest() override {}
 
   ash::ShelfModel* shelf_model() const { return controller_->shelf_model(); }
@@ -390,23 +391,21 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   ChromeLauncherController* controller_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfAppBrowserTest);
 };
 
 class ShelfAppBrowserTestNoDefaultBrowser : public ShelfAppBrowserTest {
  protected:
   ShelfAppBrowserTestNoDefaultBrowser() {}
+  ShelfAppBrowserTestNoDefaultBrowser(
+      const ShelfAppBrowserTestNoDefaultBrowser&) = delete;
+  ShelfAppBrowserTestNoDefaultBrowser& operator=(
+      const ShelfAppBrowserTestNoDefaultBrowser&) = delete;
   ~ShelfAppBrowserTestNoDefaultBrowser() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ShelfAppBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kNoStartupWindow);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfAppBrowserTestNoDefaultBrowser);
 };
 
 class ShelfWebAppBrowserTest
@@ -2530,6 +2529,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ShelfModelInitialization) {
 class HotseatShelfAppBrowserTest : public ShelfAppBrowserTest {
  public:
   HotseatShelfAppBrowserTest() = default;
+  HotseatShelfAppBrowserTest(const HotseatShelfAppBrowserTest&) = delete;
+  HotseatShelfAppBrowserTest& operator=(const HotseatShelfAppBrowserTest&) =
+      delete;
   ~HotseatShelfAppBrowserTest() override = default;
 
   // ShelfAppBrowserTest:
@@ -2543,8 +2545,6 @@ class HotseatShelfAppBrowserTest : public ShelfAppBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HotseatShelfAppBrowserTest);
 };
 
 // Verifies that hotseat should be hidden after launching the browser from

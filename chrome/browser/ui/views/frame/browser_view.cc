@@ -398,6 +398,9 @@ class TopContainerOverlayView : public views::View {
 class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
  public:
   OverlayViewTargeterDelegate() = default;
+  OverlayViewTargeterDelegate(const OverlayViewTargeterDelegate&) = delete;
+  OverlayViewTargeterDelegate& operator=(const OverlayViewTargeterDelegate&) =
+      delete;
   ~OverlayViewTargeterDelegate() override = default;
 
   bool DoesIntersectRect(const views::View* target,
@@ -410,9 +413,6 @@ class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
     };
     return std::any_of(children.cbegin(), children.cend(), hits_child);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayViewTargeterDelegate);
 };
 
 class ContentsSeparator : public views::Separator {
@@ -452,7 +452,10 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
  public:
   explicit BrowserViewLayoutDelegateImpl(BrowserView* browser_view)
       : browser_view_(browser_view) {}
-  ~BrowserViewLayoutDelegateImpl() override {}
+  BrowserViewLayoutDelegateImpl(const BrowserViewLayoutDelegateImpl&) = delete;
+  BrowserViewLayoutDelegateImpl& operator=(
+      const BrowserViewLayoutDelegateImpl&) = delete;
+  ~BrowserViewLayoutDelegateImpl() override = default;
 
   bool IsTabStripVisible() const override {
     return browser_view_->IsTabStripVisible();
@@ -530,8 +533,6 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
 
  private:
   BrowserView* browser_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewLayoutDelegateImpl);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

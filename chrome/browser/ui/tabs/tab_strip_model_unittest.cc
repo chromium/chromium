@@ -359,6 +359,8 @@ const char* const MockTabStripModelObserver::State::kActionNames[]{
 class TabStripModelTest : public testing::Test {
  public:
   TabStripModelTest() : profile_(new TestingProfile) {}
+  TabStripModelTest(const TabStripModelTest&) = delete;
+  TabStripModelTest& operator=(const TabStripModelTest&) = delete;
 
   TestingProfile* profile() { return profile_.get(); }
 
@@ -445,8 +447,6 @@ class TabStripModelTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   const std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabStripModelTest);
 };
 
 TEST_F(TabStripModelTest, TestBasicAPI) {
@@ -2160,8 +2160,12 @@ namespace {
 
 class UnloadListenerTabStripModelDelegate : public TestTabStripModelDelegate {
  public:
-  UnloadListenerTabStripModelDelegate() : run_unload_(false) {}
-  ~UnloadListenerTabStripModelDelegate() override {}
+  UnloadListenerTabStripModelDelegate() = default;
+  UnloadListenerTabStripModelDelegate(
+      const UnloadListenerTabStripModelDelegate&) = delete;
+  UnloadListenerTabStripModelDelegate& operator=(
+      const UnloadListenerTabStripModelDelegate&) = delete;
+  ~UnloadListenerTabStripModelDelegate() override = default;
 
   void set_run_unload_listener(bool value) { run_unload_ = value; }
 
@@ -2171,9 +2175,7 @@ class UnloadListenerTabStripModelDelegate : public TestTabStripModelDelegate {
 
  private:
   // Whether to report that we need to run an unload listener before closing.
-  bool run_unload_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnloadListenerTabStripModelDelegate);
+  bool run_unload_ = false;
 };
 
 }  // namespace
@@ -2892,7 +2894,9 @@ class TabBlockedStateTestBrowser
       : tab_strip_model_(tab_strip_model) {
     tab_strip_model_->AddObserver(this);
   }
-
+  TabBlockedStateTestBrowser(const TabBlockedStateTestBrowser&) = delete;
+  TabBlockedStateTestBrowser& operator=(const TabBlockedStateTestBrowser&) =
+      delete;
   ~TabBlockedStateTestBrowser() override {
     tab_strip_model_->RemoveObserver(this);
   }
@@ -2930,8 +2934,6 @@ class TabBlockedStateTestBrowser
   }
 
   TabStripModel* tab_strip_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabBlockedStateTestBrowser);
 };
 
 class DummySingleWebContentsDialogManager
@@ -2941,7 +2943,11 @@ class DummySingleWebContentsDialogManager
       gfx::NativeWindow dialog,
       web_modal::SingleWebContentsDialogManagerDelegate* delegate)
       : delegate_(delegate), dialog_(dialog) {}
-  ~DummySingleWebContentsDialogManager() override {}
+  DummySingleWebContentsDialogManager(
+      const DummySingleWebContentsDialogManager&) = delete;
+  DummySingleWebContentsDialogManager& operator=(
+      const DummySingleWebContentsDialogManager&) = delete;
+  ~DummySingleWebContentsDialogManager() override = default;
 
   void Show() override {}
   void Hide() override {}
@@ -2954,8 +2960,6 @@ class DummySingleWebContentsDialogManager
  private:
   web_modal::SingleWebContentsDialogManagerDelegate* delegate_;
   gfx::NativeWindow dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummySingleWebContentsDialogManager);
 };
 
 }  // namespace

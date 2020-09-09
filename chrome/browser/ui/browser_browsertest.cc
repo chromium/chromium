@@ -188,7 +188,9 @@ int CountRenderProcessHosts() {
 
 class TabClosingObserver : public TabStripModelObserver {
  public:
-  TabClosingObserver() : closing_count_(0) {}
+  TabClosingObserver() = default;
+  TabClosingObserver(const TabClosingObserver&) = delete;
+  TabClosingObserver& operator=(const TabClosingObserver&) = delete;
 
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -205,9 +207,7 @@ class TabClosingObserver : public TabStripModelObserver {
   int closing_count() const { return closing_count_; }
 
  private:
-  int closing_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabClosingObserver);
+  int closing_count_ = 0;
 };
 
 // Used by CloseWithAppMenuOpen. Invokes CloseWindow on the supplied browser.
@@ -229,6 +229,8 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   RenderViewSizeObserver(content::WebContents* web_contents,
                          BrowserWindow* browser_window)
       : WebContentsObserver(web_contents), browser_window_(browser_window) {}
+  RenderViewSizeObserver(const RenderViewSizeObserver&) = delete;
+  RenderViewSizeObserver& operator=(const RenderViewSizeObserver&) = delete;
 
   void GetSizeForRenderViewHost(content::RenderViewHost* render_view_host,
                                 gfx::Size* rwhv_create_size,
@@ -308,8 +310,6 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   // DidStartNavigation.
   gfx::Size wcv_resize_insets_;
   BrowserWindow* browser_window_;  // Weak ptr.
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewSizeObserver);
 };
 
 }  // namespace
@@ -1683,16 +1683,21 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
 
 class BrowserTestWithExtensionsDisabled : public BrowserTest {
  protected:
-  BrowserTestWithExtensionsDisabled() {}
+  BrowserTestWithExtensionsDisabled() = default;
+
+ public:
+  BrowserTestWithExtensionsDisabled(const BrowserTestWithExtensionsDisabled&) =
+      delete;
+  BrowserTestWithExtensionsDisabled& operator=(
+      const BrowserTestWithExtensionsDisabled&) = delete;
+
+ protected:
   ~BrowserTestWithExtensionsDisabled() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableExtensions);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserTestWithExtensionsDisabled);
 };
 
 // Makes sure Extensions and Settings commands are disabled in certain
@@ -2201,10 +2206,12 @@ static const char kSecondPageTitle[] = "New window!";
 
 class ClickModifierTest : public InProcessBrowserTest {
  public:
-  ClickModifierTest() {}
+  ClickModifierTest() = default;
+  ClickModifierTest(const ClickModifierTest&) = delete;
+  ClickModifierTest& operator=(const ClickModifierTest&) = delete;
 
   // Returns a url that opens a new window or tab when clicked, via javascript.
-  GURL GetWindowOpenURL() {
+  GURL GetWindowOpenURL() const {
     return ui_test_utils::GetTestUrl(
         base::FilePath(kTestDir),
         base::FilePath(FILE_PATH_LITERAL("window_open.html")));
@@ -2212,15 +2219,19 @@ class ClickModifierTest : public InProcessBrowserTest {
 
   // Returns a url that follows a simple link when clicked, unless affected by
   // modifiers.
-  GURL GetHrefURL() {
+  GURL GetHrefURL() const {
     return ui_test_utils::GetTestUrl(
         base::FilePath(kTestDir),
         base::FilePath(FILE_PATH_LITERAL("href.html")));
   }
 
-  base::string16 GetFirstPageTitle() { return ASCIIToUTF16(kFirstPageTitle); }
+  base::string16 GetFirstPageTitle() const {
+    return ASCIIToUTF16(kFirstPageTitle);
+  }
 
-  base::string16 GetSecondPageTitle() { return ASCIIToUTF16(kSecondPageTitle); }
+  base::string16 GetSecondPageTitle() const {
+    return ASCIIToUTF16(kSecondPageTitle);
+  }
 
   // Loads our test page and simulates a single click using the supplied button
   // and modifiers.  The click will cause either a navigation or the creation of
@@ -2270,9 +2281,6 @@ class ClickModifierTest : public InProcessBrowserTest {
       EXPECT_EQ(GetFirstPageTitle(), web_contents->GetTitle());
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClickModifierTest);
 };
 
 // Tests for clicking on elements with handlers that run window.open.

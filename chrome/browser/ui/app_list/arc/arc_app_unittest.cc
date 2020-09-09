@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -105,6 +104,9 @@ constexpr int kFrameworkPiVersion = 28;
 class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
  public:
   FakeAppIconLoaderDelegate() = default;
+  FakeAppIconLoaderDelegate(const FakeAppIconLoaderDelegate&) = delete;
+  FakeAppIconLoaderDelegate& operator=(const FakeAppIconLoaderDelegate&) =
+      delete;
   ~FakeAppIconLoaderDelegate() override = default;
 
   void OnAppImageUpdated(const std::string& app_id,
@@ -137,8 +139,6 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
   std::string app_id_;
   gfx::ImageSkia image_;
   base::OnceClosure icon_updated_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppIconLoaderDelegate);
 };
 
 ArcAppIconDescriptor GetAppListIconDescriptor(ui::ScaleFactor scale_factor) {
@@ -283,6 +283,8 @@ class ArcAppModelBuilderTest
           features::kDesktopPWAsWithoutExtensions);
     }
   }
+  ArcAppModelBuilderTest(const ArcAppModelBuilderTest&) = delete;
+  ArcAppModelBuilderTest& operator=(const ArcAppModelBuilderTest&) = delete;
   ~ArcAppModelBuilderTest() override {
     // Release profile file in order to keep right sequence.
     profile_.reset();
@@ -680,13 +682,14 @@ class ArcAppModelBuilderTest
   std::unique_ptr<ChromeLauncherController> launcher_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
   bool should_flush_for_app_service_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppModelBuilderTest);
 };
 
 class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
  public:
   ArcAppModelBuilderRecreate() = default;
+  ArcAppModelBuilderRecreate(const ArcAppModelBuilderRecreate&) = delete;
+  ArcAppModelBuilderRecreate& operator=(const ArcAppModelBuilderRecreate&) =
+      delete;
   ~ArcAppModelBuilderRecreate() override = default;
 
  protected:
@@ -716,15 +719,14 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
     arc::ArcPackageSyncableServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(), BrowserContextKeyedServiceFactory::TestingFactory());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppModelBuilderRecreate);
 };
 
 class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
                             public ArcAppListPrefs::Observer {
  public:
   ArcAppModelIconTest() = default;
+  ArcAppModelIconTest(const ArcAppModelIconTest&) = delete;
+  ArcAppModelIconTest& operator=(const ArcAppModelIconTest&) = delete;
   ~ArcAppModelIconTest() override = default;
 
   void SetUp() override {
@@ -817,13 +819,13 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure icon_update_callback_;
   int icon_updated_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppModelIconTest);
 };
 
 class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
  public:
   ArcDefaultAppTest() = default;
+  ArcDefaultAppTest(const ArcDefaultAppTest&) = delete;
+  ArcDefaultAppTest& operator=(const ArcDefaultAppTest&) = delete;
   ~ArcDefaultAppTest() override = default;
 
   void SetUp() override { ArcAppModelBuilderRecreate::SetUp(); }
@@ -838,14 +840,15 @@ class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
 
   // Returns true if test needs to wait for default apps on setup.
   virtual bool IsWaitDefaultAppsNeeded() const { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcDefaultAppTest);
 };
 
 class ArcAppLauncherForDefaultAppTest : public ArcDefaultAppTest {
  public:
   ArcAppLauncherForDefaultAppTest() = default;
+  ArcAppLauncherForDefaultAppTest(const ArcAppLauncherForDefaultAppTest&) =
+      delete;
+  ArcAppLauncherForDefaultAppTest& operator=(
+      const ArcAppLauncherForDefaultAppTest&) = delete;
   ~ArcAppLauncherForDefaultAppTest() override = default;
 
   void SetUp() override {
@@ -856,14 +859,13 @@ class ArcAppLauncherForDefaultAppTest : public ArcDefaultAppTest {
  protected:
   // ArcDefaultAppTest:
   bool IsWaitDefaultAppsNeeded() const override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppLauncherForDefaultAppTest);
 };
 
 class ArcPlayStoreAppTest : public ArcDefaultAppTest {
  public:
   ArcPlayStoreAppTest() = default;
+  ArcPlayStoreAppTest(const ArcPlayStoreAppTest&) = delete;
+  ArcPlayStoreAppTest& operator=(const ArcPlayStoreAppTest&) = delete;
   ~ArcPlayStoreAppTest() override = default;
 
  protected:
@@ -900,13 +902,15 @@ class ArcPlayStoreAppTest : public ArcDefaultAppTest {
 
  private:
   scoped_refptr<extensions::Extension> arc_support_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreAppTest);
 };
 
 class ArcDefaultAppForManagedUserTest : public ArcPlayStoreAppTest {
  public:
   ArcDefaultAppForManagedUserTest() = default;
+  ArcDefaultAppForManagedUserTest(const ArcDefaultAppForManagedUserTest&) =
+      delete;
+  ArcDefaultAppForManagedUserTest& operator=(
+      const ArcDefaultAppForManagedUserTest&) = delete;
   ~ArcDefaultAppForManagedUserTest() override = default;
 
  protected:
@@ -933,9 +937,6 @@ class ArcDefaultAppForManagedUserTest : public ArcPlayStoreAppTest {
 
     ArcPlayStoreAppTest::OnBeforeArcTestSetup();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcDefaultAppForManagedUserTest);
 };
 
 TEST_P(ArcAppModelBuilderTest, ArcPackagePref) {

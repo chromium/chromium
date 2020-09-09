@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -85,6 +84,8 @@ class TestingOmniboxView : public OmniboxViewViews {
   TestingOmniboxView(OmniboxEditController* controller,
                      TestLocationBarModel* location_bar_model,
                      std::unique_ptr<OmniboxClient> client);
+  TestingOmniboxView(const TestingOmniboxView&) = delete;
+  TestingOmniboxView& operator=(const TestingOmniboxView&) = delete;
 
   using views::Textfield::GetRenderText;
 
@@ -166,8 +167,6 @@ class TestingOmniboxView : public OmniboxViewViews {
 
   // SetEmphasis() logs whether the base color of the text is emphasized.
   bool base_text_emphasis_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingOmniboxView);
 };
 
 TestingOmniboxView::TestingOmniboxView(OmniboxEditController* controller,
@@ -441,6 +440,9 @@ class TestingOmniboxEditController : public ChromeOmniboxEditController {
                                LocationBarModel* location_bar_model)
       : ChromeOmniboxEditController(command_updater),
         location_bar_model_(location_bar_model) {}
+  TestingOmniboxEditController(const TestingOmniboxEditController&) = delete;
+  TestingOmniboxEditController& operator=(const TestingOmniboxEditController&) =
+      delete;
 
   void set_omnibox_view(OmniboxViewViews* view) { omnibox_view_ = view; }
 
@@ -461,8 +463,6 @@ class TestingOmniboxEditController : public ChromeOmniboxEditController {
 
   LocationBarModel* location_bar_model_;
   OmniboxViewViews* omnibox_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingOmniboxEditController);
 };
 
 }  // namespace
@@ -508,6 +508,8 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   OmniboxViewViewsTest()
       : OmniboxViewViewsTest(std::vector<FeatureAndParams>(),
                              std::vector<base::Feature>()) {}
+  OmniboxViewViewsTest(const OmniboxViewViewsTest&) = delete;
+  OmniboxViewViewsTest& operator=(const OmniboxViewViewsTest&) = delete;
 
   TestLocationBarModel* location_bar_model() { return &location_bar_model_; }
   CommandUpdaterImpl* command_updater() { return &command_updater_; }
@@ -581,8 +583,6 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   TestingOmniboxView* omnibox_view_;
 
   std::unique_ptr<views::TextfieldTestApi> test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxViewViewsTest);
 };
 
 OmniboxViewViewsTest::OmniboxViewViewsTest(

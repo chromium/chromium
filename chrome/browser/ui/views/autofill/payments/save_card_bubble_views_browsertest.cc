@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -139,6 +138,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
  protected:
   SaveCardBubbleViewsFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
+ public:
+  SaveCardBubbleViewsFullFormBrowserTest(
+      const SaveCardBubbleViewsFullFormBrowserTest&) = delete;
+  SaveCardBubbleViewsFullFormBrowserTest& operator=(
+      const SaveCardBubbleViewsFullFormBrowserTest&) = delete;
+
+ protected:
   ~SaveCardBubbleViewsFullFormBrowserTest() override = default;
 
   // Various events that can be waited on by the DialogEventWaiter.
@@ -814,8 +820,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
   std::unique_ptr<net::FakeURLFetcherFactory> url_fetcher_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleViewsFullFormBrowserTest);
 };
 
 // TODO(crbug.com/932818): Remove this class after experiment flag is cleaned
@@ -1123,6 +1127,13 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
         /*disabled_features=*/{});
   }
 
+ public:
+  SaveCardBubbleViewsSyncTransportFullFormBrowserTest(
+      const SaveCardBubbleViewsSyncTransportFullFormBrowserTest&) = delete;
+  SaveCardBubbleViewsSyncTransportFullFormBrowserTest& operator=(
+      const SaveCardBubbleViewsSyncTransportFullFormBrowserTest&) = delete;
+
+ protected:
   void SetUpInProcessBrowserTestFixture() override {
     test_signin_client_factory_ =
         secondary_account_helper::SetUpSigninClient(test_url_loader_factory());
@@ -1149,8 +1160,6 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
   base::test::ScopedFeatureList feature_list_;
   secondary_account_helper::ScopedSigninClientFactory
       test_signin_client_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleViewsSyncTransportFullFormBrowserTest);
 };
 
 // Tests the upload save bubble. Ensures that clicking the [Save] button

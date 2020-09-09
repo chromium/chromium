@@ -113,6 +113,10 @@ class FlashContentSettingsChangeWaiter : public content_settings::Observer {
       : profile_(profile) {
     HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
   }
+  FlashContentSettingsChangeWaiter(const FlashContentSettingsChangeWaiter&) =
+      delete;
+  FlashContentSettingsChangeWaiter& operator=(
+      const FlashContentSettingsChangeWaiter&) = delete;
   ~FlashContentSettingsChangeWaiter() override {
     HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
         this);
@@ -135,8 +139,6 @@ class FlashContentSettingsChangeWaiter : public content_settings::Observer {
 
   Profile* profile_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlashContentSettingsChangeWaiter);
 };
 #endif
 
@@ -157,6 +159,9 @@ class ContentSettingSourceSetter {
         host_content_settings_map_(
             HostContentSettingsMapFactory::GetForProfile(profile)),
         content_type_(content_type) {}
+  ContentSettingSourceSetter(const ContentSettingSourceSetter&) = delete;
+  ContentSettingSourceSetter& operator=(const ContentSettingSourceSetter&) =
+      delete;
 
   void SetPolicyDefault(ContentSetting setting) {
     prefs_->SetManagedPref(GetPrefNameForDefaultPermissionSetting(),
@@ -178,8 +183,6 @@ class ContentSettingSourceSetter {
   sync_preferences::TestingPrefServiceSyncable* prefs_;
   HostContentSettingsMap* host_content_settings_map_;
   ContentSettingsType content_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSourceSetter);
 };
 
 class SiteSettingsHandlerTest : public testing::Test {
@@ -1612,7 +1615,10 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   SiteSettingsHandlerInfobarTest()
       : kNotifications(site_settings::ContentSettingsTypeToGroupName(
             ContentSettingsType::NOTIFICATIONS)) {}
-
+  SiteSettingsHandlerInfobarTest(const SiteSettingsHandlerInfobarTest&) =
+      delete;
+  SiteSettingsHandlerInfobarTest& operator=(
+      const SiteSettingsHandlerInfobarTest&) = delete;
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     handler_ = std::make_unique<SiteSettingsHandler>(profile(), app_registrar_);
@@ -1667,8 +1673,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   std::unique_ptr<SiteSettingsHandler> handler_;
   std::unique_ptr<BrowserWindow> window2_;
   std::unique_ptr<Browser> browser2_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteSettingsHandlerInfobarTest);
 };
 
 TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
