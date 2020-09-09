@@ -816,4 +816,300 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                                         server_.GetURL("a.test", "/issue"))));
 }
 
+// Redemption should fail when there are no keys for the issuer.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresKeys) {
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  EXPECT_EQ("InvalidStateError",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption' } })
+        .then(() => 'Success')
+        .catch(err => err.name); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+}
+
+// Redemption should fail when there are no tokens to redeem.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresTokens) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  EXPECT_EQ("OperationError",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption' } })
+        .then(() => 'Success')
+        .catch(err => err.name); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+}
+
+// When we have tokens for one issuer A, redemption against a different issuer B
+// should still fail if we don't have any tokens for B.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       RedemptionWithoutTokensForDesiredIssuerFails) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test", "b.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/issue"))));
+
+  EXPECT_EQ("OperationError",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption' } })
+        .then(() => 'Success')
+        .catch(err => err.name); )",
+                                      server_.GetURL("b.test", "/redeem"))));
+}
+
+// When the server rejects redemption, the client-side redemption operation
+// should fail.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       CorrectlyReportsServerErrorDuringRedemption) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  EXPECT_EQ("Success", EvalJs(shell(), R"(fetch('/issue',
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )"));
+
+  // Send a redemption request to the issuance endpoint, which should error out
+  // for the obvious reason that it isn't an issuance request:
+  EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
+        { trustToken: { type: 'srr-token-redemption' } })
+        .then(() => 'Success')
+        .catch(err => err.name); )"));
+}
+
+// After a successful issuance and redemption, a subsequent redemption against
+// the same issuer should hit the signed redemption record (SRR) cache.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       RedemptionHitsRedemptionRecordCache) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/issue"))));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+
+  EXPECT_EQ("NoModificationAllowedError",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption' } })
+        .catch(err => err.name); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+}
+
+// Redemption with `refresh-policy: 'refresh'` from an issuer context should
+// succeed, overwriting the existing SRR.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       RefreshPolicyRefreshWorksInIssuerContext) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/issue"))));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption',
+                        refreshPolicy: 'refresh' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+}
+
+// Redemption with `refresh-policy: 'refresh'` from a non-issuer context should
+// fail.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       RefreshPolicyRefreshRequiresIssuerContext) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"b.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  // Execute the operations against issuer https://b.test:<port> from a
+  // different context; attempting to use refreshPolicy: 'refresh' should error.
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("b.test", "/issue"))));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("b.test", "/redeem"))));
+
+  EXPECT_EQ("InvalidStateError",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'srr-token-redemption',
+                        refreshPolicy: 'refresh' } })
+        .then(()=>'Success').catch(err => err.name); )",
+                                      server_.GetURL("b.test", "/redeem"))));
+}
+
+// When a redemption request is made in cors mode, a cross-origin redirect from
+// issuer A to issuer B should result in a new redemption request to issuer B,
+// failing if there are no issuer B tokens.
+//
+// Note: For more on the interaction between Trust Tokens and redirects, see the
+// "Handling redirects" section in the design doc
+// https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.5erfr3uo012t
+IN_PROC_BROWSER_TEST_F(
+    TrustTokenBrowsertest,
+    CorsModeCrossOriginRedirectRedemptionUsesNewOriginAsIssuer) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test", "b.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  // Obtain both https://a.test:<PORT> and https://b.test:<PORT> tokens, the
+  // former for the initial redemption request to https://a.test:<PORT> and the
+  // latter for the fresh post-redirect redemption request to
+  // https://b.test:<PORT>.
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/issue"))));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("b.test", "/issue"))));
+
+  // On the redemption request, `mode: 'cors'` (the default) has the effect that
+  // that redirecting a request will renew the request's Trust Tokens state.
+  EXPECT_EQ("Success", EvalJs(shell(), R"(
+      fetch('/cross-site/b.test/redeem',
+        { trustToken: { mode: 'cors', type: 'srr-token-redemption' } })
+        .then(()=>'Success'); )"));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(
+      fetch('/sign',
+        { trustToken: { type: 'send-srr', issuers: [$1],
+          signRequestData: 'headers-only' } }).then(()=>'Success');)",
+                                      IssuanceOriginFromHost("b.test"))));
+
+  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(
+      fetch('/sign',
+        { trustToken: { type: 'send-srr', issuers: [$1],
+          signRequestData: 'headers-only' } }).then(()=>'Success');)",
+                                      IssuanceOriginFromHost("a.test"))));
+
+  // There shouldn't have been an a.test SRR attached to the request.
+  EXPECT_TRUE(request_handler_.LastVerificationError());
+}
+
+// When a redemption request is made in no-cors mode, a cross-origin redirect
+// from issuer A to issuer B should result in recycling the original redemption
+// request, obtaining an issuer A SRR on success.
+//
+// Note: This isn't necessarily the behavior we'll end up wanting here; the test
+// serves to document how redemption and redirects currently interact.  For more
+// on the interaction between Trust Tokens and redirects, see the "Handling
+// redirects" section in the design doc
+// https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.5erfr3uo012t
+IN_PROC_BROWSER_TEST_F(
+    TrustTokenBrowsertest,
+    NoCorsModeCrossOriginRedirectRedemptionUsesOriginalOriginAsIssuer) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  EXPECT_EQ("Success", EvalJs(shell(), R"(
+      fetch('/issue',
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )"));
+
+  // `mode: 'no-cors'` on redemption has the effect that that redirecting a
+  // request will maintain the request's Trust Tokens state.
+  EXPECT_EQ("Success", EvalJs(shell(), R"(
+      fetch('/cross-site/b.test/redeem',
+        { mode: 'no-cors',
+          trustToken: { type: 'srr-token-redemption' } })
+        .then(()=>'Success'); )"));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(
+      fetch('/sign',
+        { trustToken: { type: 'send-srr', issuers: [$1],
+          signRequestData: 'headers-only' } })
+        .then(()=>'Success'); )",
+                                      IssuanceOriginFromHost("a.test"))));
+
+  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(
+      fetch('/sign',
+        { trustToken: { type: 'send-srr', issuers: [$1],
+          signRequestData: 'headers-only' } })
+        .then(()=>'Success'); )",
+                                      IssuanceOriginFromHost("b.test"))));
+
+  // There shouldn't have been an a.test SRR attached to the request.
+  EXPECT_TRUE(request_handler_.LastVerificationError());
+}
+
+// When a redemption request is made in no-cors mode, a cross-origin redirect
+// from issuer A to issuer B should result in recycling the original redemption
+// request and, in particular, sending the same token.
+//
+// Note: This isn't necessarily the behavior we'll end up wanting here; the test
+// serves to document how redemption and redirects currently interact.
+IN_PROC_BROWSER_TEST_F(
+    TrustTokenBrowsertest,
+    NoCorsModeCrossOriginRedirectRedemptionRecyclesSameRedemptionRequest) {
+  // Have issuance provide only a single token so that, if the redemption logic
+  // searches for a new token after redirect, the redemption will fail.
+  TrustTokenRequestHandler::Options options;
+  options.batch_size = 1;
+  request_handler_.UpdateOptions(std::move(options));
+
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  EXPECT_EQ("Success", EvalJs(shell(), R"(
+      fetch('/issue',
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )"));
+
+  // The redemption should succeed after the redirect, yielding an a.test SRR
+  // (the SRR correctly corresponding to a.test is covered by a prior test
+  // case).
+  EXPECT_EQ("Success", EvalJs(shell(), R"(
+      fetch('/cross-site/b.test/redeem',
+        { mode: 'no-cors',
+          trustToken: { type: 'srr-token-redemption' } })
+        .then(()=>'Success'); )"));
+}
+
 }  // namespace content
