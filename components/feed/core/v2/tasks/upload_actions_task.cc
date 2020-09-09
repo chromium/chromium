@@ -111,8 +111,11 @@ UploadActionsTask::UploadActionsTask(
       upload_now_(upload_now),
       wire_action_(std::move(action)),
       callback_(std::move(callback)) {
-  wire_action_->mutable_client_data()->set_timestamp_seconds(
+  auto* client_data = wire_action_->mutable_client_data();
+  client_data->set_timestamp_seconds(
       (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
+  client_data->set_action_surface(
+      feedwire::FeedAction::ClientData::ANDROID_CHROME_NEW_TAB);
 }
 
 UploadActionsTask::UploadActionsTask(
