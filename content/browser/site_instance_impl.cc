@@ -42,6 +42,10 @@ GURL SchemeAndHostToSite(const std::string& scheme, const std::string& host) {
   return GURL(scheme + url::kStandardSchemeSeparator + host);
 }
 
+// Constant used to mark two call sites that must always agree on whether
+// the default SiteInstance is allowed.
+constexpr bool kCreateForURLAllowsDefaultSiteInstance = true;
+
 }  // namespace
 
 int32_t SiteInstanceImpl::next_site_instance_id_ = 1;
@@ -61,6 +65,13 @@ const GURL& SiteInstanceImpl::GetDefaultSiteURL() {
 SiteInfo SiteInfo::CreateForErrorPage() {
   return SiteInfo(GURL(content::kUnreachableWebDataURL),
                   GURL(content::kUnreachableWebDataURL),
+                  false /* is_origin_keyed */);
+}
+
+// static
+SiteInfo SiteInfo::CreateForDefaultSiteInstance() {
+  return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
+                  SiteInstanceImpl::GetDefaultSiteURL(),
                   false /* is_origin_keyed */);
 }
 
@@ -165,8 +176,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForURL(
 
   // Note: The |allow_default_instance| value used here MUST match the value
   // used in DoesSiteForURLMatch().
-  return instance->GetSiteInstanceForURL(url,
-                                         true /* allow_default_instance */);
+  return instance->GetSiteInstanceForURL(
+      url, kCreateForURLAllowsDefaultSiteInstance);
 }
 
 // static
@@ -470,6 +481,14 @@ void SiteInstanceImpl::SetSite(const GURL& url) {
       url, /* allow_default_instance */ false));
 }
 
+void SiteInstanceImpl::SetSiteInfoToDefault() {
+  TRACE_EVENT1("navigation", "SiteInstanceImpl::SetSiteInfoToDefault",
+               "site id", id_);
+  DCHECK(!has_site_);
+  original_url_ = GetDefaultSiteURL();
+  SetSiteInfoInternal(SiteInfo::CreateForDefaultSiteInstance());
+}
+
 void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   // TODO(acolwell): Add logic to validate |site_url| and |lock_url| are valid.
   DCHECK(!has_site_);
@@ -718,12 +737,10 @@ bool SiteInstanceImpl::IsSameSiteWithURL(const GURL& url) {
     // prevent SiteInstances with no site URL from being used for URLs
     // that should be routed to the default SiteInstance.
     DCHECK_EQ(site_info_.site_url(), GetDefaultSiteURL());
-    return site_info_.site_url() ==
-               GetSiteForURLInternal(GetIsolationContext(), url,
-                                     true /* should_use_effective_urls */,
-                                     true /* allow_default_site_url */) &&
-           !browsing_instance_->HasSiteInstance(
-               ComputeSiteInfo(GetIsolationContext(), url));
+    auto site_info = ComputeSiteInfo(GetIsolationContext(), url);
+    return CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url,
+                                            site_info) &&
+           !browsing_instance_->HasSiteInstance(site_info);
   }
 
   return SiteInstanceImpl::IsSameSite(GetIsolationContext(),
@@ -942,22 +959,13 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
 }
 
 bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const GURL& url) {
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  bool is_origin_keyed = policy->ShouldOriginGetOptInIsolation(
-      GetIsolationContext(), url::Origin::Create(url));
+  auto site_info = ComputeSiteInfo(GetIsolationContext(), url);
+  if (kCreateForURLAllowsDefaultSiteInstance &&
+      CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url, site_info)) {
+    site_info = SiteInfo::CreateForDefaultSiteInstance();
+  }
 
-  // Note: The |allow_default_site_url| value used here MUST match the value
-  // used in CreateForURL().  This is why we can't use ComputeSiteInfo() or
-  // even DetermineProcessLockURL() here, which do not allow the default site
-  // URL.
-  return site_info_ ==
-         SiteInfo(GetSiteForURLInternal(GetIsolationContext(), url,
-                                        true /* should_use_effective_urls */,
-                                        true /* allow_default_site_url */),
-                  GetSiteForURLInternal(GetIsolationContext(), url,
-                                        false /* should_use_effective_urls */,
-                                        true /* allow_default_site_url */),
-                  is_origin_keyed);
+  return site_info_ == site_info;
 }
 
 void SiteInstanceImpl::PreventOptInOriginIsolation(
@@ -1029,24 +1037,21 @@ GURL SiteInstanceImpl::DetermineProcessLockURL(
   // For the process lock URL, convert |url| to a site without resolving |url|
   // to an effective URL.
   return SiteInstanceImpl::GetSiteForURLInternal(
-      isolation_context, url, false /* should_use_effective_urls */,
-      false /* allow_default_site_url */);
+      isolation_context, url, false /* should_use_effective_urls */);
 }
 
 // static
 GURL SiteInstanceImpl::GetSiteForURL(const IsolationContext& isolation_context,
                                      const GURL& real_url) {
   return GetSiteForURLInternal(isolation_context, real_url,
-                               true /* should_use_effective_urls */,
-                               false /* allow_default_site_url */);
+                               true /* should_use_effective_urls */);
 }
 
 // static
 GURL SiteInstanceImpl::GetSiteForURLInternal(
     const IsolationContext& isolation_context,
     const GURL& real_url,
-    bool should_use_effective_urls,
-    bool allow_default_site_url) {
+    bool should_use_effective_urls) {
   // Explicitly group chrome-error: URLs based on their host component.
   // These URLs are special because we want to group them like other URLs
   // with a host even though they are considered "no access" and
@@ -1132,12 +1137,6 @@ GURL SiteInstanceImpl::GetSiteForURLInternal(
     }
   }
 
-  // We should never get here if we're origin_keyed, otherwise we would have
-  // returned after the GetMatchingIsolatedOrigin() call above.
-  if (allow_default_site_url &&
-      CanBePlacedInDefaultSiteInstance(isolation_context, real_url, site_url)) {
-    return GetDefaultSiteURL();
-  }
   return site_url;
 }
 
@@ -1145,7 +1144,7 @@ GURL SiteInstanceImpl::GetSiteForURLInternal(
 bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
     const IsolationContext& isolation_context,
     const GURL& url,
-    const GURL& site_url) {
+    const SiteInfo& site_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!base::FeatureList::IsEnabled(
@@ -1178,7 +1177,8 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
 
   // Allow the default SiteInstance to be used for sites that don't need to be
   // isolated in their own process.
-  return !DoesSiteURLRequireDedicatedProcess(isolation_context, site_url);
+  return !DoesSiteURLRequireDedicatedProcess(isolation_context,
+                                             site_info.site_url());
 }
 
 // static

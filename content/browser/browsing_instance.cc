@@ -108,15 +108,15 @@ bool BrowsingInstance::TrySettingDefaultSiteInstance(
   DCHECK(!site_instance->HasSite());
   const SiteInfo site_info = ComputeSiteInfoForURL(url);
   if (default_site_instance_ ||
-      !SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
-          isolation_context_, url, site_info.site_url())) {
+      !SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(isolation_context_,
+                                                          url, site_info)) {
     return false;
   }
 
   // Note: |default_site_instance_| must be set before SetSite() call to
   // properly trigger default SiteInstance behavior inside that method.
   default_site_instance_ = site_instance;
-  site_instance->SetSite(SiteInstanceImpl::GetDefaultSiteURL());
+  site_instance->SetSiteInfoToDefault();
   site_url_set_.insert(site_info.site_url());
   return true;
 }
@@ -132,8 +132,8 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
   // Check to see if we can use the default SiteInstance for sites that don't
   // need to be isolated in their own process.
   if (allow_default_instance &&
-      SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
-          isolation_context_, url, site_info.site_url())) {
+      SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(isolation_context_,
+                                                         url, site_info)) {
     DCHECK(!default_process_);
     scoped_refptr<SiteInstanceImpl> site_instance = default_site_instance_;
     if (!site_instance) {
@@ -148,7 +148,7 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
       // calls RegisterSiteInstance().
       default_site_instance_ = site_instance.get();
 
-      site_instance->SetSite(SiteInstanceImpl::GetDefaultSiteURL());
+      site_instance->SetSiteInfoToDefault();
     }
 
     // Add |site_url| to the set so we can keep track of all the sites the
