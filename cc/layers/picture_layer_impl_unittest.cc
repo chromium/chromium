@@ -6412,20 +6412,6 @@ TEST_P(LCDTextTest, Filter) {
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no filter");
 }
 
-TEST_P(LCDTextTest, BackdropFilter) {
-  FilterOperations backdrop_filter;
-  backdrop_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
-  SetBackdropFilter(descendant_, backdrop_filter);
-  CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
-                     "backdrop-filter", layer_);
-  CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "backdrop-filter",
-                     descendant_);
-
-  SetBackdropFilter(descendant_, FilterOperations());
-  CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no backdrop-filter",
-                     layer_);
-}
-
 TEST_P(LCDTextTest, ContentsOpaqueForText) {
   layer_->SetContentsOpaque(false);
   layer_->SetBackgroundColor(SK_ColorGREEN);

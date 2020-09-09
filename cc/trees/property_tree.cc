@@ -781,17 +781,6 @@ void EffectTree::UpdateOnlyDrawsVisibleContent(EffectNode* node,
   }
 }
 
-void EffectTree::UpdateNodesAffectedByBackdropEffect(EffectNode* node) {
-  node->affected_by_backdrop_effect = false;
-  const bool has_backdrop_effect = !node->backdrop_filters.IsEmpty() ||
-                                   node->blend_mode != SkBlendMode::kSrcOver;
-  if (!has_backdrop_effect)
-    return;
-
-  for (int i = node->target_id; i < node->id; ++i)
-    Node(i)->affected_by_backdrop_effect = true;
-}
-
 void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
   if (!effect_node->HasRenderSurface()) {
     effect_node->surface_contents_scale = gfx::Vector2dF(1.0f, 1.0f);
@@ -879,7 +868,6 @@ void EffectTree::UpdateEffects(int id) {
   UpdateHasMaskingChild(node, parent_node);
   UpdateOnlyDrawsVisibleContent(node, parent_node);
   UpdateSurfaceContentsScale(node);
-  UpdateNodesAffectedByBackdropEffect(node);
 }
 
 void EffectTree::AddCopyRequest(

@@ -873,8 +873,7 @@ LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
     return LCDTextDisallowedReason::kTransformAnimation;
 
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
-  if (effect_node->node_or_ancestor_has_filters ||
-      effect_node->affected_by_backdrop_effect)
+  if (effect_node->node_or_ancestor_has_filters)
     return LCDTextDisallowedReason::kPixelOrColorEffect;
 
   return LCDTextDisallowedReason::kNone;

@@ -132,10 +132,6 @@ struct CC_EXPORT EffectNode {
   bool is_fast_rounded_corner : 1;
   // If the node or it's parent has the filters, it sets to true.
   bool node_or_ancestor_has_filters : 1;
-  // All node in the subtree starting from the containing render surface, and
-  // before the backdrop effect node in pre tree order.
-  // The backdrop effects include backdrop filters and exotic blend modes.
-  bool affected_by_backdrop_effect: 1;
   // RenderSurfaceReason::kNone if this effect node should not create a render
   // surface, or the reason that this effect node should create one.
   RenderSurfaceReason render_surface_reason;
