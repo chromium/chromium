@@ -50,7 +50,7 @@ struct __declspec(uuid("EA868415-A724-40BC-950A-C7DB6B1723C6"))
 // removed in 10.0.19041.0 SDK, so are included here conditionally
 #ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
 template <>
-struct __declspec(uuid("968b9665-06ed-5744-8f53-8edeabd5f7b5"))
+struct __declspec(uuid("968b9665-06ed-5774-8f53-8edeabd5f7b5"))
     IAsyncOperation<int> : IAsyncOperation_impl<int> {};
 
 template <>
