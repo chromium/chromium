@@ -27,7 +27,7 @@ async_test(function(t) {
     document.body.offsetTop;
 
     var animation = document.body.getAnimations()[0];
-    setTimeout(function() {
+    requestAnimationFrame(function() {
       if (animation.playState === 'pending') {
         var passed = false;
         document.body.addEventListener('animationstart', function() {
@@ -47,7 +47,7 @@ async_test(function(t) {
         // pass even if the implementation is incorrect.
         t.done();
       }
-    }, 0);
+    });
   });
 });
 </script>

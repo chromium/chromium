@@ -41,7 +41,7 @@
 
     var t = async_test('An animation which is initially paused produces the correct output when first created, and can be unpaused.');
 
-    setTimeout(t.step_func(() => { // this set timeout should be ok in the test environment
+    requestAnimationFrame(t.step_func(() => {
       assert_equals(getComputedStyle(animation1).left, '570px');
       assert_equals(getComputedStyle(animation2).left, '100px');
       assert_equals(getComputedStyle(animation3).left, '0px');
@@ -56,7 +56,7 @@
       assert_equals(getComputedStyle(animation1).left, '570px');
       assert_equals(getComputedStyle(animation2).left, '100px');
       assert_equals(getComputedStyle(animation3).left, '0px');
-    }), 102); // arbitrary
+    }));
 
     function finished() {
       var left1 = parseFloat(getComputedStyle(animation1).left);
