@@ -332,7 +332,8 @@ const SelectionInDOMTree AXSelection::AsSelection(
 
 void AXSelection::UpdateSelectionIfNecessary() {
   Document* document = base_.ContainerObject()->GetDocument();
-  DCHECK(document);
+  if (!document)
+    return;
 
   LocalFrameView* view = document->View();
   if (!view || !view->LayoutPending())
@@ -397,13 +398,9 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
     return false;
   }
 
-  // If the anchor or focus is removed during the "selectstart" event, do
-  // not proceed.
-  if (base_.ContainerObject()->IsDetached() ||
-      extent_.ContainerObject()->IsDetached())
-    return false;
-
   UpdateSelectionIfNecessary();
+  if (!IsValid())
+    return false;
 
   // Dispatching the "selectstart" event could potentially change the document
   // associated with the current frame.
