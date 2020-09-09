@@ -594,12 +594,18 @@ WebInputEventResult WebViewImpl::HandleGestureEvent(
       if (!MainFrameImpl() || !MainFrameImpl()->GetFrameView())
         break;
 
-      if (event.GetType() == WebInputEvent::Type::kGestureLongTap &&
-          !MainFrameImpl()
-               ->GetFrame()
-               ->GetEventHandler()
-               .LongTapShouldInvokeContextMenu())
-        break;
+      if (event.GetType() == WebInputEvent::Type::kGestureLongTap) {
+        if (LocalFrame* inner_frame =
+                targeted_event.GetHitTestResult().InnerNodeFrame()) {
+          if (!inner_frame->GetEventHandler().LongTapShouldInvokeContextMenu())
+            break;
+        } else if (!MainFrameImpl()
+                        ->GetFrame()
+                        ->GetEventHandler()
+                        .LongTapShouldInvokeContextMenu()) {
+          break;
+        }
+      }
 
       page_->GetContextMenuController().ClearContextMenu();
       {

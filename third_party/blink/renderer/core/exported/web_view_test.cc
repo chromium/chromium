@@ -5995,4 +5995,51 @@ TEST_F(WebViewTest, UpdateTargetURLWithInvalidURL) {
   EXPECT_EQ(invalid_kurl, web_view->target_url_);
 }
 
+// Regression test for https://crbug.com/1112987
+TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
+  RegisterMockedHttpURLLoad("long_press_link_in_iframe.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_link_in_iframe.html");
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->MainFrameWidget()->Resize(WebSize(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  Document* document = frame->GetFrame()->GetDocument();
+  Element* child_frame = document->getElementById("childframe");
+  DCHECK(child_frame);
+  Document* child_document =
+      To<HTMLIFrameElement>(child_frame)->contentDocument();
+  Element* anchor = child_document->getElementById("anchorTag");
+  IntPoint center =
+      To<WebLocalFrameImpl>(
+          web_view->MainFrame()->FirstChild()->ToWebLocalFrame())
+          ->GetFrameView()
+          ->FrameToScreen(anchor->GetLayoutObject()->AbsoluteBoundingBoxRect())
+          .Center();
+  WebGestureEvent event(WebInputEvent::Type::kGestureLongPress,
+                        WebInputEvent::kNoModifiers,
+                        WebInputEvent::GetStaticTimeStampForTests(),
+                        WebGestureDevice::kTouchscreen);
+  event.SetPositionInWidget(gfx::PointF(center.X(), center.X()));
+
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            web_view->MainFrameWidget()->HandleInputEvent(
+                WebCoalescedInputEvent(event, ui::LatencyInfo())));
+
+  WebGestureEvent tap_event(WebInputEvent::Type::kGestureLongTap,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests(),
+                            WebGestureDevice::kTouchscreen);
+  tap_event.SetPositionInWidget(gfx::PointF(center.X(), center.X()));
+
+  EXPECT_EQ(WebInputEventResult::kNotHandled,
+            web_view->MainFrameWidget()->HandleInputEvent(
+                WebCoalescedInputEvent(tap_event, ui::LatencyInfo())));
+  EXPECT_EQ("anchor contextmenu",
+            web_view->MainFrameImpl()->GetDocument().Title());
+}
+
 }  // namespace blink
