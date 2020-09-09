@@ -49,8 +49,6 @@ void PrerenderRenderFrameObserver::SetIsPrerendering(
       prerender_helper = new prerender::PrerenderHelper(render_frame(), mode,
                                                         histogram_prefix);
     }
-
-    prerender_helper->SetIsPrerendering(mode, histogram_prefix);
   }
 
   prerender::PrerenderObserverList::SetIsPrerenderingForFrame(render_frame(),

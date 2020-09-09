@@ -49,7 +49,7 @@ std::unique_ptr<blink::URLLoaderThrottle> PrerenderHelper::MaybeCreateThrottle(
   auto throttle = std::make_unique<PrerenderURLLoaderThrottle>(
       prerender_helper->prerender_mode(), prerender_helper->histogram_prefix(),
       std::move(canceler));
-  prerender_helper->AddThrottle(throttle->AsWeakPtr());
+  prerender_helper->AddThrottle(*throttle);
   return throttle;
 }
 
@@ -85,39 +85,16 @@ void PrerenderHelper::OnDestruct() {
   delete this;
 }
 
-void PrerenderHelper::SetIsPrerendering(prerender::mojom::PrerenderMode mode,
-                                        const std::string& histogram_prefix) {
-  // Immediately after construction, |this| may receive the message that
-  // triggered its creation.  If so, ignore it.
-  if (mode != prerender::mojom::PrerenderMode::kNoPrerender)
-    return;
-
-  std::vector<base::WeakPtr<PrerenderURLLoaderThrottle>> throttles =
-      std::move(throttles_);
-
-  // |this| must be deleted so PrerenderHelper::IsPrerendering returns false
-  // when the visibility state is updated, so the visibility state string will
-  // not be "prerendered".
-  delete this;
-
-  for (auto& throttle : throttles) {
-    if (throttle)
-      throttle->PrerenderUsed();
-  }
-}
-
-void PrerenderHelper::AddThrottle(
-    const base::WeakPtr<PrerenderURLLoaderThrottle>& throttle) {
+void PrerenderHelper::AddThrottle(PrerenderURLLoaderThrottle& throttle) {
   // Keep track of how many pending throttles we have, as we want to defer
   // sending the "prefetch finished" signal until they are destroyed. This is
   // important since that signal tells the browser that it can tear down this
   // renderer which could interrupt subresource prefetching.
   if (prerender_mode_ == prerender::mojom::PrerenderMode::kPrefetchOnly) {
     prefetch_count_++;
-    throttle->set_destruction_closure(base::BindOnce(
+    throttle.set_destruction_closure(base::BindOnce(
         &PrerenderHelper::OnThrottleDestroyed, weak_factory_.GetWeakPtr()));
   }
-  throttles_.push_back(throttle);
 }
 
 void PrerenderHelper::OnThrottleDestroyed() {

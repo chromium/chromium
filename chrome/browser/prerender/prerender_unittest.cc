@@ -200,7 +200,7 @@ class UnitTestPrerenderManager : public PrerenderManager {
         prerender_data->ReleaseContents();
     active_prerenders_.erase(to_erase);
 
-    prerender_contents->PrepareForUse();
+    prerender_contents->MarkAsUsedForTesting();
     return prerender_contents;
   }
 

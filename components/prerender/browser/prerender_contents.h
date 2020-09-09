@@ -204,8 +204,10 @@ class PrerenderContents : public content::NotificationObserver,
 
   std::unique_ptr<base::DictionaryValue> GetAsValue() const;
 
-  // Marks prerender as used and releases any throttled resource requests.
-  void PrepareForUse();
+  // This function is not currently called in production since prerendered
+  // contents are never used (only prefetch is supported), but it may be used in
+  // the future: https://crbug.com/1126305
+  void MarkAsUsedForTesting();
 
   // Increments the number of bytes fetched over the network for this prerender.
   void AddNetworkBytes(int64_t bytes);

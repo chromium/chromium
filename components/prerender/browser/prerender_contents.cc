@@ -587,7 +587,7 @@ std::unique_ptr<base::DictionaryValue> PrerenderContents::GetAsValue() const {
   return dict_value;
 }
 
-void PrerenderContents::PrepareForUse() {
+void PrerenderContents::MarkAsUsedForTesting() {
   SetFinalStatus(FINAL_STATUS_USED);
 
   if (prerender_contents_.get()) {
