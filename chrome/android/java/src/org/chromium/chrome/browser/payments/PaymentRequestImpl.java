@@ -18,14 +18,10 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
 import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator;
@@ -38,13 +34,6 @@ import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.chrome.browser.payments.ui.ShoppingCart;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -167,35 +156,6 @@ public class PaymentRequestImpl
     @Nullable
     private ComponentPaymentRequestImpl mComponentPaymentRequestImpl;
 
-    /** Monitors changes in the TabModelSelector. */
-    private final TabModelSelectorObserver mSelectorObserver = new EmptyTabModelSelectorObserver() {
-        @Override
-        public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.TAB_SWITCH);
-        }
-    };
-
-    /** Monitors changes in the current TabModel. */
-    private final TabModelObserver mTabModelObserver = new TabModelObserver() {
-        @Override
-        public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-            if (tab == null || tab.getId() != lastId) {
-                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                disconnectFromClientWithDebugMessage(ErrorStrings.TAB_SWITCH);
-            }
-        }
-    };
-
-    /** Monitors changes in the tab overview. */
-    private final OverviewModeObserver mOverviewModeObserver = new EmptyOverviewModeObserver() {
-        @Override
-        public void onOverviewModeStartedShowing(boolean showToolbar) {
-            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.TAB_OVERVIEW_MODE);
-        }
-    };
-
     private final Handler mHandler = new Handler();
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
@@ -232,9 +192,6 @@ public class PaymentRequestImpl
     private PaymentApp mInvokedPaymentApp;
     private boolean mHideServerAutofillCards;
     private boolean mWaitForUpdatedDetails;
-    private TabModelSelector mObservedTabModelSelector;
-    private TabModel mObservedTabModel;
-    private OverviewModeBehavior mOverviewModeBehavior;
     private PaymentHandlerHost mPaymentHandlerHost;
 
     /**
@@ -448,62 +405,18 @@ public class PaymentRequestImpl
 
     /** @return Whether the UI was built. */
     private boolean buildUI(ChromeActivity activity) {
-        // Payment methods section must be ready before building the rest of the UI. This is because
-        // shipping and contact sections (when requested by merchant) are populated depending on
-        // whether or not the selected payment app (if such exists) can provide the required
-        // information.
-        assert mPaymentUIsManager.getPaymentMethodsSection() != null;
-
-        assert activity != null;
-
-        // Catch any time the user switches tabs. Because the dialog is modal, a user shouldn't be
-        // allowed to switch tabs, which can happen if the user receives an external Intent.
-        mObservedTabModelSelector = activity.getTabModelSelector();
-        mObservedTabModel = activity.getCurrentTabModel();
-        mObservedTabModelSelector.addObserver(mSelectorObserver);
-        mObservedTabModel.addObserver(mTabModelObserver);
-
-        // Only the currently selected tab is allowed to show the payment UI.
-        if (!mDelegate.isWebContentsActive(activity)) {
+        String error = mPaymentUIsManager.buildPaymentRequestUI(activity,
+                /*isWebContentsActive=*/mDelegate.isWebContentsActive(activity),
+                /*waitForUpdatedDetails=*/mWaitForUpdatedDetails);
+        if (error != null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.CANNOT_SHOW_IN_BACKGROUND_TAB);
+            disconnectFromClientWithDebugMessage(error);
             if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
                 ComponentPaymentRequestImpl.getObserverForTest()
                         .onPaymentRequestServiceShowFailed();
             }
             return false;
         }
-
-        // Catch any time the user enters the overview mode and dismiss the payment UI.
-        if (activity instanceof ChromeTabbedActivity) {
-            mOverviewModeBehavior =
-                    ((ChromeTabbedActivity) activity).getOverviewModeBehaviorSupplier().get();
-
-            assert mOverviewModeBehavior != null;
-
-            if (mOverviewModeBehavior.overviewVisible()) {
-                mJourneyLogger.setNotShown(NotShownReason.OTHER);
-                disconnectFromClientWithDebugMessage(ErrorStrings.TAB_OVERVIEW_MODE);
-                if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                    ComponentPaymentRequestImpl.getObserverForTest()
-                            .onPaymentRequestServiceShowFailed();
-                }
-                return false;
-            }
-            mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
-        }
-
-        if (shouldShowShippingSection() && !mWaitForUpdatedDetails) {
-            mPaymentUIsManager.createShippingSectionForPaymentRequestUI(activity);
-        }
-
-        if (shouldShowContactSection()) {
-            mPaymentUIsManager.setContactSection(
-                    new ContactDetailsSection(activity, mPaymentUIsManager.getAutofillProfiles(),
-                            mPaymentUIsManager.getContactEditor(), mJourneyLogger));
-        }
-
-        mPaymentUIsManager.buildPaymentRequestUI(activity);
         return true;
     }
 
@@ -2113,20 +2026,7 @@ public class PaymentRequestImpl
             mPaymentUIsManager.setPaymentMethodsSection(null);
         }
 
-        if (mObservedTabModelSelector != null) {
-            mObservedTabModelSelector.removeObserver(mSelectorObserver);
-            mObservedTabModelSelector = null;
-        }
-
-        if (mObservedTabModel != null) {
-            mObservedTabModel.removeObserver(mTabModelObserver);
-            mObservedTabModel = null;
-        }
-
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
-            mOverviewModeBehavior = null;
-        }
+        mPaymentUIsManager.removeLeavingTabObservers();
 
         SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUIsManager);
 
@@ -2192,5 +2092,13 @@ public class PaymentRequestImpl
     public void onPaymentRequestUIFaviconNotAvailable() {
         if (mComponentPaymentRequestImpl == null) return;
         mComponentPaymentRequestImpl.warnNoFavicon();
+    }
+
+    // Implement PaymentUIsObserver.onLeavingCurrentTab:
+    @Override
+    public void onLeavingCurrentTab(String reason) {
+        if (mComponentPaymentRequestImpl == null) return;
+        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+        disconnectFromClientWithDebugMessage(reason);
     }
 }

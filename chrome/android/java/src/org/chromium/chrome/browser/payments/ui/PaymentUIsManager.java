@@ -14,10 +14,14 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.payments.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
@@ -35,10 +39,19 @@ import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.Pa
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppType;
@@ -94,6 +107,9 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     private final boolean mIsOffTheRecord;
     private final Handler mHandler = new Handler();
     private final Queue<Runnable> mRetryQueue = new LinkedList<>();
+    private final OverviewModeObserver mOverviewModeObserver;
+    private final TabModelSelectorObserver mSelectorObserver;
+    private final TabModelObserver mTabModelObserver;
     private ContactEditor mContactEditor;
     private PaymentHandlerCoordinator mPaymentHandlerUi;
     private Callback<PaymentInformation> mPaymentInformationCallback;
@@ -122,6 +138,9 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     private boolean mCanUserAddCreditCard;
     private final JourneyLogger mJourneyLogger;
     private PaymentUIsObserver mObserver;
+    private TabModelSelector mObservedTabModelSelector;
+    private TabModel mObservedTabModel;
+    private OverviewModeBehavior mOverviewModeBehavior;
 
     /**
      * True if we should skip showing PaymentRequest UI.
@@ -231,6 +250,26 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         mIsOffTheRecord = isOffTheRecord;
         mPaymentAppComparator = new PaymentAppComparator(/*params=*/mParams);
         mObserver = observer;
+        mSelectorObserver = new EmptyTabModelSelectorObserver() {
+            @Override
+            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                mObserver.onLeavingCurrentTab(ErrorStrings.TAB_SWITCH);
+            }
+        };
+        mTabModelObserver = new TabModelObserver() {
+            @Override
+            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                if (tab == null || tab.getId() != lastId) {
+                    mObserver.onLeavingCurrentTab(ErrorStrings.TAB_SWITCH);
+                }
+            }
+        };
+        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+            @Override
+            public void onOverviewModeStartedShowing(boolean showToolbar) {
+                mObserver.onLeavingCurrentTab(ErrorStrings.TAB_OVERVIEW_MODE);
+            }
+        };
     }
 
     /** @return The PaymentRequestUI. */
@@ -947,10 +986,61 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
 
     /**
      * Build the PaymentRequest UI.
-     * @param activity The ChromeActivity for the payment request.
+     * @param activity The ChromeActivity for the payment request, cannot be null.
+     * @param isWebContentsActive Whether the merchant's WebContents is active.
+     * @param waitForUpdatedDetails Whether to wait for updated details. See {@link
+     *         BrowserPaymentRequest#show}'s waitForUpdatedDetails.
+     * @return The error message if built unsuccessfully; null otherwise.
      */
-    public void buildPaymentRequestUI(ChromeActivity activity) {
-        assert mIsPaymentRequestParamsInitiated;
+    @Nullable
+    public String buildPaymentRequestUI(
+            ChromeActivity activity, boolean isWebContentsActive, boolean waitForUpdatedDetails) {
+        // Payment methods section must be ready before building the rest of the UI. This is because
+        // shipping and contact sections (when requested by merchant) are populated depending on
+        // whether or not the selected payment app (if such exists) can provide the required
+        // information.
+        assert mPaymentMethodsSection != null;
+
+        assert activity != null;
+
+        // Only the currently selected tab is allowed to show the payment UI.
+        if (!isWebContentsActive) return ErrorStrings.CANNOT_SHOW_IN_BACKGROUND_TAB;
+
+        // Catch any time the user switches tabs. Because the dialog is modal, a user shouldn't be
+        // allowed to switch tabs, which can happen if the user receives an external Intent.
+        if (mObservedTabModelSelector != null) {
+            mObservedTabModelSelector.removeObserver(mSelectorObserver);
+        }
+        mObservedTabModelSelector = activity.getTabModelSelector();
+        mObservedTabModelSelector.addObserver(mSelectorObserver);
+        if (mObservedTabModel != null) {
+            mObservedTabModel.removeObserver(mTabModelObserver);
+        }
+        mObservedTabModel = activity.getCurrentTabModel();
+        mObservedTabModel.addObserver(mTabModelObserver);
+
+        // Catch any time the user enters the overview mode and dismiss the payment UI.
+        if (activity instanceof ChromeTabbedActivity) {
+            if (mOverviewModeBehavior != null) {
+                mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+            }
+            mOverviewModeBehavior =
+                    ((ChromeTabbedActivity) activity).getOverviewModeBehaviorSupplier().get();
+
+            assert mOverviewModeBehavior != null;
+            if (mOverviewModeBehavior.overviewVisible()) return ErrorStrings.TAB_OVERVIEW_MODE;
+            mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+        }
+
+        if (shouldShowShippingSection() && !waitForUpdatedDetails) {
+            createShippingSectionForPaymentRequestUI(activity);
+        }
+
+        if (shouldShowContactSection()) {
+            mContactSection = new ContactDetailsSection(
+                    activity, mAutofillProfiles, mContactEditor, mJourneyLogger);
+        }
+
         mPaymentRequestUI = new PaymentRequestUI(activity, mDelegate.getPaymentRequestUIClient(),
                 mMerchantSupportsAutofillCards, !PaymentPreferencesUtil.isPaymentCompleteOnce(),
                 mMerchantName, mTopLevelOriginFormattedForDisplay,
@@ -985,6 +1075,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         if (mContactEditor != null) {
             mContactEditor.setEditorDialog(mPaymentRequestUI.getEditorDialog());
         }
+        return null;
     }
 
     /** Create a shipping section for PaymentRequest UI. */
@@ -1290,5 +1381,23 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                 // Skip to payment app only if user gesture is provided when it is required to
                 // skip-UI.
                 && (isUserGestureShow || !selectedApp.isUserGestureRequiredToSkipUi());
+    }
+
+    /** Removes all of the observers that observe users leaving the tab. */
+    public void removeLeavingTabObservers() {
+        if (mObservedTabModelSelector != null) {
+            mObservedTabModelSelector.removeObserver(mSelectorObserver);
+            mObservedTabModelSelector = null;
+        }
+
+        if (mObservedTabModel != null) {
+            mObservedTabModel.removeObserver(mTabModelObserver);
+            mObservedTabModel = null;
+        }
+
+        if (mOverviewModeBehavior != null) {
+            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+            mOverviewModeBehavior = null;
+        }
     }
 }
