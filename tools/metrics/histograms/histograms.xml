@@ -39724,9 +39724,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DefaultBrowser.State" enum="DefaultBrowserState"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: Used to keep track of desktop browser ecosystem. -->
+
   <owner>gab@chromium.org</owner>
-  <summary>Whether Chrome was the default browser when it started up.</summary>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Whether Chrome was the default browser when it started up.
+
+    Only logged correctly on Windows, Mac, and Linux. Logged incorrectly on
+    other platforms.
+
+    For ChromeOS, no histogram is necessary because Chrome is always the default
+    browser.
+
+    For Android, see Mobile.DefaultBrowser.State.
+
+    For iOS, in the future Chrome will be allowed to be the default browser. How
+    that will be logged is to be decided at the time of writing this
+    description.
+  </summary>
 </histogram>
 
 <histogram name="DefaultBrowser.Win10ChooserInvoked" enum="BooleanSuccess"
