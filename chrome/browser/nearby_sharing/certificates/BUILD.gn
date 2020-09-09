@@ -21,7 +21,6 @@ source_set("certificates") {
     "nearby_share_encrypted_metadata_key.h",
     "nearby_share_private_certificate.cc",
     "nearby_share_private_certificate.h",
-    "nearby_share_visibility.h",
   ]
 
   deps = [
@@ -58,6 +57,7 @@ source_set("test_support") {
     ":certificates",
     "//base",
     "//chrome/browser/nearby_sharing/proto",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/leveldb_proto",
     "//components/prefs",
     "//crypto",
@@ -88,6 +88,7 @@ source_set("unit_tests") {
     "//chrome/browser/nearby_sharing/local_device_data:test_support",
     "//chrome/browser/nearby_sharing/proto",
     "//chrome/browser/nearby_sharing/scheduling:test_support",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",
     "//crypto",

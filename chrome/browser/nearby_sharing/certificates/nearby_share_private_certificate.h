@@ -16,9 +16,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_visibility.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -43,12 +43,12 @@ class NearbySharePrivateCertificate {
   // not-after time from |not_before| and the certificate validity period fixed
   // by the Nearby Share protocol. Visibility cannot be "no one".
   NearbySharePrivateCertificate(
-      NearbyShareVisibility visibility,
+      nearby_share::mojom::Visibility visibility,
       base::Time not_before,
       nearbyshare::proto::EncryptedMetadata unencrypted_metadata);
 
   NearbySharePrivateCertificate(
-      NearbyShareVisibility visibility,
+      nearby_share::mojom::Visibility visibility,
       base::Time not_before,
       base::Time not_after,
       std::unique_ptr<crypto::ECPrivateKey> key_pair,
@@ -68,7 +68,7 @@ class NearbySharePrivateCertificate {
   virtual ~NearbySharePrivateCertificate();
 
   const std::vector<uint8_t>& id() const { return id_; }
-  NearbyShareVisibility visibility() const { return visibility_; }
+  nearby_share::mojom::Visibility visibility() const { return visibility_; }
   base::Time not_before() const { return not_before_; }
   base::Time not_after() const { return not_after_; }
   const nearbyshare::proto::EncryptedMetadata& unencrypted_metadata() const {
@@ -125,7 +125,7 @@ class NearbySharePrivateCertificate {
 
   // Specifies which contacts can receive the public certificate corresponding
   // to this private certificate.
-  NearbyShareVisibility visibility_;
+  nearby_share::mojom::Visibility visibility_;
 
   // The begin/end times of the certificate's validity period. Note: An offset
   // is not yet applied to these values. To avoid issues with clock skew,

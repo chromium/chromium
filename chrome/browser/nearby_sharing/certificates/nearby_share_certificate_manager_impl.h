@@ -19,10 +19,10 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_visibility.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
 class NearbyShareClient;
 class NearbyShareClientFactory;
@@ -106,10 +106,10 @@ class NearbyShareCertificateManagerImpl
 
   // NearbyShareCertificateManager:
   NearbySharePrivateCertificate GetValidPrivateCertificate(
-      NearbyShareVisibility visibility) override;
+      nearby_share::mojom::Visibility visibility) override;
   std::vector<nearbyshare::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
-      NearbyShareVisibility visibility) override;
+      nearby_share::mojom::Visibility visibility) override;
   void GetDecryptedPublicCertificate(
       NearbyShareEncryptedMetadataKey encrypted_metadata_key,
       CertDecryptedCallback callback) override;
@@ -143,8 +143,9 @@ class NearbyShareCertificateManagerImpl
 
   void FinishPrivateCertificateRefresh(
       std::vector<NearbySharePrivateCertificate> new_certs,
-      base::flat_map<NearbyShareVisibility, size_t> num_valid_certs,
-      base::flat_map<NearbyShareVisibility, base::Time> latest_not_after,
+      base::flat_map<nearby_share::mojom::Visibility, size_t> num_valid_certs,
+      base::flat_map<nearby_share::mojom::Visibility, base::Time>
+          latest_not_after,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
 
   // Invoked by the certificate upload scheduler when private certificates need

@@ -128,7 +128,7 @@ std::set<std::vector<uint8_t>> StringToSalts(const std::string& str) {
 }  // namespace
 
 NearbySharePrivateCertificate::NearbySharePrivateCertificate(
-    NearbyShareVisibility visibility,
+    nearby_share::mojom::Visibility visibility,
     base::Time not_before,
     nearbyshare::proto::EncryptedMetadata unencrypted_metadata)
     : visibility_(visibility),
@@ -142,11 +142,11 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
           GenerateRandomBytes(kNearbyShareNumBytesMetadataEncryptionKey)),
       id_(CreateCertificateIdFromSecretKey(*secret_key_)),
       unencrypted_metadata_(std::move(unencrypted_metadata)) {
-  DCHECK_NE(visibility, NearbyShareVisibility::kNoOne);
+  DCHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne);
 }
 
 NearbySharePrivateCertificate::NearbySharePrivateCertificate(
-    NearbyShareVisibility visibility,
+    nearby_share::mojom::Visibility visibility,
     base::Time not_before,
     base::Time not_after,
     std::unique_ptr<crypto::ECPrivateKey> key_pair,
@@ -164,7 +164,7 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
       id_(std::move(id)),
       unencrypted_metadata_(std::move(unencrypted_metadata)),
       consumed_salts_(std::move(consumed_salts)) {
-  DCHECK_NE(visibility, NearbyShareVisibility::kNoOne);
+  DCHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne);
 }
 
 NearbySharePrivateCertificate::NearbySharePrivateCertificate(
@@ -284,7 +284,7 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
   public_certificate.mutable_end_time()->set_seconds(
       (not_after_ + not_after_offset).ToJavaTime() / 1000);
   public_certificate.set_for_selected_contacts(
-      visibility_ == NearbyShareVisibility::kSelectedContacts);
+      visibility_ == nearby_share::mojom::Visibility::kSelectedContacts);
   public_certificate.set_metadata_encryption_key(std::string(
       metadata_encryption_key_.begin(), metadata_encryption_key_.end()));
   public_certificate.set_encrypted_metadata_bytes(std::string(
@@ -330,8 +330,8 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value& dict) {
   if (!int_opt)
     return base::nullopt;
 
-  NearbyShareVisibility visibility =
-      static_cast<NearbyShareVisibility>(*int_opt);
+  nearby_share::mojom::Visibility visibility =
+      static_cast<nearby_share::mojom::Visibility>(*int_opt);
 
   time_opt = util::ValueToTime(dict.FindPath(kNotBefore));
   if (!time_opt)

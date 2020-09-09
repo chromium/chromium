@@ -14,6 +14,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/symmetric_key.h"
 
@@ -45,18 +46,20 @@ const std::vector<uint8_t>& GetNearbyShareTestSampleSignature();
 const std::vector<uint8_t>& GetNearbyShareTestPayloadHashUsingSecretKey();
 
 NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
-    NearbyShareVisibility visibility,
+    nearby_share::mojom::Visibility visibility,
     base::Time not_before = GetNearbyShareTestNotBefore());
 nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
-    NearbyShareVisibility visibility,
+    nearby_share::mojom::Visibility visibility,
     base::Time not_before = GetNearbyShareTestNotBefore());
 
 // Returns a list of |kNearbyShareNumPrivateCertificates| private/public
 // certificates, spanning contiguous validity periods.
 std::vector<NearbySharePrivateCertificate>
-GetNearbyShareTestPrivateCertificateList(NearbyShareVisibility visibility);
+GetNearbyShareTestPrivateCertificateList(
+    nearby_share::mojom::Visibility visibility);
 std::vector<nearbyshare::proto::PublicCertificate>
-GetNearbyShareTestPublicCertificateList(NearbyShareVisibility visibility);
+GetNearbyShareTestPublicCertificateList(
+    nearby_share::mojom::Visibility visibility);
 
 const NearbyShareDecryptedPublicCertificate&
 GetNearbyShareTestDecryptedPublicCertificate();

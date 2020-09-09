@@ -8,7 +8,6 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_visibility.h"
 #include "chrome/browser/nearby_sharing/proto/timestamp.pb.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
@@ -235,7 +234,7 @@ const std::vector<uint8_t>& GetNearbyShareTestPayloadHashUsingSecretKey() {
 }
 
 NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
-    NearbyShareVisibility visibility,
+    nearby_share::mojom::Visibility visibility,
     base::Time not_before) {
   NearbySharePrivateCertificate cert(
       visibility, not_before,
@@ -249,7 +248,7 @@ NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
 }
 
 nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
-    NearbyShareVisibility visibility,
+    nearby_share::mojom::Visibility visibility,
     base::Time not_before) {
   nearbyshare::proto::PublicCertificate cert;
   cert.set_secret_id(std::string(GetNearbyShareTestCertificateId().begin(),
@@ -264,8 +263,8 @@ nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
                                         GetNearbyShareTestValidityOffset())
                                            .ToJavaTime() /
                                        1000);
-  cert.set_for_selected_contacts(visibility ==
-                                 NearbyShareVisibility::kSelectedContacts);
+  cert.set_for_selected_contacts(
+      visibility == nearby_share::mojom::Visibility::kSelectedContacts);
   cert.set_metadata_encryption_key(
       std::string(GetNearbyShareTestMetadataEncryptionKey().begin(),
                   GetNearbyShareTestMetadataEncryptionKey().end()));
@@ -279,7 +278,8 @@ nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
 }
 
 std::vector<NearbySharePrivateCertificate>
-GetNearbyShareTestPrivateCertificateList(NearbyShareVisibility visibility) {
+GetNearbyShareTestPrivateCertificateList(
+    nearby_share::mojom::Visibility visibility) {
   std::vector<NearbySharePrivateCertificate> list;
   for (size_t i = 0; i < kNearbyShareNumPrivateCertificates; ++i) {
     list.push_back(GetNearbyShareTestPrivateCertificate(
@@ -290,7 +290,8 @@ GetNearbyShareTestPrivateCertificateList(NearbyShareVisibility visibility) {
 }
 
 std::vector<nearbyshare::proto::PublicCertificate>
-GetNearbyShareTestPublicCertificateList(NearbyShareVisibility visibility) {
+GetNearbyShareTestPublicCertificateList(
+    nearby_share::mojom::Visibility visibility) {
   std::vector<nearbyshare::proto::PublicCertificate> list;
   for (size_t i = 0; i < kNearbyShareNumPrivateCertificates; ++i) {
     list.push_back(GetNearbyShareTestPublicCertificate(
@@ -305,7 +306,7 @@ GetNearbyShareTestDecryptedPublicCertificate() {
   static const base::NoDestructor<NearbyShareDecryptedPublicCertificate> cert(
       *NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(
-              NearbyShareVisibility::kAllContacts),
+              nearby_share::mojom::Visibility::kAllContacts),
           GetNearbyShareTestEncryptedMetadataKey()));
   return *cert;
 }

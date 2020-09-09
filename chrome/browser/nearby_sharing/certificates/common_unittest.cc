@@ -9,6 +9,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(NearbyShareCertificatesCommonTest, AuthenticationTokenHash) {
@@ -20,8 +21,8 @@ TEST(NearbyShareCertificatesCommonTest, AuthenticationTokenHash) {
 }
 
 TEST(NearbyShareCertificatesCommonTest, ValidityPeriod_PrivateCertificate) {
-  NearbySharePrivateCertificate cert =
-      GetNearbyShareTestPrivateCertificate(NearbyShareVisibility::kAllContacts);
+  NearbySharePrivateCertificate cert = GetNearbyShareTestPrivateCertificate(
+      nearby_share::mojom::Visibility::kAllContacts);
   const bool use_public_certificate_tolerance = false;
 
   // Set time before validity period.
@@ -69,7 +70,7 @@ TEST(NearbyShareCertificatesCommonTest, ValidityPeriod_PublicCertificate) {
   NearbyShareDecryptedPublicCertificate cert =
       *NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(
-              NearbyShareVisibility::kAllContacts),
+              nearby_share::mojom::Visibility::kAllContacts),
           GetNearbyShareTestEncryptedMetadataKey());
   const bool use_public_certificate_tolerance = true;
 

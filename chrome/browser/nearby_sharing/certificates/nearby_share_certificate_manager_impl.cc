@@ -26,6 +26,7 @@
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -36,9 +37,9 @@ namespace {
 
 const char kDeviceIdPrefix[] = "users/me/devices/";
 
-constexpr std::array<NearbyShareVisibility, 2> kVisibilities = {
-    NearbyShareVisibility::kAllContacts,
-    NearbyShareVisibility::kSelectedContacts};
+constexpr std::array<nearby_share::mojom::Visibility, 2> kVisibilities = {
+    nearby_share::mojom::Visibility::kAllContacts,
+    nearby_share::mojom::Visibility::kSelectedContacts};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -239,7 +240,7 @@ NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() {
 
 NearbySharePrivateCertificate
 NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
-    NearbyShareVisibility visibility) {
+    nearby_share::mojom::Visibility visibility) {
   std::vector<NearbySharePrivateCertificate> certs =
       *certificate_storage_->GetPrivateCertificates();
   for (auto& cert : certs) {
@@ -254,14 +255,14 @@ NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
   NS_LOG(ERROR) << __func__
                 << ": No valid private certificate found with visibility "
                 << static_cast<int>(visibility);
-  return NearbySharePrivateCertificate(NearbyShareVisibility::kNoOne,
+  return NearbySharePrivateCertificate(nearby_share::mojom::Visibility::kNoOne,
                                        /*not_before=*/base::Time(),
                                        nearbyshare::proto::EncryptedMetadata());
 }
 
 std::vector<nearbyshare::proto::PublicCertificate>
 NearbyShareCertificateManagerImpl::GetPrivateCertificatesAsPublicCertificates(
-    NearbyShareVisibility visibility) {
+    nearby_share::mojom::Visibility visibility) {
   NOTIMPLEMENTED();
   return std::vector<nearbyshare::proto::PublicCertificate>();
 }
@@ -340,9 +341,9 @@ void NearbyShareCertificateManagerImpl::OnPrivateCertificateExpiration() {
       << __func__
       << ": Private certificate expiration detected; refreshing certificates.";
   base::Time now = clock_->Now();
-  base::flat_map<NearbyShareVisibility, size_t> num_valid_certs;
-  base::flat_map<NearbyShareVisibility, base::Time> latest_not_after;
-  for (NearbyShareVisibility visibility : kVisibilities) {
+  base::flat_map<nearby_share::mojom::Visibility, size_t> num_valid_certs;
+  base::flat_map<nearby_share::mojom::Visibility, base::Time> latest_not_after;
+  for (nearby_share::mojom::Visibility visibility : kVisibilities) {
     num_valid_certs[visibility] = 0;
     latest_not_after[visibility] = now;
   }
@@ -378,8 +379,9 @@ void NearbyShareCertificateManagerImpl::OnPrivateCertificateExpiration() {
 
 void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
     std::vector<NearbySharePrivateCertificate> new_certs,
-    base::flat_map<NearbyShareVisibility, size_t> num_valid_certs,
-    base::flat_map<NearbyShareVisibility, base::Time> latest_not_after,
+    base::flat_map<nearby_share::mojom::Visibility, size_t> num_valid_certs,
+    base::flat_map<nearby_share::mojom::Visibility, base::Time>
+        latest_not_after,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   nearbyshare::proto::EncryptedMetadata metadata;
 
@@ -421,14 +423,14 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
   NS_LOG(VERBOSE)
       << __func__ << ": Creating "
       << kNearbyShareNumPrivateCertificates -
-             num_valid_certs[NearbyShareVisibility::kAllContacts]
+             num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
       << " all-contacts visibility and "
       << kNearbyShareNumPrivateCertificates -
-             num_valid_certs[NearbyShareVisibility::kSelectedContacts]
+             num_valid_certs[nearby_share::mojom::Visibility::kSelectedContacts]
       << " selected-contacts visibility private certificates.";
   // Add new certificates if necessary. Each visibility should have
   // kNearbyShareNumPrivateCertificates.
-  for (NearbyShareVisibility visibility : kVisibilities) {
+  for (nearby_share::mojom::Visibility visibility : kVisibilities) {
     while (num_valid_certs[visibility] < kNearbyShareNumPrivateCertificates) {
       new_certs.emplace_back(
           visibility, /*not_before=*/latest_not_after[visibility], metadata);

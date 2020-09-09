@@ -9,17 +9,17 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_visibility.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(NearbySharePrivateCertificateTest, Construction) {
   NearbySharePrivateCertificate private_certificate(
-      NearbyShareVisibility::kAllContacts, GetNearbyShareTestNotBefore(),
-      GetNearbyShareTestMetadata());
+      nearby_share::mojom::Visibility::kAllContacts,
+      GetNearbyShareTestNotBefore(), GetNearbyShareTestMetadata());
   EXPECT_EQ(kNearbyShareNumBytesCertificateId, private_certificate.id().size());
-  EXPECT_EQ(NearbyShareVisibility::kAllContacts,
+  EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts,
             private_certificate.visibility());
   EXPECT_EQ(GetNearbyShareTestNotBefore(), private_certificate.not_before());
   EXPECT_EQ(
@@ -30,9 +30,9 @@ TEST(NearbySharePrivateCertificateTest, Construction) {
 }
 
 TEST(NearbySharePrivateCertificateTest, ToFromDictionary) {
-  NearbySharePrivateCertificate before(NearbyShareVisibility::kAllContacts,
-                                       GetNearbyShareTestNotBefore(),
-                                       GetNearbyShareTestMetadata());
+  NearbySharePrivateCertificate before(
+      nearby_share::mojom::Visibility::kAllContacts,
+      GetNearbyShareTestNotBefore(), GetNearbyShareTestMetadata());
   // Generate a few consumed salts.
   for (size_t i = 0; i < 5; ++i)
     ASSERT_TRUE(before.EncryptMetadataKey());
@@ -58,8 +58,8 @@ TEST(NearbySharePrivateCertificateTest, ToFromDictionary) {
 
 TEST(NearbySharePrivateCertificateTest, EncryptMetadataKey) {
   NearbySharePrivateCertificate private_certificate(
-      NearbyShareVisibility::kAllContacts, GetNearbyShareTestNotBefore(),
-      GetNearbyShareTestMetadata());
+      nearby_share::mojom::Visibility::kAllContacts,
+      GetNearbyShareTestNotBefore(), GetNearbyShareTestMetadata());
   base::Optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
       private_certificate.EncryptMetadataKey();
   ASSERT_TRUE(encrypted_metadata_key);
@@ -71,7 +71,8 @@ TEST(NearbySharePrivateCertificateTest, EncryptMetadataKey) {
 
 TEST(NearbySharePrivateCertificateTest, EncryptMetadataKey_FixedData) {
   NearbySharePrivateCertificate private_certificate =
-      GetNearbyShareTestPrivateCertificate(NearbyShareVisibility::kAllContacts);
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
   base::Optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
       private_certificate.EncryptMetadataKey();
   EXPECT_EQ(GetNearbyShareTestEncryptedMetadataKey().encrypted_key(),
@@ -83,7 +84,8 @@ TEST(NearbySharePrivateCertificateTest, EncryptMetadataKey_FixedData) {
 TEST(NearbySharePrivateCertificateTest,
      EncryptMetadataKey_SaltsExhaustedFailure) {
   NearbySharePrivateCertificate private_certificate =
-      GetNearbyShareTestPrivateCertificate(NearbyShareVisibility::kAllContacts);
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
   for (size_t i = 0; i < kNearbyShareMaxNumMetadataEncryptionKeySalts; ++i) {
     EXPECT_TRUE(private_certificate.EncryptMetadataKey());
   }
@@ -93,7 +95,8 @@ TEST(NearbySharePrivateCertificateTest,
 TEST(NearbySharePrivateCertificateTest,
      EncryptMetadataKey_TooManySaltGenerationRetriesFailure) {
   NearbySharePrivateCertificate private_certificate =
-      GetNearbyShareTestPrivateCertificate(NearbyShareVisibility::kAllContacts);
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
   EXPECT_TRUE(private_certificate.EncryptMetadataKey());
   while (private_certificate.next_salts_for_testing().size() <
          kNearbyShareMaxNumMetadataEncryptionKeySaltGenerationRetries) {
@@ -105,20 +108,21 @@ TEST(NearbySharePrivateCertificateTest,
 TEST(NearbySharePrivateCertificateTest, PublicCertificateConversion) {
   NearbySharePrivateCertificate private_certificate =
       GetNearbyShareTestPrivateCertificate(
-          NearbyShareVisibility::kSelectedContacts);
+          nearby_share::mojom::Visibility::kSelectedContacts);
   private_certificate.offset_for_testing() = GetNearbyShareTestValidityOffset();
   base::Optional<nearbyshare::proto::PublicCertificate> public_certificate =
       private_certificate.ToPublicCertificate();
   ASSERT_TRUE(public_certificate);
   EXPECT_EQ(GetNearbyShareTestPublicCertificate(
-                NearbyShareVisibility::kSelectedContacts)
+                nearby_share::mojom::Visibility::kSelectedContacts)
                 .SerializeAsString(),
             public_certificate->SerializeAsString());
 }
 
 TEST(NearbySharePrivateCertificateTest, EncryptDecryptRoundtrip) {
   NearbySharePrivateCertificate private_certificate =
-      GetNearbyShareTestPrivateCertificate(NearbyShareVisibility::kAllContacts);
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
 
   base::Optional<NearbyShareDecryptedPublicCertificate>
       decrypted_public_certificate =
@@ -133,7 +137,8 @@ TEST(NearbySharePrivateCertificateTest, EncryptDecryptRoundtrip) {
 
 TEST(NearbySharePrivateCertificateTest, SignVerifyRoundtrip) {
   NearbySharePrivateCertificate private_certificate =
-      GetNearbyShareTestPrivateCertificate(NearbyShareVisibility::kAllContacts);
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
   base::Optional<std::vector<uint8_t>> signature =
       private_certificate.Sign(GetNearbyShareTestPayloadToSign());
   ASSERT_TRUE(signature);
@@ -149,7 +154,8 @@ TEST(NearbySharePrivateCertificateTest, SignVerifyRoundtrip) {
 
 TEST(NearbySharePrivateCertificateTest, HashAuthenticationToken) {
   NearbySharePrivateCertificate private_certificate =
-      GetNearbyShareTestPrivateCertificate(NearbyShareVisibility::kAllContacts);
+      GetNearbyShareTestPrivateCertificate(
+          nearby_share::mojom::Visibility::kAllContacts);
   EXPECT_EQ(GetNearbyShareTestPayloadHashUsingSecretKey(),
             private_certificate.HashAuthenticationToken(
                 GetNearbyShareTestPayloadToSign()));

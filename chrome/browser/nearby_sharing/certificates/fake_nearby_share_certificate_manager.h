@@ -73,10 +73,10 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
 
   // NearbyShareCertificateManager:
   NearbySharePrivateCertificate GetValidPrivateCertificate(
-      NearbyShareVisibility visibility) override;
+      nearby_share::mojom::Visibility visibility) override;
   std::vector<nearbyshare::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
-      NearbyShareVisibility visibility) override;
+      nearby_share::mojom::Visibility visibility) override;
   void GetDecryptedPublicCertificate(
       NearbyShareEncryptedMetadataKey encrypted_metadata_key,
       CertDecryptedCallback callback) override;

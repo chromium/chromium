@@ -42,6 +42,7 @@
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/mojom/nearby_connections_types.mojom.h"
@@ -476,7 +477,7 @@ class NearbySharingServiceImplTest : public testing::Test {
       std::move(calls.back().callback)
           .Run(NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
               GetNearbyShareTestPublicCertificate(
-                  NearbyShareVisibility::kAllContacts),
+                  nearby_share::mojom::Visibility::kAllContacts),
               GetNearbyShareTestEncryptedMetadataKey()));
     } else {
       std::move(calls.back().callback).Run(base::nullopt);

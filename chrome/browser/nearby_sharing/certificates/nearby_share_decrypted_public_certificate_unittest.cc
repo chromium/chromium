@@ -8,6 +8,7 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -16,8 +17,8 @@ namespace {
 // for remote device certificates. Even if set, it is meaningless. It only has
 // meaning for private certificates converted to public certificates and
 // uploaded to the Nearby server.
-const NearbyShareVisibility kTestPublicCertificateVisibility =
-    NearbyShareVisibility::kNoOne;
+const nearby_share::mojom::Visibility kTestPublicCertificateVisibility =
+    nearby_share::mojom::Visibility::kNoOne;
 
 }  // namespace
 

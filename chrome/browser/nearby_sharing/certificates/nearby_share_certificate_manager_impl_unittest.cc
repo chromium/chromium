@@ -15,6 +15,7 @@
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler_factory.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -170,13 +171,13 @@ class NearbyShareCertificateManagerImplTest
       EXPECT_EQ(cert.not_after() - cert.not_before(),
                 kNearbyShareCertificateValidityPeriod);
       switch (cert.visibility()) {
-        case NearbyShareVisibility::kAllContacts:
+        case nearby_share::mojom::Visibility::kAllContacts:
           min_not_before_all_contacts =
               std::min(min_not_before_all_contacts, cert.not_before());
           max_not_after_all_contacts =
               std::max(max_not_after_all_contacts, cert.not_after());
           break;
-        case NearbyShareVisibility::kSelectedContacts:
+        case nearby_share::mojom::Visibility::kSelectedContacts:
           min_not_before_selected_contacts =
               std::min(min_not_before_selected_contacts, cert.not_before());
           max_not_after_selected_contacts =
@@ -321,8 +322,9 @@ class NearbyShareCertificateManagerImplTest
   void PopulatePrivateCertificates() {
     private_certificates_.clear();
     const auto& metadata = GetNearbyShareTestMetadata();
-    for (auto visibility : {NearbyShareVisibility::kAllContacts,
-                            NearbyShareVisibility::kSelectedContacts}) {
+    for (auto visibility :
+         {nearby_share::mojom::Visibility::kAllContacts,
+          nearby_share::mojom::Visibility::kSelectedContacts}) {
       private_certificates_.emplace_back(visibility, t0, metadata);
       private_certificates_.emplace_back(
           visibility, t0 + kNearbyShareCertificateValidityPeriod, metadata);
@@ -342,7 +344,7 @@ class NearbyShareCertificateManagerImplTest
     metadata2.set_bluetooth_mac_address("bluetooth_mac_address2");
     for (auto metadata : {metadata1, metadata2}) {
       auto private_cert = NearbySharePrivateCertificate(
-          NearbyShareVisibility::kAllContacts, t0, metadata);
+          nearby_share::mojom::Visibility::kAllContacts, t0, metadata);
       public_certificates_.push_back(*private_cert.ToPublicCertificate());
       metadata_encryption_keys_.push_back(*private_cert.EncryptMetadataKey());
     }
@@ -376,9 +378,9 @@ TEST_F(NearbyShareCertificateManagerImplTest, GetValidPrivateCertificate) {
   cert_store_->SetPrivateCertificates(private_certificates_);
   clock_.SetNow(t0 + kNearbyShareCertificateValidityPeriod * 1.5);
   auto cert = cert_manager_->GetValidPrivateCertificate(
-      NearbyShareVisibility::kAllContacts);
+      nearby_share::mojom::Visibility::kAllContacts);
 
-  EXPECT_EQ(NearbyShareVisibility::kAllContacts, cert.visibility());
+  EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, cert.visibility());
   EXPECT_LE(cert.not_before(), clock_.Now());
   EXPECT_LT(clock_.Now(), cert.not_after());
 }
@@ -404,7 +406,8 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 TEST_F(NearbyShareCertificateManagerImplTest,
        GetDecryptedPublicCertificateCertNotFound) {
   auto private_cert = NearbySharePrivateCertificate(
-      NearbyShareVisibility::kAllContacts, t0, GetNearbyShareTestMetadata());
+      nearby_share::mojom::Visibility::kAllContacts, t0,
+      GetNearbyShareTestMetadata());
   auto metadata_key = private_cert.EncryptMetadataKey();
   ASSERT_TRUE(metadata_key);
 
