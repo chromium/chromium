@@ -11,22 +11,28 @@
 
 UserActionsUIHandler::UserActionsUIHandler()
     : action_callback_(base::Bind(&UserActionsUIHandler::OnUserAction,
-                                  base::Unretained(this))) {
-  base::AddActionCallback(action_callback_);
-}
+                                  base::Unretained(this))) {}
 
 UserActionsUIHandler::~UserActionsUIHandler() {
-  WebContentsObserver::Observe(nullptr);
   base::RemoveActionCallback(action_callback_);
 }
 
 void UserActionsUIHandler::RegisterMessages() {
-  WebContentsObserver::Observe(web_ui()->GetWebContents());
+  web_ui()->RegisterMessageCallback(
+      "pageLoaded", base::BindRepeating(&UserActionsUIHandler::HandlePageLoaded,
+                                        base::Unretained(this)));
 }
 
-void UserActionsUIHandler::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
+void UserActionsUIHandler::HandlePageLoaded(const base::ListValue* args) {
   AllowJavascript();
+}
+
+void UserActionsUIHandler::OnJavascriptAllowed() {
+  base::AddActionCallback(action_callback_);
+}
+
+void UserActionsUIHandler::OnJavascriptDisallowed() {
+  base::RemoveActionCallback(action_callback_);
 }
 
 void UserActionsUIHandler::OnUserAction(const std::string& action,
