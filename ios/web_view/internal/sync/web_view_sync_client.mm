@@ -31,6 +31,7 @@
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -74,8 +75,8 @@ std::unique_ptr<WebViewSyncClient> WebViewSyncClient::Create(
       WebViewProfileInvalidationProviderFactory::GetForBrowserState(
           browser_state)
           ->GetInvalidationService(),
-      /*sync_invalidations_service=*/nullptr);
-  // TODO(crbug.com/1082122): implement sync invalidations on iOS platform.
+      WebViewSyncInvalidationsServiceFactory::GetForBrowserState(
+          browser_state));
 }
 
 WebViewSyncClient::WebViewSyncClient(

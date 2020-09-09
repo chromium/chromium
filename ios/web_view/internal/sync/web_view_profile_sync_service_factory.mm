@@ -32,6 +32,7 @@
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_client.h"
+#import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -73,6 +74,7 @@ WebViewProfileSyncServiceFactory::WebViewProfileSyncServiceFactory()
   DependsOn(WebViewGCMProfileServiceFactory::GetInstance());
   DependsOn(WebViewProfileInvalidationProviderFactory::GetInstance());
   DependsOn(WebViewModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
 }
 
 WebViewProfileSyncServiceFactory::~WebViewProfileSyncServiceFactory() {}

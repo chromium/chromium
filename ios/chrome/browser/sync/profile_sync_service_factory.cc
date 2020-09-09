@@ -42,6 +42,7 @@
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
@@ -138,6 +139,7 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
+  DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 
 ProfileSyncServiceFactory::~ProfileSyncServiceFactory() {}

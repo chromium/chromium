@@ -56,6 +56,7 @@
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
@@ -197,8 +198,7 @@ IOSChromeSyncClient::GetInvalidationService() {
 
 syncer::SyncInvalidationsService*
 IOSChromeSyncClient::GetSyncInvalidationsService() {
-  // TODO(crbug.com/1082122): implement sync invalidations on iOS.
-  return nullptr;
+  return SyncInvalidationsServiceFactory::GetForBrowserState(browser_state_);
 }
 
 syncer::TrustedVaultClient* IOSChromeSyncClient::GetTrustedVaultClient() {
