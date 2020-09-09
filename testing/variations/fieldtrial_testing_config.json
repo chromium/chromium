@@ -51,6 +51,27 @@
             ]
         }
     ],
+    "AllPassiveMixedContentAutoupgrade": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_10",
+                    "params": {
+                        "mode": "all-passive"
+                    },
+                    "enable_features": [
+                        "AutoupgradeMixedContent"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDarkSearch": [
         {
             "platforms": [
@@ -1862,22 +1883,6 @@
                     "name": "DirectActions",
                     "enable_features": [
                         "DirectActions"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DirectCompositionGpuVSync": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositionGpuVSync",
-                        "DirectCompositionPresentationFeedback"
                     ]
                 }
             ]
