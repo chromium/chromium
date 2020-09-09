@@ -383,9 +383,19 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
   }
 };
 
+// TODO(sgilhuly): Enable these tests for Skia Dawn, and switch over to using
+// kRendererTypesGpu.
+viz::RendererType const kRendererTypesGpuNonDawn[] = {
+    viz::RendererType::kGL,
+    viz::RendererType::kSkiaGL,
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    viz::RendererType::kSkiaVk,
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+};
+
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostBlurFiltersPixelTestGPULayerList,
-                         ::testing::ValuesIn(kRendererTypesGpu),
+                         ::testing::ValuesIn(kRendererTypesGpuNonDawn),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
