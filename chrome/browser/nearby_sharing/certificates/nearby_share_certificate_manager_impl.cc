@@ -49,6 +49,10 @@ enum GetDecryptedPublicCertificateResult {
   kMaxValue = kStorageFailure
 };
 
+size_t NumExpectedPrivateCertificates() {
+  return kVisibilities.size() * kNearbyShareNumPrivateCertificates;
+}
+
 void RecordGetDecryptedPublicCertificateResultMetric(
     GetDecryptedPublicCertificateResult result) {
   base::UmaHistogramEnumeration(
@@ -167,6 +171,10 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
       pref_service_(pref_service),
       client_factory_(client_factory),
       clock_(clock),
+      certificate_storage_(NearbyShareCertificateStorageImpl::Factory::Create(
+          pref_service_,
+          proto_database_provider,
+          profile_path)),
       private_certificate_expiration_scheduler_(
           NearbyShareSchedulerFactory::CreateExpirationScheduler(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
@@ -179,6 +187,19 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               pref_service_,
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       OnPrivateCertificateExpiration,
+                                  base::Unretained(this)),
+              clock_)),
+      public_certificate_expiration_scheduler_(
+          NearbyShareSchedulerFactory::CreateExpirationScheduler(
+              base::BindRepeating(&NearbyShareCertificateManagerImpl::
+                                      NextPublicCertificateExpirationTime,
+                                  base::Unretained(this)),
+              /*retry_failures=*/true,
+              /*require_connectivity=*/false,
+              prefs::kNearbySharingSchedulerPublicCertificateExpirationPrefName,
+              pref_service_,
+              base::BindRepeating(&NearbyShareCertificateManagerImpl::
+                                      OnPublicCertificateExpiration,
                                   base::Unretained(this)),
               clock_)),
       upload_local_device_certificates_scheduler_(
@@ -205,11 +226,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   /*page_token=*/base::nullopt,
                                   /*page_number=*/1,
                                   /*certificate_count=*/0),
-              clock_)),
-      cert_store_(NearbyShareCertificateStorageImpl::Factory::Create(
-          pref_service_,
-          proto_database_provider,
-          profile_path)) {}
+              clock_)) {}
 
 NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() =
     default;
@@ -218,7 +235,7 @@ NearbySharePrivateCertificate
 NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
     NearbyShareVisibility visibility) {
   std::vector<NearbySharePrivateCertificate> certs =
-      *cert_store_->GetPrivateCertificates();
+      *certificate_storage_->GetPrivateCertificates();
   for (auto& cert : certs) {
     if (IsNearbyShareCertificateWithinValidityPeriod(
             clock_->Now(), cert.not_before(), cert.not_after(),
@@ -246,7 +263,7 @@ NearbyShareCertificateManagerImpl::GetPrivateCertificatesAsPublicCertificates(
 void NearbyShareCertificateManagerImpl::GetDecryptedPublicCertificate(
     NearbyShareEncryptedMetadataKey encrypted_metadata_key,
     CertDecryptedCallback callback) {
-  cert_store_->GetPublicCertificates(
+  certificate_storage_->GetPublicCertificates(
       base::BindOnce(&TryDecryptPublicCertificates,
                      std::move(encrypted_metadata_key), std::move(callback)));
 }
@@ -257,22 +274,36 @@ void NearbyShareCertificateManagerImpl::DownloadPublicCertificates() {
 
 void NearbyShareCertificateManagerImpl::OnStart() {
   private_certificate_expiration_scheduler_->Start();
+  public_certificate_expiration_scheduler_->Start();
   upload_local_device_certificates_scheduler_->Start();
   download_public_certificates_scheduler_->Start();
 }
 
 void NearbyShareCertificateManagerImpl::OnStop() {
   private_certificate_expiration_scheduler_->Stop();
+  public_certificate_expiration_scheduler_->Stop();
   upload_local_device_certificates_scheduler_->Stop();
   download_public_certificates_scheduler_->Stop();
 }
 
-base::Time
+base::Optional<base::Time>
 NearbyShareCertificateManagerImpl::NextPrivateCertificateExpirationTime() {
-  // If no private certificates are present, return the minimum time to trigger
-  // an immediate refresh.
-  return cert_store_->NextPrivateCertificateExpirationTime().value_or(
-      base::Time::Min());
+  // We enforce that a fixed number--kNearbyShareNumPrivateCertificates for each
+  // visibility--of private certificates be present at all times. This might not
+  // be true the first time the user enables Nearby Share or after certificates
+  // are revoked. For simplicity, consider the case of missing certificates an
+  // "expired" state. Return the minimum time to immediately trigger the private
+  // certificate creation flow.
+  if (certificate_storage_->GetPrivateCertificates()->size() <
+      NumExpectedPrivateCertificates()) {
+    return base::Time::Min();
+  }
+
+  base::Optional<base::Time> expiration_time =
+      certificate_storage_->NextPrivateCertificateExpirationTime();
+  DCHECK(expiration_time);
+
+  return *expiration_time;
 }
 
 void NearbyShareCertificateManagerImpl::OnPrivateCertificateExpiration() {
@@ -289,7 +320,7 @@ void NearbyShareCertificateManagerImpl::OnPrivateCertificateExpiration() {
 
   // Remove all expired certificates.
   std::vector<NearbySharePrivateCertificate> old_certs =
-      *cert_store_->GetPrivateCertificates();
+      *certificate_storage_->GetPrivateCertificates();
   std::vector<NearbySharePrivateCertificate> new_certs;
   for (const NearbySharePrivateCertificate& cert : old_certs) {
     if (IsNearbyShareCertificateExpired(
@@ -377,7 +408,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
     }
   }
 
-  cert_store_->ReplacePrivateCertificates(new_certs);
+  certificate_storage_->ReplacePrivateCertificates(new_certs);
   NotifyPrivateCertificatesChanged();
   private_certificate_expiration_scheduler_->HandleResult(/*success=*/true);
 
@@ -388,7 +419,7 @@ void NearbyShareCertificateManagerImpl::
     OnLocalDeviceCertificateUploadRequest() {
   std::vector<nearbyshare::proto::PublicCertificate> public_certs;
   std::vector<NearbySharePrivateCertificate> private_certs =
-      *cert_store_->GetPrivateCertificates();
+      *certificate_storage_->GetPrivateCertificates();
   for (const NearbySharePrivateCertificate& private_cert : private_certs) {
     public_certs.push_back(*private_cert.ToPublicCertificate());
   }
@@ -408,6 +439,33 @@ void NearbyShareCertificateManagerImpl::OnLocalDeviceCertificateUploadFinished(
   upload_local_device_certificates_scheduler_->HandleResult(success);
 }
 
+base::Optional<base::Time>
+NearbyShareCertificateManagerImpl::NextPublicCertificateExpirationTime() {
+  base::Optional<base::Time> next_expiration_time =
+      certificate_storage_->NextPublicCertificateExpirationTime();
+
+  // Supposedly there are no store public certificates.
+  if (!next_expiration_time)
+    return base::nullopt;
+
+  // To account for clock skew between devices, we accept public certificates
+  // that are slightly past their validity period. This conforms with the
+  // GmsCore implementation.
+  return *next_expiration_time +
+         kNearbySharePublicCertificateValidityBoundOffsetTolerance;
+}
+void NearbyShareCertificateManagerImpl::OnPublicCertificateExpiration() {
+  certificate_storage_->RemoveExpiredPublicCertificates(
+      clock_->Now(), base::BindOnce(&NearbyShareCertificateManagerImpl::
+                                        OnExpiredPublicCertificatesRemoved,
+                                    base::Unretained(this)));
+}
+
+void NearbyShareCertificateManagerImpl::OnExpiredPublicCertificatesRemoved(
+    bool success) {
+  public_certificate_expiration_scheduler_->HandleResult(success);
+}
+
 void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
     base::Optional<std::string> page_token,
     size_t page_number,
@@ -419,7 +477,8 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
   if (page_token)
     request.set_page_token(*page_token);
 
-  for (const std::string& id : cert_store_->GetPublicCertificateIds()) {
+  for (const std::string& id :
+       certificate_storage_->GetPublicCertificateIds()) {
     request.add_secret_ids(id);
   }
 
@@ -429,13 +488,15 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
   client_ = client_factory_->CreateInstance();
   client_->ListPublicCertificates(
       request,
-      base::BindOnce(&NearbyShareCertificateManagerImpl::OnRpcSuccess,
-                     base::Unretained(this), page_number, certificate_count),
-      base::BindOnce(&NearbyShareCertificateManagerImpl::OnRpcFailure,
-                     base::Unretained(this), page_number, certificate_count));
+      base::BindOnce(
+          &NearbyShareCertificateManagerImpl::OnListPublicCertificatesSuccess,
+          base::Unretained(this), page_number, certificate_count),
+      base::BindOnce(
+          &NearbyShareCertificateManagerImpl::OnListPublicCertificatesFailure,
+          base::Unretained(this), page_number, certificate_count));
 }
 
-void NearbyShareCertificateManagerImpl::OnRpcSuccess(
+void NearbyShareCertificateManagerImpl::OnListPublicCertificatesSuccess(
     size_t page_number,
     size_t certificate_count,
     const nearbyshare::proto::ListPublicCertificatesResponse& response) {
@@ -452,14 +513,14 @@ void NearbyShareCertificateManagerImpl::OnRpcSuccess(
 
   NS_LOG(VERBOSE) << __func__ << ": " << certs.size()
                   << " public certificates downloaded.";
-  cert_store_->AddPublicCertificates(
-      certs, base::BindOnce(
-                 &NearbyShareCertificateManagerImpl::OnPublicCertificatesAdded,
-                 base::Unretained(this), page_token, page_number,
-                 certificate_count + certs.size()));
+  certificate_storage_->AddPublicCertificates(
+      certs, base::BindOnce(&NearbyShareCertificateManagerImpl::
+                                OnPublicCertificatesAddedToStorage,
+                            base::Unretained(this), page_token, page_number,
+                            certificate_count + certs.size()));
 }
 
-void NearbyShareCertificateManagerImpl::OnRpcFailure(
+void NearbyShareCertificateManagerImpl::OnListPublicCertificatesFailure(
     size_t page_number,
     size_t certificate_count,
     NearbyShareHttpError error) {
@@ -470,7 +531,7 @@ void NearbyShareCertificateManagerImpl::OnRpcFailure(
       certificate_count);
 }
 
-void NearbyShareCertificateManagerImpl::OnPublicCertificatesAdded(
+void NearbyShareCertificateManagerImpl::OnPublicCertificatesAddedToStorage(
     base::Optional<std::string> page_token,
     size_t page_number,
     size_t certificate_count,
@@ -494,6 +555,9 @@ void NearbyShareCertificateManagerImpl::FinishDownloadPublicCertificates(
         << __func__
         << ": Public certificates successfully downloaded and stored.";
     NotifyPublicCertificatesDownloaded();
+
+    // Recompute the expiration timer to account for new certificates.
+    public_certificate_expiration_scheduler_->Reschedule();
   } else if (http_result == NearbyShareHttpResult::kSuccess) {
     NS_LOG(ERROR) << __func__ << ": Public certificates not stored.";
   } else {

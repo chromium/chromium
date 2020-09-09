@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -39,13 +40,15 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
 
     scheduler_ = std::make_unique<NearbyShareExpirationScheduler>(
         base::BindRepeating(
-            &NearbyShareExpirationSchedulerTest::TestExpirationTimeCallback,
+            &NearbyShareExpirationSchedulerTest::TestExpirationTimeFunctor,
             base::Unretained(this)),
         /*retry_failures=*/true, /*require_connectivity=*/true, kTestPrefName,
         &pref_service_, base::DoNothing(), task_environment_.GetMockClock());
   }
 
-  base::Time TestExpirationTimeCallback() { return expiration_time_; }
+  base::Optional<base::Time> TestExpirationTimeFunctor() {
+    return expiration_time_;
+  }
 
   base::Time Now() const { return task_environment_.GetMockClock()->Now(); }
 
@@ -54,13 +57,12 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  base::Time expiration_time() const { return expiration_time_; }
+  base::Optional<base::Time> expiration_time_;
   NearbyShareScheduler* scheduler() { return scheduler_.get(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::Time expiration_time_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NearbyShareScheduler> scheduler_;
 };
@@ -69,8 +71,31 @@ TEST_F(NearbyShareExpirationSchedulerTest, ExpirationRequest) {
   scheduler()->Start();
 
   // Let 5 minutes elapse since the start time just to make sure the time to the
-  // next request only depend on the expiration time and the current time.
+  // next request only depends on the expiration time and the current time.
   FastForward(base::TimeDelta::FromMinutes(5));
 
-  EXPECT_EQ(expiration_time() - Now(), scheduler()->GetTimeUntilNextRequest());
+  EXPECT_EQ(*expiration_time_ - Now(), scheduler()->GetTimeUntilNextRequest());
+}
+
+TEST_F(NearbyShareExpirationSchedulerTest, Reschedule) {
+  scheduler()->Start();
+  FastForward(base::TimeDelta::FromMinutes(5));
+
+  base::TimeDelta initial_expected_time_until_next_request =
+      *expiration_time_ - Now();
+  EXPECT_EQ(initial_expected_time_until_next_request,
+            scheduler()->GetTimeUntilNextRequest());
+
+  // The expiration time suddenly changes.
+  expiration_time_ = *expiration_time_ + base::TimeDelta::FromDays(2);
+  scheduler()->Reschedule();
+  EXPECT_EQ(
+      initial_expected_time_until_next_request + base::TimeDelta::FromDays(2),
+      scheduler()->GetTimeUntilNextRequest());
+}
+
+TEST_F(NearbyShareExpirationSchedulerTest, NullExpirationTime) {
+  expiration_time_.reset();
+  scheduler()->Start();
+  EXPECT_EQ(base::nullopt, scheduler()->GetTimeUntilNextRequest());
 }

@@ -23,6 +23,7 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
   // NearbyShareScheduler:
   void MakeImmediateRequest() override;
   void HandleResult(bool success) override;
+  void Reschedule() override;
   base::Optional<base::Time> GetLastSuccessTime() const override;
   base::Optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
   bool IsWaitingForResult() const override;
@@ -36,6 +37,7 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
   void InvokeRequestCallback();
 
   size_t num_immediate_requests() const { return num_immediate_requests_; }
+  size_t num_reschedule_calls() const { return num_reschedule_calls_; }
   const std::vector<bool>& handled_results() const { return handled_results_; }
 
  private:
@@ -45,6 +47,7 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
 
   bool can_invoke_request_callback_ = false;
   size_t num_immediate_requests_ = 0;
+  size_t num_reschedule_calls_ = 0;
   std::vector<bool> handled_results_;
   base::Optional<base::Time> last_success_time_;
   base::Optional<base::TimeDelta> time_until_next_request_;

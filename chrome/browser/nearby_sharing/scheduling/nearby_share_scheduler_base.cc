@@ -60,7 +60,7 @@ NearbyShareSchedulerBase::~NearbyShareSchedulerBase() {
 void NearbyShareSchedulerBase::MakeImmediateRequest() {
   timer_.Stop();
   SetHasPendingImmediateRequest(true);
-  SetTimer();
+  Reschedule();
 }
 
 void NearbyShareSchedulerBase::HandleResult(bool success) {
@@ -75,7 +75,22 @@ void NearbyShareSchedulerBase::HandleResult(bool success) {
   }
 
   SetIsWaitingForResult(false);
-  SetTimer();
+  Reschedule();
+}
+
+void NearbyShareSchedulerBase::Reschedule() {
+  if (!is_running())
+    return;
+
+  timer_.Stop();
+
+  base::Optional<base::TimeDelta> delay = GetTimeUntilNextRequest();
+  if (!delay)
+    return;
+
+  timer_.Start(FROM_HERE, *delay,
+               base::BindOnce(&NearbyShareSchedulerBase::OnTimerFired,
+                              base::Unretained(this)));
 }
 
 base::Optional<base::Time> NearbyShareSchedulerBase::GetLastSuccessTime()
@@ -123,7 +138,7 @@ size_t NearbyShareSchedulerBase::GetNumConsecutiveFailures() const {
 }
 
 void NearbyShareSchedulerBase::OnStart() {
-  SetTimer();
+  Reschedule();
 }
 
 void NearbyShareSchedulerBase::OnStop() {
@@ -135,7 +150,7 @@ void NearbyShareSchedulerBase::OnConnectionChanged(
   if (content::GetNetworkConnectionTracker()->IsOffline())
     return;
 
-  SetTimer();
+  Reschedule();
 }
 
 base::Optional<base::Time> NearbyShareSchedulerBase::GetLastAttemptTime()
@@ -213,21 +228,6 @@ base::Optional<base::TimeDelta> NearbyShareSchedulerBase::TimeUntilRetry(
   base::TimeDelta time_elapsed_since_last_attempt = now - *GetLastAttemptTime();
 
   return std::max(kZeroTimeDelta, delay - time_elapsed_since_last_attempt);
-}
-
-void NearbyShareSchedulerBase::SetTimer() {
-  if (!is_running())
-    return;
-
-  timer_.Stop();
-
-  base::Optional<base::TimeDelta> delay = GetTimeUntilNextRequest();
-  if (!delay)
-    return;
-
-  timer_.Start(FROM_HERE, *delay,
-               base::BindOnce(&NearbyShareSchedulerBase::OnTimerFired,
-                              base::Unretained(this)));
 }
 
 void NearbyShareSchedulerBase::OnTimerFired() {

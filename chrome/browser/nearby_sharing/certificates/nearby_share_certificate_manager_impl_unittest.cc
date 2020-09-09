@@ -63,11 +63,19 @@ class NearbyShareCertificateManagerImplTest
         &clock_);
     cert_man_->AddObserver(this);
 
+    cert_store_ = cert_store_factory_.instances().back();
+
     private_cert_exp_scheduler_ =
         scheduler_factory_.pref_name_to_expiration_instance()
             .find(
                 prefs::
                     kNearbySharingSchedulerPrivateCertificateExpirationPrefName)
+            ->second.fake_scheduler;
+    public_cert_exp_scheduler_ =
+        scheduler_factory_.pref_name_to_expiration_instance()
+            .find(
+                prefs::
+                    kNearbySharingSchedulerPublicCertificateExpirationPrefName)
             ->second.fake_scheduler;
     upload_scheduler_ =
         scheduler_factory_.pref_name_to_on_demand_instance()
@@ -80,7 +88,6 @@ class NearbyShareCertificateManagerImplTest
             .find(prefs::
                       kNearbySharingSchedulerDownloadPublicCertificatesPrefName)
             ->second.fake_scheduler;
-    cert_store_ = cert_store_factory_.instances().back();
 
     PopulatePrivateCertificates();
     PopulatePublicCertificates();
@@ -230,6 +237,8 @@ class NearbyShareCertificateManagerImplTest
 
     size_t initial_num_notifications =
         num_public_certs_downloaded_notifications_;
+    size_t initial_num_public_cert_exp_reschedules =
+        public_cert_exp_scheduler_->num_reschedule_calls();
     std::string page_token;
     for (size_t page_number = 0; page_number < num_pages; ++page_number) {
       bool last_page = page_number == num_pages - 1;
@@ -258,10 +267,13 @@ class NearbyShareCertificateManagerImplTest
     }
     ASSERT_EQ(download_scheduler_->handled_results().size(),
               prev_num_results + 1);
+
     bool success = !rpc_fail && !store_fail;
     EXPECT_EQ(download_scheduler_->handled_results().back(), success);
     EXPECT_EQ(initial_num_notifications + (success ? 1u : 0u),
               num_public_certs_downloaded_notifications_);
+    EXPECT_EQ(initial_num_public_cert_exp_reschedules + (success ? 1u : 0u),
+              public_cert_exp_scheduler_->num_reschedule_calls());
   }
 
   void CheckRpcRequest(
@@ -334,6 +346,7 @@ class NearbyShareCertificateManagerImplTest
 
   FakeNearbyShareCertificateStorage* cert_store_;
   FakeNearbyShareScheduler* private_cert_exp_scheduler_;
+  FakeNearbyShareScheduler* public_cert_exp_scheduler_;
   FakeNearbyShareScheduler* upload_scheduler_;
   FakeNearbyShareScheduler* download_scheduler_;
   std::string bluetooth_mac_address_ = kTestUnparsedBluetoothMacAddress;
@@ -591,4 +604,46 @@ TEST_F(NearbyShareCertificateManagerImplTest,
   metadata.clear_icon_url();
 
   VerifyPrivateCertificates(/*expected_metadata=*/metadata);
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
+       RemoveExpiredPublicCertificates_Success) {
+  clock_.SetNow(t0);
+  cert_man_->Start();
+
+  // The public certificate expiration scheduler notifies the certificate
+  // manager that a public certificate has expired.
+  EXPECT_EQ(0u, cert_store_->remove_expired_public_certificates_calls().size());
+  public_cert_exp_scheduler_->InvokeRequestCallback();
+  EXPECT_EQ(1u, cert_store_->remove_expired_public_certificates_calls().size());
+  EXPECT_EQ(t0,
+            cert_store_->remove_expired_public_certificates_calls().back().now);
+
+  EXPECT_EQ(0u, public_cert_exp_scheduler_->handled_results().size());
+  std::move(
+      cert_store_->remove_expired_public_certificates_calls().back().callback)
+      .Run(/*success=*/true);
+  EXPECT_EQ(1u, public_cert_exp_scheduler_->handled_results().size());
+  EXPECT_TRUE(public_cert_exp_scheduler_->handled_results().back());
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
+       RemoveExpiredPublicCertificates_Failue) {
+  clock_.SetNow(t0);
+  cert_man_->Start();
+
+  // The public certificate expiration scheduler notifies the certificate
+  // manager that a public certificate has expired.
+  EXPECT_EQ(0u, cert_store_->remove_expired_public_certificates_calls().size());
+  public_cert_exp_scheduler_->InvokeRequestCallback();
+  EXPECT_EQ(1u, cert_store_->remove_expired_public_certificates_calls().size());
+  EXPECT_EQ(t0,
+            cert_store_->remove_expired_public_certificates_calls().back().now);
+
+  EXPECT_EQ(0u, public_cert_exp_scheduler_->handled_results().size());
+  std::move(
+      cert_store_->remove_expired_public_certificates_calls().back().callback)
+      .Run(/*success=*/false);
+  EXPECT_EQ(1u, public_cert_exp_scheduler_->handled_results().size());
+  EXPECT_FALSE(public_cert_exp_scheduler_->handled_results().back());
 }

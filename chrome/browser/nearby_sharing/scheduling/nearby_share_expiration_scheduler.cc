@@ -8,7 +8,7 @@
 #include <utility>
 
 NearbyShareExpirationScheduler::NearbyShareExpirationScheduler(
-    ExpirationTimeCallback expiration_time_callback,
+    ExpirationTimeFunctor expiration_time_functor,
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
@@ -21,13 +21,16 @@ NearbyShareExpirationScheduler::NearbyShareExpirationScheduler(
                                pref_service,
                                std::move(on_request_callback),
                                clock),
-      expiration_time_callback_(std::move(expiration_time_callback)) {}
+      expiration_time_functor_(std::move(expiration_time_functor)) {}
 
 NearbyShareExpirationScheduler::~NearbyShareExpirationScheduler() = default;
 
 base::Optional<base::TimeDelta>
 NearbyShareExpirationScheduler::TimeUntilRecurringRequest(
     base::Time now) const {
-  return std::max(base::TimeDelta::FromSeconds(0),
-                  expiration_time_callback_.Run() - now);
+  base::Optional<base::Time> expiration_time = expiration_time_functor_.Run();
+  if (!expiration_time)
+    return base::nullopt;
+
+  return std::max(base::TimeDelta::FromSeconds(0), *expiration_time - now);
 }

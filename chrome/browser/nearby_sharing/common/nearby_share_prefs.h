@@ -26,6 +26,7 @@ extern const char kNearbySharingSchedulerContactUploadPrefName[];
 extern const char kNearbySharingSchedulerDownloadDeviceDataPrefName[];
 extern const char kNearbySharingSchedulerDownloadPublicCertificatesPrefName[];
 extern const char kNearbySharingSchedulerPrivateCertificateExpirationPrefName[];
+extern const char kNearbySharingSchedulerPublicCertificateExpirationPrefName[];
 extern const char kNearbySharingSchedulerUploadDeviceNamePrefName[];
 extern const char
     kNearbySharingSchedulerUploadLocalDeviceCertificatesPrefName[];

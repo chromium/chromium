@@ -31,8 +31,8 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
     ~ExpirationInstance();
 
     FakeNearbyShareScheduler* fake_scheduler = nullptr;
-    NearbyShareExpirationScheduler::ExpirationTimeCallback
-        expiration_time_callback;
+    NearbyShareExpirationScheduler::ExpirationTimeFunctor
+        expiration_time_functor;
     bool retry_failures;
     bool require_connectivity;
     PrefService* pref_service = nullptr;
@@ -77,8 +77,8 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
  private:
   // NearbyShareSchedulerFactory:
   std::unique_ptr<NearbyShareScheduler> CreateExpirationSchedulerInstance(
-      NearbyShareExpirationScheduler::ExpirationTimeCallback
-          expiration_time_callback,
+      NearbyShareExpirationScheduler::ExpirationTimeFunctor
+          expiration_time_functor,
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,

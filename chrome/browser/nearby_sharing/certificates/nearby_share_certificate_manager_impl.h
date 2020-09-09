@@ -104,35 +104,61 @@ class NearbyShareCertificateManagerImpl : public NearbyShareCertificateManager {
   void OnStart() override;
   void OnStop() override;
 
-  // Removes expired privates certificates, ensures that at least
-  // kNearbyShareNumPrivateCertificates are present for each visibility with
-  // contiguous validity periods, and uploads any changes to the Nearby Share
-  // server.
-  base::Time NextPrivateCertificateExpirationTime();
+  // Used by the private certificate expiration scheduler to determine the next
+  // private certificate expiration time. Returns base::Time::Min() if
+  // certificates are missing. This function never returns base::nullopt.
+  base::Optional<base::Time> NextPrivateCertificateExpirationTime();
+
+  // Used by the public certificate expiration scheduler to determine the next
+  // public certificate expiration time. Returns base::nullopt if no public
+  // certificates are present, and no expiration event is scheduled.
+  base::Optional<base::Time> NextPublicCertificateExpirationTime();
+
+  // Invoked by the private certificate expiration scheduler when an expired
+  // private certificate needs to be removed or if no private certificates exist
+  // yet. New certificate(s) will be created, and an upload to the Nearby Share
+  // server will be requested.
   void OnPrivateCertificateExpiration();
+
   void FinishPrivateCertificateRefresh(
       std::vector<NearbySharePrivateCertificate> new_certs,
       base::flat_map<NearbyShareVisibility, size_t> num_valid_certs,
       base::flat_map<NearbyShareVisibility, base::Time> latest_not_after,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+
+  // Invoked by the certificate upload scheduler when private certificates need
+  // to be converted to public certificates and uploaded to the Nearby Share
+  // server.
   void OnLocalDeviceCertificateUploadRequest();
+
   void OnLocalDeviceCertificateUploadFinished(bool success);
 
+  // Invoked by the public certificate expiration scheduler when an expired
+  // public certificate needs to be removed from storage.
+  void OnPublicCertificateExpiration();
+
+  void OnExpiredPublicCertificatesRemoved(bool success);
+
+  // Invoked by the certificate download scheduler when the public certificates
+  // from trusted contacts need to be downloaded from Nearby Share server via
+  // the ListPublicCertificates RPC.
   void OnDownloadPublicCertificatesRequest(
       base::Optional<std::string> page_token,
       size_t page_number,
       size_t certificate_count);
-  void OnRpcSuccess(
+
+  void OnListPublicCertificatesSuccess(
       size_t page_number,
       size_t certificate_count,
       const nearbyshare::proto::ListPublicCertificatesResponse& response);
-  void OnRpcFailure(size_t page_number,
-                    size_t certificate_count,
-                    NearbyShareHttpError error);
-  void OnPublicCertificatesAdded(base::Optional<std::string> page_token,
-                                 size_t page_number,
-                                 size_t certificate_count,
-                                 bool success);
+  void OnListPublicCertificatesFailure(size_t page_number,
+                                       size_t certificate_count,
+                                       NearbyShareHttpError error);
+  void OnPublicCertificatesAddedToStorage(
+      base::Optional<std::string> page_token,
+      size_t page_number,
+      size_t certificate_count,
+      bool success);
   void FinishDownloadPublicCertificates(bool success,
                                         NearbyShareHttpResult http_result,
                                         size_t page_number,
@@ -142,12 +168,14 @@ class NearbyShareCertificateManagerImpl : public NearbyShareCertificateManager {
   PrefService* pref_service_ = nullptr;
   NearbyShareClientFactory* client_factory_ = nullptr;
   base::Clock* clock_ = nullptr;
+  std::unique_ptr<NearbyShareCertificateStorage> certificate_storage_;
   std::unique_ptr<NearbyShareScheduler>
       private_certificate_expiration_scheduler_;
   std::unique_ptr<NearbyShareScheduler>
+      public_certificate_expiration_scheduler_;
+  std::unique_ptr<NearbyShareScheduler>
       upload_local_device_certificates_scheduler_;
   std::unique_ptr<NearbyShareScheduler> download_public_certificates_scheduler_;
-  std::unique_ptr<NearbyShareCertificateStorage> cert_store_;
   std::unique_ptr<NearbyShareClient> client_;
   base::WeakPtrFactory<NearbyShareCertificateManagerImpl> weak_ptr_factory_{
       this};

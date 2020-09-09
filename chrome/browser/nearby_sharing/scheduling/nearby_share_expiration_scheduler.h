@@ -16,19 +16,19 @@
 // expiration time provided by the owner.
 class NearbyShareExpirationScheduler : public NearbyShareSchedulerBase {
  public:
-  using ExpirationTimeCallback = base::RepeatingCallback<base::Time()>;
+  using ExpirationTimeFunctor =
+      base::RepeatingCallback<base::Optional<base::Time>()>;
 
-  // |expiration_time_callback|: A function provided by the owner that returns
+  // |expiration_time_functor|: A function provided by the owner that returns
   //     the next expiration time.
   // See NearbyShareSchedulerBase for a description of other inputs.
-  NearbyShareExpirationScheduler(
-      ExpirationTimeCallback expiration_time_callback,
-      bool retry_failures,
-      bool require_connectivity,
-      const std::string& pref_name,
-      PrefService* pref_service,
-      OnRequestCallback on_request_callback,
-      const base::Clock* clock);
+  NearbyShareExpirationScheduler(ExpirationTimeFunctor expiration_time_functor,
+                                 bool retry_failures,
+                                 bool require_connectivity,
+                                 const std::string& pref_name,
+                                 PrefService* pref_service,
+                                 OnRequestCallback on_request_callback,
+                                 const base::Clock* clock);
 
   ~NearbyShareExpirationScheduler() override;
 
@@ -36,7 +36,7 @@ class NearbyShareExpirationScheduler : public NearbyShareSchedulerBase {
   base::Optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const override;
 
-  ExpirationTimeCallback expiration_time_callback_;
+  ExpirationTimeFunctor expiration_time_functor_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_EXPIRATION_SCHEDULER_H_

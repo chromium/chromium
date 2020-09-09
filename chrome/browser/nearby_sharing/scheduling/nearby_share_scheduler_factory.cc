@@ -16,8 +16,8 @@ NearbyShareSchedulerFactory* NearbyShareSchedulerFactory::test_factory_ =
 // static
 std::unique_ptr<NearbyShareScheduler>
 NearbyShareSchedulerFactory::CreateExpirationScheduler(
-    NearbyShareExpirationScheduler::ExpirationTimeCallback
-        expiration_time_callback,
+    NearbyShareExpirationScheduler::ExpirationTimeFunctor
+        expiration_time_functor,
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
@@ -26,13 +26,13 @@ NearbyShareSchedulerFactory::CreateExpirationScheduler(
     const base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreateExpirationSchedulerInstance(
-        std::move(expiration_time_callback), retry_failures,
+        std::move(expiration_time_functor), retry_failures,
         require_connectivity, pref_name, pref_service,
         std::move(on_request_callback), clock);
   }
 
   return std::make_unique<NearbyShareExpirationScheduler>(
-      std::move(expiration_time_callback), retry_failures, require_connectivity,
+      std::move(expiration_time_functor), retry_failures, require_connectivity,
       pref_name, pref_service, std::move(on_request_callback), clock);
 }
 

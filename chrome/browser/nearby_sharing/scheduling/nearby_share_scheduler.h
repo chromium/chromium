@@ -30,9 +30,15 @@ class NearbyShareScheduler {
   // Makes a request that runs as soon as possible.
   virtual void MakeImmediateRequest() = 0;
 
-  // Processes the result of the previous request. Method to be called by
-  // the owner with the request is finished.
+  // Processes the result of the previous request. Method to be called by the
+  // owner when the request is finished. The timer for the next request is
+  // automatically scheduled.
   virtual void HandleResult(bool success) = 0;
+
+  // Recomputes the time until the next request, using GetTimeUntilNextRequest()
+  // as the source of truth. This method is essentially idempotent. NOTE: This
+  // method should rarely need to be called.
+  virtual void Reschedule() = 0;
 
   // Returns the time of the last known successful request. If no request has
   // succeeded, base::nullopt is returned.
@@ -42,10 +48,8 @@ class NearbyShareScheduler {
   // there is no request scheduled.
   virtual base::Optional<base::TimeDelta> GetTimeUntilNextRequest() const = 0;
 
-  // Returns true after the relevant delegate has been alerted of a request
-  // |type| but before the delegate has returned the result to the scheduler.
-  // In other words, between ...Delegate::On...Requested() and
-  // HandleResult().
+  // Returns true after the |callback_| has been alerted of a request but before
+  // HandleResult() is invoked.
   virtual bool IsWaitingForResult() const = 0;
 
   // The number of times the current request type has failed.

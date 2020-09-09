@@ -18,6 +18,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
+#include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -575,8 +576,16 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificates(
 
   auto ids_to_remove = std::make_unique<std::vector<std::string>>();
   for (const auto& pair : public_certificate_expirations_) {
-    if (pair.second > now)
+    // Because the list is sorted by expiration time, break as soon as we
+    // encounter an unexpired certificate. Apply a tolerance when evaluating
+    // whether the certificate is expired to account for clock skew between
+    // devices. This conforms this the GmsCore implementation.
+    if (!IsNearbyShareCertificateExpired(
+            now,
+            /*not_after=*/pair.second,
+            /*use_public_certificate_tolerance=*/true)) {
       break;
+    }
 
     ids_to_remove->emplace_back(pair.first);
   }

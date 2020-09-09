@@ -438,7 +438,12 @@ TEST_F(NearbyShareCertificateStorageImplTest, RemoveExpiredPublicCertificates) {
     expiration_times.emplace_back(TimestampToTime(pair.second.end_time()));
   }
   std::sort(expiration_times.begin(), expiration_times.end());
-  base::Time now = expiration_times[1];
+
+  // The current time exceeds the expiration times of the first two certificates
+  // even accounting for the expiration time tolerance applied to public
+  // certificates to account for clock skew.
+  base::Time now = expiration_times[1] +
+                   kNearbySharePublicCertificateValidityBoundOffsetTolerance;
 
   bool succeeded = false;
   cert_store_->RemoveExpiredPublicCertificates(
@@ -450,7 +455,8 @@ TEST_F(NearbyShareCertificateStorageImplTest, RemoveExpiredPublicCertificates) {
   ASSERT_TRUE(succeeded);
   ASSERT_EQ(1u, db_entries_.size());
   for (const auto& pair : db_entries_) {
-    EXPECT_LE(now, TimestampToTime(pair.second.end_time()));
+    EXPECT_LE(now - kNearbySharePublicCertificateValidityBoundOffsetTolerance,
+              TimestampToTime(pair.second.end_time()));
   }
 }
 

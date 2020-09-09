@@ -21,8 +21,8 @@ class PrefService;
 class NearbyShareSchedulerFactory {
  public:
   static std::unique_ptr<NearbyShareScheduler> CreateExpirationScheduler(
-      NearbyShareExpirationScheduler::ExpirationTimeCallback
-          expiration_time_callback,
+      NearbyShareExpirationScheduler::ExpirationTimeFunctor
+          expiration_time_functor,
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,
@@ -54,8 +54,8 @@ class NearbyShareSchedulerFactory {
 
   virtual std::unique_ptr<NearbyShareScheduler>
   CreateExpirationSchedulerInstance(
-      NearbyShareExpirationScheduler::ExpirationTimeCallback
-          expiration_time_callback,
+      NearbyShareExpirationScheduler::ExpirationTimeFunctor
+          expiration_time_functor,
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,

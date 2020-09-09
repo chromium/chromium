@@ -19,6 +19,10 @@ void FakeNearbyShareScheduler::HandleResult(bool success) {
   handled_results_.push_back(success);
 }
 
+void FakeNearbyShareScheduler::Reschedule() {
+  ++num_reschedule_calls_;
+}
+
 base::Optional<base::Time> FakeNearbyShareScheduler::GetLastSuccessTime()
     const {
   return last_success_time_;

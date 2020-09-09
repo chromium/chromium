@@ -42,6 +42,8 @@ const char kNearbySharingSchedulerDownloadPublicCertificatesPrefName[] =
     "nearby_sharing.scheduler.download_public_certificates";
 const char kNearbySharingSchedulerPrivateCertificateExpirationPrefName[] =
     "nearby_sharing.scheduler.private_certificate_expiration";
+const char kNearbySharingSchedulerPublicCertificateExpirationPrefName[] =
+    "nearby_sharing.scheduler.public_certificate_expiration";
 const char kNearbySharingSchedulerUploadDeviceNamePrefName[] =
     "nearby_sharing.scheduler.upload_device_name";
 const char kNearbySharingSchedulerUploadLocalDeviceCertificatesPrefName[] =
@@ -88,6 +90,8 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
       prefs::kNearbySharingSchedulerDownloadPublicCertificatesPrefName);
   registry->RegisterDictionaryPref(
       prefs::kNearbySharingSchedulerPrivateCertificateExpirationPrefName);
+  registry->RegisterDictionaryPref(
+      prefs::kNearbySharingSchedulerPublicCertificateExpirationPrefName);
   registry->RegisterDictionaryPref(
       prefs::kNearbySharingSchedulerUploadDeviceNamePrefName);
   registry->RegisterDictionaryPref(

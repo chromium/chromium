@@ -65,6 +65,7 @@ class NearbyShareSchedulerBase
   // NearbyShareScheduler:
   void MakeImmediateRequest() override;
   void HandleResult(bool success) override;
+  void Reschedule() override;
   base::Optional<base::Time> GetLastSuccessTime() const override;
   base::Optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
   bool IsWaitingForResult() const override;
@@ -94,10 +95,6 @@ class NearbyShareSchedulerBase
   // base::nullopt if there is no failure to retry or if failure retry is not
   // enabled for the scheduler.
   base::Optional<base::TimeDelta> TimeUntilRetry(base::Time now) const;
-
-  // Schedules/Reschedules request, using GetTimeUntilNextRequest() as the
-  // source of truth. This method is essentially idempotent.
-  void SetTimer();
 
   // Notifies the owner that a request is ready. Early returns if not online and
   // the scheduler requires connectivity; the attempt is rescheduled when
