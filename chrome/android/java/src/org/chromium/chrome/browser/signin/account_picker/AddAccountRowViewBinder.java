@@ -7,10 +7,8 @@ package org.chromium.chrome.browser.signin.account_picker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,17 +32,6 @@ class AddAccountRowViewBinder {
     }
 
     static void bindView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            // Set the vector drawable programmatically because app:drawableStartCompat is
-            // only available after AndroidX appcompat library.
-
-            // TODO(https://crbug.com/948367): Use app:drawableStartCompat.
-            TextView textView = (TextView) view;
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    AppCompatResources.getDrawable(
-                            view.getContext(), R.drawable.ic_add_circle_40dp),
-                    null, null, null);
-        }
         if (propertyKey == AddAccountRowProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(model.get(AddAccountRowProperties.ON_CLICK_LISTENER));
         } else {
