@@ -1190,9 +1190,12 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
   UpdateBackdrop();
 
   if (geometry_changed_callback_) {
-    const float scale = 1.f / GetClientToDpScale();
-    const gfx::Rect scaled = gfx::ScaleToRoundedRect(GetVisibleBounds(), scale);
-    geometry_changed_callback_.Run(scaled);
+    // Since the visible bounds are in screen coordinates, do not scale these
+    // bounds with the display's scale before sending them.
+    // TODO(b/167286795): Instead of sending bounds in screen coordinates, send
+    // the bounds in the display along with the display information, similar to
+    // the bounds_changed_callback_.
+    geometry_changed_callback_.Run(GetVisibleBounds());
   }
 
   // Apply new top inset height.
