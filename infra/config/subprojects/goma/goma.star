@@ -52,6 +52,7 @@ def fyi_goma_canary_builder(*, name, **kwargs):
         name = name,
         builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
+        isolated_server = "https://isolateserver.appspot.com",
         **kwargs
     )
 
