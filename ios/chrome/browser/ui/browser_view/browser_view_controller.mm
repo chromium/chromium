@@ -1640,7 +1640,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       }
       completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         BrowserViewController* strongSelf = weakSelf;
-        weakSelf.fullscreenController->ResizeViewport();
+        strongSelf.fullscreenController->ResizeViewport();
         if (strongSelf.tabStripView) {
           [strongSelf.tabStripCoordinator tabStripSizeDidChange];
         }
@@ -3391,6 +3391,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     if (self.isNTPActiveForCurrentWebState) {
       NewTabPageTabHelper::FromWebState(self.currentWebState)->Deactivate();
     }
+    // The next call ensures that web view content of any window that doesn't
+    // go through viewWillTransitionToSize:withTransitionCoordinator:,
+    // including for the first window, is sized properly.
+    self.fullscreenController->ResizeViewport();
   }
 }
 
