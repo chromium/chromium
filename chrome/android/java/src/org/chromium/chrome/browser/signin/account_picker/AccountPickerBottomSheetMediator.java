@@ -143,9 +143,9 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             // When a non-empty account list appears while it is currently zero-account screen,
             // we should change the screen to collapsed account list and set the selected account
             // to the first account of the account list
+            setSelectedAccountName(accounts.get(0).name);
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE,
                     ViewState.COLLAPSED_ACCOUNT_LIST);
-            setSelectedAccountName(accounts.get(0).name);
         } else if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
                 && AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null) {
             // When it is already collapsed account list, we update the selected account only
