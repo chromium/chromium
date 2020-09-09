@@ -131,7 +131,7 @@
 <translation id="1923956950274750765">Orquídia mitjà</translation>
 <translation id="1928932365747995741">No hi ha cap camp de text anterior que es pugui editar</translation>
 <translation id="1964135212174907577">Objecte següent</translation>
-<translation id="1966649499058910679">Destaca cada paraula a mesura que es digui</translation>
+<translation id="1966649499058910679">Marca cada paraula a mesura que es digui</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostra ordres de braille als menús de ChromeVox</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{claudàtor d'obertura}other{# claudàtors d'obertura}}</translation>
@@ -863,7 +863,7 @@
 <translation id="7882421473871500483">Marró</translation>
 <translation id="78826985582142166">control lliscant</translation>
 <translation id="7913106023953875143">No hi ha cap encapçalament més de nivell 2</translation>
-<translation id="7914870167134465181">Opcions per destacar</translation>
+<translation id="7914870167134465181">Opcions per marcar</translation>
 <translation id="7927711904086083099">Sense seleccionar</translation>
 <translation id="7935627501098484003">Control de temps</translation>
 <translation id="7939428177581522200">s'ha afegit a la selecció</translation>

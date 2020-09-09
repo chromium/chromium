@@ -248,7 +248,7 @@
 <translation id="1908217026282415406">Camera use and movement</translation>
 <translation id="191374271204266022">Copy as JSON</translation>
 <translation id="1914326953223720820">Unzip Service</translation>
-<translation id="1915697529809968049">Use touch ID instead of CVC?</translation>
+<translation id="1915697529809968049">Use Touch ID instead of CVC?</translation>
 <translation id="1916770123977586577">To apply your updated settings to this site, reload this page</translation>
 <translation id="1917876262703816781">A data breach on a site or app exposed your password. Chrome recommends changing your password on <ph name="ORIGIN" /> now.</translation>
 <translation id="1919345977826869612">Ads</translation>
@@ -1329,7 +1329,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6409754798200046165">You just entered your password on a deceptive site. Chrome recommends changing your password now.</translation>
 <translation id="6410264514553301377">Enter the expiry date and CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium can help you protect your Google account and change your password.</translation>
-<translation id="6423385022588644828">Confirm your cards faster by using touch ID from now on</translation>
+<translation id="6423385022588644828">Confirm your cards faster by using Touch ID from now on</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Gate fold</translation>
 <translation id="6428450836711225518">Verifying your phone number</translation>
@@ -1499,7 +1499,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7210993021468939304">Linux activity within the container, and can install and run Linux apps within the container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about this problem.</translation>
 <translation id="7214062855724067749">Use the fonts installed on your computer so that you can create advanced typography</translation>
-<translation id="7217745192097460130">Use touch ID to verify and complete your purchase?</translation>
+<translation id="7217745192097460130">Use Touch ID to verify and complete your purchase?</translation>
 <translation id="7219179957768738017">The connection uses <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Processing</translation>
 <translation id="7221855153210829124">Show notifications</translation>
@@ -1842,7 +1842,7 @@ Additional details:
 <translation id="8559762987265718583">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your device's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
 <translation id="8564182942834072828">Separate documents/Uncollated copies</translation>
 <translation id="8564985650692024650">Chromium recommends resetting your <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> password if you reused it on other sites.</translation>
-<translation id="8574899947864779331">Use touch ID to confirm cards faster</translation>
+<translation id="8574899947864779331">Use Touch ID to confirm cards faster</translation>
 <translation id="858637041960032120">Add phone no.</translation>
 <translation id="8589998999637048520">Best quality</translation>
 <translation id="860043288473659153">Cardholder name</translation>
@@ -1940,7 +1940,7 @@ Additional details:
 <translation id="9035022520814077154">Security error</translation>
 <translation id="9038649477754266430">Use a prediction service to load pages more quickly</translation>
 <translation id="9039213469156557790">Furthermore, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the behaviour of the page.</translation>
-<translation id="9044359186343685026">Use touch ID</translation>
+<translation id="9044359186343685026">Use Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">You attempted to reach <ph name="DOMAIN" />, but the server presented an invalid certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
