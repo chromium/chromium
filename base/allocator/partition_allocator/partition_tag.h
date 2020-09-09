@@ -25,9 +25,11 @@ namespace internal {
 // TODO(tasak): add a description about the partition tag.
 using PartitionTag = uint8_t;
 
-// Allocate extra 16 bytes for the partition tag. 14 bytes are unused
-// (reserved).
-static constexpr size_t kInSlotTagBufferSize = 16;
+// Allocate extra space for the partition tag to satisfy the alignment
+// requirement.
+static constexpr size_t kInSlotTagBufferSize = alignof(std::max_align_t);
+static_assert(sizeof(PartitionTag) <= kInSlotTagBufferSize,
+              "PartitionTag should fit into the in-slot buffer.");
 
 #if DCHECK_IS_ON()
 // The layout inside the slot is |tag|cookie|object|(empty)|cookie|.

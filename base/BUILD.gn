@@ -1772,6 +1772,8 @@ component("base") {
         "allocator/partition_allocator/partition_oom.h",
         "allocator/partition_allocator/partition_page.cc",
         "allocator/partition_allocator/partition_page.h",
+        "allocator/partition_allocator/partition_ref_count.cc",
+        "allocator/partition_allocator/partition_ref_count.h",
         "allocator/partition_allocator/partition_tag.h",
         "allocator/partition_allocator/partition_tag_bitmap.h",
         "allocator/partition_allocator/random.cc",

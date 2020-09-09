@@ -66,6 +66,7 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/base_export.h"
 #include "base/bits.h"
@@ -83,6 +84,10 @@
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 #include <stdlib.h>
 #endif
+
+#if defined(ADDRESS_SANITIZER)
+#include <sanitizer/asan_interface.h>
+#endif  // defined(ADDRESS_SANITIZER)
 
 // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
 // size as other alloc code.
@@ -173,6 +178,7 @@ ALWAYS_INLINE void* PartitionPointerAdjustSubtract(bool allow_extras,
   if (allow_extras) {
     ptr = PartitionTagPointerAdjustSubtract(ptr);
     ptr = PartitionCookiePointerAdjustSubtract(ptr);
+    ptr = PartitionRefCountPointerAdjustSubtract(ptr);
   }
   return ptr;
 }
@@ -181,6 +187,7 @@ ALWAYS_INLINE void* PartitionPointerAdjustAdd(bool allow_extras, void* ptr) {
   if (allow_extras) {
     ptr = PartitionTagPointerAdjustAdd(ptr);
     ptr = PartitionCookiePointerAdjustAdd(ptr);
+    ptr = PartitionRefCountPointerAdjustAdd(ptr);
   }
   return ptr;
 }
@@ -189,6 +196,7 @@ ALWAYS_INLINE size_t PartitionSizeAdjustAdd(bool allow_extras, size_t size) {
   if (allow_extras) {
     size = PartitionTagSizeAdjustAdd(size);
     size = PartitionCookieSizeAdjustAdd(size);
+    size = PartitionRefCountSizeAdjustAdd(size);
   }
   return size;
 }
@@ -198,6 +206,7 @@ ALWAYS_INLINE size_t PartitionSizeAdjustSubtract(bool allow_extras,
   if (allow_extras) {
     size = PartitionTagSizeAdjustSubtract(size);
     size = PartitionCookieSizeAdjustSubtract(size);
+    size = PartitionRefCountSizeAdjustSubtract(size);
   }
   return size;
 }
@@ -369,6 +378,7 @@ struct BASE_EXPORT PartitionRoot {
   size_t total_size_of_committed_pages = 0;
   size_t total_size_of_super_pages = 0;
   size_t total_size_of_direct_mapped_pages = 0;
+  bool is_thread_safe = thread_safe;
   // TODO(bartekn): Consider size of added extras (cookies and/or tag, or
   // nothing) instead of true|false, so that we can just add or subtract the
   // size instead of having an if branch on the hot paths.
@@ -482,6 +492,9 @@ struct BASE_EXPORT PartitionRoot {
 
   internal::PartitionBucket<thread_safe>* SizeToBucket(size_t size) const;
 
+  // Frees memory, with |ptr| as returned by |RawAlloc()|.
+  ALWAYS_INLINE void RawFree(void* ptr, Page* page);
+
  private:
   // Allocates memory, without any cookies / tags.
   //
@@ -492,8 +505,6 @@ struct BASE_EXPORT PartitionRoot {
                                size_t size,
                                size_t* allocated_size,
                                bool* is_already_zeroed);
-  // Frees memory, with |ptr| as returned by |RawAlloc()|.
-  ALWAYS_INLINE void RawFree(void* ptr, Page* page);
   ALWAYS_INLINE void* AllocFromBucket(Bucket* bucket,
                                       int flags,
                                       size_t size,
@@ -614,12 +625,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     size_t allocated_size = page->GetAllocatedSize();
 
     // |ptr| points after the tag and the cookie.
-    // The layout is | tag | cookie | data | cookie |
-    //               ^              ^
-    //               |             ptr
-    //      allocation_start_ptr
+    // The layout is | tag or ref count | cookie | data | cookie |
+    //               ^                           ^
+    //      allocation_start_ptr                ptr
     //
-    // Note: tag and cookie can be 0-sized.
+    // Note: tag, reference count and cookie can be 0-sized.
     void* allocation_start_ptr =
         internal::PartitionPointerAdjustSubtract(true /* allow_extras */, ptr);
 
@@ -641,6 +651,23 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
       internal::PartitionTagIncrementValue(ptr, size_with_no_extras);
 #else
       internal::PartitionTagClearValue(ptr, size_with_no_extras);
+#endif
+
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+      internal::PartitionRefCount* ref_count =
+          internal::PartitionRefCountPointerNoOffset(ptr);
+      // If we are holding the last reference to the allocation, it can be freed
+      // immediately. Otherwise, defer the operation and zap the memory to turn
+      // potential use-after-free issues into unexploitable crashes.
+      if (UNLIKELY(!ref_count->HasOneRef())) {
+#ifdef ADDRESS_SANITIZER
+        ASAN_POISON_MEMORY_REGION(ptr, size_with_no_extras);
+#else
+        memset(ptr, kFreedByte, size_with_no_extras);
+#endif
+        ref_count->Release();
+        return;
+      }
 #endif
     }
 
@@ -878,17 +905,21 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(int flags,
     memset(ret, 0, size_with_no_extras);
   }
 
-  // Do not set tag for MTECheckedPtr in the set-tag-at-free case.
-  // It is set only at Free() time and at slot span allocation time.
-#if !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE
   bool is_direct_mapped = size > kMaxBucketed;
   if (allow_extras && !is_direct_mapped) {
+    // Do not set tag for MTECheckedPtr in the set-tag-at-free case.
+    // It is set only at Free() time and at slot span allocation time.
+#if !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE
     size_t slot_size_with_no_extras =
         internal::PartitionSizeAdjustSubtract(allow_extras, allocated_size);
     internal::PartitionTagSetValue(ret, slot_size_with_no_extras,
                                    GetNewPartitionTag());
-  }
 #endif  // !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE
+
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+    internal::PartitionRefCountPointerNoOffset(ret)->Init();
+#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+  }
   return ret;
 }
 

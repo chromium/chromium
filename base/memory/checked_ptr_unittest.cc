@@ -29,6 +29,7 @@ static_assert(sizeof(CheckedPtr<int>) == sizeof(int*),
 static_assert(sizeof(CheckedPtr<std::string>) == sizeof(std::string*),
               "CheckedPtr shouldn't add memory overhead");
 
+#if !ENABLE_BACKUP_REF_PTR_IMPL
 // |is_trivially_copyable| assertion means that arrays/vectors of CheckedPtr can
 // be copied by memcpy.
 static_assert(std::is_trivially_copyable<CheckedPtr<void>>::value,
@@ -57,6 +58,7 @@ static_assert(std::is_trivially_default_constructible<CheckedPtr<int>>::value,
 static_assert(
     std::is_trivially_default_constructible<CheckedPtr<std::string>>::value,
     "CheckedPtr should be trivially default constructible");
+#endif  // !ENABLE_BACKUP_REF_PTR_IMPL
 
 // Don't use base::internal for testing CheckedPtr API, to test if code outside
 // this namespace calls the correct functions from this namespace.
@@ -534,20 +536,20 @@ TEST_F(CheckedPtrTest, UpcastConvertible) {
 
   {
     Derived derived_val(42, 84, 1024);
-    CheckedPtr<Derived> checked_derived_ptr = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr1 = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr2 = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr3 = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr4 = &derived_val;
 
-    CheckedPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr));
+    CheckedPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr1));
     EXPECT_EQ(checked_base1_ptr->b1, 42);
-    CheckedPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr));
+    CheckedPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr2));
     EXPECT_EQ(checked_base2_ptr->b2, 84);
 
-    checked_base1_ptr = std::move(checked_derived_ptr);
+    checked_base1_ptr = std::move(checked_derived_ptr3);
     EXPECT_EQ(checked_base1_ptr->b1, 42);
-    checked_base2_ptr = std::move(checked_derived_ptr);
+    checked_base2_ptr = std::move(checked_derived_ptr4);
     EXPECT_EQ(checked_base2_ptr->b2, 84);
-
-    EXPECT_EQ(checked_base1_ptr, checked_derived_ptr);
-    EXPECT_EQ(checked_base2_ptr, checked_derived_ptr);
   }
 }
 
@@ -815,7 +817,7 @@ TEST(CheckedPtr2OrMTEImpl, CrashOnGenerationMismatch) {
   // pointer and points to the tag appropriately.
   char bytes[] = {0xBA, 0x42, 0x78, 0x89};
   CheckedPtr<char, CheckedPtr2OrMTEImplForTest> ptr = bytes + kTagOffsetForTest;
-  EXPECT_TRUE(*ptr == 0x78);
+  EXPECT_EQ(*ptr, 0x78);
   // Clobber the generation associated with the fake allocation.
   bytes[0] = 0;
   EXPECT_DEATH_IF_SUPPORTED(if (*ptr == 0x78) return, "");
@@ -847,7 +849,7 @@ TEST(CheckedPtr2OrMTEImpl, CrashOnUseAfterFree) {
   // exercise real PartitionAlloc paths.
   CheckedPtr<int> ptr = static_cast<int*>(raw_ptr);
   *ptr = 42;
-  EXPECT_TRUE(*ptr == 42);
+  EXPECT_EQ(*ptr, 42);
   allocator.root()->Free(raw_ptr);
   EXPECT_DEATH_IF_SUPPORTED(if (*ptr == 42) return, "");
 }
@@ -881,10 +883,48 @@ TEST(CheckedPtr2OrMTEImpl, CrashOnUseAfterFree_WithOffset) {
   }
 }
 #endif  // ENABLE_TAG_FOR_MTE_CHECKED_PTR
-
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_CHECKED_PTR2_OR_MTE_IMPL &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
+#if BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL && \
+    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+TEST(BackupRefPtrImpl, Basic) {
+  // This test works only if GigaCage is enabled. Bail out otherwise.
+  if (!IsPartitionAllocGigaCageEnabled())
+    return;
+
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init();
+  uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(sizeof(uint64_t), ""));
+  // Use the actual CheckedPtr implementation, not a test substitute, to
+  // exercise real PartitionAlloc paths.
+  CheckedPtr<uint64_t> checked_ptr1 = raw_ptr1;
+
+  *raw_ptr1 = 42;
+  EXPECT_EQ(*raw_ptr1, *checked_ptr1);
+
+  // The allocation should be poisoned since there's a CheckedPtr alive.
+  allocator.root()->Free(raw_ptr1);
+  EXPECT_NE(*checked_ptr1, 42ul);
+
+  // The allocator should not be able to reuse the slot at this point.
+  void* raw_ptr2 = allocator.root()->Alloc(sizeof(uint64_t), "");
+  EXPECT_NE(raw_ptr1, raw_ptr2);
+  allocator.root()->Free(raw_ptr2);
+
+  // When the last reference is released, the slot should become reusable.
+  checked_ptr1 = nullptr;
+  void* raw_ptr3 = allocator.root()->Alloc(sizeof(uint64_t), "");
+  EXPECT_EQ(raw_ptr1, raw_ptr3);
+  allocator.root()->Free(raw_ptr3);
+}
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL &&
+        // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }  // namespace internal
 }  // namespace base
 

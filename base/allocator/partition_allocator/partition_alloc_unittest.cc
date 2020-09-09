@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/logging.h"
@@ -134,11 +135,13 @@ namespace internal {
 
 const size_t kTestAllocSize = 16;
 #if !DCHECK_IS_ON()
-const size_t kPointerOffset = kInSlotTagBufferSize;
-const size_t kExtraAllocSize = kInSlotTagBufferSize;
+const size_t kPointerOffset = kInSlotTagBufferSize + kInSlotRefCountBufferSize;
+const size_t kExtraAllocSize = kInSlotTagBufferSize + kInSlotRefCountBufferSize;
 #else
-const size_t kPointerOffset = kCookieSize + kInSlotTagBufferSize;
-const size_t kExtraAllocSize = kCookieSize * 2 + kInSlotTagBufferSize;
+const size_t kPointerOffset =
+    kCookieSize + kInSlotTagBufferSize + kInSlotRefCountBufferSize;
+const size_t kExtraAllocSize =
+    kCookieSize * 2 + kInSlotTagBufferSize + kInSlotRefCountBufferSize;
 #endif
 const size_t kRealAllocSize = kTestAllocSize + kExtraAllocSize;
 
@@ -1548,12 +1551,14 @@ TEST_F(PartitionAllocDeathTest, LargeAllocs) {
   EXPECT_DEATH(allocator.root()->Alloc(kMaxDirectMapped + 1, type_name), "");
 }
 
+// TODO(glazunov): make BackupRefPtr compatible with the double-free detection.
+#if !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+
 // Check that our immediate double-free detection works.
 TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
-
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
 }
 
@@ -1570,6 +1575,8 @@ TEST_F(PartitionAllocDeathTest, RefcountDoubleFree) {
   // which is illegal and should be trapped.
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
 }
+
+#endif  // !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 
 // Check that guard pages are present where expected.
 TEST_F(PartitionAllocDeathTest, GuardPages) {
@@ -2417,11 +2424,12 @@ TEST_F(PartitionAllocTest, Alignment) {
     // cookie.
     expected_alignment = std::min(expected_alignment, kCookieSize);
 #endif
-#if ENABLE_TAG_FOR_CHECKED_PTR2
+#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
     // When ENABLE_TAG_FOR_CHECKED_PTR2, a kInSlotTagBufferSize is added before
     // rounding up the allocation size. The returned pointer points after the
     // partition tag.
-    expected_alignment = std::min({expected_alignment, kInSlotTagBufferSize});
+    expected_alignment = std::min(
+        {expected_alignment, kInSlotTagBufferSize + kInSlotRefCountBufferSize});
 #endif
     for (int index = 0; index < 3; index++) {
       void* ptr = allocator.root()->Alloc(size, "");
@@ -2578,6 +2586,48 @@ TEST_F(PartitionAllocTest, GetAllocatedSize) {
     allocator.root()->Free(ptr);
   }
 }
+
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+
+TEST_F(PartitionAllocTest, RefCountBasic) {
+  constexpr uint64_t kCookie = 0x1234567890ABCDEF;
+
+  size_t alloc_size = 64 - kExtraAllocSize;
+  uint64_t* ptr1 = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_TRUE(ptr1);
+
+  *ptr1 = kCookie;
+
+  auto* ref_count = PartitionRefCountPointer(ptr1);
+
+  ref_count->AddRef();
+  ref_count->Release();
+  EXPECT_TRUE(ref_count->HasOneRef());
+  EXPECT_EQ(*ptr1, kCookie);
+
+  ref_count->AddRef();
+  EXPECT_FALSE(ref_count->HasOneRef());
+
+  allocator.root()->Free(ptr1);
+  EXPECT_NE(*ptr1, kCookie);
+
+  // The allocator should not reuse the original slot since its reference count
+  // doesn't equal zero.
+  uint64_t* ptr2 = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_NE(ptr1, ptr2);
+  allocator.root()->Free(ptr2);
+
+  // When the last reference is released, the slot should become reusable.
+  ref_count->Release();
+  uint64_t* ptr3 = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_EQ(ptr1, ptr3);
+  allocator.root()->Free(ptr3);
+}
+
+#endif
 
 }  // namespace internal
 }  // namespace base
