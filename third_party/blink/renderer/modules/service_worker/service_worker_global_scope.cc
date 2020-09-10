@@ -710,8 +710,9 @@ ServiceWorker* ServiceWorkerGlobalScope::GetOrCreateServiceWorker(
     return nullptr;
   ::blink::ServiceWorker* worker = service_worker_objects_.at(info.version_id);
   if (!worker) {
+    const int64_t version_id = info.version_id;
     worker = ::blink::ServiceWorker::Create(this, std::move(info));
-    service_worker_objects_.Set(info.version_id, worker);
+    service_worker_objects_.Set(version_id, worker);
   }
   return worker;
 }
