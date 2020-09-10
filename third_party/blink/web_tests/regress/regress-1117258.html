@@ -1,0 +1,35 @@
+<title>Regression tests for crbug.com/1117258</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+async_test((test) => {
+  function worker_code() {
+      self.addEventListener('message', () => {
+      let code = [
+          0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00
+      ];
+      let wasm_blob = URL.createObjectURL(
+          new Blob([new Uint8Array(code)], { type: "application/wasm" })
+      );
+      let controller = new AbortController();
+      let signal = controller.signal;
+      Object.defineProperty(WebAssembly.Module.prototype, 'then', {
+          get: function () {
+              controller.abort();
+          }
+      });
+      WebAssembly.compileStreaming(fetch(wasm_blob, { signal })).finally(
+       () => self.postMessage('success')
+      );
+    });
+  }
+  let blob = new Blob(['(', worker_code.toString(), ')()']);
+  let worker = new Worker(window.URL.createObjectURL(blob));
+  worker.addEventListener('message', (message) => {
+    assert_equals(message.data, 'success');
+    test.done();
+  });
+  worker.postMessage('start');
+}, 'Regression test for crbug.com/1117258');
+</script>
