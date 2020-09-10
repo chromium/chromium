@@ -86,7 +86,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -341,9 +340,9 @@ public class PaymentRequestImpl
             mQueryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
 
-        mSpec = new PaymentRequestSpec(mPaymentOptions, methodData);
-        if (parseAndValidateDetails(details)
-                && parseAndValidateDetailsForSkipToGPayHelper(details)) {
+        mSpec = PaymentRequestSpec.createAndValidate(
+                details, mPaymentOptions, methodData, LocaleUtils.getDefaultLocaleString());
+        if (mSpec != null && parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
                     details, mSpec.getRawTotal(), mSpec.getRawLineItems());
         } else {
@@ -351,14 +350,12 @@ public class PaymentRequestImpl
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
             return false;
         }
-        mSpec.createNative(details, LocaleUtils.getDefaultLocaleString());
 
         if (mSpec.getRawTotal() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.TOTAL_REQUIRED);
             return false;
         }
-        mSpec.setId(details.id);
 
         // The first time initializations and validation of all of the parameters of {@link
         // PaymentRequestParams} should be done before {@link
@@ -840,7 +837,7 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (parseAndValidateDetails(details)
+        if (mSpec.parseAndValidateDetails(details)
                 && parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
                     details, mSpec.getRawTotal(), mSpec.getRawLineItems());
@@ -889,7 +886,7 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (parseAndValidateDetails(details)
+        if (mSpec.parseAndValidateDetails(details)
                 && parseAndValidateDetailsForSkipToGPayHelper(details)) {
             mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
                     details, mSpec.getRawTotal(), mSpec.getRawLineItems());
@@ -984,51 +981,6 @@ public class PaymentRequestImpl
      */
     private boolean parseAndValidateDetailsForSkipToGPayHelper(PaymentDetails details) {
         return mSkipToGPayHelper == null || mSkipToGPayHelper.setShippingOptionIfValid(details);
-    }
-
-    /**
-     * Sets the total, display line items, and shipping options based on input and returns the
-     * status boolean. That status is true for valid data, false for invalid data. If the input is
-     * invalid, disconnects from the client. Both raw and UI versions of data are updated.
-     *
-     * @param details The total, line items, and shipping options to parse, validate, and save in
-     *                member variables.
-     * @return True if the data is valid. False if the data is invalid.
-     */
-    private boolean parseAndValidateDetails(PaymentDetails details) {
-        if (!PaymentValidator.validatePaymentDetails(details)) return false;
-
-        if (details.total != null) {
-            mSpec.setRawTotal(details.total);
-        }
-
-        if (mSpec.getRawLineItems() == null || details.displayItems != null) {
-            mSpec.setRawLineItems(Collections.unmodifiableList(details.displayItems != null
-                            ? Arrays.asList(details.displayItems)
-                            : new ArrayList<>()));
-        }
-
-        if (details.modifiers != null) {
-            if (details.modifiers.length == 0) mSpec.getModifiers().clear();
-
-            for (int i = 0; i < details.modifiers.length; i++) {
-                PaymentDetailsModifier modifier = details.modifiers[i];
-                String method = modifier.methodData.supportedMethod;
-                mSpec.getModifiers().put(method, modifier);
-            }
-        }
-
-        if (details.shippingOptions != null) {
-            mSpec.setRawShippingOptions(
-                    Collections.unmodifiableList(Arrays.asList(details.shippingOptions)));
-        } else if (mSpec.getRawShippingOptions() == null) {
-            mSpec.setRawShippingOptions(Collections.unmodifiableList(new ArrayList<>()));
-        }
-
-        assert mSpec.getRawTotal() != null;
-        assert mSpec.getRawLineItems() != null;
-
-        return true;
     }
 
     /**

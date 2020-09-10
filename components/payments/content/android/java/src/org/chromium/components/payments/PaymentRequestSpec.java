@@ -19,6 +19,9 @@ import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,36 +34,40 @@ import java.util.Map;
 public class PaymentRequestSpec {
     // TODO(crbug.com/1124917): these parameters duplicate with those in payment_request_spec from
     // the blink side. We need to de-dup them.
+    private final Map<String, PaymentMethodData> mMethodData;
+    private final String mId;
     private Map<String, PaymentDetailsModifier> mModifiers = new ArrayMap<>();
-    private String mId;
     private List<PaymentShippingOption> mRawShippingOptions;
     private List<PaymentItem> mRawLineItems;
     private PaymentItem mRawTotal;
-    private final PaymentOptions mOptions;
-    private final Map<String, PaymentMethodData> mMethodData;
     private long mNativePointer;
 
     /**
-     * Creates an instance to store the information received from the renderer that invoked the
-     * Payment Request API.
+     * Creates a valid instance of PaymentRequestSpec.
+     * @param details The payment details, e.g., the total amount.
      * @param options The payment options, e.g., whether shipping is requested.
      * @param methodData The map of supported payment method identifiers and corresponding payment
-     * method specific data.
+     * @param appLocale The current application locale.
+     * @return The created instance if valid; null otherwise.
      */
-    public PaymentRequestSpec(PaymentOptions options, Map<String, PaymentMethodData> methodData) {
-        mOptions = options;
+    @Nullable
+    public static PaymentRequestSpec createAndValidate(PaymentDetails details,
+            PaymentOptions options, Map<String, PaymentMethodData> methodData, String appLocale) {
+        PaymentRequestSpec spec = new PaymentRequestSpec(details.id, methodData);
+        if (!spec.parseAndValidateDetails(details)) return null;
+        spec.createNative(details, options, appLocale);
+        return spec;
+    }
+
+    private PaymentRequestSpec(String id, Map<String, PaymentMethodData> methodData) {
+        mId = id;
         mMethodData = methodData;
     }
 
-    /**
-     * Creates an instance of native payment_request_spec.cc with the existing and the given
-     * parameters.
-     * @param details The payment details, e.g., the total amount.
-     * @param appLocale The current application locale.
-     */
-    public void createNative(PaymentDetails details, String appLocale) {
+    private void createNative(PaymentDetails details, PaymentOptions options, String appLocale) {
+        assert mNativePointer == 0;
         mNativePointer =
-                PaymentRequestSpecJni.get().create(mOptions.serialize(), details.serialize(),
+                PaymentRequestSpecJni.get().create(options.serialize(), details.serialize(),
                         MojoStructCollection.serialize(mMethodData.values()), appLocale);
     }
 
@@ -95,11 +102,6 @@ public class PaymentRequestSpec {
         return mId;
     }
 
-    /** Set the id found from PaymentDetails. */
-    public void setId(String id) {
-        mId = id;
-    }
-
     /**
      * The raw shipping options, as it was received from the website. This data is passed to the
      * payment app when the app is responsible for handling shipping address. This value is still
@@ -107,11 +109,6 @@ public class PaymentRequestSpec {
      */
     public List<PaymentShippingOption> getRawShippingOptions() {
         return mRawShippingOptions;
-    }
-
-    /** Set the raw shipping options found from PaymentDetails. */
-    public void setRawShippingOptions(List<PaymentShippingOption> rawShippingOptions) {
-        mRawShippingOptions = rawShippingOptions;
     }
 
     /**
@@ -122,11 +119,6 @@ public class PaymentRequestSpec {
         return mRawLineItems;
     }
 
-    /** Set the raw payment items found in PaymentDetails. */
-    public void setRawLineItems(List<PaymentItem> rawLineItems) {
-        mRawLineItems = rawLineItems;
-    }
-
     /**
      * The raw total amount being charged, as it was received from the website. This data is passed
      * to the payment app. This value is still available after the instance is destroyed.
@@ -135,9 +127,49 @@ public class PaymentRequestSpec {
         return mRawTotal;
     }
 
-    /** Set the total property found from PaymentDetails. */
-    public void setRawTotal(PaymentItem rawTotal) {
-        mRawTotal = rawTotal;
+    /**
+     * Sets the total, display line items, and shipping options based on input and returns the
+     * status boolean. That status is true for valid data, false for invalid data. If the input is
+     * invalid, disconnects from the client. Both raw and UI versions of data are updated.
+     *
+     * @param details The total, line items, and shipping options to parse, validate, and save in
+     *                member variables.
+     * @return True if the data is valid. False if the data is invalid.
+     */
+    public boolean parseAndValidateDetails(PaymentDetails details) {
+        if (!PaymentValidator.validatePaymentDetails(details)) return false;
+
+        if (details.total != null) {
+            mRawTotal = details.total;
+        }
+
+        if (mRawLineItems == null || details.displayItems != null) {
+            mRawLineItems = Collections.unmodifiableList(details.displayItems != null
+                            ? Arrays.asList(details.displayItems)
+                            : new ArrayList<>());
+        }
+
+        if (details.modifiers != null) {
+            if (details.modifiers.length == 0) mModifiers.clear();
+
+            for (int i = 0; i < details.modifiers.length; i++) {
+                PaymentDetailsModifier modifier = details.modifiers[i];
+                String method = modifier.methodData.supportedMethod;
+                mModifiers.put(method, modifier);
+            }
+        }
+
+        if (details.shippingOptions != null) {
+            mRawShippingOptions =
+                    Collections.unmodifiableList(Arrays.asList(details.shippingOptions));
+        } else if (mRawShippingOptions == null) {
+            mRawShippingOptions = Collections.unmodifiableList(new ArrayList<>());
+        }
+
+        assert mRawTotal != null;
+        assert mRawLineItems != null;
+
+        return true;
     }
 
     /**
