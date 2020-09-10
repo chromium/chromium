@@ -23,7 +23,7 @@ import org.chromium.components.embedder_support.util.Origin;
  */
 public class PageInfoCookiesController
         implements PageInfoSubpageController, CookieControlsObserver {
-    private PageInfoMainPageController mMainController;
+    private PageInfoMainController mMainController;
     private PageInfoRowView mRowView;
     private CookieControlsBridge mBridge;
     private PageInfoControllerDelegate mDelegate;
@@ -36,9 +36,8 @@ public class PageInfoCookiesController
     private int mStatus;
     private boolean mIsEnforced;
 
-    public PageInfoCookiesController(PageInfoMainPageController mainController,
-            PageInfoRowView rowView, PageInfoControllerDelegate delegate, boolean isVisible,
-            String fullUrl) {
+    public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
+            PageInfoControllerDelegate delegate, boolean isVisible, String fullUrl) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;

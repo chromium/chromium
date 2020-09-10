@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -174,7 +173,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         public CharSequence url;
         public CharSequence previewLoadOriginalMessage;
         public int urlOriginLength;
-        public CharSequence truncatedUrl;
     }
 
     /** Parameters to configure the permission info section */
@@ -342,13 +340,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mOnUiClosingCallback.run();
-    }
-
-    /**
-     * Sets a favicon for the current page.
-     */
-    public void setFavicon(Drawable favicon) {
-        // Not implemented.
     }
 
     public void setPermissions(PermissionParams params) {

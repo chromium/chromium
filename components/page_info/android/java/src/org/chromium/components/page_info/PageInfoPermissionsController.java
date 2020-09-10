@@ -17,14 +17,14 @@ import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
  * Class for controlling the page info permissions section.
  */
 public class PageInfoPermissionsController implements PageInfoSubpageController {
-    private PageInfoMainPageController mMainController;
+    private PageInfoMainController mMainController;
     private PageInfoRowView mRowView;
     private PageInfoControllerDelegate mDelegate;
     private String mTitle;
     private String mPageUrl;
     private SingleWebsiteSettings mSubpageFragment;
 
-    public PageInfoPermissionsController(PageInfoMainPageController mainController,
+    public PageInfoPermissionsController(PageInfoMainController mainController,
             PageInfoRowView view, PageInfoControllerDelegate delegate, String pageUrl) {
         mMainController = mainController;
         mRowView = view;

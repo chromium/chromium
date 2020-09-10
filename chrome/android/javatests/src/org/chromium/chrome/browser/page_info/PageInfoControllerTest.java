@@ -104,7 +104,7 @@ public class PageInfoControllerTest {
                     new PageInfoController(tab.getWebContents(), ConnectionSecurityLevel.NONE,
                             /*publisher=*/null, chromePageInfoControllerDelegate,
                             chromePermissionParamsListBuilderDelegate);
-            PageInfoView pageInfoView = pageInfo.getPageInfoViewForTesting();
+            PageInfoView pageInfoView = (PageInfoView) pageInfo.getPageInfoViewForTesting();
             // Test that the title contains the Unicode hostname rather than strict equality, as
             // the test server will be bound to a random port.
             Assert.assertTrue(

@@ -5,11 +5,9 @@
 package org.chromium.components.page_info;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,23 +21,11 @@ public class PageInfoViewV2 extends PageInfoView {
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
     private PageInfoRowView mCookiesRow;
-    private TextView mTruncatedUrlTitle;
 
     public PageInfoViewV2(Context context, PageInfoView.PageInfoViewParams params) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.page_info_v2, this, true);
         init(params);
-    }
-
-    @Override
-    public void setFavicon(Drawable favicon) {
-        int padding =
-                getResources().getDimensionPixelSize(R.dimen.page_info_popup_button_padding_sides);
-        int size = getResources().getDimensionPixelSize(R.dimen.page_info_favicon_size);
-
-        favicon.setBounds(0, 0, size, size);
-        mTruncatedUrlTitle.setCompoundDrawablePadding(padding);
-        mTruncatedUrlTitle.setCompoundDrawablesRelative(favicon, null, null, null);
     }
 
     @Override
@@ -51,23 +37,7 @@ public class PageInfoViewV2 extends PageInfoView {
 
     @Override
     protected void initUrlTitle(PageInfoView.PageInfoViewParams params) {
-        super.initUrlTitle(params);
-        // Adjust the mUrlTitle for displaying the non-truncated URL.
-        mUrlTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        mUrlTitle.setAlpha(1.0f);
-        mUrlTitle.setVisibility(GONE);
-        mUrlTitle.toggleTruncation();
-        // Use a separate view for truncated URL display.
-        mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
-        mTruncatedUrlTitle.setText(params.truncatedUrl);
-        if (params.urlTitleLongClickCallback != null) {
-            mTruncatedUrlTitle.setOnLongClickListener(v -> {
-                params.urlTitleLongClickCallback.run();
-                return true;
-            });
-        }
-        initializePageInfoViewChild(
-                mTruncatedUrlTitle, params.urlTitleShown, 0f, params.urlTitleClickCallback);
+        // URL is initialized in PageInfoContainer.
     }
 
     @Override
@@ -108,8 +78,7 @@ public class PageInfoViewV2 extends PageInfoView {
 
     @Override
     public void toggleUrlTruncation() {
-        mUrlTitle.setVisibility(mTruncatedUrlTitle.getVisibility());
-        mTruncatedUrlTitle.setVisibility(mUrlTitle.getVisibility() == VISIBLE ? GONE : VISIBLE);
+        throw new RuntimeException();
     }
 
     /**
@@ -118,7 +87,7 @@ public class PageInfoViewV2 extends PageInfoView {
     @Override
     protected List<View> collectAnimatableViews() {
         // TODO(crbug.com/1077766): Sort and use rows instead of the rowWrapper.
-        return Arrays.asList(mTruncatedUrlTitle, mPreviewMessage, mPreviewLoadOriginal,
-                mPreviewSeparator, mInstantAppButton, mRowWrapper, mSiteSettingsButton);
+        return Arrays.asList(mPreviewMessage, mPreviewLoadOriginal, mPreviewSeparator,
+                mInstantAppButton, mRowWrapper, mSiteSettingsButton);
     }
 }

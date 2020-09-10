@@ -14,14 +14,26 @@
     android:background="@color/sheet_bg_color"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/page_info_truncated_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:ellipsize="end"
+        android:layout_marginVertical="16dp"
+        android:lineSpacingExtra="6dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
     <view
-        android:id="@+id/subpage_url"
+        android:id="@+id/page_info_url"
         class="org.chromium.components.page_info.PageInfoView$ElidedUrlTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:lineSpacingExtra="6dp"
         android:paddingVertical="16dp"
+        android:visibility="gone"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
@@ -30,7 +42,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="16dp">
+        android:paddingHorizontal="16dp"
+        android:id="@+id/page_info_subpage_header">
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/subpage_back_button"
@@ -45,7 +58,7 @@
             app:tint="@color/default_icon_color" />
 
         <TextView
-            android:id="@+id/subpage_title"
+            android:id="@+id/page_info_subpage_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="12dp"
@@ -54,7 +67,7 @@
 
     <!-- Programmatically add page specific inner view here -->
     <FrameLayout
-        android:id="@+id/placeholder"
+        android:id="@+id/page_info_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -9,7 +9,7 @@ import org.chromium.components.embedder_support.browser_context.BrowserContextHa
 /**
  * Interface for a page info main page controller.
  */
-public interface PageInfoMainPageController {
+public interface PageInfoMainController {
     /**
      * Launches the PageInfoSubpage provided by |pageInfoCookiesController|.
      * @param controller The controller providing a PageInfoSubpage.

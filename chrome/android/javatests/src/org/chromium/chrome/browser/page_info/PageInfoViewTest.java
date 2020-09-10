@@ -41,7 +41,6 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatureList;
-import org.chromium.components.page_info.PageInfoView;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -90,10 +89,10 @@ public class PageInfoViewTest {
         onView(withId(R.id.location_bar_status_icon)).perform(click());
     }
 
-    private PageInfoView getPageInfoView() {
+    private View getPageInfoView() {
         PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
         assertNotNull(controller);
-        PageInfoView view = controller.getPageInfoViewForTesting();
+        View view = controller.getPageInfoViewForTesting();
         assertNotNull(view);
         return view;
     }
@@ -266,9 +265,8 @@ public class PageInfoViewTest {
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowConnectionInfoSubpage() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
-        View dialog = (View) getPageInfoView().getParent();
         onView(withId(R.id.page_info_connection_row)).perform(click());
-        mRenderTestRule.render(dialog, "PageInfo_ConnectionInfoSubpage");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpage");
     }
 
     /**
@@ -280,9 +278,8 @@ public class PageInfoViewTest {
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowPermissionsSubpage() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
-        View dialog = (View) getPageInfoView().getParent();
         onView(withId(R.id.page_info_permissions_row)).perform(click());
-        mRenderTestRule.render(dialog, "PageInfo_PermissionsSubpage");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage");
     }
 
     /**
@@ -295,9 +292,8 @@ public class PageInfoViewTest {
     public void testShowCookiesSubpage() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
-        View dialog = (View) getPageInfoView().getParent();
         onView(withId(R.id.page_info_cookies_row)).perform(click());
-        mRenderTestRule.render(dialog, "PageInfo_CookiesSubpage");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage");
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.
