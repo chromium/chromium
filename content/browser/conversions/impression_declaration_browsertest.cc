@@ -203,17 +203,10 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_EQ(1UL, impression_observer.last_impression().impression_data);
 }
 
-// Flaky on Mac: crbug.com/1099410
-#if defined(OS_MAC)
-#define MAYBE_ImpressionTagNavigatesExistingRemoteFrame_ImpressionReceived \
-  DISABLED_ImpressionTagNavigatesExistingRemoteFrame_ImpressionReceived
-#else
-#define MAYBE_ImpressionTagNavigatesExistingRemoteFrame_ImpressionReceived \
-  ImpressionTagNavigatesExistingRemoteFrame_ImpressionReceived
-#endif
+// Flaky: crbug.com/1077216
 IN_PROC_BROWSER_TEST_F(
     ImpressionDeclarationBrowserTest,
-    MAYBE_ImpressionTagNavigatesExistingRemoteFrame_ImpressionReceived) {
+    DISABLED_ImpressionTagNavigatesExistingRemoteFrame_ImpressionReceived) {
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
