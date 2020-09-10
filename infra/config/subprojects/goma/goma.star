@@ -52,6 +52,7 @@ def fyi_goma_canary_builder(*, name, **kwargs):
         name = name,
         builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
@@ -216,6 +217,7 @@ def fyi_goma_latest_client_builder(*, name, os = os.LINUX_DEFAULT, **kwargs):
         builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
         os = os,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
@@ -390,14 +392,13 @@ def goma_builder(
         name,
         builderless = False,
         os = os.LINUX_DEFAULT,
-        goma_use_luci_auth = True,
         **kwargs):
     return builder(
         name = name,
         builder_group = "chromium.goma",
         builderless = builderless,
         os = os,
-        goma_use_luci_auth = goma_use_luci_auth,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
@@ -446,7 +447,6 @@ goma_builder(
 
 goma_builder(
     name = "Chromium Linux Goma Staging",
-    goma_use_luci_auth = False,
 )
 
 goma_builder(
@@ -471,14 +471,12 @@ def goma_mac_builder(
         *,
         name,
         os = os.MAC_DEFAULT,
-        goma_use_luci_auth = True,
         **kwargs):
     return goma_builder(
         name = name,
         cores = 4,
         goma_jobs = goma.jobs.J80,
         os = os,
-        goma_use_luci_auth = goma_use_luci_auth,
         **kwargs
     )
 
@@ -514,21 +512,18 @@ goma_mac_builder(
 
 goma_mac_builder(
     name = "Chromium Mac Goma Staging",
-    goma_use_luci_auth = False,
 )
 
 def goma_windows_builder(
         *,
         name,
         goma_enable_ats = True,
-        goma_use_luci_auth = True,
         cores = 32,
         **kwargs):
     return goma_builder(
         name = name,
         cores = cores,
         goma_enable_ats = goma_enable_ats,
-        goma_use_luci_auth = goma_use_luci_auth,
         os = os.WINDOWS_DEFAULT,
         **kwargs
     )
@@ -552,5 +547,4 @@ goma_windows_builder(
     name = "CrWinGomaStaging",
     cores = 8,
     goma_enable_ats = False,
-    goma_use_luci_auth = False,
 )
