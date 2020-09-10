@@ -1,21 +1,25 @@
 <style>
-  .warning-log {
+  :host {
+    padding: 3px;
+  }
+
+  :host(.warning-log) {
     background-color: rgb(255, 252, 239);
   }
 
-  .error-log {
+  :host(.error-log) {
     background-color: rgb(255, 241, 241);
   }
 
-  .verbose-log {
+  :host(.verbose-log) {
     background-color: rgb(235, 235, 235);
   }
 
-  .default-log {
+  :host(.default-log) {
     background-color: rgb(255, 255, 255);
   }
 
-  #item-metadata {
+  #log-container {
     color: #888;
     display: flex;
     font-size: 10px;
@@ -28,17 +32,15 @@
 
   #text {
     display: inline-block;
-    margin: 3px;
-    padding: 5px;
-    text-align: left;
+    text-align: start;
     width: 100%;
   }
 </style>
-<div id="item" severity="[[item.severity]]">
-  <p id="text">[[item.text]]</p>
-  <div id="item-metadata">
-    <span>[[item.time]]</span>
+<div>
+  <p id="text">[[logMessage.text]]</p>
+  <div id="log-container">
+    <span>[[logMessage.time]]</span>
     <div id="flex"></div>
-    <span>[[item.file]]:[[item.line]]</span>
+    <span>[[getFilenameWithLine_(logMessage.file, logMessage.line)]]</span>
   </div>
 </div>

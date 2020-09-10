@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Severity} from './types.js';
+import {LogMessage, Severity} from './types.js';
 
 Polymer({
   is: 'log-object',
@@ -12,13 +12,12 @@ Polymer({
 
   properties: {
     /**
-     * Underlying LogMessage data for this item. Contains read-only fields
-     * from the NearbyShare backend, as well as fields computed by logging tab.
-     * Type: {!LogMessage}
+     * Log whose metadata is displayed within this element.
+     * @type {!LogMessage}
      */
-    item: {
+    logMessage: {
       type: Object,
-      observer: 'itemChanged_',
+      observer: 'logMessageChanged_',
     },
   },
 
@@ -26,20 +25,34 @@ Polymer({
    * Sets the log message style based on severity level.
    * @private
    */
-  itemChanged_() {
-    switch (this.item.severity) {
+  logMessageChanged_() {
+    switch (this.logMessage.severity) {
       case Severity.WARNING:
-        this.$['item'].className = 'warning-log';
+        this.className = 'warning-log';
         break;
       case Severity.ERROR:
-        this.$['item'].className = 'error-log';
+        this.className = 'error-log';
         break;
       case Severity.VERBOSE:
-        this.$['item'].className = 'verbose-log';
+        this.className = 'verbose-log';
         break;
       default:
-        this.$['item'].className = 'default-log';
+        this.className = 'default-log';
         break;
     }
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getFilenameWithLine_() {
+    if (!this.logMessage) {
+      return '';
+    }
+
+    // The filename is prefixed with "../../", so replace it with "//".
+    const filename = this.logMessage.file.replace('../../', '//');
+    return filename + ':' + this.logMessage.line;
   },
 });
