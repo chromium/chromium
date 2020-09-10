@@ -13,8 +13,8 @@
   <release seq="1">
     <includes>
       <!-- Privileged app host contents. -->
-      <include name="IDR_DIAGNOSTICS_APP_INDEX_HTML" file="index.html" type="BINDATA" compress="gzip" />
-      <include name="IDR_DIAGNOSTICS_APP_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_app.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_APP_INDEX_HTML" file="index.html" type="BINDATA" />
+      <include name="IDR_DIAGNOSTICS_APP_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_app.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_APP_ICON" file="app_icon_192.png" type="BINDATA" />
     </includes>
   </release>
