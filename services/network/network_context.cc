@@ -472,6 +472,9 @@ NetworkContext::NetworkContext(
     cors_exempt_header_list_.insert(key);
 
   origin_policy_manager_ = std::make_unique<OriginPolicyManager>(this);
+
+  cors_enabled_ =
+      base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors);
 }
 
 NetworkContext::~NetworkContext() {
@@ -2456,6 +2459,18 @@ void NetworkContext::InitializeCorsParams() {
   }
   for (const auto& key : params_->cors_exempt_header_list)
     cors_exempt_header_list_.insert(key);
+  switch (params_->cors_mode) {
+    case mojom::NetworkContextParams::CorsMode::kDefault:
+      cors_enabled_ =
+          base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors);
+      break;
+    case mojom::NetworkContextParams::CorsMode::kEnable:
+      cors_enabled_ = true;
+      break;
+    case mojom::NetworkContextParams::CorsMode::kDisable:
+      cors_enabled_ = false;
+      break;
+  }
 }
 
 void NetworkContext::FinishConstructingTrustTokenStore(

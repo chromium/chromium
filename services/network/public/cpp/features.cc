@@ -26,6 +26,11 @@ const base::Feature kNetworkService {
       base::FEATURE_ENABLED_BY_DEFAULT
 };
 
+// FYI bots were just turned down, and we support only OOR-CORS enabled mode.
+// Legacy Blink CORS code will be removed quickly. (https://crbug.com/1053866)
+const base::Feature kOutOfBlinkCors{"OutOfBlinkCors",
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kReporting{"Reporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Based on the field trial parameters, this feature will override the value of

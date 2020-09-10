@@ -478,6 +478,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return domain_reliability_monitor_.get();
   }
 
+  bool IsCorsEnabled() const { return cors_enabled_; }
+
   // The http_auth_dynamic_params_ would be used to populate
   // the |http_auth_merged_preferences| of the given NetworkContext.
   void OnHttpAuthDynamicParamsChanged(
@@ -715,6 +717,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // Manages CORS preflight requests and its cache.
   cors::PreflightController cors_preflight_controller_;
+
+  // Manages if OOR-CORS is enabled.
+  bool cors_enabled_ = false;
 
   std::unique_ptr<NetworkQualitiesPrefDelegate>
       network_qualities_pref_delegate_;

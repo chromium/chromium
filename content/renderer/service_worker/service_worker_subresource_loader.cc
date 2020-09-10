@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -16,6 +17,7 @@
 #include "content/common/fetch/fetch_request_type_converters.h"
 #include "content/common/service_worker/service_worker_loader_helpers.h"
 #include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/renderer/loader/web_url_request_util.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
@@ -24,8 +26,11 @@
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
@@ -405,6 +410,36 @@ void ServiceWorkerSubresourceLoader::OnFallback(
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
   UpdateResponseTiming(std::move(timing));
+  // When the request mode is CORS or CORS-with-forced-preflight and the origin
+  // of the request URL is different from the security origin of the document,
+  // we can't simply fallback to the network here. It is because the CORS
+  // preflight logic is implemented in Blink. So we return a "fallback required"
+  // response to Blink.
+  // TODO(crbug.com/1053866): Remove this mechanism.
+  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors) &&
+      ((resource_request_.mode == network::mojom::RequestMode::kCors ||
+        resource_request_.mode ==
+            network::mojom::RequestMode::kCorsWithForcedPreflight) &&
+       (!resource_request_.request_initiator.has_value() ||
+        !resource_request_.request_initiator->IsSameOriginWith(
+            url::Origin::Create(resource_request_.url))))) {
+    TRACE_EVENT_WITH_FLOW0(
+        "ServiceWorker",
+        "ServiceWorkerSubresourceLoader::OnFallback - CORS workaround",
+        TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
+                            TRACE_ID_LOCAL(request_id_)),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    //  Add "Service Worker Fallback Required" which DevTools knows means to not
+    //  show the response in the Network tab as it's just an internal
+    //  implementation mechanism.
+    response_head_->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        "HTTP/1.1 400 Service Worker Fallback Required");
+    response_head_->was_fetched_via_service_worker = true;
+    response_head_->was_fallback_required_by_service_worker = true;
+    CommitResponseHeaders();
+    CommitEmptyResponseAndComplete();
+    return;
+  }
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerSubresourceLoader::OnFallback",
       TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
