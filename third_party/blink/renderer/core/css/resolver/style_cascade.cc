@@ -550,6 +550,8 @@ void StyleCascade::ForceColors() {
 
   int bg_color_alpha =
       style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).Alpha();
+  int visited_bg_color_alpha =
+      style->ResolvedColor(style->InternalVisitedBackgroundColor()).Alpha();
   const SVGComputedStyle& svg_style = style->SvgStyle();
 
   MaybeForceColor(GetCSSPropertyColor(), style->GetColor());
@@ -604,6 +606,10 @@ void StyleCascade::ForceColors() {
   style->SetBackgroundColor(
       StyleColor(style->BackgroundColor().ResolveWithAlpha(
           style->GetCurrentColor(), WebColorScheme::kLight, bg_color_alpha)));
+  style->SetInternalVisitedBackgroundColor(
+      StyleColor(style->InternalVisitedBackgroundColor().ResolveWithAlpha(
+          style->GetCurrentColor(), WebColorScheme::kLight,
+          visited_bg_color_alpha)));
 }
 
 void StyleCascade::MaybeForceColor(const CSSProperty& property,
@@ -626,8 +632,10 @@ const CSSValue* StyleCascade::GetForcedColorValue(CSSPropertyName name) {
   CascadePriority* p = map_.Find(name, CascadeOrigin::kUserAgent);
   if (p)
     return ValueAt(match_result_, p->GetPosition());
-  if (name.Id() == CSSPropertyID::kBackgroundColor)
+  if (name.Id() == CSSPropertyID::kBackgroundColor ||
+      name.Id() == CSSPropertyID::kInternalVisitedBackgroundColor) {
     return CSSIdentifierValue::Create(CSSValueID::kCanvas);
+  }
   return cssvalue::CSSUnsetValue::Create();
 }
 
