@@ -502,7 +502,7 @@ enum StringAttribute {
   kAriaInvalidValue,
   kAutoComplete,
   kChildTreeId,
-  kClassName,  // Native / Android
+  kClassName,
   kContainerLiveRelevant,
   kContainerLiveStatus,
   kDescription,
