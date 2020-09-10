@@ -86,7 +86,6 @@ public class ChromeContextMenuPopulatorTest {
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, false);
         features.put(ChromeFeatureList.EPHEMERAL_TAB_USING_BOTTOM_SHEET, false);
-        features.put(ChromeFeatureList.CONTEXT_MENU_COPY_IMAGE, true);
 
         ChromeFeatureList.setTestFeatures(features);
     }

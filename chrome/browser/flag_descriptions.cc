@@ -2698,10 +2698,6 @@ const char kContentIndexingNTPName[] = "Content indexing in NTP";
 const char kContentIndexingNTPDescription[] =
     "Shows content indexing entry point UI in NTP";
 
-const char kContextMenuCopyImageName[] = "Copy Image";
-const char kContextMenuCopyImageDescription[] =
-    "Enable copying image to system clipboard via context menu.";
-
 const char kContextMenuPerformanceInfoAndRemoteHintFetchingName[] =
     "Context menu performance info and remote hint fetching";
 const char kContextMenuPerformanceInfoAndRemoteHintFetchingDescription[] =

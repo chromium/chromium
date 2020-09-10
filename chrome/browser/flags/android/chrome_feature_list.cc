@@ -138,7 +138,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kContentIndexingNTP,
     &kContentSuggestionsScrollToLoad,
     &kContextMenuEnableLensShoppingAllowlist,
-    &kContextMenuCopyImage,
     &kContextMenuGoogleLensChip,
     &kContextMenuSearchWithGoogleLens,
     &kContextMenuShopWithGoogleLens,
@@ -400,9 +399,6 @@ const base::Feature kContentSuggestionsScrollToLoad{
 const base::Feature kContextMenuEnableLensShoppingAllowlist{
     "ContextMenuEnableLensShoppingAllowlist",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kContextMenuCopyImage{"ContextMenuCopyImage",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kContextMenuGoogleLensChip{
     "ContextMenuGoogleLensChip", base::FEATURE_DISABLED_BY_DEFAULT};

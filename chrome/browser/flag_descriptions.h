@@ -1565,9 +1565,6 @@ extern const char kContentIndexingDownloadHomeDescription[];
 extern const char kContentIndexingNTPName[];
 extern const char kContentIndexingNTPDescription[];
 
-extern const char kContextMenuCopyImageName[];
-extern const char kContextMenuCopyImageDescription[];
-
 extern const char kContextMenuPerformanceInfoAndRemoteHintFetchingName[];
 extern const char kContextMenuPerformanceInfoAndRemoteHintFetchingDescription[];
 

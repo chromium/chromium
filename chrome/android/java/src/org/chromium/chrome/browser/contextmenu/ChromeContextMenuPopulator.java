@@ -480,9 +480,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 if (mShowEphemeralTabNewLabel) item.setShowInProductHelp();
                 imageTab.add(item);
             }
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_COPY_IMAGE)) {
-                imageTab.add(new ChromeContextMenuItem(Item.COPY_IMAGE));
-            }
+            imageTab.add(new ChromeContextMenuItem(Item.COPY_IMAGE));
             if (isSrcDownloadableScheme) {
                 imageTab.add(new ChromeContextMenuItem(Item.SAVE_IMAGE));
                 hasSaveImage = true;

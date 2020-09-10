@@ -47,7 +47,6 @@ extern const base::Feature kCommandLineOnNonRooted;
 extern const base::Feature kConditionalTabStripAndroid;
 extern const base::Feature kContentIndexingDownloadHome;
 extern const base::Feature kContentIndexingNTP;
-extern const base::Feature kContextMenuCopyImage;
 extern const base::Feature kContextMenuEnableLensShoppingAllowlist;
 extern const base::Feature kContextMenuGoogleLensChip;
 extern const base::Feature kContextMenuPerformanceInfo;

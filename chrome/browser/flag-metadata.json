@@ -562,11 +562,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "context-menu-copy-image",
-    "owners": [ "gangwu" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "context-menu-google-lens-chip",
     "owners": [ "yusuyoutube", "benwgold", "lens-chrome" ],
     "expiry_milestone": 90

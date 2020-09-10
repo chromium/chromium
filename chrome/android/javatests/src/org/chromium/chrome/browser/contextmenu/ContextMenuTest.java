@@ -296,11 +296,9 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_COPY_IMAGE,
-            ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
-    public void
-    testLensShoppingAllowlistWithLensFeaturesDisabled() throws Throwable {
+    public void testLensShoppingAllowlistWithLensFeaturesDisabled() throws Throwable {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
         LensUtils.setFakePassableLensEnvironmentForTesting(true);

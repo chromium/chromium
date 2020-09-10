@@ -5763,9 +5763,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "BackForwardCache")},
 
 #if defined(OS_ANDROID)
-    {"context-menu-copy-image", flag_descriptions::kContextMenuCopyImageName,
-     flag_descriptions::kContextMenuCopyImageDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kContextMenuCopyImage)},
     {"enable-clipboard-provider-image-suggestions",
      flag_descriptions::kEnableClipboardProviderImageSuggestionsName,
      flag_descriptions::kEnableClipboardProviderImageSuggestionsDescription,
