@@ -106,9 +106,6 @@ Polymer({
         return [];
       },
     },
-
-    /** @private {string|undefined} */
-    languageSyncedWithBrowserEnableSpellchecking_: String,
     // </if>
 
     /**
@@ -641,29 +638,12 @@ Polymer({
 
       // Hide list of spell check languages if there is only 1 language
       // and we don't need to display any errors for that language
+
+      // TODO(crbug/1124888): Make hideSpellCheckLanugages_ a computed property
       this.hideSpellCheckLanguages_ = !singleLanguage.isManaged &&
           singleLanguage.downloadDictionaryFailureCount === 0;
-
-      // Turn off spell check if spell check for the 1 remaining language is
-      // off
-      if (!singleLanguage.spellCheckEnabled) {
-        this.setPrefValue('browser.enable_spellchecking', false);
-        this.languageSyncedWithBrowserEnableSpellchecking_ =
-            singleLanguage.language.code;
-      }
-
-      // Undo the sync if spell check appeared as turned off for the language
-      // because a download was still in progress. This only occurs when
-      // Settings is loaded for the very first time and dictionaries have not
-      // been downloaded yet.
-      if (this.languageSyncedWithBrowserEnableSpellchecking_ ===
-              singleLanguage.language.code &&
-          singleLanguage.spellCheckEnabled) {
-        this.setPrefValue('browser.enable_spellchecking', true);
-      }
     } else {
       this.hideSpellCheckLanguages_ = false;
-      this.languageSyncedWithBrowserEnableSpellchecking_ = undefined;
     }
   },
 

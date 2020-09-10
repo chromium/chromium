@@ -631,27 +631,34 @@ suite('languages page', function() {
 
       const list = languagesPage.$.spellCheckLanguagesList;
       assertFalse(list.hidden);
+      assertTrue(languagesPage.$$('#enableSpellcheckingToggle').checked);
+      assertDeepEquals(
+          ['en-US'], languageHelper.getPref('spellcheck.dictionaries').value);
 
-      languageHelper.setPrefValue('intl.accept_languages', 'en-US');
-      if (isChromeOS) {
-        languageHelper.setPrefValue(
-            'settings.language.preferred_languages', 'en-US');
-      }
-
-      // Update supported languages to just 1 language English with spell
-      // check disabled for that language
-      languageHelper.setPrefValue('spellcheck.dictionaries', []);
+      // Update supported languages to just 1 language should hide list.
+      languageHelper.setPrefValue(languagesPref, 'en-US');
+      flush();
       assertTrue(list.hidden);
-      assertFalse(languageHelper.getPref('browser.enable_spellchecking').value);
 
-      // Update supported languages to just 1 language English that finished
-      // downloading and is now ready
-      languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US']);
-      languageHelper.set('languages.enabled.0.downloadDictionaryStatus', {
-        isReady: true,
-      });
+      // Disable spell check should keep list hidden and remove the single
+      // language from dictionaries.
+      languagesPage.$$('#enableSpellcheckingToggle').click();
+      flush();
+
       assertTrue(list.hidden);
-      assertTrue(languageHelper.getPref('browser.enable_spellchecking').value);
+      assertFalse(languagesPage.$$('#enableSpellcheckingToggle').checked);
+      assertDeepEquals(
+          [], languageHelper.getPref('spellcheck.dictionaries').value);
+
+      // Enable spell check should keep list hidden and add the single language
+      // to dictionaries.
+      languagesPage.$$('#enableSpellcheckingToggle').click();
+      flush();
+
+      assertTrue(list.hidden);
+      assertTrue(languagesPage.$$('#enableSpellcheckingToggle').checked);
+      assertDeepEquals(
+          ['en-US'], languageHelper.getPref('spellcheck.dictionaries').value);
     });
 
     test('no supported languages', () => {

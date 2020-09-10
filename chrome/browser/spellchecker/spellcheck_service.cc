@@ -829,8 +829,15 @@ void SpellcheckService::OnSpellCheckDictionariesChanged() {
 
   // If there are no hunspell dictionaries to load, then immediately let the
   // renderers know the new state.
-  if (hunspell_dictionaries_.empty())
+  if (hunspell_dictionaries_.empty()) {
+#if !defined(OS_MAC)
+    // Only update non-MacOS platform because basic spell check on Mac OS
+    // is controlled by OS and doesn't depend on users' dictionaries pref
+    user_prefs::UserPrefs::Get(context_)->SetBoolean(
+        spellcheck::prefs::kSpellCheckEnable, false);
+#endif  // !defined(OS_MAC)
     InitForAllRenderers();
+  }
 }
 
 void SpellcheckService::OnUseSpellingServiceChanged() {
