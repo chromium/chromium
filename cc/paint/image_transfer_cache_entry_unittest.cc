@@ -279,7 +279,8 @@ TEST_P(ImageTransferCacheEntryTest, Deserialize) {
 TEST_P(ImageTransferCacheEntryTest, HardwareDecodedNoMipsAtCreation) {
   std::unique_ptr<bool[]> release_flags;
   std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(&release_flags);
-  ASSERT_EQ(NumberOfPlanesForYUVDecodeFormat(GetParam()), plane_images.size());
+  const size_t plane_images_size = plane_images.size();
+  ASSERT_EQ(NumberOfPlanesForYUVDecodeFormat(GetParam()), plane_images_size);
 
   // Create a service-side image cache entry backed by these planes and do not
   // request generating mipmap chains. The |buffer_byte_size| is only used for
@@ -293,11 +294,11 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedNoMipsAtCreation) {
   // We didn't request generating mipmap chains, so the textures we created
   // above should stay alive until after the cache entry is deleted.
   EXPECT_TRUE(std::none_of(release_flags.get(),
-                           release_flags.get() + plane_images.size(),
+                           release_flags.get() + plane_images_size,
                            [](bool released) { return released; }));
   entry.reset();
   EXPECT_TRUE(std::all_of(release_flags.get(),
-                          release_flags.get() + plane_images.size(),
+                          release_flags.get() + plane_images_size,
                           [](bool released) { return released; }));
 }
 
@@ -311,7 +312,8 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAtCreation) {
 #endif
   std::unique_ptr<bool[]> release_flags;
   std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(&release_flags);
-  ASSERT_EQ(NumberOfPlanesForYUVDecodeFormat(GetParam()), plane_images.size());
+  const size_t plane_images_size = plane_images.size();
+  ASSERT_EQ(NumberOfPlanesForYUVDecodeFormat(GetParam()), plane_images_size);
 
   // Create a service-side image cache entry backed by these planes and request
   // generating mipmap chains at creation time. The |buffer_byte_size| is only
@@ -325,7 +327,7 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAtCreation) {
   // We requested generating mipmap chains at creation time, so the textures we
   // created above should be released by now.
   EXPECT_TRUE(std::all_of(release_flags.get(),
-                          release_flags.get() + plane_images.size(),
+                          release_flags.get() + plane_images_size,
                           [](bool released) { return released; }));
   DeletePendingTextures();
 
@@ -348,7 +350,8 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAfterCreation) {
 #endif
   std::unique_ptr<bool[]> release_flags;
   std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(&release_flags);
-  ASSERT_EQ(NumberOfPlanesForYUVDecodeFormat(GetParam()), plane_images.size());
+  const size_t plane_images_size = plane_images.size();
+  ASSERT_EQ(NumberOfPlanesForYUVDecodeFormat(GetParam()), plane_images_size);
 
   // Create a service-side image cache entry backed by these planes and do not
   // request generating mipmap chains at creation time. The |buffer_byte_size|
@@ -362,7 +365,7 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAfterCreation) {
   // We didn't request generating mip chains, so the textures we created above
   // should stay alive for now.
   EXPECT_TRUE(std::none_of(release_flags.get(),
-                           release_flags.get() + plane_images.size(),
+                           release_flags.get() + plane_images_size,
                            [](bool released) { return released; }));
 
   // Now request generating the mip chains.
@@ -370,7 +373,7 @@ TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAfterCreation) {
 
   // Now the original textures should have been released.
   EXPECT_TRUE(std::all_of(release_flags.get(),
-                          release_flags.get() + plane_images.size(),
+                          release_flags.get() + plane_images_size,
                           [](bool released) { return released; }));
   DeletePendingTextures();
 
