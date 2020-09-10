@@ -210,15 +210,23 @@ class PpdProviderImpl : public PpdProvider {
   // *  This method is not locale-sensitive.
   void ResolvePpdReference(const PrinterSearchData& search_data,
                            ResolvePpdReferenceCallback cb) override {
-    ResolvePpdReferenceContext context(search_data, std::move(cb));
+    // In v3 metadata, effective-make-and-model strings are only
+    // expressed in lowercased ASCII.
+    PrinterSearchData lowercased_search_data(search_data);
+    for (std::string& emm : lowercased_search_data.make_and_model) {
+      emm = base::ToLowerASCII(emm);
+    }
+
+    ResolvePpdReferenceContext context(lowercased_search_data, std::move(cb));
 
     // Initiate step 1 if possible.
-    if (!search_data.make_and_model.empty()) {
+    if (!lowercased_search_data.make_and_model.empty()) {
       auto callback = base::BindOnce(
           &PpdProviderImpl::TryToResolvePpdReferenceFromForwardIndices,
           weak_factory_.GetWeakPtr(), std::move(context));
       metadata_manager_->FindAllEmmsAvailableInIndex(
-          search_data.make_and_model, kMaxDataAge, std::move(callback));
+          lowercased_search_data.make_and_model, kMaxDataAge,
+          std::move(callback));
       return;
     }
 
@@ -230,6 +238,11 @@ class PpdProviderImpl : public PpdProvider {
   // ResolvePpdReference().
   void ResolvePpd(const Printer::PpdReference& reference,
                   ResolvePpdCallback cb) override {
+    // In v3 metadata, effective-make-and-model strings are only
+    // expressed in lowercased ASCII.
+    Printer::PpdReference lowercased_reference(reference);
+    lowercased_reference.effective_make_and_model =
+        base::ToLowerASCII(lowercased_reference.effective_make_and_model);
     // TODO(crbug.com/888189): implement this.
   }
 
@@ -259,20 +272,30 @@ class PpdProviderImpl : public PpdProvider {
       return;
     }
 
+    // In v3 metadata, effective-make-and-model strings are only
+    // expressed in lowercased ASCII.
+    std::string lowercased_effective_make_and_model =
+        base::ToLowerASCII(effective_make_and_model);
+
     // Delegates directly to the PpdMetadataManager.
-    metadata_manager_->SplitMakeAndModel(effective_make_and_model, kMaxDataAge,
-                                         std::move(cb));
+    metadata_manager_->SplitMakeAndModel(lowercased_effective_make_and_model,
+                                         kMaxDataAge, std::move(cb));
   }
 
   // This method depends on forward indices, which are not
   // locale-sensitive.
   void ResolvePpdLicense(base::StringPiece effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
+    // In v3 metadata, effective-make-and-model strings are only
+    // expressed in lowercased ASCII.
+    const std::string lowercased_effective_make_and_model =
+        base::ToLowerASCII(effective_make_and_model);
+
     auto callback = base::BindOnce(
         &PpdProviderImpl::FindLicenseForEmm, weak_factory_.GetWeakPtr(),
-        std::string(effective_make_and_model), std::move(cb));
+        lowercased_effective_make_and_model, std::move(cb));
     metadata_manager_->FindAllEmmsAvailableInIndex(
-        {std::string(effective_make_and_model)}, kMaxDataAge,
+        {lowercased_effective_make_and_model}, kMaxDataAge,
         std::move(callback));
   }
 
