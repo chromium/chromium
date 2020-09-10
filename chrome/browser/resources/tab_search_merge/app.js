@@ -13,8 +13,10 @@ import './tab_search_search_field.js'
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {fuzzySearch} from './fuzzy_search.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 export class TabSearchAppElement extends PolymerElement {
@@ -278,19 +280,17 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   updateFilteredTabs_(windowTabs) {
-    const lowerCaseSearchText = this.searchText_.toLowerCase();
-    this.filteredOpenTabs_ = !!this.searchText_ ?
-        windowTabs
-            .map(window => {
-              return window.tabs.filter(item => {
-                return item.title.toLowerCase().includes(lowerCaseSearchText);
-              });
-            })
-            .flat() :
-        windowTabs.map(window => window.tabs).flat();
-    this.filteredOpenTabs_.sort((a, b) => (b.lastActiveTimeTicks && a.lastActiveTimeTicks) ?
+    const result = [];
+    windowTabs.forEach(window => {
+      window.tabs.forEach(tab => {
+        result.push(
+            Object.assign({}, tab, {hostname: new URL(tab.url).hostname}));
+      });
+    });
+    result.sort((a, b) => (b.lastActiveTimeTicks && a.lastActiveTimeTicks) ?
         b.lastActiveTimeTicks.internalValue - a.lastActiveTimeTicks.internalValue :
         0);
+    this.filteredOpenTabs_ = fuzzySearch(this.searchText_, result);
   }
 }
 

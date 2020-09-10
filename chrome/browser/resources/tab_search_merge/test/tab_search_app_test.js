@@ -277,6 +277,7 @@ suite('TabSearchAppTest', () => {
         (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
     assertEquals(updatedTab.title, tabSearchItem.data.title);
     assertEquals(updatedTab.url, tabSearchItem.data.url);
+    assertEquals('example.com', tabSearchItem.data.hostname);
   });
 
   test('Verify initial tab render time is logged correctly', async () => {

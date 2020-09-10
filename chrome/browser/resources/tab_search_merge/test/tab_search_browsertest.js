@@ -44,3 +44,15 @@ var TabSearchAppTest = class extends TabSearchBrowserTest {
 TEST_F('TabSearchAppTest', 'All', function() {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var FuzzySearchTest = class extends TabSearchBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://tab-search/test_loader.html?module=tab_search/test/fuzzy_search_test.js';
+  }
+};
+
+TEST_F('FuzzySearchTest', 'All', function() {
+  mocha.run();
+});

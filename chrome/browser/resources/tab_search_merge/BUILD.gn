@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":app",
+    ":fuzzy_search",
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
@@ -20,6 +21,7 @@ js_type_check("closure_compile") {
 
 js_library("app") {
   deps = [
+    ":fuzzy_search",
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
@@ -28,6 +30,9 @@ js_library("app") {
     "//ui/webui/resources/js:util.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("fuzzy_search") {
 }
 
 js_library("tab_search_api_proxy") {
