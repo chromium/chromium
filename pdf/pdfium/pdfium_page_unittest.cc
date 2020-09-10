@@ -8,16 +8,23 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/optional.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_utils.h"
+#include "pdf/thumbnail.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
@@ -71,6 +78,23 @@ void PopulateTextObjects(const std::vector<gfx::Range>& ranges,
     (*text_objects)[i].start_char_index = ranges[i].start();
     (*text_objects)[i].char_count = ranges[i].end() - ranges[i].start();
   }
+}
+
+base::FilePath GetThumbnailTestData(const std::string& expectation_file_prefix,
+                                    size_t page_index,
+                                    float device_pixel_ratio) {
+  std::string file_dir = base::StringPrintf("%.1fx", device_pixel_ratio);
+  std::string file_name = base::StringPrintf(
+      "%s_expected.pdf.%zu.png", expectation_file_prefix.c_str(), page_index);
+  base::FilePath root_path;
+  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path))
+    return base::FilePath();
+  return root_path.Append(FILE_PATH_LITERAL("pdf"))
+      .Append(FILE_PATH_LITERAL("test"))
+      .Append(FILE_PATH_LITERAL("data"))
+      .Append(FILE_PATH_LITERAL("thumbnail"))
+      .AppendASCII(file_dir)
+      .AppendASCII(file_name);
 }
 
 }  // namespace
@@ -704,6 +728,66 @@ TEST_F(PDFiumPageOverlappingTest, CountCompleteOverlaps) {
   PopulateTextObjects(kLinkRanges, &links);
   PopulateTextObjects(kHighlightRanges, &highlights);
   ASSERT_EQ(12u, PDFiumPage::CountLinkHighlightOverlaps(links, highlights));
+}
+
+class PDFiumPageThumbnailTest : public PDFiumTestBase {
+ public:
+  PDFiumPageThumbnailTest() = default;
+  PDFiumPageThumbnailTest(const PDFiumPageThumbnailTest&) = delete;
+  PDFiumPageThumbnailTest& operator=(const PDFiumPageThumbnailTest&) = delete;
+  ~PDFiumPageThumbnailTest() override = default;
+
+  void TestGenerateThumbnail(PDFiumEngine& engine,
+                             size_t page_index,
+                             float device_pixel_ratio,
+                             const gfx::Size& expected_thumbnail_size,
+                             const std::string& expectation_file_prefix) {
+    PDFiumPage& page = GetPDFiumPageForTest(engine, page_index);
+    Thumbnail thumbnail = page.GenerateThumbnail(device_pixel_ratio);
+    EXPECT_EQ(expected_thumbnail_size, gfx::Size(thumbnail.bitmap().width(),
+                                                 thumbnail.bitmap().height()));
+    EXPECT_EQ(device_pixel_ratio, thumbnail.device_pixel_ratio());
+
+    base::FilePath expectation_png_file_path = GetThumbnailTestData(
+        expectation_file_prefix, page_index, device_pixel_ratio);
+
+    cc::MatchesPNGFile(thumbnail.bitmap(), expectation_png_file_path,
+                       cc::ExactPixelComparator(/*discard_alpha=*/false));
+  }
+};
+
+TEST_F(PDFiumPageThumbnailTest, GenerateThumbnail) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
+  ASSERT_EQ(7, engine->GetNumberOfPages());
+
+  static constexpr struct {
+    size_t page_index;
+    float device_pixel_ratio;
+    gfx::Size expected_thumbnail_size;
+  } kGenerateThumbnailTestParams[] = {
+      {0, 1, {108, 140}},  // ANSI Letter
+      {1, 1, {108, 152}},  // ISO 216 A4
+      {2, 1, {140, 140}},  // Square
+      {3, 1, {540, 108}},  // Wide
+      {4, 1, {108, 540}},  // Tall
+      {5, 1, {1399, 46}},  // Super wide
+      {6, 1, {46, 1399}},  // Super tall
+      {0, 2, {216, 280}},  // ANSI Letter
+      {1, 2, {214, 303}},  // ISO 216 A4
+      {2, 2, {255, 255}},  // Square
+      {3, 2, {571, 114}},  // Wide
+      {4, 2, {114, 571}},  // Tall
+      {5, 2, {1399, 46}},  // Super wide
+      {6, 2, {46, 1399}},  // Super tall
+  };
+
+  for (const auto& params : kGenerateThumbnailTestParams) {
+    TestGenerateThumbnail(*engine, params.page_index, params.device_pixel_ratio,
+                          params.expected_thumbnail_size,
+                          "variable_page_sizes");
+  }
 }
 
 }  // namespace chrome_pdf

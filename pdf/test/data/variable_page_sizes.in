@@ -1,0 +1,88 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 7
+  /Kids [3 0 R 4 0 R 5 0 R 6 0 R 7 0 R 8 0 R 9 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  % ANSI Letter
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 612 792]
+  /Contents 10 0 R
+>>
+endobj
+{{object 4 0}} <<
+  % ISO 216 A4
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 595 842]
+  /Contents 10 0 R
+>>
+endobj
+{{object 5 0}} <<
+  % Square
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 200 200]
+  /Contents 10 0 R
+>>
+endobj
+{{object 6 0}} <<
+  % Wide
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 1000 200]
+  /Contents 10 0 R
+>>
+endobj
+{{object 7 0}} <<
+  % Tall
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 200 1000]
+  /Contents 10 0 R
+>>
+endobj
+{{object 8 0}} <<
+  % Super wide
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 1500 50]
+  /Contents 10 0 R
+>>
+endobj
+{{object 9 0}} <<
+  % Super tall
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 50 1500]
+  /Contents 10 0 R
+>>
+endobj
+{{object 10 0}} <<
+  {{streamlen}}
+>>
+stream
+q
+0 0 1 rg
+0 0 25 25 re B*
+1 1 0 rg
+25 0 25 25 re B*
+1 0 0 rg
+0 25 25 25 re B*
+0 1 0 rg
+25 25 25 25 re B*
+Q
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

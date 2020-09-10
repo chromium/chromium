@@ -332,6 +332,7 @@ if (enable_pdf) {
       ":ppapi_migration",
       "//base",
       "//base/test:test_support",
+      "//cc:test_support",
       "//gin",
       "//ppapi/c",
       "//ppapi/cpp:objects",

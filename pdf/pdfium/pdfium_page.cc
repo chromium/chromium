@@ -23,11 +23,13 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
+#include "pdf/thumbnail.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "printing/units.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -1455,6 +1457,34 @@ gfx::Rect PDFiumPage::PageToScreen(const gfx::Point& page_point,
 
   return gfx::Rect(new_left, new_top, new_size_x.ValueOrDie(),
                    new_size_y.ValueOrDie());
+}
+
+Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
+  DCHECK(available());
+
+  FPDF_PAGE page = GetPage();
+  gfx::Size page_size(base::saturated_cast<int>(FPDF_GetPageWidthF(page)),
+                      base::saturated_cast<int>(FPDF_GetPageHeightF(page)));
+  Thumbnail thumbnail(page_size, device_pixel_ratio);
+
+  SkBitmap& sk_bitmap = thumbnail.bitmap();
+  ScopedFPDFBitmap fpdf_bitmap(FPDFBitmap_CreateEx(
+      sk_bitmap.width(), sk_bitmap.height(), FPDFBitmap_BGRA,
+      sk_bitmap.getPixels(), sk_bitmap.rowBytes()));
+
+  // Clear the bitmap.
+  FPDFBitmap_FillRect(fpdf_bitmap.get(), /*left=*/0, /*top=*/0,
+                      sk_bitmap.width(), sk_bitmap.height(),
+                      /*color=*/0xFFFFFFFF);
+
+  // The combination of the |FPDF_REVERSE_BYTE_ORDER| rendering flag and the
+  // |FPDFBitmap_BGRA| format when initializing |fpdf_bitmap| results in an RGBA
+  // rendering, which is the format required by HTML <canvas>.
+  FPDF_RenderPageBitmap(fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
+                        /*start_y=*/0, sk_bitmap.width(), sk_bitmap.height(),
+                        /*rotate=*/0, FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER);
+
+  return thumbnail;
 }
 
 PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(PDFiumPage* page)

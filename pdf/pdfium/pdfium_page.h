@@ -30,6 +30,7 @@ class Point;
 namespace chrome_pdf {
 
 class PDFiumEngine;
+class Thumbnail;
 
 // Wrapper around a page from the document.
 class PDFiumPage {
@@ -156,6 +157,9 @@ class PDFiumPage {
                          double right,
                          double bottom,
                          PageOrientation orientation) const;
+
+  // Generate a page thumbnail accommodating a specific |device_pixel_ratio|.
+  Thumbnail GenerateThumbnail(float device_pixel_ratio);
 
   int index() const { return index_; }
 

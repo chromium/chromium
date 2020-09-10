@@ -1,4 +1,6 @@
 include_rules = [
+  "+cc/test/pixel_comparator.h",
+  "+cc/test/pixel_test_utils.h",
   "+gin/array_buffer.h",
   "+gin/public",
   "+gin/v8_initializer.h",
