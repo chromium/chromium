@@ -387,6 +387,7 @@ source_set("tests") {
     "//services/network/public/cpp:buildflags",
     "//services/network/public/cpp/cert_verifier:cert_verifier_creation",
     "//services/network/public/mojom",
+    "//services/network/public/proto",
     "//services/network/trust_tokens",
     "//services/network/trust_tokens:tests",
     "//services/service_manager/public/cpp",

@@ -31,6 +31,7 @@
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/filter/mock_source_stream.h"
 #include "net/http/transport_security_state.h"

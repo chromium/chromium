@@ -62,7 +62,6 @@
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/sct_auditing_cache.h"
 #include "services/network/url_loader.h"
 
 #if defined(OS_ANDROID) && defined(ARCH_CPU_ARMEL)
@@ -77,6 +76,10 @@
 #if defined(OS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "net/android/http_auth_negotiate_android.h"
+#endif
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "services/network/sct_auditing_cache.h"
 #endif
 
 namespace network {

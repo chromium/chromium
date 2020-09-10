@@ -18,6 +18,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/test_network_context_client.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -189,7 +190,7 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
                              chain_.get(), sct_list);
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
     for (const auto& entry : *cache.GetCacheForTesting()) {
-      ASSERT_NE("example1.com", entry.second->host_port_pair.host());
+      ASSERT_NE("example1.com", entry.second->context().origin().hostname());
     }
   }
 }
@@ -265,7 +266,7 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
 
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
   for (const auto& entry : *cache.GetCacheForTesting()) {
-    ASSERT_NE("example2.com", entry.second->host_port_pair.host());
+    ASSERT_NE("example2.com", entry.second->context().origin().hostname());
   }
 }
 

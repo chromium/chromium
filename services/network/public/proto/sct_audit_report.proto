@@ -1,0 +1,81 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Protocol for sending SCT auditing reports.
+//
+// If any changes are made to this file, the server-side proto definitions must
+// be updated as well.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package sct_auditing;
+
+// TLSConnectionReport is the primary per-handshake report for SCT auditing.
+message TLSConnectionReport {
+  TLSConnectionContext context = 1;
+
+  // SCTs may appear in any order. See SCTWithSourceAndVerifyStatus for details.
+  repeated SCTWithSourceAndVerifyStatus included_scts = 2;
+}
+
+// TLSConnectionContext contains details about the connection that are common
+// to all SCTs observed in that connection.
+message TLSConnectionContext {
+  // Time when the UA observed the certificate in seconds since the Unix epoch.
+  int64 time_seen = 1;
+
+  // The origin that the UA connected to.
+  message Origin {
+    string hostname = 1;
+    int32 port = 2;
+    // Implicitly, scheme is HTTPS/WSS.
+  }
+  Origin origin = 2;
+
+  // The certificate chain as constructed by the UA.  Each entry is a
+  // DER-encoded X.509 certificate as described in RFC7468.  Order matches the
+  // order validated, with the first cert representing the end-entity (leaf).
+  repeated bytes certificate_chain = 3;
+}
+
+// SCTWithSourceAndVerifyStatus contains the raw SCT, where it was found in the
+// certificate, and its validation status according to the UA.
+message SCTWithSourceAndVerifyStatus {
+  // Keep sync'd with SctVerifyStatus in Chrome's net/cert/sct_status_flags.h.
+  enum SctVerifyStatus {
+    // Default to unspecified status.  See go/unspecified-enum.
+    NONE = 0;
+
+    // The SCT is from an unknown log, so we cannot verify its signature.
+    LOG_UNKNOWN = 1;
+
+    // Obsolete in net/cert/sct_status_flags.h. Included to remain consistent.
+    reserved 2;
+    reserved "INVALID";
+
+    // The SCT is from a known log, and the signature is valid.
+    OK = 3;
+
+    // The SCT is from a known log, but the signature is invalid.
+    INVALID_SIGNATURE = 4;
+
+    // The SCT is from a known log, but the timestamp is in the future.
+    INVALID_TIMESTAMP = 5;
+  }
+  SctVerifyStatus status = 1;
+
+  // The source is the manner in which the client received the SCT (embedded in
+  // the certificate, delivered via the TLS handshake, or delivered via OCSP).
+  enum Source {
+    SOURCE_UNSPECIFIED = 0;
+    EMBEDDED = 1;
+    TLS_EXTENSION = 2;
+    OCSP_RESPONSE = 3;
+  }
+  Source source = 2;
+
+  bytes sct = 3;
+}

@@ -54,7 +54,6 @@
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "services/network/sct_auditing_cache.h"
 #include "services/network/socket_factory.h"
 #include "services/network/url_request_context_owner.h"
 

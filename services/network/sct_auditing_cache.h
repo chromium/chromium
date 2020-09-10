@@ -15,6 +15,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "services/network/public/proto/sct_audit_report.pb.h"
 
 namespace net {
 class X509Certificate;
@@ -22,21 +23,6 @@ class X509Certificate;
 
 namespace network {
 class NetworkContext;
-
-struct SCTAuditReport {
-  SCTAuditReport();
-  ~SCTAuditReport();
-
-  SCTAuditReport(const SCTAuditReport& other);
-  SCTAuditReport& operator=(const SCTAuditReport& other) = default;
-  SCTAuditReport(SCTAuditReport&& other);
-  SCTAuditReport& operator=(SCTAuditReport&& other) = default;
-
-  base::Time time_seen;
-  net::HostPortPair host_port_pair;
-  std::vector<std::string> certificate_chain;
-  std::vector<net::SignedCertificateTimestampAndStatus> sct_list;
-};
 
 // SCTAuditingCache tracks SCTs seen during CT verification. The cache supports
 // a configurable sample rate to reduce load, and deduplicates SCTs seen more
@@ -69,17 +55,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps);
 
-  SCTAuditReport* GetPendingReport(const net::SHA256HashValue& cache_key);
+  sct_auditing::TLSConnectionReport* GetPendingReport(
+      const net::SHA256HashValue& cache_key);
 
   void ClearCache();
 
-  base::MRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditReport>>*
+  base::MRUCache<net::SHA256HashValue,
+                 std::unique_ptr<sct_auditing::TLSConnectionReport>>*
   GetCacheForTesting() {
     return &cache_;
   }
 
  private:
-  base::MRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditReport>> cache_;
+  base::MRUCache<net::SHA256HashValue,
+                 std::unique_ptr<sct_auditing::TLSConnectionReport>>
+      cache_;
 };
 
 }  // namespace network
