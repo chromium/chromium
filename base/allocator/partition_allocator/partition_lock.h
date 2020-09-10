@@ -6,9 +6,10 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_LOCK_H_
 
 #include <atomic>
+#include <type_traits>
 
+#include "base/allocator/buildflags.h"
 #include "base/no_destructor.h"
-#include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -37,6 +38,35 @@ class SCOPED_LOCKABLE ScopedGuard {
  private:
   MaybeSpinLock<thread_safe>& lock_;
 };
+
+#if !DCHECK_IS_ON()
+// Spinlock. Do not use, to be removed. crbug.com/1061437.
+class BASE_EXPORT SpinLock {
+ public:
+  SpinLock() = default;
+  ~SpinLock() = default;
+
+  ALWAYS_INLINE void Acquire() {
+    if (LIKELY(!lock_.exchange(true, std::memory_order_acquire)))
+      return;
+    AcquireSlow();
+  }
+
+  ALWAYS_INLINE void Release() {
+    lock_.store(false, std::memory_order_release);
+  }
+
+  // Not supported.
+  void AssertAcquired() const {}
+
+ private:
+  // This is called if the initial attempt to acquire the lock fails. It's
+  // slower, but has a much better scheduling and power consumption behavior.
+  void AcquireSlow();
+
+  std::atomic_int lock_{0};
+};
+#endif  // !DCHECK_IS_ON()
 
 template <>
 class LOCKABLE MaybeSpinLock<true> {
@@ -90,14 +120,22 @@ class LOCKABLE MaybeSpinLock<true> {
   }
 
  private:
+#if DCHECK_IS_ON()
   // NoDestructor to avoid issues with the "static destruction order fiasco".
   //
-  // This also means that for DCHECK_IS_ON() builds we leak a lock when a
-  // partition is destructed. This will in practice only show in some tests, as
-  // partitions are not destructed in regular use. In addition, on most
-  // platforms, base::Lock doesn't allocate memory and neither does the OS
-  // library, and the destructor is a no-op.
+  // This also means that we leak a lock when a partition is destructed. This
+  // will in practice only show in some tests, as partitions are not destructed
+  // in regular use. In addition, on most platforms, base::Lock doesn't allocate
+  // memory and neither does the OS library, and the destructor is a no-op.
   base::NoDestructor<base::Lock> lock_;
+#else
+  // base::Lock is slower on the fast path than SpinLock, hence we still use it
+  // on non-DCHECK() builds. crbug.com/1125999
+  base::NoDestructor<SpinLock> lock_;
+  // base::NoDestructor is here to use the same code elsewhere, we are not
+  // leaking anything.
+  static_assert(std::is_trivially_destructible<SpinLock>::value, "");
+#endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
   std::atomic<PlatformThreadRef> owning_thread_ref_ GUARDED_BY(lock_);
