@@ -71,7 +71,7 @@ suite('AmbientModeHandler', function() {
 
     const albumList = ambientModePhotosPage.$$('album-list');
     const ironList = albumList.$$('iron-list');
-    const albumItems = ironList.querySelectorAll('album-item');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
     assertEquals(2, albumItems.length);
 
     const album0 = albumItems[0];
@@ -84,6 +84,50 @@ suite('AmbientModeHandler', function() {
     assertEquals('album1', album1.album.title);
   });
 
+  test('personalPhotosImageContainerHasCorrectSize', function() {
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0'},
+      {albumId: 'id1', checked: false, title: 'album1'},
+      {albumId: 'id2', checked: false, title: 'album2'}
+    ];
+    ambientModePhotosPage.topicSource = AmbientModeTopicSource.GOOGLE_PHOTOS;
+    Polymer.dom.flush();
+
+    const albumList = ambientModePhotosPage.$$('album-list');
+    const ironList = albumList.$$('iron-list');
+    assertTrue(ironList.grid);
+
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
+    assertEquals(3, albumItems.length);
+    albumItems.forEach((album) => {
+      const imageContainer = album.$$('#imageContainer');
+      assertEquals(160, imageContainer.clientHeight);
+      assertEquals(160, imageContainer.clientWidth);
+    });
+  });
+
+  test('artImageContainerHasCorrectSize', function() {
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0'},
+      {albumId: 'id1', checked: false, title: 'album1'},
+      {albumId: 'id2', checked: false, title: 'album2'}
+    ];
+    ambientModePhotosPage.topicSource = AmbientModeTopicSource.ART_GALLERY;
+    Polymer.dom.flush();
+
+    const albumList = ambientModePhotosPage.$$('album-list');
+    const ironList = albumList.$$('iron-list');
+    assertTrue(ironList.grid);
+
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
+    assertEquals(3, albumItems.length);
+    albumItems.forEach((album) => {
+      const imageContainer = album.$$('#imageContainer');
+      assertEquals(160, imageContainer.clientHeight);
+      assertEquals(256, imageContainer.clientWidth);
+    });
+  });
+
   test('toggleAlbumSelectionByClick', function() {
     ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
@@ -93,7 +137,7 @@ suite('AmbientModeHandler', function() {
 
     const albumList = ambientModePhotosPage.$$('album-list');
     const ironList = albumList.$$('iron-list');
-    const albumItems = ironList.querySelectorAll('album-item');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
     assertEquals(2, albumItems.length);
 
     const album0 = albumItems[0];
@@ -138,7 +182,7 @@ suite('AmbientModeHandler', function() {
 
     const albumList = ambientModePhotosPage.$$('album-list');
     const ironList = albumList.$$('iron-list');
-    const albumItems = ironList.querySelectorAll('album-item');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
     assertEquals(2, albumItems.length);
 
     const album0 = albumItems[0];
@@ -176,7 +220,7 @@ suite('AmbientModeHandler', function() {
 
     const albumList = ambientModePhotosPage.$$('album-list');
     const ironList = albumList.$$('iron-list');
-    const albumItems = ironList.querySelectorAll('album-item');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
     assertEquals(1, albumItems.length);
 
     const album0 = albumItems[0];
@@ -203,7 +247,7 @@ suite('AmbientModeHandler', function() {
 
     const albumList = ambientModePhotosPage.$$('album-list');
     const ironList = albumList.$$('iron-list');
-    const albumItems = ironList.querySelectorAll('album-item');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
     assertEquals(1, albumItems.length);
 
     const album0 = albumItems[0];
@@ -238,7 +282,7 @@ suite('AmbientModeHandler', function() {
 
     const albumList = ambientModePhotosPage.$$('album-list');
     const ironList = albumList.$$('iron-list');
-    const albumItems = ironList.querySelectorAll('album-item');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
     assertEquals(1, albumItems.length);
 
     const album0 = albumItems[0];
@@ -263,7 +307,7 @@ suite('AmbientModeHandler', function() {
 
     const albumList = ambientModePhotosPage.$$('album-list');
     const ironList = albumList.$$('iron-list');
-    const albumItems = ironList.querySelectorAll('album-item');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
     assertEquals(1, albumItems.length);
 
     const album0 = albumItems[0];

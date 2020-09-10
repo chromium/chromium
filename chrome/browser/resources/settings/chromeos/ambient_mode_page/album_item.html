@@ -23,45 +23,44 @@
 
       #albumContainer.art-album {
         margin: 8px auto;
-        width: 512px;
+        width: 280px;
       }
 
       #imageContainer {
         background-color: rgba(var(--google-blue-50-rgb), .8);
         border-radius: 4px;
         display: block;
+        margin: 0 12px;
       }
 
       #imageContainer.personal-album {
         height: 160px;
-        margin: 0 12px;
         width: 160px;
       }
 
       #imageContainer.art-album {
-        height: 320px;
-        width: 512px;
+        height: 160px;
+        width: 256px;
       }
 
-      #albumInfo.personal-album {
+      #albumInfo {
         margin: 0 12px;
       }
 
       #image {
         border-radius: 4px;
         display: block;
+        height: 160px;
         transform: scale(1.0);
         transition: transform 240ms;
       }
 
       #image.personal-album {
-        height: 160px;
         width: 160px;
       }
 
       #image.art-album {
-        height: 320px;
-        width: 512px;
+        width: 256px;
       }
 
       .selected-circle {
@@ -72,17 +71,18 @@
         display: none;
         height: 22px;
         position: absolute;
-        top: 13px;
         width: 22px;
         z-index: 1;
       }
 
       .selected-circle.personal-album {
         left: 144px;
+        top: 12px;
       }
 
       .selected-circle.art-album {
-        left: 558px;
+        left: 240px;
+        top: 8px;
       }
 
       .check {
@@ -91,7 +91,6 @@
         display: none;
         height: 10px;
         position: absolute;
-        top: 17px;
         transform: rotate(45deg);
         width: 5px;
         z-index: 2;
@@ -99,10 +98,12 @@
 
       .check.personal-album {
         left: 152px;
+        top: 16px;
       }
 
       .check.art-album {
-        left: 566px;
+        left: 248px;
+        top: 12px;
       }
 
       :host([checked]) #image {
@@ -117,7 +118,7 @@
       }
 
       :host([checked]) #image.art-album {
-        transform: scale(0.9);
+        transform: scale(0.875);
       }
 
       :host([checked]) .selected-circle {

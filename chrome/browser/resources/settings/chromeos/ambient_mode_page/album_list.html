@@ -29,8 +29,7 @@
     </style>
     <paper-spinner-lite active="[[!albums]]"></paper-spinner-lite>
 
-    <iron-list grid="[[computeLayout_(topicSource)]]" scrollable
-        scroll-target="document" items="{{albums}}">
+    <iron-list grid scrollable scroll-target="document" items="{{albums}}">
       <template>
         <album-item album="{{item}}" checked="{{item.checked}}"
             topic-source="[[topicSource]]" tabindex$="[[tabIndex]]">
