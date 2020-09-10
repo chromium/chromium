@@ -47,6 +47,27 @@ private_membership::rlwe::RlwePlaintextId ConstructDeviceRlweId(
 // Upon a failed determination it won't allow another membership check.
 class PrivateSetMembershipHelper;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrivateSetMembershipStatus {
+  kAttempt = 0,
+  kSuccessfulDetermination = 1,
+  kError = 2,
+  kTimeout = 3,
+  kMaxValue = kTimeout,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrivateSetMembershipHashDanceComparison {
+  kEqualResults = 0,
+  kDifferentResults = 1,
+  kPSMErrorHashDanceSuccess = 2,
+  kPSMSuccessHashDanceError = 3,
+  kBothError = 4,
+  kMaxValue = kBothError,
+};
+
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
 // OOBE.
@@ -194,6 +215,14 @@ class AutoEnrollmentClientImpl
   // Updates UMA histograms for bucket download timings.
   void UpdateBucketDownloadTimingHistograms();
 
+  // Updates the UMA histogram for successful hash dance.
+  void RecordHashDanceSuccessTimeHistogram();
+
+  // Records the UMA histogram comparing results of hash dance and private set
+  // membership. This function should be called after PSM and hash dance
+  // requests finished.
+  void RecordPrivateSetMembershipHashDanceComparison();
+
   // Callback to invoke when the protocol generates a relevant event. This can
   // be either successful completion or an error that requires external action.
   ProgressCallback progress_callback_;
@@ -253,16 +282,21 @@ class AutoEnrollmentClientImpl
   // If |time_start_| is not null, the protocol is still running.
   // If |time_extra_start_| is not null, the protocol is still running but our
   // owner has relinquished ownership.
-  base::Time time_start_;
-  base::Time time_extra_start_;
+  base::TimeTicks time_start_;
+  base::TimeTicks time_extra_start_;
 
   // The time when the bucket download part of the protocol started.
-  base::Time time_start_bucket_download_;
+  base::TimeTicks time_start_bucket_download_;
 
   // The UMA histogram suffix. Will be ".ForcedReenrollment" for an
   // |AutoEnrollmentClient| used for FRE and ".InitialEnrollment" for an
   // |AutoEnrollmentclient| used for initial enrollment.
   const std::string uma_suffix_;
+
+  // Whether this instance already recorded the comparison of private set
+  // membership and hash dance. This is required because we do not want to
+  // record the result again on a hash dance retry.
+  bool recorded_psm_hash_dance_comparison_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentClientImpl);
 };

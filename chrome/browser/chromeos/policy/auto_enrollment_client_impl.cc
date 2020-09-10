@@ -51,6 +51,18 @@ constexpr base::TimeDelta kPrivateSetMembershipTimeout =
     base::TimeDelta::FromSeconds(15);
 
 // UMA histogram names.
+constexpr char kUMAHashDanceSuccessTime[] =
+    "Enterprise.AutoEnrollmentHashDanceSuccessTime";
+constexpr char kUMAPrivateSetMembershipHashDanceComparison[] =
+    "Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison";
+constexpr char kUMAPrivateSetMembershipSuccessTime[] =
+    "Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime";
+constexpr char kUMAPrivateSetMembershipRequestStatus[] =
+    "Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus";
+
+// The following histogram names where added before private set membership
+// existed. They are only recorded for hash dance.
+
 constexpr char kUMAProtocolTime[] = "Enterprise.AutoEnrollmentProtocolTime";
 constexpr char kUMABucketDownloadTime[] =
     "Enterprise.AutoEnrollmentBucketDownloadTime";
@@ -259,6 +271,12 @@ class PrivateSetMembershipHelper {
       return;
     }
 
+    // Report the psm attempt and start the timer to measure successful private
+    // set membership requests.
+    base::UmaHistogramEnumeration(kUMAPrivateSetMembershipRequestStatus,
+                                  PrivateSetMembershipStatus::kAttempt);
+    time_start_ = base::TimeTicks::Now();
+
     on_completion_callback_ = std::move(callback);
 
     // Start the protocol and its timeout timer.
@@ -311,9 +329,17 @@ class PrivateSetMembershipHelper {
   }
 
  private:
-  void OnTimeout() { StoreErrorAndStop(); }
+  void OnTimeout() {
+    base::UmaHistogramEnumeration(kUMAPrivateSetMembershipRequestStatus,
+                                  PrivateSetMembershipStatus::kTimeout);
+    StoreErrorAndStop();
+  }
 
   void StoreErrorAndStop() {
+    // Record the error. Note that a timeout is also recorded as error.
+    base::UmaHistogramEnumeration(kUMAPrivateSetMembershipRequestStatus,
+                                  PrivateSetMembershipStatus::kError);
+
     // Stop the private set membership timer.
     private_set_membership_timeout_.Stop();
 
@@ -482,6 +508,11 @@ class PrivateSetMembershipHelper {
 
         LOG(WARNING) << "PSM query request completed successfully";
 
+        base::UmaHistogramEnumeration(
+            kUMAPrivateSetMembershipRequestStatus,
+            PrivateSetMembershipStatus::kSuccessfulDetermination);
+        RecordPrivateSetMembershipSuccessTimeHistogram();
+
         // The RLWE query response has been processed successfully. Extract
         // the membership response, and report the result.
         psm_rlwe::MembershipResponseMap membership_responses_map =
@@ -538,6 +569,23 @@ class PrivateSetMembershipHelper {
         std::move(callback));
   }
 
+  // Record UMA histogram for timing of successful private set membership
+  // request.
+  void RecordPrivateSetMembershipSuccessTimeHistogram() {
+    // These values determine bucketing of the histogram, they should not be
+    // changed.
+    static const base::TimeDelta kMin = base::TimeDelta::FromMilliseconds(1);
+    static const base::TimeDelta kMax = base::TimeDelta::FromSeconds(25);
+    static const int kBuckets = 50;
+
+    base::TimeTicks now = base::TimeTicks::Now();
+    if (!time_start_.is_null()) {
+      base::TimeDelta delta = now - time_start_;
+      base::UmaHistogramCustomTimes(kUMAPrivateSetMembershipSuccessTime, delta,
+                                    kMin, kMax, kBuckets);
+    }
+  }
+
   // Private Set Membership RLWE client, used for preparing PSM requests and
   // parsing PSM responses.
   std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
@@ -574,6 +622,9 @@ class PrivateSetMembershipHelper {
   // A timer that puts a hard limit on the maximum time to wait for private set
   // membership protocol.
   base::OneShotTimer private_set_membership_timeout_;
+
+  // The time when the private set membership request started.
+  base::TimeTicks time_start_;
 
   // A sequence checker to prevent the race condition of having the possibility
   // of the destructor being called and any of the callbacks.
@@ -857,7 +908,7 @@ void AutoEnrollmentClientImpl::Start() {
   // Drop the previous job and reset state.
   request_job_.reset();
   state_ = AUTO_ENROLLMENT_STATE_PENDING;
-  time_start_ = base::Time::Now();
+  time_start_ = base::TimeTicks::Now();
   modulus_updates_received_ = 0;
   has_server_state_ = false;
   device_state_available_ = false;
@@ -877,7 +928,7 @@ void AutoEnrollmentClientImpl::CancelAndDeleteSoon() {
     // Client still running, but our owner isn't interested in the result
     // anymore. Wait until the protocol completes to measure the extra time
     // needed.
-    time_extra_start_ = base::Time::Now();
+    time_extra_start_ = base::TimeTicks::Now();
     progress_callback_.Reset();
   }
 }
@@ -927,7 +978,8 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
       state_download_message_processor_(
           std::move(state_download_message_processor)),
       private_set_membership_helper_(std::move(private_set_membership_helper)),
-      uma_suffix_(uma_suffix) {
+      uma_suffix_(uma_suffix),
+      recorded_psm_hash_dance_comparison_(false) {
   DCHECK_LE(current_power_, power_limit_);
   DCHECK(!progress_callback_.is_null());
 }
@@ -1015,6 +1067,18 @@ void AutoEnrollmentClientImpl::SetPrivateSetMembershipRlweClientForTesting(
 
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) {
   state_ = state;
+  // If hash dance finished with an error or result, record comparison with
+  // private set membership. Note that hash dance might be retried but for
+  // recording we only care about the first attempt.
+  // If |private_set_membership_helper_| is non-null, a private set membership
+  // request has been made at this point because it is executed before hash
+  // dance.
+  const bool has_hash_dance_result = (state != AUTO_ENROLLMENT_STATE_IDLE &&
+                                      state != AUTO_ENROLLMENT_STATE_PENDING);
+  if (private_set_membership_helper_ && !recorded_psm_hash_dance_comparison_ &&
+      has_hash_dance_result) {
+    RecordPrivateSetMembershipHashDanceComparison();
+  }
   if (progress_callback_.is_null()) {
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   } else {
@@ -1067,7 +1131,7 @@ void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
   // Record the time when the bucket download request is started. Note that the
   // time may be set multiple times. This is fine, only the last request is the
   // one where the hash bucket is actually downloaded.
-  time_start_bucket_download_ = base::Time::Now();
+  time_start_bucket_download_ = base::TimeTicks::Now();
 
   VLOG(1) << "Request bucket #" << remainder;
   std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
@@ -1209,6 +1273,10 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
     local_state_->CommitPendingWrite();
     VLOG(1) << "Received has_state=" << has_server_state_;
     progress = true;
+    // Report timing if hash dance finished successfully and if the caller is
+    // still interested in the result.
+    if (!progress_callback_.is_null())
+      RecordHashDanceSuccessTimeHistogram();
   }
 
   // Bucket download done, update UMA.
@@ -1269,6 +1337,8 @@ bool AutoEnrollmentClientImpl::IsIdHashInProtobuf(
 }
 
 void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
+  // These values determine bucketing of the histogram, they should not be
+  // changed.
   // The minimum time can't be 0, must be at least 1.
   static const base::TimeDelta kMin = base::TimeDelta::FromMilliseconds(1);
   static const base::TimeDelta kMax = base::TimeDelta::FromMinutes(5);
@@ -1276,7 +1346,7 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
   static const base::TimeDelta kZero = base::TimeDelta::FromMilliseconds(0);
   static const int kBuckets = 50;
 
-  base::Time now = base::Time::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
   if (!time_start_.is_null()) {
     base::TimeDelta delta = now - time_start_;
     base::UmaHistogramCustomTimes(kUMAProtocolTime + uma_suffix_, delta, kMin,
@@ -1295,6 +1365,76 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
   // total users going through OOBE.
   base::UmaHistogramCustomTimes(kUMAExtraTime + uma_suffix_, delta, kMin, kMax,
                                 kBuckets);
+}
+
+void AutoEnrollmentClientImpl::RecordHashDanceSuccessTimeHistogram() {
+  // These values determine bucketing of the histogram, they should not be
+  // changed.
+  static const base::TimeDelta kMin = base::TimeDelta::FromMilliseconds(1);
+  static const base::TimeDelta kMax = base::TimeDelta::FromSeconds(25);
+  static const int kBuckets = 50;
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!time_start_.is_null()) {
+    base::TimeDelta delta = now - time_start_;
+    base::UmaHistogramCustomTimes(kUMAHashDanceSuccessTime + uma_suffix_, delta,
+                                  kMin, kMax, kBuckets);
+  }
+}
+
+void AutoEnrollmentClientImpl::RecordPrivateSetMembershipHashDanceComparison() {
+  // Private set membership timeout is enforced in the helper class. This method
+  // should only be called after private set membership request finished or ran
+  // into timeout.
+  DCHECK(private_set_membership_helper_);
+  DCHECK(!private_set_membership_helper_->IsCheckMembershipInProgress());
+
+  // Make sure to only record once per instance.
+  recorded_psm_hash_dance_comparison_ = true;
+
+  bool private_set_membership_decision =
+      private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
+  bool private_set_membership_error =
+      private_set_membership_helper_->HasPrivateSetMembershipError();
+
+  bool hash_dance_decision = has_server_state_;
+  bool hash_dance_error = false;
+  switch (state_) {
+    case AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT:
+    case AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
+    case AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH:
+    case AUTO_ENROLLMENT_STATE_DISABLED:
+      hash_dance_error = false;
+      break;
+    case AUTO_ENROLLMENT_STATE_CONNECTION_ERROR:
+    case AUTO_ENROLLMENT_STATE_SERVER_ERROR:
+      hash_dance_error = true;
+      break;
+    // This method should only be called if hash dance finished.
+    case AUTO_ENROLLMENT_STATE_IDLE:
+    case AUTO_ENROLLMENT_STATE_PENDING:
+    default:
+      NOTREACHED();
+  }
+
+  auto comparison = PrivateSetMembershipHashDanceComparison::kEqualResults;
+  if (!hash_dance_error && !private_set_membership_error) {
+    comparison =
+        (hash_dance_decision == private_set_membership_decision)
+            ? PrivateSetMembershipHashDanceComparison::kEqualResults
+            : PrivateSetMembershipHashDanceComparison::kDifferentResults;
+  } else if (hash_dance_error && !private_set_membership_error) {
+    comparison =
+        PrivateSetMembershipHashDanceComparison::kPSMSuccessHashDanceError;
+  } else if (!hash_dance_error && private_set_membership_error) {
+    comparison =
+        PrivateSetMembershipHashDanceComparison::kPSMErrorHashDanceSuccess;
+  } else {
+    comparison = PrivateSetMembershipHashDanceComparison::kBothError;
+  }
+
+  base::UmaHistogramEnumeration(kUMAPrivateSetMembershipHashDanceComparison,
+                                comparison);
 }
 
 }  // namespace policy

@@ -58185,6 +58185,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="ToastButton"/>
 </enum>
 
+<enum name="PrivateSetMembershipHashDanceComparison">
+  <int value="0" label="Equal Results"/>
+  <int value="1" label="Different Results"/>
+  <int value="2" label="PSM Error, Hash Dance Success"/>
+  <int value="3" label="PSM Success, Hash Dance Error"/>
+  <int value="4" label="Both Error"/>
+</enum>
+
+<enum name="PrivateSetMembershipStatus">
+  <int value="0" label="Attempt"/>
+  <int value="1" label="Successful Determination"/>
+  <int value="2" label="Error"/>
+  <int value="3" label="Timeout"/>
+</enum>
+
 <enum name="PrivetNotificationsEvent">
   <int value="0" label="PRIVET_SERVICE_STARTED"/>
   <int value="1" label="PRIVET_LISTER_STARTED"/>
