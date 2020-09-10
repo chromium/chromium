@@ -215,11 +215,6 @@ void SVGAnimateElement::UpdateTargetProperty() {
     ClearTargetProperty();
 }
 
-AnimatedPropertyType SVGAnimateElement::GetAnimatedPropertyType() const {
-  // TODO(fs): Should be possible to DCHECK targetElement() here instead.
-  return !targetElement() ? kAnimatedUnknown : type_;
-}
-
 bool SVGAnimateElement::HasValidAnimation() const {
   if (AttributeName() == AnyQName())
     return false;
@@ -347,15 +342,14 @@ void SVGAnimateElement::CalculateAnimatedValue(
     return;
 
   DCHECK(percentage >= 0 && percentage <= 1);
-  DCHECK_NE(GetAnimatedPropertyType(), kAnimatedUnknown);
+  DCHECK_NE(type_, kAnimatedUnknown);
   DCHECK(from_property_);
-  DCHECK_EQ(from_property_->GetType(), GetAnimatedPropertyType());
+  DCHECK_EQ(from_property_->GetType(), type_);
   DCHECK(to_property_);
 
   auto* result_animation_element = To<SVGAnimateElement>(result_element);
   DCHECK(result_animation_element->animated_value_);
-  DCHECK_EQ(result_animation_element->GetAnimatedPropertyType(),
-            GetAnimatedPropertyType());
+  DCHECK_EQ(result_animation_element->type_, type_);
 
   if (IsA<SVGSetElement>(*this))
     percentage = 1;
@@ -475,9 +469,9 @@ void SVGAnimateElement::ClearAnimatedType() {
 }
 
 void SVGAnimateElement::ApplyResultsToTarget() {
-  DCHECK_NE(GetAnimatedPropertyType(), kAnimatedUnknown);
   DCHECK(animated_value_);
   DCHECK(targetElement());
+  DCHECK_NE(type_, kAnimatedUnknown);
 
   // We do update the style and the animation property independent of each
   // other.
@@ -507,8 +501,9 @@ void SVGAnimateElement::ApplyResultsToTarget() {
 }
 
 bool SVGAnimateElement::AnimatedPropertyTypeSupportsAddition() const {
+  DCHECK(targetElement());
   // http://www.w3.org/TR/SVG/animate.html#AnimationAttributesAndProperties.
-  switch (GetAnimatedPropertyType()) {
+  switch (type_) {
     case kAnimatedBoolean:
     case kAnimatedEnumeration:
     case kAnimatedPreserveAspectRatio:

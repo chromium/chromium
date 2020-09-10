@@ -50,7 +50,9 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
       const Attribute&) const override;
 
   const QualifiedName& AttributeName() const { return attribute_name_; }
-  AnimatedPropertyType GetAnimatedPropertyType() const;
+  AnimatedPropertyType GetAnimatedPropertyTypeForTesting() const {
+    return type_;
+  }
   bool AnimatedPropertyTypeSupportsAddition() const;
 
  protected:

@@ -221,14 +221,14 @@ TEST(UnsafeSVGAttributeSanitizationTest, stringsShouldNotSupportAddition) {
   element->SetAttributeName(xlink_names::kHrefAttr);
 
   // Sanity check that xlink:href was identified as a "string" attribute
-  EXPECT_EQ(kAnimatedString, element->GetAnimatedPropertyType());
+  EXPECT_EQ(kAnimatedString, element->GetAnimatedPropertyTypeForTesting());
 
   EXPECT_FALSE(element->AnimatedPropertyTypeSupportsAddition());
 
   element->SetAttributeName(svg_names::kHrefAttr);
 
   // Sanity check that href was identified as a "string" attribute
-  EXPECT_EQ(kAnimatedString, element->GetAnimatedPropertyType());
+  EXPECT_EQ(kAnimatedString, element->GetAnimatedPropertyTypeForTesting());
 
   EXPECT_FALSE(element->AnimatedPropertyTypeSupportsAddition());
 }
