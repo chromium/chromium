@@ -174,6 +174,12 @@ function refreshSigninInfo(signinInfo) {
   jstProcess(new JsEvalContext(signinInfo), $('token-info'));
   jstProcess(new JsEvalContext(signinInfo), $('account-info'));
   jstProcess(new JsEvalContext(signinInfo), $('refresh-token-events'));
+  document.querySelectorAll('td[jsvalues=".textContent: status"]')
+      .forEach(td => {
+        if (td.textContent.includes('Expired at')) {
+          td.style = 'color: #ffffff; background-color: #ff0000';
+        }
+      });
 }
 
 // Replace the cookie information with the fetched values.

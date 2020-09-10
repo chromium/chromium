@@ -542,13 +542,16 @@ AboutSigninInternals::TokenInfo::ToValue() const {
         expiration_time_string = "Expiration time not available";
       }
       std::string status_str;
+      std::string expire_string = "Expire";
       if (token_expired)
-        status_str = "<p style=\"color: #ffffff; background-color: #ff0000\">";
-      base::StringAppendF(&status_str, "Received token at %s. Expire at %s",
+        expire_string = "Expired";
+      base::StringAppendF(&status_str, "Received token at %s. %s at %s",
                           base::TimeToISO8601(receive_time).c_str(),
+                          expire_string.c_str(),
                           expiration_time_string.c_str());
-      if (token_expired)
-        base::StringAppendF(&status_str, "</p>");
+      // JS code looks for `Expired at` string in order to mark
+      // specific status row red color. Changing `Exired at` status
+      // requires a change in JS code too.
       token_info->SetString("status", status_str);
     } else {
       token_info->SetString(
