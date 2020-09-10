@@ -32,6 +32,3 @@ per-file BUILD.gn=*
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 per-file *.mojom=*
-
-per-file unittests_manifest.json=set noparent
-per-file unittests_manifest.json=file://ipc/SECURITY_OWNERS

@@ -26,9 +26,4 @@ per-file *.mm=lgrey@chromium.org
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*
 
-per-file interactive_ui_tests_manifest.json=set noparent
-per-file interactive_ui_tests_manifest.json=file://ipc/SECURITY_OWNERS
-per-file unittests_manifest.json=set noparent
-per-file unittests_manifest.json=file://ipc/SECURITY_OWNERS
-
 # COMPONENT: Internals>Views

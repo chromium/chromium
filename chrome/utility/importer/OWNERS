@@ -7,9 +7,4 @@ per-file nss_*=engedy@chromium.org
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
-per-file profile_import_manifest.cc=set noparent
-per-file profile_import_manifest.cc=file://ipc/SECURITY_OWNERS
-per-file profile_import_manifest.h=set noparent
-per-file profile_import_manifest.h=file://ipc/SECURITY_OWNERS
-
 # COMPONENT: UI>Browser>Import
