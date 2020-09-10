@@ -128,7 +128,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider3D() {
       DCHECK(LowLatencyEnabled());
       provider = CanvasResourceProvider::CreatePassThroughProvider(
           Size(), FilterQuality(), ColorParams(),
-          SharedGpuContext::ContextProviderWrapper(), std::move(dispatcher),
+          SharedGpuContext::ContextProviderWrapper(), dispatcher,
           RenderingContext()->IsOriginTopLeft());
     }
     if (!provider) {
@@ -168,8 +168,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider3D() {
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         Size(), FilterQuality(), ColorParams(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
-        std::move(dispatcher));
+        CanvasResourceProvider::ShouldInitialize::kCallClear, dispatcher);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
@@ -209,7 +208,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
       provider = CanvasResourceProvider::CreateSwapChainProvider(
           Size(), FilterQuality(), ColorParams(),
           CanvasResourceProvider::ShouldInitialize::kCallClear,
-          SharedGpuContext::ContextProviderWrapper(), std::move(dispatcher),
+          SharedGpuContext::ContextProviderWrapper(), dispatcher,
           is_origin_top_left);
     }
     // If SwapChain failed or it was not possible, we will try a SharedImage
@@ -258,8 +257,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         Size(), FilterQuality(), ColorParams(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
-        std::move(dispatcher));
+        CanvasResourceProvider::ShouldInitialize::kCallClear, dispatcher);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
