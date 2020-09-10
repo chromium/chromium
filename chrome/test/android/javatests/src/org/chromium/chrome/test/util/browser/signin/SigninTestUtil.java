@@ -6,6 +6,8 @@ package org.chromium.chrome.test.util.browser.signin;
 
 import android.accounts.Account;
 
+import androidx.annotation.Nullable;
+
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
@@ -43,7 +45,7 @@ final class SigninTestUtil {
     /**
      * Sign into an account.
      */
-    static void signIn(Account account) {
+    static void signIn(Account account, @Nullable ProfileSyncService profileSyncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
@@ -53,8 +55,10 @@ final class SigninTestUtil {
                     SigninAccessPoint.UNKNOWN, account, new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
-                            ProfileSyncService.get().setFirstSetupComplete(
-                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+                            if (profileSyncService != null) {
+                                profileSyncService.setFirstSetupComplete(
+                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
+                            }
                             callbackHelper.notifyCalled();
                         }
 
