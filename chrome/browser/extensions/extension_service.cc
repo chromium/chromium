@@ -319,9 +319,14 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
           info.extension_id, info.install_parameter, info.update_url,
           info.download_location, info.creation_flags,
           info.mark_acknowledged)) {
-    install_stage_tracker->ReportFailure(
-        info.extension_id,
-        InstallStageTracker::FailureReason::PENDING_ADD_FAILED);
+    // We can reach here if the extension from an equal or higher priority
+    // source is already present in the |pending_extension_list_|. No need to
+    // report the failure in this case.
+    if (!pending_extension_manager()->GetById(info.extension_id)) {
+      install_stage_tracker->ReportFailure(
+          info.extension_id,
+          InstallStageTracker::FailureReason::PENDING_ADD_FAILED);
+    }
     return false;
   }
 
