@@ -19,5 +19,8 @@ js_library("diagnostics_app") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "diagnostics_app.js" ]
+  js_files = [
+    "diagnostics_app.js",
+    "diagnostics_shared_css.js",
+  ]
 }

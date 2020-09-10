@@ -16,6 +16,7 @@
       <include name="IDR_DIAGNOSTICS_APP_ICON" file="app_icon_192.png" type="BINDATA" />
       <include name="IDR_DIAGNOSTICS_APP_INDEX_HTML" file="index.html" type="BINDATA" />
       <include name="IDR_DIAGNOSTICS_APP_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_app.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_SHARED_CSS_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_shared_css.js" use_base_dir="false" type="BINDDATA"/>
     </includes>
   </release>
 </grit>
