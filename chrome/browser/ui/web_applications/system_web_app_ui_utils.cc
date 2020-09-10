@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -198,7 +198,7 @@ Browser* LaunchSystemWebApp(Profile* profile,
   }
 
   // Send launch files.
-  if (provider->file_handler_manager().IsFileHandlingAPIAvailable(
+  if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
           params->app_id)) {
     if (provider->system_web_app_manager().AppShouldReceiveLaunchDirectory(
             app_type)) {

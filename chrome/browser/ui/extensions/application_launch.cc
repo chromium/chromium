@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
@@ -162,10 +162,10 @@ GURL UrlForExtension(const extensions::Extension* extension,
     DCHECK(IsAllowedToOverrideURL(extension, params.override_url));
     url = params.override_url;
   } else if (extension->from_bookmark()) {
-    web_app::FileHandlerManager& file_handler_manager =
+    web_app::OsIntegrationManager& os_integration_manager =
         web_app::WebAppProviderBase::GetProviderBase(profile)
-            ->file_handler_manager();
-    url = file_handler_manager
+            ->os_integration_manager();
+    url = os_integration_manager
               .GetMatchingFileHandlerURL(params.app_id, params.launch_files)
               .value_or(extensions::AppLaunchInfo::GetFullLaunchURL(extension));
   } else {
@@ -367,7 +367,7 @@ WebContents* OpenEnabledApplication(Profile* profile,
 
   if (extension->from_bookmark()) {
     if (web_app::WebAppProviderBase::GetProviderBase(profile)
-            ->file_handler_manager()
+            ->os_integration_manager()
             .IsFileHandlingAPIAvailable(extension->id())) {
       web_launch::WebLaunchFilesHelper::SetLaunchPaths(tab, url,
                                                        params.launch_files);

@@ -8,7 +8,7 @@
 #include "base/bind_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
@@ -33,16 +33,16 @@ void UpdateFileHandlerRegistrationInOs(const AppId& app_id, Profile* profile) {
   // On OSX, file associations are managed through app shims in the Applications
   // directory, so after enabling or disabling file handling for an app its shim
   // needs to be updated.
-  AppShortcutManager& shortcut_manager =
-      WebAppProviderBase::GetProviderBase(profile)->shortcut_manager();
+  OsIntegrationManager& os_integration_manager =
+      WebAppProviderBase::GetProviderBase(profile)->os_integration_manager();
   auto onCreateShortcut = [](bool shortcut_created) {
     UMA_HISTOGRAM_ENUMERATION(kRegistrationResultMetric,
                               shortcut_created
                                   ? RegistrationResult::kSuccess
                                   : RegistrationResult::kFailToCreateShortcut);
   };
-  shortcut_manager.CreateShortcuts(app_id, /*add_to_desktop=*/false,
-                                   base::BindOnce(onCreateShortcut));
+  os_integration_manager.CreateShortcuts(app_id, /*add_to_desktop=*/false,
+                                         base::BindOnce(onCreateShortcut));
 }
 
 }  // namespace

@@ -195,8 +195,9 @@ class SystemWebAppManagerTest : public WebAppTest {
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     test_pending_app_manager_impl_ =
         std::make_unique<TestPendingAppManagerImpl>(profile());
-    test_os_integration_manager_ =
-        std::make_unique<TestOsIntegrationManager>(profile());
+    test_os_integration_manager_ = std::make_unique<TestOsIntegrationManager>(
+        profile(), /*app_shortcut_manager=*/nullptr,
+        /*file_handler_manager=*/nullptr);
     test_system_web_app_manager_ =
         std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<TestWebAppUiManager>();
@@ -219,7 +220,7 @@ class SystemWebAppManagerTest : public WebAppTest {
 
     system_web_app_manager().SetSubsystems(
         &pending_app_manager(), &controller().registrar(),
-        &controller().sync_bridge(), &ui_manager(), &file_handler_manager());
+        &controller().sync_bridge(), &ui_manager(), &os_integration_manager());
 
     install_manager().Start();
     install_finalizer().Start();

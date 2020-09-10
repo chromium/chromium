@@ -18,7 +18,7 @@
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/webui_url_constants.h"
@@ -55,19 +55,19 @@ void FindWebTasks(Profile* profile,
   web_app::WebAppProviderBase* provider =
       web_app::WebAppProviderBase::GetProviderBase(profile);
   web_app::AppRegistrar& registrar = provider->registrar();
-  web_app::FileHandlerManager& file_handler_manager =
-      provider->file_handler_manager();
+  web_app::OsIntegrationManager& os_integration_manager =
+      provider->os_integration_manager();
 
   std::vector<web_app::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
     if (has_special_file && app_id != chromeos::default_web_apps::kMediaAppId)
       continue;
 
-    if (!file_handler_manager.IsFileHandlingAPIAvailable(app_id))
+    if (!os_integration_manager.IsFileHandlingAPIAvailable(app_id))
       continue;
 
     const auto* file_handlers =
-        file_handler_manager.GetEnabledFileHandlers(app_id);
+        os_integration_manager.GetEnabledFileHandlers(app_id);
 
     if (!file_handlers)
       continue;
@@ -119,7 +119,7 @@ void ExecuteWebTask(Profile* profile,
     return;
   }
 
-  if (!provider->file_handler_manager().IsFileHandlingAPIAvailable(
+  if (!provider->os_integration_manager().IsFileHandlingAPIAvailable(
           task.app_id)) {
     std::move(done).Run(
         extensions::api::file_manager_private::TASK_RESULT_FAILED,

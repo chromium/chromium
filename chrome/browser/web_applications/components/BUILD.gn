@@ -27,6 +27,8 @@ source_set("components") {
     "install_finalizer.h",
     "install_manager.cc",
     "install_manager.h",
+    "os_integration_manager.cc",
+    "os_integration_manager.h",
     "pending_app_manager.cc",
     "pending_app_manager.h",
     "policy/web_app_policy_constants.cc",

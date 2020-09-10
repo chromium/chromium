@@ -8,7 +8,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 
@@ -119,7 +119,7 @@ void WebAppShimManagerDelegate::LaunchShim(
                                    std::move(terminated_callback));
     return;
   }
-  WebAppProvider::Get(profile)->shortcut_manager().GetShortcutInfoForApp(
+  WebAppProvider::Get(profile)->os_integration_manager().GetShortcutInfoForApp(
       app_id,
       base::BindOnce(
           &web_app::LaunchShim,

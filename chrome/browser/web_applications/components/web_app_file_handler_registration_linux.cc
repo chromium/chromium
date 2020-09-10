@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
@@ -83,10 +83,9 @@ void UpdateFileHandlerRegistrationInOs(const AppId& app_id, Profile* profile) {
   // On Linux, file associations are managed through shortcuts in the app menu,
   // so after enabling or disabling file handling for an app its shortcuts
   // need to be recreated.
-  AppShortcutManager& shortcut_manager =
-      WebAppProviderBase::GetProviderBase(profile)->shortcut_manager();
-  shortcut_manager.GetShortcutInfoForApp(
-      app_id, base::BindOnce(&OnShortcutInfoReceived));
+  WebAppProviderBase::GetProviderBase(profile)
+      ->os_integration_manager()
+      .GetShortcutInfoForApp(app_id, base::BindOnce(&OnShortcutInfoReceived));
 }
 
 void OnRegisterMimeTypes(bool registration_succeeded) {

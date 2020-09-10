@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_bounce_metric.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/components/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/web_applications/external_web_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/pending_app_manager_impl.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
@@ -129,19 +129,9 @@ WebAppAudioFocusIdMap& WebAppProvider::audio_focus_id_map() {
   return *audio_focus_id_map_;
 }
 
-FileHandlerManager& WebAppProvider::file_handler_manager() {
-  CheckIsConnected();
-  return *file_handler_manager_;
-}
-
 AppIconManager& WebAppProvider::icon_manager() {
   CheckIsConnected();
   return *icon_manager_;
-}
-
-AppShortcutManager& WebAppProvider::shortcut_manager() {
-  CheckIsConnected();
-  return *shortcut_manager_;
 }
 
 SystemWebAppManager& WebAppProvider::system_web_app_manager() {
@@ -188,7 +178,6 @@ void WebAppProvider::CreateCommonSubsystems(Profile* profile) {
   external_web_app_manager_ = std::make_unique<ExternalWebAppManager>(profile);
   system_web_app_manager_ = std::make_unique<SystemWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
-  os_integration_manager_ = std::make_unique<OsIntegrationManager>(profile);
 }
 
 void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
@@ -219,9 +208,14 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
       profile, *registrar, std::make_unique<FileUtilsWrapper>());
   install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
       profile, icon_manager.get(), std::move(legacy_finalizer));
-  file_handler_manager_ = std::make_unique<WebAppFileHandlerManager>(profile);
-  shortcut_manager_ = std::make_unique<WebAppShortcutManager>(
-      profile, icon_manager.get(), file_handler_manager_.get());
+
+  auto file_handler_manager =
+      std::make_unique<WebAppFileHandlerManager>(profile);
+  auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
+      profile, icon_manager.get(), file_handler_manager.get());
+  os_integration_manager_ = std::make_unique<OsIntegrationManager>(
+      profile, std::move(shortcut_manager), std::move(file_handler_manager));
+
   migration_manager_ = std::make_unique<WebAppMigrationManager>(
       profile, database_factory_.get(), icon_manager.get());
 
@@ -241,10 +235,13 @@ void WebAppProvider::CreateBookmarkAppsSubsystems(Profile* profile) {
   icon_manager_ = std::make_unique<extensions::BookmarkAppIconManager>(profile);
   install_finalizer_ =
       std::make_unique<extensions::BookmarkAppInstallFinalizer>(profile);
-  file_handler_manager_ =
+
+  auto file_handler_manager =
       std::make_unique<extensions::BookmarkAppFileHandlerManager>(profile);
-  shortcut_manager_ =
+  auto shortcut_manager =
       std::make_unique<extensions::BookmarkAppShortcutManager>(profile);
+  os_integration_manager_ = std::make_unique<OsIntegrationManager>(
+      profile, std::move(shortcut_manager), std::move(file_handler_manager));
 
   // Upcast to unified subsystem types:
   registrar_ = std::move(registrar);
@@ -268,14 +265,11 @@ void WebAppProvider::ConnectSubsystems() {
   external_web_app_manager_->SetSubsystems(pending_app_manager_.get());
   system_web_app_manager_->SetSubsystems(
       pending_app_manager_.get(), registrar_.get(), registry_controller_.get(),
-      ui_manager_.get(), file_handler_manager_.get());
+      ui_manager_.get(), os_integration_manager_.get());
   web_app_policy_manager_->SetSubsystems(pending_app_manager_.get());
-  file_handler_manager_->SetSubsystems(registrar_.get());
-  shortcut_manager_->SetSubsystems(icon_manager_.get(), registrar_.get());
   ui_manager_->SetSubsystems(registry_controller_.get());
-  os_integration_manager_->SetSubsystems(
-      registrar_.get(), shortcut_manager_.get(), file_handler_manager_.get(),
-      ui_manager_.get());
+  os_integration_manager_->SetSubsystems(registrar_.get(), ui_manager_.get(),
+                                         icon_manager_.get());
 
   connected_ = true;
 }
@@ -297,7 +291,6 @@ void WebAppProvider::OnRegistryControllerReady() {
   web_app_policy_manager_->Start();
   system_web_app_manager_->Start();
   manifest_update_manager_->Start();
-  file_handler_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
 

@@ -153,8 +153,9 @@ class WebAppInstallManagerTest : public WebAppTest {
     install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
         profile(), icon_manager_.get(), /*legacy_finalizer=*/nullptr);
 
-    os_integration_manager_ =
-        std::make_unique<TestOsIntegrationManager>(profile());
+    os_integration_manager_ = std::make_unique<TestOsIntegrationManager>(
+        profile(), /*app_shortcut_manager=*/nullptr,
+        /*file_handler_manager=*/nullptr);
 
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     install_manager_->SetSubsystems(&registrar(), os_integration_manager_.get(),

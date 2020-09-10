@@ -31,9 +31,7 @@ namespace web_app {
 // Forward declarations of generalized interfaces.
 class AppRegistryController;
 class AppIconManager;
-class AppShortcutManager;
 class ExternalWebAppManager;
-class FileHandlerManager;
 class InstallFinalizer;
 class ManifestUpdateManager;
 class SystemWebAppManager;
@@ -78,9 +76,7 @@ class WebAppProvider : public WebAppProviderBase {
   WebAppPolicyManager& policy_manager() override;
   WebAppUiManager& ui_manager() override;
   WebAppAudioFocusIdMap& audio_focus_id_map() override;
-  FileHandlerManager& file_handler_manager() override;
   AppIconManager& icon_manager() override;
-  AppShortcutManager& shortcut_manager() override;
   SystemWebAppManager& system_web_app_manager() override;
   OsIntegrationManager& os_integration_manager() override;
 
@@ -127,12 +123,10 @@ class WebAppProvider : public WebAppProviderBase {
   std::unique_ptr<AppRegistrar> registrar_;
   std::unique_ptr<AppRegistryController> registry_controller_;
   std::unique_ptr<ExternalWebAppManager> external_web_app_manager_;
-  std::unique_ptr<FileHandlerManager> file_handler_manager_;
   std::unique_ptr<AppIconManager> icon_manager_;
   std::unique_ptr<InstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<PendingAppManager> pending_app_manager_;
-  std::unique_ptr<AppShortcutManager> shortcut_manager_;
   std::unique_ptr<SystemWebAppManager> system_web_app_manager_;
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;

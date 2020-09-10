@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 
 #include <utility>
 
@@ -12,8 +12,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,24 +46,28 @@ class OsHooksBarrierInfo {
   InstallOsHooksCallback done_callback_;
 };
 
-OsIntegrationManager::OsIntegrationManager(Profile* profile)
-    : profile_(profile) {}
+OsIntegrationManager::OsIntegrationManager(
+    Profile* profile,
+    std::unique_ptr<AppShortcutManager> shortcut_manager,
+    std::unique_ptr<FileHandlerManager> file_handler_manager)
+    : profile_(profile),
+      shortcut_manager_(std::move(shortcut_manager)),
+      file_handler_manager_(std::move(file_handler_manager)) {}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 
-void OsIntegrationManager::SetSubsystems(
-    AppRegistrar* registrar,
-    AppShortcutManager* shortcut_manager,
-    FileHandlerManager* file_handler_manager,
-    WebAppUiManager* ui_manager) {
+void OsIntegrationManager::SetSubsystems(AppRegistrar* registrar,
+                                         WebAppUiManager* ui_manager,
+                                         AppIconManager* icon_manager) {
   registrar_ = registrar;
-  shortcut_manager_ = shortcut_manager;
-  file_handler_manager_ = file_handler_manager;
   ui_manager_ = ui_manager;
+  file_handler_manager_->SetSubsystems(registrar);
+  shortcut_manager_->SetSubsystems(icon_manager, registrar);
 }
 
 void OsIntegrationManager::Start() {
   DCHECK(registrar_);
+  DCHECK(file_handler_manager_);
 
 #if defined(OS_MAC)
   // Ensure that all installed apps are included in the AppShimRegistry when the
@@ -80,6 +82,7 @@ void OsIntegrationManager::Start() {
                                                      profile_->GetPath());
   }
 #endif
+  file_handler_manager_->Start();
 }
 
 void OsIntegrationManager::InstallOsHooks(
@@ -171,15 +174,14 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   DeleteSharedAppShims(app_id);
 }
 
-void OsIntegrationManager::SuppressOsHooksForTesting() {
-  suppress_os_hooks_for_testing_ = true;
-}
-
 void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     const WebApplicationInfo& web_app_info) {
   DCHECK(shortcut_manager_);
+
+  if (suppress_os_hooks_for_testing_)
+    return;
 
   // TODO(crbug.com/1079439): Update file handlers.
   shortcut_manager_->UpdateShortcuts(app_id, old_name);
@@ -194,6 +196,74 @@ void OsIntegrationManager::UpdateOsHooks(
     // shortcuts_menu_item_infos is empty.
     shortcut_manager_->UnregisterShortcutsMenuWithOs(app_id);
   }
+}
+
+bool OsIntegrationManager::CanCreateShortcuts() const {
+  DCHECK(shortcut_manager_);
+  return shortcut_manager_->CanCreateShortcuts();
+}
+
+void OsIntegrationManager::CreateShortcuts(const AppId& app_id,
+                                           bool add_to_desktop,
+                                           CreateShortcutsCallback callback) {
+  DCHECK(shortcut_manager_);
+  return shortcut_manager_->CreateShortcuts(app_id, add_to_desktop,
+                                            std::move(callback));
+}
+
+void OsIntegrationManager::GetShortcutInfoForApp(
+    const AppId& app_id,
+    AppShortcutManager::GetShortcutInfoCallback callback) {
+  DCHECK(shortcut_manager_);
+  return shortcut_manager_->GetShortcutInfoForApp(app_id, std::move(callback));
+}
+
+bool OsIntegrationManager::IsFileHandlingAPIAvailable(const AppId& app_id) {
+  DCHECK(file_handler_manager_);
+  return file_handler_manager_->IsFileHandlingAPIAvailable(app_id);
+}
+
+const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
+    const AppId& app_id) {
+  DCHECK(file_handler_manager_);
+  return file_handler_manager_->GetEnabledFileHandlers(app_id);
+}
+
+const base::Optional<GURL> OsIntegrationManager::GetMatchingFileHandlerURL(
+    const AppId& app_id,
+    const std::vector<base::FilePath>& launch_files) {
+  DCHECK(file_handler_manager_);
+  return file_handler_manager_->GetMatchingFileHandlerURL(app_id, launch_files);
+}
+
+void OsIntegrationManager::MaybeUpdateFileHandlingOriginTrialExpiry(
+    content::WebContents* web_contents,
+    const AppId& app_id) {
+  DCHECK(file_handler_manager_);
+  return file_handler_manager_->MaybeUpdateFileHandlingOriginTrialExpiry(
+      web_contents, app_id);
+}
+
+void OsIntegrationManager::ForceEnableFileHandlingOriginTrial(
+    const AppId& app_id) {
+  DCHECK(file_handler_manager_);
+  return file_handler_manager_->ForceEnableFileHandlingOriginTrial(app_id);
+}
+
+void OsIntegrationManager::DisableForceEnabledFileHandlingOriginTrial(
+    const AppId& app_id) {
+  DCHECK(file_handler_manager_);
+  return file_handler_manager_->DisableForceEnabledFileHandlingOriginTrial(
+      app_id);
+}
+
+FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
+  DCHECK(file_handler_manager_);
+  return *file_handler_manager_;
+}
+
+void OsIntegrationManager::SuppressOsHooksForTesting() {
+  suppress_os_hooks_for_testing_ = true;
 }
 
 void OsIntegrationManager::OnShortcutsCreated(

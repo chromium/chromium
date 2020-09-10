@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -147,7 +147,7 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
         /*auto_accept=*/true,
         /*auto_open_in_window=*/true);
 
-    provider().shortcut_manager().SuppressShortcutsForTesting();
+    provider().os_integration_manager().SuppressOsHooksForTesting();
 
     AppId app_id;
     base::RunLoop run_loop;

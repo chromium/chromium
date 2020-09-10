@@ -22,8 +22,6 @@ source_set("common") {
     "manifest_update_manager.h",
     "manifest_update_task.cc",
     "manifest_update_task.h",
-    "os_integration_manager.cc",
-    "os_integration_manager.h",
     "system_web_app_manager.cc",
     "system_web_app_manager.h",
     "web_app_tab_helper.cc",

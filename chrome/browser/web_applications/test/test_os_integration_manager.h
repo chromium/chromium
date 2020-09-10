@@ -8,14 +8,20 @@
 #include <map>
 
 #include "base/optional.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
 
 namespace web_app {
 
+class AppShortcutManager;
+class FileHandlerManager;
+
 class TestOsIntegrationManager : public OsIntegrationManager {
  public:
-  explicit TestOsIntegrationManager(Profile* profile);
+  explicit TestOsIntegrationManager(
+      Profile* profile,
+      std::unique_ptr<AppShortcutManager> shortcut_manager,
+      std::unique_ptr<FileHandlerManager> file_handler_manager);
   ~TestOsIntegrationManager() override;
 
   // OsIntegrationManager:
@@ -51,6 +57,9 @@ class TestOsIntegrationManager : public OsIntegrationManager {
 
   void SetNextCreateShortcutsResult(const AppId& app_id, bool success);
 
+  void SetFileHandlerManager(
+      std::unique_ptr<FileHandlerManager> file_handler_manager);
+
  private:
   size_t num_create_shortcuts_calls_ = 0;
   size_t num_register_run_on_os_login_calls_ = 0;
@@ -61,6 +70,15 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   std::map<AppId, bool> next_create_shortcut_results_;
 };
 
+// Stub test shortcut manager.
+class TestShortcutManager : public AppShortcutManager {
+ public:
+  explicit TestShortcutManager(Profile* profile);
+  ~TestShortcutManager() override;
+  std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id) override;
+  void GetShortcutInfoForApp(const AppId& app_id,
+                             GetShortcutInfoCallback callback) override;
+};
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_OS_INTEGRATION_MANAGER_H_

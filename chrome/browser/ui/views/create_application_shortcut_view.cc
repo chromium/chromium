@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -72,7 +72,7 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     const base::Callback<void(bool)>& close_callback)
     : CreateChromeApplicationShortcutView(profile, close_callback) {
   web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
-  provider->shortcut_manager().GetShortcutInfoForApp(
+  provider->os_integration_manager().GetShortcutInfoForApp(
       web_app_id,
       base::Bind(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
                  weak_ptr_factory_.GetWeakPtr()));

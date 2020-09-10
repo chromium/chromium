@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -88,7 +89,9 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
   }
 
   web_app::FileHandlerManager& file_handler_manager() {
-    return provider()->file_handler_manager();
+    return provider()
+        ->os_integration_manager()
+        .file_handler_manager_for_testing();
   }
 
   web_app::AppRegistrar& registrar() { return provider()->registrar(); }

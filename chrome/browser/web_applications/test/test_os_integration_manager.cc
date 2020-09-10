@@ -5,12 +5,27 @@
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/test_file_handler_manager.h"
 
 namespace web_app {
-TestOsIntegrationManager::TestOsIntegrationManager(Profile* profile)
-    : OsIntegrationManager(profile) {}
+TestOsIntegrationManager::TestOsIntegrationManager(
+    Profile* profile,
+    std::unique_ptr<AppShortcutManager> shortcut_manager,
+    std::unique_ptr<FileHandlerManager> file_handler_manager)
+    : OsIntegrationManager(profile,
+                           std::move(shortcut_manager),
+                           std::move(file_handler_manager)) {
+  if (!this->shortcut_manager()) {
+    set_shortcut_manager(std::make_unique<TestShortcutManager>(profile));
+  }
+  if (!this->file_handler_manager()) {
+    set_file_handler_manager(std::make_unique<TestFileHandlerManager>(profile));
+  }
+}
 
 TestOsIntegrationManager::~TestOsIntegrationManager() = default;
 
@@ -70,4 +85,24 @@ void TestOsIntegrationManager::UpdateOsHooks(
   NOTIMPLEMENTED();
 }
 
+void TestOsIntegrationManager::SetFileHandlerManager(
+    std::unique_ptr<FileHandlerManager> file_handler_manager) {
+  set_file_handler_manager(std::move(file_handler_manager));
+}
+
+TestShortcutManager::TestShortcutManager(Profile* profile)
+    : AppShortcutManager(profile) {}
+
+TestShortcutManager::~TestShortcutManager() = default;
+
+std::unique_ptr<ShortcutInfo> TestShortcutManager::BuildShortcutInfo(
+    const AppId& app_id) {
+  return nullptr;
+}
+
+void TestShortcutManager::GetShortcutInfoForApp(
+    const AppId& app_id,
+    GetShortcutInfoCallback callback) {
+  std::move(callback).Run(nullptr);
+}
 }  // namespace web_app

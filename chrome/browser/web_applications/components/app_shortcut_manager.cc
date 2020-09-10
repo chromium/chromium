@@ -130,7 +130,6 @@ void AppShortcutManager::UnregisterShortcutsMenuWithOs(const AppId& app_id) {
   web_app::UnregisterShortcutsMenuWithOs(app_id, profile_->GetPath());
 }
 
-
 void AppShortcutManager::OnShortcutsCreated(const AppId& app_id,
                                             CreateShortcutsCallback callback,
                                             bool success) {

@@ -18,8 +18,7 @@
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -189,10 +188,10 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
   // File Handlers should only be included in bookmark apps.
   if (app->from_bookmark()) {
     shortcut_info->is_multi_profile = true;
-    FileHandlerManager& file_handler_manager =
-        WebAppProviderBase::GetProviderBase(profile)->file_handler_manager();
+    OsIntegrationManager& os_integration_manager =
+        WebAppProviderBase::GetProviderBase(profile)->os_integration_manager();
     if (const auto* file_handlers =
-            file_handler_manager.GetEnabledFileHandlers(app->id())) {
+            os_integration_manager.GetEnabledFileHandlers(app->id())) {
       shortcut_info->file_handler_extensions =
           apps::GetFileExtensionsFromFileHandlers(*file_handlers);
       shortcut_info->file_handler_mime_types =
@@ -255,7 +254,7 @@ void CreateShortcutsForWebApp(ShortcutCreationReason reason,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebAppProviderBase::GetProviderBase(profile)
-      ->shortcut_manager()
+      ->os_integration_manager()
       .GetShortcutInfoForApp(
           app_id, base::BindOnce(&CreateShortcutsWithInfo, reason, locations,
                                  std::move(callback)));

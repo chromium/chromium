@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
+#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_features.h"
@@ -54,7 +55,11 @@ class WebFileTasksTest : public ::testing::TestWithParam<ProviderType> {
     auto file_handler_manager =
         std::make_unique<web_app::TestFileHandlerManager>(profile_.get());
     file_handler_manager_ = file_handler_manager.get();
-    app_provider_->SetFileHandlerManager(std::move(file_handler_manager));
+    auto os_integration_manager =
+        std::make_unique<web_app::TestOsIntegrationManager>(
+            profile_.get(), /*app_shortcut_manager=*/nullptr,
+            std::move(file_handler_manager));
+    app_provider_->SetOsIntegrationManager(std::move(os_integration_manager));
 
     app_provider_->Start();
   }

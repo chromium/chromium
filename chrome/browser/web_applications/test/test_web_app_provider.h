@@ -21,8 +21,6 @@ class BrowserContext;
 namespace web_app {
 
 class AppRegistrar;
-class AppShortcutManager;
-class FileHandlerManager;
 class OsIntegrationManager;
 class InstallFinalizer;
 class PendingAppManager;
@@ -56,8 +54,6 @@ class TestWebAppProvider : public WebAppProvider {
 
   void SetRegistrar(std::unique_ptr<AppRegistrar> registrar);
   void SetRegistryController(std::unique_ptr<AppRegistryController> controller);
-  void SetFileHandlerManager(
-      std::unique_ptr<FileHandlerManager> file_handler_manager);
   void SetOsIntegrationManager(
       std::unique_ptr<OsIntegrationManager> os_integration_manager);
   void SetInstallManager(std::unique_ptr<WebAppInstallManager> install_manager);
@@ -69,7 +65,6 @@ class TestWebAppProvider : public WebAppProvider {
       std::unique_ptr<SystemWebAppManager> system_web_app_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
-  void SetShortcutManager(std::unique_ptr<AppShortcutManager> shortcut_manager);
 
  private:
   void CheckNotStarted() const;

@@ -22,7 +22,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
@@ -371,12 +371,12 @@ void SystemWebAppManager::SetSubsystems(
     AppRegistrar* registrar,
     AppRegistryController* registry_controller,
     WebAppUiManager* ui_manager,
-    FileHandlerManager* file_handler_manager) {
+    OsIntegrationManager* os_integration_manager) {
   pending_app_manager_ = pending_app_manager;
   registrar_ = registrar;
   registry_controller_ = registry_controller;
   ui_manager_ = ui_manager;
-  file_handler_manager_ = file_handler_manager;
+  os_integration_manager_ = os_integration_manager;
 }
 
 void SystemWebAppManager::Start() {
@@ -710,9 +710,10 @@ void SystemWebAppManager::OnAppsSynchronized(
       continue;
 
     if (AppHasFileHandlingOriginTrial(type)) {
-      file_handler_manager_->ForceEnableFileHandlingOriginTrial(app_id.value());
+      os_integration_manager_->ForceEnableFileHandlingOriginTrial(
+          app_id.value());
     } else {
-      file_handler_manager_->DisableForceEnabledFileHandlingOriginTrial(
+      os_integration_manager_->DisableForceEnabledFileHandlingOriginTrial(
           app_id.value());
     }
   }

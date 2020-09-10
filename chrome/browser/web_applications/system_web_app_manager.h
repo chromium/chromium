@@ -41,7 +41,7 @@ class Profile;
 namespace web_app {
 
 class WebAppUiManager;
-class FileHandlerManager;
+class OsIntegrationManager;
 class AppRegistryController;
 
 // An enum that lists the different System Apps that exist. Can be used to
@@ -152,7 +152,7 @@ class SystemWebAppManager {
                      AppRegistrar* registrar,
                      AppRegistryController* registry_controller,
                      WebAppUiManager* ui_manager,
-                     FileHandlerManager* file_handler_manager);
+                     OsIntegrationManager* os_integration_manager);
 
   void Start();
 
@@ -288,7 +288,7 @@ class SystemWebAppManager {
 
   WebAppUiManager* ui_manager_ = nullptr;
 
-  FileHandlerManager* file_handler_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
 

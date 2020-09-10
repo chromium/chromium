@@ -16,8 +16,6 @@ namespace web_app {
 class AppIconManager;
 class AppRegistrar;
 class AppRegistryController;
-class AppShortcutManager;
-class FileHandlerManager;
 class InstallFinalizer;
 class InstallManager;
 class ManifestUpdateManager;
@@ -57,12 +55,8 @@ class WebAppProviderBase : public KeyedService {
 
   virtual WebAppAudioFocusIdMap& audio_focus_id_map() = 0;
 
-  virtual FileHandlerManager& file_handler_manager() = 0;
-
   // Implements fetching of app icons.
   virtual AppIconManager& icon_manager() = 0;
-
-  virtual AppShortcutManager& shortcut_manager() = 0;
 
   virtual SystemWebAppManager& system_web_app_manager() = 0;
 

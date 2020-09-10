@@ -15,9 +15,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/pending_app_registration_task.h"
@@ -59,9 +59,9 @@ class PendingAppManagerImplBrowserTest
         ->registrar();
   }
 
-  AppShortcutManager& shortcut_manager() {
+  OsIntegrationManager& os_integration_manager() {
     return WebAppProviderBase::GetProviderBase(browser()->profile())
-        ->shortcut_manager();
+        ->os_integration_manager();
   }
 
   PendingAppManager& pending_app_manager() {
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest,
 IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest,
                        PlaceholderInstallSucceedsWithShortcuts) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  shortcut_manager().SuppressShortcutsForTesting();
+  os_integration_manager().SuppressOsHooksForTesting();
 
   GURL final_url = embedded_test_server()->GetURL(
       "other.origin.com", "/banners/manifest_test_page.html");

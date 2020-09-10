@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_OS_INTEGRATION_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_OS_INTEGRATION_MANAGER_H_
 
 #include <bitset>
 #include <vector>
@@ -11,17 +11,23 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_run_on_os_login.h"
 #include "chrome/common/web_application_info.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 namespace web_app {
 
-class AppShortcutManager;
-class FileHandlerManager;
+class AppIconManager;
 class WebAppUiManager;
 
 // OsHooksResults contains the result of all Os hook deployments
@@ -49,13 +55,15 @@ using UninstallOsHooksCallback =
 // care of inter-dependencies among them.
 class OsIntegrationManager {
  public:
-  explicit OsIntegrationManager(Profile* profile);
+  explicit OsIntegrationManager(
+      Profile* profile,
+      std::unique_ptr<AppShortcutManager> shortcut_manager,
+      std::unique_ptr<FileHandlerManager> file_handler_manager);
   virtual ~OsIntegrationManager();
 
   void SetSubsystems(AppRegistrar* registrar,
-                     AppShortcutManager* shortcut_manager,
-                     FileHandlerManager* file_handler_manager,
-                     WebAppUiManager* ui_manager);
+                     WebAppUiManager* ui_manager,
+                     AppIconManager* icon_manager);
 
   void Start();
 
@@ -80,10 +88,47 @@ class OsIntegrationManager {
                              base::StringPiece old_name,
                              const WebApplicationInfo& web_app_info);
 
+  // Proxy calls for AppShortcutManager.
+  bool CanCreateShortcuts() const;
+  void GetShortcutInfoForApp(
+      const AppId& app_id,
+      AppShortcutManager::GetShortcutInfoCallback callback);
+  // TODO(https://crbug.com/1123201): remove exposing this from
+  // OsIntegrationManager.
+  void CreateShortcuts(const AppId& app_id,
+                       bool add_to_desktop,
+                       CreateShortcutsCallback callback);
+
+  // Proxy calls for FileHandlerManager.
+  bool IsFileHandlingAPIAvailable(const AppId& app_id);
+  const apps::FileHandlers* GetEnabledFileHandlers(const AppId& app_id);
+  const base::Optional<GURL> GetMatchingFileHandlerURL(
+      const AppId& app_id,
+      const std::vector<base::FilePath>& launch_files);
+  void MaybeUpdateFileHandlingOriginTrialExpiry(
+      content::WebContents* web_contents,
+      const AppId& app_id);
+  void ForceEnableFileHandlingOriginTrial(const AppId& app_id);
+  void DisableForceEnabledFileHandlingOriginTrial(const AppId& app_id);
+
+  // Getter for testing FileHandlerManager
+  FileHandlerManager& file_handler_manager_for_testing();
+
   void SuppressOsHooksForTesting();
 
  protected:
-  WebAppUiManager* ui_manager_ = nullptr;
+  AppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
+  FileHandlerManager* file_handler_manager() {
+    return file_handler_manager_.get();
+  }
+  void set_shortcut_manager(
+      std::unique_ptr<AppShortcutManager> shortcut_manager) {
+    shortcut_manager_ = std::move(shortcut_manager);
+  }
+  void set_file_handler_manager(
+      std::unique_ptr<FileHandlerManager> file_handler_manager) {
+    file_handler_manager_ = std::move(file_handler_manager);
+  }
 
  private:
   void OnShortcutsCreated(const AppId& app_id,
@@ -103,14 +148,16 @@ class OsIntegrationManager {
   void DeleteSharedAppShims(const AppId& app_id);
 
   Profile* const profile_;
-
   AppRegistrar* registrar_ = nullptr;
-  AppShortcutManager* shortcut_manager_ = nullptr;
-  FileHandlerManager* file_handler_manager_ = nullptr;
+  WebAppUiManager* ui_manager_ = nullptr;
+
+  std::unique_ptr<AppShortcutManager> shortcut_manager_;
+  std::unique_ptr<FileHandlerManager> file_handler_manager_;
+
   bool suppress_os_hooks_for_testing_ = false;
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_OS_INTEGRATION_MANAGER_H_
