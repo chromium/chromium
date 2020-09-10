@@ -344,4 +344,26 @@ Polymer({
     return item.isManaged || item.downloadDictionaryFailureCount > 0 ||
         !this.getPref('browser.enable_spellchecking').value;
   },
+
+  /**
+   * Handler to initiate another attempt at downloading the spell check
+   * dictionary for a specified language.
+   * @param {!{target: Element, model: !{item: !LanguageState}}} e
+   * @private
+   */
+  onRetryDictionaryDownloadClick_(e) {
+    assert(e.model.item.downloadDictionaryFailureCount > 0);
+    this.languageHelper.retryDownloadDictionary(e.model.item.language.code);
+  },
+
+  /**
+   * @param {!LanguageState} item
+   * @return {!string}
+   * @private
+   */
+  getDictionaryDownloadRetryAriaLabel_(item) {
+    return this.i18n(
+        'languagesDictionaryDownloadRetryDescription',
+        item.language.displayName);
+  }
 });

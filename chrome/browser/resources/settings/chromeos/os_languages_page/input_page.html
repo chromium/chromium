@@ -42,6 +42,18 @@
         pointer-events: none;
       }
 
+      .name-with-error div {
+        color: var(--settings-error-color);
+        margin-top: 8px;
+      }
+
+      iron-icon[icon='cr:error'] {
+        --iron-icon-fill-color: var(--settings-error-color);
+        height: var(--cr-icon-size);
+        margin-inline-end: 8px;
+        width: var(--cr-icon-size);
+      }
+
       /* The default implementation of the actionable list item makes the
        * entire list item row a button such that clicking anywhere will
        * activate the action of the list item. The input method list behaves
@@ -165,7 +177,19 @@
                     disabled$="[[isSpellCheckNameClickDisabled_(item, item.*,
                         prefs.browser.enable_spellchecking.*)]]">
                   [[item.language.displayName]]
+                  <div hidden="[[!item.downloadDictionaryFailureCount]]"
+                      aria-hidden="true">
+                    <iron-icon icon="cr:error"></iron-icon>
+                    $i18n{languagesDictionaryDownloadError}
+                  </div>
                 </div>
+                <cr-button on-click="onRetryDictionaryDownloadClick_"
+                    hidden="[[!item.downloadDictionaryFailureCount]]"
+                    disabled="[[!prefs.browser.enable_spellchecking.value]]"
+                    aria-label$="[[getDictionaryDownloadRetryAriaLabel_(
+                        item)]]">
+                  $i18n{languagesDictionaryDownloadRetryLabel}
+                </cr-button>
                 <template is="dom-if" if="[[!
                     item.downloadDictionaryFailureCount]]">
                   <template is="dom-if" if="[[!item.isManaged]]">

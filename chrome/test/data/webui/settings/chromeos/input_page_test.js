@@ -401,5 +401,45 @@ suite('input page', () => {
       assertTrue(spellCheckToggle.disabled);
       assertFalse(spellCheckToggle.checked);
     });
+
+    test('error handling', () => {
+      const checkAllHidden = nodes => {
+        assertTrue(nodes.every(node => node.hidden));
+      };
+
+      const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
+      const errorDivs = Array.from(
+          spellCheckListContainer.querySelectorAll('.name-with-error div'));
+      assertEquals(2, errorDivs.length);
+      checkAllHidden(errorDivs);
+
+      const retryButtons =
+          Array.from(spellCheckListContainer.querySelectorAll('cr-button'));
+      assertEquals(2, retryButtons.length);
+
+      const languageCode = inputPage.get('languages.enabled.0.language.code');
+      languageSettingsPrivate.onSpellcheckDictionariesChanged.callListeners([
+        {languageCode, isReady: false, downloadFailed: true},
+      ]);
+
+      Polymer.dom.flush();
+      assertFalse(errorDivs[0].hidden);
+      assertFalse(retryButtons[0].hidden);
+      assertFalse(retryButtons[0].disabled);
+
+      // turns off spell check disable retry button.
+      spellCheckToggle.click();
+      assertTrue(retryButtons[0].disabled);
+
+      // turns spell check back on and enable download.
+      spellCheckToggle.click();
+      languageSettingsPrivate.onSpellcheckDictionariesChanged.callListeners([
+        {languageCode, isReady: true, downloadFailed: false},
+      ]);
+
+      Polymer.dom.flush();
+      assertTrue(errorDivs[0].hidden);
+      assertTrue(retryButtons[0].hidden);
+    });
   });
 });

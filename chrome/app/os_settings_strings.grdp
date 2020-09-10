@@ -307,6 +307,15 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_DESCRIPTION" translateable="false" desc="Description for the list of languages that support spell check, from which users can enable or disable spell check for.">
     Languages available for spell check is based on your languages settings
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED" translateable="false" desc="Error message when spell check dictionary download fails.">
+    Couldn’t download spell check dictionary
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_LABEL" translateable="false" desc="Label for the button to retry spell check dictionary download.">
+    Try again
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_DESCRIPTION" translateable="false" desc="Description read by screenreader for the button to retry spell check dictionary download.">
+    Couldn’t download spell check dictionary for <ph name="LANGUAGE">$1<ex>English</ex></ph>. Try again.
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_LIST_TITLE" desc="Title for the list of the user's preferred written languages.">
     Languages
   </message>
