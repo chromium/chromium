@@ -40,14 +40,23 @@ class FCMHandler : public gcm::GCMAppHandler {
   FCMHandler& operator=(const FCMHandler&) = delete;
 
   // Used to start handling incoming invalidations from the server and to obtain
-  // an FCM token. Before StartListening() is called for the first time, the
-  // FCM registration token will be empty.
+  // an FCM token. This method gets called after sign-in, or during browser
+  // startup if the user is already signed in. Before StartListening() is called
+  // for the first time, the FCM registration token will be empty.
   void StartListening();
 
   // Stop handling incoming invalidations. It doesn't cleanup the FCM
   // registration token and doesn't unsubscribe from FCM. All incoming
-  // invalidations will be dropped.
+  // invalidations will be dropped. This method gets called during browser
+  // shutdown.
   void StopListening();
+
+  // Stop handling incoming invalidations and delete Instance ID. This method
+  // gets called during sign-out.
+  void StopListeningPermanently();
+
+  // Returns if the handler is listening for incoming invalidations.
+  bool IsListening() const;
 
   // Add or remove a new listener which will be notified on each new incoming
   // invalidation. |listener| must not be nullptr.
@@ -74,8 +83,6 @@ class FCMHandler : public gcm::GCMAppHandler {
                           const std::string& message_id) override;
 
  private:
-  bool IsListening() const;
-
   // Called when a subscription token is obtained from the GCM server.
   void DidRetrieveToken(const std::string& subscription_token,
                         instance_id::InstanceID::Result result);

@@ -32,6 +32,7 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   ~SyncInvalidationsServiceImpl() override;
 
   // SyncInvalidationsService implementation.
+  void SetActive(bool active) override;
   void AddListener(InvalidationsListener* listener) override;
   void RemoveListener(InvalidationsListener* listener) override;
   void AddTokenObserver(FCMRegistrationTokenObserver* observer) override;

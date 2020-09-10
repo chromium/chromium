@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -49,6 +50,15 @@ void FCMHandler::StopListening() {
     gcm_driver_->RemoveAppHandler(app_id_);
     token_validation_timer_.AbandonAndStop();
   }
+}
+
+void FCMHandler::StopListeningPermanently() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (instance_id_driver_->ExistsInstanceID(app_id_)) {
+    instance_id_driver_->GetInstanceID(app_id_)->DeleteID(
+        /*callback=*/base::DoNothing());
+  }
+  StopListening();
 }
 
 const std::string& FCMHandler::GetFCMRegistrationToken() const {

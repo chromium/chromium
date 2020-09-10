@@ -17,6 +17,7 @@ class MockSyncInvalidationsService : public SyncInvalidationsService {
   MockSyncInvalidationsService();
   ~MockSyncInvalidationsService() override;
 
+  MOCK_METHOD(void, SetActive, (bool active));
   MOCK_METHOD(void, AddListener, (InvalidationsListener * listener));
   MOCK_METHOD(void, RemoveListener, (InvalidationsListener * listener));
   MOCK_METHOD(void,

@@ -328,6 +328,12 @@ void ProfileSyncService::Initialize() {
       invalidations_identity_provider_->SetActiveAccountId(
           GetAuthenticatedAccountInfo().account_id);
     }
+
+    SyncInvalidationsService* sync_invalidations_service =
+        sync_client_->GetSyncInvalidationsService();
+    if (sync_invalidations_service) {
+      sync_invalidations_service->SetActive(IsSignedIn());
+    }
   }
 
   // If sync is disabled permanently, clean up old data that may be around (e.g.
@@ -413,6 +419,12 @@ void ProfileSyncService::AccountStateChanged() {
   if (invalidations_identity_provider_) {
     invalidations_identity_provider_->SetActiveAccountId(
         GetAuthenticatedAccountInfo().account_id);
+  }
+
+  SyncInvalidationsService* sync_invalidations_service =
+      sync_client_->GetSyncInvalidationsService();
+  if (sync_invalidations_service) {
+    sync_invalidations_service->SetActive(IsSignedIn());
   }
 }
 

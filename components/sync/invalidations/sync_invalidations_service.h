@@ -22,6 +22,9 @@ class InterestedDataTypesObserver;
 // should be added.
 class SyncInvalidationsService : public KeyedService {
  public:
+  // Start or stop listening to invalidations.
+  virtual void SetActive(bool active) = 0;
+
   // Add or remove a new listener which will be notified on each new incoming
   // invalidation. |listener| must not be nullptr. If there is no such
   // |listener| then RemoveListener will do nothing.

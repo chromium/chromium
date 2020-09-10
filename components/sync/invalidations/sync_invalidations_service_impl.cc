@@ -21,10 +21,21 @@ SyncInvalidationsServiceImpl::SyncInvalidationsServiceImpl(
     instance_id::InstanceIDDriver* instance_id_driver) {
   fcm_handler_ = std::make_unique<FCMHandler>(gcm_driver, instance_id_driver,
                                               kSenderId, kApplicationId);
-  fcm_handler_->StartListening();
 }
 
 SyncInvalidationsServiceImpl::~SyncInvalidationsServiceImpl() = default;
+
+void SyncInvalidationsServiceImpl::SetActive(bool active) {
+  if (fcm_handler_->IsListening() == active) {
+    return;
+  }
+
+  if (active) {
+    fcm_handler_->StartListening();
+  } else {
+    fcm_handler_->StopListeningPermanently();
+  }
+}
 
 void SyncInvalidationsServiceImpl::AddListener(
     InvalidationsListener* listener) {

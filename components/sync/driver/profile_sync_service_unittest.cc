@@ -1648,5 +1648,45 @@ TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
   service()->SetInvalidationsForSessionsEnabled(false);
 }
 
+TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+       ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
+  CreateService(ProfileSyncService::AUTO_START);
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(true)).Times(0);
+  SignIn();
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
+  InitializeForFirstSync();
+}
+
+TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+       ShouldActivateSyncInvalidationsServiceOnSignIn) {
+  CreateService(ProfileSyncService::AUTO_START);
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(false));
+  InitializeForFirstSync();
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
+  SignIn();
+}
+
+// CrOS does not support signout.
+#if !defined(OS_CHROMEOS)
+TEST_F(ProfileSyncServiceTestWithSubscribeForSyncInvalidations,
+       ShouldDectivateSyncInvalidationsServiceOnSignOut) {
+  CreateService(ProfileSyncService::AUTO_START);
+  SignIn();
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
+  InitializeForFirstSync();
+
+  auto* account_mutator = identity_manager()->GetPrimaryAccountMutator();
+  // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
+  DCHECK(account_mutator);
+
+  // Sign out.
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(false));
+  account_mutator->ClearPrimaryAccount(
+      signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
+}
+#endif
+
 }  // namespace
 }  // namespace syncer
