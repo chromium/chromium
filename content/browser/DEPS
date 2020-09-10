@@ -160,8 +160,11 @@ specific_include_rules = {
   # SiteInstance and BrowsingInstance should not depend on the types of things
   # that rely on them, like RenderFrameHostImpl or WebContentsImpl.
   "(site_instance_impl|browsing_instance)\.(cc|h)": [
-    "-content/browser/frame_host",
+    "-content/browser/renderer_host",
     "-content/browser/web_contents",
+    # These files do not cycle back to SiteInstance or BrowsingInstance.
+    "+content/browser/renderer_host/render_process_host_impl.h",
+    "+content/browser/renderer_host/agent_scheduling_group_host.h",
   ],
   "storage_partition_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",

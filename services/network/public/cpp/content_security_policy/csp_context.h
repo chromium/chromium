@@ -18,7 +18,7 @@ namespace network {
 // A CSPContext represents the Document where the Content-Security-Policy are
 // checked. One must define via its virtual methods how to report violations
 // and what is the set of scheme that bypass the CSP. Its main implementation
-// is in content/browser/frame_host/render_frame_host_impl.h
+// is in content/browser/renderer_host/render_frame_host_impl.h
 class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
  public:
   // This enum represents what set of policies should be checked by

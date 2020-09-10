@@ -1,5 +1,5 @@
 // Generated with https://crrev.com/c/2220116 and:
-//   python3 tools/state_transitions/state_graph.py content/browser/frame_host/render_frame_host_impl.cc LifecycleState
+//   python3 tools/state_transitions/state_graph.py content/browser/renderer_host/render_frame_host_impl.cc LifecycleState
 //
 // See tools/state_transitions/README.md
 digraph createflow {

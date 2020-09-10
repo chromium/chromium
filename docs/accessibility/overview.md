@@ -531,7 +531,7 @@ is defined by [automation.idl], which must be kept synchronized with
 [Node]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/dom/node.h
 [RenderAccessibilityImpl]: https://cs.chromium.org/chromium/src/content/renderer/accessibility/render_accessibility_impl.h
 [RenderAccessibilityManager]: https://source.chromium.org/chromium/chromium/src/+/master:content/renderer/accessibility/render_accessibility_manager.h
-[RenderFrameHostImpl]: https://cs.chromium.org/chromium/src/content/browser/frame_host/render_frame_host_impl.h
+[RenderFrameHostImpl]: https://cs.chromium.org/chromium/src/content/browser/renderer_host/render_frame_host_impl.h
 [ui::AXNodeData]: https://cs.chromium.org/chromium/src/ui/accessibility/ax_node_data.h
 [WebAXObject]: https://cs.chromium.org/chromium/src/third_party/blink/public/web/web_ax_object.h
 [automation API]: https://cs.chromium.org/chromium/src/chrome/renderer/resources/extensions/automation

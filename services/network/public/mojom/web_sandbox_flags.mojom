@@ -6,7 +6,7 @@ module network.mojom;
 // Enum types for the sandbox attributes of the main resource.
 // TODO(https://crbug.com/1041376): Parse the flags in the network service.
 //
-// See content/browser/frame_host/sandbox_flags.md for more details about how
+// See content/browser/renderer_host/sandbox_flags.md for more details about how
 // the web-layer components (i.e. //content and Blink) consume and apply these
 // flags.
 
