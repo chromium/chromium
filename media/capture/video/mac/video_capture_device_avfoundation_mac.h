@@ -16,23 +16,12 @@
 
 namespace media {
 class VideoCaptureDeviceMac;
-
-// Find the best capture format from |formats| for the specified dimensions and
-// frame rate. Returns an element of |formats|, or nil.
-AVCaptureDeviceFormat* CAPTURE_EXPORT
-FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
-                      int width,
-                      int height,
-                      float frame_rate);
 }  // namespace media
 
 // Class used by VideoCaptureDeviceMac (VCDM) for video and image capture using
 // AVFoundation API. This class lives inside the thread created by its owner
 // VCDM.
 //
-//  * Clients (VCDM) should call +deviceNames to fetch the list of devices
-//    available in the system; this method returns the list of device names that
-//    have to be used with -setCaptureDevice:.
 //  * Previous to any use, clients (VCDM) must call -initWithFrameReceiver: to
 //    initialise an object of this class and register a |frameReceiver_|.
 //  * Frame receiver registration or removal can also happen via explicit call
@@ -85,13 +74,6 @@ FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
 
   base::ThreadChecker _main_thread_checker;
 }
-
-// Returns a dictionary of capture devices with friendly name and unique id.
-+ (NSDictionary*)deviceNames;
-
-// Retrieve the capture supported formats for a given device |descriptor|.
-+ (void)getDevice:(const media::VideoCaptureDeviceDescriptor&)descriptor
-    supportedFormats:(media::VideoCaptureFormats*)formats;
 
 // Initializes the instance and the underlying capture session and registers the
 // frame receiver.

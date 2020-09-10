@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"

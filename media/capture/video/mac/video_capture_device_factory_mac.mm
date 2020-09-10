@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/task_runner_util.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "services/video_capture/public/uma/video_capture_service_event.h"
@@ -102,12 +103,12 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
 
   // Loop through all available devices and add to |devices_info|.
   std::vector<VideoCaptureDeviceInfo> devices_info;
-  NSDictionary* capture_devices;
   DVLOG(1) << "Enumerating video capture devices using AVFoundation";
-  capture_devices = [VideoCaptureDeviceAVFoundation deviceNames];
+  base::scoped_nsobject<NSDictionary> capture_devices =
+      GetVideoCaptureDeviceNames();
   // Enumerate all devices found by AVFoundation, translate the info for each
   // to class Name and add it to |device_names|.
-  for (NSString* key in capture_devices) {
+  for (NSString* key in capture_devices.get()) {
     const std::string device_id = [key UTF8String];
     const VideoCaptureApi capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
     int transport_type = [[capture_devices valueForKey:key] transportType];
@@ -128,9 +129,8 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
     devices_info.emplace_back(descriptor);
 
     // Get supported formats
-    [VideoCaptureDeviceAVFoundation
-               getDevice:descriptor
-        supportedFormats:&devices_info.back().supported_formats];
+    devices_info.back().supported_formats =
+        GetDeviceSupportedFormats(descriptor);
   }
 
   // Also retrieve Blackmagic devices, if present, via DeckLink SDK API.
