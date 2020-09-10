@@ -52,6 +52,8 @@ class KaleidoscopeService : public KeyedService {
 
   void SetCollectionsForTesting(const std::string& collections);
 
+  bool ShouldShowFirstRunExperience();
+
  private:
   friend class KaleidoscopeServiceTest;
 

@@ -131,33 +131,8 @@ void KaleidoscopeDataProviderImpl::GetCredentials(GetCredentialsCallback cb) {
 
 void KaleidoscopeDataProviderImpl::GetShouldShowFirstRunExperience(
     GetShouldShowFirstRunExperienceCallback cb) {
-  // If the flag for forcing the first run experience to show is set, then just
-  // show it.
-  if (base::FeatureList::IsEnabled(
-          media::kKaleidoscopeForceShowFirstRunExperience)) {
-    std::move(cb).Run(true);
-    return;
-  }
-
-  // Otherwise, check to see if the user has already completed the latest first
-  // run experience.
-  auto* prefs = profile_->GetPrefs();
-  if (!prefs) {
-    std::move(cb).Run(true);
-    return;
-  }
-
-  // If the pref is unset or lower than the current version, then we haven't
-  // shown the current first run experience before and we should show it now.
-  const base::Value* pref = prefs->GetUserPrefValue(
-      kaleidoscope::prefs::kKaleidoscopeFirstRunCompleted);
-  if (!pref || pref->GetInt() < kKaleidoscopeFirstRunLatestVersion) {
-    std::move(cb).Run(true);
-    return;
-  }
-
-  // Otherwise, we have shown it and don't need to.
-  std::move(cb).Run(false);
+  std::move(cb).Run(kaleidoscope::KaleidoscopeService::Get(profile_)
+                        ->ShouldShowFirstRunExperience());
 }
 
 void KaleidoscopeDataProviderImpl::SetFirstRunExperienceStep(
@@ -175,6 +150,9 @@ void KaleidoscopeDataProviderImpl::SetFirstRunExperienceStep(
 
   prefs->SetInteger(kaleidoscope::prefs::kKaleidoscopeFirstRunCompleted,
                     kKaleidoscopeFirstRunLatestVersion);
+
+  // Delete any cached data that has the first run stored in it.
+  GetMediaHistoryService()->DeleteKaleidoscopeData();
 }
 
 void KaleidoscopeDataProviderImpl::GetAllMediaFeeds(

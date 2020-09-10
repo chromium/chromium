@@ -11,7 +11,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/media/kaleidoscope/constants.h"
+#include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -88,6 +91,12 @@ class KaleidoscopeServiceTest : public ChromeRenderViewHostTestHarness {
     return KaleidoscopeService::Get(profile());
   }
 
+  void MarkFirstRunAsComplete() {
+    profile()->GetPrefs()->SetInteger(
+        kaleidoscope::prefs::kKaleidoscopeFirstRunCompleted,
+        kKaleidoscopeFirstRunLatestVersion);
+  }
+
  private:
   std::string GetCurrentlyQueriedHeaderValue(const base::StringPiece& key) {
     std::string out;
@@ -103,6 +112,8 @@ class KaleidoscopeServiceTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(KaleidoscopeServiceTest, Success) {
+  MarkFirstRunAsComplete();
+
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
       base::BindLambdaForTesting(
@@ -143,6 +154,8 @@ TEST_F(KaleidoscopeServiceTest, Success) {
 }
 
 TEST_F(KaleidoscopeServiceTest, ServerFail_Forbidden) {
+  MarkFirstRunAsComplete();
+
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
       base::BindLambdaForTesting(
@@ -171,6 +184,8 @@ TEST_F(KaleidoscopeServiceTest, ServerFail_Forbidden) {
 }
 
 TEST_F(KaleidoscopeServiceTest, ServerFail) {
+  MarkFirstRunAsComplete();
+
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
       base::BindLambdaForTesting(
@@ -198,6 +213,8 @@ TEST_F(KaleidoscopeServiceTest, ServerFail) {
 }
 
 TEST_F(KaleidoscopeServiceTest, NetworkFail) {
+  MarkFirstRunAsComplete();
+
   GetService()->GetCollections(
       CreateCredentials(), "123", "abcd",
       base::BindLambdaForTesting(
@@ -225,6 +242,8 @@ TEST_F(KaleidoscopeServiceTest, NetworkFail) {
 }
 
 TEST_F(KaleidoscopeServiceTest, ForceCache) {
+  MarkFirstRunAsComplete();
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kKaleidoscopeModuleCacheOnly);
 
@@ -275,6 +294,59 @@ TEST_F(KaleidoscopeServiceTest, ForceCache) {
         KaleidoscopeService::kNTPModuleCacheHitHistogramName,
         KaleidoscopeService::CacheHitResult::kCacheHit, 1);
   }
+}
+
+TEST_F(KaleidoscopeServiceTest, FirstRun) {
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindOnce([](media::mojom::GetCollectionsResponsePtr result) {
+        EXPECT_TRUE(result->response.empty());
+        EXPECT_EQ(media::mojom::GetCollectionsResult::kFirstRun,
+                  result->result);
+      }));
+
+  WaitForRequest();
+  ASSERT_TRUE(RespondToFetch(kTestData));
+
+  // If we call again then we should hit the cache.
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindOnce([](media::mojom::GetCollectionsResponsePtr result) {
+        EXPECT_TRUE(result->response.empty());
+        EXPECT_EQ(media::mojom::GetCollectionsResult::kFirstRun,
+                  result->result);
+      }));
+
+  // A request should not be created.
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(url_loader_factory()->pending_requests()->empty());
+}
+
+TEST_F(KaleidoscopeServiceTest, FirstRunNotAvailable) {
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindOnce([](media::mojom::GetCollectionsResponsePtr result) {
+        EXPECT_TRUE(result->response.empty());
+        EXPECT_EQ(media::mojom::GetCollectionsResult::kNotAvailable,
+                  result->result);
+      }));
+
+  WaitForRequest();
+  ASSERT_TRUE(RespondToFetch("", net::HTTP_FORBIDDEN));
+
+  // If we call again then we should hit the cache. HTTP Forbidden is special
+  // cased because this indicates the user cannot access Kaleidoscope.
+  GetService()->GetCollections(
+      CreateCredentials(), "123", "abcd",
+      base::BindOnce([](media::mojom::GetCollectionsResponsePtr result) {
+        EXPECT_TRUE(result->response.empty());
+        EXPECT_EQ(media::mojom::GetCollectionsResult::kNotAvailable,
+                  result->result);
+      }));
+
+  // A request should not be created.
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(url_loader_factory()->pending_requests()->empty());
 }
 
 }  // namespace kaleidoscope

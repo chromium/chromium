@@ -102,6 +102,9 @@ enum GetCollectionsResult {
 
  // Kaleidoscope is not available to the user.
  kNotAvailable,
+
+ // The user needs to complete the first run experience.
+ kFirstRun,
 };
 
 struct GetCollectionsResponse {

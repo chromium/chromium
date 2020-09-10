@@ -10,9 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/media/history/media_history_store.h"
+#include "chrome/browser/media/kaleidoscope/constants.h"
+#include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_service_factory.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_switches.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
@@ -178,6 +181,31 @@ void KaleidoscopeService::SetCollectionsForTesting(
       "");
 }
 
+bool KaleidoscopeService::ShouldShowFirstRunExperience() {
+  // If the flag for forcing the first run experience to show is set, then just
+  // show it.
+  if (base::FeatureList::IsEnabled(
+          media::kKaleidoscopeForceShowFirstRunExperience)) {
+    return true;
+  }
+
+  // Otherwise, check to see if the user has already completed the latest first
+  // run experience.
+  auto* prefs = profile_->GetPrefs();
+  if (!prefs)
+    return true;
+
+  // If the pref is unset or lower than the current version, then we haven't
+  // shown the current first run experience before and we should show it now.
+  const base::Value* pref = prefs->GetUserPrefValue(
+      kaleidoscope::prefs::kKaleidoscopeFirstRunCompleted);
+  if (!pref || pref->GetInt() < kKaleidoscopeFirstRunLatestVersion)
+    return true;
+
+  // Otherwise, we have shown it and don't need to.
+  return false;
+}
+
 void KaleidoscopeService::OnGotCachedData(
     media::mojom::CredentialsPtr credentials,
     const std::string& gaia_id,
@@ -227,6 +255,11 @@ void KaleidoscopeService::OnURLFetchComplete(
     response->result = media::mojom::GetCollectionsResult::kNotAvailable;
   } else if (request_->has_failed()) {
     response->result = media::mojom::GetCollectionsResult::kFailed;
+  } else if (ShouldShowFirstRunExperience()) {
+    // If we should show the first run experience then we should send a special
+    // "first run" response which will trigger the module to display the first
+    // run promo message.
+    response->result = media::mojom::GetCollectionsResult::kFirstRun;
   } else {
     response->result = media::mojom::GetCollectionsResult::kSuccess;
     response->response = *data;
