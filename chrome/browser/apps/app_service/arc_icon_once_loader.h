@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_icon_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -53,6 +54,13 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   void OnAppIconUpdated(const std::string& app_id,
                         const ArcAppIconDescriptor& descriptor) override;
 
+  void SetArcAppIconFactoryForTesting(
+      std::unique_ptr<arc::ArcAppIconFactory> arc_app_icon_factory);
+
+  arc::ArcAppIconFactory* arc_app_icon_factory() {
+    return arc_app_icon_factory_.get();
+  }
+
  private:
   class SizeSpecificLoader;
 
@@ -81,6 +89,8 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   bool stop_observing_called_;
   std::map<SizeAndType, std::unique_ptr<SizeSpecificLoader>>
       size_specific_loaders_;
+
+  std::unique_ptr<arc::ArcAppIconFactory> arc_app_icon_factory_;
 
   // The current icon loading requests.
   std::set<ArcAppIcon*> in_flight_requests_;

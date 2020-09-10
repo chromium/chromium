@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_model_builder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_icon_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_launcher.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
@@ -85,6 +86,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -101,6 +103,8 @@ constexpr char kFrameworkPackageName[] = "android";
 constexpr int kFrameworkNycVersion = 25;
 constexpr int kFrameworkPiVersion = 28;
 
+constexpr size_t kMaxSimultaneousIconRequests = 250;
+
 class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
  public:
   FakeAppIconLoaderDelegate() = default;
@@ -109,14 +113,44 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
       delete;
   ~FakeAppIconLoaderDelegate() override = default;
 
+  bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
+    if (size_in_dip_ != image.width() || size_in_dip_ != image.height())
+      return false;
+
+    const std::vector<ui::ScaleFactor>& scale_factors =
+        ui::GetSupportedScaleFactors();
+    for (auto& scale_factor : scale_factors) {
+      const float scale = ui::GetScaleForScaleFactor(scale_factor);
+      if (!image.HasRepresentation(scale))
+        return false;
+
+      const gfx::ImageSkiaRep& representation = image.GetRepresentation(scale);
+      if (representation.is_null() ||
+          representation.pixel_width() !=
+              base::ClampCeil(size_in_dip_ * scale) ||
+          representation.pixel_height() !=
+              base::ClampCeil(size_in_dip_ * scale))
+        return false;
+    }
+
+    return true;
+  }
+
   void OnAppImageUpdated(const std::string& app_id,
                          const gfx::ImageSkia& image) override {
     app_id_ = app_id;
     image_ = image;
+    images_[app_id] = image;
     ++update_image_count_;
     if (update_image_count_ == expected_update_image_count_ &&
         !icon_updated_callback_.is_null()) {
       std::move(icon_updated_callback_).Run();
+    }
+    if (icon_loaded_callback_) {
+      if (ValidateImageIsFullyLoaded(image))
+        app_ids_.erase(app_id);
+      if (app_ids_.empty())
+        std::move(icon_loaded_callback_).Run();
     }
   }
 
@@ -127,23 +161,121 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
     run_loop.Run();
   }
 
+  void WaitForIconLoaded(std::vector<std::string>& app_ids, int size_in_dip) {
+    base::RunLoop run_loop;
+    for (const auto& app_id : app_ids)
+      app_ids_.insert(app_id);
+    size_in_dip_ = size_in_dip;
+    icon_loaded_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   size_t update_image_count() const { return update_image_count_; }
 
   const std::string& app_id() const { return app_id_; }
 
   const gfx::ImageSkia& image() { return image_; }
 
+  std::map<std::string, gfx::ImageSkia>& images() { return images_; }
+
  private:
   size_t update_image_count_ = 0;
   size_t expected_update_image_count_ = 0;
   std::string app_id_;
   gfx::ImageSkia image_;
+  std::map<std::string, gfx::ImageSkia> images_;
+  int size_in_dip_;
+  std::set<std::string> app_ids_;
   base::OnceClosure icon_updated_callback_;
+  base::OnceClosure icon_loaded_callback_;
+};
+
+// FakeArcAppIcon is a sub class of ArcAppIcon, to record all ArcAppIcon load
+// icon requests to calculate the max icon loading requests count.
+class FakeArcAppIcon : public ArcAppIcon {
+ public:
+  FakeArcAppIcon(content::BrowserContext* context,
+                 const std::string& app_id,
+                 int size_in_dip,
+                 ArcAppIcon::Observer* observer,
+                 ArcAppIcon::IconType icon_type,
+                 std::set<ArcAppIcon*>& arc_app_icon_requests,
+                 size_t& max_arc_app_icon_request_count)
+      : ArcAppIcon(context, app_id, size_in_dip, observer, icon_type),
+        arc_app_icon_requests_(arc_app_icon_requests),
+        max_arc_app_icon_request_count_(max_arc_app_icon_request_count) {}
+
+  ~FakeArcAppIcon() override = default;
+
+  FakeArcAppIcon(const FakeArcAppIcon&) = delete;
+  FakeArcAppIcon& operator=(const FakeArcAppIcon&) = delete;
+
+  void LoadSupportedScaleFactors() override {
+    arc_app_icon_requests_.insert(this);
+    if (max_arc_app_icon_request_count_ < arc_app_icon_requests_.size())
+      max_arc_app_icon_request_count_ = arc_app_icon_requests_.size();
+
+    ArcAppIcon::LoadSupportedScaleFactors();
+  }
+
+ private:
+  void LoadForScaleFactor(ui::ScaleFactor scale_factor) override {
+    arc_app_icon_requests_.insert(this);
+    if (max_arc_app_icon_request_count_ < arc_app_icon_requests_.size())
+      max_arc_app_icon_request_count_ = arc_app_icon_requests_.size();
+
+    ArcAppIcon::LoadForScaleFactor(scale_factor);
+  }
+
+  void OnIconRead(
+      std::unique_ptr<ArcAppIcon::ReadResult> read_result) override {
+    arc_app_icon_requests_.erase(this);
+    ArcAppIcon::OnIconRead(std::move(read_result));
+  }
+
+  std::set<ArcAppIcon*>& arc_app_icon_requests_;
+  size_t& max_arc_app_icon_request_count_;
+};
+
+// FakeArcAppIconFactory is a sub class of ArcAppIconFactory, to generate
+// FakeArcAppIcon.
+class FakeArcAppIconFactory : public arc::ArcAppIconFactory {
+ public:
+  FakeArcAppIconFactory(std::set<ArcAppIcon*>& arc_app_icon_requests,
+                        size_t& max_arc_app_icon_request_count)
+      : arc::ArcAppIconFactory(),
+        arc_app_icon_requests_(arc_app_icon_requests),
+        max_arc_app_icon_request_count_(max_arc_app_icon_request_count) {}
+
+  ~FakeArcAppIconFactory() override = default;
+
+  FakeArcAppIconFactory(const FakeArcAppIconFactory&) = delete;
+  FakeArcAppIconFactory& operator=(const FakeArcAppIconFactory&) = delete;
+
+  std::unique_ptr<ArcAppIcon> CreateArcAppIcon(
+      content::BrowserContext* context,
+      const std::string& app_id,
+      int size_in_dip,
+      ArcAppIcon::Observer* observer,
+      ArcAppIcon::IconType icon_type) override {
+    return std::make_unique<FakeArcAppIcon>(
+        context, app_id, size_in_dip, observer, icon_type,
+        arc_app_icon_requests_, max_arc_app_icon_request_count_);
+  }
+
+ private:
+  std::set<ArcAppIcon*>& arc_app_icon_requests_;
+  size_t& max_arc_app_icon_request_count_;
 };
 
 ArcAppIconDescriptor GetAppListIconDescriptor(ui::ScaleFactor scale_factor) {
   return ArcAppIconDescriptor(
       ash::AppListConfig::instance().grid_icon_dimension(), scale_factor);
+}
+
+ArcAppIconDescriptor GetAppListIconDescriptor(int dip_size,
+                                              ui::ScaleFactor scale_factor) {
+  return ArcAppIconDescriptor(dip_size, scale_factor);
 }
 
 bool IsIconCreated(ArcAppListPrefs* prefs,
@@ -155,9 +287,10 @@ bool IsIconCreated(ArcAppListPrefs* prefs,
 
 void WaitForIconCreation(ArcAppListPrefs* prefs,
                          const std::string& app_id,
+                         int dip_size,
                          ui::ScaleFactor scale_factor) {
-  const base::FilePath icon_path =
-      prefs->GetIconPath(app_id, GetAppListIconDescriptor(scale_factor));
+  const base::FilePath icon_path = prefs->GetIconPath(
+      app_id, GetAppListIconDescriptor(dip_size, scale_factor));
   // Process pending tasks. This performs multiple thread hops, so we need
   // to run it continuously until it is resolved.
   do {
@@ -524,9 +657,7 @@ class ArcAppModelBuilderTest
   }
 
   // Validates that provided image is acceptable as ARC app icon.
-  void ValidateIcon(const gfx::ImageSkia& image) {
-    const int icon_dimension =
-        ash::AppListConfig::instance().grid_icon_dimension();
+  void ValidateIcon(const gfx::ImageSkia& image, int icon_dimension) {
     EXPECT_EQ(icon_dimension, image.width());
     EXPECT_EQ(icon_dimension, image.height());
 
@@ -811,7 +942,188 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     }
   }
 
+  std::string InstallExtraPackage(int id) {
+    arc::mojom::AppInfo app;
+    app.name = base::StringPrintf("Fake App %d", id);
+    app.package_name = base::StringPrintf("fake.app.%d", id);
+    app.activity = base::StringPrintf("fake.app.%d.activity", id);
+    app.sticky = false;
+    app_instance()->SendAppAdded(app);
+
+    app_instance()->SendPackageAdded(arc::mojom::ArcPackageInfo::New(
+        base::StringPrintf("fake.package.%d", id) /* package_name */,
+        id /* package_version */, id /* last_backup_android_id */,
+        0 /* last_backup_time */, false /* sync */));
+
+    return ArcAppTest::GetAppId(app);
+  }
+
+  void LoadIconWithIconLoader(const std::string& app_id,
+                              int update_count,
+                              AppServiceAppIconLoader& icon_loader,
+                              FakeAppIconLoaderDelegate& delegate) {
+    size_t current_update_count = delegate.update_image_count();
+    icon_loader.FetchImage(app_id);
+    EXPECT_EQ(current_update_count, delegate.update_image_count());
+    delegate.WaitForIconUpdates(update_count);
+
+    // Validate loaded image.
+    EXPECT_EQ(update_count + current_update_count,
+              delegate.update_image_count());
+    ValidateIcon(delegate.images()[app_id],
+                 extension_misc::EXTENSION_ICON_MEDIUM);
+
+    // No more updates are expected.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(update_count + current_update_count,
+              delegate.update_image_count());
+  }
+
+  void CreateFakeApps(int total_count, std::vector<std::string>& app_ids) {
+    FakeAppIconLoaderDelegate delegate;
+    AppServiceAppIconLoader icon_loader(
+        profile(), extension_misc::EXTENSION_ICON_MEDIUM, &delegate);
+
+    const std::vector<ui::ScaleFactor>& scale_factors =
+        ui::GetSupportedScaleFactors();
+    int current_count = 0;
+    while (current_count < total_count) {
+      // The id should start from 3 to avoid duplicate with the 3 existing fake
+      // icons.
+      std::string app_id = InstallExtraPackage(3 + current_count);
+      app_ids.emplace_back(app_id);
+
+      // Wait AppServiceAppItem to finish loading icon.
+      model_updater()->WaitForIconUpdates(scale_factors.size() + 1);
+
+      size_t index;
+      EXPECT_TRUE(model_updater()->FindItemIndexForTest(app_id, &index));
+      ChromeAppListItem* item = model_updater()->ItemAtForTest(index);
+      ASSERT_NE(nullptr, item);
+      ValidateIcon(item->icon(),
+                   ash::AppListConfig::instance().grid_icon_dimension());
+
+      size_t update_count = model_updater()->update_image_count();
+      // No more updates are expected.
+      base::RunLoop().RunUntilIdle();
+      EXPECT_EQ(update_count, model_updater()->update_image_count());
+
+      LoadIconWithIconLoader(app_id, scale_factors.size() + 1, icon_loader,
+                             delegate);
+
+      // There should be 2 more updates for model_updater(), because fetch
+      // the icon image for the size extension_misc::EXTENSION_ICON_MEDIUM.
+      size_t new_update_count = model_updater()->update_image_count();
+      if (new_update_count < update_count + 2) {
+        model_updater()->WaitForIconUpdates(update_count + 2 -
+                                            new_update_count);
+      }
+
+      current_count++;
+    }
+  }
+
+  void CreateFakeAppsWithBadIcons(int total_count,
+                                  int start_id,
+                                  std::vector<std::string>& app_ids) {
+    app_instance()->set_icon_response_type(
+        arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SEND_BAD);
+
+    FakeAppIconLoaderDelegate delegate;
+    AppServiceAppIconLoader icon_loader(
+        profile(), extension_misc::EXTENSION_ICON_MEDIUM, &delegate);
+
+    const std::vector<ui::ScaleFactor>& scale_factors =
+        ui::GetSupportedScaleFactors();
+    int current_count = 0;
+    while (current_count < total_count) {
+      std::string app_id = InstallExtraPackage(start_id + current_count);
+      app_ids.emplace_back(app_id);
+
+      icon_loader.FetchImage(app_id);
+
+      // Wait AppServiceAppItem to generate the bad icon image files.
+      for (auto& scale_factor : scale_factors) {
+        // Force the icon to be loaded.
+        WaitForIconCreation(
+            ArcAppListPrefs::Get(profile()), app_id,
+            ash::AppListConfig::instance().grid_icon_dimension(), scale_factor);
+      }
+
+      // Wait AppServiceAppIconLoader to generate the bad icon image files.
+      for (auto& scale_factor : scale_factors) {
+        // Force the icon to be loaded.
+        WaitForIconCreation(ArcAppListPrefs::Get(profile()), app_id,
+                            extension_misc::EXTENSION_ICON_MEDIUM,
+                            scale_factor);
+      }
+
+      current_count++;
+    }
+  }
+
+  void LoadIconsWithIconLoader(std::vector<std::string>& app_ids,
+                               int update_count) {
+    FakeAppIconLoaderDelegate delegate;
+    AppServiceAppIconLoader icon_loader(
+        profile(), extension_misc::EXTENSION_ICON_MEDIUM, &delegate);
+    EXPECT_EQ(0UL, delegate.update_image_count());
+    for (auto& app_id : app_ids) {
+      icon_loader.FetchImage(app_id);
+    }
+    EXPECT_EQ(0UL, delegate.update_image_count());
+    delegate.WaitForIconUpdates(update_count);
+
+    // Validate loaded image.
+    EXPECT_EQ(update_count, delegate.update_image_count());
+    for (const auto& app_id : app_ids) {
+      ValidateIcon(delegate.images()[app_id],
+                   extension_misc::EXTENSION_ICON_MEDIUM);
+    }
+
+    // No more updates are expected.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(update_count, delegate.update_image_count());
+  }
+
+  void RemoveAppsFromIconLoader(std::vector<std::string>& app_ids) {
+    apps::ArcIconOnceLoader& arc_icon_once_loader =
+        apps::ArcAppsFactory::GetForProfile(profile())
+            ->GetArcIconOnceLoaderForTesting();
+    for (const auto& app_id : app_ids) {
+      arc_icon_once_loader.OnAppRemoved(app_id);
+    }
+
+    // Update the icon key to fetch the new icon and avoid icon catch,
+    apps_util::IncrementingIconKeyFactory icon_key_factory;
+    std::vector<apps::mojom::AppPtr> apps;
+    for (const auto& app_id : app_ids) {
+      apps::mojom::AppPtr app = apps::mojom::App::New();
+      app->app_type = apps::mojom::AppType::kArc;
+      app->app_id = app_id;
+      app->icon_key = icon_key_factory.MakeIconKey(apps::IconEffects::kNone);
+      apps.push_back(app.Clone());
+    }
+
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->AppRegistryCache()
+        .OnApps(std::move(apps));
+  }
+
+  // Set FakeArcAppIconFactory to use FakeArcAppIcon for Arc app icon loading to
+  // calculate the arc app icon requests number.
+  void SetFakeArcAppIconFactory() {
+    apps::ArcAppsFactory::GetForProfile(profile())
+        ->GetArcIconOnceLoaderForTesting()
+        .SetArcAppIconFactoryForTesting(std::make_unique<FakeArcAppIconFactory>(
+            arc_app_icon_requests_, max_arc_app_icon_request_count_));
+  }
+
   arc::mojom::AppInfo test_app() const { return fake_apps()[0]; }
+
+  size_t max_arc_app_icon_request_count() {
+    return max_arc_app_icon_request_count_;
+  }
 
  private:
   std::unique_ptr<ui::test::ScopedSetSupportedScaleFactors>
@@ -819,6 +1131,8 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure icon_update_callback_;
   int icon_updated_count_;
+  std::set<ArcAppIcon*> arc_app_icon_requests_;
+  size_t max_arc_app_icon_request_count_ = 0;
 };
 
 class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
@@ -2205,7 +2519,9 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderWithBadIcon) {
     // Force the icon to be loaded.
     app_item->icon().GetRepresentation(
         ui::GetScaleForScaleFactor(scale_factor));
-    WaitForIconCreation(prefs, app_id, scale_factor);
+    WaitForIconCreation(prefs, app_id,
+                        ash::AppListConfig::instance().grid_icon_dimension(),
+                        scale_factor);
   }
 
   // After clear request record related to |app_id|, when bad icon is installed,
@@ -2260,11 +2576,81 @@ TEST_P(ArcAppModelBuilderTest, IconLoader) {
   // Validate loaded image.
   EXPECT_EQ(1UL, delegate.update_image_count());
   EXPECT_EQ(app_id, delegate.app_id());
-  ValidateIcon(delegate.image());
+  ValidateIcon(delegate.image(),
+               ash::AppListConfig::instance().grid_icon_dimension());
 
   // No more updates are expected.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1UL, delegate.update_image_count());
+}
+
+TEST_P(ArcAppModelIconTest, LoadManyIcons) {
+  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+    return;
+
+  // Remove ARC apps installed as default to avoid test flaky due to update
+  // those default app icons.
+  RemoveArcApps(profile(), model_updater());
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+
+  SetFakeArcAppIconFactory();
+
+  int app_count = 500;
+  std::vector<std::string> app_ids;
+  CreateFakeApps(app_count, app_ids);
+
+  // Remove ArcAppIcon cache From apps::ArcIconOnceLoader to re-load all icons
+  // to simulate the system reboot case.
+  RemoveAppsFromIconLoader(app_ids);
+
+  LoadIconsWithIconLoader(app_ids, app_count);
+
+  EXPECT_GE(kMaxSimultaneousIconRequests, max_arc_app_icon_request_count());
+}
+
+TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
+  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+    return;
+
+  // Remove ARC apps installed as default to avoid test flaky due to update
+  // those default app icons.
+  RemoveArcApps(profile(), model_updater());
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+
+  SetFakeArcAppIconFactory();
+
+  int app_count = 500;
+  std::vector<std::string> app_ids;
+  CreateFakeApps(app_count, app_ids);
+
+  int bad_icon_app_count = 10;
+  // The app_id should start at the end, after 3 fake apps, and |app_count|
+  // apps.
+  CreateFakeAppsWithBadIcons(bad_icon_app_count, fake_apps().size() + app_count,
+                             app_ids);
+
+  // Remove ArcAppIcon cache From apps::ArcIconOnceLoader to re-load all icons
+  // to simulate the system reboot case.
+  RemoveAppsFromIconLoader(app_ids);
+
+  app_instance()->set_icon_response_type(
+      arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SEND_GOOD);
+
+  for (int i = app_count; i < app_ids.size(); i++)
+    MaybeRemoveIconRequestRecord(app_ids[i]);
+
+  FakeAppIconLoaderDelegate delegate;
+  AppServiceAppIconLoader icon_loader(
+      profile(), extension_misc::EXTENSION_ICON_MEDIUM, &delegate);
+  for (auto& app_id : app_ids)
+    icon_loader.FetchImage(app_id);
+  delegate.WaitForIconLoaded(app_ids, extension_misc::EXTENSION_ICON_MEDIUM);
+
+  EXPECT_GE(kMaxSimultaneousIconRequests, max_arc_app_icon_request_count());
 }
 
 TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {

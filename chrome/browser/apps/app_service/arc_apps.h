@@ -63,6 +63,10 @@ class ArcApps : public KeyedService,
 
   ~ArcApps() override;
 
+  ArcIconOnceLoader& GetArcIconOnceLoaderForTesting() {
+    return arc_icon_once_loader_;
+  }
+
  private:
   using AppIdToTaskIds = std::map<std::string, std::set<int>>;
   using TaskIdToAppId = std::map<int, std::string>;

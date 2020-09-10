@@ -41,24 +41,17 @@ bool disable_safe_decoding_for_testing = false;
 ////////////////////////////////////////////////////////////////////////////////
 // ArcAppIcon::ReadResult
 
-struct ArcAppIcon::ReadResult {
-  ReadResult(bool error,
-             bool request_to_install,
-             ui::ScaleFactor scale_factor,
-             bool resize_allowed,
-             std::vector<std::string> unsafe_icon_data)
-      : error(error),
-        request_to_install(request_to_install),
-        scale_factor(scale_factor),
-        resize_allowed(resize_allowed),
-        unsafe_icon_data(std::move(unsafe_icon_data)) {}
-
-  const bool error;
-  const bool request_to_install;
-  const ui::ScaleFactor scale_factor;
-  const bool resize_allowed;
-  const std::vector<std::string> unsafe_icon_data;
-};
+ArcAppIcon::ReadResult::ReadResult(bool error,
+                                   bool request_to_install,
+                                   ui::ScaleFactor scale_factor,
+                                   bool resize_allowed,
+                                   std::vector<std::string> unsafe_icon_data)
+    : error(error),
+      request_to_install(request_to_install),
+      scale_factor(scale_factor),
+      resize_allowed(resize_allowed),
+      unsafe_icon_data(std::move(unsafe_icon_data)) {}
+ArcAppIcon::ReadResult::~ReadResult() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ArcAppIcon::Source
@@ -287,8 +280,7 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
   }
 }
 
-ArcAppIcon::~ArcAppIcon() {
-}
+ArcAppIcon::~ArcAppIcon() = default;
 
 void ArcAppIcon::LoadSupportedScaleFactors() {
   switch (icon_type_) {

@@ -99,11 +99,9 @@ void ArcIconOnceLoader::SizeSpecificLoader::LoadIcon(
       break;
   }
 
-  iter = icons_
-             .insert(std::make_pair(
-                 app_id, std::make_unique<ArcAppIcon>(
-                             profile_, app_id, size_in_dip_, this, icon_type)))
-             .first;
+  auto arc_app_icon = host_.arc_app_icon_factory()->CreateArcAppIcon(
+      profile_, app_id, size_in_dip_, this, icon_type);
+  iter = icons_.insert(std::make_pair(app_id, std::move(arc_app_icon))).first;
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     host_.MaybeStartIconRequest(iter->second.get(),
                                 ui::ScaleFactor::NUM_SCALE_FACTORS);
@@ -187,6 +185,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::OnIconFailed(ArcAppIcon* icon) {
 ArcIconOnceLoader::ArcIconOnceLoader(Profile* profile)
     : profile_(profile), stop_observing_called_(false) {
   ArcAppListPrefs::Get(profile)->AddObserver(this);
+  arc_app_icon_factory_ = std::make_unique<arc::ArcAppIconFactory>();
 }
 
 ArcIconOnceLoader::~ArcIconOnceLoader() {
@@ -240,6 +239,11 @@ void ArcIconOnceLoader::OnAppIconUpdated(
       iter->second->Reload(app_id, descriptor.scale_factor);
     }
   }
+}
+
+void ArcIconOnceLoader::SetArcAppIconFactoryForTesting(
+    std::unique_ptr<arc::ArcAppIconFactory> arc_app_icon_factory) {
+  arc_app_icon_factory_ = std::move(arc_app_icon_factory);
 }
 
 void ArcIconOnceLoader::MaybeStartIconRequest(ArcAppIcon* arc_app_icon,

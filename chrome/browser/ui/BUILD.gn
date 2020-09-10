@@ -1643,6 +1643,8 @@ static_library("ui") {
       "app_list/arc/arc_app_icon.h",
       "app_list/arc/arc_app_icon_descriptor.cc",
       "app_list/arc/arc_app_icon_descriptor.h",
+      "app_list/arc/arc_app_icon_factory.cc",
+      "app_list/arc/arc_app_icon_factory.h",
       "app_list/arc/arc_app_launcher.cc",
       "app_list/arc/arc_app_launcher.h",
       "app_list/arc/arc_app_list_prefs.cc",

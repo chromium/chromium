@@ -74,6 +74,8 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
   void WaitForIconUpdates(size_t expected_updates);
 
+  size_t update_image_count() const { return update_image_count_; }
+
  private:
   bool search_engine_is_google_ = false;
   std::vector<std::unique_ptr<ChromeAppListItem>> items_;
