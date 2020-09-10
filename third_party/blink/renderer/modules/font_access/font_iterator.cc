@@ -33,8 +33,6 @@ ScriptPromise FontIterator::next(ScriptState* script_state) {
 #if defined(OS_MAC)
       remote_manager_->RequestPermission(WTF::Bind(
           &FontIterator::DidGetPermissionResponse, WrapWeakPersistent(this)));
-      pending_resolver_ =
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 #else
       remote_manager_->EnumerateLocalFonts(WTF::Bind(
           &FontIterator::DidGetEnumerationResponse, WrapWeakPersistent(this)));
