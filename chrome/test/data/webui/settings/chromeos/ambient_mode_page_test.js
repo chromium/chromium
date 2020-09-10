@@ -51,9 +51,6 @@ suite('AmbientModeHandler', function() {
   /** @type {SettingsAmbientModePageElement} */
   let ambientModePage = null;
 
-  /** @type {SettingsAmbientModePhotosPageElement} */
-  let ambientModePhotosPage = null;
-
   /** @type {?TestAmbientModeBrowserProxy} */
   let browserProxy = null;
 
@@ -67,10 +64,6 @@ suite('AmbientModeHandler', function() {
 
     const prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
-
-    ambientModePhotosPage =
-        document.createElement('settings-ambient-mode-photos-page');
-    document.body.appendChild(ambientModePhotosPage);
 
     return CrSettingsPrefs.initialized.then(function() {
       ambientModePage = document.createElement('settings-ambient-mode-page');
@@ -87,7 +80,6 @@ suite('AmbientModeHandler', function() {
 
   teardown(function() {
     ambientModePage.remove();
-    ambientModePhotosPage.remove();
     settings.Router.getInstance().resetRouteForTesting();
   });
 
@@ -170,27 +162,6 @@ suite('AmbientModeHandler', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Topic sources row should be focused for settingId=502.');
-  });
-
-  test('hasAlbums', function() {
-    ambientModePhotosPage.albums = [
-      {albumId: 'id0', checked: true, title: 'album0'},
-      {albumId: 'id1', checked: false, title: 'album1'}
-    ];
-    Polymer.dom.flush();
-
-    const ironList = ambientModePhotosPage.$$('iron-list');
-    const checkboxes = ironList.querySelectorAll('cr-checkbox');
-    assertEquals(2, checkboxes.length);
-
-    const checkbox0 = checkboxes[0];
-    const checkbox1 = checkboxes[1];
-    assertEquals('id0', checkbox0.dataset.id);
-    assertTrue(checkbox0.checked);
-    assertEquals('album0', checkbox0.label);
-    assertEquals('id1', checkbox1.dataset.id);
-    assertFalse(checkbox1.checked);
-    assertEquals('album1', checkbox1.label);
   });
 
   test('temperatureUnitRadioButtonsDisabled', () => {

@@ -67,11 +67,11 @@ suite('AmbientModeHandler', function() {
    * @private
    */
   function assertCheckPosition(topicSource) {
-    ambientModePhotosPage.albums_ = [
-      {albumId: 'id0', checked: true, title: 'album0'},
-      {albumId: 'id1', checked: true, title: 'album1'}
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0', url: 'url'},
+      {albumId: 'id1', checked: true, title: 'album1', url: 'url'}
     ];
-    ambientModePhotosPage.topicSource_ = topicSource;
+    ambientModePhotosPage.topicSource = topicSource;
     Polymer.dom.flush();
 
     const albumList = ambientModePhotosPage.$$('album-list');
@@ -80,7 +80,7 @@ suite('AmbientModeHandler', function() {
 
     albumItems.forEach((album) => {
       const check = album.$$('.check');
-      const image = album.$.image;
+      const image = album.$$('#image');
       const boundingWidth = image.getBoundingClientRect().width;
       const scale = boundingWidth / image.offsetWidth;
 
@@ -95,7 +95,41 @@ suite('AmbientModeHandler', function() {
     });
   }
 
-  test('hasAlbums', function() {
+  test('hasAlbumsWithoutPhotoPreview', function() {
+    // Disable photo preview feature and reload the |ambientModePhotosPage|.
+    loadTimeData.overrideValues({isAmbientModePhotoPreviewEnabled: false});
+    assertFalse(loadTimeData.getBoolean('isAmbientModePhotoPreviewEnabled'));
+
+    ambientModePhotosPage.remove();
+    ambientModePhotosPage =
+        document.createElement('settings-ambient-mode-photos-page');
+    document.body.appendChild(ambientModePhotosPage);
+
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0'},
+      {albumId: 'id1', checked: false, title: 'album1'}
+    ];
+    Polymer.dom.flush();
+
+    const ironList = ambientModePhotosPage.$$('iron-list');
+    const checkboxes = ironList.querySelectorAll('cr-checkbox');
+    assertEquals(2, checkboxes.length);
+
+    const checkbox0 = checkboxes[0];
+    const checkbox1 = checkboxes[1];
+    assertEquals('id0', checkbox0.dataset.id);
+    assertTrue(checkbox0.checked);
+    assertEquals('album0', checkbox0.label);
+    assertEquals('id1', checkbox1.dataset.id);
+    assertFalse(checkbox1.checked);
+    assertEquals('album1', checkbox1.label);
+
+    // Reset/enable photo preview feature.
+    loadTimeData.overrideValues({isAmbientModePhotoPreviewEnabled: true});
+    assertTrue(loadTimeData.getBoolean('isAmbientModePhotoPreviewEnabled'));
+  });
+
+  test('hasAlbumsWithPhotoPreview', function() {
     ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
       {albumId: 'id1', checked: false, title: 'album1'}

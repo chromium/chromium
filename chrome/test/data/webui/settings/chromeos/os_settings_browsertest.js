@@ -227,11 +227,6 @@ var OSSettingsAmbientModePageTest = class extends OSSettingsBrowserTest {
   }
 
   /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kAmbientModeFeature']};
-  }
-
-  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
@@ -252,16 +247,6 @@ var OSSettingsAmbientModePhotosPageTest = class extends OSSettingsBrowserTest {
   get browsePreload() {
     return super.browsePreload +
         'ambient_mode_page/ambient_mode_photos_page.html';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kAmbientModeFeature',
-        'chromeos::features::kAmbientModePhotoPreviewFeature',
-      ]
-    };
   }
 
   /** @override */

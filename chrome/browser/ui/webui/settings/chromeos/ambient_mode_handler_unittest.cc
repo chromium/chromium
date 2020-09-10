@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +47,7 @@ class AmbientModeHandlerTest : public testing::Test {
     handler_->AllowJavascript();
     fake_backend_controller_ =
         std::make_unique<ash::FakeAmbientBackendControllerImpl>();
+    image_downloader_ = std::make_unique<ash::TestImageDownloader>();
   }
 
   void RequestSettings() {
@@ -184,6 +186,7 @@ class AmbientModeHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<ash::FakeAmbientBackendControllerImpl>
       fake_backend_controller_;
+  std::unique_ptr<ash::TestImageDownloader> image_downloader_;
   std::unique_ptr<TestAmbientModeHandler> handler_;
 };
 
