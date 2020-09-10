@@ -288,6 +288,9 @@ export class TabSearchAppElement extends PolymerElement {
             })
             .flat() :
         windowTabs.map(window => window.tabs).flat();
+    this.filteredOpenTabs_.sort((a, b) => (b.lastActiveTimeTicks && a.lastActiveTimeTicks) ?
+        b.lastActiveTimeTicks.internalValue - a.lastActiveTimeTicks.internalValue :
+        0);
   }
 }
 

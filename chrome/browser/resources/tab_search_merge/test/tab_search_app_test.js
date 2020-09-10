@@ -267,6 +267,7 @@ suite('TabSearchAppTest', () => {
       favIconUrl: '',
       title: 'Example',
       url: 'https://example.com',
+      lastActiveTimeTicks: { internalValue: 1 },
     });
     testProxy.getCallbackRouterRemote().tabUpdated(updatedTab);
     await flushTasks();
@@ -386,5 +387,36 @@ suite('TabSearchAppTest', () => {
         (tabSearchApp.shadowRoot.querySelector('#feedback-footer'));
     feedbackButton.click();
     await testProxy.whenCalled('showFeedbackPage');
+  });
+
+  test('Sort by most recent active tabs', async () => {
+    const tabs = [
+    {
+      index: 0,
+      tabId: 1,
+      favIconUrl: '',
+      title: 'Google',
+      url: 'https://www.google.com',
+      lastActiveTimeTicks: { internalValue: 2 },
+    },
+    {
+      index: 1,
+      tabId: 2,
+      favIconUrl: '',
+      title: 'Bing',
+      url: 'https://www.bing.com',
+      lastActiveTimeTicks: { internalValue: 4 },
+    },
+    {
+      index: 2,
+      tabId: 3,
+      favIconUrl: '',
+      title: 'Yahoo',
+      url: 'https://www.yahoo.com',
+      lastActiveTimeTicks: { internalValue: 3 },
+    }];
+
+    await setupTest({windows: [{active: true, tabs}]});
+    verifyTabIds(queryRows(), [2, 3, 1]);
   });
 });
