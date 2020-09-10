@@ -65,6 +65,24 @@
     }
   }
 
+  @media(max-width: 500px) {
+    #start,
+    #fit {
+      display: none;
+    }
+  }
+
+  @media(max-width: 420px) {
+    #center {
+      display: none;
+    }
+
+    #end {
+      padding-inline-start: initial;
+      text-align: center;
+    }
+  }
+
   viewer-page-selector {
     display: inline-flex;
     height: 36px; /* Matching default --cr-icon-button-size */
@@ -165,7 +183,7 @@
           on-click="onZoomInClick_">
       </cr-icon-button>
     </span>
-    <cr-icon-button iron-icon="[[fitToButtonIcon_]]"
+    <cr-icon-button id="fit" iron-icon="[[fitToButtonIcon_]]"
         title="[[getFitToButtonTooltip_('$i18nPolymer{tooltipFitToPage}',
                                         '$i18nPolymer{tooltipFitToWidth}',
                                         fittingType_)]]"

@@ -26,6 +26,13 @@
     width: 0;
   }
 
+  @media(max-width: 500px),
+  (max-height: 250px) {
+    #sidenav-container {
+      display: none;
+    }
+  }
+
   #content-focus-rectangle {
     border: 2px solid var(--google-grey-600);
     border-radius: 2px;
@@ -60,6 +67,13 @@
 
   viewer-pdf-toolbar-new {
     z-index: 1;
+  }
+
+  @media(max-width: 200px),
+  (max-height: 250px) {
+    viewer-pdf-toolbar-new {
+      display: none;
+    }
   }
 
   :host-context([pdf-viewer-update-enabled]):host {
