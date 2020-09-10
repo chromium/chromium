@@ -470,15 +470,15 @@ void MediaNotificationViewImpl::UpdateWithVectorIcon(
                            kIconMediaNotificationHeaderInsets);
 }
 
-void MediaNotificationViewImpl::OnThemeChanged() {
-  MediaNotificationView::OnThemeChanged();
-  UpdateForegroundColor();
-}
-
 void MediaNotificationViewImpl::UpdateDeviceSelectorAvailability(
     bool availability) {
   GetMediaNotificationBackground()->UpdateDeviceSelectorAvailability(
       availability);
+}
+
+void MediaNotificationViewImpl::OnThemeChanged() {
+  MediaNotificationView::OnThemeChanged();
+  UpdateForegroundColor();
 }
 
 views::Button* MediaNotificationViewImpl::GetHeaderRowForTesting() const {

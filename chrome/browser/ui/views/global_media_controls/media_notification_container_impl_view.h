@@ -15,6 +15,7 @@
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/media_switches.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
@@ -117,7 +118,8 @@ class MediaNotificationContainerImplView
   views::ImageButton* GetDismissButtonForTesting();
 
   media_message_center::MediaNotificationViewImpl* view_for_testing() {
-    return view_;
+    DCHECK(!base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI));
+    return static_cast<media_message_center::MediaNotificationViewImpl*>(view_);
   }
 
   bool is_playing_for_testing() { return is_playing_; }
@@ -166,7 +168,7 @@ class MediaNotificationContainerImplView
   views::View* dismiss_button_container_ = nullptr;
 
   DismissButton* dismiss_button_ = nullptr;
-  media_message_center::MediaNotificationViewImpl* view_ = nullptr;
+  media_message_center::MediaNotificationView* view_ = nullptr;
   MediaNotificationDeviceSelectorView* audio_device_selector_view_ = nullptr;
 
   SkColor foreground_color_;

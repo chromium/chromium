@@ -81,9 +81,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override;
   void UpdateWithVectorIcon(const gfx::VectorIcon& vector_icon) override;
-  void OnThemeChanged() override;
+  void UpdateDeviceSelectorAvailability(bool availability) override;
 
-  void UpdateDeviceSelectorAvailability(bool availability);
+  void OnThemeChanged() override;
 
   const views::Label* title_label_for_testing() const { return title_label_; }
 

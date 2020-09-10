@@ -19,6 +19,8 @@ component("media_message_center") {
     "media_notification_view.h",
     "media_notification_view_impl.cc",
     "media_notification_view_impl.h",
+    "media_notification_view_modern_impl.cc",
+    "media_notification_view_modern_impl.h",
     "media_session_notification_item.cc",
     "media_session_notification_item.h",
   ]

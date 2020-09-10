@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/audio/audio_device_description.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -115,9 +115,16 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   UpdateDismissButtonIcon();
 
   bool is_cast_notification = item ? item->SourceIsCast() : false;
-  auto view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
-      this, std::move(item), std::move(dismiss_button_placeholder),
-      base::string16(), kWidth, /*should_show_icon=*/false);
+
+  std::unique_ptr<media_message_center::MediaNotificationView> view;
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
+    view = std::make_unique<
+        media_message_center::MediaNotificationViewModernImpl>();
+  } else {
+    view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
+        this, std::move(item), std::move(dismiss_button_placeholder),
+        base::string16(), kWidth, /*should_show_icon=*/false);
+  }
   view_ = swipeable_container_->AddChildView(std::move(view));
 
   if (base::FeatureList::IsEnabled(
