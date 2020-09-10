@@ -100,9 +100,7 @@ class ContentPasswordManagerDriver
       const std::vector<autofill::FormData>& visible_forms_data,
       bool did_stop_loading) override;
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
-  void ShowManualFallbackForSaving(
-      const autofill::FormData& form_data) override;
-  void HideManualFallbackForSaving() override;
+  void InformAboutUserInput(const autofill::FormData& form_data) override;
   void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
                                   submission_indication_event) override;
   void RecordSavePasswordProgress(const std::string& log) override;

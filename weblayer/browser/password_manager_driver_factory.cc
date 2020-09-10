@@ -38,16 +38,16 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
       const std::vector<autofill::FormData>& visible_forms_data,
       bool did_stop_loading) override {}
   void PasswordFormSubmitted(const autofill::FormData& form_data) override {}
-  void ShowManualFallbackForSaving(
-      const autofill::FormData& form_data) override {
+  void InformAboutUserInput(const autofill::FormData& form_data) override {
     if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
             render_frame_host_, form_data.url,
             password_manager::BadMessageReason::
-                CPMD_BAD_ORIGIN_SHOW_FALLBACK_FOR_SAVING)) {
+                CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE)) {
       return;
     }
 
-    if (site_isolation::SiteIsolationPolicy::
+    if (FormHasNonEmptyPasswordField(form_data) &&
+        site_isolation::SiteIsolationPolicy::
             IsIsolationForPasswordSitesEnabled()) {
       // This function signals that a password field has been filled (whether by
       // the user, JS, autofill, or some other means) or a password form has
@@ -59,7 +59,6 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
           form_data.url);
     }
   }
-  void HideManualFallbackForSaving() override {}
   void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
                                   submission_indication_event) override {}
   void RecordSavePasswordProgress(const std::string& log) override {}

@@ -120,6 +120,9 @@ struct FormData {
 #endif
 };
 
+// Whether any of the fields in |form| is a non-empty password field.
+bool FormHasNonEmptyPasswordField(const FormData& form);
+
 // For testing.
 std::ostream& operator<<(std::ostream& os, const FormData& form);
 

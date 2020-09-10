@@ -356,17 +356,6 @@ bool FormHasPasswordField(const FormData& form) {
   return false;
 }
 
-// Whether any of the fields in |form| is a non-empty password field.
-bool FormHasNonEmptyPasswordField(const FormData& form) {
-  for (const auto& field : form.fields) {
-    if (field.IsPasswordInputElement()) {
-      if (!field.value.empty() || !field.typed_value.empty())
-        return true;
-    }
-  }
-  return false;
-}
-
 void AnnotateFieldWithParsingResult(WebDocument doc,
                                     FieldRendererId renderer_id,
                                     const std::string& text) {
@@ -564,7 +553,7 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   field_data_manager_->UpdateFieldDataMap(element_id, element_value,
                                           FieldPropertiesFlags::kUserTyped);
 
-  ProvisionallySavePassword(element.Form(), element, RESTRICTION_NONE);
+  InformBrowserAboutUserInput(element.Form(), element);
 
   if (element.IsPasswordFieldForAutofill()) {
     auto iter = password_to_username_.find(element);
@@ -659,8 +648,7 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
   DCHECK(password_input);
   DCHECK(password_input->IsPasswordFieldForAutofill());
   FillField(password_input, credential);
-  ProvisionallySavePassword(password_input->Form(), *password_input,
-                            RESTRICTION_NONE);
+  InformBrowserAboutUserInput(password_input->Form(), *password_input);
 }
 
 bool PasswordAutofillAgent::PreviewSuggestion(
@@ -1454,29 +1442,23 @@ void PasswordAutofillAgent::ClearPreview(WebInputElement* username,
     password->SetAutofillState(password_autofill_state_);
   }
 }
-void PasswordAutofillAgent::ProvisionallySavePassword(
+void PasswordAutofillAgent::InformBrowserAboutUserInput(
     const WebFormElement& form,
-    const WebInputElement& element,
-    ProvisionallySaveRestriction restriction) {
+    const WebInputElement& element) {
   DCHECK(!form.IsNull() || !element.IsNull());
+  if (!FrameCanAccessPasswordManager())
+    return;
   SetLastUpdatedFormAndField(form, element);
   std::unique_ptr<FormData> form_data =
-      (form.IsNull() ? GetFormDataFromUnownedInputElements()
-                     : GetFormDataFromWebForm(form));
+      form.IsNull() ? GetFormDataFromUnownedInputElements()
+                    : GetFormDataFromWebForm(form);
   if (!form_data)
     return;
 
-  bool has_password = FormHasNonEmptyPasswordField(*form_data);
-  if (restriction == RESTRICTION_NON_EMPTY_PASSWORD && !has_password)
+  if (!FormHasPasswordField(*form_data))
     return;
 
-  if (!FrameCanAccessPasswordManager())
-    return;
-
-  if (has_password)
-    GetPasswordManagerDriver()->ShowManualFallbackForSaving(*form_data);
-  else
-    GetPasswordManagerDriver()->HideManualFallbackForSaving();
+  GetPasswordManagerDriver()->InformAboutUserInput(*form_data);
 
   browser_has_form_to_process_ = true;
 }
@@ -1639,8 +1621,7 @@ void PasswordAutofillAgent::OnProvisionallySaveForm(
   }
 
   DCHECK_EQ(ElementChangeSource::WILL_SEND_SUBMIT_EVENT, source);
-  ProvisionallySavePassword(form, input_element,
-                            RESTRICTION_NON_EMPTY_PASSWORD);
+  InformBrowserAboutUserInput(form, input_element);
 }
 
 void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {

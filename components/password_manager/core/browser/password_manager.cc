@@ -488,8 +488,8 @@ void PasswordManager::OnUserModifiedNonPasswordField(
                              renderer_id, value, base::Time::Now(), driver_id);
 }
 
-void PasswordManager::ShowManualFallbackForSaving(PasswordManagerDriver* driver,
-                                                  const FormData& form_data) {
+void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
+                                             const FormData& form_data) {
   PasswordFormManager* manager = ProvisionallySaveForm(form_data, driver, true);
 
   if (manager && form_data.is_gaia_with_skip_save_password_form) {
@@ -504,7 +504,7 @@ void PasswordManager::ShowManualFallbackForSaving(PasswordManagerDriver* driver,
   if (client_ && client_->GetMetricsRecorder())
     client_->GetMetricsRecorder()->RecordFormManagerAvailable(availability);
 
-  ShowManualFallbackForSavingImpl(manager, form_data);
+  ShowManualFallbackForSaving(manager, form_data);
 }
 
 void PasswordManager::HideManualFallbackForSaving() {
@@ -724,8 +724,7 @@ void PasswordManager::UpdateStateOnUserInput(
     if (manager->UpdateStateOnUserInput(form_id, field_id, field_value)) {
       ProvisionallySaveForm(*manager->observed_form(), driver, true);
       if (manager->is_submitted() && !manager->HasGeneratedPassword()) {
-        ShowManualFallbackForSavingImpl(manager.get(),
-                                        *manager->observed_form());
+        ShowManualFallbackForSaving(manager.get(), *manager->observed_form());
       } else {
         HideManualFallbackForSaving();
       }
@@ -1197,10 +1196,19 @@ void PasswordManager::TryToFindPredictionsToPossibleUsernameData() {
   }
 }
 
-void PasswordManager::ShowManualFallbackForSavingImpl(
+void PasswordManager::ShowManualFallbackForSaving(
     PasswordFormManager* form_manager,
     const FormData& form_data) {
-  if (!form_manager || !form_manager->is_submitted())
+  // Where `form_manager` is nullptr, make sure the manual fallback isn't
+  // shown. One scenario where this is relevant is when the user inputs some
+  // password and then removes it. Upon removing the password, the
+  // `form_manager` will become nullptr.
+  if (!form_manager) {
+    HideManualFallbackForSaving();
+    return;
+  }
+
+  if (!form_manager->is_submitted())
     return;
 
   if (!client_->GetProfilePasswordStore()->IsAbleToSavePasswords() ||

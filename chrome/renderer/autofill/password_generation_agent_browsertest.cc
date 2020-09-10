@@ -895,21 +895,20 @@ TEST_F(PasswordGenerationAgentTest, FallbackForSaving) {
   LoadHTMLWithUserGesture(kAccountCreationFormHTML);
   SimulateElementRightClick("first_password");
   SelectGenerationFallbackAndExpect(true);
-  EXPECT_EQ(0, fake_driver_.called_show_manual_fallback_for_saving_count());
+  EXPECT_EQ(0, fake_driver_.called_inform_about_user_input_count());
   base::string16 password = base::ASCIIToUTF16("random_password");
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)))
       .WillOnce(testing::InvokeWithoutArgs([this]() {
         // Make sure that generation event was propagated to the browser before
         // the fallback showing. Otherwise, the fallback for saving provides a
         // save bubble instead of a confirmation bubble.
-        EXPECT_EQ(0,
-                  fake_driver_.called_show_manual_fallback_for_saving_count());
+        EXPECT_EQ(0, fake_driver_.called_inform_about_user_input_count());
       }));
   password_generation_->GeneratedPasswordAccepted(password);
   fake_driver_.Flush();
   // Two fallback requests are expected because generation changes either new
   // password and confirmation fields.
-  EXPECT_EQ(2, fake_driver_.called_show_manual_fallback_for_saving_count());
+  EXPECT_EQ(2, fake_driver_.called_inform_about_user_input_count());
 }
 
 TEST_F(PasswordGenerationAgentTest, FormClassifierDisabled) {

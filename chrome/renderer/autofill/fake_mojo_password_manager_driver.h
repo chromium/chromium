@@ -111,8 +111,8 @@ class FakeMojoPasswordManagerDriver
     return called_check_safe_browsing_reputation_cnt_;
   }
 
-  int called_show_manual_fallback_for_saving_count() const {
-    return called_show_manual_fallback_for_saving_count_;
+  int called_inform_about_user_input_count() const {
+    return called_inform_about_user_input_count_;
   }
 
   autofill::mojom::FocusedFieldType last_focused_field_type() const {
@@ -143,9 +143,8 @@ class FakeMojoPasswordManagerDriver
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
 
-  void ShowManualFallbackForSaving(
-      const autofill::FormData& form_data) override;
-  void HideManualFallbackForSaving() override;
+  void InformAboutUserInput(const autofill::FormData& form_data) override;
+
   void FocusedInputChanged(
       autofill::mojom::FocusedFieldType focused_field_type) override;
   void LogFirstFillingResult(autofill::FormRendererId form_renderer_id,
@@ -181,9 +180,8 @@ class FakeMojoPasswordManagerDriver
   // Records number of times CheckSafeBrowsingReputation() gets called.
   int called_check_safe_browsing_reputation_cnt_ = 0;
 
-  // Records the number of request to show manual fallback for password saving.
-  // If it is zero, the fallback is not available.
-  int called_show_manual_fallback_for_saving_count_ = 0;
+  // Records the number of request to inform about user input.
+  int called_inform_about_user_input_count_ = 0;
 
   // Records the last focused field type that FocusedInputChanged() was called
   // with.

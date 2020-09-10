@@ -243,12 +243,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
  private:
   using OnPasswordField = util::StrongAlias<class OnPasswordFieldTag, bool>;
 
-  // Ways to restrict which passwords are saved in ProvisionallySavePassword.
-  enum ProvisionallySaveRestriction {
-    RESTRICTION_NONE,
-    RESTRICTION_NON_EMPTY_PASSWORD
-  };
-
   // Enumeration representing possible Touch To Fill states. This is used to
   // make sure that Touch To Fill will only be shown in response to the first
   // password form focus during a frame's life time and to suppress the soft
@@ -397,14 +391,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void FillPasswordFieldAndSave(blink::WebInputElement* password_input,
                                 const base::string16& credential);
 
-  // Saves |form| and |input| in |provisionally_saved_form_|, as long as it
-  // satisfies |restriction|. |form| and |input| are the elements user has just
-  // been interacting with before the form save. |form| or |input| can be null
-  // but not both at the same time. For example: if the form is unowned, |form|
-  // will be null; if the user has submitted the form, |input| will be null.
-  void ProvisionallySavePassword(const blink::WebFormElement& form,
-                                 const blink::WebInputElement& input,
-                                 ProvisionallySaveRestriction restriction);
+  // |form| and |input| are the elements user has just been interacting with
+  // before the form save. |form| or |input| can be null but not both at the
+  // same time. For example: if the form is unowned, |form| will be null; if the
+  // user has submitted the form, |input| will be null.
+  void InformBrowserAboutUserInput(const blink::WebFormElement& form,
+                                   const blink::WebInputElement& input);
 
   // This function attempts to fill |username_element| and |password_element|
   // with values from |fill_data|. The |username_element| and |password_element|

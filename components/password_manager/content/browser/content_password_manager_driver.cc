@@ -246,15 +246,16 @@ void ContentPasswordManagerDriver::PasswordFormSubmitted(
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
 }
 
-void ContentPasswordManagerDriver::ShowManualFallbackForSaving(
+void ContentPasswordManagerDriver::InformAboutUserInput(
     const autofill::FormData& form_data) {
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           render_frame_host_, form_data.url,
-          BadMessageReason::CPMD_BAD_ORIGIN_SHOW_FALLBACK_FOR_SAVING))
+          BadMessageReason::CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE))
     return;
-  GetPasswordManager()->ShowManualFallbackForSaving(this, form_data);
+  GetPasswordManager()->OnInformAboutUserInput(this, form_data);
 
-  if (client_->IsIsolationForPasswordSitesEnabled()) {
+  if (FormHasNonEmptyPasswordField(form_data) &&
+      client_->IsIsolationForPasswordSitesEnabled()) {
     // This function signals that a password field has been filled (whether by
     // the user, JS, autofill, or some other means) or a password form has been
     // submitted. Use this as a heuristic to start site-isolating the form's
@@ -264,10 +265,6 @@ void ContentPasswordManagerDriver::ShowManualFallbackForSaving(
         render_frame_host_->GetSiteInstance()->GetBrowserContext(),
         form_data.url);
   }
-}
-
-void ContentPasswordManagerDriver::HideManualFallbackForSaving() {
-  GetPasswordManager()->HideManualFallbackForSaving();
 }
 
 void ContentPasswordManagerDriver::SameDocumentNavigation(

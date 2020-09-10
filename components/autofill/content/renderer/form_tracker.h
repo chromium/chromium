@@ -33,6 +33,7 @@ class FormTracker : public content::RenderFrameObserver {
       SELECT_CHANGED,
     };
 
+    // TODO(crbug.com/1126017): Find a better name for this method.
     // Invoked when form needs to be saved because of |source|, |element| is
     // valid if the callback caused by source other than
     // WILL_SEND_SUBMIT_EVENT, |form| is valid for the callback caused by

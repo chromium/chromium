@@ -50,10 +50,7 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void PasswordFormSubmitted(const autofill::FormData& form_data) override {}
 
-  void ShowManualFallbackForSaving(
-      const autofill::FormData& form_data) override {}
-
-  void HideManualFallbackForSaving() override {}
+  void InformAboutUserInput(const autofill::FormData& form_data) override {}
 
   void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
                                   submission_indication_event) override {}

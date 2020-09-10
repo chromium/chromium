@@ -166,10 +166,10 @@ class PasswordManager : public PasswordManagerInterface {
                                       autofill::FieldRendererId renderer_id,
                                       const base::string16& value);
 
-  // Handles a request to show manual fallback for password saving, i.e. the
-  // omnibox icon with the anchored hidden prompt.
-  void ShowManualFallbackForSaving(PasswordManagerDriver* driver,
-                                   const autofill::FormData& form_data);
+  // Handles user input and decides whether to show manual fallback for password
+  // saving, i.e. the omnibox icon with the anchored hidden prompt.
+  void OnInformAboutUserInput(PasswordManagerDriver* driver,
+                              const autofill::FormData& form_data);
 
   // Handles a request to hide manual fallback for password saving.
   void HideManualFallbackForSaving();
@@ -320,8 +320,8 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Handles a request to show manual fallback for password saving, i.e. the
   // omnibox icon with the anchored hidden prompt. todo
-  void ShowManualFallbackForSavingImpl(PasswordFormManager* form_manager,
-                                       const autofill::FormData& form_data);
+  void ShowManualFallbackForSaving(PasswordFormManager* form_manager,
+                                   const autofill::FormData& form_data);
 
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
