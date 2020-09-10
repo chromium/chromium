@@ -16,9 +16,11 @@ public class LanguageItem {
 
     private final boolean mSupportTranslate;
 
+    private boolean mSupportAppUI;
+
     /**
      * Creates a new {@link LanguageItem}.
-     * @param code The string resource id for the text to show for this item.
+     * @param code The BCP-47 language tag for this language item.
      * @param displayName The display name of the language in the current app locale.
      * @param nativeDisplayName The display name of the language in the language's locale.
      * @param supportTranslate Whether Chrome supports translate for this language.
@@ -29,10 +31,11 @@ public class LanguageItem {
         mDisplayName = displayName;
         mNativeDisplayName = nativeDisplayName;
         mSupportTranslate = supportTranslate;
+        mSupportAppUI = AvailableUiLanguages.isAvailable(mCode);
     }
 
     /**
-     * @return The ISO code of the language item.
+     * @return The BCP-47 language tag of the language item.
      */
     public String getCode() {
         return mCode;
@@ -57,5 +60,12 @@ public class LanguageItem {
      */
     public boolean isSupported() {
         return mSupportTranslate;
+    }
+
+    /**
+     * @return Whether this language supports the Chrome UI.
+     */
+    public boolean isUISupported() {
+        return mSupportAppUI;
     }
 }

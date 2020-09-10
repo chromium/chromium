@@ -93,6 +93,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTitle(R.string.settings);
         ensureActivityNotExported();
 
         // The browser process must be started here because this Activity may be started explicitly
