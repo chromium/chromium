@@ -98,7 +98,6 @@ std::string ReplacementMapToString(
 IdentificationSettingsManager::SubstitutableParameter
 IdentificationSettingsManager::ConvertSubstitutableParameterFromMojom(
     mojom::SubstitutableParameterPtr mojo_param) {
-  DCHECK(!mojo_param->is_signature || mojo_param->is_for_auth);
   IdentificationSettingsManager::SubstitutableParameter param;
   param.name = mojo_param->name;
   if (mojo_param->replacement_token.has_value()) {
@@ -109,7 +108,6 @@ IdentificationSettingsManager::ConvertSubstitutableParameterFromMojom(
   }
   param.is_signature = mojo_param->is_signature;
   param.value = mojo_param->value;
-  param.is_for_auth = mojo_param->is_for_auth;
   return param;
 }
 
@@ -415,7 +413,6 @@ void IdentificationSettingsManager::AnalyzeAndReplaceQueryString(
   base::StringPiece input = orig_url.query_piece();
   std::string output = orig_url.query() + "&";  // Helps with an edge case.
   bool need_replacement = false;
-  uint32_t i = 0;
   for (auto& p : *params) {
     if (!p.replacement_token.empty() &&
         input.find(p.replacement_token) != std::string::npos) {
@@ -423,8 +420,7 @@ void IdentificationSettingsManager::AnalyzeAndReplaceQueryString(
       p.need_query = true;
       need_replacement = true;
 
-      std::string replacement_value = net::EscapeQueryParamValue(
-          p.is_for_auth ? GetAuthHeader(i) : p.value, true);
+      std::string replacement_value = net::EscapeQueryParamValue(p.value, true);
       base::ReplaceSubstringsAfterOffset(&output, 0, p.replacement_token,
                                          replacement_value);
     } else if (!p.suppression_token.empty() &&
@@ -440,7 +436,6 @@ void IdentificationSettingsManager::AnalyzeAndReplaceQueryString(
         base::ReplaceSubstringsAfterOffset(&output, 0, "&&", "&");
       } while (output.find("&&") != std::string::npos);
     }
-    ++i;
   }
   if (need_replacement) {
     size_t last_pos = output.size() - 1;
@@ -463,20 +458,10 @@ void IdentificationSettingsManager::AddHttpHeaders(
       continue;
     }
     if (!p.suppress_header) {
-      const std::string& value = p.is_for_auth ? GetAuthHeader(i) : p.value;
-      if (!value.empty())
-        headers->SetHeaderIfMissing(p.name, value);
+      if (!p.value.empty())
+        headers->SetHeaderIfMissing(p.name, p.value);
     }
     ++i;
-  }
-}
-
-void IdentificationSettingsManager::UpdateAuthHeaders(
-    std::vector<chromecast::mojom::IndexValuePairPtr> auth_headers) {
-  lock_.AssertAcquired();
-  for (auto& auth_header : auth_headers) {
-    DCHECK(auth_header->index < substitutable_params_.size());
-    auth_headers_[auth_header->index] = auth_header->value;
   }
 }
 
@@ -604,7 +589,7 @@ void IdentificationSettingsManager::SignatureComplete(
     if (!signature_headers.empty()) {
       next_refresh_time_ = next_refresh_time;
     }
-    UpdateAuthHeaders(std::move(signature_headers));
+    UpdateSubstitutableParamValues(std::move(signature_headers));
     create_signature_in_progress_ = false;
   }
 
@@ -615,7 +600,7 @@ void IdentificationSettingsManager::SignatureComplete(
 
 int IdentificationSettingsManager::EnsureCerts() {
   lock_.AssertAcquired();
-  if (!auth_headers_.empty())
+  if (cert_initialized_)
     return net::OK;
 
   if (create_cert_in_progress_)
@@ -635,20 +620,11 @@ void IdentificationSettingsManager::InitCerts(
     std::vector<chromecast::mojom::IndexValuePairPtr> cert_headers) {
   {
     base::AutoLock lock(lock_);
-    UpdateAuthHeaders(std::move(cert_headers));
+    UpdateSubstitutableParamValues(std::move(cert_headers));
     create_cert_in_progress_ = false;
+    cert_initialized_ = true;
   }
   CreateSignatureAsync();
-}
-
-std::string IdentificationSettingsManager::GetAuthHeader(uint32_t index) const {
-  base::AutoLock lock(lock_);
-  const auto& it = auth_headers_.find(index);
-  if (it == auth_headers_.end()) {
-    LOG(ERROR) << "Auth header is not available: " << index;
-    return std::string();
-  }
-  return it->second;
 }
 
 }  // namespace chromecast

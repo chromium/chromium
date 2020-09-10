@@ -31,10 +31,6 @@ struct SubstitutableParameter {
   // `ClientAuthDelegate`
   bool is_signature;
 
-  // Whether the header is used for authentication. If |is_signature| is true,
-  // |is_for_auth| must also be true.
-  bool is_for_auth;
-
   // Value of the header.
   string value;
 };

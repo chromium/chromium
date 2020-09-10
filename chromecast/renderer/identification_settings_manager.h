@@ -71,10 +71,9 @@ class IdentificationSettingsManager
     std::string name;
     std::string replacement_token;
     std::string suppression_token;
-    bool is_signature;
+    bool is_signature = false;
     bool suppress_header = false;
     bool need_query = false;
-    bool is_for_auth;
     std::string value;
   };
 
@@ -185,9 +184,8 @@ class IdentificationSettingsManager
   // Whether a signature creation request is sent.
   bool create_signature_in_progress_ GUARDED_BY(lock_) = false;
 
-  // Header indices should align with the indices in |substitutable_params_|.
-  base::flat_map<uint32_t /* header_index */, std::string /* header_value */>
-      auth_headers_ GUARDED_BY(lock_);
+  // Whether certificates have been initialized.
+  bool cert_initialized_ GUARDED_BY(lock_) = false;
 
   // When the next time the signature needs to be refreshed.
   base::Time next_refresh_time_ GUARDED_BY(lock_);
