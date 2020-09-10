@@ -67,6 +67,18 @@ Polymer({
 
     interactiveMode: {type: Boolean, value: false},
 
+    nudgeIntervalId: {type: Number},
+
+    /** @const */
+    NUDGE_INTERVAL_TIME_MS: {type: Number, value: 45 * 1000},
+
+    nudgeCounter: {type: Number, value: 0},
+
+    /** @type {Array<function(): void>} */
+    nudgeArray: {type: Array},
+
+    isPracticeAreaActive: {type: Boolean, value: false},
+
     // Labels and text content.
 
     chooseYourExperience: {
@@ -440,9 +452,22 @@ Polymer({
   ready() {
     document.addEventListener('keydown', this.onKeyDown.bind(this));
     this.hideAllScreens();
+    this.initializeNudges();
     this.$.lessonTemplate.addEventListener('dom-change', (evt) => {
       // Executes once all lessons have been added to the dom.
       this.show();
+    });
+    this.$.tutorial.addEventListener('focus', this.onFocus.bind(this), true);
+    this.addEventListener('startpractice', (evt) => {
+      // Stop nudges when the practice area opens. This is because the practice
+      // area can provide hints and we don't want nudges to conflict with them.
+      this.stopNudges();
+      this.isPracticeAreaActive = true;
+    });
+    this.addEventListener('endpractice', (evt) => {
+      // When the practice area closes, it's safe to resume nudges.
+      this.startNudges();
+      this.isPracticeAreaActive = false;
     });
   },
 
@@ -456,6 +481,7 @@ Polymer({
     } else {
       this.showMainMenu();
     }
+    this.startNudges();
   },
 
   /**
@@ -675,6 +701,7 @@ Polymer({
 
   /** @private */
   exit() {
+    this.stopNudges();
     this.dispatchEvent(new CustomEvent('closetutorial', {}));
   },
 
@@ -725,4 +752,84 @@ Polymer({
       evt.stopPropagation();
     }
   },
+
+  /** @private */
+  startNudges() {
+    this.stopNudges();
+    this.nudgeIntervalId =
+        setInterval(this.giveNudge.bind(this), this.NUDGE_INTERVAL_TIME_MS);
+  },
+
+  /** @private */
+  stopNudges() {
+    this.nudgeCounter = 0;
+    if (this.nudgeIntervalId) {
+      clearInterval(this.nudgeIntervalId);
+    }
+  },
+
+  /** @private */
+  giveNudge() {
+    if (this.nudgeCounter < 0 || this.nudgeCounter >= this.nudgeArray.length) {
+      this.stopNudges();
+      return;
+    }
+
+    this.nudgeArray[this.nudgeCounter]();
+    this.nudgeCounter += 1;
+  },
+
+  /**
+   * @param {string} text
+   * @private
+   */
+  requestSpeech(text) {
+    this.dispatchEvent(
+        new CustomEvent('requestspeech', {composed: true, detail: {text}}));
+  },
+
+  /** @private */
+  requestFullyDescribe() {
+    this.dispatchEvent(
+        new CustomEvent('requestfullydescribe', {composed: true}));
+  },
+
+  /** @private */
+  initializeNudges() {
+    const maybeGiveNudge = (msg) => {
+      if (this.interactiveMode) {
+        // Do not announce message since ChromeVox blocks actions in interactive
+        // mode.
+        return;
+      }
+
+      this.requestSpeech(msg);
+    };
+
+    this.nudgeArray = [
+      this.requestFullyDescribe.bind(this),
+      this.requestFullyDescribe.bind(this),
+      this.requestFullyDescribe.bind(this),
+      maybeGiveNudge.bind(
+          this, 'Hint: Hold Search and press the arrow keys to navigate.'),
+      maybeGiveNudge.bind(
+          this, 'Hint: Press Search + Space to activate the current item.'),
+      this.requestSpeech.bind(
+          this, 'Hint: Press Escape if you would like to exit this tutorial.')
+    ];
+  },
+
+  /**
+   * @param {Event} evt
+   * @private
+   */
+  onFocus(evt) {
+    // Restart nudges whenever focus changes, as long as the practice area is
+    // inactive.
+    if (this.isPracticeAreaActive) {
+      return;
+    }
+
+    this.startNudges();
+  }
 });

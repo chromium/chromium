@@ -134,6 +134,7 @@ export const TutorialLesson = Polymer({
 
   /** @private */
   startPractice() {
+    this.notifyStartPractice();
     this.$.practice.showModal();
     this.startHints();
     this.$.practiceTitle.focus();
@@ -141,8 +142,19 @@ export const TutorialLesson = Polymer({
 
   /** @private */
   endPractice() {
+    this.notifyEndPractice();
     this.stopHints();
     this.$.startPractice.focus();
+  },
+
+  /** @private */
+  notifyStartPractice() {
+    this.dispatchEvent(new CustomEvent('startpractice', {composed: true}));
+  },
+
+  /** @private */
+  notifyEndPractice() {
+    this.dispatchEvent(new CustomEvent('endpractice', {composed: true}));
   },
 
 
@@ -203,7 +215,6 @@ export const TutorialLesson = Polymer({
           'practice area button to continue');
     }
   },
-
 
   // Methods for managing hints.
 

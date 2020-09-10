@@ -1219,6 +1219,11 @@ Panel = class {
           chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
       background.destroyUserActionMonitor();
     });
+    $('i-tutorial').addEventListener('requestfullydescribe', (evt) => {
+      const commandHandler =
+          chrome.extension.getBackgroundPage()['CommandHandler'];
+      commandHandler.onCommand('fullyDescribe');
+    });
   }
 
   /**
