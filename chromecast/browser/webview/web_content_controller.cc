@@ -12,6 +12,7 @@
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
+#include "chromecast/graphics/cast_focus_client_aura.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
@@ -170,14 +171,23 @@ void WebContentController::AttachTo(aura::Window* window, int window_id) {
 void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
   content::WebContents* contents = GetWebContents();
   DCHECK(contents);
-  DCHECK(contents->GetNativeView());
-  if (!contents->GetNativeView()->CanFocus())
-    return;
-  // Ensure this web contents has focus before sending it input.
-  if (!contents->GetNativeView()->HasFocus())
-    contents->GetNativeView()->Focus();
 
+  // Ensure this web contents has focus before sending it input.
+  // Focus at this level is necessary, or else Blink will ignore
+  // attempts to focus any elements in the contents.
+  //
+  // Via b/156123509: The aura::Window given by |contents->GetNativeView()|
+  // is not suitable for this purpose, because it has no OnWindowFocused
+  // observer. The |window| used here is the same one whose |delegate|
+  // is the EventHandler for this input event.
   content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
+  aura::Window* window = rwhv->GetNativeView();
+  DCHECK(window == contents->GetContentNativeView());
+  if (!window->CanFocus())
+    return;
+  if (!window->HasFocus())
+    window->Focus();
+
   ui::EventHandler* handler = rwhv->GetNativeView()->delegate();
   ui::EventType type = static_cast<ui::EventType>(ev.event_type());
   switch (type) {
