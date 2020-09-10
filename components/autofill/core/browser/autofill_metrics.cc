@@ -49,6 +49,11 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_STATE,
   GROUP_ADDRESS_ZIP,
   GROUP_ADDRESS_COUNTRY,
+  GROUP_ADDRESS_HOME_STREET_NAME,
+  GROUP_ADDRESS_HOME_DEPENDENT_STREET_NAME,
+  GROUP_ADDRESS_HOME_HOUSE_NUMBER,
+  GROUP_ADDRESS_HOME_PREMISE_NAME,
+  GROUP_ADDRESS_HOME_SUBPREMISE,
   GROUP_PHONE,
   GROUP_FAX,  // Deprecated.
   GROUP_EMAIL,
@@ -157,6 +162,21 @@ int GetFieldTypeGroupPredictionQualityMetric(
           break;
         case ADDRESS_HOME_COUNTRY:
           group = GROUP_ADDRESS_COUNTRY;
+          break;
+        case ADDRESS_HOME_STREET_NAME:
+          group = GROUP_ADDRESS_HOME_STREET_NAME;
+          break;
+        case ADDRESS_HOME_DEPENDENT_STREET_NAME:
+          group = GROUP_ADDRESS_HOME_DEPENDENT_STREET_NAME;
+          break;
+        case ADDRESS_HOME_HOUSE_NUMBER:
+          group = GROUP_ADDRESS_HOME_HOUSE_NUMBER;
+          break;
+        case ADDRESS_HOME_PREMISE_NAME:
+          group = GROUP_ADDRESS_HOME_PREMISE_NAME;
+          break;
+        case ADDRESS_HOME_SUBPREMISE:
+          group = GROUP_ADDRESS_HOME_SUBPREMISE;
           break;
         default:
           NOTREACHED() << field_type << " has no group assigned (ambiguous)";
