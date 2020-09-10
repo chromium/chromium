@@ -8,7 +8,7 @@
       "targetArchitecture": "x64",
       "program": "${workspaceRoot}/out/Debug/chrome",
       "args": [], // Optional command line args
-      "preLaunchTask": "1-build_chrome_debug",
+      "preLaunchTask": "6-build_chrome_debug",
       "stopAtEntry": false,
       "cwd": "${workspaceRoot}/out/Debug/",
       "environment": [],
@@ -35,7 +35,7 @@
       "targetArchitecture": "x64",
       "program": "${workspaceRoot}/out/Release/chrome",
       "args": [], // Optional command line args
-      "preLaunchTask": "2-build_chrome_release",
+      "preLaunchTask": "7-build_chrome_release",
       "stopAtEntry": false,
       "cwd": "${workspaceRoot}/out/Release/",
       "environment": [],
@@ -53,7 +53,7 @@
         "--ui-test-action-max-timeout=1000000",
         "--test-launcher-timeout=1000000"
       ],
-      "preLaunchTask": "5-build_test_debug",
+      "preLaunchTask": "8-build_test_debug",
       "stopAtEntry": false,
       "cwd": "${workspaceRoot}/out/Debug/",
       "environment": [],
