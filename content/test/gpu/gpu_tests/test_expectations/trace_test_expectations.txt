@@ -58,7 +58,6 @@ crbug.com/1096431 [ fuchsia ] TraceTest_Video_MP4_FourColors_Rot_180 [ Skip ]
 crbug.com/1096431 [ fuchsia ] TraceTest_Video_MP4_FourColors_Rot_270 [ Skip ]
 crbug.com/1096431 [ fuchsia ] TraceTest_Video_MP4_FourColors_Rot_90 [ Skip ]
 crbug.com/1096431 [ fuchsia ] TraceTest_Video_MP4_Rounded_Corner [ Skip ]
-crbug.com/1096431 [ fuchsia ] TraceTest_Video_VP8_Incompatible_Stride [ Skip ]
 crbug.com/1096431 [ fuchsia ] TraceTest_Video_VP9 [ Skip ]
 crbug.com/1096431 [ fuchsia ] TraceTest_Video_VP9_DXVA [ Skip ]
 
