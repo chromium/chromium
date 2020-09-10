@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# TODO(crbug.com/1026488): Consider moving all service worker mojom files into
+# this BUILD.gn and figure out right dependencies for them. Currently mojom
+# files other than "storage" target are listed in blink/public/mojom/BUILD.gn.
+
+# This is separated from the rest of the other service worker mojom files
+# to avoid introducing a dependency on the entire public blink platform for
+# non-blink dependents.
+mojom_component("storage") {
+  output_prefix = "service_worker_storage_mojom"
+  macro_prefix = "SERVICE_WORKER_STORAGE_MOJOM"
+
+  sources = [
+    "navigation_preload_state.mojom",
+    "service_worker_database.mojom",
+    "service_worker_registration_options.mojom",
+  ]
+
+  public_deps = [
+    "//third_party/blink/public/mojom:script_type_mojo_bindings",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  generate_java = true
+}

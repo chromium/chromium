@@ -137,7 +137,6 @@ mojom("mojom_platform") {
     "renderer_preferences.mojom",
     "reporting/reporting.mojom",
     "screen_enumeration/screen_enumeration.mojom",
-    "script/script_type.mojom",
     "scroll/scroll_enums.mojom",
     "scroll/scroll_into_view_params.mojom",
     "scroll/scrollbar_mode.mojom",
@@ -145,15 +144,12 @@ mojom("mojom_platform") {
     "selection_menu/selection_menu_behavior.mojom",
     "service_worker/controller_service_worker_mode.mojom",
     "service_worker/dispatch_fetch_event_params.mojom",
-    "service_worker/navigation_preload_state.mojom",
     "service_worker/service_worker_client.mojom",
     "service_worker/service_worker_container_type.mojom",
-    "service_worker/service_worker_database.mojom",
     "service_worker/service_worker_error_type.mojom",
     "service_worker/service_worker_event_status.mojom",
     "service_worker/service_worker_fetch_response_callback.mojom",
     "service_worker/service_worker_installed_scripts_manager.mojom",
-    "service_worker/service_worker_registration_options.mojom",
     "service_worker/service_worker_state.mojom",
     "service_worker/service_worker_stream_handle.mojom",
     "site_engagement/site_engagement.mojom",
@@ -205,6 +201,7 @@ mojom("mojom_platform") {
     ":android_mojo_bindings",
     ":authenticator_test_mojo_bindings",
     ":mojom_mhtml_load_result",
+    ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
     "//cc/mojom",
     "//components/payments/mojom",
@@ -223,6 +220,7 @@ mojom("mojom_platform") {
     "//third_party/blink/public/mojom/dom_storage",
     "//third_party/blink/public/mojom/frame",
     "//third_party/blink/public/mojom/gpu",
+    "//third_party/blink/public/mojom/service_worker:storage",
     "//third_party/blink/public/mojom/tokens",
     "//third_party/blink/public/mojom/usb",
     "//ui/base/cursor/mojom",
@@ -719,6 +717,7 @@ mojom("mojom_core") {
   public_deps = [
     ":android_mojo_bindings",
     ":mojom_platform",
+    ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
     "//cc/mojom",
     "//components/payments/mojom",
@@ -726,6 +725,7 @@ mojom("mojom_core") {
     "//services/network/public/mojom",
     "//services/service_manager/public/mojom",
     "//skia/public/mojom",
+    "//third_party/blink/public/mojom/service_worker:storage",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
@@ -829,6 +829,7 @@ mojom("mojom_core") {
     ":android_mojo_bindings",
     ":mojom_platform",
     "//services/network/public/mojom",
+    "//third_party/blink/public/mojom/service_worker:storage",
   ]
   component_deps_blink = [ "//third_party/blink/renderer/platform" ]
 
@@ -1070,6 +1071,18 @@ mojom("mojom_mhtml_load_result") {
   export_class_attribute = "BLINK_COMMON_EXPORT"
   export_define = "BLINK_COMMON_IMPLEMENTATION=1"
   export_header = "third_party/blink/public/common/common_export.h"
+}
+
+mojom_component("script_type_mojo_bindings") {
+  generate_java = true
+  sources = [ "script/script_type.mojom" ]
+
+  macro_prefix = "SCRIPT_TYPE_MOJOM"
+  output_prefix = "script_type_mojom"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
 }
 
 # The web_feature_mojo_bindings is separated from the rest of the mojom files
