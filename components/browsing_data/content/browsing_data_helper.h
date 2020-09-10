@@ -9,9 +9,26 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 
 class GURL;
+class PrefService;
+
+namespace content {
+class BrowsingDataFilterBuilder;
+}
+
+namespace network {
+namespace mojom {
+class NetworkContext;
+}
+}  // namespace network
+
+namespace prerender {
+class PrerenderManager;
+}
 
 namespace browsing_data {
 
@@ -30,6 +47,35 @@ namespace browsing_data {
 // `chrome-extension`.
 bool IsWebScheme(const std::string& scheme);
 bool HasWebScheme(const GURL& origin);
+
+// Creates a filter for website settings in a HostContentSettingsMap.
+HostContentSettingsMap::PatternSourcePredicate CreateWebsiteSettingsFilter(
+    content::BrowsingDataFilterBuilder* filter_builder);
+
+// Clears prerendering cache.
+void RemovePrerenderCacheData(prerender::PrerenderManager* prerender_manager);
+
+// Removes site isolation prefs. Should be called when the user removes
+// cookies and other site settings or history.
+void RemoveSiteIsolationData(PrefService* prefs);
+
+// Removes data that should be cleared at the same time as cookies, but which
+// content/ doesn't know about. e.g. client hints and safe browsing cookie.
+// If |safe_browsing_context| is not null and the function decides to clear
+// cookies in it then |callback_factory| will be called synchronously to create
+// a callback that is run on completion.
+void RemoveEmbedderCookieData(
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    content::BrowsingDataFilterBuilder* filter_builder,
+    HostContentSettingsMap* host_content_settings_map,
+    network::mojom::NetworkContext* safe_browsing_context,
+    base::OnceCallback<base::OnceCallback<void()>()> callback_factory);
+
+// Removes site settings data.
+void RemoveSiteSettingsData(const base::Time& delete_begin,
+                            const base::Time& delete_end,
+                            HostContentSettingsMap* host_content_settings_map);
 
 }  // namespace browsing_data
 

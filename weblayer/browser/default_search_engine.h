@@ -16,6 +16,7 @@ class Origin;
 }
 
 namespace weblayer {
+const url::Origin& GetDseOrigin();
 
 // Returns whether permissions for |type| and |origin| are controlled by
 // WebLayer's default search engine logic. This only applies to the GEOLOCATION

@@ -13,7 +13,6 @@
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
-#include "weblayer/browser/user_agent.h"
 #include "weblayer/browser/verdict_cache_manager_factory.h"
 
 namespace weblayer {
@@ -43,7 +42,7 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
           BrowserProcess::GetInstance()
-              ->GetSafeBrowsingService(weblayer::GetUserAgent())
+              ->GetSafeBrowsingService()
               ->GetURLLoaderFactory());
 
   return new safe_browsing::RealTimeUrlLookupService(

@@ -94,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, NavigateToPageWithNoFavicon) {
   fetcher_delegate.ClearLastImage();
 
   TestFaviconServiceImplObserver test_observer;
-  FaviconServiceImplFactory::GetForProfile(
-      static_cast<TabImpl*>(shell()->tab())->profile())
+  FaviconServiceImplFactory::GetForBrowserContext(
+      static_cast<TabImpl*>(shell()->tab())->profile()->GetBrowserContext())
       ->set_observer(&test_observer);
 
   const GURL url2 = embedded_test_server()->GetURL("/simple_page.html");
@@ -150,8 +150,8 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, OffTheRecord) {
 
   // There is no FaviconService for off the record profiles. FaviconService
   // writes to disk, which is not appropriate for off the record mode.
-  EXPECT_EQ(nullptr,
-            FaviconServiceImplFactory::GetForProfile(otr_profile_impl));
+  EXPECT_EQ(nullptr, FaviconServiceImplFactory::GetForBrowserContext(
+                         otr_profile_impl->GetBrowserContext()));
   ASSERT_TRUE(embedded_test_server()->Start());
   TestFaviconFetcherDelegate fetcher_delegate;
   auto fetcher = tab->CreateFaviconFetcher(&fetcher_delegate);

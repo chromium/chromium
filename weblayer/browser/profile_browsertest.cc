@@ -4,9 +4,12 @@
 
 #include "base/test/bind_test_util.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/favicon/favicon_fetcher_impl.h"
 #include "weblayer/browser/favicon/test_favicon_fetcher_delegate.h"
+#include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/shell/browser/shell.h"
@@ -128,6 +131,62 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearBrowsingDataDeletesFavicons) {
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DefaultNetworkPredictionState) {
   ASSERT_TRUE(
       GetProfile()->GetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED));
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
+  auto dse_origin = GetDseOrigin().GetURL();
+  auto foo_origin = GURL("http://www.foo.com");
+
+  auto* settings_map = HostContentSettingsMapFactory::GetForBrowserContext(
+      static_cast<TabImpl*>(shell()->tab())
+          ->web_contents()
+          ->GetBrowserContext());
+  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
+                                            ContentSettingsType::GEOLOCATION,
+                                            std::string()),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
+                                            ContentSettingsType::GEOLOCATION,
+                                            std::string()),
+            CONTENT_SETTING_ASK);
+
+  settings_map->SetContentSettingDefaultScope(
+      foo_origin, foo_origin, ContentSettingsType::GEOLOCATION, std::string(),
+      CONTENT_SETTING_ALLOW);
+
+  // Ensure clearing things other than site data doesn't change it
+  base::RunLoop run_loop;
+  base::Time now = base::Time::Now();
+  ProfileImpl* profile = static_cast<TabImpl*>(shell()->tab())->profile();
+  profile->ClearBrowsingData(
+      {BrowsingDataType::COOKIES_AND_SITE_DATA, BrowsingDataType::CACHE},
+      base::Time(), now, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
+                                            ContentSettingsType::GEOLOCATION,
+                                            std::string()),
+            CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
+                                            ContentSettingsType::GEOLOCATION,
+                                            std::string()),
+            CONTENT_SETTING_ALLOW);
+
+  // Now clear site data.
+  base::RunLoop run_loop2;
+  profile->ClearBrowsingData({BrowsingDataType::SITE_SETTINGS}, base::Time(),
+                             now, run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
+                                            ContentSettingsType::GEOLOCATION,
+                                            std::string()),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
+                                            ContentSettingsType::GEOLOCATION,
+                                            std::string()),
+            CONTENT_SETTING_ASK);
 }
 
 }  // namespace weblayer

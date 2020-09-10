@@ -14,6 +14,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "weblayer/browser/system_network_context_manager.h"
+#include "weblayer/browser/user_agent.h"
 
 #if defined(OS_ANDROID)
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
@@ -99,12 +100,12 @@ void BrowserProcess::CreateNetworkQualityObserver() {
 }
 
 #if defined(OS_ANDROID)
-SafeBrowsingService* BrowserProcess::GetSafeBrowsingService(
-    std::string user_agent) {
+SafeBrowsingService* BrowserProcess::GetSafeBrowsingService() {
   if (!safe_browsing_service_) {
     // Create and initialize safe_browsing_service on first get.
     // Note: Initialize() needs to happen on UI thread.
-    safe_browsing_service_ = std::make_unique<SafeBrowsingService>(user_agent);
+    safe_browsing_service_ =
+        std::make_unique<SafeBrowsingService>(GetUserAgent());
     safe_browsing_service_->Initialize();
   }
   return safe_browsing_service_.get();

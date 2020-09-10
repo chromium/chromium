@@ -228,6 +228,12 @@ void SafeBrowsingService::StopDBManagerOnIOThread() {
   }
 }
 
+network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext() {
+  if (!network_context_)
+    return nullptr;
+  return network_context_->GetNetworkContext();
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 SafeBrowsingService::GetURLLoaderFactory() {
   if (!network_context_)

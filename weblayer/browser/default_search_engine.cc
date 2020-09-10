@@ -12,15 +12,12 @@
 #include "weblayer/browser/host_content_settings_map_factory.h"
 
 namespace weblayer {
-namespace {
 
 const url::Origin& GetDseOrigin() {
   static const base::NoDestructor<url::Origin> kOrigin(
       url::Origin::Create(GURL("https://www.google.com")));
   return *kOrigin;
 }
-
-}  // namespace
 
 bool IsPermissionControlledByDse(ContentSettingsType type,
                                  const url::Origin& origin) {

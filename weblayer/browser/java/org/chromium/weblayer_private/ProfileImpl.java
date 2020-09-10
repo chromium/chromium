@@ -235,6 +235,9 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
                 case BrowsingDataType.CACHE:
                     convertedTypes.add(ImplBrowsingDataType.CACHE);
                     break;
+                case BrowsingDataType.SITE_SETTINGS:
+                    convertedTypes.add(ImplBrowsingDataType.SITE_SETTINGS);
+                    break;
                 default:
                     break; // Skip unrecognized values for forward compatibility.
             }

@@ -8,10 +8,13 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace weblayer {
 
 class FaviconServiceImpl;
-class ProfileImpl;
 
 // BrowserContextKeyedServiceFactory for getting the FaviconServiceImpl.
 class FaviconServiceImplFactory : public BrowserContextKeyedServiceFactory {
@@ -21,7 +24,8 @@ class FaviconServiceImplFactory : public BrowserContextKeyedServiceFactory {
       delete;
 
   // Off the record profiles do not have a FaviconServiceImpl.
-  static FaviconServiceImpl* GetForProfile(ProfileImpl* profile);
+  static FaviconServiceImpl* GetForBrowserContext(
+      content::BrowserContext* browser_context);
 
   // Returns the FaviconServiceFactory singleton.
   static FaviconServiceImplFactory* GetInstance();

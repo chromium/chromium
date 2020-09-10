@@ -780,7 +780,7 @@ void ContentBrowserClientImpl::CreateFeatureListAndFieldTrials() {
 
 #if defined(OS_ANDROID)
 SafeBrowsingService* ContentBrowserClientImpl::GetSafeBrowsingService() {
-  return BrowserProcess::GetInstance()->GetSafeBrowsingService(GetUserAgent());
+  return BrowserProcess::GetInstance()->GetSafeBrowsingService();
 }
 #endif
 

@@ -8,10 +8,49 @@
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/prefs/pref_service.h"
+#include "components/prerender/browser/prerender_manager.h"
+#include "components/site_isolation/pref_names.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
 namespace browsing_data {
+
+namespace {
+
+bool WebsiteSettingsFilterAdapter(
+    const base::RepeatingCallback<bool(const GURL&)> predicate,
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern) {
+  // Ignore the default setting.
+  if (primary_pattern == ContentSettingsPattern::Wildcard())
+    return false;
+
+  // Website settings only use origin-scoped patterns. The only content setting
+  // this filter is used for is DURABLE_STORAGE, which also only uses
+  // origin-scoped patterns. Such patterns can be directly translated to a GURL.
+  GURL url(primary_pattern.ToString());
+  DCHECK(url.is_valid());
+  return predicate.Run(url);
+}
+
+// Callback for when cookies have been deleted. Invokes |done|.
+// Receiving |cookie_manager| as a parameter so that the receive pipe is
+// not deleted before the response is received.
+void OnClearedCookies(
+    base::OnceClosure done,
+    mojo::Remote<network::mojom::CookieManager> cookie_manager,
+    uint32_t num_deleted) {
+  std::move(done).Run();
+}
+
+}  // namespace
 
 bool IsWebScheme(const std::string& scheme) {
   const std::vector<std::string>& schemes = url::GetWebStorageSchemes();
@@ -20,6 +59,100 @@ bool IsWebScheme(const std::string& scheme) {
 
 bool HasWebScheme(const GURL& origin) {
   return IsWebScheme(origin.scheme());
+}
+
+HostContentSettingsMap::PatternSourcePredicate CreateWebsiteSettingsFilter(
+    content::BrowsingDataFilterBuilder* filter_builder) {
+  return filter_builder->MatchesAllOriginsAndDomains()
+             ? HostContentSettingsMap::PatternSourcePredicate()
+             : base::BindRepeating(&WebsiteSettingsFilterAdapter,
+                                   filter_builder->BuildUrlFilter());
+}
+
+void RemovePrerenderCacheData(prerender::PrerenderManager* prerender_manager) {
+  // The PrerenderManager may have a page actively being prerendered, which
+  // is essentially a preemptively cached page.
+  if (prerender_manager) {
+    prerender_manager->ClearData(
+        prerender::PrerenderManager::CLEAR_PRERENDER_CONTENTS);
+  }
+}
+
+void RemoveSiteIsolationData(PrefService* prefs) {
+  prefs->ClearPref(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
+  // Note that this does not clear these sites from the in-memory map in
+  // ChildProcessSecurityPolicy, since that is not supported at runtime. That
+  // list of isolated sites is not directly exposed to users, though, and
+  // will be cleared on next restart.
+}
+
+void RemoveEmbedderCookieData(
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    content::BrowsingDataFilterBuilder* filter_builder,
+    HostContentSettingsMap* host_content_settings_map,
+    network::mojom::NetworkContext* safe_browsing_context,
+    base::OnceCallback<base::OnceCallback<void()>()> callback_factory) {
+  auto website_settings_filter = CreateWebsiteSettingsFilter(filter_builder);
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::CLIENT_HINTS, base::Time(), base::Time::Max(),
+      website_settings_filter);
+
+  // Clear the safebrowsing cookies only if time period is for "all time".  It
+  // doesn't make sense to apply the time period of deleting in the last X
+  // hours/days to the safebrowsing cookies since they aren't the result of
+  // any user action.
+  if (delete_begin == base::Time() && delete_end == base::Time::Max() &&
+      safe_browsing_context) {
+    mojo::Remote<network::mojom::CookieManager> cookie_manager;
+    safe_browsing_context->GetCookieManager(
+        cookie_manager.BindNewPipeAndPassReceiver());
+
+    network::mojom::CookieManager* manager_ptr = cookie_manager.get();
+
+    network::mojom::CookieDeletionFilterPtr deletion_filter =
+        filter_builder->BuildCookieDeletionFilter();
+    if (!delete_begin.is_null())
+      deletion_filter->created_after_time = delete_begin;
+    if (!delete_end.is_null())
+      deletion_filter->created_before_time = delete_end;
+
+    manager_ptr->DeleteCookies(
+        std::move(deletion_filter),
+        base::BindOnce(&OnClearedCookies, std::move(callback_factory).Run(),
+                       std::move(cookie_manager)));
+  }
+}
+
+void RemoveSiteSettingsData(const base::Time& delete_begin,
+                            const base::Time& delete_end,
+                            HostContentSettingsMap* host_content_settings_map) {
+  const auto* registry =
+      content_settings::ContentSettingsRegistry::GetInstance();
+  for (const content_settings::ContentSettingsInfo* info : *registry) {
+    host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+        info->website_settings_info()->type(), delete_begin, delete_end,
+        HostContentSettingsMap::PatternSourcePredicate());
+  }
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::USB_CHOOSER_DATA, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::BLUETOOTH_CHOOSER_DATA, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
+
+#if !defined(OS_ANDROID)
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::SERIAL_CHOOSER_DATA, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::HID_CHOOSER_DATA, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
+#endif
 }
 
 }  // namespace browsing_data

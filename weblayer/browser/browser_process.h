@@ -49,7 +49,7 @@ class BrowserProcess {
   network::NetworkQualityTracker* GetNetworkQualityTracker();
 
 #if defined(OS_ANDROID)
-  SafeBrowsingService* GetSafeBrowsingService(std::string user_agent);
+  SafeBrowsingService* GetSafeBrowsingService();
   void StopSafeBrowsingService();
 #endif
 
