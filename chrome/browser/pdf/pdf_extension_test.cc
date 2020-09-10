@@ -1381,7 +1381,16 @@ static std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
     if (!found_embedded_object)
       continue;
 
-    int indent = id_to_indentation[node.id];
+    auto indent_found = id_to_indentation.find(node.id);
+    int indent = 0;
+    if (indent_found != id_to_indentation.end()) {
+      indent = indent_found->second;
+    } else if (node.role != ax::mojom::Role::kEmbeddedObject) {
+      // If this node has no indent and isn't the embedded object, return, as
+      // this indicates the end of the PDF.
+      return ax_tree_dump;
+    }
+
     ax_tree_dump += std::string(2 * indent, ' ');
     ax_tree_dump += ui::ToString(node.role);
 
@@ -1434,11 +1443,9 @@ static const char kExpectedPDFAXTreePattern[] =
     "          inlineTextBox 'Second Section'\n"
     "      paragraph\n"
     "        staticText '3'\n"
-    "          inlineTextBox '3'\n"
-    "genericContainer\n"
-    "  genericContainer\n";
+    "          inlineTextBox '3'\n";
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibility) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, PdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -1453,7 +1460,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibility) {
   ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityEnableLater) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
@@ -1475,7 +1482,7 @@ bool RetrieveGuestContents(WebContents** out_guest_contents,
   return true;
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInIframe) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, PdfAccessibilityInIframe) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   GURL test_iframe_url(embedded_test_server()->GetURL("/pdf/test-iframe.html"));
   ui_test_utils::NavigateToURL(browser(), test_iframe_url);
@@ -1496,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInIframe) {
   ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInOOPIF) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, PdfAccessibilityInOOPIF) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   GURL test_iframe_url(embedded_test_server()->GetURL(
       "/pdf/test-cross-site-iframe.html"));
@@ -1518,7 +1525,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInOOPIF) {
   ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityWordBoundaries) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       PdfAccessibilityWordBoundaries) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -1551,7 +1559,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityWordBoundaries) {
   ASSERT_TRUE(found);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilitySelection) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam, PdfAccessibilitySelection) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -1598,7 +1606,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilitySelection) {
   EXPECT_EQ(ax::mojom::Role::kRegion, region->data().role);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       PdfAccessibilityContextMenuAction) {
   // Validate the context menu arguments for PDF selection when context menu is
   // invoked via accessibility tree.
   const char kExepectedPDFSelection[] =
@@ -1662,7 +1671,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test a particular PDF encountered in the wild that triggered a crash
 // when accessibility is enabled.  (http://crbug.com/668724)
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityTextRunCrash) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
+                       PdfAccessibilityTextRunCrash) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   GURL test_pdf_url(embedded_test_server()->GetURL(
       "/pdf_private/accessibility_crash_2.pdf"));
