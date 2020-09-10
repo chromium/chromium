@@ -26,10 +26,10 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 #include "url/origin.h"
 
 #if defined(OS_CHROMEOS)
@@ -38,23 +38,6 @@
 #endif
 
 namespace {
-
-class VectorIconView : public views::ImageView {
- public:
-  explicit VectorIconView(const gfx::VectorIcon& icon) : icon_(icon) {}
-
-  // views::ImageView
-  void OnThemeChanged() override {
-    ImageView::OnThemeChanged();
-    constexpr int kPrimaryIconSize = 20;
-    const SkColor color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
-    SetImage(gfx::CreateVectorIcon(icon_, kPrimaryIconSize, color));
-  }
-
- private:
-  const gfx::VectorIcon& icon_;
-};
 
 class HeaderImageView : public NonAccessibleImageView {
  public:
@@ -283,6 +266,7 @@ void SharingDialogView::Init() {
 }
 
 void SharingDialogView::InitListView() {
+  constexpr int kPrimaryIconSize = 20;
   int tag = 0;
   const gfx::Insets device_border =
       gfx::Insets(kSharingDialogSpacing, kSharingDialogSpacing * 2,
@@ -297,10 +281,11 @@ void SharingDialogView::InitListView() {
   // Devices:
   LogSharingDevicesToShow(data_.prefix, kSharingUiDialog, data_.devices.size());
   for (const auto& device : data_.devices) {
-    auto icon = std::make_unique<VectorIconView>(
+    auto icon = std::make_unique<views::ColorTrackingIconView>(
         device->device_type() == sync_pb::SyncEnums::TYPE_TABLET
             ? kTabletIcon
-            : kHardwareSmartphoneIcon);
+            : kHardwareSmartphoneIcon,
+        kPrimaryIconSize);
 
     auto dialog_button = std::make_unique<HoverButton>(
         this, std::move(icon), base::UTF8ToUTF16(device->client_name()),
@@ -317,7 +302,8 @@ void SharingDialogView::InitListView() {
   for (const auto& app : data_.apps) {
     std::unique_ptr<views::ImageView> icon;
     if (app.vector_icon) {
-      icon = std::make_unique<VectorIconView>(*app.vector_icon);
+      icon = std::make_unique<views::ColorTrackingIconView>(*app.vector_icon,
+                                                            kPrimaryIconSize);
     } else {
       icon = std::make_unique<views::ImageView>();
       icon->SetImage(app.image.AsImageSkia());

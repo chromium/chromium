@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,11 +20,11 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -35,25 +34,6 @@
 namespace media_router {
 
 namespace {
-
-// A view that represents the primary icon for a sink issue. This class is used
-// to ensure its color is kept in sync with current theme.
-class SinkIssueIconView : public views::ImageView {
- public:
-  SinkIssueIconView() {
-    SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
-  }
-  ~SinkIssueIconView() override = default;
-
-  // views::ImageView:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
-    SetImage(gfx::CreateVectorIcon(::vector_icons::kInfoOutlineIcon,
-                                   kPrimaryIconSize, icon_color));
-  }
-};
 
 gfx::ImageSkia CreateSinkIcon(SinkIconType icon_type, bool enabled = true) {
   const gfx::VectorIcon* vector_icon;
@@ -112,7 +92,10 @@ std::unique_ptr<views::View> CreatePrimaryIconForSink(
     return CreatePrimaryIconView(gfx::CreateVectorIcon(
         kGenericStopIcon, kPrimaryIconSize, gfx::kGoogleBlue500));
   } else if (sink.issue) {
-    return std::make_unique<SinkIssueIconView>();
+    auto icon = std::make_unique<views::ColorTrackingIconView>(
+        ::vector_icons::kInfoOutlineIcon, kPrimaryIconSize);
+    icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
+    return icon;
   } else if (sink.state == UIMediaSinkState::CONNECTING ||
              sink.state == UIMediaSinkState::DISCONNECTING) {
     return CreateThrobber();

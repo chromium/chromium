@@ -36,6 +36,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -59,23 +60,6 @@ enum PasswordItemsViewColumnSetType {
   MULTI_STORE_PASSWORD_COLUMN_SET,
   // Contains two columns for text and an undo button.
   UNDO_COLUMN_SET
-};
-
-// And ImageView that holds a kGlobeIcon of gfx::kFaviconSize and adapts to
-// changes in theme color. Used as a fallback option when the page has no
-// favicon.
-class GlobeIconImageView : public views::ImageView {
- public:
-  GlobeIconImageView() = default;
-  ~GlobeIconImageView() override = default;
-
-  // views::View:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
-    SetImage(gfx::CreateVectorIcon(kGlobeIcon, gfx::kFaviconSize, icon_color));
-  }
 };
 
 PasswordItemsViewColumnSetType InferColumnSetTypeFromCredentials(
@@ -310,7 +294,8 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
 
   // Use a globe fallback until the actual favicon is loaded.
   if (parent_->favicon_.IsEmpty()) {
-    layout->AddView(std::make_unique<GlobeIconImageView>());
+    layout->AddView(std::make_unique<views::ColorTrackingIconView>(
+        kGlobeIcon, gfx::kFaviconSize));
   } else {
     auto favicon_view = std::make_unique<views::ImageView>();
     favicon_view->SetImage(parent_->favicon_.AsImageSkia());
