@@ -13,10 +13,6 @@
 namespace blink {
 namespace scheduler {
 
-const base::Feature kHighPriorityInputOnCompositorThread{
-    "BlinkSchedulerHighPriorityInputOnCompositorThread",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDedicatedWorkerThrottling{
     "BlinkSchedulerWorkerThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
