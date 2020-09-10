@@ -54,16 +54,20 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
   if (!input.current_url().is_valid())
     return;
 
-  const auto& current_query = input.current_url().spec();
-  const auto& current_title = input.current_title();
-
   AutocompleteInput verbatim_input = input;
   verbatim_input.set_prevent_inline_autocomplete(true);
   verbatim_input.set_allow_exact_keyword_match(false);
 
-  AutocompleteMatch match =
-      VerbatimMatchForURL(client_, verbatim_input, GURL(current_query),
-                          current_title, nullptr, kVerbatimMatchRelevanceScore);
+  AutocompleteMatch match = VerbatimMatchForURL(
+      client_, verbatim_input, input.current_url(), input.current_title(),
+      nullptr, kVerbatimMatchRelevanceScore);
+
+  // In the case of native pages, the classifier may replace the URL with an
+  // empty content, resulting with a verbatim match that does not point
+  // anywhere.
+  if (!match.destination_url.is_valid())
+    return;
+
   match.provider = this;
   matches_.push_back(match);
 }
