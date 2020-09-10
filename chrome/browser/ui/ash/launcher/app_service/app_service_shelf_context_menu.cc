@@ -517,7 +517,6 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       return false;
     }
     case apps::mojom::AppType::kPluginVm:
-      FALLTHROUGH;
     case apps::mojom::AppType::kBuiltIn: {
       bool show_in_launcher = false;
       apps::AppServiceProxy* proxy =
@@ -530,21 +529,18 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       return show_in_launcher;
     }
     case apps::mojom::AppType::kCrostini:
-      FALLTHROUGH;
     case apps::mojom::AppType::kExtension:
-      FALLTHROUGH;
     case apps::mojom::AppType::kLacros:
-      FALLTHROUGH;
     case apps::mojom::AppType::kWeb:
       return true;
     case apps::mojom::AppType::kUnknown:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kMacNative:
+      // Type kUnknown is used for "unregistered" Crostini apps, which do not
+      // have a .desktop file and can only be closed, not pinned.
       return false;
+    case apps::mojom::AppType::kMacNative:
+    case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
-      FALLTHROUGH;
-    default:
-      NOTREACHED() << "All AppType must decide if pin menu should be added.";
+      NOTREACHED() << "Type " << app_type_ << " should not appear in shelf.";
       return false;
   }
 }
