@@ -1269,6 +1269,35 @@
             ]
         }
     ],
+    "ClientSideDetectionModel": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithVisualModel",
+                    "params": {
+                        "ModelNum": "5"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionModel"
+                    ]
+                },
+                {
+                    "name": "EnabledDomOnly",
+                    "params": {
+                        "ModelNum": "4"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "CodeCacheDeletionWithoutFilter": [
         {
             "platforms": [
@@ -7150,27 +7179,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "VideoToolboxVp9Decoding"
-                    ]
-                }
-            ]
-        }
-    ],
-    "VisualClientSideDetectionModel": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ModelNum": "5"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModel"
                     ]
                 }
             ]
