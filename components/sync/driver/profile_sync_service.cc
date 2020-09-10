@@ -1966,6 +1966,18 @@ void ProfileSyncService::SetPassphrasePrompted(bool prompted) {
   sync_prefs_.SetPassphrasePrompted(prompted);
 }
 
+#if defined(OS_ANDROID)
+void ProfileSyncService::SetDecoupledFromAndroidMasterSync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_prefs_.SetDecoupledFromAndroidMasterSync();
+}
+
+bool ProfileSyncService::GetDecoupledFromAndroidMasterSync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_prefs_.GetDecoupledFromAndroidMasterSync();
+}
+#endif  // defined(OS_ANDROID)
+
 SyncEncryptionHandler::Observer*
 ProfileSyncService::GetEncryptionObserverForTest() {
   return &crypto_;

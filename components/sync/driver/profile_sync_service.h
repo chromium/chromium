@@ -19,6 +19,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
@@ -215,6 +216,16 @@ class ProfileSyncService : public SyncService,
 
   bool IsPassphrasePrompted() const;
   void SetPassphrasePrompted(bool prompted);
+
+#if defined(OS_ANDROID)
+  // Persists the fact that sync should no longer respect whether Android master
+  // sync is enabled. Only called on Android.
+  void SetDecoupledFromAndroidMasterSync();
+
+  // Gets the persisted information of whether sync should no longer respect
+  // if Android master sync is enabled. Only called on Android.
+  bool GetDecoupledFromAndroidMasterSync();
+#endif  // defined(OS_ANDROID)
 
   // Returns whether or not the underlying sync engine has made any
   // local changes to items that have not yet been synced with the

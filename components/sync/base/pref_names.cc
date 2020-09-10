@@ -45,7 +45,7 @@ const char kSyncAllOsTypes[] = "sync.all_os_types";
 // OS user selectable types.
 const char kSyncOsApps[] = "sync.os_apps";
 const char kSyncOsPreferences[] = "sync.os_preferences";
-#endif
+#endif  // defined(OS_CHROMEOS)
 
 // Booleans specifying whether the user has selected to sync the following
 // user selectable types.
@@ -133,6 +133,13 @@ const char kSyncDemographics_GenderPath[] = "gender";
 // and after clearing their other browser data.
 const char kSyncDemographicsBirthYearOffset[] =
     "sync.demographics_birth_year_offset";
+
+#if defined(OS_ANDROID)
+// Stores whether sync should no longer respect the state of master toggle for
+// this user.
+const char kSyncDecoupledFromAndroidMasterSync[] =
+    "sync.decoupled_from_master_sync";
+#endif  // defined(OS_ANDROID)
 
 }  // namespace prefs
 

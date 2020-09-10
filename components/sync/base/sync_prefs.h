@@ -169,6 +169,17 @@ class SyncPrefs : public CryptoSyncPrefs,
   bool IsPassphrasePrompted() const;
   void SetPassphrasePrompted(bool value);
 
+#if defined(OS_ANDROID)
+  // Sets a boolean pref representing that Sync should no longer respect whether
+  // Android master sync is enabled/disabled.
+  void SetDecoupledFromAndroidMasterSync();
+
+  // Gets the value for the boolean pref representing whether Sync should no
+  // longer respect if Android master sync is enabled/disabled. Returns false
+  // until |SetDecoupledFromAndroidMasterSync()| is called.
+  bool GetDecoupledFromAndroidMasterSync();
+#endif  // defined(OS_ANDROID)
+
   // For testing.
   void SetManagedForTest(bool is_managed);
 

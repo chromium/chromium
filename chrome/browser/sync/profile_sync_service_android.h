@@ -131,6 +131,12 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   jboolean RequiresClientUpgrade(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  void SetDecoupledFromAndroidMasterSync(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+  jboolean GetDecoupledFromAndroidMasterSync(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
 
   // Pure SyncPrefs calls.
   jboolean IsPassphrasePrompted(

@@ -392,6 +392,20 @@ jboolean ProfileSyncServiceAndroid::RequiresClientUpgrade(
   return sync_service_->RequiresClientUpgrade();
 }
 
+void ProfileSyncServiceAndroid::SetDecoupledFromAndroidMasterSync(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  sync_service_->SetDecoupledFromAndroidMasterSync();
+}
+
+jboolean ProfileSyncServiceAndroid::GetDecoupledFromAndroidMasterSync(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return sync_service_->GetDecoupledFromAndroidMasterSync();
+}
+
 jboolean ProfileSyncServiceAndroid::IsPassphrasePrompted(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {

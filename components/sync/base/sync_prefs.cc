@@ -288,6 +288,10 @@ void SyncPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kSyncLastRunVersion, std::string());
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
+#if defined(OS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kSyncDecoupledFromAndroidMasterSync,
+                                false);
+#endif  // defined(OS_ANDROID)
 
   // Demographic prefs.
   registry->RegisterDictionaryPref(
@@ -341,6 +345,9 @@ void SyncPrefs::ClearLocalSyncTransportData() {
   pref_service_->ClearPref(prefs::kSyncCacheGuid);
   pref_service_->ClearPref(prefs::kSyncBirthday);
   pref_service_->ClearPref(prefs::kSyncBagOfChips);
+#if defined(OS_ANDROID)
+  pref_service_->ClearPref(prefs::kSyncDecoupledFromAndroidMasterSync);
+#endif  // defined(OS_ANDROID)
 
   // No need to clear kManaged, kEnableLocalSyncBackend or kLocalSyncBackendDir,
   // since they're never actually set as user preferences.
@@ -665,6 +672,18 @@ bool SyncPrefs::IsPassphrasePrompted() const {
 void SyncPrefs::SetPassphrasePrompted(bool value) {
   pref_service_->SetBoolean(prefs::kSyncPassphrasePrompted, value);
 }
+
+#if defined(OS_ANDROID)
+void SyncPrefs::SetDecoupledFromAndroidMasterSync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(prefs::kSyncDecoupledFromAndroidMasterSync, true);
+}
+
+bool SyncPrefs::GetDecoupledFromAndroidMasterSync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(prefs::kSyncDecoupledFromAndroidMasterSync);
+}
+#endif  // defined(OS_ANDROID)
 
 void SyncPrefs::GetInvalidationVersions(
     std::map<ModelType, int64_t>* invalidation_versions) const {
