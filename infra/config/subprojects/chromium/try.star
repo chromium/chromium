@@ -1577,6 +1577,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-chrome",
+)
+
+chrome_internal_verifier(
     builder = "linux-chrome-beta",
     branch_selector = branches.STANDARD_RELEASES,
 )
