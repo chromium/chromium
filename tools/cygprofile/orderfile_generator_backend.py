@@ -428,10 +428,6 @@ class OrderfileUpdater(object):
     with open(abs_hash_filename, 'r') as f:
       return (rel_hash_filename, f.read())
 
-  def _CommitFiles(self, files_to_commit, commit_message_lines):
-    """Commits a list of files, with a given message."""
-    raise NotImplementedError
-
   def _GitStash(self):
     """Git stash the current clank tree.
 
@@ -455,19 +451,6 @@ class OrderfileUpdater(object):
     Raises:
       NotImplementedError when the commit logic hasn't been overridden.
     """
-    raise NotImplementedError
-
-
-class OrderfileNoopUpdater(OrderfileUpdater):
-  def CommitFileHashes(self, unpatched_orderfile_filename, orderfile_filename):
-    # pylint: disable=unused-argument
-    return
-
-  def UploadToCloudStorage(self, filename, use_debug_location):
-    # pylint: disable=unused-argument
-    return
-
-  def _CommitFiles(self, files_to_commit, commit_message_lines):
     raise NotImplementedError
 
 
@@ -594,10 +577,7 @@ class OrderfileGenerator(object):
     self._step_recorder = StepRecorder(options.buildbot)
     self._compiler = None
     if orderfile_updater_class is None:
-      if options.public:
-        orderfile_updater_class = OrderfileNoopUpdater
-      else:
-        orderfile_updater_class = OrderfileUpdater
+      orderfile_updater_class = OrderfileUpdater
     assert issubclass(orderfile_updater_class, OrderfileUpdater)
     self._orderfile_updater = orderfile_updater_class(self._clank_dir,
                                                       self._step_recorder)
@@ -1031,7 +1011,8 @@ class OrderfileGenerator(object):
       self._output_data['no_orderfile_benchmark_results'] = self.RunBenchmark(
           self._no_orderfile_out_dir, no_orderfile=True)
 
-    self._orderfile_updater._GitStash()
+    if self._options.buildbot:
+      self._orderfile_updater._GitStash()
     self._step_recorder.EndStep()
     return not self._step_recorder.ErrorRecorded()
 
@@ -1089,8 +1070,10 @@ def CreateArgumentParser():
       '--use-goma', action='store_true', help='Enable GOMA.', default=False)
   parser.add_argument('--adb-path', help='Path to the adb binary.')
 
-  parser.add_argument('--public', action='store_true',
-                      help='Required if your checkout is non-internal.',
+  parser.add_argument('--public',
+                      action='store_true',
+                      help='Build non-internal APK and change the orderfile '
+                      'location. Required if your checkout is non-internal.',
                       default=False)
   parser.add_argument('--nosystem-health-orderfile', action='store_false',
                       dest='system_health_orderfile', default=True,
@@ -1146,9 +1129,6 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   Args:
     options: As returned from optparse.OptionParser.parse_args()
     orderfile_updater_class: (OrderfileUpdater) subclass of OrderfileUpdater.
-                             Use to explicitly set an OrderfileUpdater class,
-                             the defaults are OrderfileUpdater, or
-                             OrderfileNoopUpdater if --public is set.
 
   Returns:
     True iff success.
