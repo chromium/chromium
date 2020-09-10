@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/persisted_data.h"
+
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/stl_util.h"
 #include "base/version.h"
-#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/registration_data.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
@@ -80,6 +82,38 @@ TEST(PersistedDataTest, SharedPref) {
   metadata = base::MakeRefCounted<PersistedData>(pref.get());
   EXPECT_STREQ("1.0",
                metadata->GetProductVersion("someappid").GetString().c_str());
+}
+
+TEST(PersistedDataTest, RemoveAppId) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(pref.get());
+
+  RegistrationRequest data;
+  data.app_id = "someappid";
+  data.brand_code = "somebrand";
+  data.tag = "arandom-tag=likethis";
+  data.version = base::Version("1.0");
+  data.existence_checker_path =
+      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
+
+  metadata->RegisterApp(data);
+
+  data.app_id = "someappid2";
+  data.brand_code = "somebrand";
+  data.tag = "arandom-tag=likethis";
+  data.version = base::Version("2.0");
+  data.existence_checker_path =
+      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
+
+  metadata->RegisterApp(data);
+  EXPECT_EQ(size_t{2}, metadata->GetAppIds().size());
+
+  metadata->RemoveApp("someappid");
+  EXPECT_EQ(size_t{1}, metadata->GetAppIds().size());
+
+  metadata->RemoveApp("someappid2");
+  EXPECT_TRUE(metadata->GetAppIds().empty());
 }
 
 }  // namespace updater

@@ -103,6 +103,17 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   SetTag(rq.app_id, rq.tag);
 }
 
+bool PersistedData::RemoveApp(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pref_service_)
+    return false;
+
+  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
+  base::Value* apps = update->FindDictKey("apps");
+
+  return apps ? apps->RemoveKey(id) : false;
+}
+
 std::vector<std::string> PersistedData::GetAppIds() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -65,6 +65,9 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
 
+  // This function removes a registered application from the persistent store.
+  bool RemoveApp(const std::string& id);
+
   // Returns the app ids of the applications registered in prefs, if the
   // application has a valid version.
   std::vector<std::string> GetAppIds() const;
@@ -83,7 +86,6 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   void SetString(const std::string& id,
                  const std::string& key,
                  const std::string& value);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   PrefService* pref_service_ = nullptr;  // Not owned by this class.
