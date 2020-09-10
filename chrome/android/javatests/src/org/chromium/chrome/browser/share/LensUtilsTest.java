@@ -67,6 +67,17 @@ public class LensUtilsTest {
     }
 
     /**
+     * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when disable incognito param is
+     * unset and user is incognito.
+     */
+    @Test
+    @SmallTest
+    public void isGoogleLensFeatureEnabled_incognitoParamUnsetIncognitoUser() {
+        Assert.assertFalse("Feature incorrectly enabled when incognito param is not set",
+                isGoogleLensFeatureEnabledOnUiThread(true));
+    }
+
+    /**
      * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when incognito users are enabled
      * and user is incognito.
      */
@@ -112,6 +123,22 @@ public class LensUtilsTest {
     isGoogleLensFeatureEnabled_incognitoDisabledStandardUser() {
         Assert.assertTrue("Feature incorrectly disabled when user was not incognito",
                 isGoogleLensFeatureEnabledOnUiThread(false));
+    }
+
+    /**
+     * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when disable incognito param is
+     * unset and user is incognito.
+     */
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
+                    + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:lensShopVariation/ShopSimilarProducts"})
+    @Test
+    @SmallTest
+    public void
+    isGoogleLensShoppingFeatureEnabled_incognitoParamUnsetIncognitoUser() {
+        Assert.assertFalse("Feature incorrectly enabled when incognito param is not set",
+                isGoogleLensShoppingFeatureEnabledOnUiThread(true));
     }
 
     /**

@@ -153,7 +153,6 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     public void testSearchWithGoogleLensFiresIntent() throws Throwable {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
@@ -176,8 +175,7 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
@@ -205,8 +203,7 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
@@ -235,8 +232,7 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
@@ -265,8 +261,7 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
@@ -608,7 +603,6 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     public void testContextMenuRetrievesImageOptionsLensEnabled() throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
 
@@ -627,8 +621,7 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
@@ -653,8 +646,7 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
@@ -679,8 +671,7 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
@@ -706,7 +697,6 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST
                     + "<FakeStudyName",
@@ -731,7 +721,6 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST,
-            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
             ChromeFeatureList.CONTEXT_MENU_SEARCH_AND_SHOP_WITH_GOOGLE_LENS})
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
                     + "<FakeStudyName",
@@ -779,7 +768,6 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     @Policies.Add({ @Policies.Item(key = "DefaultSearchProviderEnabled", string = "false") })
-    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     public void testContextMenuRetrievesImageOptions_NoDefaultSearchEngine()
             throws TimeoutException {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
@@ -798,7 +786,6 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     @Policies.Add({ @Policies.Item(key = "DefaultSearchProviderEnabled", string = "false") })
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     public void testContextMenuRetrievesImageOptions_NoDefaultSearchEngineLensEnabled()
             throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
@@ -840,7 +827,6 @@ public class ContextMenuTest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     public void testContextMenuRetrievesImageLinkOptionsSearchLensEnabled()
             throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);

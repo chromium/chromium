@@ -57,7 +57,7 @@ public class LensUtils {
     private static final String SEND_ALT_PARAM_NAME = "sendAlt";
     private static final String USE_DIRECT_INTENT_FEATURE_PARAM_NAME = "useDirectIntent";
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
-    private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "8.19";
+    private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_CHROME_SHOPPING_INTENT = "11.16";
     private static final String LENS_INTENT_TYPE_LENS_CHROME_SHOPPING = "18";
     private static final String LENS_SHOPPING_FEATURE_FLAG_VARIANT_NAME = "lensShopVariation";
@@ -320,7 +320,7 @@ public class LensUtils {
                 && !(isIncognito
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
-                                DISABLE_ON_INCOGNITO_PARAM_NAME, false));
+                                DISABLE_ON_INCOGNITO_PARAM_NAME, true));
     }
 
     public static boolean isGoogleLensShoppingFeatureEnabled(boolean isIncognito) {
@@ -329,7 +329,7 @@ public class LensUtils {
                 && !(isIncognito
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS,
-                                DISABLE_ON_INCOGNITO_PARAM_NAME, false));
+                                DISABLE_ON_INCOGNITO_PARAM_NAME, true));
     }
 
     /**

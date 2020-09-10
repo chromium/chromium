@@ -400,7 +400,7 @@ const base::Feature kContextMenuGoogleLensChip{
     "ContextMenuGoogleLensChip", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextMenuSearchWithGoogleLens{
-    "ContextMenuSearchWithGoogleLens", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ContextMenuSearchWithGoogleLens", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kContextMenuShopWithGoogleLens{
     "ContextMenuShopWithGoogleLens", base::FEATURE_DISABLED_BY_DEFAULT};
