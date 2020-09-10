@@ -2,8 +2,3 @@
 -MessageLoopPerfTest.PostTaskRate/1_Posting_Thread
 # crbug.com/848499
 -WaitableEventPerfTest.Throughput
-
-# Can cause hangs on SSH connection to test box
-# https://fuchsia.atlassian.net/browse/NET-1010
--TaskObserverPerfTest.TaskPingPong
--JSONPerfTest.StressTest
