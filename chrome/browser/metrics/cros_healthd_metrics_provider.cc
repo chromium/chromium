@@ -153,7 +153,7 @@ void CrosHealthdMetricsProvider::OnProbeDone(
     }
 
     dev.set_model(storage->name);
-    dev.set_size_mb(storage->size / 1000);
+    dev.set_size_mb(storage->size / 1e6);
 
     devices_.push_back(dev);
   }
