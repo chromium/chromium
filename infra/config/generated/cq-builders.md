@@ -367,5 +367,5 @@ as required builders.
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
 * [mac-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/mac-coverage-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac-coverage-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac-coverage-rel))
-  * Experiment percentage: 7
+  * Experiment percentage: 10
 
