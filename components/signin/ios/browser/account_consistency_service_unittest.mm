@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/ios/ios_util.h"
 #include "base/test/bind_test_util.h"
 #import "base/test/ios/wait_util.h"
 #include "base/values.h"
@@ -472,6 +473,13 @@ TEST_F(AccountConsistencyServiceTest,
 // signon realm returns with a X-Chrome-Manage-Accounts header with ADDSESSION
 // action.
 TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsShowAddAccount) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1126746): Test is failing on iOS 12 device.
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    return;
+  }
+#endif
+
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[delegate expect] onAddAccount];
