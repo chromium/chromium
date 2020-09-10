@@ -10,10 +10,76 @@
 
 namespace {
 
+// We would usually make g_root a static local variable, as these are guaranteed
+// to be thread-safe in C++11. However this does not work on Windows, as the
+// initialization calls into the runtime, which is not prepared to handle it.
+//
+// To sidestep that, we implement our own equivalent to a local `static
+// base::NoDestructor<base::ThreadSafePartitionRoot> root`.
+//
+// The ingredients are:
+// - Placement new to avoid a static constructor, and a static destructor.
+// - Double-checked locking to get the same guarantees as a static local
+//   variable.
+
+// Lock for double-checked locking.
+std::atomic<bool> g_initialization_lock;
+std::atomic<base::ThreadSafePartitionRoot*> g_root_;
+// Buffer for placement new.
+uint8_t g_allocator_buffer[sizeof(base::ThreadSafePartitionRoot)];
+
 base::ThreadSafePartitionRoot& Allocator() {
-  static base::NoDestructor<base::ThreadSafePartitionRoot> allocator{
-      false /* enforce_alignment */};
-  return *allocator;
+  // Double-checked locking.
+  //
+  // The proper way to proceed is:
+  //
+  // auto* root = load_acquire(g_root);
+  // if (!root) {
+  //   ScopedLock initialization_lock;
+  //   root = load_relaxed(g_root);
+  //   if (root)
+  //     return root;
+  //   new_root = Create new root.
+  //   release_store(g_root, new_root);
+  // }
+  //
+  // We don't want to use a base::Lock here, so instead we use the
+  // compare-and-exchange on a lock variable, but this provides the same
+  // guarantees as a regular lock. The code could be made simpler as we have
+  // stricter requirements, but we stick to something close to a regular lock
+  // for ease of reading, as none of this is performance-critical anyway.
+  //
+  // If we boldly assume that initialization will always be single-threaded,
+  // then we could remove all these atomic operations, but this seems a bit too
+  // bold to try yet. Might be worth revisiting though, since this would remove
+  // a memory barrier at each load. We could probably guarantee single-threaded
+  // init by adding a static constructor which allocates (and hence triggers
+  // initialization before any other thread is created).
+  auto* root = g_root_.load(std::memory_order_acquire);
+  if (LIKELY(root))
+    return *root;
+
+  bool expected = false;
+  // Semantically equivalent to base::Lock::Acquire().
+  while (!g_initialization_lock.compare_exchange_strong(
+      expected, true, std::memory_order_acquire, std::memory_order_acquire)) {
+  }
+
+  root = g_root_.load(std::memory_order_relaxed);
+  // Someone beat us.
+  if (root) {
+    // Semantically equivalent to base::Lock::Release().
+    g_initialization_lock.store(false, std::memory_order_release);
+    return *root;
+  }
+
+  auto* new_root = new (g_allocator_buffer)
+      base::ThreadSafePartitionRoot(false /* enforce_alignment */);
+  g_root_.store(new_root, std::memory_order_release);
+
+  // Semantically equivalent to base::Lock::Release().
+  g_initialization_lock.store(false, std::memory_order_release);
+  return *new_root;
 }
 
 using base::allocator::AllocatorDispatch;
