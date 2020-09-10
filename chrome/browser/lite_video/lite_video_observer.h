@@ -44,7 +44,6 @@ class LiteVideoObserver
   // Determines the LiteVideoDecision based on |hint| and the coinflip
   // holdback state.
   lite_video::LiteVideoDecision MakeLiteVideoDecision(
-      content::NavigationHandle* navigation_handle,
       base::Optional<lite_video::LiteVideoHint> hint) const;
 
   // Records the metrics for LiteVideos applied to any frames associated with
@@ -55,6 +54,13 @@ class LiteVideoObserver
   // the mainframe. Should only be called once per new mainframe navigation.
   void MaybeUpdateCoinflipExperimentState(
       content::NavigationHandle* navigation_handle);
+
+  // Callback run after a hint and blocklist reason is available for use
+  // within the agent associated with |render_frame_host_routing_id|.
+  void OnHintAvailable(
+      content::GlobalFrameRoutingId render_frame_host_routing_id,
+      base::Optional<lite_video::LiteVideoHint> hint,
+      lite_video::LiteVideoBlocklistReason blocklist_reason);
 
   // The decider capable of making decisions about whether LiteVideos should be
   // applied and the params to use when throttling media requests.
@@ -69,6 +75,9 @@ class LiteVideoObserver
   // |is_coinflip_holdback_| is updated each time a mainframe navigation
   // commits.
   bool is_coinflip_holdback_ = false;
+
+  // Used to get a weak pointer to |this|.
+  base::WeakPtrFactory<LiteVideoObserver> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

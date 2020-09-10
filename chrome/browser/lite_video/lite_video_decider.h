@@ -22,6 +22,10 @@ class OptOutStore;
 
 namespace lite_video {
 
+using LiteVideoHintCallback =
+    base::OnceCallback<void(base::Optional<LiteVideoHint> hint,
+                            LiteVideoBlocklistReason blocklist_reason)>;
+
 // The LiteVideoDecider makes the decision on whether LiteVideos should be
 // applied to a navigation and provides the parameters to use when
 // throttling media requests.
@@ -34,14 +38,13 @@ class LiteVideoDecider
                    base::Clock* clock);
   ~LiteVideoDecider() override;
 
-  // Determine if the navigation can have the LiteVideo optimization
-  // applied and returns the LiteVideoHint to use for throttling if one exists.
-  // This also updates the blocklist based on the navigation provided and should
-  // be limited to one call per navigation. |blocklist_reason| will be
-  // populated, if applicable.
-  base::Optional<LiteVideoHint> CanApplyLiteVideo(
-      content::NavigationHandle* navigation_handle,
-      LiteVideoBlocklistReason* blocklist_reason);
+  // Determine if the navigation can have the LiteVideo optimization applied. It
+  // invokes |callback| with the blocklist result and a LiteVideoHint if
+  // available for the |navigation_handle|. This also updates the blocklist
+  // based on the navigation provided and should be limited to one call per
+  // navigation.
+  void CanApplyLiteVideo(content::NavigationHandle* navigation_handle,
+                         LiteVideoHintCallback callback);
 
   // Override the blocklist used by |this| for testing.
   void SetUserBlocklistForTesting(

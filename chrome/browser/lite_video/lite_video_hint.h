@@ -34,10 +34,10 @@ class LiteVideoHint {
   base::TimeDelta max_throttling_delay() const { return max_throttling_delay_; }
 
  private:
-  const int target_downlink_bandwidth_kbps_;
-  const base::TimeDelta target_downlink_rtt_latency_;
-  const int kilobytes_to_buffer_before_throttle_;
-  const base::TimeDelta max_throttling_delay_;
+  int target_downlink_bandwidth_kbps_;
+  base::TimeDelta target_downlink_rtt_latency_;
+  int kilobytes_to_buffer_before_throttle_;
+  base::TimeDelta max_throttling_delay_;
 };
 
 }  // namespace lite_video

@@ -58,6 +58,13 @@ class LiteVideoNavigationMetrics {
   // Update the throttling result of the current navigation.
   void SetThrottleResult(LiteVideoThrottleResult throttle_result);
 
+  // Update the decision to made on applying LiteVideos to the current
+  // navigation.
+  void SetDecision(LiteVideoDecision decision);
+
+  // Update the blocklist reason for the current navigation.
+  void SetBlocklistReason(LiteVideoBlocklistReason blocklist_reason);
+
  private:
   int64_t nav_id_;
   LiteVideoDecision decision_;

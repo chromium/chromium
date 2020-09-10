@@ -23,4 +23,12 @@ void LiteVideoNavigationMetrics::SetThrottleResult(
   throttle_result_ = throttle_result;
 }
 
+void LiteVideoNavigationMetrics::SetDecision(LiteVideoDecision decision) {
+  decision_ = decision;
+}
+void LiteVideoNavigationMetrics::SetBlocklistReason(
+    LiteVideoBlocklistReason blocklist_reason) {
+  blocklist_reason_ = blocklist_reason;
+}
+
 }  // namespace lite_video

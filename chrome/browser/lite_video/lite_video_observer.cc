@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lite_video/lite_video_observer.h"
 
+#include "base/bind.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/lite_video/lite_video_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -80,29 +83,53 @@ void LiteVideoObserver::DidFinishNavigation(
 
   lite_video::LiteVideoBlocklistReason blocklist_reason =
       lite_video::LiteVideoBlocklistReason::kUnknown;
-  base::Optional<lite_video::LiteVideoHint> hint =
-      lite_video_decider_->CanApplyLiteVideo(navigation_handle,
-                                             &blocklist_reason);
-
-  MaybeUpdateCoinflipExperimentState(navigation_handle);
-
-  lite_video::LiteVideoDecision decision =
-      MakeLiteVideoDecision(navigation_handle, hint);
 
   if (navigation_handle->IsInMainFrame()) {
     FlushUKMMetrics();
     nav_metrics_ = lite_video::LiteVideoNavigationMetrics(
-        navigation_handle->GetNavigationId(), decision, blocklist_reason,
+        navigation_handle->GetNavigationId(),
+        lite_video::LiteVideoDecision::kUnknown, blocklist_reason,
         lite_video::LiteVideoThrottleResult::kThrottledWithoutStop);
   }
 
-  LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.Navigation.HasHint", hint ? true : false);
+  MaybeUpdateCoinflipExperimentState(navigation_handle);
+  auto* render_frame_host = navigation_handle->GetRenderFrameHost();
+  if (!render_frame_host)
+    return;
+  lite_video_decider_->CanApplyLiteVideo(
+      navigation_handle,
+      base::BindOnce(&LiteVideoObserver::OnHintAvailable,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     content::GlobalFrameRoutingId(
+                         render_frame_host->GetProcess()->GetID(),
+                         render_frame_host->GetRoutingID())));
+}
 
-  if (decision == lite_video::LiteVideoDecision::kNotAllowed)
+void LiteVideoObserver::OnHintAvailable(
+    content::GlobalFrameRoutingId render_frame_host_routing_id,
+    base::Optional<lite_video::LiteVideoHint> hint,
+    lite_video::LiteVideoBlocklistReason blocklist_reason) {
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_routing_id);
+  if (!render_frame_host)
     return;
 
-  content::RenderFrameHost* render_frame_host =
-      navigation_handle->GetRenderFrameHost();
+  lite_video::LiteVideoDecision decision = MakeLiteVideoDecision(hint);
+
+  LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.Navigation.HasHint", hint ? true : false);
+
+  if (nav_metrics_ && render_frame_host->GetMainFrame()) {
+    nav_metrics_->SetDecision(decision);
+    nav_metrics_->SetBlocklistReason(blocklist_reason);
+  }
+
+  // Only proceed to passing hints if the decision is allowed.
+  if (decision != lite_video::LiteVideoDecision::kAllowed)
+    return;
+
+  if (!hint)
+    return;
+
   if (!render_frame_host || !render_frame_host->GetProcess())
     return;
 
@@ -125,7 +152,6 @@ void LiteVideoObserver::DidFinishNavigation(
 }
 
 lite_video::LiteVideoDecision LiteVideoObserver::MakeLiteVideoDecision(
-    content::NavigationHandle* navigation_handle,
     base::Optional<lite_video::LiteVideoHint> hint) const {
   if (hint) {
     return is_coinflip_holdback_ ? lite_video::LiteVideoDecision::kHoldback
