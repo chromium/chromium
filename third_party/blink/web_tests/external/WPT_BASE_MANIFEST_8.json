@@ -205412,7 +205412,7 @@
      []
     ],
     "generic-sensor-tests.js": [
-     "129ccd48543d6dfbc3f1e339443d44a3d864ce7b",
+     "26ff691959917b7b4921900f0603dcc23867c0ca",
      []
     ],
     "resources": {
@@ -229803,7 +229803,7 @@
     ],
     "resources": {
      "shapedetection-helpers.js": [
-      "bdb0e857d788ab0b2778cc9946386ead3d224b2c",
+      "05424de893dc9ac59d7f40c436bb73c9523da52f",
       []
      ]
     }
@@ -338664,7 +338664,7 @@
       ]
      ],
      "none.https.html": [
-      "0fbd4165a5f19f19a4e6cca3ee43bba88f0336b5",
+      "24b1fce1764d74a01c4eeb21c3d9e05de1bb12ba",
       [
        null,
        {
@@ -346749,6 +346749,13 @@
         ]
        ],
        "sizes": {
+        "implicit-sizes-ignores-width.html": [
+         "db61db351eacb5f38ce6767a55a61e588f5580e5",
+         [
+          null,
+          {}
+         ]
+        ],
         "parse-a-sizes-attribute-display-none.html": [
          "6aa77ebf85b9de2757e80abb32c32fd2c8021958",
          [
@@ -386322,7 +386329,7 @@
      ]
     ],
     "detection-on-worker.https.worker.js": [
-     "94b8e37d7272ea8f882d856d49fb9be334f1ffe5",
+     "3981c6fdc8e12839d3aa30206fa16d8af1faf513",
      [
       "shape-detection/detection-on-worker.https.worker.html",
       {}
