@@ -108,7 +108,6 @@ _idl_imports = [
   "//third_party/blink/renderer/modules/presentation/idls.gni",
   "//third_party/blink/renderer/modules/push_messaging/idls.gni",
   "//third_party/blink/renderer/modules/quota/idls.gni",
-  "//third_party/blink/renderer/modules/direct_sockets/idls.gni",
   "//third_party/blink/renderer/modules/remoteplayback/idls.gni",
   "//third_party/blink/renderer/modules/sanitizer_api/idls.gni",
   "//third_party/blink/renderer/modules/scheduler/idls.gni",
@@ -140,7 +139,10 @@ _idl_imports = [
 # TODO(dcheng): For whatever reason, is_android doesn't seem to be defined, even
 # if using import() instead of read_file() in the foreach() loop below...
 if (!is_android) {
-  _idl_imports += [ "//third_party/blink/renderer/modules/serial/idls.gni" ]
+  _idl_imports += [
+    "//third_party/blink/renderer/modules/direct_sockets/idls.gni",
+    "//third_party/blink/renderer/modules/serial/idls.gni",
+  ]
 }
 
 # Do not add IDL files directly to these lists. See _idl_imports above instead

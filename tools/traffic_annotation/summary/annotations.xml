@@ -84,6 +84,7 @@ Refer to README.md for content description and update process.
  <item id="dial_get_app_info" hash_code="15952025" type="0" deprecated="2018-02-27" content_hash_code="90542080" file_path=""/>
  <item id="dial_get_device_description" hash_code="50422598" type="0" deprecated="2018-02-27" content_hash_code="129827780" file_path=""/>
  <item id="dial_url_fetcher" hash_code="41424546" type="0" content_hash_code="129828432" os_list="linux,windows" file_path="chrome/browser/media/router/discovery/dial/dial_url_fetcher.cc"/>
+ <item id="direct_sockets" hash_code="32472991" type="0" content_hash_code="22754768" os_list="linux,windows" file_path="third_party/blink/renderer/modules/direct_sockets/navigator_socket.cc"/>
  <item id="dns_over_https" hash_code="79895226" type="0" content_hash_code="45123510" os_list="linux,windows" file_path="net/dns/dns_transaction.cc"/>
  <item id="dns_transaction" hash_code="79227717" type="0" content_hash_code="132206495" os_list="linux,windows" file_path="net/dns/dns_transaction.cc"/>
  <item id="dom_distiller" hash_code="3989826" type="0" content_hash_code="106153970" os_list="linux,windows" file_path="components/dom_distiller/core/distiller_url_fetcher.cc"/>

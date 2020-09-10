@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
@@ -28,8 +29,8 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService,
       public WebContentsObserver {
  public:
-  using PermissionCallback = base::RepeatingCallback<net::Error(
-      const blink::mojom::DirectSocketOptions&)>;
+  using PermissionCallback = base::RepeatingCallback<
+      net::Error(const blink::mojom::DirectSocketOptions&, net::IPAddress&)>;
 
   explicit DirectSocketsServiceImpl(RenderFrameHost& frame_host);
   ~DirectSocketsServiceImpl() override = default;
@@ -42,10 +43,17 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
 
   // blink::mojom::DirectSocketsService override:
-  void OpenTcpSocket(blink::mojom::DirectSocketOptionsPtr options,
-                     OpenTcpSocketCallback callback) override;
-  void OpenUdpSocket(blink::mojom::DirectSocketOptionsPtr options,
-                     OpenUdpSocketCallback callback) override;
+  void OpenTcpSocket(
+      blink::mojom::DirectSocketOptionsPtr options,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
+      OpenTcpSocketCallback callback) override;
+  void OpenUdpSocket(
+      blink::mojom::DirectSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+      OpenUdpSocketCallback callback) override;
 
   // WebContentsObserver override:
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
@@ -53,10 +61,15 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   static void SetPermissionCallbackForTesting(PermissionCallback callback);
 
+  static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
+
  private:
   friend class DirectSocketsUnitTest;
 
-  net::Error EnsurePermission(const blink::mojom::DirectSocketOptions& options);
+  // Returns net::OK and populates |remote_address| if the options are valid and
+  // the connection is permitted.
+  net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options,
+                             net::IPAddress& remote_address);
 
   network::mojom::NetworkContext* GetNetworkContext();
 

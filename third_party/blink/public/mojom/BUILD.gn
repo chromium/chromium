@@ -45,7 +45,6 @@ mojom("mojom_platform") {
     "devtools/devtools_agent.mojom",
     "devtools/devtools_frontend.mojom",
     "devtools/inspector_issue.mojom",
-    "direct_sockets/direct_sockets.mojom",
     "disk_allocator.mojom",
     "favicon/favicon_url.mojom",
     "feature_observer/feature_observer.mojom",
@@ -242,7 +241,10 @@ mojom("mojom_platform") {
       "//ui/latency/mojom",
     ]
   } else {
-    sources += [ "serial/serial.mojom" ]
+    sources += [
+      "direct_sockets/direct_sockets.mojom",
+      "serial/serial.mojom",
+    ]
   }
 
   if (is_mac) {

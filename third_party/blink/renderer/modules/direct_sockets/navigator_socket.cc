@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/modules/direct_sockets/navigator_socket.h"
 
 #include "base/macros.h"
+#include "base/optional.h"
+#include "services/network/public/mojom/tcp_socket.mojom-blink.h"
+#include "services/network/public/mojom/udp_socket.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -18,84 +21,26 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-class NavigatorSocket::PendingRequest final
-    : public GarbageCollected<PendingRequest> {
- public:
-  PendingRequest(NavigatorSocket&, ScriptPromiseResolver&);
-
-  // TODO(crbug.com/905818): Resolve Promise<TCPSocket>
-  void TcpCallback(int32_t result);
-
-  // TODO(crbug.com/1119620): Resolve Promise<UDPSocket>
-  void UdpCallback(int32_t result);
-
-  void OnConnectionError();
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(navigator_);
-    visitor->Trace(resolver_);
-  }
-
- private:
-  WeakMember<NavigatorSocket> navigator_;
-  Member<ScriptPromiseResolver> resolver_;
-  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
-};
-
-NavigatorSocket::PendingRequest::PendingRequest(
-    NavigatorSocket& navigator_socket,
-    ScriptPromiseResolver& resolver)
-    : navigator_(&navigator_socket),
-      resolver_(&resolver),
-      feature_handle_for_scheduler_(
-          ExecutionContext::From(resolver_->GetScriptState())
-              ->GetScheduler()
-              ->RegisterFeature(
-                  SchedulingPolicy::Feature::
-                      kOutstandingNetworkRequestDirectSocket,
-                  {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
-
-void NavigatorSocket::PendingRequest::TcpCallback(int32_t result) {
-  if (navigator_)
-    navigator_->pending_requests_.erase(this);
-
-  // TODO(crbug.com/905818): Compare with net::OK
-  if (result == 0) {
-    // TODO(crbug.com/905818): Resolve TCPSocket
-    NOTIMPLEMENTED();
-    resolver_->Resolve();
-  } else {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "Permission denied"));
-  }
-}
-
-void NavigatorSocket::PendingRequest::UdpCallback(int32_t result) {
-  if (navigator_)
-    navigator_->pending_requests_.erase(this);
-
-  // TODO(crbug.com/1119620): Compare with net::OK
-  if (result == 0) {
-    // TODO(crbug.com/1119620): Resolve UDPSocket
-    NOTIMPLEMENTED();
-    resolver_->Resolve();
-  } else {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "Permission denied"));
-  }
-}
-
-void NavigatorSocket::PendingRequest::OnConnectionError() {
-  resolver_->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError,
-      "Internal error: could not connect to DirectSocketsService interface."));
-}
+constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("direct_sockets", R"(
+        semantics {
+          sender: "Direct Sockets API"
+          description: "Web app request to communicate with network device"
+          trigger: "User consents to network connection and enters destination address"
+          data: "Any data sent by web app"
+          destination: OTHER
+          destination_other: "Address entered by user in consent dialog"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot yet be controlled by settings."
+          policy_exception_justification: "To be implemented"
+        }
+      )");
 
 const char NavigatorSocket::kSupplementName[] = "NavigatorSocket";
 
@@ -143,7 +88,8 @@ void NavigatorSocket::ContextLifecycleStateChanged(
 
 void NavigatorSocket::Trace(Visitor* visitor) const {
   visitor->Trace(service_remote_);
-  visitor->Trace(pending_requests_);
+  visitor->Trace(pending_tcp_);
+  visitor->Trace(pending_udp_);
   Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
@@ -181,8 +127,6 @@ mojom::blink::DirectSocketOptionsPtr NavigatorSocket::CreateSocketOptions(
   if (options.hasReceiveBufferSize())
     socket_options->receive_buffer_size = options.receiveBufferSize();
 
-  if (options.hasKeepAlive())
-    socket_options->keep_alive = options.keepAlive();
   if (options.hasNoDelay())
     socket_options->no_delay = options.noDelay();
 
@@ -196,14 +140,16 @@ ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
     return ScriptPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  PendingRequest* pending =
-      MakeGarbageCollected<PendingRequest>(*this, *resolver);
-  pending_requests_.insert(pending);
+  TCPSocket* pending = MakeGarbageCollected<TCPSocket>(*resolver);
+  pending_tcp_.insert(pending);
   ScriptPromise promise = resolver->Promise();
 
   service_remote_->OpenTcpSocket(
       CreateSocketOptions(*options),
-      WTF::Bind(&PendingRequest::TcpCallback, WrapPersistent(pending)));
+      net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
+      pending->GetTCPSocketReceiver(), pending->GetTCPSocketObserver(),
+      WTF::Bind(&NavigatorSocket::OnTcpOpen, WrapPersistent(this),
+                WrapPersistent(pending)));
   return promise;
 }
 
@@ -214,14 +160,15 @@ ScriptPromise NavigatorSocket::openUDPSocket(ScriptState* script_state,
     return ScriptPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  PendingRequest* pending =
-      MakeGarbageCollected<PendingRequest>(*this, *resolver);
-  pending_requests_.insert(pending);
+  UDPSocket* pending = MakeGarbageCollected<UDPSocket>(*resolver);
+  pending_udp_.insert(pending);
   ScriptPromise promise = resolver->Promise();
 
   service_remote_->OpenUdpSocket(
-      CreateSocketOptions(*options),
-      WTF::Bind(&PendingRequest::UdpCallback, WrapPersistent(pending)));
+      CreateSocketOptions(*options), pending->GetUDPSocketReceiver(),
+      pending->GetUDPSocketListener(),
+      WTF::Bind(&NavigatorSocket::OnUdpOpen, WrapPersistent(this),
+                WrapPersistent(pending)));
   return promise;
 }
 
@@ -256,11 +203,39 @@ bool NavigatorSocket::OpenSocketPermitted(ScriptState* script_state,
   return true;
 }
 
+void NavigatorSocket::OnTcpOpen(
+    TCPSocket* socket,
+    int32_t result,
+    const base::Optional<net::IPEndPoint>& local_addr,
+    const base::Optional<net::IPEndPoint>& peer_addr,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
+  pending_tcp_.erase(socket);
+  socket->Init(result, local_addr, peer_addr, std::move(receive_stream),
+               std::move(send_stream));
+}
+
+void NavigatorSocket::OnUdpOpen(
+    UDPSocket* socket,
+    int32_t result,
+    const base::Optional<net::IPEndPoint>& local_addr,
+    const base::Optional<net::IPEndPoint>& peer_addr) {
+  pending_udp_.erase(socket);
+  socket->Init(result, local_addr, peer_addr);
+}
+
 void NavigatorSocket::OnConnectionError() {
-  for (auto& pending : pending_requests_) {
-    pending->OnConnectionError();
+  for (auto& pending : pending_tcp_) {
+    pending->Init(net::Error::ERR_CONTEXT_SHUT_DOWN, base::nullopt,
+                  base::nullopt, mojo::ScopedDataPipeConsumerHandle(),
+                  mojo::ScopedDataPipeProducerHandle());
   }
-  pending_requests_.clear();
+  for (auto& pending : pending_udp_) {
+    pending->Init(net::Error::ERR_CONTEXT_SHUT_DOWN, base::nullopt,
+                  base::nullopt);
+  }
+  pending_tcp_.clear();
+  pending_udp_.clear();
   service_remote_.reset();
 }
 
