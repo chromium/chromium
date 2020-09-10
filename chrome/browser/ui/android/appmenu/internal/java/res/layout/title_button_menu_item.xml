@@ -30,6 +30,7 @@
         android:paddingStart="16dp"
         android:drawablePadding="12dp"
         app:chromeDrawableTint="@color/default_icon_color_secondary"
+        android:tintMode="src_in"
         app:drawableWidth="24dp"
         app:drawableHeight="24dp" />
 
