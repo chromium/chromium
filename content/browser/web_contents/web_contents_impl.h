@@ -959,12 +959,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       int proxy_routing_id) override;
   void CreateRenderWidgetHostViewForRenderManager(
       RenderViewHost* render_view_host) override;
-  bool CreateRenderFrameForRenderManager(
-      RenderFrameHost* render_frame_host,
-      int previous_routing_id,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
-      int parent_routing_id,
-      int previous_sibling_routing_id) override;
   void BeforeUnloadFiredFromRenderManager(
       bool proceed,
       const base::TimeTicks& proceed_time,

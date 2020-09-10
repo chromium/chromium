@@ -7970,35 +7970,6 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   return true;
 }
 
-bool WebContentsImpl::CreateRenderFrameForRenderManager(
-    RenderFrameHost* render_frame_host,
-    int previous_routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
-    int parent_routing_id,
-    int previous_sibling_routing_id) {
-  TRACE_EVENT2(
-      "browser,navigation",
-      "WebContentsImpl::CreateRenderFrameForRenderManager", "render_frame_host",
-      base::trace_event::ToTracedValue(render_frame_host), "params",
-      base::trace_event::TracedValue::Build(
-          {{"previous_routing_id", previous_routing_id},
-           {"parent_routing_id", parent_routing_id},
-           {"previous_sibling_routing_id", previous_sibling_routing_id}}));
-
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(render_frame_host);
-  if (!rfh->CreateRenderFrame(previous_routing_id, opener_frame_token,
-                              parent_routing_id, previous_sibling_routing_id)) {
-    return false;
-  }
-
-  // TODO(nasko): When RenderWidgetHost is owned by RenderFrameHost, the passed
-  // RenderFrameHost will have to be associated with the appropriate
-  // RenderWidgetHostView or a new one should be created here.
-
-  return true;
-}
-
 #if defined(OS_ANDROID)
 
 base::android::ScopedJavaLocalRef<jobject>

@@ -2586,9 +2586,9 @@ bool RenderFrameHostManager::InitRenderFrame(
   int previous_routing_id =
       GetReplacementRoutingId(existing_proxy, render_frame_host);
 
-  return delegate_->CreateRenderFrameForRenderManager(
-      render_frame_host, previous_routing_id, opener_frame_token,
-      parent_routing_id, previous_sibling_routing_id);
+  return render_frame_host->CreateRenderFrame(
+      previous_routing_id, opener_frame_token, parent_routing_id,
+      previous_sibling_routing_id);
 }
 
 int RenderFrameHostManager::GetReplacementRoutingId(
