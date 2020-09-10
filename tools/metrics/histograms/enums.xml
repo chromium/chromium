@@ -16336,12 +16336,32 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="8" label="More than 50"/>
 </enum>
 
+<enum name="DevToolsIssuesPanelIssueExpanded">
+  <int value="0" label="CrossOriginEmbedderPolicy"/>
+  <int value="1" label="MixedContent"/>
+  <int value="2" label="SameSiteCookie"/>
+  <int value="3" label="HeavyAd"/>
+  <int value="4" label="ContentSecurityPolicy"/>
+  <int value="5" label="Other"/>
+</enum>
+
 <enum name="DevToolsIssuesPanelOpenedFrom">
   <int value="0" label="Console Info Bar"/>
   <int value="1" label="Learn More Link COEP"/>
   <int value="2" label="Status Bar Issues Counter"/>
   <int value="3" label="Hamburger Menu"/>
   <int value="4" label="Adorner"/>
+</enum>
+
+<enum name="DevToolsIssuesPanelResourceOpened">
+  <int value="0" label="CrossOriginEmbedderPolicy Cookie opened"/>
+  <int value="1" label="CrossOriginEmbedderPolicy Element opened"/>
+  <int value="2" label="MixedContent Request opened"/>
+  <int value="3" label="SameSiteCookie Cookie opened"/>
+  <int value="4" label="SameSiteCookie Request opened"/>
+  <int value="5" label="HeavyAd Element opened"/>
+  <int value="6" label="ContentSecurityPolicy Directive opened"/>
+  <int value="7" label="ContentSecurityPolicy Element opened"/>
 </enum>
 
 <enum name="DevToolsKeybindSets">

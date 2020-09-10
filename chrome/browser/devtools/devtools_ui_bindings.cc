@@ -130,6 +130,10 @@ static const char kDevToolsColorPickerFixedColorHistogram[] =
     "DevTools.ColorPicker.FixedColor";
 static const char kDevToolsComputedStyleGroupingHistogram[] =
     "DevTools.ComputedStyleGrouping";
+static const char kDevtoolsIssuesPanelIssueExpandedHistogram[] =
+    "DevTools.IssuesPanelIssueExpanded";
+static const char kDevtoolsIssuesPanelResourceOpenedHistogram[] =
+    "DevTools.IssuesPanelResourceOpened";
 
 static const char kRemotePageActionInspect[] = "inspect";
 static const char kRemotePageActionReload[] = "reload";
@@ -1307,6 +1311,10 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
   else if (name == kDevToolsColorPickerFixedColorHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else if (name == kDevToolsComputedStyleGroupingHistogram)
+    base::UmaHistogramExactLinear(name, sample, boundary_value);
+  else if (name == kDevtoolsIssuesPanelIssueExpandedHistogram)
+    base::UmaHistogramExactLinear(name, sample, boundary_value);
+  else if (name == kDevtoolsIssuesPanelResourceOpenedHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else
     frontend_host_->BadMessageRecieved();
