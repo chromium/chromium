@@ -151,6 +151,11 @@ void UpdateScreenHandler::DeclareLocalizedValues(
   builder->Add("batteryWarningTitle", IDS_UPDATE_BATTERY_WARNING_TITLE);
   builder->Add("batteryWarningText", IDS_UPDATE_BATTERY_WARNING_TEXT);
 
+  builder->Add("slideLabel", IDS_UPDATE_SLIDE_LABEL);
+  builder->Add("slideSelectedButtonLabel", IDS_UPDATE_SELECTED_BUTTON_LABEL);
+  builder->Add("slideUnselectedButtonLabel",
+               IDS_UPDATE_UNSELECTED_BUTTON_LABEL);
+
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   builder->Add("cancelUpdateHint", IDS_UPDATE_CANCEL);
   builder->Add("cancelledUpdateMessage", IDS_UPDATE_CANCELLED);
