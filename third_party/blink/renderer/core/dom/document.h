@@ -1236,6 +1236,9 @@ class CORE_EXPORT Document : public ContainerNode,
   bool UnloadStarted() const {
     return load_event_progress_ >= kPageHideInProgress;
   }
+  bool UnloadEventInProgress() const {
+    return load_event_progress_ == kUnloadEventInProgress;
+  }
 
   void BeforeUnloadDoneWillUnload() {
     load_event_progress_ = kBeforeUnloadEventHandled;

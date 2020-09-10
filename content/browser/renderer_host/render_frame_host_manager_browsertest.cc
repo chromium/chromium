@@ -6036,7 +6036,7 @@ class ProactivelySwapBrowsingInstancesSameSiteTest
 
  protected:
   const char* kActionAfterPagehideHistogramName =
-      "BackForwardCache.SameSite.ActionAfterPagehide";
+      "BackForwardCache.SameSite.ActionAfterPagehide2";
   const char* kSameSiteNavigationDidSwapHistogramName =
       "BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap";
   const char* kEligibilityDuringCommitHistogramName =

@@ -192,6 +192,7 @@ bool StorageArea::CanAccessStorage() const {
 }
 
 void StorageArea::RecordModificationInMetrics() {
+  TRACE_EVENT0("blink", "StorageArea::RecordModificationInMetrics");
   if (!GetFrame() || !GetFrame()->GetPage() ||
       !GetFrame()->GetPage()->DispatchedPagehideAndStillHidden()) {
     return;
@@ -201,9 +202,15 @@ void StorageArea::RecordModificationInMetrics() {
   // happen if we're doing a same-site cross-RenderFrame navigation where we
   // dispatch pagehide during the new RenderFrame's commit but won't actually
   // unload/freeze the page after the new RenderFrame finished committing). We
-  // should track this case to measure how often this is happening.
+  // should track this case to measure how often this is happening, except for
+  // when the unload event is currently in progress, which means the page is not
+  // actually stored in the back-forward cache and this behavior is ok.
+  if (GetFrame()->GetDocument() &&
+      GetFrame()->GetDocument()->UnloadEventInProgress()) {
+    return;
+  }
   UMA_HISTOGRAM_ENUMERATION(
-      "BackForwardCache.SameSite.ActionAfterPagehide",
+      "BackForwardCache.SameSite.ActionAfterPagehide2",
       storage_type_ == StorageType::kLocalStorage
           ? ActionAfterPagehide::kLocalStorageModification
           : ActionAfterPagehide::kSessionStorageModification);
