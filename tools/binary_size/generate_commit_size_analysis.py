@@ -21,15 +21,15 @@ _CLANG_UPDATE_PATH = os.path.join(_SRC_ROOT, 'tools', 'clang', 'scripts',
                                   'update.py')
 
 
-def extract_proguard_mapping(apk_name, mapping_name, staging_dir,
-                             chromium_output_directory):
-  """Copies proguard mapping file to staging_dir"""
-  mapping_path = os.path.join(chromium_output_directory, 'apks', mapping_name)
+def _extract_proguard_mapping(apk_name, mapping_name_list, staging_dir,
+                              chromium_output_directory):
+  """Copies proguard mapping files to staging_dir"""
+  for mapping_name in mapping_name_list:
+    mapping_path = os.path.join(chromium_output_directory, 'apks', mapping_name)
+    shutil.copy(mapping_path, os.path.join(staging_dir, apk_name + '.mapping'))
 
-  shutil.copy(mapping_path, os.path.join(staging_dir, apk_name + '.mapping'))
 
-
-def generate_resource_sizes(apk_name, staging_dir, chromium_output_directory):
+def _generate_resource_sizes(apk_name, staging_dir, chromium_output_directory):
   """Creates results-chart.json file in staging_dir"""
   apk_path = os.path.join(chromium_output_directory, 'apks', apk_name)
 
@@ -47,8 +47,8 @@ def generate_resource_sizes(apk_name, staging_dir, chromium_output_directory):
   )
 
 
-def generate_supersize_archive(apk_name, staging_dir,
-                               chromium_output_directory):
+def _generate_supersize_archive(apk_name, staging_dir,
+                                chromium_output_directory):
   """Creates a .size file for the given .apk or .minimal.apks"""
   subprocess.run([_CLANG_UPDATE_PATH, '--package=objdump'], check=True)
   apk_path = os.path.join(chromium_output_directory, 'apks', apk_name)
@@ -84,6 +84,7 @@ def main():
   parser.add_argument(
       '--mapping-name',
       required=True,
+      action='append',
       help='Filename of the proguard mapping file.',
   )
   parser.add_argument(
@@ -94,18 +95,18 @@ def main():
 
   args = parser.parse_args()
 
-  extract_proguard_mapping(
+  _extract_proguard_mapping(
       args.apk_name,
       args.mapping_name,
       args.staging_dir,
       args.chromium_output_directory,
   )
-  generate_resource_sizes(
+  _generate_resource_sizes(
       args.apk_name,
       args.staging_dir,
       args.chromium_output_directory,
   )
-  generate_supersize_archive(
+  _generate_supersize_archive(
       args.apk_name,
       args.staging_dir,
       args.chromium_output_directory,
