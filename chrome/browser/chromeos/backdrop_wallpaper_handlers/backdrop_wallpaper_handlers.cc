@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/extensions/api/wallpaper_private.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/constants/devicetype.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,6 +51,10 @@ std::string MaybeConvertToTestUrl(std::string url) {
           chromeos::switches::kTestWallpaperServer)) {
     base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3",
                                            "chromecast-dev.sandbox");
+  } else if (base::FeatureList::IsEnabled(
+                 chromeos::features::kUseWallpaperStagingUrl)) {
+    base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3",
+                                           "chromecast-staging.sandbox");
   }
   return url;
 }

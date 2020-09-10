@@ -156,6 +156,11 @@ const char kUseLookalikesForNavigationSuggestionsDescription[] =
     "Use lookalike URL suggestions to suggest navigations to users who "
     "face domain not found error.";
 
+const char kUseWallpaperStagingUrlName[] = "Use Wallpaper staging URL";
+const char kUseWallpaperStagingUrlDescription[] =
+    "Use the staging server as part of the Wallpaper App to verify "
+    "additions/removals of wallpapers.";
+
 const char kUseMessagesStagingUrlName[] = "Use Messages staging URL";
 const char kUseMessagesStagingUrlDescription[] =
     "Use the staging server as part of the \"Messages\" feature under "

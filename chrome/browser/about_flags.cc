@@ -5939,6 +5939,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReleaseNotesNotificationName,
      flag_descriptions::kReleaseNotesNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kReleaseNotesNotification)},
+    {"use-wallpaper-staging-url",
+     flag_descriptions::kUseWallpaperStagingUrlName,
+     flag_descriptions::kUseWallpaperStagingUrlDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kUseWallpaperStagingUrl)},
 #endif  // defined(OS_CHROMEOS)
 
     {"passive-mixed-content-warning",

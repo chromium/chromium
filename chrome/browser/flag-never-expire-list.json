@@ -95,6 +95,7 @@
   "use-fake-device-for-media-stream",
   "use_messages_staging_url",
   "use-sync-sandbox",
+  "use-wallpaper-staging-url",
   "wallet-service-use-sandbox",
   "webxr-runtime"
 ]

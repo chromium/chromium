@@ -4563,6 +4563,12 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-wallpaper-staging-url",
+    "owners": [ "cros-customization@google.com", "hsuregan", "khorimoto" ],
+    // This flag is required for QA and dogfood testing.
+    "expiry_milestone": -1
+  },
+  {
     "name": "use-winrt-midi-api",
     "owners": [ "toyoshim" ],
     "expiry_milestone": 86

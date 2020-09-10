@@ -224,6 +224,8 @@ extern const base::Feature kUpdatedCellularActivationUi;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kUseBrowserSyncConsent;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kUseWallpaperStagingUrl;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kUseMessagesStagingUrl;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kUserActivityPrediction;

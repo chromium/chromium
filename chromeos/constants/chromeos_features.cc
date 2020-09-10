@@ -518,6 +518,11 @@ const base::Feature kUpdatedCellularActivationUi{
 const base::Feature kUseBrowserSyncConsent{"UseBrowserSyncConsent",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Use the staging server as part of the Wallpaper App to verify
+// additions/removals of wallpapers.
+const base::Feature kUseWallpaperStagingUrl{"UseWallpaperStagingUrl",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 const base::Feature kUseMessagesStagingUrl{"UseMessagesStagingUrl",
