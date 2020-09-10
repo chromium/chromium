@@ -26,6 +26,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+third_party/zxcvbn-cpp",
 ]
 
 specific_include_rules = {

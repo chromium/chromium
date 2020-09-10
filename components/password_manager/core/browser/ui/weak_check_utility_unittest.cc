@@ -20,6 +20,7 @@ constexpr char kUsername2[] = "bob";
 constexpr char kWeakShortPassword[] = "123456";
 constexpr char kWeakLongPassword[] =
     "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcda";
+constexpr char kStrongShortPassword[] = "fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char kStrongLongPassword[] =
     "pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
 
@@ -39,7 +40,8 @@ PasswordForm MakeSavedPassword(base::StringPiece username,
 
 TEST(WeakCheckUtilityTest, WeakPasswordsNotFound) {
   std::vector<PasswordForm> passwords = {
-      MakeSavedPassword(kUsername1, kStrongLongPassword)};
+      MakeSavedPassword(kUsername1, kStrongShortPassword),
+      MakeSavedPassword(kUsername2, kStrongLongPassword)};
 
   EXPECT_THAT(BulkWeakCheck(passwords), testing::IsEmpty());
 }
@@ -48,6 +50,7 @@ TEST(WeakCheckUtilityTest, DetectedShortAndLongWeakPasswords) {
   std::vector<PasswordForm> passwords = {
       MakeSavedPassword(kUsername1, kStrongLongPassword),
       MakeSavedPassword(kUsername1, kWeakShortPassword),
+      MakeSavedPassword(kUsername1, kStrongShortPassword),
       MakeSavedPassword(kUsername2, kWeakLongPassword)};
 
   base::flat_set<base::string16> weak_passwords = BulkWeakCheck(passwords);

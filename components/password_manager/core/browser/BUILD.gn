@@ -314,6 +314,7 @@ static_library("browser") {
     "//third_party/abseil-cpp:absl",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
+    "//third_party/zxcvbn-cpp",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/range",

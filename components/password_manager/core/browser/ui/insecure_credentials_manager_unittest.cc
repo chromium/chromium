@@ -30,8 +30,8 @@ constexpr char kPassword2[] = "s3cr3t";
 constexpr char kPassword3[] = "484her";
 
 constexpr char kWeakPassword1[] = "123456";
-constexpr char kWeakPassword2[] = "654321";
-constexpr char kStrongPassword1[] = "qjdGd6mGdSLnfp8sfsnF5sndslDdnn%ndkfsn8vdv";
+constexpr char kWeakPassword2[] = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcda";
+constexpr char kStrongPassword1[] = "fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char kStrongPassword2[] = "pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
 
 using autofill::PasswordForm;
@@ -605,6 +605,8 @@ TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
   EXPECT_TRUE(IsCompromised(returned_weak_credentials[0].insecure_type));
 
   ASSERT_EQ(returned_compromised_credentials.size(), 1u);
+  EXPECT_EQ(base::UTF16ToUTF8(returned_compromised_credentials[0].password),
+            kWeakPassword1);
   EXPECT_TRUE(IsWeak(returned_compromised_credentials[0].insecure_type));
   EXPECT_TRUE(IsCompromised(returned_compromised_credentials[0].insecure_type));
 }

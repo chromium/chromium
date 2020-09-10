@@ -4,6 +4,11 @@
 
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
+#include "base/strings/utf_string_conversions.h"
+#include "third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp"
+#include "third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp"
+#include "third_party/zxcvbn-cpp/native-src/zxcvbn/time_estimates.hpp"
+
 namespace password_manager {
 
 namespace {
@@ -43,8 +48,11 @@ int PasswordWeakCheck(const base::string16& password) {
   if (password.size() > kZxcvbnLengthCap) {
     return SimpleLongPasswordStrengthEstimate(password);
   }
-  // TODO(crbug.com/1119752): Compute result by zxcvbn-cpp.
-  return kHighSeverityScore;
+  std::vector<zxcvbn::Match> matches =
+      zxcvbn::omnimatch(base::UTF16ToUTF8(password));
+  zxcvbn::ScoringResult result = zxcvbn::most_guessable_match_sequence(
+      base::UTF16ToUTF8(password), matches);
+  return zxcvbn::estimate_attack_times(result.guesses).score;
 }
 
 }  // namespace
