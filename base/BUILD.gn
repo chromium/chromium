@@ -1304,38 +1304,47 @@ component("base") {
       "allocator/allocator_shim_override_cpp_symbols.h",
       "allocator/allocator_shim_override_libc_symbols.h",
     ]
+    if (is_android) {
+      sources +=
+          [ "allocator/allocator_shim_override_linker_wrapped_symbols.h" ]
+      all_dependent_configs += [ "//base/allocator:wrap_malloc_symbols" ]
+    }
+    if (is_apple) {
+      sources += [ "allocator/allocator_shim_override_mac_symbols.h" ]
+    }
+    if (is_chromeos || is_linux) {
+      sources += [ "allocator/allocator_shim_override_glibc_weak_symbols.h" ]
+    }
     if (is_win) {
       sources += [
-        "allocator/allocator_shim_default_dispatch_to_winheap.cc",
         "allocator/allocator_shim_override_ucrt_symbols_win.h",
         "allocator/winheap_stubs_win.cc",
         "allocator/winheap_stubs_win.h",
       ]
-    } else if ((is_linux || is_chromeos) && use_allocator == "tcmalloc") {
-      sources += [
-        "allocator/allocator_shim_default_dispatch_to_tcmalloc.cc",
-        "allocator/allocator_shim_override_glibc_weak_symbols.h",
-      ]
-      deps += [ "//base/allocator:tcmalloc" ]
-    } else if ((is_linux || is_chromeos) && use_allocator == "none") {
-      sources += [ "allocator/allocator_shim_default_dispatch_to_glibc.cc" ]
-    } else if ((is_linux || is_chromeos || is_android) &&
-               use_allocator == "partition") {
+    }
+
+    if (use_allocator == "partition") {
       sources +=
           [ "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc" ]
-    } else if (is_android) {
-      sources +=
-          [ "allocator/allocator_shim_override_linker_wrapped_symbols.h" ]
-      all_dependent_configs += [ "//base/allocator:wrap_malloc_symbols" ]
-      if (use_allocator == "none") {
+    } else if (use_allocator == "tcmalloc") {
+      sources += [ "allocator/allocator_shim_default_dispatch_to_tcmalloc.cc" ]
+      deps += [ "//base/allocator:tcmalloc" ]
+    } else if (use_allocator == "none") {
+      if (is_android) {
         sources += [ "allocator/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc" ]
       }
-    } else if (is_apple) {
-      sources += [
-        "allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc",
-        "allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.h",
-        "allocator/allocator_shim_override_mac_symbols.h",
-      ]
+      if (is_apple) {
+        sources += [
+          "allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc",
+          "allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.h",
+        ]
+      }
+      if (is_chromeos || is_linux) {
+        sources += [ "allocator/allocator_shim_default_dispatch_to_glibc.cc" ]
+      }
+      if (is_win) {
+        sources += [ "allocator/allocator_shim_default_dispatch_to_winheap.cc" ]
+      }
     }
   }
 
