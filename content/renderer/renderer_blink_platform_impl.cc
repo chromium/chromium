@@ -741,6 +741,10 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
+  attributes.enable_oop_rasterization =
+      attributes.enable_raster_interface &&
+      base::FeatureList::IsEnabled(features::kCanvasOopRasterization);
+  attributes.enable_gles2_interface = !attributes.enable_oop_rasterization;
 
   attributes.gpu_preference = web_attributes.prefer_low_power_gpu
                                   ? gl::GpuPreference::kLowPower
@@ -753,6 +757,8 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
+  bool use_grcontext =
+      !attributes.enable_oop_rasterization && web_attributes.support_grcontext;
 
   scoped_refptr<viz::ContextProviderCommandBuffer> provider(
       new viz::ContextProviderCommandBuffer(
@@ -760,7 +766,7 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
           RenderThreadImpl::current()->GetGpuMemoryBufferManager(),
           kGpuStreamIdDefault, kGpuStreamPriorityDefault,
           gpu::kNullSurfaceHandle, GURL(top_document_web_url),
-          automatic_flushes, support_locking, web_attributes.support_grcontext,
+          automatic_flushes, support_locking, use_grcontext,
           gpu::SharedMemoryLimits(), attributes,
           viz::command_buffer_metrics::ContextType::WEBGL));
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
