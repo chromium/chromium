@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.payments.mojom.PaymentAddress;
+
 /** Interface for observing payment UIs. */
 public interface PaymentUIsObserver {
     /** Called when favicon not available for payment request UI. */
@@ -22,4 +24,17 @@ public interface PaymentUIsObserver {
      * @param optionId The option id of the selected shipping option.
      */
     void onShippingOptionChange(String optionId);
+
+    /**
+     * Called when the shipping address has changed by the user.
+     * @param address The changed shipping address.
+     */
+    void onShippingAddressChange(PaymentAddress address);
+
+    /**
+     * Called when the Payment UI service quits with an error. The observer should stop referencing
+     * the Payment UI service.
+     * @param error The diagnostic message that's exposed to developers.
+     */
+    void onUiServiceError(String error);
 }

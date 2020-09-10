@@ -500,6 +500,7 @@ public class ComponentPaymentRequestImpl {
         // Every caller should stop referencing this class once close() is called.
         assert mClient != null;
 
+        redactShippingAddress(address);
         mClient.onShippingAddressChange(address);
     }
 
@@ -626,5 +627,20 @@ public class ComponentPaymentRequestImpl {
      */
     public Origin getPaymentRequestSecurityOrigin() {
         return mPaymentRequestSecurityOrigin;
+    }
+
+    /**
+     * Redact shipping address before exposing it in ShippingAddressChangeEvent.
+     * https://w3c.github.io/payment-request/#shipping-address-changed-algorithm
+     * @param shippingAddress The shipping address to redact in place.
+     */
+    private static void redactShippingAddress(PaymentAddress shippingAddress) {
+        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                    PaymentFeatureList.WEB_PAYMENTS_REDACT_SHIPPING_ADDRESS)) {
+            shippingAddress.organization = "";
+            shippingAddress.phone = "";
+            shippingAddress.recipient = "";
+            shippingAddress.addressLine = new String[0];
+        }
     }
 }

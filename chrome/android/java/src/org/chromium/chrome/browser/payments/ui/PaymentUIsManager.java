@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
@@ -96,7 +97,7 @@ import java.util.Set;
  */
 public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Observer,
                                           PaymentRequestLifecycleObserver, PaymentHandlerUiObserver,
-                                          FocusChangedObserver {
+                                          FocusChangedObserver, NormalizedAddressRequestDelegate {
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
 
@@ -158,8 +159,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         void dispatchPayerDetailChangeEventIfNeeded(PayerDetail detail);
         /** Record the show event to the journey logger and record the transaction amount. */
         void recordShowEventAndTransactionAmount();
-        /** Start the normalization of the new shipping address. */
-        void startShippingAddressChangeNormalization(AutofillAddress editedAddress);
         /** Gets the PaymentRequestUI Client from PaymentRequestImpl. */
         // TODO(crbug.com/1114791): This class will implement the PaymentRequestUI Client interface
         // once its current implementation has no dependency on PRImpl.
@@ -1067,7 +1066,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                                     PaymentRequestUI.DataType.CONTACT_DETAILS, mContactSection);
                         }
 
-                        mDelegate.startShippingAddressChangeNormalization(editedAddress);
+                        startShippingAddressChangeNormalization(editedAddress);
                     }
                 } else {
                     providePaymentInformationToPaymentRequestUI();
@@ -1513,7 +1512,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
             AutofillAddress address = (AutofillAddress) option;
             if (address.isComplete()) {
                 mShippingAddressesSection.setSelectedItem(option);
-                mDelegate.startShippingAddressChangeNormalization(address);
+                startShippingAddressChangeNormalization(address);
             } else {
                 // Log the edit of a shipping address.
                 mJourneyLogger.incrementSelectionEdits(Section.SHIPPING_ADDRESS);
@@ -1572,5 +1571,34 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         }
 
         return PaymentRequestUI.SelectionResult.NONE;
+    }
+
+    // Implements PersonalDataManager.NormalizedAddressRequestDelegate:
+    @Override
+    public void onAddressNormalized(AutofillProfile profile) {
+        ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
+
+        // Can happen if the tab is closed during the normalization process.
+        if (chromeActivity == null) {
+            mObserver.onUiServiceError(ErrorStrings.ACTIVITY_NOT_FOUND);
+            return;
+        }
+
+        // Don't reuse the selected address because it is formatted for display.
+        AutofillAddress shippingAddress = new AutofillAddress(chromeActivity, profile);
+        mObserver.onShippingAddressChange(shippingAddress.toPaymentAddress());
+    }
+
+    // Implements PersonalDataManager.NormalizedAddressRequestDelegate:
+    @Override
+    public void onCouldNotNormalize(AutofillProfile profile) {
+        // Since the phone number is formatted in either case, this profile should be used.
+        onAddressNormalized(profile);
+    }
+
+    private void startShippingAddressChangeNormalization(AutofillAddress address) {
+        // Will call back into either onAddressNormalized or onCouldNotNormalize which will send the
+        // result to the merchant.
+        PersonalDataManager.getInstance().normalizeAddress(address.getProfile(), /*delegate=*/this);
     }
 }

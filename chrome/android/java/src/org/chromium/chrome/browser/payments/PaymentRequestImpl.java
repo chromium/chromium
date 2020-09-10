@@ -20,8 +20,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentInformation;
@@ -98,8 +96,8 @@ public class PaymentRequestImpl
                    PaymentAppFactoryParams, PaymentRequestUpdateEventListener,
                    PaymentApp.AbortCallback, PaymentApp.InstrumentDetailsCallback,
                    PaymentResponseHelper.PaymentResponseRequesterDelegate,
-                   NormalizedAddressRequestDelegate, PaymentDetailsConverter.MethodChecker,
-                   PaymentUIsManager.Delegate, PaymentUIsObserver {
+                   PaymentDetailsConverter.MethodChecker, PaymentUIsManager.Delegate,
+                   PaymentUIsObserver {
     /**
      * A delegate to ask questions about the system, that allows tests to inject behaviour without
      * having to modify the entire system. This partially mirrors a similar C++
@@ -674,7 +672,6 @@ public class PaymentRequestImpl
             return false;
         }
 
-        redactShippingAddress(shippingAddress);
         mComponentPaymentRequestImpl.onShippingAddressChange(shippingAddress);
         return true;
     }
@@ -1786,47 +1783,6 @@ public class PaymentRequestImpl
         }
     }
 
-    @Override
-    public void onAddressNormalized(AutofillProfile profile) {
-        if (mComponentPaymentRequestImpl == null) return;
-        ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-
-        // Can happen if the tab is closed during the normalization process.
-        if (chromeActivity == null) {
-            mJourneyLogger.setAborted(AbortReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getObserverForTest()
-                        .onPaymentRequestServiceShowFailed();
-            }
-            return;
-        }
-
-        // Don't reuse the selected address because it is formatted for display.
-        AutofillAddress shippingAddress = new AutofillAddress(chromeActivity, profile);
-
-        PaymentAddress redactedAddress = shippingAddress.toPaymentAddress();
-        redactShippingAddress(redactedAddress);
-
-        // This updates the line items and the shipping options asynchronously.
-        mComponentPaymentRequestImpl.onShippingAddressChange(redactedAddress);
-    }
-
-    @Override
-    public void onCouldNotNormalize(AutofillProfile profile) {
-        // Since the phone number is formatted in either case, this profile should be used.
-        onAddressNormalized(profile);
-    }
-
-    // Implement PaymentUIsManager.Delegate:
-    @Override
-    public void startShippingAddressChangeNormalization(AutofillAddress address) {
-        // Will call back into either onAddressNormalized or onCouldNotNormalize which will send the
-        // result to the merchant.
-        PersonalDataManager.getInstance().normalizeAddress(
-                address.getProfile(), /* delegate= */ this);
-    }
-
     // Implement PaymentUIsManager.Delegate:
     @Override
     public PaymentRequestUI.Client getPaymentRequestUIClient() {
@@ -1898,21 +1854,6 @@ public class PaymentRequestImpl
     }
 
     /**
-     * Redact shipping address before exposing it in ShippingAddressChangeEvent.
-     * https://w3c.github.io/payment-request/#shipping-address-changed-algorithm
-     * @param shippingAddress The shippingAddress to get redacted.
-     */
-    private void redactShippingAddress(PaymentAddress shippingAddress) {
-        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                    PaymentFeatureList.WEB_PAYMENTS_REDACT_SHIPPING_ADDRESS)) {
-            shippingAddress.organization = "";
-            shippingAddress.phone = "";
-            shippingAddress.recipient = "";
-            shippingAddress.addressLine = new String[0];
-        }
-    }
-
-    /**
      * @return Whether any instance of PaymentRequest has received a show() call.
      *         Don't use this function to check whether the current instance has
      *         received a show() call.
@@ -1952,5 +1893,23 @@ public class PaymentRequestImpl
         if (mComponentPaymentRequestImpl == null) return;
         mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
         disconnectFromClientWithDebugMessage(reason);
+    }
+
+    // Implement PaymentUIsObserver:
+    @Override
+    public void onUiServiceError(String error) {
+        mJourneyLogger.setAborted(AbortReason.OTHER);
+        disconnectFromClientWithDebugMessage(error);
+        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
+            ComponentPaymentRequestImpl.getObserverForTest().onPaymentRequestServiceShowFailed();
+        }
+    }
+
+    // Implement PaymentUIsObserver:
+    @Override
+    public void onShippingAddressChange(PaymentAddress address) {
+        if (mComponentPaymentRequestImpl == null) return;
+        // This updates the line items and the shipping options asynchronously.
+        mComponentPaymentRequestImpl.onShippingAddressChange(address);
     }
 }
