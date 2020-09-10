@@ -161011,9 +161011,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ServiceWorker.InternalsPageAccessed"
-    enum="ServiceWorkerInternalsLinkQuery" expires_after="M87">
-  <owner>nidhijaju@google.com</owner>
+    enum="ServiceWorkerInternalsLinkQuery" expires_after="M90">
   <owner>bashi@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
   <summary>
     The method that the user takes to arrive at
     chrome://serviceworker-internals, based on the query string. Specifically,
