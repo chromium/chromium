@@ -152,7 +152,9 @@ struct CC_EXPORT EffectNode {
     return render_surface_reason != RenderSurfaceReason::kNone;
   }
 
+#if DCHECK_IS_ON()
   bool operator==(const EffectNode& other) const;
+#endif
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
 };

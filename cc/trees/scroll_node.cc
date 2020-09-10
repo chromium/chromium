@@ -35,6 +35,7 @@ ScrollNode::ScrollNode(const ScrollNode& other) = default;
 
 ScrollNode::~ScrollNode() = default;
 
+#if DCHECK_IS_ON()
 bool ScrollNode::operator==(const ScrollNode& other) const {
   return id == other.id && parent_id == other.parent_id &&
          scrollable == other.scrollable &&
@@ -55,6 +56,7 @@ bool ScrollNode::operator==(const ScrollNode& other) const {
          snap_container_data == other.snap_container_data &&
          is_composited == other.is_composited;
 }
+#endif
 
 void ScrollNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("id", id);

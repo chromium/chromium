@@ -71,7 +71,9 @@ class CC_EXPORT PropertyTree {
   static const int kRootNodeId = 0;
   static const int kSecondaryRootNodeId = 1;
 
+#if DCHECK_IS_ON()
   bool operator==(const PropertyTree<T>& other) const;
+#endif
 
   int Insert(const T& tree_node, int parent_id);
 
@@ -130,7 +132,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   ~TransformTree() final;
   TransformTree& operator=(const TransformTree&);
 
+#if DCHECK_IS_ON()
   bool operator==(const TransformTree& other) const;
+#endif
 
   static const int kContentsRootNodeId = 1;
 
@@ -271,7 +275,9 @@ struct StickyPositionNodeData {
 
 class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
  public:
+#if DCHECK_IS_ON()
   bool operator==(const ClipTree& other) const;
+#endif
 
   static const int kViewportNodeId = 1;
 
@@ -285,7 +291,10 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   ~EffectTree() final;
 
   EffectTree& operator=(const EffectTree& from);
+
+#if DCHECK_IS_ON()
   bool operator==(const EffectTree& other) const;
+#endif
 
   static const int kContentsRootNodeId = 1;
 
@@ -394,7 +403,10 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   ~ScrollTree() final;
 
   ScrollTree& operator=(const ScrollTree& from);
+
+#if DCHECK_IS_ON()
   bool operator==(const ScrollTree& other) const;
+#endif
 
   void clear();
 
@@ -629,8 +641,11 @@ class CC_EXPORT PropertyTrees final {
   PropertyTrees(const PropertyTrees& other) = delete;
   ~PropertyTrees();
 
-  bool operator==(const PropertyTrees& other) const;
   PropertyTrees& operator=(const PropertyTrees& from);
+
+#if DCHECK_IS_ON()
+  bool operator==(const PropertyTrees& other) const;
+#endif
 
   // These maps allow mapping directly from a compositor element id to the
   // respective property node. This will eventually allow simplifying logic in

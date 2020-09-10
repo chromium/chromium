@@ -40,6 +40,7 @@ TransformNode::TransformNode()
 
 TransformNode::TransformNode(const TransformNode&) = default;
 
+#if DCHECK_IS_ON()
 bool TransformNode::operator==(const TransformNode& other) const {
   return id == other.id && parent_id == other.parent_id &&
          parent_frame_id == other.parent_frame_id &&
@@ -76,6 +77,7 @@ bool TransformNode::operator==(const TransformNode& other) const {
          starting_animation_scale == other.starting_animation_scale &&
          visible_frame_element_id == other.visible_frame_element_id;
 }
+#endif  // DCHECK_IS_ON()
 
 void TransformNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("id", id);

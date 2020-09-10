@@ -131,7 +131,9 @@ struct CC_EXPORT TransformNode {
   // root of a visible frame subtree.
   ElementId visible_frame_element_id;
 
+#if DCHECK_IS_ON()
   bool operator==(const TransformNode& other) const;
+#endif
 
   void set_to_parent(const gfx::Transform& transform) {
     to_parent = transform;

@@ -71,7 +71,9 @@ struct CC_EXPORT ClipNode {
   // The id of the transform node that defines the clip node's local space.
   int transform_id;
 
+#if DCHECK_IS_ON()
   bool operator==(const ClipNode& other) const;
+#endif
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
 };
