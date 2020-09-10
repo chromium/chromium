@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <limits>
+#include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
