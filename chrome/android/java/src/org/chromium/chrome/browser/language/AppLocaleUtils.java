@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language;
 
+import android.content.Context;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.google.android.play.core.splitinstall.SplitInstallManager;
@@ -35,10 +37,23 @@ public class AppLocaleUtils {
 
     /**
      * Get the value of application language shared preference or null if there is none.
-     * @return String
+     * @return String BCP-47 language tag (e.g. en-US).
      */
     public static String getAppLanguagePref() {
         return SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
+    }
+
+    /**
+     * Get the value of application language shared preference or null if there is none.
+     * Used during {@link ChromeApplication#attachBaseContext} before
+     * {@link SharedPreferencesManager} is created.
+     * @param base Context to use for getting the shared preference.
+     * @return String BCP-47 language tag (e.g. en-US).
+     */
+    @SuppressWarnings("DefaultSharedPreferencesCheck")
+    protected static String getAppLanguagePrefStartUp(Context base) {
+        return PreferenceManager.getDefaultSharedPreferences(base).getString(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
     }
 

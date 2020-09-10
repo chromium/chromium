@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
@@ -79,7 +80,19 @@ public class ChromeApplication extends Application {
     @Override
     protected void attachBaseContext(Context context) {
         boolean isBrowserProcess = isBrowserProcess();
-        if (isBrowserProcess) UmaUtils.recordMainEntryPointTime();
+
+        if (isBrowserProcess) {
+            UmaUtils.recordMainEntryPointTime();
+
+            // If the app locale override preference is set, create a new override
+            // context to use as the base context for the application.
+            // Must be initialized early to override Application level localizations.
+            if (GlobalAppLocaleController.getInstance().init(context)) {
+                context = context.createConfigurationContext(
+                        GlobalAppLocaleController.getInstance().getOverrideConfig(context));
+            }
+        }
+
         super.attachBaseContext(context);
         ContextUtils.initApplicationContext(this);
         maybeInitProcessType(isBrowserProcess);
