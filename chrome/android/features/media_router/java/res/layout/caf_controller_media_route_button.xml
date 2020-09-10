@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<androidx.appcompat.app.MediaRouteButton
+<androidx.mediarouter.app.MediaRouteButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cast_controller_media_route_button"
     android:layout_width="wrap_content"
