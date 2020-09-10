@@ -481,6 +481,11 @@ body.video.recording-ui-paused #pause-recordvideo .two-bars {
   --bar-size: 0px;
 }
 
+body.video.taking #recordvideo {
+  /* Prevent white background shown outside red dot area (crbug.com/1125896) */
+  background: transparent;
+}
+
 body:not(.video) #toggle-mic,
 body:not(.multi-camera) #switch-device {
   visibility: hidden;
