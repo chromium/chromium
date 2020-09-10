@@ -12,6 +12,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
+import "ui/gl/mojom/hdr_metadata.mojom";
 
 // See media/base/audio_codecs.h for descriptions.
 [Native]
@@ -133,22 +134,6 @@ struct VideoColorSpace {
   RangeID range;
 };
 
-// This defines a mojo transport format for media::HDRMetadata.
-// See media/base/hdr_metadata.h for description.
-struct MasteringMetadata {
-  gfx.mojom.PointF primary_r;
-  gfx.mojom.PointF primary_g;
-  gfx.mojom.PointF primary_b;
-  gfx.mojom.PointF white_point;
-  float luminance_max;
-  float luminance_min;
-};
-
-struct HDRMetadata {
-  MasteringMetadata mastering_metadata;
-  uint32 max_content_light_level;
-  uint32 max_frame_average_light_level;
-};
 
 // This defines a mojo transport format for media::AudioDecoderConfig.
 // See media/base/audio_decoder_config.h for descriptions.
@@ -178,7 +163,7 @@ struct VideoDecoderConfig {
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
   VideoColorSpace color_space_info;
-  HDRMetadata? hdr_metadata;
+  gl.mojom.HDRMetadata? hdr_metadata;
 };
 
 // Native struct media::SubsampleEntry;
@@ -362,7 +347,7 @@ struct VideoFrame {
   VideoFrameMetadata metadata;
 
   gfx.mojom.ColorSpace color_space;
-  HDRMetadata? hdr_metadata;
+  gl.mojom.HDRMetadata? hdr_metadata;
 };
 
 // Possible choices for storing VideoFrame data.

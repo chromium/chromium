@@ -66,6 +66,7 @@ mojom("mojom") {
     "//services/service_manager/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
+    "//ui/gl/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
@@ -218,20 +219,7 @@ mojom("mojom") {
         "//media/base/ipc",
       ]
     },
-    {
-      types = [
-        {
-          mojom = "media.mojom.MasteringMetadata"
-          cpp = "::media::MasteringMetadata"
-        },
-        {
-          mojom = "media.mojom.HDRMetadata"
-          cpp = "::media::HDRMetadata"
-        },
-      ]
-      traits_headers = [ "hdr_metadata_mojom_traits.h" ]
-      traits_public_deps = [ "//media" ]
-    },
+
     {
       types = [
         {

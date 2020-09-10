@@ -14,12 +14,12 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
-#include "media/mojo/mojom/hdr_metadata_mojom_traits.h"
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
+#include "ui/gl/mojom/hdr_metadata_mojom_traits.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/posix/eintr_wrapper.h"

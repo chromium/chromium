@@ -5,8 +5,16 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "gpu_preference.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  generate_java = true
+
+  sources = [
+    "gpu_preference.mojom",
+    "hdr_metadata.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
   cpp_typemaps = [
     {
       types = [
@@ -16,6 +24,21 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "gpu_preference_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gl" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gl.mojom.MasteringMetadata"
+          cpp = "::gl::MasteringMetadata"
+        },
+        {
+          mojom = "gl.mojom.HDRMetadata"
+          cpp = "::gl::HDRMetadata"
+        },
+      ]
+      traits_headers = [ "hdr_metadata_mojom_traits.h" ]
+      traits_sources = [ "hdr_metadata_mojom_traits.cc" ]
       traits_public_deps = [ "//ui/gl" ]
     },
   ]

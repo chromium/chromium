@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gl.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This defines a mojo transport format for gl::HDRMetadata.
+// See ui/gl/hdr_metadata.h for description.
+struct MasteringMetadata {
+    gfx.mojom.PointF primary_r;
+    gfx.mojom.PointF primary_g;
+    gfx.mojom.PointF primary_b;
+    gfx.mojom.PointF white_point;
+    float luminance_max;
+    float luminance_min;
+  };
+
+struct HDRMetadata {
+    MasteringMetadata mastering_metadata;
+    uint32 max_content_light_level;
+    uint32 max_frame_average_light_level;
+  };
