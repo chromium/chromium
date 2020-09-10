@@ -20,14 +20,15 @@
 //
 //   * An `absl::Status` class for holding error handling information
 //   * A set of canonical `absl::StatusCode` error codes, and associated
-//     utilities for generating and propogating status codes.
+//     utilities for generating and propagating status codes.
 //   * A set of helper functions for creating status codes and checking their
 //     values
 //
-// Within Google, `absl::Status` is the primary mechanism for indicating
-// recoverable errors across API boundaries (and in particular across RPC
-// boundaries). Most functions which can produce a recoverable error should
-// be designed to return an `absl::Status` (or `absl::StatusOr`).
+// Within Google, `absl::Status` is the primary mechanism for gracefully
+// handling errors across API boundaries (and in particular across RPC
+// boundaries). Some of these errors may be recoverable, but others may not.
+// Most functions that can produce a recoverable error should be designed to
+// return an `absl::Status` (or `absl::StatusOr`).
 //
 // Example:
 //
@@ -47,16 +48,6 @@
 // error codes (of type `absl::StatusCode`) enumerated in this header file.
 // These canonical codes are understood across the codebase and will be
 // accepted across all API and RPC boundaries.
-//
-// An `absl::Status` can optionally include a payload with more information
-// about the error. Typically, this payload serves one of several purposes:
-//
-//   * It may provide more fine-grained semantic information about the error to
-//     facilitate actionable remedies.
-//   * It may provide human-readable contexual information that is more
-//     appropriate
-//     to display to an end user.
-//
 #ifndef ABSL_STATUS_STATUS_H_
 #define ABSL_STATUS_STATUS_H_
 
@@ -290,18 +281,99 @@ std::ostream& operator<<(std::ostream& os, StatusCode code);
 
 // absl::Status
 //
+// The `absl::Status` class is generally used to gracefully handle errors
+// across API boundaries (and in particular across RPC boundaries). Some of
+// these errors may be recoverable, but others may not. Most
+// functions which can produce a recoverable error should be designed to return
+// either an `absl::Status` (or the similar `absl::StatusOr<T>`, which holds
+// either an object of type `T` or an error).
+//
+// API developers should construct their functions to return `absl::OkStatus()`
+// upon success, or an `absl::StatusCode` upon another type of error (e.g
+// an `absl::StatusCode::kInvalidArgument` error). The API provides convenience
+// functions to constuct each status code.
+//
+// Example:
+//
+// absl::Status myFunction(absl::string_view fname, ...) {
+//   ...
+//   // encounter error
+//   if (error condition) {
+//     // Construct an absl::StatusCode::kInvalidArgument error
+//     return absl::InvalidArgumentError("bad mode");
+//   }
+//   // else, return OK
+//   return absl::OkStatus();
+// }
+//
+// Users handling status error codes should prefer checking for an OK status
+// using the `ok()` member function. Handling multiple error codes may justify
+// use of switch statement, but only check for error codes you know how to
+// handle; do not try to exhaustively match against all canonical error codes.
+// Errors that cannot be handled should be logged and/or propagated for higher
+// levels to deal with. If you do use a switch statement, make sure that you
+// also provide a `default:` switch case, so that code does not break as other
+// canonical codes are added to the API.
+//
+// Example:
+//
+//   absl::Status result = DoSomething();
+//   if (!result.ok()) {
+//     LOG(ERROR) << result;
+//   }
+//
+//   // Provide a default if switching on multiple error codes
+//   switch (result.code()) {
+//     // The user hasn't authenticated. Ask them to reauth
+//     case absl::StatusCode::kUnauthenticated:
+//       DoReAuth();
+//       break;
+//     // The user does not have permission. Log an error.
+//     case absl::StatusCode::kPermissionDenied:
+//       LOG(ERROR) << result;
+//       break;
+//     // Propagate the error otherwise.
+//     default:
+//       return true;
+//   }
+//
+// An `absl::Status` can optionally include a payload with more information
+// about the error. Typically, this payload serves one of several purposes:
+//
+//   * It may provide more fine-grained semantic information about the error to
+//     facilitate actionable remedies.
+//   * It may provide human-readable contexual information that is more
+//     appropriate to display to an end user.
+//
+// Example:
+//
+//   absl::Status result = DoSomething();
+//   // Inform user to retry after 30 seconds
+//   // See more error details in googleapis/google/rpc/error_details.proto
+//   if (absl::IsResourceExhausted(result)) {
+//     google::rpc::RetryInfo info;
+//     info.retry_delay().seconds() = 30;
+//     // Payloads require a unique key (a URL to ensure no collisions with
+//     // other payloads), and an `absl::Cord` to hold the encoded data.
+//     absl::string_view url = "type.googleapis.com/google.rpc.RetryInfo";
+//     result.SetPayload(url, info.SerializeAsCord());
+//     return result;
+//   }
+//
 class ABSL_MUST_USE_RESULT Status final {
  public:
   // Constructors
 
-  // Creates an OK status with no message or payload.
+  // This default constructor creates an OK status with no message or payload.
+  // Avoid this constructor and pefer explicit construction of an OK status with
+  // `absl::OkStatus()`.
   Status();
 
-  // Create a status in the canonical error space with the specified code and
-  // error message.  If `code == absl::StatusCode::kOk`, `msg` is ignored and an
-  // object identical to an OK status is constructed.
+  // Creates a status in the canonical error space with the specified
+  // `absl::StatusCode` and error message.  If `code == absl::StatusCode::kOk`,
+  // `msg` is ignored and an object identical to an OK status is constructed.
   //
-  // `msg` must be in UTF-8. The implementation may complain (e.g.,
+  // The `msg` string must be in UTF-8. The implementation may complain (e.g.,
   // by printing a warning) if it is not.
   Status(absl::StatusCode code, absl::string_view msg);
 
@@ -318,42 +390,51 @@ class ABSL_MUST_USE_RESULT Status final {
 
   // Status::Update()
   //
-  // If `this->ok()`, stores `new_status` into *this. If `!this->ok()`,
-  // preserves the current data. May, in the future, augment the current status
-  // with additional information about `new_status`.
+  // Updates the existing status with `new_status` provided that `this->ok()`.
+  // If the existing status already contains a non-OK error, this update has no
+  // effect and preserves the current data. Note that this behavior may change
+  // in the future to augment a current non-ok status with additional
+  // information about `new_status`.
   //
-  // Convenient way of keeping track of the first error encountered.
-  // Instead of:
-  //   if (overall_status.ok()) overall_status = new_status
-  // Use:
+  // `Update()` provides a convenient way of keeping track of the first error
+  // encountered.
+  //
+  // Example:
+  //   // Instead of "if (overall_status.ok()) overall_status = new_status"
   //   overall_status.Update(new_status);
   //
-  // Style guide exception for rvalue reference granted in CL 153567220.
   void Update(const Status& new_status);
   void Update(Status&& new_status);
 
   // Status::ok()
   //
-  // Returns true if the Status is OK.
+  // Returns `true` if `this->ok()`. Prefer checking for an OK status using this
+  // member function.
   ABSL_MUST_USE_RESULT bool ok() const;
 
   // Status::code()
   //
-  // Returns the (canonical) error code.
+  // Returns the canonical error code of type `absl::StatusCode` of this status.
   absl::StatusCode code() const;
 
   // Status::raw_code()
   //
-  // Returns the raw (canonical) error code which could be out of the range of
-  // the local `absl::StatusCode` enum. NOTE: This should only be called when
-  // converting to wire format. Use `code` for error handling.
+  // Returns a raw (canonical) error code corresponding to the enum value of
+  // `google.rpc.Code` definitions within
+  // https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto.
+  // These values could be out of the range of canonical `absl::StatusCode`
+  // enum values.
+  //
+  // NOTE: This function should only be called when converting to an associated
+  // wire format. Use `Status::code()` for error handling.
   int raw_code() const;
 
   // Status::message()
   //
-  // Returns the error message.  Note: prefer ToString() for debug logging.
-  // This message rarely describes the error code.  It is not unusual for the
-  // error message to be the empty string.
+  // Returns the error message associated with this error code, if available.
+  // Note that this message rarely describes the error code.  It is not unusual
+  // for the error message to be the empty string. As a result, prefer
+  // `Status::ToString()` for debug logging.
   absl::string_view message() const;
 
   friend bool operator==(const Status&, const Status&);
@@ -361,12 +442,14 @@ class ABSL_MUST_USE_RESULT Status final {
 
   // Status::ToString()
   //
-  // Returns a combination of the error code name, the message and the payloads.
-  // You can expect the code name and the message to be substrings of the
-  // result, and the payloads to be printed by the registered printer extensions
-  // if they are recognized.
-  // WARNING: Do not depend on the exact format of the result of `ToString()`
-  // which is subject to change.
+  // Returns a combination of the error code name, the message and any
+  // associated payload messages. This string is designed simply to be human
+  // readable and its exact format should not be load bearing. Do not depend on
+  // the exact format of the result of `ToString()` which is subject to change.
+  //
+  // The printed code name and the message are generally substrings of the
+  // result, and the payloads to be printed use the status payload printer
+  // mechanism (which is internal).
   std::string ToString() const;
 
   // Status::IgnoreError()
@@ -378,52 +461,71 @@ class ABSL_MUST_USE_RESULT Status final {
 
   // swap()
   //
-  // Swap the contents of `a` with `b`
+  // Swap the contents of one status with another.
   friend void swap(Status& a, Status& b);
 
   //----------------------------------------------------------------------------
-  // Payload management APIs
+  // Payload Management APIs
   //----------------------------------------------------------------------------
 
-  // Type URL should be unique and follow the naming convention below:
-  // The idea of type URL comes from `google.protobuf.Any`
-  // (https://developers.google.com/protocol-buffers/docs/proto3#any). The
-  // type URL should be globally unique and follow the format of URL
-  // (https://en.wikipedia.org/wiki/URL). The default type URL for a given
-  // protobuf message type is "type.googleapis.com/packagename.messagename". For
-  // other custom wire formats, users should define the format of type URL in a
-  // similar practice so as to minimize the chance of conflict between type
-  // URLs. Users should make sure that the type URL can be mapped to a concrete
+  // A payload may be attached to a status to provide additional context to an
+  // error that may not be satisifed by an existing `absl::StatusCode`.
+  // Typically, this payload serves one of several purposes:
+  //
+  //   * It may provide more fine-grained semantic information about the error
+  //     to facilitate actionable remedies.
+  //   * It may provide human-readable contexual information that is more
+  //     appropriate to display to an end user.
+  //
+  // A payload consists of a [key,value] pair, where the key is a string
+  // referring to a unique "type URL" and the value is an object of type
+  // `absl::Cord` to hold the contextual data.
+  //
+  // The "type URL" should be unique and follow the format of a URL
+  // (https://en.wikipedia.org/wiki/URL) and, ideally, provide some
+  // documentation or schema on how to interpret its associated data. For
+  // example, the default type URL for a protobuf message type is
+  // "type.googleapis.com/packagename.messagename". Other custom wire formats
+  // should define the format of type URL in a similar practice so as to
+  // minimize the chance of conflict between type URLs.
+  // Users should ensure that the type URL can be mapped to a concrete
   // C++ type if they want to deserialize the payload and read it effectively.
+  //
+  // To attach a payload to a status object, call `Status::SetPayload()`,
+  // passing it the type URL and an `absl::Cord` of associated data. Similarly,
+  // to extract the payload from a status, call `Status::GetPayload()`. You
+  // may attach multiple payloads (with differing type URLs) to any given
+  // status object, provided that the status is currently exhibiting an error
+  // code (i.e. is not OK).
 
   // Status::GetPayload()
   //
-  // Gets the payload based for `type_url` key, if it is present.
+  // Gets the payload of a status given its unique `type_url` key, if present.
   absl::optional<absl::Cord> GetPayload(absl::string_view type_url) const;
 
   // Status::SetPayload()
   //
-  // Sets the payload for `type_url` key for a non-ok status, overwriting any
-  // existing payload for `type_url`.
+  // Sets the payload for a non-ok status using a `type_url` key, overwriting
+  // any existing payload for that `type_url`.
   //
-  // NOTE: Does nothing if the Status is ok.
+  // NOTE: This function does nothing if the Status is ok.
   void SetPayload(absl::string_view type_url, absl::Cord payload);
 
   // Status::ErasePayload()
   //
-  // Erases the payload corresponding to the `type_url` key.  Returns true if
+  // Erases the payload corresponding to the `type_url` key.  Returns `true` if
   // the payload was present.
   bool ErasePayload(absl::string_view type_url);
 
   // Status::ForEachPayload()
   //
-  // Iterates over the stored payloads and calls `visitor(type_key, payload)`
-  // for each one.
+  // Iterates over the stored payloads and calls the
+  // `visitor(type_key, payload)` callable for each one.
   //
-  // NOTE: The order of calls to `visitor` is not specified and may change at
+  // NOTE: The order of calls to `visitor()` is not specified and may change at
   // any time.
   //
-  // NOTE: Any mutation on the same 'Status' object during visitation is
+  // NOTE: Any mutation on the same 'absl::Status' object during visitation is
   // forbidden and could result in undefined behavior.
   void ForEachPayload(
       const std::function<void(absl::string_view, const absl::Cord&)>& visitor)
@@ -494,7 +596,8 @@ class ABSL_MUST_USE_RESULT Status final {
 
 // OkStatus()
 //
-// Returns an OK status, equivalent to a default constructed instance.
+// Returns an OK status, equivalent to a default constructed instance. Prefer
+// usage of `absl::OkStatus()` when constructing such an OK status.
 Status OkStatus();
 
 // operator<<()

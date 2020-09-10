@@ -12,58 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// StatusOr<T> is the union of a Status object and a T
-// object. StatusOr models the concept of an object that is either a
-// usable value, or an error Status explaining why such a value is
-// not present. To this end, StatusOr<T> does not allow its Status
-// value to be absl::OkStatus().
+// -----------------------------------------------------------------------------
+// File: statusor.h
+// -----------------------------------------------------------------------------
 //
-// The primary use-case for StatusOr<T> is as the return value of a
-// function which may fail.
+// An `absl::StatusOr<T>` represents a union of an `absl::Status` object
+// and an object of type `T`. The `absl::StatusOr<T>` will either contain an
+// object of type `T` (indicating a successful operation), or an error (of type
+// `absl::Status`) explaining why such a value is not present.
 //
-// Example usage of a StatusOr<T>:
+// In general, check the success of an operation returning an
+// `absl::StatusOr<T>` like you would an `absl::Status` by using the `ok()`
+// member function.
 //
-//  StatusOr<Foo> result = DoBigCalculationThatCouldFail();
-//  if (result.ok()) {
-//    result->DoSomethingCool();
-//  } else {
-//    LOG(ERROR) << result.status();
-//  }
+// Example:
 //
-// Example that is guaranteed to crash if the result holds no value:
-//
-//  StatusOr<Foo> result = DoBigCalculationThatCouldFail();
-//  const Foo& foo = result.value();
-//  foo.DoSomethingCool();
-//
-// Example usage of a StatusOr<std::unique_ptr<T>>:
-//
-//  StatusOr<std::unique_ptr<Foo>> result = FooFactory::MakeNewFoo(arg);
-//  if (!result.ok()) {  // Don't omit .ok()
-//    LOG(ERROR) << result.status();
-//  } else if (*result == nullptr) {
-//    LOG(ERROR) << "Unexpected null pointer";
-//  } else {
-//    (*result)->DoSomethingCool();
-//  }
-//
-// Example factory implementation returning StatusOr<T>:
-//
-//  StatusOr<Foo> FooFactory::MakeFoo(int arg) {
-//    if (arg <= 0) {
-//      return absl::Status(absl::StatusCode::kInvalidArgument,
-//                          "Arg must be positive");
-//    }
-//    return Foo(arg);
-//  }
-//
-// NULL POINTERS
-//
-// Historically StatusOr<T*> treated null pointers specially. This is no longer
-// true -- a StatusOr<T*> can be constructed from a null pointer like any other
-// pointer value, and the result will be that ok() returns true and value()
-// returns null.
-
+//   StatusOr<Foo> result = Calculation();
+//   if (result.ok()) {
+//     result->DoSomethingCool();
+//   } else {
+//     LOG(ERROR) << result.status();
+//   }
 #ifndef ABSL_STATUS_STATUSOR_H_
 #define ABSL_STATUS_STATUSOR_H_
 
@@ -83,11 +52,42 @@
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
+
+// BadStatusOrAccess
+//
+// This class defines the type of object to throw (if exceptions are enabled),
+// when accessing the value of an `absl::StatusOr<T>` object that does not
+// contain a value. This behavior is analogous to that of
+// `std::bad_optional_access` in the case of accessing an invalid
+// `std::optional` value.
+//
+// Example:
+//
+// try {
+//   absl::StatusOr<int> v = FetchInt();
+//   DoWork(v.value());  // Accessing value() when not "OK" may throw
+// } catch (absl::BadStatusOrAccess& ex) {
+//   LOG(ERROR) << ex.status();
+// }
 class BadStatusOrAccess : public std::exception {
  public:
   explicit BadStatusOrAccess(absl::Status status);
   ~BadStatusOrAccess() override;
+
+  // BadStatusOrAccess::what()
+  //
+  // Returns the associated explanatory string of the `absl::StatusOr<T>`
+  // object's error code. This function only returns the string literal "Bad
+  // StatusOr Access" for cases when evaluating general exceptions.
+  //
+  // The pointer of this string is guaranteed to be valid until any non-const
+  // function is invoked on the exception object.
   const char* what() const noexcept override;
+
+  // BadStatusOrAccess::status()
+  //
+  // Returns the associated `absl::Status` of the `absl::StatusOr<T>` object's
+  // error.
   const absl::Status& status() const;
 
  private:
@@ -98,6 +98,75 @@ class BadStatusOrAccess : public std::exception {
 template <typename T>
 class ABSL_MUST_USE_RESULT StatusOr;
 
+// absl::StatusOr<T>
+//
+// The `absl::StatusOr<T>` class template is a union of an `absl::Status` object
+// and an object of type `T`. The `absl::StatusOr<T>` models an object that is
+// either a usable object, or an error (of type `absl::Status`) explaining why
+// such an object is not present. An `absl::StatusOr<T>` is typically the return
+// value of a function which may fail.
+//
+// An `absl::StatusOr<T>` can never hold an "OK" status (an
+// `absl::StatusCode::kOk` value); instead, the presence of an object of type
+// `T` indicates success. Instead of checking for a `kOk` value, use the
+// `absl::StatusOr<T>::ok()` member function. (It is for this reason, and code
+// readability, that using the `ok()` function is preferred for `absl::Status`
+// as well.)
+//
+// Example:
+//
+//   StatusOr<Foo> result = DoBigCalculationThatCouldFail();
+//   if (result.ok()) {
+//     result->DoSomethingCool();
+//   } else {
+//     LOG(ERROR) << result.status();
+//   }
+//
+// Accessing the object held by an `absl::StatusOr<T>` should be performed via
+// `operator*` or `operator->`, after a call to `ok()` confirms that the
+// `absl::StatusOr<T>` holds an object of type `T`:
+//
+// Example:
+//
+//   absl::StatusOr<int> i = GetCount();
+//   if (foo.ok()) {
+//     updated_total += *i
+//   }
+//
+// NOTE: using `absl::StatusOr<T>::value()` when no valid value is present will
+// throw an exception if exceptions are enabled or terminate the process when
+// execeptions are not enabled.
+//
+// Example:
+//
+//   StatusOr<Foo> result = DoBigCalculationThatCouldFail();
+//   const Foo& foo = result.value();    // Crash/exception if no value present
+//   foo.DoSomethingCool();
+//
+// A `absl::StatusOr<T*>` can be constructed from a null pointer like any other
+// pointer value, and the result will be that `ok()` returns `true` and
+// `value()` returns `nullptr`. Checking the value of pointer in an
+// `absl::StatusOr<T>` generally requires a bit more care, to ensure both that a
+// value is present and that value is not null:
+//
+//  StatusOr<std::unique_ptr<Foo>> result = FooFactory::MakeNewFoo(arg);
+//  if (!result.ok()) {
+//    LOG(ERROR) << result.status();
+//  } else if (*result == nullptr) {
+//    LOG(ERROR) << "Unexpected null pointer";
+//  } else {
+//    (*result)->DoSomethingCool();
+//  }
+//
+// Example factory implementation returning StatusOr<T>:
+//
+//  StatusOr<Foo> FooFactory::MakeFoo(int arg) {
+//    if (arg <= 0) {
+//      return absl::Status(absl::StatusCode::kInvalidArgument,
+//                          "Arg must be positive");
+//    }
+//    return Foo(arg);
+//  }
 template <typename T>
 class StatusOr : private internal_statusor::StatusOrData<T>,
                  private internal_statusor::CopyCtorBase<T>,
@@ -110,30 +179,42 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   typedef internal_statusor::StatusOrData<T> Base;
 
  public:
+  // StatusOr<T>::value_type
+  //
+  // This instance data provides a generic `value_type` member for use within
+  // generic programming. This usage is analogous to that of
+  // `optional::value_type` in the case of `std::optional`.
   typedef T value_type;
 
-  // Constructs a new StatusOr with Status::UNKNOWN status.  This is marked
-  // 'explicit' to try to catch cases like 'return {};', where people think
-  // absl::StatusOr<std::vector<int>> will be initialized with an empty vector,
-  // instead of a Status::UNKNOWN status.
+  // Constructors
+
+  // Constructs a new `absl::StatusOr` with an `absl::StatusCode::kUnknown`
+  // status. This constructor is marked 'explicit' to prevent usages in return
+  // values such as 'return {};', under the misconception that
+  // `absl::StatusOr<std::vector<int>>` will be initialized with an empty
+  // vector, instead of an `absl::StatusCode::kUnknown` error code.
   explicit StatusOr();
 
-  // StatusOr<T> is copy constructible if T is copy constructible.
+  // `StatusOr<T>` is copy constructible if `T` is copy constructible.
   StatusOr(const StatusOr&) = default;
-  // StatusOr<T> is copy assignable if T is copy constructible and copy
+  // `StatusOr<T>` is copy assignable if `T` is copy constructible and copy
   // assignable.
   StatusOr& operator=(const StatusOr&) = default;
 
-  // StatusOr<T> is move constructible if T is move constructible.
+  // `StatusOr<T>` is move constructible if `T` is move constructible.
   StatusOr(StatusOr&&) = default;
-  // StatusOr<T> is moveAssignable if T is move constructible and move
+  // `StatusOr<T>` is moveAssignable if `T` is move constructible and move
   // assignable.
   StatusOr& operator=(StatusOr&&) = default;
 
-  // Converting constructors from StatusOr<U>, when T is constructible from U.
-  // To avoid ambiguity, they are disabled if T is also constructible from
-  // StatusOr<U>. Explicit iff the corresponding construction of T from U is
-  // explicit.
+  // Converting Constructors
+
+  // Constructs a new `absl::StatusOr<T>` from an `absl::StatusOr<U>`, when `T`
+  // is constructible from `U`. To avoid ambiguity, these constructors are
+  // disabled if `T` is also constructible from `StatusOr<U>.`. This constructor
+  // is explicit if and only if the corresponding construction of `T` from `U`
+  // is explicit. (This constructor inherits its explicitness from the
+  // underlying constructor.)
   template <
       typename U,
       absl::enable_if_t<
@@ -186,9 +267,25 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   explicit StatusOr(StatusOr<U>&& other)
       : Base(static_cast<typename StatusOr<U>::Base&&>(other)) {}
 
-  // Conversion copy/move assignment operator, T must be constructible and
-  // assignable from U. Only enable if T cannot be directly assigned from
-  // StatusOr<U>.
+  // Converting Assignment Operators
+
+  // Creates an `absl::StatusOr<T>` through assignment from an
+  // `absl::StatusOr<U>` when:
+  //
+  //   * Both `absl::StatusOr<T>` and `absl::StatusOr<U>` are OK by assigning
+  //     `U` to `T` directly.
+  //   * `absl::StatusOr<T>` is OK and `absl::StatusOr<U>` contains an error
+  //      code by destroying `absl::StatusOr<T>`'s value and assigning from
+  //      `absl::StatusOr<U>'
+  //   * `absl::StatusOr<T>` contains an error code and `absl::StatusOr<U>` is
+  //      OK by directly initializing `T` from `U`.
+  //   * Both `absl::StatusOr<T>` and `absl::StatusOr<U>` contain an error
+  //     code by assigning the `Status` in `absl::StatusOr<U>` to
+  //     `absl::StatusOr<T>`
+  //
+  // These overloads only apply if `absl::StatusOr<T>` is constructible and
+  // assignable from `absl::StatusOr<U>` and `StatusOr<T>` cannot be directly
+  // assigned from `StatusOr<U>`.
   template <
       typename U,
       absl::enable_if_t<
@@ -221,14 +318,13 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
     return *this;
   }
 
-  // Constructs a new StatusOr with a non-ok status. After calling this
-  // constructor, this->ok() will be false and calls to value() will CHECK-fail.
-  // The constructor also takes any type `U` that is convertible to `Status`.
+  // Constructs a new `absl::StatusOr<T>` with a non-ok status. After calling
+  // this constructor, `this->ok()` will be `false` and calls to `value()` will
+  // crash, or produce an exception if exceptions are enabled.
   //
-  // NOTE: Not explicit - we want to use StatusOr<T> as a return
-  // value, so it is convenient and sensible to be able to do
-  // `return Status()` or `return ConvertibleToStatus()` when the return type
-  // is `StatusOr<T>`.
+  // The constructor also takes any type `U` that is convertible to
+  // `absl::Status`. This constructor is explicit if an only if `U` is not of
+  // type `absl::Status` and the conversion from `U` to `Status` is explicit.
   //
   // REQUIRES: !Status(std::forward<U>(v)).ok(). This requirement is DCHECKed.
   // In optimized builds, passing absl::OkStatus() here will have the effect
@@ -279,6 +375,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   }
 
   // Perfect-forwarding value assignment operator.
+
   // If `*this` contains a `T` value before the call, the contained value is
   // assigned from `std::forward<U>(v)`; Otherwise, it is directly-initialized
   // from `std::forward<U>(v)`.
@@ -305,39 +402,25 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
                                      HasConversionOperatorToStatusOr<T, U&&>>>>,
           internal_statusor::IsForwardingAssignmentValid<T, U&&>>::value>::type>
   StatusOr& operator=(U&& v) {
-    static_assert(
-        !absl::conjunction<
-            std::is_constructible<T, U&&>, std::is_assignable<T&, U&&>,
-            std::is_constructible<absl::Status, U&&>,
-            std::is_assignable<absl::Status&, U&&>,
-            absl::negation<std::is_same<
-                T, absl::remove_cv_t<absl::remove_reference_t<U>>>>>::value,
-        "U can assign to both T and Status, will result in semantic change");
-    static_assert(
-        !absl::conjunction<
-            std::is_constructible<T, U&&>, std::is_assignable<T&, U&&>,
-            internal_statusor::HasConversionOperatorToStatusOr<T, U&&>,
-            absl::negation<std::is_same<
-                T, absl::remove_cv_t<absl::remove_reference_t<U>>>>>::value,
-        "U can assign to T and convert to StatusOr<T>, will result in semantic "
-        "change");
     this->Assign(std::forward<U>(v));
     return *this;
   }
 
-  // Constructs the inner value T in-place using the provided args, using the
-  // T(args...) constructor.
+  // Constructs the inner value `T` in-place using the provided args, using the
+  // `T(args...)` constructor.
   template <typename... Args>
   explicit StatusOr(absl::in_place_t, Args&&... args);
   template <typename U, typename... Args>
   explicit StatusOr(absl::in_place_t, std::initializer_list<U> ilist,
                     Args&&... args);
 
-  // Constructs the inner value T in-place using the provided args, using the
-  // T(U) (direct-initialization) constructor. Only valid if T can be
-  // constructed from a U. Can accept move or copy constructors. Explicit if
-  // U is not convertible to T. To avoid ambiguity, this is disabled if U is
-  // a StatusOr<J>, where J is convertible to T.
+  // Constructs the inner value `T` in-place using the provided args, using the
+  // `T(U)` (direct-initialization) constructor. This constructor is only valid
+  // if `T` can be constructed from a `U`. Can accept move or copy constructors.
+  //
+  // This constructor is explicit if `U` is not convertible to `T`. To avoid
+  // ambiguity, this constuctor is disabled if `U` is a `StatusOr<J>`, where `J`
+  // is convertible to `T`.
   template <
       typename U = T,
       absl::enable_if_t<
@@ -355,21 +438,6 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
           int> = 0>
   StatusOr(U&& u)  // NOLINT
       : StatusOr(absl::in_place, std::forward<U>(u)) {
-    static_assert(
-        !absl::conjunction<
-            std::is_convertible<U&&, T>, std::is_convertible<U&&, absl::Status>,
-            absl::negation<std::is_same<
-                T, absl::remove_cv_t<absl::remove_reference_t<U>>>>>::value,
-        "U is convertible to both T and Status, will result in semantic "
-        "change");
-    static_assert(
-        !absl::conjunction<
-            std::is_convertible<U&&, T>,
-            internal_statusor::HasConversionOperatorToStatusOr<T, U&&>,
-            absl::negation<std::is_same<
-                T, absl::remove_cv_t<absl::remove_reference_t<U>>>>>::value,
-        "U can construct T and convert to StatusOr<T>, will result in semantic "
-        "change");
   }
 
   template <
@@ -390,38 +458,42 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
           int> = 0>
   explicit StatusOr(U&& u)  // NOLINT
       : StatusOr(absl::in_place, std::forward<U>(u)) {
-    static_assert(
-        !absl::conjunction<
-            std::is_constructible<T, U&&>,
-            std::is_constructible<absl::Status, U&&>,
-            absl::negation<std::is_same<
-                T, absl::remove_cv_t<absl::remove_reference_t<U>>>>>::value,
-        "U can construct both T and Status, will result in semantic "
-        "change");
-    static_assert(
-        !absl::conjunction<
-            std::is_constructible<T, U&&>,
-            internal_statusor::HasConversionOperatorToStatusOr<T, U&&>,
-            absl::negation<std::is_same<
-                T, absl::remove_cv_t<absl::remove_reference_t<U>>>>>::value,
-        "U can construct T and convert to StatusOr<T>, will result in semantic "
-        "change");
   }
 
-  // Returns this->status().ok()
+  // StatusOr<T>::ok()
+  //
+  // Returns whether or not this `absl::StatusOr<T>` holds a `T` value. This
+  // member function is analagous to `absl::Status::ok()` and should be used
+  // similarly to check the status of return values.
+  //
+  // Example:
+  //
+  // StatusOr<Foo> result = DoBigCalculationThatCouldFail();
+  // if (result.ok()) {
+  //    // Handle result
+  // else {
+  //    // Handle error
+  // }
   ABSL_MUST_USE_RESULT bool ok() const { return this->status_.ok(); }
 
-  // Returns a reference to our status. If this contains a T, then
-  // returns absl::OkStatus().
+  // StatusOr<T>::status()
+  //
+  // Returns a reference to the current `absl::Status` contained within the
+  // `absl::StatusOr<T>`. If `absl::StatusOr<T>` contains a `T`, then this
+  // function returns `absl::OkStatus()`.
   const Status& status() const &;
   Status status() &&;
 
+  // StatusOr<T>::value()
+  //
   // Returns a reference to the held value if `this->ok()`. Otherwise, throws
-  // `absl::BadStatusOrAccess` if exception is enabled, or `LOG(FATAL)` if
-  // exception is disabled.
+  // `absl::BadStatusOrAccess` if exceptions are enabled, or is guaranteed to
+  // terminate the process if exceptions are disabled.
+  //
   // If you have already checked the status using `this->ok()`, you probably
   // want to use `operator*()` or `operator->()` to access the value instead of
   // `value`.
+  //
   // Note: for value types that are cheap to copy, prefer simple code:
   //
   //   T value = statusor.value();
@@ -443,28 +515,35 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   const T&& value() const&&;
   T&& value() &&;
 
+  // StatusOr<T>:: operator*()
+  //
   // Returns a reference to the current value.
   //
-  // REQUIRES: this->ok() == true, otherwise the behavior is undefined.
+  // REQUIRES: `this->ok() == true`, otherwise the behavior is undefined.
   //
-  // Use this->ok() to verify that there is a current value.
-  // Alternatively, see value() for a similar API that guarantees
-  // CHECK-failing if there is no current value.
+  // Use `this->ok()` to verify that there is a current value within the
+  // `absl::StatusOr<T>`. Alternatively, see the `value()` member function for a
+  // similar API that guarantees crashing or throwing an exception if there is
+  // no current value.
   const T& operator*() const&;
   T& operator*() &;
   const T&& operator*() const&&;
   T&& operator*() &&;
 
+  // StatusOr<T>::operator->()
+  //
   // Returns a pointer to the current value.
   //
-  // REQUIRES: this->ok() == true, otherwise the behavior is undefined.
+  // REQUIRES: `this->ok() == true`, otherwise the behavior is undefined.
   //
-  // Use this->ok() to verify that there is a current value.
+  // Use `this->ok()` to verify that there is a current value.
   const T* operator->() const;
   T* operator->();
 
-  // Returns the current value this->ok() == true. Otherwise constructs a value
-  // using `default_value`.
+  // StatusOr<T>::value_or()
+  //
+  // Returns the current value of `this->ok() == true`. Otherwise constructs a
+  // value using the provided `default_value`.
   //
   // Unlike `value`, this function returns by value, copying the current value
   // if necessary. If the value type supports an efficient move, it can be used
@@ -472,18 +551,22 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   //
   //   T value = std::move(statusor).value_or(def);
   //
-  // Unlike with `value`, calling `std::move` on the result of `value_or` will
+  // Unlike with `value`, calling `std::move()` on the result of `value_or` will
   // still trigger a copy.
   template <typename U>
   T value_or(U&& default_value) const&;
   template <typename U>
   T value_or(U&& default_value) &&;
 
+  // StatusOr<T>::IgnoreError()
+  //
   // Ignores any errors. This method does nothing except potentially suppress
   // complaints from any tools that are checking that errors are not dropped on
   // the floor.
   void IgnoreError() const;
 
+  // StatusOr<T>::emplace()
+  //
   // Reconstructs the inner value T in-place using the provided args, using the
   // T(args...) constructor. Returns reference to the reconstructed `T`.
   template <typename... Args>
@@ -522,19 +605,26 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   void Assign(absl::StatusOr<U>&& other);
 };
 
+// operator==()
+//
+// This operator checks the equality of two `absl::StatusOr<T>` objects.
 template <typename T>
 bool operator==(const StatusOr<T>& lhs, const StatusOr<T>& rhs) {
   if (lhs.ok() && rhs.ok()) return *lhs == *rhs;
   return lhs.status() == rhs.status();
 }
 
+// operator!=()
+//
+// This operator checks the inequality of two `absl::StatusOr<T>` objects.
 template <typename T>
 bool operator!=(const StatusOr<T>& lhs, const StatusOr<T>& rhs) {
   return !(lhs == rhs);
 }
 
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 // Implementation details for StatusOr<T>
+//------------------------------------------------------------------------------
 
 // TODO(sbenza): avoid the string here completely.
 template <typename T>
