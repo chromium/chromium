@@ -183,8 +183,10 @@ blink_platform_sources("scheduler") {
     "//v8",
   ]
 
-  allow_circular_includes_from =
-      [ "//third_party/blink/renderer/platform/instrumentation" ]
+  allow_circular_includes_from = [
+    "//third_party/blink/renderer/platform/heap:heap",
+    "//third_party/blink/renderer/platform/instrumentation",
+  ]
 }
 
 source_set("test_support") {

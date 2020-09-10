@@ -238,8 +238,8 @@ source_set("platform_export") {
 
   visibility = []  # Allow re-assignment of list.
   visibility = [
-    ":platform",
     "//mojo/public/cpp/bindings:wtf_support",
+    "//third_party/blink/renderer/platform/*",
   ]
 }
 
@@ -250,8 +250,8 @@ component("platform") {
     "//services/device/public/mojom:mojom_blink",
     "//services/media_session/public/mojom:mojom_blink",
     "//third_party/blink/*",
-    "//url/mojom:url_mojom_origin_blink",
     "//url/mojom:url_mojom_gurl_blink",
+    "//url/mojom:url_mojom_origin_blink",
   ]
   output_name = "blink_platform"
 
@@ -1561,6 +1561,7 @@ component("platform") {
 
   allow_circular_includes_from = [
     "//third_party/blink/renderer/platform/blob",
+    "//third_party/blink/renderer/platform/heap:heap",
     "//third_party/blink/renderer/platform/instrumentation",
     "//third_party/blink/renderer/platform/scheduler",
   ]
