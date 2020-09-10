@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,9 +29,8 @@ class ProbeServiceTest : public testing::Test {
   void TearDown() override {
     CrosHealthdClient::Shutdown();
 
-    // Wait for cros_healthd::ServiceConnection to observe the destruction of
-    // the client.
-    base::RunLoop().RunUntilIdle();
+    // Wait for ServiceConnection to observe the destruction of the client.
+    cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   }
 
   health::mojom::ProbeServiceProxy* probe_service() const {

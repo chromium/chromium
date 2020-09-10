@@ -54,6 +54,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/wilco_dtc_supportd:mojo_utils",
     "//chromeos/components/telemetry_extension_ui/mojom",
     "//chromeos/dbus/cros_healthd",
+    "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
