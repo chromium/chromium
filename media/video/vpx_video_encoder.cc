@@ -76,9 +76,19 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
   return Status();
 }
 
+void FreeCodecCtx(vpx_codec_ctx_t* codec_ctx) {
+  if (codec_ctx->name) {
+    // Codec has been initialized, we need to destroy it.
+    auto error = vpx_codec_destroy(codec_ctx);
+    DCHECK_EQ(error, VPX_CODEC_OK);
+  }
+
+  delete codec_ctx;
+}
+
 }  // namespace
 
-VpxVideoEncoder::VpxVideoEncoder() = default;
+VpxVideoEncoder::VpxVideoEncoder() : codec_(nullptr, FreeCodecCtx) {}
 
 void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
                                  const Options& options,
@@ -141,30 +151,21 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
       break;
   }
 
-  Status status;
-  if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt, options.width,
-                                  options.height, 1, nullptr)) {
-    status = Status(StatusCode::kEncoderInitializationError,
-                    "Invalid format or frame size.");
-    std::move(done_cb).Run(status);
-    return;
-  }
-  vpx_image_.bit_depth = bits_for_storage;
-
-  status = SetUpVpxConfig(options, &codec_config_);
+  Status status = SetUpVpxConfig(options, &codec_config_);
   if (!status.is_ok()) {
     std::move(done_cb).Run(status);
     return;
   }
 
-  codec_ = new vpx_codec_ctx_t;
+  vpx_codec_unique_ptr codec(new vpx_codec_ctx_t, FreeCodecCtx);
+  codec->name = nullptr;  // We are allowed to use vpx_codec_ctx_t.name
   vpx_error = vpx_codec_enc_init(
-      codec_, iface, &codec_config_,
+      codec.get(), iface, &codec_config_,
       codec_config_.g_bit_depth == VPX_BITS_8 ? 0 : VPX_CODEC_USE_HIGHBITDEPTH);
   if (vpx_error != VPX_CODEC_OK) {
     std::string msg = base::StringPrintf(
         "VPX encoder initialization error: %s %s",
-        vpx_codec_err_to_string(vpx_error), codec_->err_detail);
+        vpx_codec_err_to_string(vpx_error), codec->err_detail);
 
     status = Status(StatusCode::kEncoderInitializationError, msg);
     std::move(done_cb).Run(status);
@@ -173,7 +174,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
 
   // Due to https://bugs.chromium.org/p/webm/issues/detail?id=1684
   // values less than 5 crash VP9 encoder.
-  vpx_error = vpx_codec_control(codec_, VP8E_SET_CPUUSED, 5);
+  vpx_error = vpx_codec_control(codec.get(), VP8E_SET_CPUUSED, 5);
   if (vpx_error != VPX_CODEC_OK) {
     std::string msg =
         base::StringPrintf("VPX encoder VP8E_SET_CPUUSED error: %s",
@@ -184,20 +185,30 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
+  if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt, options.width,
+                                  options.height, 1, nullptr)) {
+    status = Status(StatusCode::kEncoderInitializationError,
+                    "Invalid format or frame size.");
+    std::move(done_cb).Run(status);
+    return;
+  }
+  vpx_image_.bit_depth = bits_for_storage;
+
   if (is_vp9_) {
     // Set the number of column tiles in encoding an input frame, with number of
     // tile columns (in Log2 unit) as the parameter.
     // The minimum width of a tile column is 256 pixels, the maximum is 4096.
     int log2_tile_columns =
         static_cast<int>(std::log2(codec_config_.g_w / 256));
-    vpx_codec_control(codec_, VP9E_SET_TILE_COLUMNS, log2_tile_columns);
+    vpx_codec_control(codec.get(), VP9E_SET_TILE_COLUMNS, log2_tile_columns);
 
     // Turn on row level multi-threading.
-    vpx_codec_control(codec_, VP9E_SET_ROW_MT, 1);
+    vpx_codec_control(codec.get(), VP9E_SET_ROW_MT, 1);
   }
 
   options_ = options;
   output_cb_ = media::BindToCurrentLoop(std::move(output_cb));
+  codec_ = std::move(codec);
   std::move(done_cb).Run(Status());
 }
 
@@ -268,13 +279,13 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   auto duration = GetFrameDuration(*frame);
   auto deadline = VPX_DL_REALTIME;
   vpx_codec_flags_t flags = key_frame ? VPX_EFLAG_FORCE_KF : 0;
-  auto vpx_error = vpx_codec_encode(codec_, &vpx_image_, timestamp, duration,
-                                    flags, deadline);
+  auto vpx_error = vpx_codec_encode(codec_.get(), &vpx_image_, timestamp,
+                                    duration, flags, deadline);
 
   if (vpx_error != VPX_CODEC_OK) {
     std::string msg = base::StringPrintf("VPX encoding error: %s (%s)",
                                          vpx_codec_err_to_string(vpx_error),
-                                         vpx_codec_error_detail(codec_));
+                                         vpx_codec_error_detail(codec_.get()));
     status = Status(StatusCode::kEncoderFailedEncode, msg)
                  .WithData("vpx_error", vpx_error);
     std::move(done_cb).Run(std::move(status));
@@ -295,7 +306,7 @@ void VpxVideoEncoder::ChangeOptions(const Options& options, StatusCB done_cb) {
   vpx_codec_enc_cfg_t new_config = codec_config_;
   auto status = SetUpVpxConfig(options, &new_config);
   if (status.is_ok()) {
-    auto vpx_error = vpx_codec_enc_config_set(codec_, &new_config);
+    auto vpx_error = vpx_codec_enc_config_set(codec_.get(), &new_config);
     if (vpx_error == VPX_CODEC_OK) {
       codec_config_ = new_config;
       options_ = options;
@@ -322,10 +333,6 @@ VpxVideoEncoder::~VpxVideoEncoder() {
   if (!codec_)
     return;
 
-  auto error = vpx_codec_destroy(codec_);
-  DCHECK_EQ(error, VPX_CODEC_OK);
-  delete codec_;
-
   // It's safe to call vpx_img_free, even if vpx_image_ has never been
   // initialized. vpx_img_free is not going to deallocate the vpx_image_
   // itself, only internal buffers.
@@ -339,11 +346,11 @@ void VpxVideoEncoder::Flush(StatusCB done_cb) {
     return;
   }
 
-  auto vpx_error = vpx_codec_encode(codec_, nullptr, -1, 0, 0, 0);
+  auto vpx_error = vpx_codec_encode(codec_.get(), nullptr, -1, 0, 0, 0);
   if (vpx_error != VPX_CODEC_OK) {
     std::string msg = base::StringPrintf("VPX flushing error: %s (%s)",
                                          vpx_codec_err_to_string(vpx_error),
-                                         vpx_codec_error_detail(codec_));
+                                         vpx_codec_error_detail(codec_.get()));
     Status status = Status(StatusCode::kEncoderFailedEncode, msg)
                         .WithData("vpx_error", vpx_error);
     std::move(done_cb).Run(std::move(status));
@@ -356,7 +363,7 @@ void VpxVideoEncoder::Flush(StatusCB done_cb) {
 void VpxVideoEncoder::DrainOutputs() {
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
-  while ((pkt = vpx_codec_get_cx_data(codec_, &iter))) {
+  while ((pkt = vpx_codec_get_cx_data(codec_.get(), &iter))) {
     if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
       VideoEncoderOutput result;
       result.key_frame = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
