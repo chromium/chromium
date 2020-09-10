@@ -45,8 +45,7 @@ enum SplitResult {
 // To split on either commas or semicolons, keeping all whitespace:
 //
 //   std::vector<std::string> tokens = base::SplitString(
-//       input, ", WARN_UNUSED_RESULT;", base::KEEP_WHITESPACE,
-//       base::SPLIT_WANT_ALL) WARN_UNUSED_RESULT;
+//       input, ",;", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 BASE_EXPORT std::vector<std::string> SplitString(StringPiece input,
                                                  StringPiece separators,
                                                  WhitespaceHandling whitespace,
