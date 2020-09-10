@@ -2352,4 +2352,211 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(shell_surface->get_shadow_bounds_changed_for_testing());
 }
 
+namespace {
+
+class ClientControlledShellSurfaceScaleTest : public test::ExoTestBase {
+ public:
+  ClientControlledShellSurfaceScaleTest() = default;
+  ~ClientControlledShellSurfaceScaleTest() override = default;
+
+  int bounds_change_count() const { return bounds_change_count_; }
+
+  const std::vector<gfx::Rect>& requested_bounds() const {
+    return requested_bounds_;
+  }
+
+  int geometry_change_count() const { return geometry_change_count_; }
+
+  const std::vector<gfx::Rect>& geometry_bounds() const {
+    return geometry_bounds_;
+  }
+
+  void OnBoundsChangeEvent(ClientControlledShellSurface* shell_surface,
+                           ash::WindowStateType current_state,
+                           ash::WindowStateType requested_state,
+                           int64_t display_id,
+                           const gfx::Rect& bounds_in_display,
+                           bool is_resize,
+                           int bounds_change) {
+    bounds_change_count_++;
+    requested_bounds_.push_back(bounds_in_display);
+  }
+
+  void OnGeometryChangeEvent(const gfx::Rect& geometry) {
+    geometry_change_count_++;
+    geometry_bounds_.push_back(geometry);
+  }
+
+  void Reset() {
+    bounds_change_count_ = 0;
+    requested_bounds_.clear();
+
+    geometry_change_count_ = 0;
+    geometry_bounds_.clear();
+  }
+
+ private:
+  int bounds_change_count_ = 0;
+  std::vector<gfx::Rect> requested_bounds_;
+
+  int geometry_change_count_ = 0;
+  std::vector<gfx::Rect> geometry_bounds_;
+
+  ClientControlledShellSurfaceScaleTest(
+      const ClientControlledShellSurfaceScaleTest&) = delete;
+  ClientControlledShellSurfaceScaleTest& operator=(
+      const ClientControlledShellSurfaceScaleTest&) = delete;
+};
+
+}  // namespace
+
+TEST_F(ClientControlledShellSurfaceScaleTest, ScaleSetOnInitialCommit) {
+  UpdateDisplay("1200x800*2.0");
+
+  const gfx::Size buffer_size(20, 20);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface());
+  auto shell_surface = exo_test_helper()->CreateClientControlledShellSurface(
+      surface.get(), /*is_modal=*/false, /*default_scale_cancellation=*/false);
+
+  shell_surface->set_bounds_changed_callback(base::BindRepeating(
+      &ClientControlledShellSurfaceScaleTest::OnBoundsChangeEvent,
+      base::Unretained(this), base::Unretained(shell_surface.get())));
+  shell_surface->set_geometry_changed_callback(base::BindRepeating(
+      &ClientControlledShellSurfaceScaleTest::OnGeometryChangeEvent,
+      base::Unretained(this)));
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
+  EXPECT_EQ(0, bounds_change_count());
+  EXPECT_EQ(1, geometry_change_count());
+}
+
+TEST_F(ClientControlledShellSurfaceScaleTest,
+       DeferScaleCommitForRestoredWindow) {
+  UpdateDisplay("1200x800*2.0");
+
+  const gfx::Size buffer_size(20, 20);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface());
+  auto shell_surface = exo_test_helper()->CreateClientControlledShellSurface(
+      surface.get(), /*is_modal=*/false, /*default_scale_cancellation=*/false);
+  shell_surface->set_geometry_changed_callback(base::BindRepeating(
+      &ClientControlledShellSurfaceScaleTest::OnGeometryChangeEvent,
+      base::Unretained(this)));
+  shell_surface->SetRestored();
+  surface->Attach(buffer.get());
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  gfx::Rect initial_native_bounds(100, 100, 100, 100);
+  shell_surface->SetBounds(primary_display.id(), initial_native_bounds);
+  surface->Commit();
+
+  EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
+  EXPECT_EQ(0, bounds_change_count());
+  EXPECT_EQ(1, geometry_change_count());
+  EXPECT_EQ(gfx::ScaleToRoundedRect(initial_native_bounds,
+                                    shell_surface->GetClientToDpScale()),
+            geometry_bounds()[0]);
+
+  UpdateDisplay("2400x1600*1.0");
+
+  // The surface's scale should not be committed until the buffer size changes.
+  EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
+  EXPECT_EQ(0, bounds_change_count());
+
+  const gfx::Size new_buffer_size(10, 10);
+  std::unique_ptr<Buffer> new_buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(new_buffer_size)));
+  surface->Attach(new_buffer.get());
+  surface->Commit();
+
+  EXPECT_EQ(1.f, shell_surface->GetClientToDpScale());
+  EXPECT_EQ(0, bounds_change_count());
+}
+
+TEST_F(ClientControlledShellSurfaceScaleTest,
+       CommitScaleChangeImmediatelyForMaximizedWindow) {
+  UpdateDisplay("1200x800*2.0");
+
+  const gfx::Size buffer_size(20, 20);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface());
+  auto shell_surface = exo_test_helper()->CreateClientControlledShellSurface(
+      surface.get(), /*is_modal=*/false, /*default_scale_cancellation=*/false);
+  shell_surface->set_geometry_changed_callback(base::BindRepeating(
+      &ClientControlledShellSurfaceScaleTest::OnGeometryChangeEvent,
+      base::Unretained(this)));
+  shell_surface->SetMaximized();
+  surface->Attach(buffer.get());
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  gfx::Rect initial_native_bounds(100, 100, 100, 100);
+  shell_surface->SetBounds(primary_display.id(), initial_native_bounds);
+  surface->Commit();
+
+  EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
+  EXPECT_EQ(1, geometry_change_count());
+  EXPECT_EQ(gfx::ScaleToRoundedRect(initial_native_bounds,
+                                    shell_surface->GetClientToDpScale()),
+            geometry_bounds()[0]);
+
+  UpdateDisplay("2400x1600*1.0");
+
+  EXPECT_EQ(1.f, shell_surface->GetClientToDpScale());
+  EXPECT_EQ(0, bounds_change_count());
+}
+
+TEST_F(ClientControlledShellSurfaceScaleTest,
+       CommitScaleChangeImmediatelyInTabletMode) {
+  EnableTabletMode(true);
+  UpdateDisplay("1200x800*2.0");
+
+  const gfx::Size buffer_size(20, 20);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface());
+  auto shell_surface = exo_test_helper()->CreateClientControlledShellSurface(
+      surface.get(), /*is_modal=*/false, /*default_scale_cancellation=*/false);
+  shell_surface->set_bounds_changed_callback(base::BindRepeating(
+      &ClientControlledShellSurfaceScaleTest::OnBoundsChangeEvent,
+      base::Unretained(this), base::Unretained(shell_surface.get())));
+  shell_surface->set_geometry_changed_callback(base::BindRepeating(
+      &ClientControlledShellSurfaceScaleTest::OnGeometryChangeEvent,
+      base::Unretained(this)));
+  surface->Attach(buffer.get());
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  gfx::Rect initial_native_bounds(100, 100, 100, 100);
+  shell_surface->SetBounds(primary_display.id(), initial_native_bounds);
+  shell_surface->SetSnappedToRight();
+  surface->Commit();
+
+  EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
+  EXPECT_EQ(1, geometry_change_count());
+  EXPECT_EQ(gfx::ScaleToRoundedRect(initial_native_bounds,
+                                    shell_surface->GetClientToDpScale()),
+            geometry_bounds()[0]);
+
+  // A bounds change is requested because the window is snapped.
+  EXPECT_EQ(1, bounds_change_count());
+
+  Reset();
+  UpdateDisplay("2400x1600*1.0");
+
+  EXPECT_EQ(1.f, shell_surface->GetClientToDpScale());
+
+  // Updating the scale in tablet mode should request a bounds change, because
+  // the window is snapped. Changing the scale will change its bounds in DP,
+  // even if the position of the window as visible to the user does not change.
+  EXPECT_GE(bounds_change_count(), 1);
+}
+
 }  // namespace exo
