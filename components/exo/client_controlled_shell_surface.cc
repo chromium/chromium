@@ -843,6 +843,15 @@ gfx::Size ClientControlledShellSurface::GetMaximumSize() const {
 
 void ClientControlledShellSurface::OnDeviceScaleFactorChanged(float old_dsf,
                                                               float new_dsf) {
+  if (!use_default_scale_cancellation_) {
+    SetScale(new_dsf);
+    // Commit scale changes immediately if we expect that the window will not be
+    // resized.
+    if (widget_->IsMaximized() || widget_->IsFullscreen() ||
+        WMHelper::GetInstance()->InTabletMode())
+      CommitPendingScale();
+  }
+
   views::View::OnDeviceScaleFactorChanged(old_dsf, new_dsf);
 
   UpdateWidgetBounds();
@@ -879,18 +888,19 @@ void ClientControlledShellSurface::OnDisplayMetricsChanged(
   if (current_display.id() != new_display.id())
     return;
 
+  bool in_tablet_mode = WMHelper::GetInstance()->InTabletMode();
+
   if (!use_default_scale_cancellation_ &&
       changed_metrics &
           display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR) {
     SetScale(new_display.device_scale_factor());
     // Commit scale changes immediately if we expect that the window will not be
     // resized.
-    if (frame_type_ != SurfaceFrameType::NORMAL || widget_->IsMaximized() ||
-        widget_->IsFullscreen())
+    if (widget_->IsMaximized() || widget_->IsFullscreen() || in_tablet_mode)
       CommitPendingScale();
   }
 
-  if (!WMHelper::GetInstance()->InTabletMode() || !widget_->IsActive() ||
+  if (!in_tablet_mode || !widget_->IsActive() ||
       !(changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
     return;
   }
