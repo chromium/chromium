@@ -273,7 +273,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Sets the SessionStorageNamespace for the given |partition_id|. This is
   // used during initialization of a new NavigationController to allow
   // pre-population of the SessionStorageNamespace objects. Session restore,
-  // prerendering, and the implementaion of window.open() are the primary users
+  // prerendering, and the implementation of window.open() are the primary users
   // of this API.
   //
   // Calling this function when a SessionStorageNamespace has already been
@@ -415,7 +415,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
           different_document_loads);
 
   // Starts a new navigation based on |load_params|, that doesn't correspond to
-  // an exisiting NavigationEntry.
+  // an existing NavigationEntry.
   void NavigateWithoutEntry(const LoadURLParams& load_params);
 
   // Handles a navigation to a renderer-debug URL.
@@ -637,7 +637,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // pending_entry_ is a new entry (created by LoadURL).
   int pending_entry_index_ = -1;
 
-  // The delegate associated with the controller. Possibly NULL during
+  // The delegate associated with the controller. Possibly null during
   // setup.
   NavigationControllerDelegate* delegate_;
 

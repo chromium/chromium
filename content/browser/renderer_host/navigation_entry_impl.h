@@ -326,7 +326,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     user_typed_url_ = user_typed_url;
   }
 
-  // The RestoreType for this entry. This is set if the entry was retored. This
+  // The RestoreType for this entry. This is set if the entry was restored. This
   // is set to RestoreType::NONE once the entry is loaded.
   void set_restore_type(RestoreType type) { restore_type_ = type; }
   RestoreType restore_type() const { return restore_type_; }

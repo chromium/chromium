@@ -507,10 +507,11 @@ TEST_F(NavigationControllerTest, LoadURLSameTime) {
 
   // Timestamps should be distinct despite the clock returning the
   // same value.
-  EXPECT_EQ(1u,
-            controller.GetEntryAtIndex(0)->GetTimestamp().ToInternalValue());
-  EXPECT_EQ(2u,
-            controller.GetEntryAtIndex(1)->GetTimestamp().ToInternalValue());
+  base::Time t;
+  t = controller.GetEntryAtIndex(0)->GetTimestamp();
+  EXPECT_EQ(1u, t.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  t = controller.GetEntryAtIndex(1)->GetTimestamp();
+  EXPECT_EQ(2u, t.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 void CheckNavigationEntryMatchLoadParams(

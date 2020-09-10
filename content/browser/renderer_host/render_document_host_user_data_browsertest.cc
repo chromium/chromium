@@ -559,8 +559,8 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // Test needs these RenderFrameHosts to be pending deletion after navigating
   // but it doesn't happen with BackForwardCache as it is stored in cache.
   // BFCache case is covered explicitly by
-  // "RenderDocumentHostUserDataWithBackForwardCacheTest.BackForwardCacheNavigation"
-  // test.
+  // "RenderDocumentHostUserDataWithBackForwardCacheTest.
+  //      BackForwardCacheNavigation" test.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
                                     BackForwardCache::TEST_ASSUMES_NO_CACHING);
 

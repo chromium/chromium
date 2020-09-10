@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/ancestor_throttle.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -140,7 +141,7 @@ std::unique_ptr<NavigationThrottle> AncestorThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  return std::unique_ptr<NavigationThrottle>(new AncestorThrottle(handle));
+  return base::WrapUnique(new AncestorThrottle(handle));
 }
 
 AncestorThrottle::~AncestorThrottle() {}

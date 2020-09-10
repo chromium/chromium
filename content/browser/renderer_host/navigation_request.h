@@ -473,9 +473,10 @@ class CONTENT_EXPORT NavigationRequest
   void CancelDeferredNavigation(NavigationThrottle* cancelling_throttle,
                                 NavigationThrottle::ThrottleCheckResult result);
 
-  // Simulates the navigation resuming. Most callers should just let the
-  // deferring NavigationThrottle do the resuming.
-  void CallResumeForTesting();
+  // Returns the underlying NavigationThrottleRunner for tests to manipulate.
+  NavigationThrottleRunner* GetNavigationThrottleRunnerForTesting() {
+    return throttle_runner_.get();
+  }
 
   // Simulates renderer aborting navigation.
   void RendererAbortedNavigationForTesting();

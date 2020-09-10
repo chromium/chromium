@@ -198,7 +198,7 @@ RenderFrameHostManager::~RenderFrameHostManager() {
   ResetProxyHosts();
 
   // We should always have a current RenderFrameHost except in some tests.
-  SetRenderFrameHost(std::unique_ptr<RenderFrameHostImpl>());
+  SetRenderFrameHost(nullptr);
 }
 
 void RenderFrameHostManager::InitRoot(SiteInstance* site_instance,
@@ -1346,7 +1346,7 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
     bool should_replace_current_entry) {
   // If we've disabled proactive BrowsingInstance swap for this RenderFrameHost,
   // we should not try to do a proactive swap.
-  if (render_frame_host_->IsProactiveBrowsingInstanceSwapDisabledForTesting())
+  if (render_frame_host_->HasTestDisabledProactiveBrowsingInstanceSwap())
     return ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled;
   // We should only do proactive swap when either the flag is enabled, or if
   // it's needed for the back-forward cache (and the bfcache flag is enabled).

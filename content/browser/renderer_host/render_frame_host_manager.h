@@ -173,7 +173,7 @@ class CONTENT_EXPORT RenderFrameHostManager
     virtual ~Delegate() {}
   };
 
-  // The delegate pointer must be non-NULL and is not owned by this class. It
+  // The delegate pointer must be non-null and is not owned by this class. It
   // must outlive this class.
   //
   // You must call one of the Init*() methods before using this class.
@@ -190,7 +190,7 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   // Returns the currently active RenderFrameHost.
   //
-  // This will be non-NULL between Init() and Shutdown(). You may want to NULL
+  // This will be non-null between Init() and Shutdown(). You may want to null
   // check it in many cases, however. Windows can send us messages during the
   // destruction process after it has been shut down.
   RenderFrameHostImpl* current_frame_host() const {
@@ -200,7 +200,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // TODO(creis): Remove this when we no longer use RVH for navigation.
   RenderViewHostImpl* current_host() const;
 
-  // Returns the view associated with the current RenderViewHost, or NULL if
+  // Returns the view associated with the current RenderViewHost, or null if
   // there is no current one.
   RenderWidgetHostView* GetRenderWidgetHostView() const;
 
@@ -227,7 +227,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // If this is a RenderFrameHostManager for a main frame, removes the
   // FrameTreeNode in the outer WebContents that represents this FrameTreeNode.
   // TODO(lazyboy): This does not belong to RenderFrameHostManager, move it to
-  // somehwere else.
+  // somewhere else.
   void RemoveOuterDelegateFrame();
 
   // Returns the speculative RenderFrameHost, or null if there is no speculative
@@ -879,7 +879,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // For use in creating RenderFrameHosts.
   FrameTreeNode* frame_tree_node_;
 
-  // Our delegate, not owned by us. Guaranteed non-NULL.
+  // Our delegate, not owned by us. Guaranteed non-null.
   Delegate* delegate_;
 
   // Our RenderFrameHost which is responsible for all communication with a child

@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/renderer_host/debug_urls.h"
@@ -2134,7 +2135,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   };
   for (const auto& test_case : kTestCases) {
     // Modify the URLs port to use the embedded test server's port.
-    std::string port_str(std::to_string(embedded_test_server()->port()));
+    std::string port_str(base::NumberToString(embedded_test_server()->port()));
     GURL::Replacements set_port;
     set_port.SetPortStr(port_str);
     GURL main_url(test_case.main_url.ReplaceComponents(set_port));

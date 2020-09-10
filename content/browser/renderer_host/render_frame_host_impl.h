@@ -894,7 +894,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // If accessibility is enabled, get the BrowserAccessibilityManager for
   // this frame, or create one if it doesn't exist yet, otherwise return
-  // NULL.
+  // null.
   BrowserAccessibilityManager* GetOrCreateBrowserAccessibilityManager();
 
   void set_no_create_browser_accessibility_manager_for_testing(bool flag) {
@@ -1159,8 +1159,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // navigations on this frame - cross-site and same-site).
   void DisableProactiveBrowsingInstanceSwapForTesting();
 
-  bool IsProactiveBrowsingInstanceSwapDisabledForTesting() const {
-    return is_proactive_browsing_instance_swap_disabled_for_testing_;
+  bool HasTestDisabledProactiveBrowsingInstanceSwap() const {
+    return has_test_disabled_proactive_browsing_instance_swap_;
   }
 
   void AddServiceWorkerContainerHost(
@@ -1856,7 +1856,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojom::NavigationClient::CommitFailedNavigationCallback
   BuildCommitFailedNavigationCallback(NavigationRequest* navigation_request);
 
-  // Protected / virtual so it can be overriden by tests.
+  // Protected / virtual so it can be overridden by tests.
   virtual void SendBeforeUnload(bool is_reload,
                                 base::WeakPtr<RenderFrameHostImpl> impl);
 
@@ -2917,7 +2917,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // GetInterface messages dispatched through this binding are guaranteed to
   // originate from the document corresponding to the last committed navigation;
-  // or the inital empty document if no real navigation has ever been committed.
+  // or the initial empty document if no real navigation has ever been
+  // committed.
   //
   // The InterfaceProvider interface connection is established as follows:
   //
@@ -3030,7 +3031,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Note that even if this is false, proactive BrowsingInstance swap still
   // might not happen on navigations on this frame due to other reasons.
   // Should only be used for testing purposes.
-  bool is_proactive_browsing_instance_swap_disabled_for_testing_ = false;
+  bool has_test_disabled_proactive_browsing_instance_swap_ = false;
 
   // This used to re-commit when restoring from the BackForwardCache, with the
   // same params as the original navigation.

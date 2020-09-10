@@ -1441,9 +1441,17 @@ def CheckNoProductionCodeUsingTestOnlyFunctions(input_api, output_api):
   base_function_pattern = r'[ :]test::[^\s]+|ForTest(s|ing)?|for_test(s|ing)?'
   inclusion_pattern = input_api.re.compile(r'(%s)\s*\(' % base_function_pattern)
   comment_pattern = input_api.re.compile(r'//.*(%s)' % base_function_pattern)
+  allowlist_pattern = input_api.re.compile(r'// IN-TEST$')
   exclusion_pattern = input_api.re.compile(
     r'::[A-Za-z0-9_]+(%s)|(%s)[^;]+\{' % (
       base_function_pattern, base_function_pattern))
+  # Avoid a false positive in this case, where the method name, the ::, and
+  # the closing { are all on different lines due to line wrapping.
+  # HelperClassForTesting::
+  #   HelperClassForTesting(
+  #       args)
+  #     : member(0) {}
+  method_defn_pattern = input_api.re.compile(r'[A-Za-z0-9_]+::$')
 
   def FilterFile(affected_file):
     files_to_skip = (_EXCLUDED_PATHS +
@@ -1457,12 +1465,16 @@ def CheckNoProductionCodeUsingTestOnlyFunctions(input_api, output_api):
   problems = []
   for f in input_api.AffectedSourceFiles(FilterFile):
     local_path = f.LocalPath()
+    in_method_defn = False
     for line_number, line in f.ChangedContents():
       if (inclusion_pattern.search(line) and
           not comment_pattern.search(line) and
-          not exclusion_pattern.search(line)):
+          not exclusion_pattern.search(line) and
+          not allowlist_pattern.search(line) and
+          not in_method_defn):
         problems.append(
           '%s:%d\n    %s' % (local_path, line_number, line.strip()))
+      in_method_defn = method_defn_pattern.search(line)
 
   if problems:
     return [output_api.PresubmitPromptOrNotify(_TEST_ONLY_WARNING, problems)]

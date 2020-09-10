@@ -113,7 +113,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
                                  const IPC::Message& message);
 
-  // Allows the delegate to filter incoming associated inteface requests.
+  // Allows the delegate to filter incoming associated interface requests.
   virtual void OnAssociatedInterfaceRequest(
       RenderFrameHost* render_frame_host,
       const std::string& interface_name,
@@ -231,7 +231,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                const GURL& url) {}
 
   // Return this object cast to a WebContents, if it is one. If the object is
-  // not a WebContents, returns NULL.
+  // not a WebContents, returns null.
   virtual WebContents* GetAsWebContents();
 
   // The render frame has requested access to media devices listed in

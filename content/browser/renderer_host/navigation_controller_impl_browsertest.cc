@@ -3619,7 +3619,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // srcdoc if we go back and recreate the frames.
 //
 // This test is similar to
-// NavigationControllerBrowserTest.FrameNavigationEntry_RecreatedInjectedBlankSubframe
+// NavigationControllerBrowserTest.
+//     FrameNavigationEntry_RecreatedInjectedBlankSubframe
 // and RenderFrameHostManagerTest.RestoreSubframeFileAccessForHistoryNavigation.
 //
 // This test worked before and after the fix for https://crbug.com/657896, but

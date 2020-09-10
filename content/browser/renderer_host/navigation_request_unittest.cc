@@ -493,6 +493,7 @@ TEST_F(NavigationRequestTest, WillFailRequestCanAccessRenderFrameHost) {
       NavigationRequest::From(navigation->GetNavigationHandle())->state());
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetRenderFrameHost());
   NavigationRequest::From(navigation->GetNavigationHandle())
+      ->GetNavigationThrottleRunnerForTesting()
       ->CallResumeForTesting();
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetRenderFrameHost());
 

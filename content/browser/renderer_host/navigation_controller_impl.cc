@@ -1156,7 +1156,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   base::Time timestamp =
       time_smoother_.GetSmoothedTime(get_timestamp_callback_.Run());
   DVLOG(1) << "Navigation finished at (smoothed) timestamp "
-           << timestamp.ToInternalValue();
+           << timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds();
 
   // If we aren't keeping the pending entry, there shouldn't be one at this
   // point. Clear it again in case any error cases above forgot to do so.
@@ -2454,7 +2454,7 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
   std::string partition_id;
   if (instance) {
     // TODO(ajwong): When GetDefaultSessionStorageNamespace() goes away, remove
-    // this if statement so |instance| must not be NULL.
+    // this if statement so |instance| must not be null.
     partition_id = GetContentClient()->browser()->GetStoragePartitionIdForSite(
         browser_context_, instance->GetSiteURL());
   }

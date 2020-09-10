@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/form_submission_throttle.h"
+#include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -21,8 +22,7 @@ FormSubmissionThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
   if (!handle->IsFormSubmission())
     return nullptr;
 
-  return std::unique_ptr<NavigationThrottle>(
-      new FormSubmissionThrottle(handle));
+  return base::WrapUnique(new FormSubmissionThrottle(handle));
 }
 
 FormSubmissionThrottle::~FormSubmissionThrottle() {}

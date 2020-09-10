@@ -97,7 +97,7 @@ class CONTENT_EXPORT NavigatorDelegate {
   virtual bool ShouldOverrideUserAgentForRendererInitiatedNavigation() = 0;
 
   // A RenderFrameHost in the specified |frame_tree_node| started loading a new
-  // document. This correponds to Blink's notion of the throbber starting.
+  // document. This corresponds to Blink's notion of the throbber starting.
   // |to_different_document| will be true unless the load is a fragment
   // navigation, or triggered by history.pushState/replaceState.
   virtual void DidStartLoading(FrameTreeNode* frame_tree_node,

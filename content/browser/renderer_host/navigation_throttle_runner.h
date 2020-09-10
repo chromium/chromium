@@ -50,6 +50,8 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // the navigation.
   void ResumeProcessingNavigationEvent(NavigationThrottle* resuming_throttle);
 
+  // Simulates the navigation resuming. Most callers should just let the
+  // deferring NavigationThrottle do the resuming.
   void CallResumeForTesting();
 
   void RegisterNavigationThrottles();

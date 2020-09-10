@@ -70,7 +70,7 @@ class CONTENT_EXPORT RenderFrameHostFactory {
   static void UnregisterFactory();
 
  private:
-  // The current globally registered factory. This is NULL when we should create
+  // The current globally registered factory. This is null when we should create
   // regular RenderFrameHostImpls.
   static RenderFrameHostFactory* factory_;
 
