@@ -2615,7 +2615,7 @@ New Search
           Finish what you were doing in your other open Chrome window.
       </message>
       <message name="IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION" desc="Button label that appears on a button to switch to some other window, when the user has multiple windows open, and one window is showing a dialog that has to be interacted with before any other window can be used.">
-          Switch to Open Window.
+          Switch to Open Window
       </message>
     </messages>
   </release>

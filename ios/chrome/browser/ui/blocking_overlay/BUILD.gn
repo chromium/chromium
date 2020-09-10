@@ -15,6 +15,5 @@ source_set("blocking_overlay") {
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ui/base",
   ]
 }

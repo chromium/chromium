@@ -21,6 +21,8 @@
 				<string>IDS_IOS_SAFE_MODE_CRASH_REPORT_SENT</string>
 				<string>IDS_IOS_SAFE_MODE_RELOAD_CHROME</string>
 				<string>IDS_IOS_SAFE_MODE_AW_SNAP</string>
+				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION</string>
+				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION</string>
 			</array>
 		</dict>
 		<dict>
@@ -64,12 +66,12 @@
 					<key>output</key>
 					<string>Z6KvRw</string>
 				</dict>
-                <dict>
-                    <key>input</key>
-                    <string>IDS_IOS_INTENTS_SEARCH_IN_CHROME_PARAMETER_COMBINATION_TITLE</string>
-                    <key>output</key>
-                    <string>TqBLdA</string>
-                </dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SEARCH_IN_CHROME_PARAMETER_COMBINATION_TITLE</string>
+					<key>output</key>
+					<string>TqBLdA</string>
+				</dict>
 				<dict>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_OPEN_IN_CHROME_PARAMETER_COMBINATION_TITLE</string>

@@ -8,7 +8,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,6 +21,9 @@ const CGFloat kButtonSpacing = 20.0f;
 
 }  // namespace
 
+// This view controller is used in Safe Mode. This means everything used here
+// must not require any advanced initialization that only happens after safe
+// mode.
 @implementation BlockingOverlayViewController
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -41,8 +43,11 @@ const CGFloat kButtonSpacing = 20.0f;
   AddSameConstraints(self.view, backgroundBlurEffect);
 
   UILabel* label = [[UILabel alloc] init];
-  label.text =
-      l10n_util::GetNSString(IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION);
+  // Here and everywhere, use NSLocalizedString because the usual localization
+  // method with l10n_util::GetNSString() requires initialization that happens
+  // after safe mode completes.
+  label.text = NSLocalizedString(
+      @"IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION", @"");
   label.textColor = [UIColor colorNamed:kGrey800Color];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   label.textAlignment = NSTextAlignmentCenter;
@@ -56,9 +61,11 @@ const CGFloat kButtonSpacing = 20.0f;
 
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  [button setTitle:l10n_util::GetNSString(
-                       IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION)
-          forState:UIControlStateNormal];
+  [button
+      setTitle:NSLocalizedString(
+                   @"IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION",
+                   @"")
+      forState:UIControlStateNormal];
   [button setTitleColor:[UIColor colorNamed:kBlueColor]
                forState:UIControlStateNormal];
   button.titleLabel.font =
